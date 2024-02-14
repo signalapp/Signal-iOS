@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Eklenti indirmesi başarısız oldu.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Eklenti yükleme başarısız oldu.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@ tarafından gelen bir ileti teslim edilemedi";
@@ -4367,10 +4367,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Bildirimler açılsın mı?";
 
 /* Shown as the body of an alert when notifications can't be shown due to an error. */
-"NOTIFICATIONS_ERROR_MESSAGE" = "Restart your %1$@ if you’re not receiving Signal notifications.";
+"NOTIFICATIONS_ERROR_MESSAGE" = "Signal bildirimlerini almıyorsan, %1$@ cihazını yeniden başlat.";
 
 /* Shown as the title of an alert when notifications can't be shown due to an error. */
-"NOTIFICATIONS_ERROR_TITLE" = "Couldn’t Show Notifications";
+"NOTIFICATIONS_ERROR_TITLE" = "Bildirimler Gösterilemedi";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "\"Okundu olarak işaretle\", \"Yanıtla\" ve \"Geri ara\" gibi eylemler içerir.";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Hiç kimse";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Telefon numaran, telefon rehberinde kayıtlı olmadığı sürece kimse tarafından görülmez.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Telefon numaran kimse tarafından görülmez.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal'in Kilidini Aç";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "İsim, kullanıcı adı, veya numara";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "İsim, kullanıcı adı veya numara";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "İsim ya da numara bul";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "Kare Kodlar ve Bağlantılar";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Telefon numaran artık sohbetlerde görünmüyor. Numaran bir arkadaşının kişilerinde kayıtlıysa, numaranı yine görecektir.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Telefon Numarası Gizliliği";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Bağlanmanın Yeni Yolları";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "İnsanlar artık isteğe bağlı kullanıcı adını kullanarak sana mesaj gönderebilir, böylece telefon numaranı vermene gerek kalmaz. Kullanıcı adları profilinde görünmez.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Kullanıcı adları";

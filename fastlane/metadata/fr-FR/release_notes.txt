@@ -1,2 +1,2 @@
-• This Valentine's Day, we have good news if you're planning on getting back together with your iPad after taking a break: A bug that could cause Signal to crash when attempting to re-link an unlinked device has been fixed.
-• If you're in a relationship with multiple devices, group call notifications on your iPhone will be automatically dismissed when you answer that call on your iPad or Desktop.
+• C’est bientôt la Saint-Valentin et nous avons une bonne nouvelle pour vous ! Si vous pensez à renouer avec votre iPad après une rupture douloureuse, sachez que nous avons corrigé le bug qui faisait planter Signal au moment de reconnecter un appareil non associé.
+• Et si vous êtes en polyamour avec plusieurs appareils, les notifications d’appels de groupe que vous recevez sur votre iPhone sont automatiquement supprimées lorsque vous répondez depuis votre iPad ou votre ordinateur.

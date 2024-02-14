@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Padam";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Orang ini akan dipadamkan daripada sistem kenalan anda. Anda tidak akan melihat orang ini semasa membuat pencarian. Anda akan menerima permintaan mesej jika mereka menghantar mesej kepada anda pada masa depan.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Orang ini akan dipadamkan daripada kenalan sistem anda. Anda tidak akan melihat orang ini semasa membuat pencarian. Anda akan menerima permintaan mesej jika mereka menghantar mesej kepada anda pada masa depan.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Padam Kenalan dan alih Keluar daripada senarai anda?";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Gagal muat turun lampiran.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Muat naik lampiran gagal.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Mesej daripada %1$@ tidak dapat disampaikan";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Tiada sesiapa";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Nombor telefon anda tidak akan kelihatan kepada sesiapa melainkan mereka menyimpannya dalam kenalan telefon.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Nombor telefon anda tidak akan kelihatan kepada sesiapa.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@%2$@";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Menerima permintaan mesej";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Meletakkan mereka dalam sistem kenalan anda";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Meletakkan mereka dalam kenalan sistem anda";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Hubungan anda boleh melihat nama dan foto anda, dan boleh melihat hantaran anda ke \"Cerita Saya\" kecuali anda menyembunyikannya daripada mereka.";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "Kod QR dan Pautan";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Nombor telefon anda tidak lagi kelihatan dalam sembang. Jika nombor anda disimpan pada kenalan rakan, mereka boleh melihatnya.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Privasi Nombor Telefon";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Cara Baharu untuk Berhubung";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Mereka kini boleh menghantar mesej kepada anda menggunakan nama pengguna pilihan anda, tanpa memberikan nombor telefon anda. Nama pengguna tidak kelihatan pada profil anda.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Nama Pengguna";

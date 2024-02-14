@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "การดาวน์โหลดแฟ้มแนบล้มเหลว";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "อัปโหลดไฟล์แนบไม่สำเร็จ";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "ไม่สามารถส่งข้อความจาก %1$@ ได้";
@@ -4214,7 +4214,7 @@
 "MY_STORY_TAP_TO_ADD" = "แตะเพื่อเพิ่ม";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "เพิ่งเปลี่ยนชื่อของเขาจาก %1$@ เป็น %2$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "เพิ่งเปลี่ยนชื่อโปรไฟล์จาก %1$@ เป็น %2$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ข้าม";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "คนที่คุณไม่รู้จัก";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "จะไม่มีใครเห็นหมายเลขโทรศัพท์ของคุณ เว้นแต่ว่าคนคนนั้นจะบันทึกเบอร์คุณไว้ในรายชื่อผู้ติดต่อบนโทรศัพท์";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "จะไม่มีใครเห็นหมายเลขโทรศัพท์ของคุณ";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5282,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "เกี่ยวกับ (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ ได้เปลี่ยนชื่อโปรไฟล์ของพวกเขาจาก %2$@ เป็น %3$@";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ เปลี่ยนชื่อโปรไฟล์จาก %2$@ เป็น %3$@";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ได้เปลี่ยนชื่อโปรไฟล์เป็น %2$@";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ เปลี่ยนชื่อโปรไฟล์เป็น %2$@";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "ชื่อของคุณ";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "ปลดล็อก Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "ชื่อ ชื่อผู้ใช้ และหมายเลข";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "ชื่อ ชื่อผู้ใช้ หรือหมายเลขโทรศัพท์";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ค้นหาโดยชื่อหรือหมายเลข";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "ไอคอนแอป";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "แสดงรูปผู้ติดต่อจากระบบ ถ้าทำได้";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "แสดงรูปผู้ติดต่อของระบบ ถ้าทำได้";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "ใช้รูปผู้ติดต่อจากระบบ";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "ใช้รูปผู้ติดต่อของระบบ";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "ธีม";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "รับคำขอส่งข้อความ";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "มีรายชื่ออยู่ในระบบผู้ติดต่อของคุณ";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "บันทึกไว้ในรายชื่อผู้ติดต่อของระบบคุณ";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "เครือข่ายของคุณจะเห็นชื่อและรูปภาพของคุณ รวมถึงโพสต์ที่คุณส่งใน “สตอรี่ของฉัน” เว้นแต่ว่าคุณจะซ่อนสตอรี่นั้นจากพวกเขา";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "คิวอาร์โค้ดและลิงก์";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "ระบบจะไม่แสดงหมายเลขโทรศัพท์ของคุณในแชทอีกต่อไป ผู้ติดต่อจะยังคงเห็นหมายเลขโทรศัพท์ของคุณ หากบันทึกเบอร์คุณไว้ในรายชื่อติดต่อ";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "การรักษาความเป็นส่วนตัวของหมายเลขโทรศัพท์";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "วิธีใหม่ในการติดต่อสื่อสาร";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "ผู้ติดต่อจะสามารถส่งข้อความหาคุณผ่านชื่อผู้ใช้ที่คุณกำหนด วิธีนี้ทำให้คุณไม่จำเป็นต้องบอกหมายเลขโทรศัพท์กับใคร โดยชื่อผู้ใช้จะไม่ปรากฏบนโปรไฟล์ของคุณ";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "ชื่อผู้ใช้";

@@ -906,7 +906,7 @@
 			<key>one</key>
 			<string>Alle Signal-kontakter · %1$d seer</string>
 			<key>other</key>
-			<string>Alle Signal-kontaker · %1$d seere</string>
+			<string>Alle Signal-kontakter · %1$d seere</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -920,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-kontaker · %1$d ekskluderet</string>
+			<string>Alle Signal-kontakter · %1$d ekskluderet</string>
 			<key>other</key>
-			<string>Alle Signal-kontaker · %1$d ekskluderet</string>
+			<string>Alle Signal-kontakter · %1$d ekskluderet</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>

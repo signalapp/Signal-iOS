@@ -995,7 +995,7 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groepen";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Zoek op nummer";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Zoeken op telefoonnummer";
 
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Zoeken op gebruikersnaam";
@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Aan bestaand contactpersoon toevoegen";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Aan systeemcontacten toevoegen";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Aan systeemcontactenlijst toevoegen";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Beheerders";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Downloaden van bijlage is mislukt.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Het uploaden van bijlagen is mislukt.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Een bericht van %1$@ kan niet worden afgeleverd";
@@ -3674,7 +3674,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Linkvoorbeeld";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Het beheren van systeemcontacten is niet meer beschikbaar op iPad. Om Signal-verbindingen aan je systeemcontacten toe te voegen, open je Signal op je telefoon.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Het beheren van systeemcontacten is niet meer beschikbaar op iPad. Om Signal-contacten aan je systeemcontactenlijst toe te voegen, open je Signal op je telefoon.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Het beheren van systeemcontacten wordt niet meer ondersteund op iPad. Dit apparaat blijft alle wijzigingen in je contactenlijst van Signal op je telefoon synchroniseren.";
@@ -4232,7 +4232,7 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Bij wifi & mobiele data";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Op telefoonnummer zoeken";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Zoeken op telefoonnummer";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nieuwe groep";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Niemand";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Je telefoonnummer is voor niemand zichtbaar, tenzij het is opgeslagen in de contacten van hun telefoon.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Je telefoonnummer is voor niemand zichtbaar.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5306,7 +5306,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Nu oplossen";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Dit verwijdert je gebruikersnaam en schakelt je QR-code en link uit. Anderen kunnen \"%1$@\" claimen. Weet je het zeker?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Hiermee wordt je gebruikersnaam verwijderd en worden je QR-code en link uitgeschakeld. “%1$@” kan hierna door anderen worden geclaimd. Weet je het zeker?";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Gebruikersnaam verwijderen";
@@ -6725,7 +6725,7 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Om deze instelling te wijzigen, stel ‘Wie kan mijn nummer zien’ in op ‘Niemand’.";
 
 /* The title for the phone number discoverability setting section. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wie kan mij vinden via mijn nummer";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wie kan mij via mijn nummer vinden";
 
 /* Description label for Phone Number Privacy */
 "SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Kies wie je telefoonnummer kan zien en wie ermee contact met je kan opnemen op Signal.";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR-codes en links";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Je telefoonnummer is niet meer zichtbaar in chats. Als iemand je nummer heeft opgeslagen, dan blijft het wel zichtbaar voor deze persoon.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Telefoonnummerprivacy";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Nieuwe manieren om contact te maken";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Mensen kunnen je nu berichten sturen via je optionele gebruikersnaam zodat je je telefoonnummer niet hoeft te geven. Gebruikersnamen zijn niet zichtbaar op je profiel.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Gebruikersnamen";
@@ -7676,7 +7676,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Kleur";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Deel je QR-code en link alleen met mensen die je vertrouwt. Wanneer gedeeld, kunnen anderen je gebruikersnaam zien en een chat met je starten.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Deel je QR-code en link alleen met mensen die je vertrouwt. Wanneer je deze deelt, kunnen anderen je gebruikersnaam zien en een chat met je starten.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-code en link niet ingesteld. Check je netwerkverbinding en probeer het opnieuw.";
@@ -7715,7 +7715,7 @@
 "USERNAME_LINK_SHEET_BUTTON" = "link";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Laat anderen een chat met jou starten door je unieke QR-code of link te delen.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Laat anderen een chat met jou starten door je unieke QR-code of link met hen te delen.";
 
 /* Title for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_TITLE" = "Deel je gebruikersnaam";
@@ -7724,7 +7724,7 @@
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Er is iets fout gegaan bij het opzoeken van de gebruikersnaam. Probeer het later opnieuw.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is geen geldige gebruikersnaam. Zorg ervoor dat je de volledige gebruikersnaam hebt ingevoerd, gevolgd door de bijbehorende reeks cijfers.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is geen geldige gebruikersnaam. Zorg ervoor dat je de volledige gebruikersnaam hebt ingevoerd, inclusief de punt en bijbehorende cijfercombinatie.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Ongeldige gebruikersnaam";
@@ -7751,7 +7751,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Wanneer je je gebruikersnaam wijzigt, werken je bestaande QR-code en link niet langer en worden deze vernieuwd. Weet je het zeker?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Gebruikersnamen zorgen ervoor dat anderen jou berichten kunnen sturen zonder je telefoonnummer nodig te hebben. Ze zijn gekoppeld aan een cijferset zodat jouw adres privé blijft. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Gebruikersnamen zorgen ervoor dat anderen jou berichten kunnen sturen zonder je telefoonnummer nodig te hebben. Ze zijn gekoppeld aan een cijfercombinatie zodat jouw adres privé blijft. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Kies jouw gebruikersnaam";
@@ -7763,7 +7763,7 @@
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Ongeldige gebruikersnaam, voer minimaal 2 cijfers in";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Deze cijfers helpen om je gebruikersnaam privé te houden zodat je ongewenste berichten kunt voorkomen. Deel je gebruikersnaam alleen met mensen en groepen waarmee je zou willen chatten. Als je je gebruikersnaam wijzigt, krijg je een nieuwe cijferset.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Deze cijfers helpen om je gebruikersnaam privé te houden zodat je ongewenste berichten kunt voorkomen. Deel je gebruikersnaam alleen met mensen en groepen waarmee je zou willen chatten. Als je je gebruikersnaam wijzigt, krijg je een nieuwe cijfercombinatie.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Wat is dit nummer?";

@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Dodaj do istniejącego kontaktu";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Dodaj do kontaktów systemu";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Dodaj do kontaktów systemowych";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administratorzy";
@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Usuń";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Ta osoba zostanie usunięta z kontaktów Twojego systemu. Nie zobaczysz tej osoby podczas wyszukiwania. Jeśli w przyszłości wyśle Ci wiadomość, otrzymasz prośbę o kontakt.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Ta osoba zostanie usunięta z kontaktów systemowych. Nie zobaczysz tej osoby podczas wyszukiwania. Jeśli w przyszłości wyśle Ci wiadomość, otrzymasz prośbę o kontakt.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Usunąć kontakt i skasować z Twojej listy?";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Pobieranie załączników nie powiodło się.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Przesyłanie załącznika nie powiodło się.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Nie udało się dostarczyć wiadomości od %1$@";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Nikt";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Nikt nie zobaczy Twojego numeru, o ile nie ma go zapisanego w kontaktach swojego telefonu.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Nikt nie zobaczy Twojego numeru telefonu.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5669,7 +5669,7 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Napraw błąd teraz";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Coś poszło nie tak z kodem QR i linkiem do nazwy użytkownika – jest nieważny. Utwórz nowy link do udostępniania innym.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Coś poszło nie tak z kodem QR i linkiem do nazwy użytkownika — są nieważne. Utwórz nowy link do udostępniania innym.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Usuń podgląd";
@@ -6023,7 +6023,7 @@
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Wyświetl zdjęcia z kontaktów systemowych, jeśli są dostępne.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Użyj zdjęć z kontaktów systemu";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Użyj zdjęć z kontaktów systemowych";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Motyw";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Zaakceptowanie prośby o kontakt";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Posiadanie ich w systemowej książce kontaktów";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Posiadanie ich w kontaktach systemowych";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Twoje kontakty widzą Twoje imię i zdjęcie oraz wszystko, co udostępniasz w „Mojej relacji”, o ile jej przed nimi nie ukryjesz.";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "Kody QR i linki";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Twój numer telefonu nie jest już widoczny w oknie czatu. Wciąż będzie jednak widoczny dla tych znajomych, którzy zapiszą Twój numer w kontaktach.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Ukryty numer telefonu";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Nowe sposoby na pozostawanie w kontakcie";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Od teraz użytkownicy mogą wysyłać Ci wiadomości, używając Twojej opcjonalnej nazwy użytkownika. Nie musisz już podawać swojego numeru telefonu. Nazwy użytkowników nie wyświetlają się na profilu.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Nazwy użytkowników";

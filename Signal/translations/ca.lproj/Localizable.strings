@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Buscar pel número";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Buscar per nom d'usuari";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Buscar per àlies";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per veure quins contactes són usuaris del Signal.";
@@ -1490,7 +1490,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Trieu un codi internacional";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Presentem la privacitat del número de telèfon, els noms d'usuari opcionals i els enllaços.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Presentem la privacitat del número de telèfon, els àlies opcionals i els enllaços.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "Noves maneres de connectar-te";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Ha fallat la baixada de l'adjunt.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "No s'ha pogut carregar el fitxer adjunt.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "No s'ha pogut lliurar un missatge de %1$@.";
@@ -4190,7 +4190,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Tothom menys…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Tots els contactes de Signal";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Totes les connexions de Signal";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Compartir només amb…";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Ningú";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "El teu número de telèfon no serà visible per a ningú tret que el tingui guardat als contactes del seu telèfon.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "El teu número de telèfon ja no és visible per a ningú.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5300,7 +5300,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "S'ha produït un error amb el teu àlies, ja no està assignat al teu compte. Pots provar de configurar-lo de nou o triar-ne un de diferent.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Elimina el nom d'usuari";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Elimina l'àlies";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Reparar-ho ara";
@@ -5309,16 +5309,16 @@
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Això eliminarà el teu àlies i desactivarà el teu codi QR i enllaç. \"%1$@\" estarà disponible perquè altres puguin utilitzar-lo. Segur que vols fer això?";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Elimina el nom d'usuari";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Elimina l'àlies";
 
 /* Title for a menu action allowing users to edit their existing username. */
-"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Editar àlies";
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Àlies";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "Codi QR o enllaç";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nom d'usuari";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Àlies";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "El cognom és massa llarg.";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Desbloca el Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nom, nom d'usuari o número";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nom, àlies o número";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Cerca per nom o número";
@@ -7646,28 +7646,28 @@
 "USE_PROXY_EXPLANATION" = "Utilitza un servidor intermediari només si no pots connectar Signal a les dades mòbils o a una xarxa Wi-Fi.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Els noms d'usuari tenen un codi QR únic que pots compartir amb els teus amics perquè iniciïn un xat amb tu";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Els àlies tenen un codi QR únic que pots compartir amb els teus amics perquè iniciïn un xat amb tu";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "Codis QR i enllaços";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "El teu número de telèfon ja no és visible als xats. Fins i tot si un amic té el teu número guardat als seus contactes, no li apareixerà.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Privacitat del número de telèfon";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Configurar el teu nom d'usuari";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Configurar el teu àlies";
 
 /* Title to set up signal username */
 "USERNAME_EDUCATION_TITLE" = "Noves maneres de connectar-te";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Ara, la gent et pot enviar missatges fent servir el teu àlies opcional, i no caldrà que donis el teu número de telèfon. Els àlies no són visibles al teu perfil.";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "Noms d'usuari";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "Àlies";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
@@ -7676,7 +7676,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Color";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Comparteix el teu codi QR i enllaç només amb persones de confiança. Quan ho comparteixis, els altres podran veure el teu nom d'usuari i iniciar un xat amb tu.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Comparteix el teu codi QR i enllaç només amb persones de confiança. Quan ho comparteixis, els altres podran veure el teu àlies i iniciar un xat amb tu.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "Codi QR i enllaç no establerts. Comprova la teva connexió i torna-ho a intentar.";
@@ -7697,7 +7697,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Escanejar";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "S'ha copiat el nom d'usuari";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "S'ha copiat l'àlies";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Enllaç copiat";
@@ -7721,7 +7721,7 @@
 "USERNAME_LINK_TOOLTIP_TITLE" = "Comparteix el teu àlies";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "Hi ha hagut un error en cercar el nom d'usuari. Torneu-ho a provar més tard.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "Hi ha hagut un error en cercar l'àlies. Torneu-ho a provar més tard.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ no és un àlies vàlid. Assegurat que has escrit l'àlies complet seguit pel seu conjunt de dígits.";
@@ -7733,7 +7733,7 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Aquest àlies ja no és vàlid.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ no és un usuari del Signal. Assegureu-vos que heu escrit el nom d'usuari complet.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ no és un usuari del Signal. Assegureu-vos que heu escrit l'àlies complet.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "No s'ha trobat l'usuari";
@@ -7751,34 +7751,34 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Canviar el teu àlies restablirà el teu codi QR i enllaç actuals. Segur que vols fer això?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Els noms d'usuari permeten a altres persones enviar-te un missatge sense necessitat del teu número de telèfon. Funcionen conjuntament amb una sèrie de dígits per ajudar-te a mantenir la teva adreça privada. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Els àlies permeten a altres persones enviar-te un missatge sense necessitat del teu número de telèfon. Funcionen conjuntament amb una sèrie de dígits per ajudar-te a mantenir la teva adreça privada. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Tria un nom d'usuari";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Tria un àlies";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Els noms d'usuari només poden contenir a-z, 0-9 i _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Els àlies només poden contenir a-z, 0-9 i _.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Nom d'usuari no vàlid, introdueix 2 dígits com a mínim";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Àlies no vàlid, introdueix 2 dígits com a mínim";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Aquests dígits ajudaran a mantenir el teu nom d'usuari en privat per tal d'evitar rebre missatges no desitjats. Comparteix el teu nom d'usuari només amb aquelles persones i grups amb les que desitges parlar. Si canvies el teu nom d'usuari, rebràs una nova sèrie de dígits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Aquests dígits ajudaran a mantenir el teu àlies en privat per tal d'evitar rebre missatges no desitjats. Comparteix el teu àlies només amb aquelles persones i grups amb les que desitges parlar. Si canvies el teu àlies, rebràs una nova sèrie de dígits.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Què és aquest número?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Aquest nom d'usuari no està disponible.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Aquest àlies no està disponible.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Nom d'usuari";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Àlies";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Nom d'usuari";
+"USERNAME_SELECTION_TITLE" = "Àlies";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Els noms d'usuari han de començar amb un mínim de %1$@ caràcters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Els àlies han de començar amb un mínim de %1$@ caràcters.";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Els àlies no poden acabar en 00. Prova un altre un dígit entre 1 i 9";

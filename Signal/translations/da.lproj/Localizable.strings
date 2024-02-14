@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find ud fra nummer";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Find ud fra brugernavn";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Find via brugernavn";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan aktivere kontaktadgang i iOS indstillinger-appen for at se, hvilke af dine kontakter der er Signal-brugere";
@@ -1031,7 +1031,7 @@
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ er i dine systemkontakter";
 
 /* A label indicating a user is a signal connection. */
-"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-kontakter";
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-kontakt";
 
 /* The title for a contact 'about' sheet. */
 "CONTACT_ABOUT_SHEET_TITLE" = "Om";
@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Tilføj til eksisterende kontakt";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Tilføj til systemets kontakter";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Tilføj til systemkontakter";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administratorer";
@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Slet";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Denne person slettes fra systemets kontakter. Du vil ikke se denne person, når du søger. Du modtager en anmodning, hvis vedkommende skriver til dig i fremtiden.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Denne person slettes fra dine systemkontakter. Du vil ikke se denne person, når du søger. Du modtager en anmodning, hvis vedkommende skriver til dig i fremtiden.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Slet kontakt, og fjern fra din liste?";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Hentning af vedhæftning mislykkedes";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Upload af vedhæftet fil mislykkedes.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "En besked fra %1$@ kunne ikke leveres";
@@ -3674,7 +3674,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Forhåndsvisning af link";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Håndtering af systemkontakter er ikke længere tilgængelig på iPad. Hvis du vil tilføje Signal-forbindelser til dine systemkontakter, skal du åbne Signal på din telefon.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Håndtering af systemkontakter er ikke længere tilgængelig på iPad. Hvis du vil tilføje Signal-kontakter til dine systemkontakter, skal du åbne Signal på din telefon.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Håndtering af systemkontakter understøttes ikke længere på iPad. Enheden fortsætter med at synkronisere eventuelle ændringer i din kontaktliste fra Signal på din telefon.";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Ingen";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Dit telefonnummer vil ikke være synligt for nogen, medmindre de har gemt det i telefonens kontakter.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Dit telefonnummer er ikke synligt for nogen.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5537,7 +5537,7 @@
 "REGISTRATION_ERROR" = "Registreringsfejl";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Din konto er blevet låst for at beskytte dit privatliv og din sikkerhed. Efter %1$@ dages inaktivitet på din konto, vil det igen blive muligt at tilmelde dette mobilnummer uden pinkode. Alt indhold vil blive slettet.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Din konto er blevet låst for at beskytte dit privatliv og din sikkerhed. Efter %1$@ dages inaktivitet på din konto, vil det igen blive muligt at tilmelde dette telefonnummer uden pinkode. Alt indhold vil blive slettet.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
 "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Få mere at vide om låste konti";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Appikon";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis systemets kontaktbilleder, hvis tilgængelige.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis systemkontakters billeder, hvis tilgængelige.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Brug kontaktbilleder i systemet";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Brug systemkontakters billeder";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Acceptere en beskedanmodning";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Have dem i dit systems kontakter";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Have dem i dine systemkontakter";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Dine kontakter kan se dit navn og billede og det, du lægger på \"Min historie\", medmindre du skjuler det for dem.";
@@ -7271,7 +7271,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Hvem kan se denne historie";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Vælg hvilke Signal-kontaker, der kan se din historie. Du kan ændre dette når som helst under privatlivsindstillinger.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Vælg hvilke Signal-kontakter, der kan se din historie. Du kan ændre dette når som helst under privatlivsindstillinger.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videoer sendt til historier beskæres til %1$d sekunder og sendes som flere historier.";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR-koder og links";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Dit telefonnummer er ikke længere synligt i chats. Hvis dit nummer er gemt i en vens kontakter, vil vedkommende stadig kunne se det.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Telefonnummerprivatliv";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Nye måder at komme i kontakt på";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Folk kan nu sende dig beskeder ved hjælp af dit valgfrie brugernavn, så du ikke behøver at dele dit telefonnummer. Brugernavne er ikke synlige på din profil.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Brugernavne";

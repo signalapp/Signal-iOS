@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Αποτυχία ανάκτησης του συνημμένου.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Αποτυχία μεταφόρτωσης του συνημμένου.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Ένα μήνυμα από τον/την %1$@ δεν μπόρεσε να παραδοθεί";
@@ -4457,7 +4457,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Να δοθούν δικαιώματα";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Επέλεξε ποιοί μπορούν να σε βρουν στο Signal χρησιμοποιώντας τον αριθμό σου %1$@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Επίλεξε ποίοι μπορούν να σε βρουν στο Signal χρησιμοποιώντας τον αριθμό τηλεφώνου σου %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Ποιοί μπορούν να σε βρουν με τον αριθμό σου;";
@@ -4481,7 +4481,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Λάθος ΡΙΝ";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Σου τέλειωσαν οι απόπειρες για το PIN, αλλά μπορείς να αποκτήσεις πρόσβαση στον λογαριασμό Signal σου επαληθεύοντας τον αριθμό σου. Για το απόρρητο και την ασφάλειά σου ο λογαριασμός δεν θα έχει προϋπάρχουσες πληροφορίες προφίλ και ρυθμίσεις.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Σου τέλειωσαν οι απόπειρες για το PIN, αλλά μπορείς να αποκτήσεις πρόσβαση στον λογαριασμό Signal σου επαληθεύοντας τον αριθμό τηλεφώνου σου. Για το απόρρητο και την ασφάλειά σου ο λογαριασμός δεν θα έχει προϋπάρχουσες πληροφορίες προφίλ και ρυθμίσεις.";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Όροι & Πολιτική Απορρήτου";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Κανένας";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Ο αριθμός τηλεφώνου σου δεν θα είναι ορατός σε κανέναν χρήστη, εκτός αν τον έχει αποθηκεύσει στις επαφές του τηλεφώνου του.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Ο αριθμός τηλεφώνου σου δεν θα είναι ορατός σε κανέναν χρήστη.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5555,7 +5555,7 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Έλεγχος σύνδεσης";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Γράψε τον αριθμό σου για να ξεκινήσεις.";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Γράψε τον αριθμό τηλεφώνου σου για να ξεκινήσεις.";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Ο αριθμός τηλεφώνου σου";
@@ -5657,7 +5657,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Απόρριψη";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός που προσπαθείς να καταχωρήσεις έχει ήδη καταχωρηθεί σε κάποιον άλλον διακομιστή, παρακαλώ απεγγράψου από εκεί και δοκίμασε ξανά.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός τηλεφώνου που προσπαθείς να καταχωρήσεις έχει ήδη καταχωρηθεί σε κάποιον άλλον διακομιστή, παρακαλώ απεγγράψου από εκεί και δοκίμασε ξανά.";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Διόρθωση τώρα";
@@ -6062,7 +6062,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Αλλαγή αριθμού";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Πρόκειται να αλλάξεις τον αριθμό σου από τον %1$@ στον %2$@.\n\nΠριν συνεχίσεις, παρακαλώ επιβεβαίωσε πως ο παρακάτω αριθμός είναι σωστός.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Πρόκειται να αλλάξεις τον αριθμό τηλεφώνου σου από %1$@ σε %2$@.\n\nΠριν συνεχίσεις, παρακαλώ επιβεβαίωσε πως ο παρακάτω αριθμός είναι σωστός.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Κωδικός χώρας";
@@ -6848,7 +6848,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Κλείδωμα εγγραφής";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Να απαιτείται το PIN Signal σου για να εγγραφτεί ο αριθμός τηλεφώνου σου ξανά στο Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Να απαιτείται το PIN Signal σου για να εγγραφεί ο αριθμός τηλεφώνου σου ξανά στο Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Δείκτες πληκτρολόγησης";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Έχεις αποδεχτεί ένα αίτημα μηνύματος";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Τα έχεις στις επαφές της συσκευής σου";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Τα έχεις στις επαφές του συστήματός σου";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Οι επαφές σου μπορούν να δουν το όνομα και τη φωτογραφία σου, και μπορούν να δουν δημοσιεύσεις στην Ιστορία σου, εκτός αν την κρύψεις από αυτούς.";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "Κωδικοί QR και σύνδεσμοι";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Ο αριθμός τηλεφώνου σου δεν είναι πλέον ορατός στις συνομιλίες. Εάν ο αριθμός σου είναι αποθηκευμένος στις επαφές ενός φίλου, θα εξακολουθεί να τον βλέπει.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Απόρρητο αριθμού τηλεφώνου";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Νέοι τρόποι σύνδεσης";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Οι χρήστες μπορούν πλέον να σου στέλνουν μήνυμα χρησιμοποιώντας το προαιρετικό όνομα χρήστη σου, ώστε να μη χρειάζεται να δώσεις τον αριθμό τηλεφώνου σου. Τα ονόματα χρήστη δεν είναι ορατά στο προφίλ σου.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Ονόματα χρηστών";

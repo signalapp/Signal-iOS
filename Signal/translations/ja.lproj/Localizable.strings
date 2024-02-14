@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "電話番号で検索";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ユーザー名で検索";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ユーザーネームで検索";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "連絡先からSignalユーザを見つけるには、iOSの設定で連絡先へのアクセスを有効にしてください。";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "添付ファイルのダウンロードに失敗しました。";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "添付ファイルのアップロードに失敗しました。";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@ からのメッセージを配送できませんでした";
@@ -3674,10 +3674,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "リンクプレビュー";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPadでは連絡先の管理はできなくなりました。連絡先にSignalコネクションを追加するには、お使いの携帯電話でSignalを操作してください。";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPadではシステムの連絡先の管理はできなくなりました。システムの連絡先にSignalコネクションを追加するには、お使いの携帯電話でSignalを操作してください。";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPadでは、連絡先の管理はサポートされなくなりました。お使いの携帯電話でSignalの連絡先リストに変更があった場合は、この端末は引き続き同期します。";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPadでは、システムの連絡先の管理はサポートされなくなりました。お使いの携帯電話でSignalの連絡先リストに変更があった場合は、この端末は引き続き同期します。";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "詳しく見る";
@@ -4214,7 +4214,7 @@
 "MY_STORY_TAP_TO_ADD" = "タップして追加";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近、プロフィール名を %1$@ から %2$@ に変更しました。";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近、プロフィールネームを %1$@ から %2$@ に変更しました。";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "スキップ";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "なし";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "相手の携帯電話の連絡先に保存されていない限り、あなたの電話番号は誰にも表示されません。";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "あなたの電話番号は誰にも表示されません。";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5282,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "自己紹介 (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ がプロフィール名を %2$@ から %3$@ に変更しました。";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ がプロフィールネームを %2$@ から %3$@ に変更しました。";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ がプロフィール名を %2$@ に変更しました。";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ がプロフィールネームを %2$@ に変更しました。";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "あなたの名前";
@@ -5297,28 +5297,28 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "名前";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "ユーザー名に問題が発生したため、アカウントに割り当てられていません。もう一度設定し直すか、新しいものを選んでみてください。";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "ユーザーネームに問題が発生したため、アカウントに割り当てられていません。もう一度設定し直すか、新しいものを選んでみてください。";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "ユーザー名を消去";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "ユーザーネームを消去";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "今すぐ修正する";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "ユーザー名を削除すると、QR コードとリンクが無効になります。「%1$@」は他のユーザーに使用可能となります。本当に変更しますか？";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "ユーザーネームを削除すると、QR コードとリンクが無効になります。「%1$@」は他のユーザーに使用可能となります。本当に変更しますか？";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "ユーザー名を消去";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "ユーザーネームを消去";
 
 /* Title for a menu action allowing users to edit their existing username. */
-"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "ユーザー名の編集";
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "ユーザーネームの編集";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR コードもしくはリンク";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "ユーザー名";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "ユーザーネーム";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "姓が長すぎます。";
@@ -5657,19 +5657,19 @@
 "REJECT_CALL_BUTTON_TITLE" = "拒否する";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "登録しようとしている番号はすでに別のサーバに登録されています。そこでの登録を解除してから再度試してください。";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "登録しようとしている電話番号はすでに別のサーバに登録されています。そこでの登録を解除してから再度試してください。";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "今すぐ修正する";
 
 /* Label warning the user that something is wrong with their username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "ユーザー名に問題が発生したため、アカウントに割り当てられていません。もう一度設定し直すか、新しいものを選んでみてください。";
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "ユーザーネームに問題が発生したため、アカウントに割り当てられていません。もう一度設定し直すか、新しいものを選んでみてください。";
 
 /* Button below the warning to fix a username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "今すぐ修正する";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "ユーザー名のQRコードとリンクに問題が発生したため、無効になりました。新しいリンクを作成して他のユーザーと共有してください。";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "ユーザーネームのQRコードとリンクに問題が発生したため、無効になりました。新しいリンクを作成して他のユーザーと共有してください。";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "プレビューを削除";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signalのロックを解除する";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "名前、ユーザー名、電話番号";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "名前、ユーザーネーム、電話番号";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "名前や電話番号で検索";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QRコードとリンク";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "チャット上に電話番号が表示されなくなります。あなたの電話番号が友人の連絡先に保存されている場合は、その友人には電話番号が表示されます。";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "電話番号保護";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "つながる新しい選択肢";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "オプションのユーザーネームを使ってメッセージを送れるようになったので、電話番号を教える必要はありません。ユーザーネームはプロフィールに表示されません。";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "ユーザーネーム";
@@ -7676,7 +7676,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "色";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "QR コードとリンクは、信頼できる人とのみ共有してください。共有すると、相手はお客様のユーザー名を見たりチャットしたりできるようになります。";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "QR コードとリンクは、信頼できる人とのみ共有してください。共有すると、相手はお客様のユーザーネームを見たりチャットしたりできるようになります。";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QRコードおよびリンクが設定されていません。ネットワーク接続を確認して再度試してください。";
@@ -7697,7 +7697,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "スキャン";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "ユーザー名をコピーしました";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "ユーザーネームをコピーしました";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "リンクをコピーしました";
@@ -7709,7 +7709,7 @@
 "USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "リンクをコピーする";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "このリンクからは、誰でもあなたのユーザー名を閲覧したりチャットを始めることができますので、信頼できる人とのみ共有してください";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "このリンクからは、誰でもあなたのユーザーネームを閲覧したりチャットを始めることができますので、信頼できる人とのみ共有してください";
 
 /* Title for a button to open a sheet for copying and sharing your username link. */
 "USERNAME_LINK_SHEET_BUTTON" = "リンク";
@@ -7718,22 +7718,22 @@
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "QRコードかリンクを共有すると、相手はあなたとチャットを開始できます。";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "ユーザー名を共有する";
+"USERNAME_LINK_TOOLTIP_TITLE" = "ユーザーネームを共有する";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "ユーザー名の検索でエラーが発生しました。あとで再度試してください。";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "ユーザーネームの検索でエラーが発生しました。あとで再度試してください。";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ は有効なユーザー名ではありません。数字とセットになっている正確なユーザー名を入力しているか確認しててください。";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ は有効なユーザーネームではありません。数字とセットになっている正確なユーザーネームを入力しているか確認しててください。";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "無効なユーザー名です";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "無効なユーザーネームです";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
-"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "このユーザー名のリンクは無効になりました。";
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "このユーザーネームのリンクは無効になりました。";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ はSignalユーザーではありません。ユーザー名を確認してください。";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ はSignalユーザーではありません。ユーザーネームを確認してください。";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "ユーザーが見つかりません";
@@ -7742,43 +7742,43 @@
 "USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "このQRコードをお使いの携帯電話でスキャンして、Signalで私とチャットしましょう。";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "QRコードとリンクはリセットされ、ユーザー名は%1$@です";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "QRコードとリンクはリセットされ、ユーザーネームは%1$@です";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "ユーザー名の先頭に数字は使用できません。";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "ユーザーネームの先頭に数字は使用できません。";
 
 /* A message explaining the side effects of changing your username. */
-"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "ユーザー名を変更すると、これまでのQRコードとリンクがリセットされます。本当に変更しますか？";
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "ユーザーネームを変更すると、これまでのQRコードとリンクがリセットされます。本当に変更しますか？";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ユーザー名を使用すると、相手は電話番号なしであなたにメッセージを送ることができますユーザー名は数字と対になっているのでアドレスを非公開にすることができます。%1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ユーザーネームを使用すると、相手は電話番号なしであなたにメッセージを送ることができますユーザーネームは数字と対になっているのでアドレスを非公開にすることができます。%1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "ユーザー名を選択してください";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "ユーザーネームを選択してください";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "ユーザー名には半角の英数字とアンダーバーのみ使用できます。";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "ユーザーネームには半角の英数字とアンダーバーのみ使用できます。";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "ユーザーネームが無効です。数字は2桁以上入力してください";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "これらの数字は、ユーザー名を非公開にし、不要なメッセージを避けるのに役立ちます。ユーザー名は、チャットをしたい人やグループとだけ共有してください。ユーザー名を変更すると、新しい数字に更新されます。";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "これらの数字は、ユーザーネームを非公開にし、不要なメッセージを避けるのに役立ちます。ユーザーネームは、チャットをしたい人やグループとだけ共有してください。ユーザーネームを変更すると、新しい数字に更新されます。";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "この数字は何ですか？";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "このユーザー名は使用できません。";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "このユーザーネームは使用できません。";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "ユーザー名";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "ユーザーネーム";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "ユーザー名";
+"USERNAME_SELECTION_TITLE" = "ユーザーネーム";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "ユーザー名は、%1$@ 文字以上にしてください。";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "ユーザーネームは、%1$@ 文字以上にしてください。";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "ユーザーネームは00で終わることはできません。1～9の他の数字を試してください";

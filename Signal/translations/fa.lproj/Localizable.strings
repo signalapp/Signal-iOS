@@ -929,16 +929,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "ویرایش عکس";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "شماره جدید شما نباید با شماره قبلی شما یکی باشد. لطفاً برای تغییر شماره یک شماره‌تلفن جدید وارد کنید.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "شماره جدید شما نباید با شماره قبلی شما یکی باشد. لطفاً برای تغییر شماره یک شماره تلفن جدید وارد کنید.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "شماره‌تلفنی که وارد کردید با حساب کاربری شما همخوانی ندارد.";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "شماره تلفنی که وارد کردید با حساب کاربری شما همخوانی ندارد.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "شماره‌تلفن جدید نامعتبر. لطفاً برای تغییر شماره خود یک شماره‌تلفن معتبر وارد کنید.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "شماره تلفن جدید نامعتبر. لطفاً برای تغییر شماره خود یک شماره تلفن معتبر وارد کنید.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "شماره‌تلفن قدیمی نامعتبر. لطفاً برای تغییر شماره خود یک شماره‌تلفن معتبر وارد کنید.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "شماره تلفن قدیمی نامعتبر. لطفاً برای تغییر شماره خود یک شماره تلفن معتبر وارد کنید.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "این پیش‌نمایشی از رنگ متن گفتگو است.";
@@ -1100,7 +1100,7 @@
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "هیچ ایمیلی در دسترس نیست";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "هیچ شماره‌ای در دسترس نیست";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "هیچ شماره تلفنی در دسترس نیست";
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "انتخاب مخاطب";
@@ -1685,7 +1685,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "پاک کردن حساب کاربری";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "شماره‌تلفنی که وارد کردید با حساب کاربری شما همخوانی ندارد.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "شماره تلفنی که وارد کردید با حساب کاربری شما همخوانی ندارد.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "همه پیام‌های موجود در گفتگو پاک شود؟";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "بارگیری پیوست ناموفق بود.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "بارگذاری پیوست انجام نشد.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "یک پیام از %1$@ نتوانست تحویل داده شود";
@@ -3524,7 +3524,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ شماره‌تلفن خود را تغییر داد.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ شماره تلفن خود را تغییر داد.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ عضو سیگنال شده است!";
@@ -3677,7 +3677,7 @@
 "LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "مدیریت مخاطبان سیستم در آی‌پد دیگر در دسترس نیست. برای افزودن آشنایان در سیگنال به مخاطبان سیستم خود، سیگنال را در تلفنتان باز کنید.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "مدیریت مخاطبان سیستم در آی‌پد دیگر پشتیبانی نمی‌شود. این دستگاه همچنان هرگونه تغییر در فهرست مخاطبان شما را از سیگنال به تلفنتان همگام‌سازی خواهد کرد.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "مدیریت مخاطبان سیستم در آی‌پد دیگر پشتیبانی نمی‌شود. این دستگاه همچنان هرگونه تغییر در فهرست مخاطبان سیستم شما را از سیگنال به تلفنتان همگام‌سازی خواهد کرد.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "بیشتر بدانید";
@@ -4214,7 +4214,7 @@
 "MY_STORY_TAP_TO_ADD" = "برای افزودن ضربه بزنید";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "به‌تازگی نام پروفایل خود را از %1$@ به %2$@ تغییر دادند";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "به‌تازگی نام نمایه خود را از %1$@ به %2$@ تغییر داد.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "رد کردن";
@@ -4430,7 +4430,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "پیوند آیفون";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "لمس \"ثبت آیپد\" به شما اجازه می دهد که یک حساب جدید ایجاد کرده و یا حساب قبلی سیگنال را به این آیپد انتقال دهید. این کار سیگنال را که با این شماره تلفن روی هر دستگاه دیگری ثبت شده باشد را غیر فعال خواهد کرد.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "لمس «ثبت آیپد» به شما اجازه می دهد که یک حساب جدید ایجاد کرده و یا حساب قبلی سیگنال را به این آیپد انتقال دهید. این کار سیگنال را که با این شماره تلفن روی هر دستگاه دیگری ثبت شده باشد را غیر فعال خواهد کرد.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "لمس \"پیوند دادن آیفون\" به شما اجازه خواهد داد تا گوشی خود را به حساب فعلیتان متصل کنید. پیوند دادن گوشی معمولا پیشنهاد نمی شود و برخی عملکرد ها مانند تماس را محدود می کند.";
@@ -4457,7 +4457,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "اجازه مجوزها";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "انتخاب کنید چه کسانی می‌توانند شما را در سیگنال با شماره‌تلفن‌تان %1$@ پیدا کنند";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "انتخاب کنید چه کسانی می‌توانند شما را در سیگنال با شماره تلفن‌تان %1$@ پیدا کنند";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "چه کسی می‌تواند شما را با شماره‌تلفن‌تان پیدا کند؟";
@@ -4469,7 +4469,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "لطفاً چند لحظه قبل از تلاش دوباره صبر کنید. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "شماره‌تلفن نامعتبر. لطفاً برای ثبت‌نام یک شماره‌تلفن معتبر وارد کنید.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "شماره تلفن نامعتبر. لطفاً برای ثبت‌نام یک شماره تلفن معتبر وارد کنید.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "شانس شما برای حدس رمزتان تمام شد، ولی کماکان می توانید با ایجاد یک رمز جدید به حساب سیگنال خود دسترسی داشته باشید. برای امنیت و حریم خصوصی شما، حساب کاربری شما بدون اطلاعات پروفایل و تنظیماتتان بازیابی خواهد شد.";
@@ -4964,16 +4964,16 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "همه";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "شماره‌تلفن شما برای افراد و گروه‌هایی که به آن‌ها پیام می‌دهید قابل مشاهده خواهد بود.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "شماره تلفن شما برای افراد و گروه‌هایی که به آن‌ها پیام می‌دهید قابل مشاهده خواهد بود.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "هیچ کس";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "شماره تلفن شما برای هیچ‌کس قابل مشاهده نیست، به‌جز کسانی که شما را در مخاطبان تلفن خود ذخیره کرده‌اند.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "شماره تلفن شما برای هیچ‌کس قابل مشاهده نیست.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5282,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "درباره (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ اسم پروفایلش را از %2$@ به %3$@ تغییر داد.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ نام نمایه خود را از %2$@ به %3$@ تغییر داد.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ اسم پروفایلش را به %2$@ تغییر داد.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ نام نمایه خود را به %2$@ تغییر داد.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "نام شما";
@@ -5555,13 +5555,13 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "اتصال را بررسی کنید";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "برای شروع، شماره‌تلفن خود را وارد کنید.";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "برای شروع، شماره تلفن خود را وارد کنید.";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "شماره تلفن شما";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "تماسی برای تآیید این شماره دریافت خواهید کرد. آیا شماره‌تلفن‌تان که در بالا آمده است، صحیح است؟";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "تماسی برای تأیید این شماره دریافت خواهید کرد. آیا شماره تلفن‌تان که در بالا آمده است، صحیح است؟";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "شماره تلفن";
@@ -5636,7 +5636,7 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "شماره تلفن معتبر نیست";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "یک کد احراز هویت به این شماره ارسال خواهد شد. آیا شماره همراه بالا صحیح است؟";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "یک کد احراز هویت به این شماره ارسال خواهد شد. آیا شماره تلفن بالا صحیح است؟";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "تأیید شماره: %1$@";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "آنلاک کردن سیگنال";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "نام ، نام کاربری یا شماره";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "نام ، نام کاربری، یا شماره";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "جستجو با نام یا شماره";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "نماد برنامه";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "نمایش عکس‌های مخاطبین سیستم در صورت وجود.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "نمایش عکس‌های مخاطبان سیستم در صورت وجود.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "استفاده از عکس‌های مخاطبین سیستم";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "استفاده از عکس‌های مخاطبان سیستم";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "زمینه";
@@ -6056,13 +6056,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "ویرایش شماره";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "تغییر شماره‌ تلفن";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "تغییر شماره تلفن";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "تغییر شماره";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "شما در آستانهٔ تغییر دادن شماره‌تلفن خود از %1$@ به %2$@ هستید.\n\nپیش از ادامه دادن، لطفاً تصدیق کنید که شمارهٔ پایین صحیح است.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "شما در آستانهٔ تغییر دادن شماره تلفن خود از %1$@ به %2$@ هستید.\n\nپیش از ادامه دادن، لطفاً تصدیق کنید که شمارهٔ پایین صحیح است.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "پیش‌شماره کشور";
@@ -6083,10 +6083,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "شماره تلفن";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "از این گزینه برای تغییر شماره‌تلفن فعلی خود به یک شماره‌تلفن جدید استفاده کنید. شما نمی‌توانید این تغییر را بازگردانی کنید.\n\nقبل از ادامه، مطمئن شوید که شمارهٔ جدید شما می‌تواند پیامک یا تماس دریافت کند.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "از این گزینه برای تغییر شماره تلفن فعلی خود به یک شماره تلفن جدید استفاده کنید. شما نمی‌توانید این تغییر را بازگردانی کنید.\n\nقبل از ادامه، مطمئن شوید که شمارهٔ جدید شما می‌تواند پیامک یا تماس دریافت کند.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "تغییر شماره‌ تلفن";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "تغییر شماره تلفن";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "تغییر شماره";
@@ -6848,7 +6848,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل ثبت‌نام";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "درخواست پین سیگنال شما برای ثبت‌نام دوباره با شماره‌تلفن شما در سیگنال.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "درخواست پین سیگنال شما برای ثبت‌نام دوباره با شماره تلفن شما در سیگنال.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "نشانگر های نوشته";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "پذیرش درخواست تبادل پیام";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "قرار دادن آن‌ها در مخاطبین سیستم خود";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "قرار دادن آن‌ها در مخاطبان سیستم خود";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "آشنایان شما می‌توانند نام و عکس شما را ببینند، و می‌توانند آنچه را به \"استوری من\" ارسال می‌کنید ببینند، مگر اینکه آن را از آن‌ها پنهان کنید.";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "پیوندها و کدهای QR";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "شماره تلفن شما دیگر در گفتگوها قابل مشاهده نیست. اگر شمارۀ شما در مخاطبان دوستتان ذخیره شده باشد، همچنان قادر به دیدنش خواهند بود.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "حریم شخصی شماره تلفن";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "روش‌های جدید برقراری ارتباط";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "اکنون افراد می‌توانند با استفاده از نام کاربری اختیاری‌تان به شما پیام بدهند، پس دیگر لازم نیست شماره تلفن خود را به کسی بدهید. نام کاربری در نمایه‌تان قابل مشاهده نیست.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "نام کاربری";

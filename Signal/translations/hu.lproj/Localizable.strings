@@ -929,16 +929,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Fotó szerkesztése";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Az új számod nem egyezhet a régivel. Kérlek adj meg egy új számot a változtatáshoz.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Az új számod nem egyezhet a régivel. A módosításhoz, kérjük, adj meg egy új számot.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "A megadott szám nem egyezik a fiókodhoz tartozó telefonszámmal.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Érvénytelen új telefonszám. Adj meg egy valós telefonszámot a változtatáshoz.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Érvénytelen új telefonszám. A módosításhoz, kérjük, adj meg egy valós telefonszámot.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Érvénytelen régi telefonszám. Adj meg egy valós telefonszámot a változtatáshoz.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Érvénytelen régi telefonszám. A módosításhoz, kérjük, adj meg egy valós telefonszámot.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Íme a csevegési szín előnézete.";
@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Hozzáadás meglevő kontakthoz";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Telefon névjegyekhez adás";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Hozzáadás a rendszernévjegyekhez";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Adminok";
@@ -1490,7 +1490,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Válassz országhívószámot";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Bemutatjuk a telefonszám-védelmet, az opcionális felhasználóneveket és a linkeket.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Bemutatjuk a telefonszám-védelmet, az opcionális felhasználóneveket és a hivatkozásokat.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "Új csatlakozási módok";
@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Törlés";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Ez a személy törlésre kerül a Rendszernévjegyek közül. Nem fogod látni ezt a személyt keresés közben. Ha a jövőben üzenetet küld neked, felkérést kapsz.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Ez a személy törlésre kerül a rendszernévjegyek közül. Nem fogod látni ezt a személyt keresés közben. Ha a jövőben üzenetet küld neked, felkérést kapsz.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Törlöd a névjegyet és eltávolítod a listáról?";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Melléklet letöltése sikertelen.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "A csatolmány feltöltése sikertelen.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Egy üzenet %1$@ ismerősödtől nem érkezett meg";
@@ -4214,7 +4214,7 @@
 "MY_STORY_TAP_TO_ADD" = "A hozzáadáshoz koppints";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nemrég megváltoztatta profilnevét erről: %1$@ erre: %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nemrég megváltoztatta profilnevét %1$@ névről %2$@ névre.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Kihagyás";
@@ -4430,7 +4430,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "iPhone társítása";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Az \"iPad regisztrálása\" menüponttal egy új Signal fiókot hozhatsz létre, vagy mozgathatsz át egy meglevőt erre az eszközre. Ez a művelet a többi meglevő eszközödön letiltja ezzel a telefonszámmal korábban regisztrált Signal fiókjaidat.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Az „iPad regisztrálása” menüponttal egy új Signal-fiókot hozhatsz létre, vagy mozgathatsz át egy meglevőt erre az eszközre. Ez a művelet a többi meglevő eszközödön letiltja ezzel a telefonszámmal korábban regisztrált Signal fiókjaidat.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Az \"iPhone társítása\" menüponttal egy meglevő fiókhoz társíthatod készüléked. Telefon társítása jelenleg nem ajánlott, mivel jelentősen lekorlátozza az alkalmazás képességeit (mint pl. a hang és videóhívás).";
@@ -4457,7 +4457,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Jogosultságok engedélyezése";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Válassz, hogy az alábbi telefonszámod alapján ki találhat meg Signalon: %1$@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Válassz, hogy a(z) %1$@ telefonszámod alapján ki találhat meg Signalon";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Ki találhat meg telefonszámod alapján?";
@@ -4469,7 +4469,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Kérlek várj egy pár percet mielőtt újra megpróbálnád. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Érvénytelen telefonszám. Adj meg egy valós telefonszámot a regisztrációhoz.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Érvénytelen telefonszám. A regisztrációhoz, kérjük, adj meg egy valós telefonszámot.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Kifogytál a PIN megadási lehetőségekből, de továbbra is hozzáférhetsz Signal fiókodhoz, amennyiben létrehozol egy új PIN-t. A magánszférád védelmének és saját biztonságod érdekében fiókod csak a mentett profilbeállítások nélkül állítható vissza.";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Senki";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "A telefonszámod nem lesz látható senki számára, kivéve, ha az illető elmentette azt a telefonja névjegyzékébe.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "A telefonszámod nem lesz látható senki számára.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5282,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Rólam (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ megváltoztatta a nevét erről: %2$@, erre: %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ megváltoztatta a profilnevét %2$@ névről %3$@ névre.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ megváltoztatta a profilnevét erre: %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ megváltoztatta a profilnevét %2$@ névre.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Neved";
@@ -5306,7 +5306,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Javítás most";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Ezzel eltávolítod a felhasználóneved, és érvénytelenné teszed a QR-kódot és a hivatkozást. A(z) „ %1$@ ” név elérhető lesz más felhasználók számára. Biztos vagy benne?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Ezzel eltávolítod a felhasználóneved, és érvénytelenné teszed a QR-kódot és a hivatkozást. A(z) %1$@ név elérhető lesz más felhasználók számára. Biztos vagy benne?";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Felhasználónév törlése";
@@ -5630,13 +5630,13 @@
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Az általad megadott kód érvénytelen. Kérjük, küldd el újra a kódot, és próbáld újra.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Adj meg egy valós telefonszámot a regisztrációhoz.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "A regisztrációhoz, kérjük, adj meg egy valós telefonszámot.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Hibás telefonszám";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Az ellenőrző kód erre a számra kerül kiküldésre. Helyes a fenti telefonszámod?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Az ellenőrző kód erre a számra kerül kiküldésre. Helyes a fenti telefonszám?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Szám megerősítés: %1$@";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Alkalmazásikon";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Telefon kontaktokban tárolt profilképek használata.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "A rendszernévjegyek képeinek megjelenítése, ha elérhető.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Profilképek telefon kontaktokból";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Rendszernévjegyek képeinek használata";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Téma";
@@ -6062,7 +6062,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Szám változtatása";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Telefonszámod megváltoztatására készülsz erről: %1$@ erre: %2$@.\n\nMielőtt nekikezdenénk, kérjük ellenőrizd, hogy a megfelelő számot adtad-e meg!";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Telefonszámod megváltoztatására készülsz, %1$@ telefonszámról %2$@ telefonszámra.\n\nMielőtt nekikezdenénk, kérjük, ellenőrizd, hogy a megfelelő számot adtad-e meg.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Országkód";
@@ -6848,7 +6848,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Regisztrációs zár";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Telefonszámod újraregisztrációját Signal PIN kódod megadásához kötheted.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Telefonszámod újraregisztrációját Signal PIN-kódod megadásához kötheted.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Gépelés mutatása";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Elfogadtál tőlük egy felkérést";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Szerepelnek a Névjegyeid között";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Szerepelnek a rendszernévjegyeid között";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "A Névjegyeid megtekinthetik a neved, a profilképed, valamint a „Történeteim” szekcióba posztoltakat, kivéve, ha kifejezetten elrejtetted azokat előlük.";
@@ -7646,13 +7646,13 @@
 "USE_PROXY_EXPLANATION" = "Csak abban az esetben használj proxy-t, ha nem lehet a Signalhoz csatlakozni se mobilnet, se Wi-Fi használatával.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "A felhasználónevek egyedi QR-kóddal és linkkel rendelkeznek, amelyet megoszthatsz a barátaiddal, hogy gyorsan cseveghess velük.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "A felhasználónevek egyedi QR-kóddal és hivatkozással rendelkeznek, amelyet megoszthatsz a barátaiddal, hogy gyorsan cseveghess velük.";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "QR kódok és linkek";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "A telefonszámod többé nem látható a Csevegésekben. Ha a telefonszámodat elmentette egy ismerősöd a névjegyei közé, ő továbbra is látni fogja.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Telefonszám-védelem";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Új csatlakozási módok";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Az emberek mostantól üzenetet küldhetnek neked az opcionális felhasználóneveden keresztül, így nem kell megadnod a telefonszámodat. A felhasználónevek nem láthatók a profilokon.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Felhasználónevek";
@@ -7733,7 +7733,7 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Az ehhez a felhasználónévhez tartozó hivatkozás már nem érvényes.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ nem Signal felhasználó. Kérjük, ellenőrizd a felhasználónevet, majd próbáld újra.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ nem Signal-felhasználó. Kérjük, ellenőrizd a felhasználónevet, majd próbáld újra.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Nincs ilyen felhasználó";

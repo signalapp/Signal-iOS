@@ -929,16 +929,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Uredi fotografiju";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Vaš novi broj telefona ne smije biti isti kao stari broj telefona. Molim vas unesite novi broj kako bi ga promijenili.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Vaš novi broj telefona ne smije biti isti kao stari broj telefona. Unesite novi broj kako biste ga promijenili.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Broj telefona koji ste unijeli ne podudara se s onim na vašem računu.";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Broj telefona koji ste unijeli ne podudara se s brojem povezanim s vašim računom.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Nevažeći novi broj telefona. Unesite valjani broj telefona kako biste ga promijenili.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Novi broj telefona nije važeći. Unesite važeći broj telefona kako biste ga promijenili.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Nevažeći broj telefona. Unesite valjani broj telefona kako biste ga promijenili.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Broj telefona nije važeći. Unesite važeći broj telefona kako biste ga promijenili.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Ovo je pregled boje razgovora.";
@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Dodaj postojećem kontaktu";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Dodaj u kontakte na uređaju";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Dodaj u kontakte sustava";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administratori";
@@ -1490,7 +1490,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Odaberi kôd države";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Predstavljamo privatnost telefonskog broja, izborna korisnička imena i poveznice.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Predstavljamo privatnost broja telefona, izborna korisnička imena i poveznice.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "Novi načini povezivanja";
@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Izbriši";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Kontakt će biti uklonjen s vašeg uređaja. Neće se pojavljivati prilikom pretraživanja, a u slučaju da vam pošalje poruku, dobit ćete zahtjev za poruku.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Korisnik će biti izbrisan iz kontakata sustava. Neće se pojavljivati prilikom pretraživanja, a u slučaju da vam pošalje poruku, dobit ćete zahtjev za poruku.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Izbrisati kontakt i ukloniti ga s popisa?";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Preuzimanje privitka nije uspjelo.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Prijenos privitka nije uspio.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Poruka od %1$@ nije se mogla isporučiti";
@@ -3674,10 +3674,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Pregled poveznice";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Upravljanje kontaktima iz imenika više nije dostupno na iPadu. Da biste dodali Signal kontakte u imenik uređaja, otvorite Signal na vašem telefonu.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Upravljanje kontaktima sustava više nije dostupno na iPadu. Da biste dodali Signal kontakte u kontakte sustava, otvorite Signal na vašem telefonu.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Upravljanje kontaktima iz imenika na iPadu više nije podržano. Ovaj će uređaj nastaviti sinkronizirati sve promjene na vašem popisu Signal kontakata na vašem telefonu.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Upravljanje kontaktima sustava na iPadu više nije podržano. Ovaj će uređaj nastaviti sinkronizirati sve promjene na vašem popisu Signal kontakata na vašem telefonu.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Saznajte više";
@@ -4214,7 +4214,7 @@
 "MY_STORY_TAP_TO_ADD" = "Dodirnite za dodavanje";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nedavno su promijenili ime svog profila iz %1$@ u %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nedavno je promijenio/la svoje ime profila iz %1$@ u %2$@.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Preskoči";
@@ -4469,7 +4469,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Molimo pričekajte nekoliko minuta prije novog pokušaja. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Nevažeći broj telefona. Unesite valjani broj telefona za registraciju.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Nevažeći broj telefona. Unesite važeći broj telefona za registraciju.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Ponestalo vam je pokušaja za unos PIN-a, ali i dalje možete pristupiti svom Signal računu stvaranjem novog PIN-a. Radi vaše privatnosti i sigurnosti, vaš će se račun oporaviti bez ikakvih spremljenih podataka ili postavki profila.";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Nitko";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Vaš broj telefona neće biti vidljiv nikome, osim korisnicima u čijim se kontaktima već nalazi.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Vaš broj telefona neće biti vidljiv nikome.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5282,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Opis (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ je promijenio/la svoje ime na profilu iz %2$@ u %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ je promijenio/la svoje ime profila iz %2$@ u %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ je promijenio/la ime na profilu u %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ je promijenio/la svoje ime profila u %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Vaše ime";
@@ -5558,7 +5558,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Unesite broj telefona za početak.";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
-"REGISTRATION_PHONE_NUMBER_TITLE" = "Vaš telefonski broj";
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Vaš broj telefona";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
 "REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Primit ćete poziv za potvrdu ovog broja telefona. Je li gore navedeni broj telefona točan?";
@@ -5630,7 +5630,7 @@
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Uneseni kôd nije valjan. Ponovno pošalji kôd i pokušaj ponovno.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Unesite valjani broj telefona za registraciju.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Unesite važeći broj telefona za registraciju.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Nevažeći broj telefona";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Ikona aplikacije";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Prikaži fotografije kontakata iz imenika ako su dostupne.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Prikaži fotografije kontakata sustava ako su dostupne.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Koristi fotografije kontakata iz imenika";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Koristi fotografije kontakata sustava";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -6062,7 +6062,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Promijeni broj";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Promijenit ćete svoj broj mobitela iz %1$@ u %2$@.\n\nPrije nego što nastavite, provjerite je li navedeni broj točan.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Promijenit ćete svoj broj telefona iz %1$@ u %2$@.\n\nPrije nego što nastavite, provjerite je li navedeni broj telefona točan.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Kôd države";
@@ -6083,7 +6083,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Broj telefona";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Koristite ovu opciju kako biste promijenili vaš trenutni broj telefona. Ovu promjenu ne možete poništiti. \n\nPrije nego što nastavite, provjerite može li vaš novi broj primati SMS poruke ili pozive.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Koristite ovu opciju kako biste promijenili vaš trenutni broj telefona. Ovu promjenu ne možete poništiti. \n\nPrije nego što nastavite, provjerite može li vaš novi broj telefona primati SMS poruke ili pozive.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Promijeni broj telefona";
@@ -6848,7 +6848,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Zaključavanje registracije";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Zahtjeva vaš Signal PIN za ponovnu registriraciju vašeg broja telefona na Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Zahtjeva vaš Signal PIN za ponovnu registraciju vašeg broja telefona na Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Prikaži tipkanje";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Prihvatili njihov zahtjev za razgovorom";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Spremili ih u kontakte";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Spremili ih u kontakte vašeg sustava";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Vaši kontakti mogu vidjeti vaše ime i fotografiju te sve što pošaljete u \"Moje priče\", osim ako to od njih ne sakrijete.";
@@ -7652,10 +7652,10 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR kodovi i poveznice";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Vaš se broj telefona više ne prikazuje korisnicima prilikom razgovora. Broj će biti vidljiv vašim prijateljima ako je već spremljen u njihovim kontaktima.";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "Privatnost telefonskog broja";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Privatnost broja telefona";
 
 /* Label for the 'set up' button on the username education sheet */
 "USERNAME_EDUCATION_SET_UP_BUTTON" = "Postavite svoje korisničko ime";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Novi načini povezivanja";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Drugi vam sada mogu slati poruke putem vašeg korisničkog imena, koje nije obavezno, tako da više ne morate dijeliti svoj broj telefona. Korisničko ime ne prikazuje se na vašem profilu.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Korisnička imena";

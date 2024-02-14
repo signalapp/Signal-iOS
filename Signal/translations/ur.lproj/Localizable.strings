@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "نمبر سے تلاش کریں";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "صارفی نام سے تلاش کریں";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "بلحاظ یوزر نیم تلاش کریں";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "آپ لے کونسے رابطے Signal صارفین ہیں ان کو دیکھنے کیلئے ایپ کی iOS ترتیبات میں رسائی کیلئے رابطوں کو فعال کریں۔";
@@ -1028,7 +1028,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "نئی ڈیوائس سے منسلک ہوں";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ آپ کے سسٹم کے روابط میں موجود ہے";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ آپ کے سسٹم کانٹیکٹس میں موجود ہے";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal کنکشن";
@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "موجودہ رابطے میں شمولیت";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "سسٹم رابطوں میں جمح کریں";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "سسٹم کانٹیکٹس میں جمح کریں";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "ایڈمنز";
@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "حذف کریں";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "یہ فرد آپ کے سسٹم کے رابطوں سے حذف کر دیا جائے گا۔ تلاش کرتے وقت آپ کو یہ فرد نظر نہیں آئے گا۔ اگر وہ مستقبل میں آپ کو میسج کریں گے تو آپ کو میسج کی درخواست موصول ہو گی۔";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "یہ فرد آپ کے سسٹم کانٹیکٹس سے حذف کر دیا جائے گا۔ تلاش کرتے وقت آپ کو یہ فرد نظر نہیں آئے گا۔ اگر وہ مستقبل میں آپ کو میسج کریں گے تو آپ کو میسج کی درخواست موصول ہو گی۔";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "رابطہ حذف کریں اور اسے اپنی فہرست سے ہٹائیں؟";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "منسلک مواد ڈاؤن لوڈ ہونے میں ناکامی۔";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "منسلک مواد اپ لوڈ کرنے سے قاصر۔";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@کی طرف سے پیغام نہیں بھیجا جا سکا";
@@ -3674,10 +3674,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "لنک کا جائزہ لیں";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad پر سسٹم کے رابطوں کا نظم کرنا اب مزید دستیاب نہیں ہے۔ اپنے سسٹم کے رابطوں پر Signal کنکشنز کو شامل کرنے کے لیے اپنے فون پر Signal کھولیں۔";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad پر سسٹم کانٹیکٹس کا نظم کرنا اب مزید دستیاب نہیں ہے۔ اپنے سسٹم ککانٹیکٹس پر Signal کنکشنز کو شامل کرنے کے لیے اپنے فون پر Signal کھولیں۔";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad پر سسٹم کے رابطوں کا نظم کرنا اب مزید سپورٹ یافتہ نہیں ہے۔ یہ ڈیوائس آپ کے فون پر آپ کی رابطہ فہرست میں Signal سے ہونے والی کسی بھی قسم کی تبدیلیوں کو سنک کرنا جاری رکھے گی۔";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad پر سسٹم کانٹیکٹس کا نظم کرنا اب مزید سپورٹ یافتہ نہیں ہے۔ یہ ڈیوائس آپ کے فون پر آپ کی رابطہ فہرست میں Signal سے ہونے والی کسی بھی قسم کی تبدیلیوں کو سنک کرنا جاری رکھے گی۔";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "مزید جانیں";
@@ -4214,7 +4214,7 @@
 "MY_STORY_TAP_TO_ADD" = "شامل کرنے کے لیے ٹیپ کریں";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "حال ہی میں ان کے پروفائل کا نام %1$@ سے %2$@ رکھ دیا گیا۔";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "حال ہی میں ان کا پروفائل نیم %1$@ سے %2$@ رکھ دیا گیا۔";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "چھوڑ دو";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "کوئی نہیں";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "آپ کا فون نمبر کسی کو نظر نہیں آئے گا جب تک وہ ان کے فون کے رابطوں میں پہلے سے محفوظ نہ ہو۔";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "آپ کا فون نمبر کسی کو نظر نہیں آئے گا۔";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@%2$@";
@@ -5282,10 +5282,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = " (%1$@) کے بارے میں";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ سے اپنے پروفائل کا نام %2$@ تبدیل کر کے%3$@ کر دیا۔";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ سے اپنا پروفائل نیم %2$@ تبدیل کر کے%3$@ کر دیا۔";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ نے اپنے پروفائل کا نام %2$@ رکھ دیا۔";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ نے اپنا پروفائل نیم %2$@ رکھ دیا۔";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "تمھارا نام";
@@ -5318,7 +5318,7 @@
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR کوڈ یا لنک";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "صارف کا نام";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "یوزر نیم";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "آپ کا آخری نام بہت لمبا ہے۔";
@@ -5561,7 +5561,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "آپ کا فون نمبر";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "اس نمبر کی تصدیق کرنے کے لیے آپ کو کال موصول ہو گی۔ کیا آپ کا مذکورہ بالا نمبر درست ہے؟";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "اس نمبر کی تصدیق کرنے کے لیے آپ کو کال موصول ہو گی۔ کیا آپ کا مذکورہ بالا فون نمبر درست ہے؟";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "فون نمبر";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ان لاک کریں";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "نام، صارف کا نام ، یا نمبر";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "نام، یوزر نیم ، یا نمبر";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "نام اور ایڈریس کے ذریعے تلاش کریں";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "ایپ آئیکن";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "اگر دستیاب ہو تو سسٹم سے رابطہ کی تصاویر دکھائیں۔";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "اگر دستیاب ہو تو سسٹم کانٹیکٹ کی تصاویر دکھائیں۔";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "سسٹم سے رابطہ کی تصاویر استعمال کریں";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "سسٹم کانٹیکٹ کی تصاویر استعمال کریں";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "موضوع";
@@ -6056,7 +6056,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "نمبر ترتیب کرے";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "فون نمبر تبدیل کرے";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "فون نمبر تبدیل کریں";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "نمبر تبدیل کرے";
@@ -6086,7 +6086,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "اپنا موجودہ فون نمبر کسی نئے فون نمبر پر تبدیل کرنے کے لیے اس کا استعمال کریں۔ آپ اس تبدیلی کو کالعدم نہیں کر سکتے۔\n\nجاری رکھنے سے پہلے، یقینی بنائیں کہ آپ کا نیا نمبر SMS یا کالز وصول کر سکتا ہے۔";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "فون نمبر تبدیل کرے";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "فون نمبر تبدیل کریں";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "فون نمبر تبدیل کرے";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "پیغام کی درخواست قبول کرنے سے";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "اپنے سسٹم کے روابط میں انہیں رکھنے سے";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "اپنے سسٹم کانٹیکٹس میں انہیں رکھنے سے";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "آپ کے کنکشنز آپ کا نام اور تصویر، اور یہ دیکھ سکتے ہیں جو آپ \"میری سٹوری\" پر بھیجتے ہیں تاوقتیکہ آپ اسے ان سے مخفی کریں۔";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR کوڈز اور لنکز";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "آپ کا فون نمبر اب چیٹس میں مزید نظر نہیں آ رہا۔ اگر آپ کا نمبر کسی دوست کے روابط میں محفوظ ہوا، تو وہ اسے اب بھی دیکھیں گے۔";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "فون نمبر پرائیویسی";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "رابطہ کرنے کے نئے طریقے";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "لوگ اب آپ کا اختیاری یوزر نیم استعمال کرتے ہوئے آپ کو میسج کر سکتے ہیں تاکہ آپ کو اپنا فون نمبر دینے کی ضرورت نہ پڑے۔ یوزر نیمز آپ کی پروفائل پر نظر نہیں آتے۔";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "یوزر نیمز";
@@ -7721,7 +7721,7 @@
 "USERNAME_LINK_TOOLTIP_TITLE" = "اپنا یوزر نیم شیئر کریں";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "صارف نام کو تلاش کرتے وقت ایک خرابی پیش آگئی۔ براہ کرم کچھ دیر بعد کوشش کریں.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "یوزر نیم تلاش کرتے وقت ایک خرابی پیش آگئی۔ براہ کرم کچھ دیر بعد کوشش کریں۔";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ درست یوزر نیم نہیں ہے۔ یقینی بنائیں کہ آپ نے مکمل یوزر نیم اور اس کے بعد اس کے ہندسوں کا سیٹ درج کیا ہو۔";
@@ -7733,7 +7733,7 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "اس یوزر نیم کا لنک مزید مؤثر نہیں ہے۔";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@Signal نہیں ہے۔ یقینی بنائیں کی صارف کا نام مکمل داخل کیا ہے۔";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@Signal یوزر نہیں ہے۔ یقینی بنائیں کہ یوزر نیم مکمل داخل کیا ہے۔";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "صارف نہیں ملا";

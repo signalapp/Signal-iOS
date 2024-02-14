@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "用電話號碼搜尋";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "用使用者個名嚟搵";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "用用戶名稱嚟搵";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "您可以喺 iOS 設定 app 度啟用聯絡人存取，以便睇下您有邊啲聯絡人係 Signal 使用者。";
@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "加入去現有聯絡人";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "加入去系統聯絡人";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "加入去系統通訊錄";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "話事人";
@@ -1490,7 +1490,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "揀選國碼";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "包括電話號碼私隱、可以選填嘅用戶名稱同連結功能。";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "包括電話冧把私隱、可以選填嘅用戶名稱同連結功能。";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "全新連繫方式";
@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "刪除";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "呢個人會喺系統聯絡人清單度刪除。你之後唔會再喺搜尋聯絡人嗰陣見到佢㗎喇。如果對方日後向你傳送訊息，你將會收到訊息請求。";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "呢個人會喺系統通訊錄度刪除。你之後唔會再喺搜尋聯絡人嗰陣見到佢㗎喇。如果對方日後向你傳送訊息，你將會收到訊息請求。";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "係咪想刪除同喺清單度移除呢位聯絡人？";
@@ -1715,7 +1715,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新註冊呢個電話冧把";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "呢部裝置嘅註冊已經失效。原因好可能係你喺另一部裝置度用咗同一個電話號碼註冊 Signal。";
+"DEREGISTRATION_WARNING" = "呢部裝置嘅註冊已經失效。原因好可能係你喺另一部裝置度用咗同一個電話冧把註冊 Signal。";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "重新用呢部裝置註冊";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "附件下載失敗。";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "附件上載失敗。";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "有一則 %1$@ 發出嘅訊息送達唔到";
@@ -3674,10 +3674,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "條拎嘅預覽";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad 唔再支援管理系統聯絡人。如果要將 Signal 人脈加入系統聯絡人，請你喺手機度打開 Signal。";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad 唔再支援管理系統通訊錄。如果要將 Signal 人脈加入系統通訊錄，請你喺手機度打開 Signal。";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad 唔再支援管理系統聯絡人。呢部裝置會繼續將 Signal 聯絡清單嘅任何變更同步至手機。";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad 唔再支援管理系統通訊錄。呢部裝置會繼續將 Signal 聯絡清單嘅任何變更同步至手機。";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "了解詳情";
@@ -4214,7 +4214,7 @@
 "MY_STORY_TAP_TO_ADD" = "㩒一下嚟新增";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近將佢先前個人資料嘅名 %1$@ 轉咗做 %2$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近將佢先前個人檔名 %1$@ 轉咗做 %2$@。";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "飛過";
@@ -4232,7 +4232,7 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi 同流動數據";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "用電話號碼嚟搵";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "用電話冧把嚟搵";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "開個新谷";
@@ -4322,7 +4322,7 @@
 "NEW_STORY_SHEET_TITLE" = "選擇限時動態類型";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用電話號碼嚟搵聯絡人";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用電話冧把嚟搵聯絡人";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "無有緣相遇嘅谷";
@@ -4430,7 +4430,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "連結 iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "㩒一下「登記 iPad」，就可以建立新嘅 Signal 帳戶，或者將現有帳號轉移至呢部 iPad。咁樣做會停用晒其他用緊同一個電話號碼登記嘅裝置上面嘅 Signal 服務。";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "㩒一下「登記 iPad」，就可以建立新嘅 Signal 帳戶，或者將現有帳號轉移至呢部 iPad。咁樣做會停用晒其他用緊同一個電話冧把登記嘅裝置上面嘅 Signal 服務。";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "㩒一下「連結 iPhone」，就可以將手機連結至現有帳戶。我哋一般都唔建議你連結手機，因為咁樣會導致部分功能受到限制 (例如通話)。";
@@ -4481,7 +4481,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN 碼唔啱";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "你已經用晒所有嘗試輸入 PIN 碼嘅機會，但你仍然可以嘗試透過驗證手機號碼嚟進入 Signal 帳戶。為咗確保你嘅私隱同安全，你嘅帳戶會還原，但之前儲存嘅所有個人檔案資料同設定都會刪除。";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "你已經用晒所有嘗試輸入 PIN 碼嘅機會，但你仍然可以嘗試透過驗證電話冧把嚟進入 Signal 帳戶。為咗確保你嘅私隱同安全，你嘅帳戶會還原，但之前儲存嘅所有個人檔案資料同設定都會刪除。";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "使用條款同私隱政策";
@@ -4508,7 +4508,7 @@
 "ONBOARDING_VERIFICATION_HELP_BULLET_2" = "確認你可以接收呢個號碼嘅電話";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "檢查你輸入嘅電話號碼係咪正確";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "檢查你輸入嘅電話冧把係咪正確";
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "註冊時出現問題？";
@@ -4949,7 +4949,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "全世界";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "任何有你電話號碼嘅人都會睇到你用緊 Signal，同埋可以開始聊天。";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "任何有你電話冧把嘅人都會睇到你用緊 Signal，同埋可以開始聊天。";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "邊個都唔得";
@@ -4964,16 +4964,16 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "全世界";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "你嘅聯絡對象同群組都會睇到你嘅電話號碼。";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "你嘅聯絡對象同群組都會睇到你嘅電話冧把。";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "邊個都唔得";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "其他人唔會睇到你嘅電話冧把，除非對方將號碼儲存咗喺手機通訊錄度。";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "冇人會睇到你嘅電話冧把。";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5282,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "關於 (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ 將佢先前個人資料嘅名 %2$@ 轉咗做 %3$@。";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ 將佢先前個人檔名 %2$@ 轉咗做 %3$@。";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ 將佢個人資料嘅名轉咗做 %2$@。";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ 將佢個人檔名轉咗做 %2$@。";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "您嘅名稱";
@@ -5318,7 +5318,7 @@
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "二維碼或連結";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "使用者名稱";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "用戶名稱";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "您個姓太長。";
@@ -5465,7 +5465,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "個使用者揀選唔到。";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ 唔係 Signal 嘅用戶。請使用有效嘅電話號碼再試一次。";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ 唔係 Signal 嘅用戶。請使用有效嘅電話冧把再試一次。";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "電話冧把無效";
@@ -5525,7 +5525,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "國碼";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "如果繼續，將會喺其他用緊同一個手機號碼註冊嘅裝置上停用 Signal。";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "如果繼續，將會喺其他用緊同一個電話冧把註冊嘅裝置上停用 Signal。";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "轉移帳戶同埋訊息";
@@ -5537,7 +5537,7 @@
 "REGISTRATION_ERROR" = "註冊錯誤";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "為咗保障你嘅私隱同安全，我哋已經將你嘅帳戶鎖定。閒置 %1$@ 之後，你就可以喺冇 PIN 碼嘅情況下重新註冊呢個手機號碼。所有資料都會被刪除。";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "為咗保障你嘅私隱同安全，我哋已經將你嘅帳戶鎖定。閒置 %1$@ 之後，你就可以喺冇 PIN 碼嘅情況下重新註冊呢個電話冧把。所有資料都會被刪除。";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
 "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "鎖定帳戶知多啲";
@@ -5555,13 +5555,13 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "檢查連線";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "想開始，就輸入你嘅手機號碼。";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "想開始，就輸入你嘅電話冧把。";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
-"REGISTRATION_PHONE_NUMBER_TITLE" = "你嘅手機號碼";
+"REGISTRATION_PHONE_NUMBER_TITLE" = "你嘅電話冧把";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "你會收到一個驗證號碼嘅電話。上面嘅電話號碼係咪正確？";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "你會收到一個驗證號碼嘅電話。上面嘅電話冧把係咪正確？";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "電話冧把";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "解鎖 Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "名稱、使用者名稱或冧把";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "名稱、用戶名稱或號碼";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "搜尋姓名或號碼";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "App 圖示";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "有嘅話就顯示返系統聯絡人啲相。";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "有嘅話就顯示返系統通訊錄啲相。";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "用返系統聯絡人嘅相";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "用返系統通訊錄嘅相";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "色系";
@@ -6728,10 +6728,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "邊個可以用手機號碼搵到我";
 
 /* Description label for Phone Number Privacy */
-"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "選擇邊個可以睇到你嘅手機號碼，同埋邊個可以喺 Signal 以手機號碼嚟聯絡你。";
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "選擇邊個可以睇到你嘅電話冧把，同埋邊個可以喺 Signal 以電話冧把嚟聯絡你。";
 
 /* The title for phone number privacy settings. */
-"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "手機號碼";
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "電話冧把";
 
 /* The title for the phone number sharing setting section. */
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "邊個睇得到我嘅手機號碼";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "接受過佢嘅訊息請求";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "系統聯絡人入面有佢喺度";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "系統通訊錄入面有佢喺度";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "你嘅人脈可以睇到你個名同你張相。除非你對佢哋隱藏限時動態，如果唔係佢哋都可以睇到你發送嘅「我的限時動態」。";
@@ -7652,10 +7652,10 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "二維碼同連結";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "你嘅電話冧把已經唔會再喺聊天度顯示。不過如果朋友儲存咗你做聯絡人，就會繼續睇到你嘅號碼。";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "電話號碼私隱";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "電話冧把私隱";
 
 /* Label for the 'set up' button on the username education sheet */
 "USERNAME_EDUCATION_SET_UP_BUTTON" = "設定你嘅用戶名稱";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "全新連繫方式";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "其他人而家可以用你選填嘅用戶名稱傳送訊息俾你，咁你就唔使再俾電話冧把人喇。用戶名稱唔會喺個人檔案度顯示。";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "用戶名稱";
@@ -7751,7 +7751,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "更改用戶名稱會將你宜家用緊嘅二維碼同連結重設。你係咪確定？";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "用戶名稱可以等其他人唔使知道你嘅電話號碼，都可以向你傳送訊息。系統會將用戶名稱同一組數字配對，幫你將地址保密。%1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "用戶名稱可以等其他人唔使知道你嘅電話冧把，都可以向你傳送訊息。系統會將用戶名稱同一組數字配對，幫你將地址保密。%1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "選擇你嘅用戶名稱";

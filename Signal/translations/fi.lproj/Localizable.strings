@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Lisää olemassaolevaan yhteystietoon";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Lisää yhteystietoihin";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Lisää järjestelmän yhteystietoihin";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Ylläpitäjät";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Liitteen lataaminen epäonnistui.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Liitteen lähettäminen epäonnistui.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Viestiä lähettäjältä %1$@ ei voitu toimittaa";
@@ -4214,7 +4214,7 @@
 "MY_STORY_TAP_TO_ADD" = "Lisää napauttamalla";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Vaihtoi äskettäin profiilinimensä %1$@ nimeksi %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Vaihtoi äskettäin profiilinsa nimen %1$@ nimeksi %2$@.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ohita";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Ei kukaan";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Puhelinnumerosi ei näy kenellekään, ellei hän ole tallentanut sitä puhelimensa yhteystietoihin.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Puhelinnumerosi ei näy kenellekään.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5282,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Tietoja (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ muutti profiilinimensä %2$@ nimeksi %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ muutti profiilinsa nimen %2$@ nimeksi %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ muutti profiilinimekseen %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ muutti profiilinsa nimeksi %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Nimi";
@@ -5318,7 +5318,7 @@
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR-koodi tai linkki";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Käyttäjätunnus";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Käyttäjänimi";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Sukunimi on liian pitkä.";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Avaa Signalin lukitus";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nimi, käyttäjätunnus tai numero";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nimi, käyttäjänimi tai numero";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Etsi nimellä tai numerolla";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Sovelluskuvake";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Näytä yhteystietoihin tallennetut yhteystietokuvat.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Näytä järjestelmän yhteystietoihin tallennetut kuvat.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Järjestelmän yhteystietokuvat";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Käytä järjestelmän yhteystietojen kuvia";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Teema";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR-koodit ja linkit";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Puhelinnumeroasi ei enää jaeta keskusteluissa. Jos numerosi on tallennettu ystäväsi yhteystietoihin, hän näkee sen edelleen.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Puhelinnumeron yksityisyys";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Uusia tapoja pitää yhteyttä";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Ihmiset voivat nyt lähettää sinulle viestejä valinnaisella käyttäjänimelläsi, joten sinun ei tarvitse antaa puhelinnumeroasi. Käyttäjänimi ei näy profiilissasi.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Käyttäjänimet";
@@ -7721,7 +7721,7 @@
 "USERNAME_LINK_TOOLTIP_TITLE" = "Jaa käyttäjänimesi";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "Käyttäjätunnusta etsiessä tapahtui virhe. Yritä uudelleen myöhemmin.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "Käyttäjänimeä etsiessä tapahtui virhe. Yritä uudelleen myöhemmin.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ ei ole kelvollinen käyttäjänimi. Varmista, että olet syöttänyt koko käyttäjänimen ja sen numerosarjan.";
@@ -7730,10 +7730,10 @@
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Virheellinen käyttäjänimi";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
-"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Tämä käyttäjänimilinkki ei ole enää kelvollinen.";
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Tämä käyttäjänimen linkki ei ole enää kelvollinen.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ei ole Signalin käyttäjä. Varmista, että olet syöttänyt koko käyttäjätunnuksen.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ei ole Signalin käyttäjä. Varmista, että olet syöttänyt koko käyttäjänimen.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Käyttäjää ei löydy";

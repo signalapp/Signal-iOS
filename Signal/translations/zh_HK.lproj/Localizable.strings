@@ -1028,7 +1028,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "連結新裝置";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ 在你的系統聯絡人中";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ 在你的系統通訊錄中";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal 人脈";
@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "新增至現有聯絡人";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "新增至系統聯絡人";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "新增至系統通訊錄";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "管理員";
@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "刪除";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "此人會從你的系統聯絡人中刪除。你不會在搜尋中看到此人。如他們日後向你傳送訊息，你會收到訊息請求。";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "此人會從你的系統通訊錄中刪除。你不會在搜尋中看到此人。如他們日後向你傳送訊息，你會收到訊息請求。";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "要刪除聯絡人並從你的清單中移除嗎？";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "無法下載附件。";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "無法上載附件。";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "來自 %1$@ 的一則訊息無法送達";
@@ -3674,10 +3674,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "連結預覽";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "無法再使用 iPad 管理系統聯絡人。如要將 Signal 聯絡人新增至系統聯絡人，請在您的手機上打開 Signal。";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "無法再使用 iPad 管理系統通訊錄。如要將 Signal 人脈新增至系統通訊錄，請在您的手機上打開 Signal。";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad 不再支援管理系統聯絡人。此裝置將繼續從您手機上的 Signal 同步聯絡清單的任何變更。";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad 不再支援管理系統通訊錄。此裝置將繼續從您手機上的 Signal 同步聯絡清單的任何變更。";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "了解更多";
@@ -4214,7 +4214,7 @@
 "MY_STORY_TAP_TO_ADD" = "輕觸以新增";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近將其個人資料名稱 %1$@ 改為 %2$@。";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近將其個人檔案名稱 %1$@ 改為 %2$@。";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "略過";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "沒有人";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "任何人都無法看到你的電話號碼，除非他們將其儲存在手機通訊錄中。";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "任何人都無法看到你的電話號碼。";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5282,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "關於 (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ 已將個人資料名稱 %2$@ 改為 %3$@。";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ 已將個人檔案名稱 %2$@ 改為 %3$@。";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ 已將個人資料名稱改為 %2$@。";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ 已將個人檔案名稱改為 %2$@。";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "您的名稱";
@@ -5318,7 +5318,7 @@
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "二維碼或連結";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "使用者名稱";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "用戶名稱";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "您的姓氏太長。";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "解除鎖定 Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "名稱、使用者名稱或電話號碼";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "名稱、用戶名稱或電話號碼";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "用名或者電話去搵";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "應用程式圖示";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "顯示系統聯絡人照片（如有）。";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "顯示系統通訊錄照片（如有）。";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "使用系統聯絡人照片";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "使用系統通訊錄照片";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "佈景主題";
@@ -7253,7 +7253,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "接受訊息請求";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "你的系統聯絡人中有對方的聯絡資料";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "你的系統通訊錄中有對方的聯絡資料";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "你的人脈可以看到你的名字和相片。除非你對他們隱藏限時動態，否則他們也可以看到你發送的「我的限時動態」。";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "二維碼及連結";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "你的電話號碼在聊天中不再可見。如果你的號碼儲存在朋友的聯絡人中，他們仍會看到。";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "電話號碼隱私";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "新的連結方式";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "其他人現在可以使用你的自選用戶名稱向你發送訊息，因此你不需提供你的電話號碼。你的個人資料不會顯示用戶名稱。";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "用戶名稱";
@@ -7721,7 +7721,7 @@
 "USERNAME_LINK_TOOLTIP_TITLE" = "分享你的用戶名稱";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "搜尋使用者名稱時發生錯誤。請稍後再試。";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "搜尋用戶名稱時發生錯誤。請稍後再試。";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ 不是有效的用戶名稱。請確保你已輸入完整的用戶名稱，以及隨後的一組數字。";
@@ -7733,7 +7733,7 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "此用戶名稱連結不再有效。";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ 不是 Signal 使用者。請確保您已輸入完整的使用者名稱。";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ 不是 Signal 使用者。請確保您已輸入完整的用戶名稱。";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "找不到該使用者";

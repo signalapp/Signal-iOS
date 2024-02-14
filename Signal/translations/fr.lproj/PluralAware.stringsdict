@@ -904,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toutes les connexions Signal · %1$d spectateur</string>
+			<string>Tous les contacts Signal · %1$d spectateur</string>
 			<key>other</key>
-			<string>Toutes les connexions Signal · %1$d spectateurs</string>
+			<string>Tous les contacts Signal · %1$d spectateurs</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -920,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toutes les connexions Signal · %1$d exclu</string>
+			<string>Tous les contacts Signal · %1$d exclu</string>
 			<key>other</key>
-			<string>Toutes les connexions Signal · %1$d exclus</string>
+			<string>Tous les contacts Signal · %1$d exclus</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>

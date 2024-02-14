@@ -1028,7 +1028,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Vincular novo aparelho";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ está nos seus contatos do sistema";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ está nos contatos do seu telefone";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Contatos do Signal";
@@ -1286,7 +1286,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Adicionar à lista de contatos";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Adicionar aos contatos do sistema";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Adicionar aos contatos do seu telefone";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Apagar";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Esta pessoa será excluída dos contatos do sistema. Você não verá esta pessoa ao pesquisar. Você receberá uma solicitação de mensagem se essa pessoa enviar uma mensagem para você no futuro.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Esta pessoa será excluída dos contatos do seu telefone. Você não verá esta pessoa ao pesquisar. Você receberá uma solicitação de mensagem se essa pessoa enviar uma mensagem para você no futuro.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Excluir contato e remover da sua lista?";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "O download do anexo falhou.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Falha no upload do anexo.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Uma mensagem de %1$@ não pôde ser entregue";
@@ -3674,10 +3674,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Pré-visualização de link";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Não é mais possível gerenciar os contatos do sistema no iPad. Para adicionar contatos do Signal aos contatos do seu sistema, abra o Signal no seu telefone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Não é mais possível gerenciar os contatos do seu telefone no iPad. Para adicionar contatos do Signal aos contatos do seu telefone, abra o Signal no seu celular.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Não é mais possível gerenciar os contatos do sistema no iPad. O dispositivo continuará a sincronizar todas as alterações na sua lista de contatos do Signal no seu telefone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Não é mais possível gerenciar os contatos do seu telefone no iPad. O dispositivo continuará a sincronizar todas as alterações na sua lista de contatos do Signal no seu telefone.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Saiba mais";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Ninguém";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Seu número de telefone não ficará visível para ninguém, a menos que ele esteja salvo nos contatos do telefone.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Seu número de telefone não ficará visível para ninguém.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Destrancar Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nome, nome de usuário, ou número";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nome, nome de usuário ou número";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Buscar por nome ou número";
@@ -6020,10 +6020,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Ícone do app";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Exibir fotos de contatos oriundas da lista de contatos do aparelho, se disponíveis.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Exibir fotos de contatos oriundas da lista de contatos do telefone, se disponíveis.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Usar fotos da lista de contatos do aparelho";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Usar fotos da lista de contatos do telefone";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR Codes e Links";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Seu número de telefone não está mais visível nos chats. Se o seu número estiver salvo nos contatos de um amigo, ele ainda o verá.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Privacidade do número de telefone";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "Outras formas de se conectar";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "As pessoas agora podem enviar mensagens para você usando seu nome de usuário opcional. Você não precisa mais informar seu número de telefone. Os nomes de usuário não estão visíveis no seu perfil.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Nomes de usuário";

@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "نومۇر ئارقىلىق ئىزدەش";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ئىشلەتكۈچى ئىسمى بويىچە ئىزدەش";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ئىشلەتكۈچى نامى بويىچە ئىزدەش";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "سىز iOS نىڭ تەڭشەكلەردىن ئالاقەداشلار زىيارەت ھوقۇقىنى قوزغىتىپ، كىملەرنىڭ Signal ئىشلەتكۈچىسى ئىكەنلىكىنى كۆرەلەيسىز.";
@@ -2438,7 +2438,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "يۈكلەنمەنى چۈشۈرەلمىدى.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "قىستۇرما يۈكلەنمىدى.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "«%1$@» دىن كەلگەن بىر ئۇچۇر يەتكۈزۈلمىدى";
@@ -4970,10 +4970,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "ھېچكىم";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "تېلېفون نومۇرىڭىزنى ئۆزىنىڭ ئالاقىداشلار تىزىملىكىدە ساقلىمىغانلا بولسا، ھېچكىم تېلېفون نومۇرىڭىزنى كۆرەلمەيدۇ.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "تېلېفون نومۇرىڭىزنى ھېچكىم كۆرەلمەيدۇ.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5768,7 +5768,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal نى ئاجرىتىڭ";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "ئات، ئىشلەتكۈچى ئاتى ياكى نومۇر";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "نام، ئىشلەتكۈچى نامى ياكى تېلېفون نومۇرى";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ئات ياكى نومۇر بويىچە ئىزدەيدۇ";
@@ -7652,7 +7652,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR كودى ياكى ئۇلانما";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "تېلېفون نومۇرىڭىز ئەمدى پاراڭلاردا كۆرۈنمەيدۇ. ئەگەر تېلېفون نومۇرىڭىز دوستىڭىزنىڭ ئالاقىداش تىزىملىكىدە ساقلانغان بولسا، ئۇلار ئۇنى كۆرەلەيدۇ.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "تېلېفون نومۇرى مەخپىيەتلىكى";
@@ -7664,7 +7664,7 @@
 "USERNAME_EDUCATION_TITLE" = "ئۇلىنىشنىڭ يېڭى ئۇسۇللىرى";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "باشقىلار ئەمدى تاللانما ئىشلەتكۈچى نامىڭىزنى ئىشلىتىپ سىزگە ئۇچۇر يوللىسا بولىدۇ، تېلېفون نومۇرىڭىزنى ئېيتىپ بېرىشنىڭ ھاجىتى يوق. ئىشلەتكۈچى نامى ئارخىپىڭىزدا كۆرۈنمەيدۇ.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "ئىشلەتكۈچى نامى";
