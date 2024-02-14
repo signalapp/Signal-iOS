@@ -1761,6 +1761,13 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     }
 
     func textViewDidChange(_ textView: UITextView) {
+        // If you swipe type, a space is inserted between words, by putting that space
+        // before the subsequent word in the `shouldChangeTextIn: range:` method.
+        // If you swipe type and then tap a single letter, `shouldChangeTextIn:` only gets
+        // the letters, NOT the space, but the NSConcreteTextStorage _somehow_ gets that
+        // space. In order to avoid this leading to discrepancies between `self.text` and
+        // the text being displayed, we sync the two up here, after the space has been applied.
+        self.text = transformedText(textView.text ?? "", for: textStyle)
         adjustFontSizeIfNecessary()
         validateTextViewAttributes()
         delegate?.textStoryComposerDidChange(self)
