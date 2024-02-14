@@ -19,11 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignedPreKeyRecord;
 @class TSRequest;
 
-typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
-    TSVerificationTransportVoice = 1,
-    TSVerificationTransportSMS
-};
-
 @interface OWSRequestFactory : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -53,20 +48,12 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
 
 + (TSRequest *)allocAttachmentRequestV4;
 
-+ (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray<NSString *> *)hashes;
-
 + (TSRequest *)profileAvatarUploadFormRequest;
 
 + (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier
                                          voipIdentifier:(nullable NSString *)voipId;
 
 + (TSRequest *)unregisterAccountRequest;
-
-+ (TSRequest *)requestVerificationCodeRequestWithE164:(NSString *)e164
-                                     preauthChallenge:(nullable NSString *)preauthChallenge
-                                         captchaToken:(nullable NSString *)captchaToken
-                                            transport:(TSVerificationTransport)transport
-    NS_SWIFT_NAME(requestVerificationCodeRequest(e164:preauthChallenge:captchaToken:transport:));
 
 + (TSRequest *)submitMessageRequestWithServiceId:(ServiceIdObjC *)serviceId
                                         messages:(NSArray<DeviceMessage *> *)messages
@@ -109,23 +96,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
 + (TSRequest *)remoteAttestationAuthRequestForKeyBackup;
 + (TSRequest *)remoteAttestationAuthRequestForCDSI;
 + (TSRequest *)remoteAttestationAuthRequestForSVR2;
-
-#pragma mark - KBS
-
-+ (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName
-                                        authUsername:(NSString *)authUsername
-                                        authPassword:(NSString *)authPassword
-                                             cookies:(NSArray<NSHTTPCookie *> *)cookies;
-
-+ (TSRequest *)kbsEnclaveRequestWithRequestId:(NSData *)requestId
-                                         data:(NSData *)data
-                                      cryptIv:(NSData *)cryptIv
-                                     cryptMac:(NSData *)cryptMac
-                                  enclaveName:(NSString *)enclaveName
-                                 authUsername:(NSString *)authUsername
-                                 authPassword:(NSString *)authPassword
-                                      cookies:(NSArray<NSHTTPCookie *> *)cookies
-                                  requestType:(NSString *)requestType;
 
 #pragma mark - UD
 

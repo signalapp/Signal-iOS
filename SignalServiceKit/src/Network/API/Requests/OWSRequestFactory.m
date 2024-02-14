@@ -113,18 +113,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray<NSString *> *)hashes
-{
-    OWSAssertDebug(hashes.count > 0);
-
-    NSString *path = [NSString stringWithFormat:@"%@/%@", self.textSecureDirectoryAPI, @"tokens"];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                              method:@"PUT"
-                          parameters:@{
-                              @"contacts" : hashes,
-                          }];
-}
-
 + (TSRequest *)currentSignedPreKeyRequest
 {
     NSString *path = self.textSecureSignedKeysAPI;
@@ -172,75 +160,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     NSString *path = [NSString stringWithFormat:@"%@/%@", self.textSecureAccountsAPI, @"me"];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
-}
-
-+ (TSRequest *)requestVerificationCodeRequestWithE164:(NSString *)e164
-                                     preauthChallenge:(nullable NSString *)preauthChallenge
-                                         captchaToken:(nullable NSString *)captchaToken
-                                            transport:(TSVerificationTransport)transport
-{
-    OWSAssertDebug(e164.length > 0);
-
-    NSMutableArray<NSURLQueryItem *> *queryItems = [NSMutableArray new];
-    [queryItems addObject:[NSURLQueryItem queryItemWithName:@"client" value:@"ios"]];
-
-    if (captchaToken.length > 0) {
-        [queryItems addObject:[NSURLQueryItem queryItemWithName:@"captcha" value:captchaToken]];
-    }
-
-    if (preauthChallenge.length > 0) {
-        [queryItems addObject:[NSURLQueryItem queryItemWithName:@"challenge" value:preauthChallenge]];
-    }
-
-    NSString *path = [NSString
-        stringWithFormat:@"%@/%@/code/%@", self.textSecureAccountsAPI, [self stringForTransport:transport], e164];
-
-    NSURLComponents *components = [[NSURLComponents alloc] initWithString:path];
-    components.queryItems = queryItems;
-
-    TSRequest *request = [TSRequest requestWithUrl:components.URL method:@"GET" parameters:@{}];
-    request.shouldHaveAuthorizationHeaders = NO;
-
-    if (transport == TSVerificationTransportVoice) {
-        NSString *_Nullable localizationHeader = [self voiceCodeLocalizationHeader];
-        if (localizationHeader.length > 0) {
-            [request setValue:localizationHeader forHTTPHeaderField:@"Accept-Language"];
-        }
-    }
-
-    return request;
-}
-
-+ (nullable NSString *)voiceCodeLocalizationHeader
-{
-    NSLocale *locale = [NSLocale currentLocale];
-    NSString *_Nullable languageCode = [locale objectForKey:NSLocaleLanguageCode];
-    NSString *_Nullable countryCode = [locale objectForKey:NSLocaleCountryCode];
-
-    if (!languageCode) {
-        return nil;
-    }
-
-    OWSAssertDebug([languageCode rangeOfString:@"-"].location == NSNotFound);
-
-    if (!countryCode) {
-        // In the absence of a country code, just send a language code.
-        return languageCode;
-    }
-
-    OWSAssertDebug(languageCode.length == 2);
-    OWSAssertDebug(countryCode.length == 2);
-    return [NSString stringWithFormat:@"%@-%@", languageCode, countryCode];
-}
-
-+ (NSString *)stringForTransport:(TSVerificationTransport)transport
-{
-    switch (transport) {
-        case TSVerificationTransportSMS:
-            return @"sms";
-        case TSVerificationTransportVoice:
-            return @"voice";
-    }
 }
 
 + (TSRequest *)currencyConversionRequest NS_SWIFT_NAME(currencyConversionRequest())
@@ -349,61 +268,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 + (TSRequest *)remoteAttestationAuthRequestForSVR2
 {
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v2/backup/auth"] method:@"GET" parameters:@{}];
-}
-
-#pragma mark - KBS
-
-+ (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName
-                                        authUsername:(NSString *)authUsername
-                                        authPassword:(NSString *)authPassword
-                                             cookies:(NSArray<NSHTTPCookie *> *)cookies
-{
-    NSString *path = [NSString stringWithFormat:@"v1/token/%@", enclaveName];
-
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
-
-    request.authUsername = authUsername;
-    request.authPassword = authPassword;
-
-    // Set the cookie header.
-    // OWSURLSession disables default cookie handling for all requests.
-    OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
-    [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
-
-    return request;
-}
-
-+ (TSRequest *)kbsEnclaveRequestWithRequestId:(NSData *)requestId
-                                         data:(NSData *)data
-                                      cryptIv:(NSData *)cryptIv
-                                     cryptMac:(NSData *)cryptMac
-                                  enclaveName:(NSString *)enclaveName
-                                 authUsername:(NSString *)authUsername
-                                 authPassword:(NSString *)authPassword
-                                      cookies:(NSArray<NSHTTPCookie *> *)cookies
-                                  requestType:(NSString *)requestType
-{
-    NSString *path = [NSString stringWithFormat:@"v1/backup/%@", enclaveName];
-
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                                            method:@"PUT"
-                                        parameters:@{
-                                            @"requestId" : requestId.base64EncodedString,
-                                            @"data" : data.base64EncodedString,
-                                            @"iv" : cryptIv.base64EncodedString,
-                                            @"mac" : cryptMac.base64EncodedString,
-                                            @"type" : requestType
-                                        }];
-
-    request.authUsername = authUsername;
-    request.authPassword = authPassword;
-
-    // Set the cookie header.
-    // OWSURLSession disables default cookie handling for all requests.
-    OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
-    [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
-
-    return request;
 }
 
 #pragma mark - UD
