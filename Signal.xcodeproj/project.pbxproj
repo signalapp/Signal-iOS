@@ -937,6 +937,7 @@
 		669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */; };
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
+		669FAE152B75968D009EE2FE /* OWSAttachmentDownloadJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */; };
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
@@ -3626,6 +3627,7 @@
 		669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemStoryManager.swift; sourceTree = "<group>"; };
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
+		669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAttachmentDownloadJob.swift; sourceTree = "<group>"; };
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
@@ -7309,6 +7311,15 @@
 			path = ViewControllerContext;
 			sourceTree = "<group>";
 		};
+		669FAE132B7595FE009EE2FE /* AttachmentDownloads */ = {
+			isa = PBXGroup;
+			children = (
+				669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */,
+				F9C5C985289453B100548EEE /* OWSAttachmentDownloads.swift */,
+			);
+			path = AttachmentDownloads;
+			sourceTree = "<group>";
+		};
 		66A1DF71298C634500C4E4A7 /* Registration */ = {
 			isa = PBXGroup;
 			children = (
@@ -9815,9 +9826,9 @@
 		F9C5C984289453B100548EEE /* Attachments */ = {
 			isa = PBXGroup;
 			children = (
+				669FAE132B7595FE009EE2FE /* AttachmentDownloads */,
 				6619A1C22B2B7199004B38FE /* AttachmentStore.swift */,
 				F9C5C987289453B100548EEE /* BlurHash.swift */,
-				F9C5C985289453B100548EEE /* OWSAttachmentDownloads.swift */,
 				F9C5C988289453B100548EEE /* OWSMediaUtils.swift */,
 				F9C5C98D289453B100548EEE /* OWSThumbnailService.swift */,
 				F9C5C98A289453B100548EEE /* TSAttachment+SDS.swift */,
@@ -13250,6 +13261,7 @@
 				F9C5CC67289453B300548EEE /* OWSAddToContactsOfferMessage.m in Sources */,
 				F9C5CC40289453B300548EEE /* OWSAddToProfileWhitelistOfferMessage+SDS.swift in Sources */,
 				F9C5CC48289453B300548EEE /* OWSAddToProfileWhitelistOfferMessage.m in Sources */,
+				669FAE152B75968D009EE2FE /* OWSAttachmentDownloadJob.swift in Sources */,
 				F9C5CC72289453B300548EEE /* OWSAttachmentDownloads.swift in Sources */,
 				F9C5CE4E289453B400548EEE /* OWSBackgroundTask.m in Sources */,
 				F9C5CD0C289453B300548EEE /* OWSBlockedPhoneNumbersMessage.m in Sources */,

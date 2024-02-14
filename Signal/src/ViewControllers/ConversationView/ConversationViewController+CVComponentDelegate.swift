@@ -214,13 +214,7 @@ extension ConversationViewController: CVComponentDelegate {
             forMessageId: message.uniqueId,
             attachmentGroup: .allAttachments,
             downloadBehavior: .bypassAll,
-            touchMessageImmediately: true,
-            success: { _ in
-                Logger.info("Successfully re-downloaded attachment.")
-            },
-            failure: { error in
-                Logger.warn("Failed to redownload message with error: \(error)")
-            }
+            touchMessageImmediately: true
         )
     }
 

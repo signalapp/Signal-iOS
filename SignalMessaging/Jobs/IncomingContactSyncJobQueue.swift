@@ -91,7 +91,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
 
         switch attachment {
         case let attachmentPointer as TSAttachmentPointer:
-            return try await attachmentDownloads.enqueueHeadlessDownloadPromise(attachmentPointer: attachmentPointer).awaitable()
+            return try await attachmentDownloads.enqueueContactSyncDownload(attachmentPointer: attachmentPointer).awaitable()
         case let attachmentStream as TSAttachmentStream:
             return attachmentStream
         default:

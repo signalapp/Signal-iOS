@@ -120,16 +120,12 @@ private class QuotedMessageViewAdapter: QuotedMessageViewDelegate, Dependencies 
 
     func didTapQuotedReply(_ quotedReply: QuotedReplyModel,
                            failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
-        Self.attachmentDownloads.enqueueDownloadOfAttachments(forMessageId: interactionUniqueId,
-                                                              attachmentGroup: .allAttachments,
-                                                              downloadBehavior: .default,
-                                                              touchMessageImmediately: true,
-                                                              success: { _ in
-                                                                Logger.info("Success.")
-                                                              },
-                                                              failure: { error in
-                                                                owsFailDebugUnlessNetworkFailure(error)
-                                                              })
+        Self.attachmentDownloads.enqueueDownloadOfAttachments(
+            forMessageId: interactionUniqueId,
+            attachmentGroup: .allAttachments,
+            downloadBehavior: .default,
+            touchMessageImmediately: true
+        )
     }
 
     func didCancelQuotedReply() {

@@ -1068,13 +1068,8 @@ extension StoryItem {
 
         attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: message.uniqueId,
-            attachmentGroup: .allAttachments,
             downloadBehavior: .bypassAll,
-            touchMessageImmediately: true) { _ in
-                Logger.info("Successfully re-downloaded attachment.")
-                DispatchQueue.main.async { completion?() }
-            } failure: { error in
-                Logger.warn("Failed to redownload attachment with error: \(error)")
+            touchMessageImmediately: true) {
                 DispatchQueue.main.async { completion?() }
             }
 
