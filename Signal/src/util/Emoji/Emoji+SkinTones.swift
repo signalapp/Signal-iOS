@@ -1842,6 +1842,30 @@ extension Emoji {
                 [.mediumDark]: "🚶🏾‍♀️",
                 [.dark]: "🚶🏿‍♀️"
             ]
+        case .personWalkingFacingRight:
+            return [
+                [.light]: "🚶🏻‍➡️",
+                [.mediumLight]: "🚶🏼‍➡️",
+                [.medium]: "🚶🏽‍➡️",
+                [.mediumDark]: "🚶🏾‍➡️",
+                [.dark]: "🚶🏿‍➡️"
+            ]
+        case .womanWalkingFacingRight:
+            return [
+                [.light]: "🚶🏻‍♀️‍➡️",
+                [.mediumLight]: "🚶🏼‍♀️‍➡️",
+                [.medium]: "🚶🏽‍♀️‍➡️",
+                [.mediumDark]: "🚶🏾‍♀️‍➡️",
+                [.dark]: "🚶🏿‍♀️‍➡️"
+            ]
+        case .manWalkingFacingRight:
+            return [
+                [.light]: "🚶🏻‍♂️‍➡️",
+                [.mediumLight]: "🚶🏼‍♂️‍➡️",
+                [.medium]: "🚶🏽‍♂️‍➡️",
+                [.mediumDark]: "🚶🏾‍♂️‍➡️",
+                [.dark]: "🚶🏿‍♂️‍➡️"
+            ]
         case .standingPerson:
             return [
                 [.light]: "🧍🏻",
@@ -1890,6 +1914,30 @@ extension Emoji {
                 [.mediumDark]: "🧎🏾‍♀️",
                 [.dark]: "🧎🏿‍♀️"
             ]
+        case .personKneelingFacingRight:
+            return [
+                [.light]: "🧎🏻‍➡️",
+                [.mediumLight]: "🧎🏼‍➡️",
+                [.medium]: "🧎🏽‍➡️",
+                [.mediumDark]: "🧎🏾‍➡️",
+                [.dark]: "🧎🏿‍➡️"
+            ]
+        case .womanKneelingFacingRight:
+            return [
+                [.light]: "🧎🏻‍♀️‍➡️",
+                [.mediumLight]: "🧎🏼‍♀️‍➡️",
+                [.medium]: "🧎🏽‍♀️‍➡️",
+                [.mediumDark]: "🧎🏾‍♀️‍➡️",
+                [.dark]: "🧎🏿‍♀️‍➡️"
+            ]
+        case .manKneelingFacingRight:
+            return [
+                [.light]: "🧎🏻‍♂️‍➡️",
+                [.mediumLight]: "🧎🏼‍♂️‍➡️",
+                [.medium]: "🧎🏽‍♂️‍➡️",
+                [.mediumDark]: "🧎🏾‍♂️‍➡️",
+                [.dark]: "🧎🏿‍♂️‍➡️"
+            ]
         case .personWithProbingCane:
             return [
                 [.light]: "🧑🏻‍🦯",
@@ -1897,6 +1945,14 @@ extension Emoji {
                 [.medium]: "🧑🏽‍🦯",
                 [.mediumDark]: "🧑🏾‍🦯",
                 [.dark]: "🧑🏿‍🦯"
+            ]
+        case .personWithWhiteCaneFacingRight:
+            return [
+                [.light]: "🧑🏻‍🦯‍➡️",
+                [.mediumLight]: "🧑🏼‍🦯‍➡️",
+                [.medium]: "🧑🏽‍🦯‍➡️",
+                [.mediumDark]: "🧑🏾‍🦯‍➡️",
+                [.dark]: "🧑🏿‍🦯‍➡️"
             ]
         case .manWithProbingCane:
             return [
@@ -1906,6 +1962,14 @@ extension Emoji {
                 [.mediumDark]: "👨🏾‍🦯",
                 [.dark]: "👨🏿‍🦯"
             ]
+        case .manWithWhiteCaneFacingRight:
+            return [
+                [.light]: "👨🏻‍🦯‍➡️",
+                [.mediumLight]: "👨🏼‍🦯‍➡️",
+                [.medium]: "👨🏽‍🦯‍➡️",
+                [.mediumDark]: "👨🏾‍🦯‍➡️",
+                [.dark]: "👨🏿‍🦯‍➡️"
+            ]
         case .womanWithProbingCane:
             return [
                 [.light]: "👩🏻‍🦯",
@@ -1913,6 +1977,14 @@ extension Emoji {
                 [.medium]: "👩🏽‍🦯",
                 [.mediumDark]: "👩🏾‍🦯",
                 [.dark]: "👩🏿‍🦯"
+            ]
+        case .womanWithWhiteCaneFacingRight:
+            return [
+                [.light]: "👩🏻‍🦯‍➡️",
+                [.mediumLight]: "👩🏼‍🦯‍➡️",
+                [.medium]: "👩🏽‍🦯‍➡️",
+                [.mediumDark]: "👩🏾‍🦯‍➡️",
+                [.dark]: "👩🏿‍🦯‍➡️"
             ]
         case .personInMotorizedWheelchair:
             return [
@@ -1922,6 +1994,14 @@ extension Emoji {
                 [.mediumDark]: "🧑🏾‍🦼",
                 [.dark]: "🧑🏿‍🦼"
             ]
+        case .personInMotorizedWheelchairFacingRight:
+            return [
+                [.light]: "🧑🏻‍🦼‍➡️",
+                [.mediumLight]: "🧑🏼‍🦼‍➡️",
+                [.medium]: "🧑🏽‍🦼‍➡️",
+                [.mediumDark]: "🧑🏾‍🦼‍➡️",
+                [.dark]: "🧑🏿‍🦼‍➡️"
+            ]
         case .manInMotorizedWheelchair:
             return [
                 [.light]: "👨🏻‍🦼",
@@ -1929,6 +2009,14 @@ extension Emoji {
                 [.medium]: "👨🏽‍🦼",
                 [.mediumDark]: "👨🏾‍🦼",
                 [.dark]: "👨🏿‍🦼"
+            ]
+        case .manInMotorizedWheelchairFacingRight:
+            return [
+                [.light]: "👨🏻‍🦼‍➡️",
+                [.mediumLight]: "👨🏼‍🦼‍➡️",
+                [.medium]: "👨🏽‍🦼‍➡️",
+                [.mediumDark]: "👨🏾‍🦼‍➡️",
+                [.dark]: "👨🏿‍🦼‍➡️"
             ]
         case .womanInMotorizedWheelchair:
             return [
@@ -1938,6 +2026,14 @@ extension Emoji {
                 [.mediumDark]: "👩🏾‍🦼",
                 [.dark]: "👩🏿‍🦼"
             ]
+        case .womanInMotorizedWheelchairFacingRight:
+            return [
+                [.light]: "👩🏻‍🦼‍➡️",
+                [.mediumLight]: "👩🏼‍🦼‍➡️",
+                [.medium]: "👩🏽‍🦼‍➡️",
+                [.mediumDark]: "👩🏾‍🦼‍➡️",
+                [.dark]: "👩🏿‍🦼‍➡️"
+            ]
         case .personInManualWheelchair:
             return [
                 [.light]: "🧑🏻‍🦽",
@@ -1945,6 +2041,14 @@ extension Emoji {
                 [.medium]: "🧑🏽‍🦽",
                 [.mediumDark]: "🧑🏾‍🦽",
                 [.dark]: "🧑🏿‍🦽"
+            ]
+        case .personInManualWheelchairFacingRight:
+            return [
+                [.light]: "🧑🏻‍🦽‍➡️",
+                [.mediumLight]: "🧑🏼‍🦽‍➡️",
+                [.medium]: "🧑🏽‍🦽‍➡️",
+                [.mediumDark]: "🧑🏾‍🦽‍➡️",
+                [.dark]: "🧑🏿‍🦽‍➡️"
             ]
         case .manInManualWheelchair:
             return [
@@ -1954,6 +2058,14 @@ extension Emoji {
                 [.mediumDark]: "👨🏾‍🦽",
                 [.dark]: "👨🏿‍🦽"
             ]
+        case .manInManualWheelchairFacingRight:
+            return [
+                [.light]: "👨🏻‍🦽‍➡️",
+                [.mediumLight]: "👨🏼‍🦽‍➡️",
+                [.medium]: "👨🏽‍🦽‍➡️",
+                [.mediumDark]: "👨🏾‍🦽‍➡️",
+                [.dark]: "👨🏿‍🦽‍➡️"
+            ]
         case .womanInManualWheelchair:
             return [
                 [.light]: "👩🏻‍🦽",
@@ -1961,6 +2073,14 @@ extension Emoji {
                 [.medium]: "👩🏽‍🦽",
                 [.mediumDark]: "👩🏾‍🦽",
                 [.dark]: "👩🏿‍🦽"
+            ]
+        case .womanInManualWheelchairFacingRight:
+            return [
+                [.light]: "👩🏻‍🦽‍➡️",
+                [.mediumLight]: "👩🏼‍🦽‍➡️",
+                [.medium]: "👩🏽‍🦽‍➡️",
+                [.mediumDark]: "👩🏾‍🦽‍➡️",
+                [.dark]: "👩🏿‍🦽‍➡️"
             ]
         case .runner:
             return [
@@ -1985,6 +2105,30 @@ extension Emoji {
                 [.medium]: "🏃🏽‍♀️",
                 [.mediumDark]: "🏃🏾‍♀️",
                 [.dark]: "🏃🏿‍♀️"
+            ]
+        case .personRunningFacingRight:
+            return [
+                [.light]: "🏃🏻‍➡️",
+                [.mediumLight]: "🏃🏼‍➡️",
+                [.medium]: "🏃🏽‍➡️",
+                [.mediumDark]: "🏃🏾‍➡️",
+                [.dark]: "🏃🏿‍➡️"
+            ]
+        case .womanRunningFacingRight:
+            return [
+                [.light]: "🏃🏻‍♀️‍➡️",
+                [.mediumLight]: "🏃🏼‍♀️‍➡️",
+                [.medium]: "🏃🏽‍♀️‍➡️",
+                [.mediumDark]: "🏃🏾‍♀️‍➡️",
+                [.dark]: "🏃🏿‍♀️‍➡️"
+            ]
+        case .manRunningFacingRight:
+            return [
+                [.light]: "🏃🏻‍♂️‍➡️",
+                [.mediumLight]: "🏃🏼‍♂️‍➡️",
+                [.medium]: "🏃🏽‍♂️‍➡️",
+                [.mediumDark]: "🏃🏾‍♂️‍➡️",
+                [.dark]: "🏃🏿‍♂️‍➡️"
             ]
         case .dancer:
             return [
