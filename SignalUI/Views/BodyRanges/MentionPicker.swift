@@ -117,9 +117,21 @@ class MentionPicker: UIView {
             : 4.5 * cellHeight
         return min(minimumTableHeight, maximumTableHeight)
     }
+
+    // The way this class does sizing needs to be redone. In short, it relies on oversizing
+    // itself to the screen height then have the superview size itself to that screen height
+    // and THEN it can compute its own height correctly.
+    // For now, just avoid re-entrancy that comes from the fact that maximumTableHeight is
+    // is called from ResizingScrollView.layoutSubviews but itself calls layoutIfNeeded.
+    private var layoutReentrancy = false
+
     private var maximumTableHeight: CGFloat {
         guard let superview = superview else { return CurrentAppContext().frame.height }
-        superview.layoutIfNeeded()
+        if !layoutReentrancy {
+            layoutReentrancy = true
+            superview.layoutIfNeeded()
+            layoutReentrancy = false
+        }
         let maximumCellHeight = CGFloat(filteredMentionableUsers.count) * cellHeight
         let maximumContainerHeight = superview.height - (superview.height - frame.maxY) - superview.safeAreaInsets.top
         return min(maximumCellHeight, maximumContainerHeight)
