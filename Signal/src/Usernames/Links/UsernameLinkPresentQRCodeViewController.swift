@@ -639,6 +639,15 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             self.usernameChangeDelegate?.usernameStateDidChange(
                 newState: latestUsernameState
             )
+        }.done(on: schedulers.main) { _ in
+            OWSActionSheets.showActionSheet(
+                message: OWSLocalizedString(
+                    "USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL",
+                    comment: "Text presenting an action sheet notifying the user their QR code and link were reset."
+                ),
+                fromViewController: self,
+                dismissalDelegate: self
+            )
         }.catch(on: schedulers.main) { [weak self] error in
             guard let self else { return }
 
