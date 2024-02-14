@@ -244,7 +244,6 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: - Observation
 
-    @objc
     public func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate) {
         guard let databaseChangeObserver = grdbStorage.databaseChangeObserver else {
             owsFailDebug("Missing databaseChangeObserver.")

@@ -7,7 +7,6 @@ import Foundation
 import GRDB
 import SignalCoreKit
 
-@objc
 public protocol DatabaseChangeDelegate: AnyObject {
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges)
     func databaseChangesDidUpdateExternally()
@@ -536,13 +535,13 @@ extension DatabaseChangeObserver: TransactionObserver {
     private func publishUpdates(shouldPublishIfEmpty: Bool) {
         AssertIsOnMainThread()
 
-        let committedChanges = Self.committedChangesLock.withLock { () -> ObservedDatabaseChanges in
+        let committedChanges = Self.committedChangesLock.withLock { () -> DatabaseChangesSnapshot in
             // Return the current committedChanges.
             let committedChanges = self.committedChanges
             // Create a new committedChanges instance for the next batch
             // of updates.
             self.committedChanges = ObservedDatabaseChanges(concurrencyMode: .unfairLock)
-            return committedChanges
+            return committedChanges.snapshot()
         }
         guard !committedChanges.isEmpty ||
                 shouldPublishIfEmpty else {

@@ -930,6 +930,8 @@
 		6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC192980AB45004EFC30 /* DependenciesBridge.swift */; };
 		6698FC1C2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */; };
 		669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669947B92A20129000E4DC0C /* SVR2Shims.swift */; };
+		669C4AAC2B7D4E56001EF103 /* DatabaseChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669C4AAB2B7D4E56001EF103 /* DatabaseChanges.swift */; };
+		669C4AAE2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669C4AAD2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift */; };
 		669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSUrlSession.swift */; };
 		669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */; };
 		669E8FEF28B417D500043D28 /* OWSSignalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEE28B417D500043D28 /* OWSSignalService.swift */; };
@@ -3619,6 +3621,8 @@
 		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
 		6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecoveryObjcBridge.swift; sourceTree = "<group>"; };
 		669947B92A20129000E4DC0C /* SVR2Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2Shims.swift; sourceTree = "<group>"; };
+		669C4AAB2B7D4E56001EF103 /* DatabaseChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseChanges.swift; sourceTree = "<group>"; };
+		669C4AAD2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseChangesSnapshot.swift; sourceTree = "<group>"; };
 		669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtil.swift; sourceTree = "<group>"; };
 		669E8FE528B4149200043D28 /* BaseOWSURLSessionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseOWSURLSessionMock.swift; sourceTree = "<group>"; };
 		669E8FE728B4153B00043D28 /* OWSUrlSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSUrlSession.swift; sourceTree = "<group>"; };
@@ -10136,6 +10140,8 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CA3E289453B100548EEE /* DatabaseChangeObserver.swift */,
+				669C4AAB2B7D4E56001EF103 /* DatabaseChanges.swift */,
+				669C4AAD2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift */,
 				F9C5CA3D289453B100548EEE /* ObservedDatabaseChanges.swift */,
 			);
 			path = Snapshots;
@@ -12996,6 +13002,8 @@
 				F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */,
 				F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */,
 				F9C5CD1D289453B300548EEE /* DatabaseChangeObserver.swift in Sources */,
+				669C4AAC2B7D4E56001EF103 /* DatabaseChanges.swift in Sources */,
+				669C4AAE2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift in Sources */,
 				F97217F828DC9F3700113D9F /* DatabaseCorruptionState.swift in Sources */,
 				F9B652C328D8E3DF006914CA /* DatabaseRecovery.swift in Sources */,
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
