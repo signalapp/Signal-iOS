@@ -107,10 +107,6 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
 
             direction = .download(attachmentPointer: attachmentPointer)
-        case .restoring:
-            // TODO: We could easily show progress for restores.
-            owsFailDebug("Restoring progress type.")
-            return false
         case .unknown:
             owsFailDebug("Unknown progress type.")
             return false

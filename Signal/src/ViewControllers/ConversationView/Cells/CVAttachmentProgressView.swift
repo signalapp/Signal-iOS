@@ -394,7 +394,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
         case uploading(attachmentStream: TSAttachmentStream)
         case pendingDownload(attachmentPointer: TSAttachmentPointer)
         case downloading(attachmentPointer: TSAttachmentPointer)
-        case restoring(attachmentPointer: TSAttachmentPointer)
         case unknown
     }
 
@@ -418,9 +417,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 return .unknown
             }
         } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            guard attachmentPointer.pointerType == .incoming else {
-                return .restoring(attachmentPointer: attachmentPointer)
-            }
             switch attachmentPointer.state {
             case .pendingMessageRequest, .pendingManualDownload:
                 return .pendingDownload(attachmentPointer: attachmentPointer)

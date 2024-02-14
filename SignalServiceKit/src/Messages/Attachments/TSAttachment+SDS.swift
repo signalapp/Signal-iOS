@@ -51,7 +51,7 @@ public struct AttachmentRecord: SDSRecord {
     public let lazyRestoreFragmentId: String?
     public let localRelativeFilePath: String?
     public let mediaSize: Data?
-    public let pointerType: TSAttachmentPointerType?
+    public let pointerType: UInt?
     public let state: TSAttachmentPointerState?
     public let uploadTimestamp: UInt64
     public let cdnKey: String
@@ -229,9 +229,7 @@ extension TSAttachment {
             let lazyRestoreFragmentId: String? = record.lazyRestoreFragmentId
             let mediaSizeSerialized: Data? = record.mediaSize
             let mediaSize: CGSize = try SDSDeserialization.unarchive(mediaSizeSerialized, name: "mediaSize")
-            guard let pointerType: TSAttachmentPointerType = record.pointerType else {
-               throw SDSError.missingRequiredField
-            }
+            let pointerType: UInt = try SDSDeserialization.required(record.pointerType, name: "pointerType")
             guard let state: TSAttachmentPointerState = record.state else {
                throw SDSError.missingRequiredField
             }
@@ -452,7 +450,7 @@ extension TSAttachment: DeepCopyable {
             let digest: Data? = modelToCopy.digest
             let lazyRestoreFragmentId: String? = modelToCopy.lazyRestoreFragmentId
             let mediaSize: CGSize = modelToCopy.mediaSize
-            let pointerType: TSAttachmentPointerType = modelToCopy.pointerType
+            let pointerType: UInt = modelToCopy.pointerType
             let state: TSAttachmentPointerState = modelToCopy.state
 
             return TSAttachmentPointer(grdbId: id,
@@ -548,7 +546,7 @@ extension TSAttachmentSerializer {
     static var lazyRestoreFragmentIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lazyRestoreFragmentId", columnType: .unicodeString, isOptional: true) }
     static var localRelativeFilePathColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "localRelativeFilePath", columnType: .unicodeString, isOptional: true) }
     static var mediaSizeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "mediaSize", columnType: .blob, isOptional: true) }
-    static var pointerTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "pointerType", columnType: .int, isOptional: true) }
+    static var pointerTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "pointerType", columnType: .int64, isOptional: true) }
     static var stateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "state", columnType: .int, isOptional: true) }
     static var uploadTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uploadTimestamp", columnType: .int64) }
     static var cdnKeyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cdnKey", columnType: .unicodeString) }
@@ -1017,7 +1015,7 @@ class TSAttachmentSerializer: SDSSerializer {
         let lazyRestoreFragmentId: String? = nil
         let localRelativeFilePath: String? = nil
         let mediaSize: Data? = nil
-        let pointerType: TSAttachmentPointerType? = nil
+        let pointerType: UInt? = nil
         let state: TSAttachmentPointerState? = nil
         let uploadTimestamp: UInt64 = model.uploadTimestamp
         let cdnKey: String = model.cdnKey

@@ -832,7 +832,7 @@ public extension OWSAttachmentDownloads {
                 let (promise, future) = Promise<Void>.pending()
                 promises.append(promise)
                 self.enqueueDownloadOfAttachments(forMessageId: message.uniqueId,
-                                                  attachmentGroup: .allAttachmentsIncoming,
+                                                  attachmentGroup: .allAttachments,
                                                   downloadBehavior: .default,
                                                   touchMessageImmediately: false,
                                                   success: { downloadedAttachments in
@@ -903,7 +903,7 @@ public extension OWSAttachmentDownloads {
         transaction.addAsyncCompletionOffMain {
             self.enqueueDownloadOfAttachments(
                 forMessageId: messageId,
-                attachmentGroup: .allAttachmentsIncoming,
+                attachmentGroup: .allAttachments,
                 downloadBehavior: downloadBehavior,
                 touchMessageImmediately: touchMessageImmediately
             ) { streams in
@@ -999,7 +999,7 @@ public extension OWSAttachmentDownloads {
         transaction.addAsyncCompletionOffMain {
             self.enqueueDownloadOfAttachments(
                 forStoryMessageId: storyMessageId,
-                attachmentGroup: .allAttachmentsIncoming,
+                attachmentGroup: .allAttachments,
                 downloadBehavior: downloadBehavior,
                 touchMessageImmediately: touchMessageImmediately
             ) { streams in
@@ -1050,28 +1050,16 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    // TODO: Can we simplify this?
     @objc
     enum AttachmentGroup: UInt, Equatable {
-        case allAttachmentsIncoming
-        case bodyAttachmentsIncoming
-        case allAttachmentsOfAnyKind
-        case bodyAttachmentsOfAnyKind
-
-        var justIncomingAttachments: Bool {
-            switch self {
-            case .bodyAttachmentsOfAnyKind, .allAttachmentsOfAnyKind:
-                return false
-            case .bodyAttachmentsIncoming, .allAttachmentsIncoming:
-                return true
-            }
-        }
+        case allAttachments
+        case bodyAttachments
 
         var justBodyAttachments: Bool {
             switch self {
-            case .allAttachmentsIncoming, .allAttachmentsOfAnyKind:
+            case .allAttachments:
                 return false
-            case .bodyAttachmentsIncoming, .bodyAttachmentsOfAnyKind:
+            case .bodyAttachments:
                 return true
             }
         }
@@ -1139,18 +1127,6 @@ public extension OWSAttachmentDownloads {
         var attachmentIds = Set<AttachmentId>()
 
         func addJobRequest(attachment: TSAttachment, category: AttachmentCategory) {
-
-            if let attachmentPointer = attachment as? TSAttachmentPointer {
-                if attachmentPointer.pointerType == .restoring {
-                    Logger.warn("Ignoring restoring attachment.")
-                    return
-                }
-                if attachmentGroup.justIncomingAttachments,
-                   attachmentPointer.pointerType != .incoming {
-                    Logger.warn("Ignoring non-incoming attachment.")
-                    return
-                }
-            }
 
             let attachmentId = attachment.uniqueId
             guard !attachmentIds.contains(attachmentId) else {
@@ -1237,18 +1213,6 @@ public extension OWSAttachmentDownloads {
         var attachmentIds = Set<AttachmentId>()
 
         func addJobRequest(attachment: TSAttachment, category: AttachmentCategory) {
-
-            if let attachmentPointer = attachment as? TSAttachmentPointer {
-                if attachmentPointer.pointerType == .restoring {
-                    Logger.warn("Ignoring restoring attachment.")
-                    return
-                }
-                if attachmentGroup.justIncomingAttachments,
-                   attachmentPointer.pointerType != .incoming {
-                    Logger.warn("Ignoring non-incoming attachment.")
-                    return
-                }
-            }
 
             let attachmentId = attachment.uniqueId
             guard !attachmentIds.contains(attachmentId) else {

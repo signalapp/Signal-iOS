@@ -1068,7 +1068,7 @@ extension StoryItem {
 
         attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: message.uniqueId,
-            attachmentGroup: .allAttachmentsIncoming,
+            attachmentGroup: .allAttachments,
             downloadBehavior: .bypassAll,
             touchMessageImmediately: true) { _ in
                 Logger.info("Successfully re-downloaded attachment.")
