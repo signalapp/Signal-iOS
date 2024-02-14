@@ -324,7 +324,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         }
 
         let canvas = UIView()
-        canvas.frame.size = screen.bounds.size
+        canvas.frame.size = CGSize(width: 424, height: 576)
         canvas.backgroundColor = self.qrCodeColor.canvas
         canvas.layoutMargins = .init(top: 0, left: 48, bottom: 10, right: 48)
 
