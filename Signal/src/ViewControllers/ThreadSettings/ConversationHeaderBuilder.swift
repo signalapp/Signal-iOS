@@ -612,7 +612,7 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
     }
 
     var canTapThreadName: Bool {
-        !thread.isGroupThread
+        !thread.isGroupThread && !thread.isNoteToSelf
     }
 
     func didTapThreadName() {
