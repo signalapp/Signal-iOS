@@ -522,12 +522,14 @@ public class SignalAttachment: NSObject {
     }
 
     public var isAnimatedImage: Bool {
-        if dataUTI == (kUTTypePNG as String),
-            dataSource.imageMetadata.isAnimated {
+        let mimeType = mimeType
+        if MIMETypeUtil.isDefinitelyAnimated(mimeType) {
             return true
         }
-
-        return SignalAttachment.animatedImageUTISet.contains(dataUTI)
+        if MIMETypeUtil.isMaybeAnimated(mimeType) {
+            return dataSource.imageMetadata.isAnimated
+        }
+        return false
     }
 
     public var isVideo: Bool {
