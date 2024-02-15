@@ -16,33 +16,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// Indicates the sort of attachment ID included in the attachment info
-typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
-    OWSAttachmentInfoReferenceUnset = 0,
-    /// An original attachment for a quoted reply draft. This needs to be thumbnailed before it is sent.
-    OWSAttachmentInfoReferenceOriginalForSend = 1,
-    /// A reference to an original attachment in a quoted reply we've received. If this ever manifests as a stream
-    /// we should clone it as a private thumbnail
-    OWSAttachmentInfoReferenceOriginal,
-    /// A private thumbnail that we (the quoted reply) have ownership of
-    OWSAttachmentInfoReferenceThumbnail,
-    /// An untrusted pointer to a thumbnail. This was included in the proto of a message we've received.
-    OWSAttachmentInfoReferenceUntrustedPointer,
-};
-
-@interface OWSAttachmentInfo : MTLModel
-@property (class, nonatomic, readonly) NSUInteger currentSchemaVersion;
-@property (nonatomic, readonly) NSUInteger schemaVersion;
-
-@property (nonatomic, readonly, nullable) NSString *contentType;
-@property (nonatomic, readonly, nullable) NSString *sourceFilename;
-@property (nonatomic) OWSAttachmentInfoReference attachmentType;
-@property (nonatomic) NSString *rawAttachmentId;
-
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-@end
-
 @implementation OWSAttachmentInfo
 
 - (instancetype)initWithoutThumbnailWithContentType:(NSString *)contentType sourceFilename:(NSString *)sourceFilename
@@ -518,88 +491,64 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
 #pragma mark - Attachment (not necessarily with a thumbnail)
 
-- (BOOL)hasAttachment
+- (id<QuotedMessageAttachmentHelper>)attachmentHelper
 {
-    return (self.quotedAttachment != nil);
+    return [QuotedMessageAttachmentHelperFactory helperFor:self.quotedAttachment];
 }
 
-- (nullable TSAttachment *)fetchThumbnailWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable QuotedThumbnailAttachmentMetadata *)
+    fetchThumbnailAttachmentMetadataForParentMessage:(TSMessage *)message
+                                         transaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *attachmentId = self.quotedAttachment.rawAttachmentId;
-    TSAttachment *_Nullable attachment = nil;
-    if (attachmentId) {
-        attachment = [TSAttachment anyFetchWithUniqueId:self.quotedAttachment.rawAttachmentId transaction:transaction];
-    }
-    return attachment;
+    return [self.attachmentHelper thumbnailAttachmentMetadataWithParentMessage:message tx:transaction];
 }
 
-- (BOOL)isThumbnailOwned
+- (nullable NSString *)fetchThumbnailAttachmentIdForParentMessage:(id)message
+                                                      transaction:(SDSAnyReadTransaction *)transaction
 {
-    return (self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceUntrustedPointer
-        || self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceThumbnail);
+    return [[self.attachmentHelper thumbnailAttachmentMetadataWithParentMessage:message tx:transaction] attachmentId];
 }
 
-- (nullable NSString *)contentType
+- (nullable DisplayableQuotedThumbnailAttachment *)
+    displayableThumbnailAttachmentForMetadata:(QuotedThumbnailAttachmentMetadata *)metadata
+                                parentMessage:(TSMessage *)message
+                                  transaction:(SDSAnyReadTransaction *)transaction
 {
-    return self.quotedAttachment.contentType;
+    return [self.attachmentHelper displayableThumbnailAttachmentWithMetadata:metadata
+                                                               parentMessage:message
+                                                                          tx:transaction];
 }
 
-- (nullable NSString *)sourceFilename
+- (nullable NSString *)attachmentPointerIdForDownloadingWithParentMessage:(TSMessage *)message
+                                                              transaction:(SDSAnyReadTransaction *)transaction
 {
-    return self.quotedAttachment.sourceFilename;
+    return [self.attachmentHelper attachmentPointerIdForDownloadingWithParentMessage:message tx:transaction];
 }
 
-- (nullable NSString *)thumbnailAttachmentId
+- (void)setDownloadedAttachmentStream:(TSAttachmentStream *)attachmentStream
+                        parentMessage:(TSMessage *)message
+                          transaction:(SDSAnyWriteTransaction *)transaction
 {
-    return self.quotedAttachment.rawAttachmentId;
+    // Slightly confusing; this method delegates to the helper because behavior depends
+    // on the attachment type and helper.
+    // Legacy attachments route back to `setLegacyThumbnailAttachmentStream` below.
+    // v2 attachments will instead update the AttachmentReferences table, not anything on TSQuotedMessage.
+    [self.attachmentHelper setDownloadedAttachmentStreamWithAttachmentStream:attachmentStream
+                                                               parentMessage:message
+                                                                          tx:transaction];
 }
 
-- (void)setThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
+- (void)setLegacyThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
-
-    // If we're updating the attachmentId, it should be because we've downloaded the thumbnail from a remote source
-    if (self.quotedAttachment.rawAttachmentId != attachmentStream.uniqueId) {
-        OWSAssertDebug(self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceUntrustedPointer);
-    }
-
     self.quotedAttachment.attachmentType = OWSAttachmentInfoReferenceThumbnail;
     self.quotedAttachment.rawAttachmentId = attachmentStream.uniqueId;
 }
 
-- (nullable TSAttachmentStream *)createThumbnailIfNecessaryWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (nullable TSAttachmentStream *)createThumbnailAndUpdateMessageIfNecessaryWithParentMessage:(TSMessage *)message
+                                                                                 transaction:(SDSAnyWriteTransaction *)
+                                                                                                 transaction
 {
-    // We want to clone the existing attachment to a new attachment if necessary. This means:
-    // - Fetching the attachment and making sure it's an attachment stream
-    // - If we already own the attachment, we've already cloned it!
-    // - Otherwise, we should copy the attachment stream to a new attachment
-    // - Updating our state to now point to the new attachment
-    NSString *_Nullable attachmentId = self.quotedAttachment.rawAttachmentId;
-    if (!attachmentId) {
-        return nil;
-    }
-
-    TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
-    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-        // Nothing to clone
-        return nil;
-    }
-    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-    TSAttachmentStream *_Nullable thumbnail = nil;
-
-    // We don't expect to be here in this state. Remote pointers are set via -setThumbnailAttachmentStream:
-    // If we have a stream and we're still in this state, something went wrong.
-    OWSAssertDebug(self.quotedAttachment.attachmentType != OWSAttachmentInfoReferenceUntrustedPointer);
-    if (!self.isThumbnailOwned) {
-        OWSLogInfo(@"Cloning attachment to thumbnail");
-        thumbnail = [attachmentStream cloneAsThumbnail];
-        [thumbnail anyInsertWithTransaction:transaction];
-        self.quotedAttachment.rawAttachmentId = thumbnail.uniqueId;
-        self.quotedAttachment.attachmentType = OWSAttachmentInfoReferenceThumbnail;
-    } else {
-        thumbnail = attachmentStream;
-    }
-    return thumbnail;
+    return [self.attachmentHelper createThumbnailAndUpdateMessageIfNecessaryWithParentMessage:message tx:transaction];
 }
 
 @end

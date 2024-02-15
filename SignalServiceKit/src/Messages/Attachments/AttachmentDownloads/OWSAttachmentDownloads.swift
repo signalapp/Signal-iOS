@@ -1018,11 +1018,19 @@ public extension OWSAttachmentDownloads {
                 Logger.warn("Missing message.")
                 return
             }
-            guard let thumbnailAttachmentPointerId = message.quotedMessage?.thumbnailAttachmentId,
-                  !thumbnailAttachmentPointerId.isEmpty else {
+            guard
+                let thumbnailAttachmentPointerId = message.quotedMessage?.fetchThumbnailAttachmentId(
+                    forParentMessage: message,
+                    transaction: transaction
+                )
+            else {
                 return
             }
-            message.setQuotedMessageThumbnailAttachmentStream(attachmentStream, transaction: transaction)
+            message.quotedMessage?.setDownloadedAttachmentStream(
+                attachmentStream,
+                parentMessage: message,
+                transaction: transaction
+            )
         }
     }
 

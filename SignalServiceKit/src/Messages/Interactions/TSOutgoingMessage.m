@@ -1124,20 +1124,17 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
     }
 
-    if (quotedMessage.hasAttachment) {
+    QuotedThumbnailAttachmentMetadata *_Nullable thumbnailAttachment =
+        [quotedMessage fetchThumbnailAttachmentMetadataForParentMessage:self transaction:transaction];
+    if (thumbnailAttachment) {
         SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
             [SSKProtoDataMessageQuoteQuotedAttachment builder];
-        quotedAttachmentBuilder.contentType = quotedMessage.contentType;
-        quotedAttachmentBuilder.fileName = quotedMessage.sourceFilename;
-
-        if (quotedMessage.thumbnailAttachmentId && quotedMessage.isThumbnailOwned) {
-            NSString *attachmentId = quotedMessage.thumbnailAttachmentId;
-            quotedAttachmentBuilder.thumbnail = [TSAttachmentStream buildProtoForAttachmentId:attachmentId
-                                                                            containingMessage:self
-                                                                                  transaction:transaction];
-        } else if (quotedMessage.thumbnailAttachmentId) {
-            OWSFailDebug(@"Referencing an attachment that isn't owned by the quote.");
-        }
+        quotedAttachmentBuilder.contentType = thumbnailAttachment.mimeType;
+        quotedAttachmentBuilder.fileName = thumbnailAttachment.sourceFilename;
+        quotedAttachmentBuilder.thumbnail =
+            [TSAttachmentStream buildProtoForAttachmentId:thumbnailAttachment.attachmentId
+                                        containingMessage:self
+                                              transaction:transaction];
 
         NSError *error;
         SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =

@@ -128,34 +128,17 @@ public class QuotedReplyModel: NSObject {
             return nil
         }
 
-        let thumbnailImage: UIImage?
-        let failedAttachmentPointer: TSAttachmentPointer?
-
-        let attachment = message.fetchQuotedMessageThumbnail(with: transaction)
-        if let attachmentStream = attachment as? TSAttachmentStream {
-            thumbnailImage = attachmentStream.thumbnailImageSmallSync()
-            failedAttachmentPointer = nil
-        } else if !quotedMessage.isThumbnailOwned {
-            // If the quoted message isn't owning the thumbnail attachment, it's going to be referencing
-            // some other attachment (e.g. undownloaded media). In this case, let's just use the blur hash
-            if let blurHash = attachment?.blurHash {
-                thumbnailImage = BlurHash.image(for: blurHash)
-            } else {
-                thumbnailImage = nil
-            }
-            failedAttachmentPointer = nil
-        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            // If the quoted message has ownership of the thumbnail, but it hasn't been downloaded yet,
-            // we should surface this in the view.
-            thumbnailImage = nil
-            failedAttachmentPointer = attachmentPointer
-        } else {
-            thumbnailImage = nil
-            failedAttachmentPointer = nil
-        }
-
-        let attachmentType: TSAttachmentType? = attachment?
-            .attachmentType(forContainingMessage: message, transaction: transaction)
+        let attachmentMetadata = quotedMessage.fetchThumbnailAttachmentMetadata(
+            forParentMessage: message,
+            transaction: transaction
+        )
+        let displayableThumbnail: DisplayableQuotedThumbnailAttachment? = attachmentMetadata.map {
+            quotedMessage.displayableThumbnailAttachment(
+                for: $0,
+                parentMessage: message,
+                transaction: transaction
+            )
+        } ?? nil
 
         var body: String? = quotedMessage.body
         var bodyRanges: MessageBodyRanges? = quotedMessage.bodyRanges
@@ -179,11 +162,11 @@ public class QuotedReplyModel: NSObject {
             bodySource: quotedMessage.bodySource,
             body: body,
             bodyRanges: bodyRanges,
-            thumbnailImage: thumbnailImage,
-            contentType: quotedMessage.contentType,
-            sourceFilename: quotedMessage.sourceFilename,
-            attachmentType: attachmentType,
-            failedThumbnailAttachmentPointer: failedAttachmentPointer,
+            thumbnailImage: displayableThumbnail?.thumbnailImage,
+            contentType: attachmentMetadata?.mimeType,
+            sourceFilename: attachmentMetadata?.sourceFilename,
+            attachmentType: displayableThumbnail?.attachmentType,
+            failedThumbnailAttachmentPointer: displayableThumbnail?.failedAttachmentPointer,
             isGiftBadge: quotedMessage.isGiftBadge,
             isPayment: isPayment
         )

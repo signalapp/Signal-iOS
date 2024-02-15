@@ -222,16 +222,24 @@ extension OWSAttachmentDownloads {
                 return
             }
 
-            // We only want to kick off a thumbnail fetching job if:
-            // - The thumbnail attachment is owned by the quoted message content (so it's solely responsible for fetching)
-            // - It's an unfetched pointer
-            if message.quotedMessage?.isThumbnailOwned == true,
-               let attachment = message.quotedMessage?.fetchThumbnail(with: tx),
-               attachment is TSAttachmentPointer
+            if
+                let attachmentPointerId = message.quotedMessage?.attachmentPointerIdForDownloading(
+                    withParentMessage: message,
+                    transaction: tx
+                )
             {
-                let jobNPromise = buildJob(attachment: attachment, category: .quotedReplyThumbnail)
-                self.quotedReplyThumbnailJob = jobNPromise.0
-                self.quotedReplyThumbnailPromise = jobNPromise.1
+                // We know the id is for a pointer; don't bother validating it.
+                if let existingPromise = existingPromises[attachmentPointerId] {
+                    self.quotedReplyThumbnailJob = nil
+                    self.quotedReplyThumbnailPromise = existingPromise
+                } else {
+                    let jobType = JobType.messageAttachment(attachmentId: attachmentPointerId, messageUniqueId: message.uniqueId)
+                    let job = Job(jobType: jobType, category: .quotedReplyThumbnail, downloadBehavior: downloadBehavior)
+
+                    existingPromises[attachmentPointerId] = job.promise
+                    self.quotedReplyThumbnailJob = job
+                    self.quotedReplyThumbnailPromise = job.promise
+                }
             } else {
                 self.quotedReplyThumbnailJob = nil
                 self.quotedReplyThumbnailPromise = nil

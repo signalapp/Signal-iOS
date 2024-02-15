@@ -370,8 +370,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [result addObjectsFromArray:self.attachmentIds];
     }
 
-    if (self.quotedMessage.thumbnailAttachmentId) {
-        [result addObject:self.quotedMessage.thumbnailAttachmentId];
+    NSString *thumbnailAttachmentId = [self.quotedMessage fetchThumbnailAttachmentIdForParentMessage:self
+                                                                                         transaction:transaction];
+    if (thumbnailAttachmentId) {
+        [result addObject:thumbnailAttachmentId];
     }
 
     if (self.contactShare.avatarAttachmentId) {
@@ -681,45 +683,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return _body.filterStringForDisplay;
 }
 
-- (nullable TSAttachment *)fetchQuotedMessageThumbnailWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    TSAttachment *_Nullable attachment = [self.quotedMessage fetchThumbnailWithTransaction:transaction];
-
-    // We should clone the attachment if it's been downloaded but our quotedMessage doesn't have its own copy.
-    BOOL needsClone = [attachment isKindOfClass:[TSAttachmentStream class]] && !self.quotedMessage.isThumbnailOwned;
-    TSAttachment * (^saveUpdatedThumbnail)(SDSAnyWriteTransaction *) = ^TSAttachment *(SDSAnyWriteTransaction *writeTx)
-    {
-        __block TSAttachment *_Nullable localAttachment = nil;
-        [self anyUpdateMessageWithTransaction:writeTx
-                                        block:^(TSMessage *message) {
-                                            localAttachment = [message.quotedMessage
-                                                createThumbnailIfNecessaryWithTransaction:writeTx];
-                                        }];
-        return localAttachment;
-    };
-
-    // If we happen to be handed a write transaction, we can perform the clone synchronously
-    // Otherwise, just hand the caller what we have. We'll clone it async.
-    if (needsClone && [transaction isKindOfClass:[SDSAnyWriteTransaction class]]) {
-        attachment = saveUpdatedThumbnail((SDSAnyWriteTransaction *)transaction);
-    } else if (needsClone) {
-        DatabaseStorageAsyncWrite(
-            self.databaseStorage, ^(SDSAnyWriteTransaction *writeTx) { saveUpdatedThumbnail(writeTx); });
-    }
-    return attachment;
-}
-
-- (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                      transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
-    OWSAssertDebug(self.quotedMessage);
-    [self anyUpdateMessageWithTransaction:transaction
-                                    block:^(TSMessage *message) {
-                                        [message.quotedMessage setThumbnailAttachmentStream:attachmentStream];
-                                    }];
-}
-
 #pragma mark - Update With... Methods
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction
@@ -911,12 +874,14 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    if (self.quotedMessage.thumbnailAttachmentId) {
-        [unknownAttachmentIds removeObject:self.quotedMessage.thumbnailAttachmentId];
+    NSString *thumbnailAttachmentId = [self.quotedMessage fetchThumbnailAttachmentIdForParentMessage:self
+                                                                                         transaction:transaction];
+    if (thumbnailAttachmentId) {
+        [unknownAttachmentIds removeObject:thumbnailAttachmentId];
     }
-    if (shouldRemoveQuotedReply && self.quotedMessage.thumbnailAttachmentId) {
+    if (shouldRemoveQuotedReply && thumbnailAttachmentId) {
         OWSLogVerbose(@"Removing quoted reply attachment.");
-        [self removeAttachmentWithId:self.quotedMessage.thumbnailAttachmentId transaction:transaction];
+        [self removeAttachmentWithId:thumbnailAttachmentId transaction:transaction];
     }
 
     // Err on the side of cleaning up unknown attachments.

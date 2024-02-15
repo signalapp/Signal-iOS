@@ -940,6 +940,9 @@
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
 		669FAE152B75968D009EE2FE /* OWSAttachmentDownloadJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */; };
+		669FAE0E2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE0D2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift */; };
+		669FAE102B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE0F2B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift */; };
+		669FAE122B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */; };
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
@@ -3632,6 +3635,9 @@
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
 		669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAttachmentDownloadJob.swift; sourceTree = "<group>"; };
+		669FAE0D2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedMessageAttachmentHelper.swift; sourceTree = "<group>"; };
+		669FAE0F2B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyQuotedMessageAttachmentHelper.swift; sourceTree = "<group>"; };
+		669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedMessageAttachmentHelperImpl.swift; sourceTree = "<group>"; };
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
@@ -7324,6 +7330,18 @@
 			path = AttachmentDownloads;
 			sourceTree = "<group>";
 		};
+		669FAE0C2B744BA4009EE2FE /* Quotes */ = {
+			isa = PBXGroup;
+			children = (
+				669FAE0F2B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift */,
+				669FAE0D2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift */,
+				669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */,
+				F9C5C90F289453B100548EEE /* TSQuotedMessage.h */,
+				F9C5C8F0289453B100548EEE /* TSQuotedMessage.m */,
+			);
+			path = Quotes;
+			sourceTree = "<group>";
+		};
 		66A1DF71298C634500C4E4A7 /* Registration */ = {
 			isa = PBXGroup;
 			children = (
@@ -9655,6 +9673,7 @@
 		F9C5C8D8289453B100548EEE /* Interactions */ = {
 			isa = PBXGroup;
 			children = (
+				669FAE0C2B744BA4009EE2FE /* Quotes */,
 				667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */,
 				50468F2829EE130A00948E02 /* InteractionStore.swift */,
 				F9C5C8EB289453B100548EEE /* MentionFinder.swift */,
@@ -9708,8 +9727,6 @@
 				F9C5C8DE289453B100548EEE /* TSOutgoingMessage.h */,
 				F9C5C8F7289453B100548EEE /* TSOutgoingMessage.m */,
 				F9C5C8F8289453B100548EEE /* TSOutgoingMessage.swift */,
-				F9C5C90F289453B100548EEE /* TSQuotedMessage.h */,
-				F9C5C8F0289453B100548EEE /* TSQuotedMessage.m */,
 				F9C5C8EF289453B100548EEE /* TSUnreadIndicatorInteraction+SDS.swift */,
 				F9C5C8FD289453B100548EEE /* TSUnreadIndicatorInteraction.h */,
 				F9C5C8E5289453B100548EEE /* TSUnreadIndicatorInteraction.m */,
@@ -13138,6 +13155,7 @@
 				D9AE0ADB29188A170063488B /* LegacyMessageDecryptJobRecord.swift in Sources */,
 				F9C5CDA4289453B400548EEE /* LegacyMessageJobFinder.swift in Sources */,
 				F9C5CD44289453B300548EEE /* LegacyMessageKeys.m in Sources */,
+				669FAE102B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift in Sources */,
 				F9C5CD40289453B300548EEE /* LegacyReceivingChain.m in Sources */,
 				F9C5CD3E289453B300548EEE /* LegacyRootKey.m in Sources */,
 				F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */,
@@ -13439,6 +13457,8 @@
 				F9C5CD97289453B300548EEE /* ProxiedContentDownloader.swift in Sources */,
 				503B47222AF0569B00978266 /* PublicKey.swift in Sources */,
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
+				669FAE0E2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift in Sources */,
+				669FAE122B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift in Sources */,
 				F9C5CD95289453B300548EEE /* ReachabilityManager.swift in Sources */,
 				F9C5CC3C289453B300548EEE /* ReactionFinder.swift in Sources */,
 				F9C5CC3D289453B300548EEE /* ReactionManager.swift in Sources */,

@@ -201,10 +201,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (NSArray<NSString *> *)allAttachmentIdsWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(allAttachmentIds(transaction:));
 
-- (nullable TSAttachment *)fetchQuotedMessageThumbnailWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                      transaction:(SDSAnyWriteTransaction *)transaction;
-
 // The raw body contains placeholders for things like mentions and is not
 // user friendly. If you want a constant string representing the body of
 // this message, this is it.

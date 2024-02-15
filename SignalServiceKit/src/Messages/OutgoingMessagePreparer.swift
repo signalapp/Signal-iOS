@@ -95,12 +95,13 @@ public class OutgoingMessagePreparer: NSObject {
 
         attachmentIds.append(contentsOf: message.bodyAttachmentIds(with: tx))
 
-        if message.quotedMessage?.thumbnailAttachmentId != nil {
+        if message.quotedMessage?.fetchThumbnailAttachmentId(forParentMessage: message, transaction: tx) != nil {
             // We need to update the message record here to reflect the new attachments we may create.
-            message.anyUpdateOutgoingMessage(transaction: tx) { message in
-                let thumbnail = message.quotedMessage?.createThumbnailIfNecessary(with: tx)
-                thumbnail.map { attachmentIds.append($0.uniqueId) }
-            }
+            let thumbnail = message.quotedMessage?.createThumbnailAndUpdateMessageIfNecessary(
+                withParentMessage: message,
+                transaction: tx
+            )
+            thumbnail.map { attachmentIds.append($0.uniqueId) }
         }
 
         if let contactShare = message.contactShare, contactShare.avatarAttachmentId != nil {
