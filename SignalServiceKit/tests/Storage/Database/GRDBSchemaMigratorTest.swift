@@ -264,4 +264,75 @@ extension GRDBSchemaMigratorTest {
             }
         }
     }
+
+    func testMigrateRemovePhoneNumbers() throws {
+        // Set up the database with sample data that may have existed.
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_SignalRecipient" (
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "recipientPhoneNumber" TEXT,
+                "recipientUUID" TEXT
+            );
+            CREATE UNIQUE INDEX "RecipientAciIndex" ON "model_SignalRecipient" ("recipientUUID");
+            CREATE UNIQUE INDEX "RecipientPhoneNumberIndex" ON "model_SignalRecipient" ("recipientPhoneNumber");
+
+            INSERT INTO "model_SignalRecipient" (
+                "recipientPhoneNumber", "recipientUUID"
+            ) VALUES
+                ('+17635550100', '00000000-0000-4000-A000-000000000000'),
+                ('+17635550101', NULL);
+
+            CREATE TABLE "SampleTable" (
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "phoneNumber" TEXT,
+                "serviceIdString" TEXT
+            );
+            CREATE INDEX "ProfileServiceIdIndex" ON "SampleTable" ("serviceIdString");
+            CREATE INDEX "ProfilePhoneNumberIndex" ON "SampleTable" ("phoneNumber");
+
+            INSERT INTO "SampleTable" (
+                "phoneNumber", "serviceIdString"
+            ) VALUES
+                (NULL, '00000000-0000-4000-A000-000000000000'),
+                (NULL, '00000000-0000-4000-B000-000000000000'),
+                ('+17635550100', '00000000-0000-4000-A000-000000000000'),
+                ('+17635550100', 'PNI:00000000-0000-4000-A000-000000000000'),
+                ('+17635550100', NULL),
+                ('+17635550101', NULL),
+                ('+17635550102', NULL);
+            """)
+            try GRDBSchemaMigrator.removeRedundantPhoneNumbers(
+                in: db,
+                tableName: "SampleTable",
+                serviceIdColumn: "serviceIdString",
+                phoneNumberColumn: "phoneNumber"
+            )
+            let cursor = try Row.fetchCursor(db, sql: "SELECT * FROM SampleTable")
+            var row: Row
+            row = try cursor.next()!
+            XCTAssertEqual(row[1] as String?, nil)
+            XCTAssertEqual(row[2] as String?, "00000000-0000-4000-A000-000000000000")
+            row = try cursor.next()!
+            XCTAssertEqual(row[1] as String?, nil)
+            XCTAssertEqual(row[2] as String?, "00000000-0000-4000-B000-000000000000")
+            row = try cursor.next()!
+            XCTAssertEqual(row[1] as String?, nil)
+            XCTAssertEqual(row[2] as String?, "00000000-0000-4000-A000-000000000000")
+            row = try cursor.next()!
+            XCTAssertEqual(row[1] as String?, "+17635550100")
+            XCTAssertEqual(row[2] as String?, "PNI:00000000-0000-4000-A000-000000000000")
+            row = try cursor.next()!
+            XCTAssertEqual(row[1] as String?, nil)
+            XCTAssertEqual(row[2] as String?, "00000000-0000-4000-A000-000000000000")
+            row = try cursor.next()!
+            XCTAssertEqual(row[1] as String?, "+17635550101")
+            XCTAssertEqual(row[2] as String?, nil)
+            row = try cursor.next()!
+            XCTAssertEqual(row[1] as String?, "+17635550102")
+            XCTAssertEqual(row[2] as String?, nil)
+            XCTAssertNil(try cursor.next())
+        }
+    }
 }

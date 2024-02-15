@@ -247,6 +247,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addFirstDeletedIndexToDeletedCallRecord
         case addCallRecordDeleteAllColumnsToJobRecord
         case addPhoneNumberSharingAndDiscoverability
+        case removeRedundantPhoneNumbers
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -306,7 +307,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 65
+    public static let grdbSchemaVersionLatest: UInt = 66
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2591,6 +2592,28 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.removeRedundantPhoneNumbers) { tx in
+            try removeRedundantPhoneNumbers(
+                in: tx.database,
+                tableName: "model_OWSUserProfile",
+                serviceIdColumn: "recipientUUID",
+                phoneNumberColumn: "recipientPhoneNumber"
+            )
+            try removeRedundantPhoneNumbers(
+                in: tx.database,
+                tableName: "model_TSThread",
+                serviceIdColumn: "contactUUID",
+                phoneNumberColumn: "contactPhoneNumber"
+            )
+            try removeRedundantPhoneNumbers(
+                in: tx.database,
+                tableName: "model_TSGroupMember",
+                serviceIdColumn: "uuidString",
+                phoneNumberColumn: "phoneNumber"
+            )
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -3271,6 +3294,41 @@ public class GRDBSchemaMigrator: NSObject {
     private static func enableFts5SecureDelete(db: Database) throws {
         try db.execute(sql: """
             INSERT INTO "indexable_text_fts" ("indexable_text_fts", "rank") VALUES ('secure-delete', 1)
+        """)
+    }
+
+    static func removeRedundantPhoneNumbers(
+        in db: Database,
+        tableName: StaticString,
+        serviceIdColumn: StaticString,
+        phoneNumberColumn: StaticString
+    ) throws {
+        // If there are any rows with an ACI & phone number, remove the latter.
+        try db.execute(sql: """
+        UPDATE "\(tableName)"
+        SET
+            "\(phoneNumberColumn)" = NULL
+        WHERE
+            "\(serviceIdColumn)" < 'PNI:'
+            AND "\(phoneNumberColumn)" IS NOT NULL;
+        """)
+
+        // If there are any rows with just a phone number, try to replace it with the ACI.
+        try db.execute(sql: """
+        UPDATE "\(tableName)"
+        SET
+            "\(phoneNumberColumn)" = NULL,
+            "\(serviceIdColumn)" = "signalRecipientAciString"
+        FROM (
+            SELECT
+                "recipientUUID" AS "signalRecipientAciString",
+                "recipientPhoneNumber" AS "signalRecipientPhoneNumber"
+            FROM "model_SignalRecipient"
+        )
+        WHERE
+            "\(serviceIdColumn)" IS NULL
+            AND "\(phoneNumberColumn)" = "signalRecipientPhoneNumber"
+            AND "signalRecipientAciString" IS NOT NULL;
         """)
     }
 }
