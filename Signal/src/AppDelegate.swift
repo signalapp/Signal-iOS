@@ -446,6 +446,33 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
+        // Disable phone number sharing when rolling out PNP.
+        //
+        // TODO: Remove this once all builds are PNP-enabled.
+        //
+        // Once all builds are PNP enabled, we can remove this explicit migration
+        // and simply treat the default as "nobody". The migration exists to ensure
+        // old linked devices respect the setting before they upgrade.
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            guard FeatureFlags.phoneNumberPrivacy else {
+                return
+            }
+            let db = DependenciesBridge.shared.db
+            guard db.read(block: self.udManager.phoneNumberSharingMode(tx:)) == nil else {
+                return
+            }
+            db.write { tx in
+                guard self.udManager.phoneNumberSharingMode(tx: tx) == nil else {
+                    return
+                }
+                self.udManager.setPhoneNumberSharingMode(
+                    .nobody,
+                    updateStorageServiceAndProfile: true,
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )
+            }
+        }
+
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
 
