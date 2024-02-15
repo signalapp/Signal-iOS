@@ -38,21 +38,4 @@ public extension Contact {
 
         return phoneNumbers.orderedMembers
     }
-
-    func registeredAddresses() -> [SignalServiceAddress] {
-        databaseStorage.read { transaction in
-            registeredAddresses(transaction: transaction)
-        }
-    }
-
-    func registeredAddresses(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-        e164sForIntersection.compactMap { e164 in
-            let address = SignalServiceAddress(phoneNumber: e164)
-            if SignalRecipient.isRegistered(address: address, tx: transaction) {
-                return address
-            } else {
-                return nil
-            }
-        }
-    }
 }

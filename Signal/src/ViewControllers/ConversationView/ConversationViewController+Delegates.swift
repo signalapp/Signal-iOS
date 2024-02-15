@@ -93,26 +93,9 @@ extension ConversationViewController: ContactPickerDelegate {
             return
         }
 
-        Logger.verbose("Contact: \(contact)")
-
-        let contactShareRecord = OWSContact(cnContact: cnContact)
-        var isProfileAvatar = false
-        var avatarImageData: Data? = contactsManager.avatarData(forCNContactId: cnContact.identifier)
-        for address in contact.registeredAddresses() {
-            if avatarImageData != nil {
-                break
-            }
-            avatarImageData = databaseStorage.read { tx in
-                return profileManager.profileAvatarData(for: address, transaction: tx)
-            }
-            if avatarImageData != nil {
-                isProfileAvatar = true
-            }
+        let contactShare = databaseStorage.read { tx in
+            return ContactShareViewModel.load(cnContact: cnContact, signalContact: contact, tx: tx)
         }
-        contactShareRecord.isProfileAvatar = isProfileAvatar
-
-        let contactShare = ContactShareViewModel(contactShareRecord: contactShareRecord,
-                                                 avatarImageData: avatarImageData)
 
         let approveContactShare = ContactShareViewController(contactShare: contactShare)
         approveContactShare.shareDelegate = self

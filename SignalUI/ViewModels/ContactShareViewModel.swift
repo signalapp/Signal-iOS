@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Contacts
 import SignalServiceKit
 
 public class ContactShareViewModel: NSObject {
@@ -28,6 +29,44 @@ public class ContactShareViewModel: NSObject {
 
         self.cachedAvatarImage = UIImage(data: avatarImageData)
         return cachedAvatarImage
+    }
+
+    public static func load(
+        cnContact: CNContact,
+        signalContact: @autoclosure () -> Contact,
+        tx: SDSAnyReadTransaction
+    ) -> ContactShareViewModel {
+        let contactShareRecord = OWSContact(cnContact: cnContact)
+        let avatarResult = loadAvatar(cnContact: cnContact, signalContact: signalContact(), tx: tx)
+        contactShareRecord.isProfileAvatar = avatarResult.isProfileAvatarData
+        return ContactShareViewModel(
+            contactShareRecord: contactShareRecord,
+            avatarImageData: avatarResult.avatarData
+        )
+    }
+
+    private static func loadAvatar(
+        cnContact: CNContact,
+        signalContact: @autoclosure () -> Contact,
+        tx: SDSAnyReadTransaction
+    ) -> (avatarData: Data?, isProfileAvatarData: Bool) {
+        if let systemAvatarImageData = contactsManager.avatarData(forCNContactId: cnContact.identifier) {
+            return (systemAvatarImageData, false)
+        }
+
+        let recipientManager = DependenciesBridge.shared.recipientManager
+        let profileAvatarData: Data? = signalContact().e164sForIntersection.lazy.compactMap { phoneNumber in
+            let recipient = recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber, tx: tx.asV2Read)
+            guard let recipient else {
+                return nil
+            }
+            return profileManager.profileAvatarData(for: recipient.address, transaction: tx)
+        }.first
+        if let profileAvatarData {
+            return (profileAvatarData, true)
+        }
+
+        return (nil, false)
     }
 
     public required init(contactShareRecord: OWSContact, avatarImageData: Data?) {
