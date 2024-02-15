@@ -43,7 +43,7 @@ class MessageReceiptSet: NSObject, Codable {
 
 @objc
 public class ReceiptSender: NSObject {
-    private let signalServiceAddressCacheRef: SignalServiceAddressCache
+    private let recipientDatabaseTable: any RecipientDatabaseTable
 
     private let deliveryReceiptStore: KeyValueStore
     private let readReceiptStore: KeyValueStore
@@ -53,8 +53,8 @@ public class ReceiptSender: NSObject {
     private let pendingTasks = PendingTasks(label: #fileID)
     private let sendingState: AtomicValue<SendingState>
 
-    public init(kvStoreFactory: KeyValueStoreFactory, signalServiceAddressCache: SignalServiceAddressCache) {
-        self.signalServiceAddressCacheRef = signalServiceAddressCache
+    public init(kvStoreFactory: KeyValueStoreFactory, recipientDatabaseTable: any RecipientDatabaseTable) {
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.deliveryReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingDeliveryReceiptManagerCollection")
         self.readReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingReadReceiptManagerCollection")
         self.viewedReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingViewedReceiptManagerCollection")
@@ -95,11 +95,7 @@ public class ReceiptSender: NSObject {
         tx: SDSAnyWriteTransaction
     ) {
         enqueueReceipt(
-            for: SignalServiceAddress(
-                serviceId: decryptedEnvelope.sourceAci,
-                phoneNumber: nil,
-                cache: signalServiceAddressCacheRef
-            ),
+            for: decryptedEnvelope.sourceAci,
             timestamp: decryptedEnvelope.timestamp,
             messageUniqueId: messageUniqueId,
             receiptType: .delivery,
@@ -114,8 +110,12 @@ public class ReceiptSender: NSObject {
         messageUniqueId: String?,
         tx: SDSAnyWriteTransaction
     ) {
+        guard let aci = address.aci else {
+            Logger.warn("Dropping receipt for message without ACI.")
+            return
+        }
         enqueueReceipt(
-            for: address,
+            for: aci,
             timestamp: timestamp,
             messageUniqueId: messageUniqueId,
             receiptType: .read,
@@ -130,8 +130,12 @@ public class ReceiptSender: NSObject {
         messageUniqueId: String?,
         tx: SDSAnyWriteTransaction
     ) {
+        guard let aci = address.aci else {
+            Logger.warn("Dropping receipt for message without ACI.")
+            return
+        }
         enqueueReceipt(
-            for: address,
+            for: aci,
             timestamp: timestamp,
             messageUniqueId: messageUniqueId,
             receiptType: .viewed,
@@ -140,21 +144,20 @@ public class ReceiptSender: NSObject {
     }
 
     private func enqueueReceipt(
-        for address: SignalServiceAddress,
+        for aci: Aci,
         timestamp: UInt64,
         messageUniqueId: String?,
         receiptType: ReceiptType,
         tx: SDSAnyWriteTransaction
     ) {
-        owsAssertDebug(address.isValid)
         guard timestamp >= 1 else {
             owsFailDebug("Invalid timestamp.")
             return
         }
         let pendingTask = pendingTasks.buildPendingTask(label: "Receipt Send")
-        let persistedSet = fetchAndMergeReceiptSet(receiptType: receiptType, address: address, tx: tx.asV2Write)
+        let persistedSet = fetchReceiptSet(receiptType: receiptType, aci: aci, tx: tx.asV2Read)
         persistedSet.insert(timestamp: timestamp, messageUniqueId: messageUniqueId)
-        storeReceiptSet(persistedSet, receiptType: receiptType, address: address, tx: tx.asV2Write)
+        storeReceiptSet(persistedSet, receiptType: receiptType, aci: aci, tx: tx.asV2Write)
         tx.addAsyncCompletionOffMain {
             self.sendingState.update { $0.mightHavePendingReceipts = true }
             self.sendPendingReceiptsIfNeeded(pendingTask: pendingTask)
@@ -222,17 +225,9 @@ public class ReceiptSender: NSObject {
     private func sendReceipts(receiptType: ReceiptType) async throws {
         let pendingReceipts = databaseStorage.read { tx in fetchAllReceiptSets(receiptType: receiptType, tx: tx.asV2Read) }
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-            for (address, receiptSet) in pendingReceipts {
-                guard address.isValid else {
-                    owsFailDebug("Invalid address.")
-                    continue
-                }
-                guard !receiptSet.timestamps.isEmpty else {
-                    owsFailDebug("No timestamps.")
-                    continue
-                }
+            for (aci, receiptBatches) in pendingReceipts {
                 taskGroup.addTask {
-                    try await self.sendReceipts(receiptType: receiptType, to: address, receiptSet: receiptSet)
+                    try await self.sendReceipts(receiptType: receiptType, to: aci, receiptBatches: receiptBatches)
                 }
             }
             try await taskGroup.waitForAll()
@@ -241,18 +236,29 @@ public class ReceiptSender: NSObject {
 
     private func sendReceipts(
         receiptType: ReceiptType,
-        to address: SignalServiceAddress,
-        receiptSet: MessageReceiptSet
+        to aci: Aci?,
+        receiptBatches: [ReceiptBatch]
     ) async throws {
         let sendPromise = await databaseStorage.awaitableWrite { tx -> Promise<Void>? in
-            if self.blockingManager.isAddressBlocked(address, transaction: tx) {
-                Logger.warn("Dropping receipts for blocked address \(address)")
+            guard let aci else {
+                Logger.warn("Dropping receipts without an ACI")
+                return .value(())
+            }
+
+            let receiptSet = receiptBatches.reduce(into: MessageReceiptSet(), { $0.union($1.receiptSet) })
+            if receiptSet.timestamps.isEmpty {
+                Logger.warn("Dropping receipts without any timestamps")
+                return .value(())
+            }
+
+            if self.blockingManager.isAddressBlocked(SignalServiceAddress(aci), transaction: tx) {
+                Logger.warn("Dropping receipts for blocked \(aci)")
                 return .value(())
             }
 
             let recipientHidingManager = DependenciesBridge.shared.recipientHidingManager
-            if recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read) {
-                Logger.warn("Dropping receipts for hidden address \(address)")
+            if recipientHidingManager.isHiddenAddress(SignalServiceAddress(aci), tx: tx.asV2Read) {
+                Logger.warn("Dropping receipts for hidden \(aci)")
                 return .value(())
             }
 
@@ -260,12 +266,12 @@ public class ReceiptSender: NSObject {
             // anyway. If an identity state changes we should recheck our
             // pendingReceipts to re-attempt a send to formerly untrusted recipients.
             let identityManager = DependenciesBridge.shared.identityManager
-            guard identityManager.untrustedIdentityForSending(to: address, untrustedThreshold: nil, tx: tx.asV2Read) == nil else {
-                Logger.warn("Skipping receipts for untrusted address \(address)")
+            guard identityManager.untrustedIdentityForSending(to: SignalServiceAddress(aci), untrustedThreshold: nil, tx: tx.asV2Read) == nil else {
+                Logger.warn("Skipping receipts for untrusted \(aci)")
                 return nil
             }
 
-            let thread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
+            let thread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(aci), transaction: tx)
             let message: OWSReceiptsForSenderMessage
             switch receiptType {
             case .delivery:
@@ -291,9 +297,9 @@ public class ReceiptSender: NSObject {
 
         do {
             try await sendPromise.awaitable()
-            await self.dequeueReceipts(for: address, receiptType: receiptType, receiptSet: receiptSet)
+            await self.dequeueReceipts(for: receiptBatches, receiptType: receiptType)
         } catch let error as MessageSenderNoSuchSignalRecipientError {
-            await self.dequeueReceipts(for: address, receiptType: receiptType, receiptSet: receiptSet)
+            await self.dequeueReceipts(for: receiptBatches, receiptType: receiptType)
             throw error
         }
     }
@@ -306,113 +312,77 @@ public class ReceiptSender: NSObject {
         case viewed
     }
 
-    private func dequeueReceipts(for address: SignalServiceAddress, receiptType: ReceiptType, receiptSet: MessageReceiptSet) async {
-        owsAssertDebug(address.isValid)
+    private func dequeueReceipts(for receiptBatches: [ReceiptBatch], receiptType: ReceiptType) async {
         await databaseStorage.awaitableWrite { tx in
-            let persistedSet = self.fetchAndMergeReceiptSet(receiptType: receiptType, address: address, tx: tx.asV2Write)
-            persistedSet.subtract(receiptSet)
-            self.storeReceiptSet(persistedSet, receiptType: receiptType, address: address, tx: tx.asV2Write)
+            for receiptBatch in receiptBatches {
+                let persistedSet = self._fetchReceiptSet(receiptType: receiptType, identifier: receiptBatch.identifier, tx: tx.asV2Write)
+                persistedSet.subtract(receiptBatch.receiptSet)
+                self._storeReceiptSet(persistedSet, receiptType: receiptType, identifier: receiptBatch.identifier, tx: tx.asV2Write)
+            }
         }
     }
 
-    func fetchAllReceiptSets(receiptType: ReceiptType, tx: DBReadTransaction) -> [SignalServiceAddress: MessageReceiptSet] {
-        let store = keyValueStore(for: receiptType)
-        let addresses = Set(store.allKeys(transaction: tx).compactMap { self.parseIdentifier($0) })
-        return Dictionary(uniqueKeysWithValues: addresses.map {
-            ($0, fetchReceiptSet(
-                receiptType: receiptType,
-                preferredKey: $0.aciUppercaseString,
-                secondaryKey: $0.phoneNumber,
-                tx: tx
-            ).receiptSet)
-        })
+    struct ReceiptBatch {
+        var receiptSet: MessageReceiptSet
+        var identifier: String
     }
 
-    private func parseIdentifier(_ identifier: String) -> SignalServiceAddress? {
+    func fetchAllReceiptSets(receiptType: ReceiptType, tx: DBReadTransaction) -> [Aci?: [ReceiptBatch]] {
+        // If we find identifiers in the database that are malformed, we stuff them
+        // into the `nil` ACI case. The sendReceipts method will turn this into a
+        // no-op an then prune those identifiers from the database.
+        var results = [Aci?: [ReceiptBatch]]()
+        for identifier in keyValueStore(for: receiptType).allKeys(transaction: tx) {
+            let recipientAci = fetchRecipientAci(for: identifier, tx: tx)
+            let receiptSet = _fetchReceiptSet(receiptType: receiptType, identifier: identifier, tx: tx)
+            results[recipientAci, default: []].append(ReceiptBatch(receiptSet: receiptSet, identifier: identifier))
+        }
+        return results
+    }
+
+    private func fetchRecipientAci(for identifier: String, tx: DBReadTransaction) -> Aci? {
         if let aci = Aci.parseFrom(aciString: identifier) {
-            return SignalServiceAddress(
-                serviceId: aci,
-                phoneNumber: nil,
-                cache: signalServiceAddressCacheRef
-            )
-        } else if let phoneNumber = E164(identifier) {
-            return SignalServiceAddress(
-                serviceId: nil,
-                phoneNumber: phoneNumber.stringValue,
-                cache: signalServiceAddressCacheRef
-            )
-        } else {
-            return nil
+            return aci
         }
+        if let phoneNumber = E164(identifier) {
+            return recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)?.aci
+        }
+        return nil
     }
 
-    func fetchAndMergeReceiptSet(receiptType: ReceiptType, address: SignalServiceAddress, tx: DBWriteTransaction) -> MessageReceiptSet {
-        return fetchAndMerge(receiptType: receiptType, preferredKey: address.aciUppercaseString, secondaryKey: address.phoneNumber, tx: tx)
+    private func fetchReceiptSet(receiptType: ReceiptType, aci: Aci, tx: DBReadTransaction) -> MessageReceiptSet {
+        return _fetchReceiptSet(receiptType: receiptType, identifier: aci.serviceIdUppercaseString, tx: tx)
     }
 
-    private func fetchReceiptSet(
+    private func _fetchReceiptSet(
         receiptType: ReceiptType,
-        preferredKey: String?,
-        secondaryKey: String?,
+        identifier: String,
         tx: DBReadTransaction
-    ) -> (receiptSet: MessageReceiptSet, hasSecondaryValue: Bool) {
+    ) -> MessageReceiptSet {
         let store = keyValueStore(for: receiptType)
         let result = MessageReceiptSet()
-        if let preferredKey, store.hasValue(preferredKey, transaction: tx) {
-            if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: preferredKey, transaction: tx) {
-                result.union(receiptSet)
-            } else if let numberSet = store.getObject(forKey: preferredKey, transaction: tx) as? Set<UInt64> {
-                result.union(timestampSet: numberSet)
-            }
-        }
-        var hasSecondaryValue = false
-        if let secondaryKey, store.hasValue(secondaryKey, transaction: tx) {
-            if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: secondaryKey, transaction: tx) {
-                result.union(receiptSet)
-            } else if let numberSet = store.getObject(forKey: secondaryKey, transaction: tx) as? Set<UInt64> {
-                result.union(timestampSet: numberSet)
-            }
-            hasSecondaryValue = true
-        }
-        return (result, hasSecondaryValue)
-    }
-
-    private func fetchAndMerge(
-        receiptType: ReceiptType,
-        preferredKey: String?,
-        secondaryKey: String?,
-        tx: DBWriteTransaction
-    ) -> MessageReceiptSet {
-        let (result, hasSecondaryValue) = fetchReceiptSet(
-            receiptType: receiptType,
-            preferredKey: preferredKey,
-            secondaryKey: secondaryKey,
-            tx: tx
-        )
-        if let preferredKey, let secondaryKey, hasSecondaryValue {
-            keyValueStore(for: receiptType).removeValue(forKey: secondaryKey, transaction: tx)
-            _storeReceiptSet(result, receiptType: receiptType, key: preferredKey, tx: tx)
+        if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: identifier, transaction: tx) {
+            result.union(receiptSet)
+        } else if let numberSet = store.getObject(forKey: identifier, transaction: tx) as? Set<UInt64> {
+            result.union(timestampSet: numberSet)
         }
         return result
     }
 
-    func storeReceiptSet(_ receiptSet: MessageReceiptSet, receiptType: ReceiptType, address: SignalServiceAddress, tx: DBWriteTransaction) {
-        guard let key = address.aciUppercaseString ?? address.phoneNumber else {
-            return owsFailDebug("Invalid address")
-        }
-        _storeReceiptSet(receiptSet, receiptType: receiptType, key: key, tx: tx)
+    func storeReceiptSet(_ receiptSet: MessageReceiptSet, receiptType: ReceiptType, aci: Aci, tx: DBWriteTransaction) {
+        _storeReceiptSet(receiptSet, receiptType: receiptType, identifier: aci.serviceIdUppercaseString, tx: tx)
     }
 
-    private func _storeReceiptSet(_ receiptSet: MessageReceiptSet, receiptType: ReceiptType, key: String, tx: DBWriteTransaction) {
+    func _storeReceiptSet(_ receiptSet: MessageReceiptSet, receiptType: ReceiptType, identifier: String, tx: DBWriteTransaction) {
         let store = keyValueStore(for: receiptType)
         if receiptSet.timestamps.count > 0 {
             do {
-                try store.setCodable(receiptSet, key: key, transaction: tx)
+                try store.setCodable(receiptSet, key: identifier, transaction: tx)
             } catch {
                 owsFailDebug("\(error)")
             }
         } else {
-            store.removeValue(forKey: key, transaction: tx)
+            store.removeValue(forKey: identifier, transaction: tx)
         }
     }
 

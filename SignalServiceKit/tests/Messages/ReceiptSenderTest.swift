@@ -11,87 +11,46 @@ import XCTest
 class ReceiptSenderTest: XCTestCase {
     private var mockDb: MockDB!
     private var receiptSender: ReceiptSender!
-    private var signalServiceAddressCacheRef: SignalServiceAddressCache!
+    private var recipientDatabaseTable: MockRecipientDatabaseTable!
 
     override func setUp() {
         super.setUp()
 
         mockDb = MockDB()
-        signalServiceAddressCacheRef = SignalServiceAddressCache()
+        recipientDatabaseTable = MockRecipientDatabaseTable()
         receiptSender = ReceiptSender(
             kvStoreFactory: InMemoryKeyValueStoreFactory(),
-            signalServiceAddressCache: signalServiceAddressCacheRef
+            recipientDatabaseTable: recipientDatabaseTable
         )
-    }
-
-    func testMergeAddress() {
-        // Setup – Store two different receipt sets for an ACI and an e164.
-        let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
-        let aciAddress = SignalServiceAddress(
-            serviceId: aci, phoneNumber: nil, cache: signalServiceAddressCacheRef
-        )
-        let aciReceiptSet = MessageReceiptSet()
-        aciReceiptSet.insert(timestamp: 1234, messageUniqueId: "00000000-0000-4000-8000-000000000AAA")
-
-        let e164 = E164("+16505550101")!
-        let e164Address = SignalServiceAddress(
-            serviceId: nil, phoneNumber: e164.stringValue, cache: signalServiceAddressCacheRef
-        )
-        let e164ReceiptSet = MessageReceiptSet()
-        e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "00000000-0000-4000-8000-000000000BBB")
-
-        mockDb.write { tx in
-            receiptSender.storeReceiptSet(aciReceiptSet, receiptType: .delivery, address: aciAddress, tx: tx)
-            receiptSender.storeReceiptSet(e164ReceiptSet, receiptType: .delivery, address: e164Address, tx: tx)
-        }
-
-        // Test – Fetch the receipt set for a merged address
-        let mergedAddress = SignalServiceAddress(
-            serviceId: aci, phoneNumber: e164.stringValue, cache: signalServiceAddressCacheRef
-        )
-        let mergedReceipt = mockDb.write { tx in
-            receiptSender.fetchAndMergeReceiptSet(receiptType: .delivery, address: mergedAddress, tx: tx)
-        }
-
-        // Verify – All timestamps exist in the merged receipt
-        XCTAssertEqual(mergedReceipt.timestamps, [1234, 5678])
-        XCTAssertEqual(mergedReceipt.uniqueIds, ["00000000-0000-4000-8000-000000000AAA", "00000000-0000-4000-8000-000000000BBB"])
     }
 
     func testMergeAll() {
-        // Setup – Store two different receipt sets for a uuid and an e164
+        // Setup – Store two different receipt sets for an ACI and an e164.
         let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
-        let aciAddress = SignalServiceAddress(
-            serviceId: aci, phoneNumber: nil, cache: signalServiceAddressCacheRef
-        )
         let aciReceiptSet = MessageReceiptSet()
         aciReceiptSet.insert(timestamp: 1234, messageUniqueId: "00000000-0000-4000-8000-000000000AAA")
 
         let e164 = E164("+16505550101")!
-        let e164Address = SignalServiceAddress(
-            serviceId: nil, phoneNumber: e164.stringValue, cache: signalServiceAddressCacheRef
-        )
         let e164ReceiptSet = MessageReceiptSet()
         e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "00000000-0000-4000-8000-000000000BBB")
 
         mockDb.write { tx in
-            receiptSender.storeReceiptSet(aciReceiptSet, receiptType: .delivery, address: aciAddress, tx: tx)
-            receiptSender.storeReceiptSet(e164ReceiptSet, receiptType: .delivery, address: e164Address, tx: tx)
+            recipientDatabaseTable.insertRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: e164), transaction: tx)
+            receiptSender._storeReceiptSet(aciReceiptSet, receiptType: .delivery, identifier: aci.serviceIdUppercaseString, tx: tx)
+            receiptSender._storeReceiptSet(e164ReceiptSet, receiptType: .delivery, identifier: e164.stringValue, tx: tx)
         }
 
-        // Test – Mark the merged address as high trust, then fetch all receipt sets
-        mockDb.write { tx in
-            let recipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: e164)
-            signalServiceAddressCacheRef.updateRecipient(recipient, tx: tx)
+        // Test – Fetch the receipt set for a merged address
+        let results = mockDb.read { tx in
+            receiptSender.fetchAllReceiptSets(receiptType: .delivery, tx: tx)
         }
-        let allReceipts = mockDb.read { tx in receiptSender.fetchAllReceiptSets(receiptType: .delivery, tx: tx) }
 
-        // Verify – The resulting dictionary contains one element. Maps the merged address to the merged receipt
-        XCTAssertEqual(allReceipts.count, 1)
-        XCTAssertEqual(allReceipts.keys.first!.serviceId, aci)
-        XCTAssertEqual(allReceipts.keys.first!.phoneNumber, e164.stringValue)
-
-        XCTAssertEqual(allReceipts.values.first!.timestamps, [1234, 5678])
-        XCTAssertEqual(allReceipts.values.first!.uniqueIds, ["00000000-0000-4000-8000-000000000AAA", "00000000-0000-4000-8000-000000000BBB"])
+        // Verify – All timestamps were fetched and batched together.
+        XCTAssertEqual(results.count, 1)
+        let receiptSets = results[aci]!.sorted(by: { $0.identifier < $1.identifier })
+        XCTAssertEqual(receiptSets[0].identifier, e164.stringValue)
+        XCTAssertEqual(receiptSets[0].receiptSet.timestamps, [5678])
+        XCTAssertEqual(receiptSets[1].identifier, aci.serviceIdUppercaseString)
+        XCTAssertEqual(receiptSets[1].receiptSet.timestamps, [1234])
     }
 }

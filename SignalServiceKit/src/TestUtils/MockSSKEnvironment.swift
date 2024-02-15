@@ -149,7 +149,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let receiptSender = ReceiptSender(
             kvStoreFactory: dependenciesBridge.keyValueStoreFactory,
-            signalServiceAddressCache: signalServiceAddressCache
+            recipientDatabaseTable: dependenciesBridge.recipientDatabaseTable
         )
         let typingIndicators = TypingIndicatorsImpl()
         let stickerManager = StickerManager()
