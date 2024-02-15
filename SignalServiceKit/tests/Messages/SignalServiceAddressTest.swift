@@ -11,18 +11,21 @@ import XCTest
 class SignalServiceAddressTest: XCTestCase {
 
     private lazy var cache = SignalServiceAddressCache()
+    private lazy var mockDb = MockDB()
 
     private func makeAddress(serviceId: ServiceId? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
         SignalServiceAddress(
             serviceId: serviceId,
             phoneNumber: phoneNumber,
-            cache: cache,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            cache: cache
         )
     }
 
     private func makeHighTrustAddress(aci: Aci? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
-        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber.flatMap { E164($0) }))
+        cache.updateRecipient(
+            SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber.flatMap { E164($0) }),
+            isPhoneNumberVisible: true
+        )
         return makeAddress(serviceId: aci, phoneNumber: phoneNumber)
     }
 
@@ -741,62 +744,33 @@ class SignalServiceAddressTest: XCTestCase {
         let pn_a = E164("+16505550101")!
         let pn_b = E164("+16505550102")!
 
-        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: pn_a))
+        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: pn_a), isPhoneNumberVisible: true)
 
         let address1 = SignalServiceAddress(
             serviceId: aci,
             phoneNumber: nil,
-            cache: cache,
-            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+            cache: cache
         )
         let address2 = SignalServiceAddress(
             serviceId: aci,
             phoneNumber: pn_a.stringValue,
-            cache: cache,
-            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+            cache: cache
         )
         let address3 = SignalServiceAddress(
             serviceId: aci,
             phoneNumber: pn_b.stringValue,
-            cache: cache,
-            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+            cache: cache
         )
 
         XCTAssertEqual(address1.e164, pn_a)
         XCTAssertEqual(address2.e164, pn_a)
-        XCTAssertEqual(address3.e164, pn_a)
+        XCTAssertEqual(address3.e164, pn_b)
 
-        let address4 = SignalServiceAddress(
-            serviceId: aci,
-            phoneNumber: nil,
-            cache: cache,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
-        )
-        let address5 = SignalServiceAddress(
-            serviceId: aci,
-            phoneNumber: pn_a.stringValue,
-            cache: cache,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
-        )
-        let address6 = SignalServiceAddress(
-            serviceId: aci,
-            phoneNumber: pn_b.stringValue,
-            cache: cache,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
-        )
-
-        XCTAssertEqual(address4.e164, pn_a)
-        XCTAssertEqual(address5.e164, pn_a)
-        XCTAssertEqual(address6.e164, pn_b)
-
-        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: pn_b))
+        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: pn_b), isPhoneNumberVisible: true)
 
         XCTAssertEqual(address1.e164, pn_b)
         XCTAssertEqual(address2.e164, pn_b)
         XCTAssertEqual(address3.e164, pn_b)
-        XCTAssertEqual(address4.e164, pn_b)
-        XCTAssertEqual(address5.e164, pn_b)
-        XCTAssertEqual(address6.e164, pn_b)
     }
 
     func testInitializerPerformance() {
@@ -805,7 +779,7 @@ class SignalServiceAddressTest: XCTestCase {
         let serviceId = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let phoneNumber = E164("+16505550101")!
 
-        cache.updateRecipient(SignalRecipient(aci: serviceId, pni: nil, phoneNumber: phoneNumber))
+        cache.updateRecipient(SignalRecipient(aci: serviceId, pni: nil, phoneNumber: phoneNumber), isPhoneNumberVisible: true)
 
         var addresses = [SignalServiceAddress]()
         addresses.reserveCapacity(iterations)
@@ -814,14 +788,107 @@ class SignalServiceAddressTest: XCTestCase {
             addresses.append(SignalServiceAddress(
                 serviceId: serviceId,
                 phoneNumber: phoneNumber.stringValue,
-                cache: cache,
-                cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+                cache: cache
             ))
         }
 
         XCTAssertEqual(addresses.count, iterations)
     }
 
+    func testPotentiallyVisible() {
+        let aci = Aci.constantForTesting("00000000-0000-4000-A000-000000000000")
+        let phoneNumber = E164("+16505550100")
+        let pni = Pni.constantForTesting("PNI:00000000-0000-4000-B000-000000000000")
+
+        var aciAddresses = [SignalServiceAddress]()
+        var pniAddresses = [SignalServiceAddress]()
+
+        func addBatch(isVisible: Bool) {
+            let ambiguousAddress = SignalServiceAddress(
+                serviceId: nil,
+                phoneNumber: phoneNumber?.stringValue,
+                cache: cache
+            )
+            if isVisible {
+                aciAddresses.append(ambiguousAddress)
+            } else {
+                pniAddresses.append(ambiguousAddress)
+            }
+            aciAddresses.append(SignalServiceAddress(
+                serviceId: nil,
+                legacyPhoneNumber: phoneNumber?.stringValue,
+                cache: cache
+            ))
+            aciAddresses.append(SignalServiceAddress(
+                serviceId: aci,
+                phoneNumber: nil,
+                cache: cache
+            ))
+            aciAddresses.append(SignalServiceAddress(
+                serviceId: aci,
+                legacyPhoneNumber: nil,
+                cache: cache
+            ))
+            pniAddresses.append(SignalServiceAddress(
+                serviceId: pni,
+                phoneNumber: nil,
+                cache: cache
+            ))
+            pniAddresses.append(SignalServiceAddress(
+                serviceId: pni,
+                legacyPhoneNumber: nil,
+                cache: cache
+            ))
+        }
+
+        addBatch(isVisible: false)
+
+        cache.updateRecipient(
+            SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber),
+            isPhoneNumberVisible: false
+        )
+
+        addBatch(isVisible: false)
+
+        for aciAddress in aciAddresses {
+            XCTAssertEqual(aciAddress.serviceId, aci)
+            XCTAssertEqual(aciAddress.phoneNumber, nil)
+        }
+        for pniAddress in pniAddresses {
+            XCTAssertEqual(pniAddress.serviceId, pni)
+            XCTAssertEqual(pniAddress.phoneNumber, phoneNumber?.stringValue)
+        }
+
+        cache.updateRecipient(
+            SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber),
+            isPhoneNumberVisible: true
+        )
+
+        addBatch(isVisible: true)
+
+        for aciAddress in aciAddresses {
+            XCTAssertEqual(aciAddress.serviceId, aci)
+            XCTAssertEqual(aciAddress.phoneNumber, phoneNumber?.stringValue)
+        }
+        for pniAddress in pniAddresses {
+            XCTAssertEqual(pniAddress.serviceId, pni)
+            XCTAssertEqual(pniAddress.phoneNumber, phoneNumber?.stringValue)
+        }
+
+        cache.updateRecipient(
+            SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber),
+            isPhoneNumberVisible: false
+        )
+
+        for aciAddress in aciAddresses {
+            XCTAssertEqual(aciAddress.serviceId, aci)
+            XCTAssertEqual(aciAddress.phoneNumber, nil)
+        }
+        for pniAddress in pniAddresses {
+            XCTAssertEqual(pniAddress.serviceId, pni)
+            XCTAssertEqual(pniAddress.phoneNumber, phoneNumber?.stringValue)
+        }
+    }
 }
 
 class SignalServiceAddress2Test: SSKBaseTestSwift {
@@ -900,7 +967,7 @@ class SignalServiceAddress2Test: SSKBaseTestSwift {
                 jsonValue: #"{"backingUuid":"00000000-0000-4000-8000-000000000ABC","backingPhoneNumber":"+16505550100"}"#,
                 keyedArchiverValue: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGmCwwTFx0eVSRudWxs0w0ODxARElYkY2xhc3NbYmFja2luZ1V1aWRfEBJiYWNraW5nUGhvbmVOdW1iZXKABYACgATSFA0VFlxOUy51dWlkYnl0ZXNPEBAAAAAAAABAAIAAAAAAAAq8gAPSGBkaG1okY2xhc3NuYW1lWCRjbGFzc2VzVk5TVVVJRKIaHFhOU09iamVjdFwrMTY1MDU1NTAxMDDSGBkfIF8QJVNpZ25hbFNlcnZpY2VLaXQuU2lnbmFsU2VydmljZUFkZHJlc3OiIRxfECVTaWduYWxTZXJ2aWNlS2l0LlNpZ25hbFNlcnZpY2VBZGRyZXNzAAgAEQAaACQAKQAyADcASQBMAFEAUwBaAGAAZwBuAHoAjwCRAJMAlQCaAKcAugC8AMEAzADVANwA3wDoAPUA+gEiASUAAAAAAAACAQAAAAAAAAAiAAAAAAAAAAAAAAAAAAABTQ==",
                 decodedServiceId: aci,
-                decodedPhoneNumber: phoneNumber
+                decodedPhoneNumber: nil
             ),
             TestCase(
                 jsonValue: #"{"backingPhoneNumber":"+16505550100"}"#,

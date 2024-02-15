@@ -98,8 +98,7 @@ public class ReceiptSender: NSObject {
             for: SignalServiceAddress(
                 serviceId: decryptedEnvelope.sourceAci,
                 phoneNumber: nil,
-                cache: signalServiceAddressCacheRef,
-                cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+                cache: signalServiceAddressCacheRef
             ),
             timestamp: decryptedEnvelope.timestamp,
             messageUniqueId: messageUniqueId,
@@ -334,15 +333,13 @@ public class ReceiptSender: NSObject {
             return SignalServiceAddress(
                 serviceId: aci,
                 phoneNumber: nil,
-                cache: signalServiceAddressCacheRef,
-                cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+                cache: signalServiceAddressCacheRef
             )
         } else if let phoneNumber = E164(identifier) {
             return SignalServiceAddress(
                 serviceId: nil,
                 phoneNumber: phoneNumber.stringValue,
-                cache: signalServiceAddressCacheRef,
-                cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+                cache: signalServiceAddressCacheRef
             )
         } else {
             return nil

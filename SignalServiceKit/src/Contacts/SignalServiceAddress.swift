@@ -74,8 +74,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             serviceId: identifiers.serviceId,
             // If there's no ServiceId, then we look up the phone number in the cache.
             phoneNumber: (identifiers.serviceId == nil) ? identifiers.phoneNumber : nil,
-            cache: cache ?? Self.signalServiceAddressCache,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            cache: cache ?? Self.signalServiceAddressCache
         )
     }
 
@@ -99,45 +98,61 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SignalServiceAddress(
             serviceId: nil,
             phoneNumber: phoneNumber,
-            cache: cache ?? Self.signalServiceAddressCache,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            cache: cache ?? Self.signalServiceAddressCache
         )
     }
 
     // MARK: - Initializers
 
-    public static func legacyAddress(serviceId: ServiceId?, phoneNumber: String?) -> SignalServiceAddress {
+    /// Initializes a "legacy" address.
+    ///
+    /// Legacy addresses were saved by prior versions of the application before
+    /// ACIs were known, so they generally contain only a phone number. They are
+    /// sent through a migration path that allows them to be resolved to ACIs in
+    /// cases where other SignalServiceAddresses can't be resolved to ACIs.
+    ///
+    /// "Modern legacy addresses" (ie modern builds writing to places that may
+    /// also contain legacy addresses) will encode the ACI instead of the phone
+    /// number, thus skipping the migration path in this initializer (good!).
+    public convenience init(
+        serviceId: ServiceId?,
+        legacyPhoneNumber phoneNumber: String?,
+        cache: SignalServiceAddressCache
+    ) {
         let normalizedAddress = NormalizedDatabaseRecordAddress(
             serviceId: serviceId,
             phoneNumber: phoneNumber
         )
-        return SignalServiceAddress(
+        self.init(
             serviceId: normalizedAddress?.serviceId,
-            phoneNumber: normalizedAddress?.phoneNumber
+            phoneNumber: normalizedAddress?.phoneNumber,
+            isLegacyPhoneNumber: true,
+            cache: cache
+        )
+    }
+
+    public static func legacyAddress(serviceId: ServiceId?, phoneNumber: String?) -> SignalServiceAddress {
+        return SignalServiceAddress(
+            serviceId: serviceId,
+            legacyPhoneNumber: phoneNumber,
+            cache: Self.signalServiceAddressCache
         )
     }
 
     public static func legacyAddress(aciString: String?, phoneNumber: String?) -> SignalServiceAddress {
-        let normalizedAddress = NormalizedDatabaseRecordAddress(
-            aci: Aci.parseFrom(aciString: aciString),
-            phoneNumber: phoneNumber,
-            pni: nil
-        )
         return SignalServiceAddress(
-            serviceId: normalizedAddress?.serviceId,
-            phoneNumber: normalizedAddress?.phoneNumber
+            serviceId: Aci.parseFrom(aciString: aciString),
+            legacyPhoneNumber: phoneNumber,
+            cache: Self.signalServiceAddressCache
         )
     }
 
     @objc
     public static func legacyAddress(serviceIdString: String?, phoneNumber: String?) -> SignalServiceAddress {
-        let normalizedAddress = NormalizedDatabaseRecordAddress(
-            serviceIdString: serviceIdString,
-            phoneNumber: phoneNumber
-        )
         return SignalServiceAddress(
-            serviceId: normalizedAddress?.serviceId,
-            phoneNumber: normalizedAddress?.phoneNumber
+            serviceId: serviceIdString.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) },
+            legacyPhoneNumber: phoneNumber,
+            cache: Self.signalServiceAddressCache
         )
     }
 
@@ -218,8 +233,8 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(
             serviceId: serviceId,
             phoneNumber: phoneNumber,
-            cache: Self.signalServiceAddressCache,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            isLegacyPhoneNumber: false,
+            cache: Self.signalServiceAddressCache
         )
     }
 
@@ -227,22 +242,24 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(address.serviceId)
     }
 
-    private convenience init(decodedServiceId: ServiceId?, decodedPhoneNumber: String?) {
+    public convenience init(
+        serviceId: ServiceId?,
+        phoneNumber: String?,
+        cache: SignalServiceAddressCache
+    ) {
         self.init(
-            serviceId: decodedServiceId,
-            phoneNumber: decodedPhoneNumber,
-            cache: Self.signalServiceAddressCache,
-            // If we know the UUID, let the cache fill in the phone number when
-            // possible. (This avoids decoding stale mappings that may exist.)
-            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+            serviceId: serviceId,
+            phoneNumber: phoneNumber,
+            isLegacyPhoneNumber: false,
+            cache: cache
         )
     }
 
-    public init(
+    private init(
         serviceId: ServiceId?,
         phoneNumber: String?,
-        cache: SignalServiceAddressCache,
-        cachePolicy: SignalServiceAddressCache.CachePolicy
+        isLegacyPhoneNumber: Bool,
+        cache: SignalServiceAddressCache
     ) {
         if let phoneNumber, phoneNumber.isEmpty {
             owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
@@ -253,7 +270,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
                 serviceId: serviceId,
                 phoneNumber: phoneNumber
             ),
-            cachePolicy: cachePolicy
+            isLegacyPhoneNumber: isLegacyPhoneNumber
         )
 
         super.init()
@@ -283,7 +300,11 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             return try ServiceId.parseFrom(serviceIdString: $0)
         }
         let decodedPhoneNumber = try container.decodeIfPresent(String.self, forKey: .backingPhoneNumber)
-        self.init(decodedServiceId: decodedServiceId, decodedPhoneNumber: decodedPhoneNumber)
+        self.init(
+            serviceId: decodedServiceId,
+            legacyPhoneNumber: decodedPhoneNumber,
+            cache: Self.signalServiceAddressCache
+        )
     }
 
     // MARK: - NSSecureCoding
@@ -324,7 +345,11 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             return nil
         }
         let decodedPhoneNumber = aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?
-        self.init(decodedServiceId: decodedServiceId, decodedPhoneNumber: decodedPhoneNumber)
+        self.init(
+            serviceId: decodedServiceId,
+            legacyPhoneNumber: decodedPhoneNumber,
+            cache: Self.signalServiceAddressCache
+        )
     }
 
     // MARK: -
@@ -485,7 +510,6 @@ private class CachedAddress {
     }
 }
 
-@objc
 public class SignalServiceAddressCache: NSObject {
     private let state = AtomicValue(CacheState(), lock: AtomicLock())
 
@@ -493,33 +517,55 @@ public class SignalServiceAddressCache: NSObject {
         var serviceIdHashValues = [ServiceId: Int]()
         var phoneNumberHashValues = [String: Int]()
 
-        var serviceIdToPhoneNumber = [ServiceId: String]()
-        var phoneNumberToServiceIds = [String: [ServiceId]]()
+        var serviceIdToPhoneNumber = [ServiceId: PotentiallyVisible<String>]()
+        var phoneNumberToServiceIds = [String: [PotentiallyVisible<ServiceId>]]()
 
         var serviceIdCachedAddresses = [ServiceId: [CachedAddress]]()
         var phoneNumberOnlyCachedAddresses = [String: [CachedAddress]]()
+        var phoneNumberOnlyLegacyCachedAddresses = [String: [CachedAddress]]()
     }
 
-    @objc
+    /// Tracks a relationship that may or may not be visible.
+    ///
+    /// Hidden relationships are used to handle "legacy" address migrations.
+    private struct PotentiallyVisible<T: Equatable>: Equatable {
+        var wrappedValue: T
+        var isVisible: Bool
+    }
+
     func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
         databaseStorage.read { transaction in
             SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
-                self.updateRecipient(recipient)
+                self.updateRecipient(recipient, isPhoneNumberVisible: true)
             }
         }
     }
 
-    func updateRecipient(_ signalRecipient: SignalRecipient) {
+    /// Updates the cache to reflect `signalRecipient`.
+    ///
+    /// This method doesn't require a write transaction to function, but there's
+    /// an assumption throughout the application that SignalServiceAddresses
+    /// won't change outside of a write transaction. Therefore, this method
+    /// requires one to allow the compiler to help enforce this invariant.
+    public func updateRecipient(_ signalRecipient: SignalRecipient, tx: DBWriteTransaction) {
         updateRecipient(
-            aci: signalRecipient.aci,
-            pni: signalRecipient.pni,
-            phoneNumber: signalRecipient.phoneNumber?.stringValue
+            signalRecipient,
+            isPhoneNumberVisible: true
         )
     }
 
-    private func updateRecipient(aci: Aci?, pni: Pni?, phoneNumber: String?) {
+    internal func updateRecipient(_ signalRecipient: SignalRecipient, isPhoneNumberVisible: Bool) {
+        updateRecipient(
+            aci: signalRecipient.aci,
+            pni: signalRecipient.pni,
+            phoneNumber: signalRecipient.phoneNumber?.stringValue,
+            isPhoneNumberVisible: isPhoneNumberVisible
+        )
+    }
+
+    private func updateRecipient(aci: Aci?, pni: Pni?, phoneNumber: String?, isPhoneNumberVisible: Bool) {
         state.update { cacheState in
             // This cache associates phone numbers to the other identifiers. If we
             // don't have a phone number, there's nothing to associate.
@@ -532,83 +578,120 @@ public class SignalServiceAddressCache: NSObject {
                 return
             }
 
-            let oldServiceIds: [ServiceId] = cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
-            let newServiceIds: [ServiceId] = [aci, pni].compacted()
+            let oldPotentiallyVisibleServiceIds: [PotentiallyVisible<ServiceId>] = (
+                cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
+            )
+            let newPotentiallyVisibleServiceIds: [PotentiallyVisible<ServiceId>] = [
+                aci.map { PotentiallyVisible(wrappedValue: $0, isVisible: isPhoneNumberVisible) },
+                pni.map { PotentiallyVisible(wrappedValue: $0, isVisible: true) },
+            ].compacted()
 
-            // If this phone number still points at the same ServiceIds, there's
-            // nothing to change.
-            guard newServiceIds != oldServiceIds else {
+            // If this phone number still points at the same ServiceIds in the same
+            // way, there's nothing to change.
+            if newPotentiallyVisibleServiceIds == oldPotentiallyVisibleServiceIds {
                 return
             }
 
-            cacheState.phoneNumberToServiceIds[phoneNumber] = newServiceIds
+            // Update the "phone number -> service ids" lookup table.
+            cacheState.phoneNumberToServiceIds[phoneNumber] = newPotentiallyVisibleServiceIds
 
-            // These ServiceIds are no longer associated with `phoneNumber`.
-            for serviceId in Set(oldServiceIds).subtracting(newServiceIds) {
-                cacheState.serviceIdToPhoneNumber[serviceId] = nil
+            // Update the "service id -> phone number" lookup table by clearing the
+            // entries for any values that were removed and updating the entries for
+            // any values that were added or changed.
+            for oldServiceId in oldPotentiallyVisibleServiceIds {
+                if newPotentiallyVisibleServiceIds.contains(where: { $0.wrappedValue == oldServiceId.wrappedValue }) {
+                    continue
+                }
+                cacheState.serviceIdToPhoneNumber[oldServiceId.wrappedValue] = nil
+            }
+            for newOrUpdatedServiceId in newPotentiallyVisibleServiceIds {
+                let oldPhoneNumber = cacheState.serviceIdToPhoneNumber.updateValue(
+                    PotentiallyVisible(wrappedValue: phoneNumber, isVisible: newOrUpdatedServiceId.isVisible),
+                    forKey: newOrUpdatedServiceId.wrappedValue
+                )
+                // If this ServiceId was associated with some other phone number, we need
+                // to break that association.
+                if let oldPhoneNumber, oldPhoneNumber.wrappedValue != phoneNumber {
+                    cacheState.phoneNumberToServiceIds[oldPhoneNumber.wrappedValue]?.removeAll(where: {
+                        return $0.wrappedValue == newOrUpdatedServiceId.wrappedValue
+                    })
+                }
+                // This might be the first time we're learning about this ServiceId or
+                // phone number. If a preferred hash value is available, make sure all
+                // future SignalServiceAddress instances will be able to find it.
+                _ = hashValue(cacheState: &cacheState, serviceId: newOrUpdatedServiceId.wrappedValue, phoneNumber: phoneNumber)
+            }
+
+            let oldVisibleServiceIds: [ServiceId] = oldPotentiallyVisibleServiceIds.compactMap {
+                return $0.isVisible ? $0.wrappedValue : nil
+            }
+            let newVisibleServiceIds: [ServiceId] = newPotentiallyVisibleServiceIds.compactMap {
+                return $0.isVisible ? $0.wrappedValue : nil
+            }
+
+            // These ServiceIds are no longer visibly associated with `phoneNumber`.
+            for serviceId in Set(oldVisibleServiceIds).subtracting(newVisibleServiceIds) {
                 cacheState.serviceIdCachedAddresses[serviceId]?.forEach { cachedAddress in
                     cachedAddress.identifiers.update { $0.phoneNumber = nil }
                 }
             }
 
-            // These ServiceIds are now associated with `phoneNumber`.
-            for serviceId in Set(newServiceIds).subtracting(oldServiceIds) {
-                let oldPhoneNumber = cacheState.serviceIdToPhoneNumber.updateValue(phoneNumber, forKey: serviceId)
+            // These ServiceIds are now visibly associated with `phoneNumber`.
+            for serviceId in Set(newVisibleServiceIds).subtracting(oldVisibleServiceIds) {
                 cacheState.serviceIdCachedAddresses[serviceId]?.forEach { cachedAddress in
                     cachedAddress.identifiers.update { $0.phoneNumber = phoneNumber }
                 }
-
-                // If this ServiceId was associated with some other phone number, we need
-                // to break that association.
-                if let oldPhoneNumber {
-                    owsAssertDebug(oldPhoneNumber != phoneNumber)
-                    cacheState.phoneNumberToServiceIds[oldPhoneNumber]?.removeAll(where: { $0 == serviceId })
-                }
-
-                // This might be the first time we're learning about this ServiceId or
-                // phone number. If a preferred hash value is available, make sure all
-                // future SignalServiceAddress instances will be able to find it.
-                _ = hashValue(cacheState: &cacheState, serviceId: serviceId, phoneNumber: phoneNumber)
             }
 
-            // If we're adding a ServiceId to this recipient for the first time, we may
-            // have some addresses with only a phone number. We should add the "best"
-            // ServiceId available to those addresses. Once we add a ServiceId, though,
-            // that value is "sticky" and won't be changed if we get an even better
-            // identifier in the future. This maintains the existing (very useful)
-            // invariant that a nonnil UUID for a SignalServiceAddress remains stable.
-            if let preferredServiceId = newServiceIds.first {
-                cacheState.phoneNumberOnlyCachedAddresses.removeValue(forKey: phoneNumber)?.forEach { cachedAddress in
-                    cachedAddress.identifiers.update { $0.serviceId = preferredServiceId }
-                    // This address has a serviceId now -- track that serviceId for future updates.
-                    cacheState.serviceIdCachedAddresses[preferredServiceId, default: []].append(cachedAddress)
-                }
-            }
+            // "Legacy" addresses can be resolved using any ServiceId.
+            updatePhoneNumberOnlyAddresses(
+                phoneNumberOnlyCachedAddresses: &cacheState.phoneNumberOnlyLegacyCachedAddresses,
+                serviceIdCachedAddresses: &cacheState.serviceIdCachedAddresses,
+                phoneNumber: phoneNumber,
+                serviceId: newPotentiallyVisibleServiceIds.first
+            )
+            // Other addresses can only be resolved with a visible ServiceId.
+            updatePhoneNumberOnlyAddresses(
+                phoneNumberOnlyCachedAddresses: &cacheState.phoneNumberOnlyCachedAddresses,
+                serviceIdCachedAddresses: &cacheState.serviceIdCachedAddresses,
+                phoneNumber: phoneNumber,
+                serviceId: newPotentiallyVisibleServiceIds.first(where: { $0.isVisible })
+            )
         }
     }
 
-    public enum CachePolicy {
-        /// Prefers a nonnil phone number from the initializer. This is useful in
-        /// cases where the initializer has more recent mappings than what's
-        /// available in the cache. If the phone number changes in the future, the
-        /// address will be dynamically updated.
-        case preferInitialPhoneNumberAndListenForUpdates
-
-        /// Prefers a nonnil phone number from the cache. This handles cases where
-        /// "stale" data may be provided in the initializer. If the phone number
-        /// changes in the future, the address will be dynamically updated.
-        case preferCachedPhoneNumberAndListenForUpdates
+    /// If we're adding a ServiceId to this recipient for the first time, we may
+    /// have some addresses with only a phone number. We should add the "best"
+    /// ServiceId available to those addresses. Once we add a ServiceId, that
+    /// value is "sticky" and won't be changed if we get an even better
+    /// identifier in the future. This maintains the existing (very useful)
+    /// invariant that a ServiceId for a SignalServiceAddress remains stable.
+    private func updatePhoneNumberOnlyAddresses(
+        phoneNumberOnlyCachedAddresses: inout [String: [CachedAddress]],
+        serviceIdCachedAddresses: inout [ServiceId: [CachedAddress]],
+        phoneNumber: String,
+        serviceId: PotentiallyVisible<ServiceId>?
+    ) {
+        guard let serviceId else {
+            return
+        }
+        phoneNumberOnlyCachedAddresses.removeValue(forKey: phoneNumber)?.forEach { cachedAddress in
+            cachedAddress.identifiers.update {
+                $0.serviceId = serviceId.wrappedValue
+                if !serviceId.isVisible { $0.phoneNumber = nil }
+            }
+            // This address has a serviceId now -- track that serviceId for future updates.
+            serviceIdCachedAddresses[serviceId.wrappedValue, default: []].append(cachedAddress)
+        }
     }
 
-    fileprivate func registerAddress(proposedIdentifiers: CachedAddress.Identifiers, cachePolicy: CachePolicy) -> CachedAddress {
+    fileprivate func registerAddress(proposedIdentifiers: CachedAddress.Identifiers, isLegacyPhoneNumber: Bool) -> CachedAddress {
         state.update { cacheState in
-            let resolvedIdentifiers: CachedAddress.Identifiers
-            switch cachePolicy {
-            case .preferInitialPhoneNumberAndListenForUpdates:
-                resolvedIdentifiers = resolveIdentifiers(proposedIdentifiers, preferInitialPhoneNumber: true, cacheState: cacheState)
-            case .preferCachedPhoneNumberAndListenForUpdates:
-                resolvedIdentifiers = resolveIdentifiers(proposedIdentifiers, preferInitialPhoneNumber: false, cacheState: cacheState)
-            }
+            let resolvedIdentifiers = resolveIdentifiers(
+                proposedIdentifiers,
+                isLegacyPhoneNumber: isLegacyPhoneNumber,
+                cacheState: cacheState
+            )
 
             // We try our best to share hash values for ServiceIds and phone numbers
             // that might be associated with one another.
@@ -633,7 +716,11 @@ public class SignalServiceAddressCache: NSObject {
                 return getOrCreateCachedAddress(key: serviceId, in: &cacheState.serviceIdCachedAddresses)
             }
             if let phoneNumber = resolvedIdentifiers.phoneNumber {
-                return getOrCreateCachedAddress(key: phoneNumber, in: &cacheState.phoneNumberOnlyCachedAddresses)
+                if isLegacyPhoneNumber {
+                    return getOrCreateCachedAddress(key: phoneNumber, in: &cacheState.phoneNumberOnlyLegacyCachedAddresses)
+                } else {
+                    return getOrCreateCachedAddress(key: phoneNumber, in: &cacheState.phoneNumberOnlyCachedAddresses)
+                }
             }
             return CachedAddress(hashValue: hashValue, identifiers: resolvedIdentifiers)
         }
@@ -641,30 +728,68 @@ public class SignalServiceAddressCache: NSObject {
 
     /// Populates missing/stale identifiers populated from the cache.
     ///
-    /// - Parameter preferInitialPhoneNumber: If true, the phone number value
-    /// from `proposedIdentifiers` will be used if it's nonnil; if it's nil, the
-    /// value from the cache will be used. If false, the phone number value from
-    /// the cache will be used if it's nonnil; if it's nil, the value from
-    /// `proposedIdentifiers` will be used.
+    /// - Parameter isLegacyPhoneNumber: If true, phone numbers can be resolved
+    /// to hidden ACIs. This ensures legacy values (eg, receipts for old
+    /// messages) will continue to associate with the correct account. In these
+    /// cases, the returned identifiers won't contain the proposed phone number.
+    /// If false, phone numbers can't be resolved to hidden ACIs (but they can
+    /// be resolved to PNIs which are always visible to phone numbers).
     private func resolveIdentifiers(
         _ proposedIdentifiers: CachedAddress.Identifiers,
-        preferInitialPhoneNumber: Bool,
+        isLegacyPhoneNumber: Bool,
         cacheState: CacheState
     ) -> CachedAddress.Identifiers {
-        CachedAddress.Identifiers(
-            serviceId: (
-                // We *always* prefer the provided serviceId.
-                proposedIdentifiers.serviceId
-                ?? proposedIdentifiers.phoneNumber.flatMap { cacheState.phoneNumberToServiceIds[$0]?.first }
-            ),
-            phoneNumber: preferInitialPhoneNumber ? (
-                proposedIdentifiers.phoneNumber
-                ?? proposedIdentifiers.serviceId.flatMap { cacheState.serviceIdToPhoneNumber[$0] }
-            ) : (
-                proposedIdentifiers.serviceId.flatMap { cacheState.serviceIdToPhoneNumber[$0] }
-                ?? proposedIdentifiers.phoneNumber
-            )
+        var resolvedIdentifiers = proposedIdentifiers
+        resolveServiceId(
+            in: &resolvedIdentifiers,
+            isLegacyPhoneNumber: isLegacyPhoneNumber,
+            cacheState: cacheState
         )
+        resolvePhoneNumber(in: &resolvedIdentifiers, cacheState: cacheState)
+        return resolvedIdentifiers
+    }
+
+    private func resolveServiceId(
+        in identifiers: inout CachedAddress.Identifiers,
+        isLegacyPhoneNumber: Bool,
+        cacheState: CacheState
+    ) {
+        guard identifiers.serviceId == nil, let phoneNumber = identifiers.phoneNumber else {
+            return
+        }
+        for serviceId in (cacheState.phoneNumberToServiceIds[phoneNumber] ?? []) {
+            if serviceId.isVisible {
+                identifiers.serviceId = serviceId.wrappedValue
+                return
+            }
+            // A "legacy" value can be resolved, but we know it's hidden (because the
+            // prior check didn't pass), so clear the phone number.
+            if isLegacyPhoneNumber {
+                identifiers.serviceId = serviceId.wrappedValue
+                identifiers.phoneNumber = nil
+                return
+            }
+        }
+    }
+
+    private func resolvePhoneNumber(
+        in identifiers: inout CachedAddress.Identifiers,
+        cacheState: CacheState
+    ) {
+        guard identifiers.phoneNumber == nil, let serviceId = identifiers.serviceId else {
+            return
+        }
+        if let phoneNumber = cacheState.serviceIdToPhoneNumber[serviceId] {
+            if phoneNumber.isVisible {
+                identifiers.phoneNumber = phoneNumber.wrappedValue
+                return
+            }
+            // Unlike the prior method, we don't need special handling for
+            // isLegacyPhoneNumber in this case. The goal for "legacy" values is to
+            // resolve to an ACI, but if we reach this point, `identifier.serviceId` is
+            // an ACI (because PNIs don't set isVisible to false) and
+            // `identifier.phoneNumber` is nil.
+        }
     }
 
     /// Finds the best hash value for (serviceId, phoneNumber).
@@ -717,8 +842,7 @@ extension SignalServiceAddress {
         SignalServiceAddress(
             serviceId: Aci.randomForTesting(),
             phoneNumber: nil,
-            cache: SignalServiceAddressCache(),
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            cache: SignalServiceAddressCache()
         )
     }
 }
@@ -728,8 +852,7 @@ extension SignalServiceAddressCache {
         SignalServiceAddress(
             serviceId: serviceId,
             phoneNumber: phoneNumber?.stringValue,
-            cache: self,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            cache: self
         )
     }
 }

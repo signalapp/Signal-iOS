@@ -110,12 +110,17 @@ class GroupMemberUpdaterTest: XCTestCase {
 
         // -- Set up the input data. --
 
-        for signalRecipient in signalRecipients {
-            mockSignalServiceAddressCache.updateRecipient(SignalRecipient(
-                aci: Aci.constantForTesting(signalRecipient.aci),
-                pni: signalRecipient.pni.map { Pni.constantForTesting($0) },
-                phoneNumber: E164(signalRecipient.phoneNumber)
-            ))
+        mockDB.write { tx in
+            for signalRecipient in signalRecipients {
+                mockSignalServiceAddressCache.updateRecipient(
+                    SignalRecipient(
+                        aci: Aci.constantForTesting(signalRecipient.aci),
+                        pni: signalRecipient.pni.map { Pni.constantForTesting($0) },
+                        phoneNumber: E164(signalRecipient.phoneNumber)
+                    ),
+                    tx: tx
+                )
+            }
         }
 
         let groupThreadMemberAddresses = groupThreadMembers.map {
@@ -185,8 +190,7 @@ class GroupMemberUpdaterTest: XCTestCase {
         return SignalServiceAddress(
             serviceId: serviceId.map { try! ServiceId.parseFrom(serviceIdString: $0) },
             phoneNumber: phoneNumber,
-            cache: mockSignalServiceAddressCache,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            cache: mockSignalServiceAddressCache
         )
     }
 }

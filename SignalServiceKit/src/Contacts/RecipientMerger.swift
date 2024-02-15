@@ -934,7 +934,7 @@ extension SignalServiceAddressCache: RecipientMergeObserver {
     func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
-        updateRecipient(mergedRecipient.newRecipient)
+        updateRecipient(mergedRecipient.newRecipient, tx: tx)
 
         // If there are any threads with addresses that have been merged, we should
         // reload them from disk. This allows us to rebuild the addresses with the

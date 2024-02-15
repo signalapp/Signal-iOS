@@ -37,8 +37,7 @@ final class RecipientDatabaseTableTest: XCTestCase {
         return TSContactThread(contactAddress: SignalServiceAddress(
             serviceId: serviceId,
             phoneNumber: phoneNumber?.stringValue,
-            cache: SignalServiceAddressCache(),
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            cache: SignalServiceAddressCache()
         ))
     }
 }

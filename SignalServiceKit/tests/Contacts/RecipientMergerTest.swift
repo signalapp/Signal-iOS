@@ -382,8 +382,7 @@ class RecipientMergerTest: XCTestCase {
                     let thread = TSContactThread(contactAddress: SignalServiceAddress(
                         serviceId: recipient.aci ?? recipient.pni,
                         phoneNumber: recipient.phoneNumber?.stringValue,
-                        cache: SignalServiceAddressCache(),
-                        cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+                        cache: SignalServiceAddressCache()
                     ))
                     thread.shouldThreadBeVisible = true
                     d.threadStore.insertThread(thread)

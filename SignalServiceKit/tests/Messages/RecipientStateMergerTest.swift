@@ -61,8 +61,7 @@ final class RecipientStateMergerTest: XCTestCase {
         return SignalServiceAddress(
             serviceId: serviceId,
             phoneNumber: nil,
-            cache: _signalServiceAddressCache,
-            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+            cache: _signalServiceAddressCache
         )
     }
 
