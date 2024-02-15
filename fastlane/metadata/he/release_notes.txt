@@ -1,2 +1,1 @@
-• This Valentine's Day, we have good news if you're planning on getting back together with your iPad after taking a break: A bug that could cause Signal to crash when attempting to re-link an unlinked device has been fixed.
-• If you're in a relationship with multiple devices, group call notifications on your iPhone will be automatically dismissed when you answer that call on your iPad or Desktop.
+• New emoji are coming soon, and this update adds preliminary support so that Signal will be ready for the future of visual communication as soon as that future arrives. People keep asking us what our favorite new emoji is, but answering that question is a “lime” we won't cross.
