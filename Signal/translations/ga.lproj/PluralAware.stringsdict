@@ -668,15 +668,59 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá ainm comhchosúil ag %1$d bhall den ghrúpa.</string>
+			<string>%1$d group member has the same name.</string>
 			<key>two</key>
-			<string>Tá ainmneacha comhchosúla ag %1$d bhall den ghrúpa.</string>
+			<string>%1$d group members have the same name.</string>
 			<key>few</key>
-			<string>Tá ainmneacha comhchosúla ag %1$d bhall den ghrúpa.</string>
+			<string>%1$d group members have the same name.</string>
 			<key>many</key>
-			<string>Tá ainmneacha comhchosúla ag %1$d mball den ghrúpa.</string>
+			<string>%1$d group members have the same name.</string>
 			<key>other</key>
-			<string>Tá ainmneacha comhchosúla ag %1$d ball den ghrúpa.</string>
+			<string>%1$d group members have the same name.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d name conflict was found in this group.</string>
+			<key>two</key>
+			<string>%1$d name conflicts were found in this group.</string>
+			<key>few</key>
+			<string>%1$d name conflicts were found in this group.</string>
+			<key>many</key>
+			<string>%1$d name conflicts were found in this group.</string>
+			<key>other</key>
+			<string>%1$d name conflicts were found in this group.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Member</string>
+			<key>two</key>
+			<string>%1$d Members</string>
+			<key>few</key>
+			<string>%1$d Members</string>
+			<key>many</key>
+			<string>%1$d Members</string>
+			<key>other</key>
+			<string>%1$d Members</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -690,15 +734,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá ainm comhchosúil ag %1$d bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
+			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
 			<key>two</key>
-			<string>Tá ainmneacha comhchosúla ag %1$d bhall den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
+			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
 			<key>few</key>
-			<string>Tá ainmneacha comhchosúla ag %1$d bhall den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
+			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
 			<key>many</key>
-			<string>Tá ainmneacha comhchosúla ag %1$d mball den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
+			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
 			<key>other</key>
-			<string>Tá ainmneacha comhchosúla ag %1$d ball den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
+			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -712,15 +756,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá an t-ainm céanna ag %1$d bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
+			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
 			<key>two</key>
-			<string>Tá an t-ainm céanna ag %1$d bhall den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
+			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
 			<key>few</key>
-			<string>Tá an t-ainm céanna ag %1$d bhall den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
+			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
 			<key>many</key>
-			<string>Tá an t-ainm céanna ag %1$d mball den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
+			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
 			<key>other</key>
-			<string>Tá an t-ainm céanna ag %1$d ball den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
+			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "תמונה";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "תמונה";
 
@@ -929,16 +926,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "ערוך תמונה";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "המספר החדש שלך לא אמור להיות כמו המספר הישן שלך. אנא הכנס מספר חדש של טלפון כדי לשנות את המספר שלך.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "המספר החדש שלך לא אמור להיות כמו המספר הישן שלך. אנא הכנס מספר טלפון חדש כדי לשנות את המספר שלך.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "מספר הטלפון שהכנסת אינו תואם אל המספר של החשבון שלך.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "מספר חדש בלתי תקף של טלפון. אנא הכנס מספר תקף של טלפון כדי לשנות את המספר שלך.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "מספר טלפון חדש בלתי תקף. אנא הכנס מספר טלפון תקף כדי לשנות את המספר שלך.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "מספר ישן בלתי תקף של טלפון. אנא הכנס מספר תקף של טלפון כדי לשנות את המספר שלך.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "מספר טלפון ישן בלתי תקף. אנא הכנס מספר טלפון תקף כדי לשנות את המספר שלך.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "הנה תצוגה מקדימה של צבע הצ׳אט.";
@@ -998,7 +995,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "מצא לפי מספר טלפון";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "מצא לפי שם משתמש";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "חיפוש לפי שם משתמש";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות אילו מאנשי הקשר שלך הם משתמשי Signal.";
@@ -1027,8 +1024,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "קשר מכשיר חדש";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ נמצא/ת באנשי הקשר של המערכת שלך";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "No direct messages with %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Pending message request";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "חבר/ת Signal";
@@ -1490,7 +1496,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "בחר קוד מדינה";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "מעכשיו פרטיות מספר טלפון, שמות משתמש אופציונליים ולינקים.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "מעכשיו: פרטיות מספר טלפון, שמות משתמש אופציונליים ולינקים.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "דרכים חדשות להתחבר";
@@ -1685,7 +1691,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "מחיקת חשבון";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "מספר הטלפון שהכנסת אינו תואם אל המספר של החשבון שלך.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "מספר הטלפון שהכנסת אינו תואם את המספר של החשבון שלך.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "למחוק את כל ההודעות בצ'אט?";
@@ -1697,7 +1703,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "מחיקה";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "האדם הזה ימחק מאנשי הקשר במערכת שלך. לא נציג לך את האדם הזה בזמן החיפוש. אם היא או הוא ישלחו לך הודעה בעתיד, תופיע אצלך בקשת הודעה.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "האדם הזה ימחק מאנשי הקשר של המערכת שלך. לא נציג לך את האדם הזה בזמן החיפוש. אם היא או הוא ישלחו לך הודעה בעתיד, תופיע אצלך בקשת הודעה.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "למחוק איש קשר ולהסיר אותו או אותה מהרשימה שלך?";
@@ -2438,7 +2444,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "הורדת צרופה נכשלה.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "העלאת הקובץ המצורף נכשלה.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "הודעה מאת %1$@ לא יכלה להימסר";
@@ -2544,6 +2550,15 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "מציאת פרטי החשבון שלך";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Find by Username";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "סמן כמוודא";
@@ -3085,12 +3100,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "חברי קבוצה";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "הקש כדי לסקור";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "חבר קבוצה";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "סקור חברי קבוצה";
 
@@ -3562,6 +3571,9 @@
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "הזמן חברים אל Signal";
 
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
+
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "חיפוש";
 
@@ -3674,10 +3686,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "תצוגה מקדימה של קישור";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "ניהול אנשי קשר במערכת לא זמין יותר ב–iPad. כדי להוסיף חברי Signal לאנשי הקשר של המערכת שלך, צריך לפתוח את Signal בטלפון.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "ניהול אנשי קשר של המערכת לא זמין יותר ב–iPad. כדי להוסיף חברי Signal לאנשי הקשר של המערכת שלך, צריך לפתוח את Signal בטלפון.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "ניהול אנשי קשר במערכת לא נתמך יותר ב–iPad. המכשיר הזה ימשיך לסנכרן כל שינוי ברשימת אנשי הקשר שלך מ–Signal בטלפון שלך.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "ניהול אנשי קשר של המערכת לא נתמך יותר ב–iPad. המכשיר הזה ימשיך לסנכרן כל שינוי ברשימת אנשי הקשר שלך מ–Signal בטלפון שלך.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "למידע נוסף";
@@ -3998,25 +4010,16 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "למחוק ולעזוב קבוצה?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "סקור בקשות בזהירות. Signal מצא איש קשר אחר עם אותו שם.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "איש הקשר שלך";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "This person has the same name as another contact";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "אם אינך בטוח ממי הבקשה, סקור את אנשי הקשר למטה ונקוט בפעולה.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "בקשה";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "סקור בקשה";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "עדכן איש קשר";
-
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "סקור בקשה";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "דווח/ה כדואר זבל ונחסם/ה.";
@@ -4213,8 +4216,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "אפשר ללחוץ כדי להוסיף";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "שינה/שינתה לאחרונה את שם הפרופיל מן %1$@ אל %2$@.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "דלג";
@@ -4233,6 +4236,9 @@
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "מצא לפי מספר טלפון";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "קבוצה חדשה";
@@ -4323,6 +4329,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "מצא אנשי קשר לפי מספר טלפון";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Find Contacts by Username";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "אין קבוצות במשותף";
@@ -4457,7 +4466,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "התר הרשאות";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "בחר מי יכול למצוא אותך ב־Signal עם המספר שלך %1$@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "בחר מי יכול למצוא אותך ב־Signal עם מספר הטלפון שלך %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "מי יכול למצוא אותך עם המספר שלך?";
@@ -4469,7 +4478,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "אנא המתן מספר דקות לפני שתנסה שוב. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "מספר בלתי תקף של טלפון. אנא הכנס מספר תקף של טלפון כדי להירשם.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "מספר טלפון בלתי תקף. אנא הכנס מספר טלפון תקף כדי להירשם.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "ניחושי PIN אזלו לך, אבל אתה עדין יכול להשיג גישה אל חשבון Signal שלך ע״י יצירת PIN חדש. למען פרטיותך ואבטחתך, חשבונך ישוחזר בלי מידע פרופיל שמור כלשהו או הגדרות שמורות כלשהן.";
@@ -4949,7 +4958,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "כולם";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "כל מי שיש להם את המספר הטלפון שלך יראו אותך ב–Signal ויוכלו להתחיל איתך צ׳אט.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "כל מי שיש להם את מספר הטלפון שלך יראו אותך ב–Signal ויוכלו להתחיל איתך צ׳אט.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "אף אחד";
@@ -4970,10 +4979,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "אף אחד";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "מספר הטלפון שלך לא יהיה גלוי לאף אחד אלא אם כן המספר שמור ברשימת אנשי הקשר שלו או שלה.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "מספר הטלפון שלך לא יהיה גלוי לאף אחד.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5630,10 +5639,10 @@
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "הקוד שהכנסת לא חוקי. כדאי לבדוק את הקוד ולנסות שוב.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "אנא הכנס מספר תקף של טלפון כדי להירשם.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "אנא הכנס מספר טלפון תקף כדי להירשם.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "מספר בלתי תקף של טלפון";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "מספר טלפון בלתי תקף";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "קוד וידוא יישלח אל מספר זה. האם מספר הטלפון שלך למעלה נכון?";
@@ -7253,7 +7262,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "אישור בקשת הודעה";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "שמירה שלהם באנשי הקשר שלך";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "שמירה שלהם באנשי הקשר של המערכת שלך";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "חברי ה–Signal שלך יוכלו לראות את השם והתמונה שלך, וגם את מה ששלחת ל״הסטורי שלי״ אלא אם כן הסתרת זאת מהם.";
@@ -7291,8 +7300,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "אישורי קריאה מושבתים";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "זהות מינוי הועתקה ללוח.";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor id to clipboard";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "מספר הביטחון שלך עם %1$@ תואם. אתה יכול לסמן איש קשר זה כמוודא.";
@@ -7416,6 +7425,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "הזמן של ההודעות הנעלמות יוגדר אל %1$@ כאשר אתה מתכתב עם הצד השני.";
+
+/* A link at the end of a warning about an unknown thread. */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "אין קבוצות משותפות. סקור בקשות בזהירות.";
@@ -7652,7 +7664,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "קודי QR ולינקים";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "מספר הטלפון שלך כבר לא גלוי בצ׳אטים. אם המספר שלך שמור באנשי הקשר של חבר או חברה, הם עדיין יראו אותו.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "פרטיות מספר טלפון";
@@ -7664,7 +7676,7 @@
 "USERNAME_EDUCATION_TITLE" = "דרכים חדשות להתחבר";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "אנשים יכולים לשלוח לך הודעות באמצעות שם המשתמש האופציונלי שלך, כך שכבר אין צורך לתת את מספר הטלפון שלך. שמות משתמש לא גלויים בפרופיל שלך.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "שמות משתמש";
@@ -7685,7 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "אפס";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "איפוס קוד ה–QR שלך יגרום לכך שקוד ה–QR והלינק הקיימים שלך לא יפעלו יותר.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "שתף";

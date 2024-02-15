@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre du groupe a un nom similaire.</string>
+			<string>%1$d group member has the same name.</string>
 			<key>other</key>
-			<string>%1$d membres du groupe ont un nom similaire.</string>
+			<string>%1$d group members have the same name.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d name conflict was found in this group.</string>
+			<key>other</key>
+			<string>%1$d name conflicts were found in this group.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Member</string>
+			<key>other</key>
+			<string>%1$d Members</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre du groupe porte un nom similaire. Examinez-le ci-dessous ou choisissez l’action appropriée.</string>
+			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
 			<key>other</key>
-			<string>%1$d membres du groupe portent un nom similaire. Examinez-les ci-dessous ou choisissez l’action appropriée.</string>
+			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -520,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre du groupe porte le même nom. Examinez-le ci-dessous et choisissez l’action appropriée.</string>
+			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
 			<key>other</key>
-			<string>%1$d membres du groupe portent le même nom. Examinez-les ci-dessous et choisissez l’action appropriée.</string>
+			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -904,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toutes les connexions Signal · %1$d spectateur</string>
+			<string>Tous les contacts Signal · %1$d spectateur</string>
 			<key>other</key>
-			<string>Toutes les connexions Signal · %1$d spectateurs</string>
+			<string>Tous les contacts Signal · %1$d spectateurs</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -920,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toutes les connexions Signal · %1$d exclu</string>
+			<string>Tous les contacts Signal · %1$d exclu</string>
 			<key>other</key>
-			<string>Toutes les connexions Signal · %1$d exclus</string>
+			<string>Tous les contacts Signal · %1$d exclus</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>

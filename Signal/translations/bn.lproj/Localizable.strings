@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "ছবি";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "ফটো";
 
@@ -1027,8 +1024,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "নতুন ডিভাইস যুক্ত করুন";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ আপনার সিস্টেমের কন্টাক্টে আছেন";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ আপনার সিস্টেমের আছেন";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "No direct messages with %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Pending message request";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal কানেকশন";
@@ -1286,7 +1292,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "বিদ্যমান পরিচিতি এর সাথে যুক্ত করুন";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "সিস্টেম পরিচিতি সমূহে যুক্ত করুন";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "সিস্টেম কন্টাক্টে যুক্ত করুন";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "অ্যাডমিন";
@@ -1712,7 +1718,7 @@
 "DEREGISTRATION_NOTIFICATION" = "আপনি এই ডিভাইসে Signal থেকে লগ আউট হয়ে গিয়েছেন।";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "এই ফোন নাম্বার পূনরায় রেজিষ্ট্রি করুন";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "এই ফোন নাম্বার পূনরায় রেজিস্টার করুন";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "এই ডিভাইসটি আর নিবন্ধিত নয়। এটি হওয়ার সম্ভাব্য কারণ হলো, আপনি হয়তো একটি ভিন্ন ডিভাইসে Signal-এর সাথে আপনার ফোন নম্বর নিবন্ধন করেছেন।";
@@ -2420,7 +2426,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "পরিষেবা থেকে অবৈধ প্রতিক্রিয়া।";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "এই ডিভাইস টি আর আপনার ফোন নাম্বার দিয়ে নিবন্ধিত নেই। Signal পুনরায় ইনস্টল করুন।";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "এই ডিভাইসটি আর আপনার ফোন নাম্বার দিয়ে নিবন্ধিত নেই। Signal পুনরায় ইনস্টল করুন।";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "সার্ভার সমস্যা। পরে আবার চেষ্টা করুন।";
@@ -2438,7 +2444,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "সংযুক্তি ডাউলোড ব্যর্থ হয়েছে।";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "সংযুক্তি আপলোড ব্যর্থ হয়েছে।";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@ থেকে একটি বার্তা বিতরণ করা যায়নি";
@@ -2544,6 +2550,15 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "আপনার অ্যাকাউন্টের তথ্য দেখুন";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Find by Username";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "যাচাইকৃত হিসাবে চিহ্নিত করুন";
@@ -3085,12 +3100,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "সদস্যগণ";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "পর্যালোচনা করতে ট্যাপ করুন";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "সদস্য";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "সদস্যদের পর্যালোচনা করুন";
 
@@ -3562,6 +3571,9 @@
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "বন্ধুদের Signal -এ আমন্ত্রণ জানান";
 
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
+
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "অনুসন্ধান";
 
@@ -3998,25 +4010,16 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "গ্রুপ মুছবেন এবং ছেড়ে চলে যাবেন?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "অনুরোধগুলি সতর্কতার সাথে পর্যালোচনা করুন। Signal একই নামের আরেকটি কন্ট্যাক্ট পেয়েছে।";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "আপনার কন্ট্যাক্ট";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "This person has the same name as another contact";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "আপনি যদি কার কাছ থেকে অনুরোধ এসেছে সে বিষয়ে নিশ্চিত না হন, তবে নিচে কন্ট্যাক্ট পর্যালোচনা করুন ও পদক্ষেপ নিন।";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "অনুরোধ";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "অনুরোধ পর্যালোচনা করুন";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "কন্ট্যাক্ট আপডেট করুন";
-
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "অনুরোধ পর্যালোচনা করুন";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "স্প্যাম হিসেবে রিপোর্ট এবং ব্লক করা হয়েছে";
@@ -4213,8 +4216,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "যোগ করতে ট্যাপ করুন";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "সম্প্রতি তাদের প্রোফাইল নাম %1$@ থেকে পরিবর্তন করে %2$@ রাখা হয়েছে।";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "বাদ দিয়ে যান";
@@ -4233,6 +4236,9 @@
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ফোন নাম্বার দিয়ে খুজুন";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "নতুন গ্রুপ";
@@ -4323,6 +4329,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ফোন নাম্বার দ্বারা পরিচিতি খুঁজুন";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Find Contacts by Username";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "একই রকমের কোনও গ্রুপ নেই";
@@ -4970,10 +4979,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "কেউ না";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "আপনার ফোন নম্বরটি কেউ দেখতে পাবেন না, যদি না তারা এটি তাদের ফোনের কন্টাক্টে সেভ করে থাকেন।";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "আপনার ফোন নম্বর কেউ দেখতে পাবেন না।";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5318,7 +5327,7 @@
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR কোড বা লিংক";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "ইউজারনেম";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "ব্যবহারকারীর নাম";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "আপনার নামের শেষাংশটি অনেক দীর্ঘ।";
@@ -5633,7 +5642,7 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "নিবন্ধন করতে একটি সঠিক ফোন নাম্বার লিখুন।";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "ভুল ফোন নাম্বার";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "ভুল ফোন নম্বর";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "এই নম্বরে একটি যাচাইকরণ কোড পাঠানো হবে। উপরে উল্লিখিত আপনার ফোন নম্বরটি কি সঠিক?";
@@ -5768,7 +5777,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal আনলক করুন";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "নাম, ইউজারনেম বা নাম্বার";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "নাম, ব্যবহারকারীর নাম বা নম্বর";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "নাম বা নাম্বার দ্বারা অনুসন্ধান করুন";
@@ -6020,10 +6029,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "অ্যাপ আইকন";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "উপলভ্য থাকলে সিস্টেম কন্ট্যাক্ট ফটোগুলি দেখান।";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "উপলভ্য থাকলে সিস্টেম কন্টাক্টের ছবি দেখান।";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "সিস্টেম কন্ট্যাক্ট ফটো ব্যবহার করুন";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "সিস্টেম কন্টাক্টের ছবি ব্যবহার করুন";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "থীম";
@@ -6056,13 +6065,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "নাম্বার এডিট করুন";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "ফোন নাম্বার পরিবর্তন করুন";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "ফোন নম্বর পরিবর্তন করুন";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "নাম্বার পরিবর্তন করুন";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "আপনি আপনার ফোন নাম্বার %1$@ থেকে %2$@-তে পরিবর্তন করতে যাচ্ছেন।\n\nএগিয়ে যাওয়ার আগে, দয়া করে নীচের নাম্বারটি সঠিক কিনা যাচাই করুন।";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "আপনি আপনার ফোন নাম্বার %1$@ থেকে %2$@-তে পরিবর্তন করতে যাচ্ছেন।\n\nএগিয়ে যাওয়ার আগে, দয়া করে নীচের নম্বরটি সঠিক কিনা যাচাই করুন।";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "দেশ কোড";
@@ -6083,10 +6092,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "ফোন নম্বর";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "আপনার বর্তমান ফোন নাম্বারটি একটি নতুন ফোন নাম্বারে পরিবর্তন করতে এটি ব্যবহার করুন। আপনি এই পরিবর্তনটি পূর্বাবস্থায় ফিরিয়ে নিতে পারবেন না।\n\nএগিয়ে যাওয়ার আগে, নিশ্চিত করুন যে আপনার নতুন নাম্বারটি এসএমএস বা কল পেতে পারে।";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "আপনার বর্তমান ফোন নম্বরটি একটি নতুন ফোন নম্বরে পরিবর্তন করতে এটি ব্যবহার করুন। আপনি এই পরিবর্তনটি পূর্বাবস্থায় ফিরিয়ে নিতে পারবেন না।\n\nএগিয়ে যাওয়ার আগে, নিশ্চিত করুন যে আপনার নতুন নম্বরটি এসএমএস বা কল পেতে পারে।";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "ফোন নাম্বার পরিবর্তন করুন";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "ফোন নম্বর পরিবর্তন করুন";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "নাম্বার পরিবর্তন করুন";
@@ -7291,8 +7300,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "ভিউ বন্ধ";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "সাবস্ক্রাইবার আইডি ক্লিপবোর্ডে কপি করা হয়েছে।";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor id to clipboard";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%1$@ এর  সাথে আপনার নিরাপত্তা নাম্বার মিল আছে। আপনি এই পরিচিতি যাচাইকৃত হিসাবে চিহ্নিত করতে পারেন।";
@@ -7416,6 +7425,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "আপনি যখন তাদের মেসেজ পাঠাবেন, মেসেজ অদৃশ্য হওয়ার সময়টি %1$@-এ সেট করা হবে।";
+
+/* A link at the end of a warning about an unknown thread. */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "একইরকম কোনও গ্রুপ নেই। সতর্কতার সাথে অনুরোধগুলি পর্যালোচনা করুন।";
@@ -7652,7 +7664,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR কোড ও লিংক";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "আপনার ফোন নম্বর চ্যাটে আর দৃশ্যমান নয়। যদি আপনার নম্বরটি আপনার বন্ধুর কন্টাক্টে সংরক্ষিত থাকে তবে তিনি এটি দেখতে পাবেন।";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "ফোন নম্বরের গোপনীয়তা";
@@ -7664,7 +7676,7 @@
 "USERNAME_EDUCATION_TITLE" = "সংযোগ করার নতুন উপায়";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "লোকজন এখন আপনার ঐচ্ছিক ব্যবহারকারীর নাম ব্যবহার করে আপনাকে মেসেজ পাঠাতে পারবেন যাতে আপনাকে আপনার ফোন নম্বর দিতে না হয়। ব্যবহারকারীর নামগুলো আপনার প্রোফাইলে দৃশ্যমান নয়।";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "ব্যবহারকারীর নাম";
@@ -7685,7 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "রিসেট করুন";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "আপনার 'ব্যবহারকারীর নাম' রিসেট করলে আপনার বিদ্যমান QR কোড ও লিংক আর কাজ করবে না।";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "শেয়ার করুন";
@@ -7724,10 +7739,10 @@
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "ইউজার নেমটি খুঁজতে গিয়ে একটি ত্রুটি ঘটেছে। পরে আবার চেষ্টা করুন|";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "ইউজারনেম হিসেবে %1$@ নামটি কার্যকর নয়। নিশ্চিত করুন যে আপনি ইউজারের সম্পূর্ণ নামের পরে তার ডিজিটের সেট লিখেছেন।";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "ব্যবহারকারীর নাম হিসেবে %1$@ নামটি কার্যকর নয়। নিশ্চিত করুন যে আপনি ব্যবহারকারীর নামের সম্পূর্ণ নামের পরে তার ডিজিটের সেট লিখেছেন।";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "ইউজারনেমটি অকার্যকর";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "ব্যবহারকারীর নামটি অকার্যকর";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "এই 'ব্যবহারকারীর নাম' আর বৈধ নয়।";
@@ -7763,7 +7778,7 @@
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "অকার্যকর ব্যবহারকারীর নাম, অন্তত 2টি সংখ্যা লিখুন";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "এই সংখ্যাগুলি আপনার ব্যবহারকারীর নামটি গোপন রাখতে সাহায্য করে, যাতে আপনি অবাঞ্ছিত ম্যাসেজ এড়িয়ে যেতে পারেন। আপনি যে ব্যক্তি ও গ্রুপের সাথে চ্যাট করতে চান শুধুমাত্র তাদের সাথে আপনার ব্যবহারকারীর নামটি শেয়ার করুন। ব্যবহারকারীর নামটি পরিবর্তন করলে আপনি কিছু নতুন সংখ্যার সেট পাবেন।";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "এই সংখ্যাগুলি আপনার ব্যবহারকারীর নামটি গোপন রাখতে সাহায্য করে, যাতে আপনি অবাঞ্ছিত মেসেজ এড়িয়ে যেতে পারেন। আপনি যে ব্যক্তি ও গ্রুপের সাথে চ্যাট করতে চান শুধুমাত্র তাদের সাথে আপনার ব্যবহারকারীর নামটি শেয়ার করুন। ব্যবহারকারীর নামটি পরিবর্তন করলে আপনি কিছু নতুন সংখ্যার সেট পাবেন।";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "এই নম্বরটি কী?";

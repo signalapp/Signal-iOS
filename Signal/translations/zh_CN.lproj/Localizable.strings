@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "图片";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "图片";
 
@@ -929,16 +926,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "编辑照片";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "您的新号码不能与旧号码相同。请输入新的电话号码以进行号码变更。";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "您的新号码不能与旧号码相同。请输入新的手机号码以进行号码变更。";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "输入的手机号码与 Signal 帐户的不匹配。";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "您输入的手机号码与 Signal 账户的手机号码不匹配。";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "新电话号码无效。请输入有效的电话号码以进行号码变更。";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "新手机号码无效。请输入有效的手机号码以进行号码变更。";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "旧电话号码无效。请输入有效的电话号码以进行号码变更。";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "旧手机号码无效。请输入有效的手机号码以进行号码变更。";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "此处为聊天颜色预览。";
@@ -1027,8 +1024,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "关联新设备";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@在您的系统通讯录中";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "No direct messages with %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Pending message request";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal 密友";
@@ -1100,7 +1106,7 @@
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "无可用 E-mail";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "无可用手机号码";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "无可用的手机号码。";
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "选择联系人";
@@ -1490,7 +1496,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "选择国家编码";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "我们推出了电话号码隐私、可选用户名和链接功能。";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "我们推出了手机号码隐私、可选用户名和链接功能。";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "联系有新招";
@@ -1676,7 +1682,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "无互联网连接。请确保 Wi-Fi 或移动数据已开启，然后重试。";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "电话号码";
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "手机号码";
 
 /* Section header */
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "请确认您的 Signal 号码";
@@ -1685,7 +1691,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "删除账号";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "输入的手机号码与 Signal 帐户的不匹配。";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "您输入的手机号码与 Signal 账户的手机号码不匹配。";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "是否删除此聊天中的所有消息？";
@@ -1715,7 +1721,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新注册此手机号码";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "此设备已注销。这可能是因为您使用您的电话号码在其他设备上注册了 Signal。";
+"DEREGISTRATION_WARNING" = "此设备已注销。这可能是因为您使用您的手机号码在其他设备上注册了 Signal。";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "重新注册设备";
@@ -1775,7 +1781,7 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "从你原来的 iOS 设备上迁移";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "继续用相同的电话号码注册会导致目前正使用的其他设备上的 Signal 登出。";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "继续用相同的手机号码注册会导致目前正使用的其他设备上的 Signal 登出。";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "缩小视图";
@@ -2420,7 +2426,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "服务返回无效响应。";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "此设备已不再与您的电话号码关联。请重新安装 Signal。";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "此设备已不再与您的手机号码关联。请重新安装 Signal。";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "服务器出错。请稍候重试。";
@@ -2438,7 +2444,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "附件下载失败。";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "附件上传失败。";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@的消息无法送达";
@@ -2544,6 +2550,15 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "查找您的账户信息";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Find by Username";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "标记为已验证";
@@ -3085,12 +3100,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "成员";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "点击开始审核";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "成员";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "审查成员";
 
@@ -3524,7 +3533,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@已更改电话号码。";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@已更改手机号码。";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ 开始使用 Signal 了！";
@@ -3561,6 +3570,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "邀请朋友使用 Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "搜索";
@@ -3674,10 +3686,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "链接预览";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad 上已不再提供管理系统联系人的功能。如要将 Signal 密友添加为您的系统联系人，请使用手机版 Signal。";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad 上已不再提供管理系统通讯录的功能。如要将 Signal 密友添加到您的系统通讯录中，请使用手机版 Signal。";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad 已不再支持管理系统联系人。此设备将继续同步手机版 Signal 对联系人列表所做的任何更改。";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad 已不再支持管理系统通讯录。此设备将继续同步手机版 Signal 对通讯录所做的任何更改。";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "了解详情";
@@ -3998,25 +4010,16 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "删除并离开此群组？";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "请仔细审核请求。Signal 发现另一个同名联系人。";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "您的联系人";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "This person has the same name as another contact";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "如果不确定谁是请求人，请对下方联系人进行审核并处理。";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "入群请求";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "审查请求";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "更新联系人";
-
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "审查请求";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "已举报为垃圾消息并屏蔽。";
@@ -4213,8 +4216,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "点击添加";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "他们的个人资料名字最近从 %1$@ 更改为 %2$@。";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "跳过";
@@ -4232,7 +4235,10 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi 和手机网络";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "通过电话号码寻找";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "通过手机号码寻找";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "新群组";
@@ -4323,6 +4329,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用手机号码搜索联系人";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Find Contacts by Username";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "无共同群组";
@@ -4430,7 +4439,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "关联iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "点击“注册iPad”以创建全新Signal账户或将已有账户迁移至当前iPad。此操作将在其他所有设备上停用以相同电话号码注册的Signal账户。";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "点击“注册 iPad”以创建全新的 Signal 账户或将已有账户迁移至当前 iPad。此操作将在其他所有设备上停用以相同手机号码注册的 Signal 账户。";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "点击“关联iPhone”以将您的手机关联至一个已有账户。我们通常并不建议关联您的手机，它会使语音呼叫等功能受限。";
@@ -4442,7 +4451,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "关联当前iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "注册当前iPad将会停用在其他所有设备上以相同电话号码注册的Signal账户。";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "注册当前 iPad 将会停用在其他所有设备上以相同手机号码注册的 Signal 账户。";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "我们并不建议关联您的iPhone，它会使某些关键功能受限。";
@@ -4457,13 +4466,13 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "授予权限";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "选择哪些人能通过电话号码%1$@找到您的 Signal帐号";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "选择哪些人能通过手机号码 %1$@ 找到您的 Signal 帐号";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "哪些人能找到您的电话号码？";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "您的电话号码";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "您的手机号码";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "请稍候几分钟后再试。（%1$@）";
@@ -4481,7 +4490,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN 错误";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "您尝试输入密码的次数已超过限定的次数，不过您仍然可以通过验证您的电话号码来登录您的 Signal 账户。出于对您的隐私和安全的考虑，您的账户在恢复时将不保留任何保存过的个人资料信息或设置。";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "您尝试输入密码的次数已超过限定的次数，不过您仍然可以通过验证您的手机号码来登录您的 Signal 账户。出于对您的隐私和安全的考虑，您的账户在恢复时将不保留任何保存过的个人资料信息或设置。";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "协议与隐私政策";
@@ -4508,7 +4517,7 @@
 "ONBOARDING_VERIFICATION_HELP_BULLET_2" = "确认该号码可接收来电";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "检查您输入了正确的电话号码";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "检查您输入了正确的手机号码";
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "在注册时遇到问题？";
@@ -4949,7 +4958,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "所有人";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "知道您的电话号码的任何人均可以在 Signal 上看到您的上线状态，并可以开始跟您聊天。";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "知道您的手机号码的任何人均可以在 Signal 上看到您的上线状态，并可以开始跟您聊天。";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "没有人";
@@ -4964,16 +4973,16 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "所有人";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "您的电话号码将对您发送消息的用户和群组可见。";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "您的手机号码将对您发送消息的用户和群组可见。";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "没有人";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "您的手机号码将对任何人不可见，除非对方已将其保存在自己的手机通讯录中。";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "您的手机号码将对任何人不可见。";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5291,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "关于 (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ 更改其昵称 %2$@ 为 %3$@。";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@已将其昵称从%2$@更改为%3$@。";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ 更改其昵称为 %2$@。";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@已将其昵称更改为%2$@。";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "你的名字";
@@ -5465,10 +5474,10 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "无法选择用户";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@不是 Signal 用户。请使用有效的电话号码再试一次。";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@不是 Signal 用户。请使用有效的手机号码再试一次。";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "电话号码无效";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "手机号码无效";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
 "RECIPIENT_PICKER_INVITE_ACTION" = "发消息";
@@ -5525,7 +5534,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "国家编码";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "继续操作将会停用其他设备上使用同一个电话号码注册的 Signal 账号。";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "继续操作将会停用其他设备上使用同一个手机号码注册的 Signal 账号。";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "迁移账户和聊天记录";
@@ -5558,13 +5567,13 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "请输入您的手机号以开始操作。";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
-"REGISTRATION_PHONE_NUMBER_TITLE" = "您的电话号码";
+"REGISTRATION_PHONE_NUMBER_TITLE" = "您的手机号码";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "您将收到来电以核验该号码。上方的电话号码是否正确？";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "您将收到来电以核验该号码。上方的手机号码是否正确？";
 
 /* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "电话号码";
+"REGISTRATION_PHONENUMBER_BUTTON" = "手机号码";
 
 /* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
 "REGISTRATION_PIN_CONFIRM_SUBTITLE" = "请重新输入您刚刚创建的 PIN 码。";
@@ -5630,13 +5639,13 @@
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "您输入的验证码无效。请重新发送验证码并重试。";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "请输入一个有效的电话号码来注册。";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "请输入一个有效的手机号码来注册。";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "电话号码无效";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "手机号码无效";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "将发送验证码到该号码，请问此手机号码是否正确？";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "验证码将会发送到该号码，请问此手机号码是否正确？";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "号码确认：%1$@";
@@ -5657,7 +5666,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "拒绝";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "您要注册的电话号码已经在别的服务器被注册，请注销该号码后再次尝试。";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "您要注册的手机号码已经在别的服务器被注册，请注销该号码后再次尝试。";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "立刻解决";
@@ -5768,7 +5777,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "解锁 Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "姓名，用户名，或者号码";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "姓名、用户名或手机号码";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "搜索姓名或号码";
@@ -5972,7 +5981,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "若启用，Signal 会尝试规避审查。除非 Signal 在您所在地受到审查，否则不要打开该功能。";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "已根据您的电话号码启动审查规避。";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "已根据您的手机号码启动审查规避。";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "您已手动禁用了审查规避功能";
@@ -6020,10 +6029,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "应用图标";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "可用时显示系统联系人图片。";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "可用时显示系统通讯录的联系人头像。";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "使用系统联系人图片";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "使用系统通讯录的联系人头像";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "主题";
@@ -6056,13 +6065,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "编辑电话号码";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "更改电话号码";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "更改手机号码";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "更换号码";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "您即将把您的电话号码从 %1$@ 改为 %2$@。\n\n在继续操作之前，请检查下方的电话号码正确无误。";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "您即将把您的手机号码从 %1$@ 改为 %2$@。\n\n在继续操作之前，请检查下方的手机号码正确无误。";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "国家编码";
@@ -6080,13 +6089,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "您的旧号码";
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "电话号码";
+"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "手机号码";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "您可以以此将当前的电话号码更改为新号码。变更将无法撤消。\n\n在继续操作之前，请确保您的新号码能接收短信或接听电话。";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "您可以以此将当前的手机号码更改为新号码。变更将无法撤消。\n\n在继续操作之前，请确保您的新号码能接收短信或接听电话。";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "更改电话号码";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "更改手机号码";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "更换号码";
@@ -6728,10 +6737,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "谁可以通过电话号码找到我";
 
 /* Description label for Phone Number Privacy */
-"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "选择谁可以在 Signal 上看到您的电话号码，以及谁可以通过您的电话号码与您联系。";
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "选择谁可以在 Signal 上看到您的手机号码，以及谁可以通过您的手机号码与您联系。";
 
 /* The title for phone number privacy settings. */
-"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "电话号码";
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "手机号码";
 
 /* The title for the phone number sharing setting section. */
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "谁可以看到我的电话号码";
@@ -6848,7 +6857,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "注册锁定";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "使用手机号码重新注册 Signal 时，需 Signal PIN 码。";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "使用手机号码重新注册 Signal 时，需 Signal 密码。";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "“正在输入”提示";
@@ -7291,8 +7300,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "查看功能关闭";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "复制定期捐款人 ID 到剪贴板";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor id to clipboard";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "您的安全码与%1$@一致。您可以将此联系人标记为已验证。";
@@ -7416,6 +7425,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "当您向他们发送消息时，限时消息时间将设置为 %1$@。";
+
+/* A link at the end of a warning about an unknown thread. */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "无共同群组。请仔细审核请求。";
@@ -7652,10 +7664,10 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "二维码和链接";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "您的手机号码在聊天中不再对好友可见。如果您的好友将您的手机号码保存到了通讯录中，那么对方仍然可以看到您的手机号码。";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "电话号码隐私";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "手机号码隐私";
 
 /* Label for the 'set up' button on the username education sheet */
 "USERNAME_EDUCATION_SET_UP_BUTTON" = "设置您的用户名";
@@ -7664,7 +7676,7 @@
 "USERNAME_EDUCATION_TITLE" = "联系有新招";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "用户现在可以通过您的可选用户名给您发送消息，因此您无需给其他用户分享您的手机号码。用户名在您的个人资料中不可见。";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "用户名";
@@ -7685,7 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "重置";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "如果重置二维码，您现有的二维码和链接将会失效。";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "分享";
@@ -7733,7 +7748,7 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "此用户名链接已失效。";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@不是 Signal 用户。请确认输入了完整的用户名。";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@不是 Signal 用户。请确认您输入了完整的用户名。";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "未找到此用户";
@@ -7751,7 +7766,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "更改用户名将会重置您现有的二维码和链接。确定要更改吗？";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "用户名可以让其他会员无需您的电话号码也能给您发送消息。系统会将用户名与一组数字配对，从而将您的地址保密。%1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "用户名可以让其他会员无需您的手机号码也能给您发送消息。系统会将用户名与一组数字配对，从而将您的地址保密。%1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "选择您的用户名";
