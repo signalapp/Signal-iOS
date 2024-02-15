@@ -945,6 +945,7 @@
 		669FAE122B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */; };
 		669FAE152B75968D009EE2FE /* OWSAttachmentDownloadJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */; };
 		669FAE1B2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */; };
+		669FAE182B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */; };
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
@@ -3642,6 +3643,7 @@
 		669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedMessageAttachmentHelperImpl.swift; sourceTree = "<group>"; };
 		669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAttachmentDownloadJob.swift; sourceTree = "<group>"; };
 		669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLinkPreviewSerializationTest.swift; sourceTree = "<group>"; };
+		669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSLinkPreview+Attachment.swift"; sourceTree = "<group>"; };
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
@@ -7349,6 +7351,7 @@
 		669FAE162B7A8DA4009EE2FE /* LinkPreview */ = {
 			isa = PBXGroup;
 			children = (
+				669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */,
 				F9C5C8E3289453B100548EEE /* OWSLinkPreview.swift */,
 			);
 			path = LinkPreview;
@@ -13352,6 +13355,7 @@
 				6605D4F82A85A504004DC345 /* OWSIncomingPaymentMessage.m in Sources */,
 				6619A1C72B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift in Sources */,
 				F9C5CD0D289453B300548EEE /* OWSLinkedDeviceReadReceipt.m in Sources */,
+				669FAE182B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift in Sources */,
 				F9C5CBD7289453B300548EEE /* OWSLinkPreview.swift in Sources */,
 				F9C5CC75289453B300548EEE /* OWSMediaUtils.swift in Sources */,
 				F9C5CC56289453B300548EEE /* OWSMessageContentJob+SDS.swift in Sources */,

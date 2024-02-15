@@ -34,13 +34,52 @@ public struct UnsentTextAttachment {
         self.linkPreviewDraft = linkPreviewDraft
     }
 
-    public func validateLinkPreviewAndBuildTextAttachment(transaction: SDSAnyWriteTransaction) -> TextAttachment? {
+    public func validateLinkPreviewAndBuildUnownedTextAttachment(
+        transaction: SDSAnyWriteTransaction
+    ) -> (TextAttachment, imageAttachmentUniqueId: String?)? {
+        var validatedLinkPreview: OWSLinkPreview?
+        var imageAttachmentUniqueId: String?
+        if let linkPreview = linkPreviewDraft {
+            do {
+                (validatedLinkPreview, imageAttachmentUniqueId) = try OWSLinkPreview.buildValidatedUnownedLinkPreview(
+                    fromInfo: linkPreview,
+                    transaction: transaction
+                )
+            } catch LinkPreviewError.featureDisabled {
+                validatedLinkPreview = .withoutImage(urlString: linkPreview.urlString)
+            } catch {
+                Logger.error("Failed to generate link preview.")
+            }
+        }
+
+        guard validatedLinkPreview != nil || !(body?.isEmpty ?? true) else {
+            owsFailDebug("Empty content")
+            return nil
+        }
+        return (TextAttachment(
+            body: body,
+            textStyle: textStyle,
+            textForegroundColor: textForegroundColor,
+            textBackgroundColor: textBackgroundColor,
+            background: background,
+            linkPreview: validatedLinkPreview
+        ), imageAttachmentUniqueId)
+    }
+
+    public func validateLinkPreviewAndBuildTextAttachment(
+        storyMessageRowId: Int64,
+        transaction: SDSAnyWriteTransaction
+    ) -> TextAttachment? {
         var validatedLinkPreview: OWSLinkPreview?
         if let linkPreview = linkPreviewDraft {
             do {
-                validatedLinkPreview = try OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreview, transaction: transaction)
+                validatedLinkPreview = try OWSLinkPreview.buildValidatedLinkPreview(
+                    fromInfo: linkPreview,
+                    storyMessageRowId: storyMessageRowId,
+                    transaction: transaction
+                )
             } catch LinkPreviewError.featureDisabled {
-                validatedLinkPreview = OWSLinkPreview(urlString: linkPreview.urlString, title: nil, imageAttachmentId: nil)
+                validatedLinkPreview = .withoutImage(urlString: linkPreview.urlString)
             } catch {
                 Logger.error("Failed to generate link preview.")
             }

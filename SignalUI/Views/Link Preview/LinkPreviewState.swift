@@ -240,11 +240,7 @@ public class LinkPreviewSent: LinkPreviewState {
     public var title: String? { linkPreview.title?.filterForDisplay.nilIfEmpty }
 
     public var imageState: LinkPreviewImageState {
-        guard linkPreview.imageAttachmentId != nil else {
-            return .none
-        }
         guard let imageAttachment = imageAttachment else {
-            Logger.warn("Missing imageAttachment.")
             return .none
         }
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {

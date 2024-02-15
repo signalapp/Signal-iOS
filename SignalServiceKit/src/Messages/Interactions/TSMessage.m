@@ -380,8 +380,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [result addObject:self.contactShare.avatarAttachmentId];
     }
 
-    if (self.linkPreview.imageAttachmentId) {
-        [result addObject:self.linkPreview.imageAttachmentId];
+    NSString *linkPreviewImageAttachmentId = [self.linkPreview imageAttachmentIdForParentMessage:self tx:transaction];
+    if (linkPreviewImageAttachmentId) {
+        [result addObject:linkPreviewImageAttachmentId];
     }
 
     if (self.messageSticker.attachmentId) {
@@ -822,13 +823,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [self removeAllMentionsWithTransaction:transaction];
     }
 
-    // Remove relevant attachments.
-    //
-    // We need to keep this method closely aligned with allAttachmentIds.
-    // We use unknownAttachmentIds to detect any unknown attachment types.
-    NSMutableSet<NSString *> *unknownAttachmentIds =
-        [NSMutableSet setWithArray:[self allAttachmentIdsWithTransaction:transaction]];
-
     // "Body attachments" includes body media, stickers, audio & generic attachments.
     // It can also contain the "oversize text" attachment, which we special-case below.
     NSMutableSet<NSString *> *bodyAttachmentIds = [NSMutableSet setWithArray:self.attachmentIds];
@@ -836,7 +830,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     if (self.messageSticker.attachmentId != nil) {
         [bodyAttachmentIds addObject:self.messageSticker.attachmentId];
     }
-    [unknownAttachmentIds minusSet:bodyAttachmentIds];
     for (NSString *attachmentId in bodyAttachmentIds) {
         BOOL wasRemoved = [self removeAttachmentWithId:attachmentId
                                            filterBlock:^(TSAttachment *attachment) {
@@ -856,18 +849,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    NSString *_Nullable linkPreviewAttachmentId = self.linkPreview.imageAttachmentId;
-    if (linkPreviewAttachmentId != nil) {
-        [unknownAttachmentIds removeObject:linkPreviewAttachmentId];
-        if (shouldRemoveLinkPreview) {
-            OWSLogVerbose(@"Removing link preview attachment.");
-            [self removeAttachmentWithId:linkPreviewAttachmentId transaction:transaction];
-        }
+    if (self.linkPreview != nil && shouldRemoveLinkPreview) {
+        OWSLogVerbose(@"Removing link preview attachment.");
+        [self.linkPreview removeAttachmentWithTx:transaction];
     }
 
     NSString *_Nullable contactShareAttachmentId = self.contactShare.avatarAttachmentId;
     if (contactShareAttachmentId != nil) {
-        [unknownAttachmentIds removeObject:contactShareAttachmentId];
         if (shouldRemoveContactShare) {
             OWSLogVerbose(@"Removing contact share attachment.");
             [self removeAttachmentWithId:contactShareAttachmentId transaction:transaction];
@@ -876,19 +864,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     NSString *thumbnailAttachmentId = [self.quotedMessage fetchThumbnailAttachmentIdForParentMessage:self
                                                                                          transaction:transaction];
-    if (thumbnailAttachmentId) {
-        [unknownAttachmentIds removeObject:thumbnailAttachmentId];
-    }
     if (shouldRemoveQuotedReply && thumbnailAttachmentId) {
         OWSLogVerbose(@"Removing quoted reply attachment.");
         [self removeAttachmentWithId:thumbnailAttachmentId transaction:transaction];
-    }
-
-    // Err on the side of cleaning up unknown attachments.
-    OWSAssertDebug(unknownAttachmentIds.count == 0);
-    for (NSString *attachmentId in unknownAttachmentIds) {
-        OWSLogWarn(@"Removing unknown attachment.");
-        [self removeAttachmentWithId:attachmentId transaction:transaction];
     }
 
     [self anyUpdateMessageWithTransaction:transaction

@@ -283,9 +283,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if ([quotedMessage hasBodyAttachmentsWithTransaction:transaction]) {
         return [quotedMessage bodyAttachmentsWithTransaction:transaction].firstObject;
-    } else if (quotedMessage.linkPreview && quotedMessage.linkPreview.imageAttachmentId.length > 0) {
-        return [TSAttachment anyFetchWithUniqueId:quotedMessage.linkPreview.imageAttachmentId transaction:transaction];
-    } else if (quotedMessage.messageSticker && quotedMessage.messageSticker.attachmentId.length > 0) {
+    }
+
+    if (quotedMessage.linkPreview) {
+        // If we have an image attachment, return it.
+        TSAttachment *linkPreviewAttachment = [quotedMessage.linkPreview imageAttachmentForParentMessage:quotedMessage
+                                                                                                      tx:transaction];
+        if (linkPreviewAttachment) {
+            return linkPreviewAttachment;
+        }
+    }
+
+    if (quotedMessage.messageSticker && quotedMessage.messageSticker.attachmentId.length > 0) {
         return [TSAttachment anyFetchWithUniqueId:quotedMessage.messageSticker.attachmentId transaction:transaction];
     } else {
         return nil;

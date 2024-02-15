@@ -80,7 +80,12 @@ extension OWSAttachmentDownloads {
                     }
                     return pointer
                 case .text(let attachment):
-                    guard let attachmentId = attachment.preview?.imageAttachmentId else {
+                    guard
+                        let attachmentId = attachment.preview?.imageAttachmentUniqueId(
+                            forParentStoryMessage: storyMessage,
+                            tx: tx
+                        )
+                    else {
                         return nil
                     }
                     return TSAttachmentPointer.anyFetchAttachmentPointer(uniqueId: attachmentId, transaction: tx)
@@ -254,7 +259,7 @@ extension OWSAttachmentDownloads {
                 self.contactShareAvatarPromise = nil
             }
 
-            if let attachmentId = message.linkPreview?.imageAttachmentId {
+            if let attachmentId = message.linkPreview?.imageAttachmentId(forParentMessage: message, tx: tx) {
                 let jobNPromise = buildJob(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
                 self.linkPreviewJob = jobNPromise?.0
                 self.linkPreviewPromise = jobNPromise?.1

@@ -69,12 +69,22 @@ extension OutgoingStoryMessage {
                     message = try OutgoingStoryMessage.createUnsentMessage(
                         thread: destination.thread,
                         transaction: transaction,
-                        attachmentGenerator: { _, _, transaction in
-                            guard let finalTextAttachment = textAttachment.value.validateLinkPreviewAndBuildTextAttachment(transaction: transaction) else {
+                        attachmentGenerator: { storyMessageRowId, _, transaction in
+                            guard
+                                let finalTextAttachment = textAttachment.value.validateLinkPreviewAndBuildTextAttachment(
+                                    storyMessageRowId: storyMessageRowId,
+                                    transaction: transaction
+                                )
+                            else {
                                 throw OWSAssertionError("Invalid text attachment")
                             }
 
-                            if let linkPreviewAttachmentId = finalTextAttachment.preview?.imageAttachmentId {
+                            if
+                                let linkPreviewAttachmentId = finalTextAttachment.preview?.imageAttachmentUniqueId(
+                                    forParentStoryMessageRowId: storyMessageRowId,
+                                    tx: transaction
+                                )
+                            {
                                 var correspondingIdsForAttachment = state.correspondingAttachmentIds[textAttachment.id] ?? []
                                 correspondingIdsForAttachment += [linkPreviewAttachmentId]
                                 state.correspondingAttachmentIds[textAttachment.id] = correspondingIdsForAttachment

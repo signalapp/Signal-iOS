@@ -987,9 +987,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         if (self.linkPreview.title.length > 0) {
             [previewBuilder setTitle:self.linkPreview.title];
         }
-        if (self.linkPreview.imageAttachmentId) {
+        NSString *attachmentStreamId = [self.linkPreview imageAttachmentStreamIdForParentMessage:self tx:transaction];
+        if (attachmentStreamId) {
             SSKProtoAttachmentPointer *_Nullable attachmentProto =
-                [TSAttachmentStream buildProtoForAttachmentId:self.linkPreview.imageAttachmentId
+                [TSAttachmentStream buildProtoForAttachmentId:attachmentStreamId
                                             containingMessage:self
                                                   transaction:transaction];
             if (!attachmentProto) {

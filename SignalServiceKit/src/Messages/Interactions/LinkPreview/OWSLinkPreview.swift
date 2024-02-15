@@ -63,8 +63,12 @@ public class OWSLinkPreview: MTLModel, Codable {
     @objc
     public var title: String?
 
+    // For Legacy image attachments only.
     @objc
-    public var imageAttachmentId: String?
+    private var imageAttachmentId: String?
+
+    @objc
+    private var usesV2AttachmentReferenceValue: NSNumber?
 
     @objc
     public var previewDescription: String?
@@ -72,10 +76,21 @@ public class OWSLinkPreview: MTLModel, Codable {
     @objc
     public var date: Date?
 
-    public init(urlString: String, title: String?, imageAttachmentId: String?) {
+    public convenience init(urlString: String, title: String?, legacyImageAttachmentId: String?) {
+        self.init(urlString: urlString, title: title, attachmentRef: .legacy(uniqueId: legacyImageAttachmentId))
+    }
+
+    internal init(urlString: String, title: String?, attachmentRef: AttachmentReference) {
         self.urlString = urlString
         self.title = title
-        self.imageAttachmentId = imageAttachmentId
+        switch attachmentRef {
+        case .legacy(let uniqueId):
+            self.imageAttachmentId = uniqueId
+            self.usesV2AttachmentReferenceValue = NSNumber(value: false)
+        case .v2:
+            self.imageAttachmentId = nil
+            self.usesV2AttachmentReferenceValue = NSNumber(value: true)
+        }
 
         super.init()
     }
@@ -90,6 +105,14 @@ public class OWSLinkPreview: MTLModel, Codable {
 
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
+    }
+
+    internal var legacyImageAttachmentId: String? {
+        return imageAttachmentId
+    }
+
+    internal var usesV2AttachmentReference: Bool {
+        return usesV2AttachmentReferenceValue?.boolValue ?? false
     }
 
     @objc
@@ -151,18 +174,9 @@ public class OWSLinkPreview: MTLModel, Codable {
             }
         }
 
-        var imageAttachmentId: String?
-        if let imageProto = proto.image {
-            if let imageAttachmentPointer = TSAttachmentPointer(fromProto: imageProto, albumMessage: nil) {
-                imageAttachmentPointer.anyInsert(transaction: transaction)
-                imageAttachmentId = imageAttachmentPointer.uniqueId
-            } else {
-                Logger.error("Could not parse image proto.")
-                throw LinkPreviewError.invalidPreview
-            }
-        }
+        let attachmentRef = try Self.attachmentReference(fromProto: proto.image, tx: transaction)
 
-        let linkPreview = OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: imageAttachmentId)
+        let linkPreview = OWSLinkPreview(urlString: urlString, title: title, attachmentRef: attachmentRef)
         linkPreview.previewDescription = previewDescription
 
         // Zero check required. Some devices in the wild will explicitly set zero to mean "no date"
@@ -173,16 +187,76 @@ public class OWSLinkPreview: MTLModel, Codable {
         return linkPreview
     }
 
-    public class func buildValidatedLinkPreview(fromInfo info: OWSLinkPreviewDraft,
-                                                transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
+    public class func buildValidatedUnownedLinkPreview(
+        fromInfo info: OWSLinkPreviewDraft,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> (OWSLinkPreview, attachmentUniqueId: String?) {
+        var attachmentUniqueId: String?
+        let preview = try _buildValidatedLinkPreview(
+            fromInfo: info,
+            attachmentRefBuilder: { innerTx in
+                let uniqueId = OWSLinkPreview.saveUnownedAttachmentIfPossible(
+                    imageData: info.imageData,
+                    imageMimeType: info.imageMimeType,
+                    tx: innerTx
+                )
+                attachmentUniqueId = uniqueId
+                return .legacy(uniqueId: uniqueId)
+            },
+            transaction: transaction
+        )
+        return (preview, attachmentUniqueId: attachmentUniqueId)
+    }
+
+    public class func buildValidatedLinkPreview(
+        fromInfo info: OWSLinkPreviewDraft,
+        messageRowId: Int64,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OWSLinkPreview {
+        return try _buildValidatedLinkPreview(
+            fromInfo: info,
+            attachmentRefBuilder: { innerTx in
+                return OWSLinkPreview.saveAttachmentIfPossible(
+                    imageData: info.imageData,
+                    imageMimeType: info.imageMimeType,
+                    messageRowId: messageRowId,
+                    tx: innerTx
+                )
+            },
+            transaction: transaction
+        )
+    }
+
+    public class func buildValidatedLinkPreview(
+        fromInfo info: OWSLinkPreviewDraft,
+        storyMessageRowId: Int64,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OWSLinkPreview {
+        return try _buildValidatedLinkPreview(
+            fromInfo: info,
+            attachmentRefBuilder: { innerTx in
+                return OWSLinkPreview.saveAttachmentIfPossible(
+                    imageData: info.imageData,
+                    imageMimeType: info.imageMimeType,
+                    storyMessageRowId: storyMessageRowId,
+                    tx: innerTx
+                )
+            },
+            transaction: transaction
+        )
+    }
+
+    private class func _buildValidatedLinkPreview(
+        fromInfo info: OWSLinkPreviewDraft,
+        attachmentRefBuilder: (SDSAnyWriteTransaction) -> AttachmentReference,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OWSLinkPreview {
         guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
             throw LinkPreviewError.featureDisabled
         }
-        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(imageData: info.imageData,
-                                                                        imageMimeType: info.imageMimeType,
-                                                                        transaction: transaction)
+        let attachmentRef = attachmentRefBuilder(transaction)
 
-        let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, imageAttachmentId: imageAttachmentId)
+        let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, attachmentRef: attachmentRef)
         linkPreview.previewDescription = info.previewDescription
         linkPreview.date = info.date
         return linkPreview
@@ -204,15 +278,7 @@ public class OWSLinkPreview: MTLModel, Codable {
             builder.setPreviewDescription(previewDescription)
         }
 
-        if
-            let imageAttachmentId = imageAttachmentId,
-            let attachmentProto = TSAttachmentStream.buildProto(
-                attachmentId: imageAttachmentId,
-                caption: nil,
-                attachmentType: .default,
-                transaction: transaction
-            )
-        {
+        if let attachmentProto = buildProtoAttachmentPointer(tx: transaction) {
             builder.setImage(attachmentProto)
         }
 
@@ -223,59 +289,6 @@ public class OWSLinkPreview: MTLModel, Codable {
         return try builder.build()
     }
 
-    private class func saveAttachmentIfPossible(imageData: Data?,
-                                                imageMimeType: String?,
-                                                transaction: SDSAnyWriteTransaction) -> String? {
-        guard let imageData = imageData else {
-            return nil
-        }
-        guard let imageMimeType = imageMimeType else {
-            return nil
-        }
-        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: imageMimeType) else {
-            return nil
-        }
-        let fileSize = imageData.count
-        guard fileSize > 0 else {
-            owsFailDebug("Invalid file size for image data.")
-            return nil
-        }
-        let contentType = imageMimeType
-
-        let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
-        do {
-            try imageData.write(to: fileUrl)
-            let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
-            let attachment = TSAttachmentStream(
-                contentType: contentType,
-                byteCount: UInt32(fileSize),
-                sourceFilename: nil,
-                caption: nil,
-                attachmentType: .default,
-                albumMessageId: nil
-            )
-            try attachment.writeConsumingDataSource(dataSource)
-            attachment.anyInsert(transaction: transaction)
-
-            return attachment.uniqueId
-        } catch {
-            owsFailDebug("Could not write data source for: \(fileUrl), error: \(error)")
-            return nil
-        }
-    }
-
-    public func removeAttachment(transaction: SDSAnyWriteTransaction) {
-        guard let imageAttachmentId = imageAttachmentId else {
-            owsFailDebug("No attachment id.")
-            return
-        }
-        guard let attachment = TSAttachment.anyFetch(uniqueId: imageAttachmentId, transaction: transaction) else {
-            owsFailDebug("Could not load attachment.")
-            return
-        }
-        attachment.anyRemove(transaction: transaction)
-    }
-
     public var displayDomain: String? {
         OWSLinkPreviewManager.displayDomain(forUrl: urlString)
     }
@@ -283,13 +296,20 @@ public class OWSLinkPreview: MTLModel, Codable {
     // MARK: - Codable
 
     enum CodingKeys: String, CodingKey {
-        case urlString, title, imageAttachmentId, previewDescription, date
+        case urlString
+        case title
+        case usesV2AttachmentReferenceValue
+        case imageAttachmentId
+        case previewDescription
+        case date
     }
 
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         urlString = try container.decodeIfPresent(String.self, forKey: .urlString)
         title = try container.decodeIfPresent(String.self, forKey: .title)
+        let usesV2AttachmentReferenceValue = try container.decodeIfPresent(Int.self, forKey: .usesV2AttachmentReferenceValue)
+        self.usesV2AttachmentReferenceValue = usesV2AttachmentReferenceValue.map(NSNumber.init(integerLiteral:))
         imageAttachmentId = try container.decodeIfPresent(String.self, forKey: .imageAttachmentId)
         previewDescription = try container.decodeIfPresent(String.self, forKey: .previewDescription)
         date = try container.decodeIfPresent(Date.self, forKey: .date)
@@ -304,6 +324,7 @@ public class OWSLinkPreview: MTLModel, Codable {
         if let title = title {
             try container.encode(title, forKey: .title)
         }
+        try container.encode(usesV2AttachmentReferenceValue?.intValue, forKey: .usesV2AttachmentReferenceValue)
         if let imageAttachmentId = imageAttachmentId {
             try container.encode(imageAttachmentId, forKey: .imageAttachmentId)
         }

@@ -21,7 +21,10 @@ public struct PreloadedTextAttachment: Equatable {
         storyMessage: StoryMessage,
         tx: SDSAnyReadTransaction
     ) -> Self {
-        let linkPreviewAttachment: TSAttachment? = textAttachment.preview?.imageAttachmentId.map { uniqueId in
+        let linkPreviewAttachment: TSAttachment? = textAttachment.preview?.imageAttachmentUniqueId(
+            forParentStoryMessage: storyMessage,
+            tx: tx
+        ).map { uniqueId in
             return TSAttachment.anyFetch(uniqueId: uniqueId, transaction: tx)
         } ?? nil
         return .init(textAttachment: textAttachment, linkPreviewAttachment: linkPreviewAttachment)

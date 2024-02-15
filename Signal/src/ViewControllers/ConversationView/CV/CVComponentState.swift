@@ -1284,16 +1284,10 @@ fileprivate extension CVComponentState.Builder {
             }
         } else {
             let linkPreviewAttachment = { () -> TSAttachment? in
-                guard let imageAttachmentId = linkPreview.imageAttachmentId,
-                      !imageAttachmentId.isEmpty else {
+                guard let linkPreviewAttachment = linkPreview.imageAttachment(forParentMessage: message, tx: transaction) else {
                     return nil
                 }
 
-                guard let linkPreviewAttachment = TSAttachment.anyFetch(uniqueId: imageAttachmentId,
-                                                                        transaction: self.transaction) else {
-                    owsFailDebug("Could not load link preview image attachment.")
-                    return nil
-                }
                 guard linkPreviewAttachment.isImageMimeType else {
                     owsFailDebug("Link preview attachment isn't an image.")
                     return nil
