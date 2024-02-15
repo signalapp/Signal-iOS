@@ -108,7 +108,8 @@ class UserProfileMergerTest: XCTestCase {
             bioEmoji: nil,
             badges: [],
             lastFetchDate: nil,
-            lastMessagingDate: nil
+            lastMessagingDate: nil,
+            isPhoneNumberShared: false
         )
     }
 }

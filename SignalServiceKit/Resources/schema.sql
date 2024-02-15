@@ -364,6 +364,7 @@ CREATE
             ,"recipientUUID" TEXT
             ,"unregisteredAtTimestamp" INTEGER
             ,"pni" TEXT
+            ,"isPhoneNumberDiscoverable" BOOLEAN
         )
 ;
 
@@ -395,6 +396,7 @@ CREATE
             ,"isStoriesCapable" BOOLEAN NOT NULL DEFAULT 0
             ,"canReceiveGiftBadges" BOOLEAN NOT NULL DEFAULT 0
             ,"isPniCapable" BOOLEAN NOT NULL DEFAULT 0
+            ,"isPhoneNumberShared" BOOLEAN
         )
 ;
 

@@ -41,6 +41,7 @@ extension OWSProfileManager: ProfileManager {
         localAvatarFileUrl: URL?,
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
+        isPhoneNumberShared: Bool?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction
@@ -85,6 +86,7 @@ extension OWSProfileManager: ProfileManager {
             avatarFileName: newAvatarFileName,
             lastFetchDate: .setTo(lastFetchDate),
             badges: .setTo(profileBadges),
+            isPhoneNumberShared: .setTo(isPhoneNumberShared),
             userProfileWriter: userProfileWriter,
             authedAccount: authedAccount,
             transaction: tx,
@@ -515,7 +517,7 @@ extension OWSProfileManager: ProfileManager {
         // First, we figure out which identifiers are whitelisted.
         let orderedIdentifiers: [(store: KeyValueStore, key: String, isInWhitelist: Bool)] = [
             (serviceIdStore, recipient.aci?.serviceIdUppercaseString),
-            (phoneNumberStore, recipient.phoneNumber),
+            (phoneNumberStore, recipient.phoneNumber?.stringValue),
             (serviceIdStore, recipient.pni?.serviceIdUppercaseString)
         ].compactMap { (store, key) -> (KeyValueStore, String, Bool)? in
             guard let key else { return nil }

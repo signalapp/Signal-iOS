@@ -311,6 +311,7 @@ public class ProfileFetcherJob: NSObject {
         let bio = fetchedProfile.decryptedProfile?.bio
         let bioEmoji = fetchedProfile.decryptedProfile?.bioEmoji
         let paymentAddress = fetchedProfile.decryptedProfile?.paymentAddress(identityKey: fetchedProfile.identityKey)
+        let isPhoneNumberShared = fetchedProfile.decryptedProfile?.phoneNumberSharing
 
         await databaseStorage.awaitableWrite { transaction in
             Self.updateUnidentifiedAccess(
@@ -348,6 +349,7 @@ public class ProfileFetcherJob: NSObject {
                 localAvatarFileUrl: localAvatarUrlIfDownloaded,
                 profileBadges: profileBadgeMetadata,
                 lastFetchDate: Date(),
+                isPhoneNumberShared: isPhoneNumberShared,
                 userProfileWriter: .profileFetch,
                 authedAccount: self.options.authedAccount,
                 tx: transaction

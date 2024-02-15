@@ -153,8 +153,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let (
             image,
             nameComponents,
-            displayNameForToast,
-            phoneNumber
+            displayNameForToast
         ) = dependencies.databaseStorage.read { tx in
             let image = avatarBuilder.avatarImage(
                 forAddress: addressForProfileLookup,
@@ -170,16 +169,10 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                 for: addressForProfileLookup,
                 transaction: tx
             ).formattedForActionSheetTitle()
-            let phoneNumber = SignalRecipient.fetchRecipient(
-                for: addressForProfileLookup,
-                onlyIfRegistered: false,
-                tx: tx
-            )?.phoneNumber
             return (
                 image,
                 nameComponents,
-                displayNameForToast,
-                phoneNumber
+                displayNameForToast
             )
         }
 
@@ -214,17 +207,15 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         }
 
         // Phone Number
-        if let signalPhoneNum = phoneNumber {
-            let formattedPhoneNum = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: signalPhoneNum)
-            let phoneNumberSection = OWSTableSection()
-            phoneNumberSection.add(
-                OWSTableItem.label(
-                    withText: formattedPhoneNum,
-                    accessoryType: .none
-                )
+        let formattedPhoneNum = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: e164.stringValue)
+        let phoneNumberSection = OWSTableSection()
+        phoneNumberSection.add(
+            OWSTableItem.label(
+                withText: formattedPhoneNum,
+                accessoryType: .none
             )
-            contents.add(phoneNumberSection)
-        }
+        )
+        contents.add(phoneNumberSection)
 
         // Delete Contact button
         let deleteContactSection = OWSTableSection()
@@ -242,7 +233,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
-                    self.displayDeleteContactActionSheet(phoneNumber: phoneNumber, displayNameForToast: displayNameForToast)
+                    self.displayDeleteContactActionSheet(phoneNumber: self.e164.stringValue, displayNameForToast: displayNameForToast)
                 }
             )
         )

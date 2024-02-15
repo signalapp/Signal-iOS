@@ -27,6 +27,16 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         public static let distantPastUnregisteredTimestamp: UInt64 = 1
     }
 
+    public struct PhoneNumber {
+        public var stringValue: String
+
+        /// Tracks whether or not this number is discoverable on CDS.
+        /// 
+        /// - Important: This property is usually stale on linked devices because
+        /// they don't perform CDS syncs at regular intervals.
+        public var isDiscoverable: Bool
+    }
+
     public var id: RowId?
     public let uniqueId: String
     /// Represents the ACI for this SignalRecipient.
@@ -41,7 +51,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     /// These have always been strongly typed for their entire existence, so
     /// it's safe to check it at time-of-fetch and throw an error.
     public var pni: Pni?
-    public var phoneNumber: String?
+    public var phoneNumber: PhoneNumber?
     fileprivate(set) public var deviceIds: [UInt32]
     fileprivate(set) public var unregisteredAtTimestamp: UInt64?
 
@@ -55,7 +65,18 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     }
 
     public var address: SignalServiceAddress {
-        SignalServiceAddress(serviceId: aci ?? pni, phoneNumber: phoneNumber)
+        // SignalRecipients store every identifier because they are the source of
+        // truth. However, we still don't want to reveal redundant identifiers via
+        // most accessor methods.
+        let normalizedAddress = NormalizedDatabaseRecordAddress(
+            aci: aci,
+            phoneNumber: phoneNumber?.stringValue,
+            pni: pni
+        )
+        return SignalServiceAddress(
+            serviceId: normalizedAddress?.serviceId,
+            phoneNumber: normalizedAddress?.phoneNumber
+        )
     }
 
     public convenience init(aci: Aci?, pni: Pni?, phoneNumber: E164?) {
@@ -68,7 +89,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             uniqueId: UUID().uuidString,
             aciString: aci?.serviceIdUppercaseString,
             pni: pni,
-            phoneNumber: phoneNumber?.stringValue,
+            phoneNumber: phoneNumber.map { PhoneNumber(stringValue: $0.stringValue, isDiscoverable: false) },
             deviceIds: deviceIds,
             unregisteredAtTimestamp: deviceIds.isEmpty ? Constants.distantPastUnregisteredTimestamp : nil
         )
@@ -106,7 +127,11 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             uniqueId: UUID().uuidString,
             aciString: backupContact.aci?.serviceIdUppercaseString,
             pni: backupContact.pni,
-            phoneNumber: backupContact.e164?.stringValue,
+            phoneNumber: backupContact.e164.map {
+                // Assume they're not discoverable. We'll learn the correct value for this
+                // property during the first CDS sync.
+                PhoneNumber(stringValue: $0.stringValue, isDiscoverable: false)
+            },
             deviceIds: deviceIds,
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
@@ -117,7 +142,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         uniqueId: String,
         aciString: String?,
         pni: Pni?,
-        phoneNumber: String?,
+        phoneNumber: PhoneNumber?,
         deviceIds: [UInt32],
         unregisteredAtTimestamp: UInt64?
     ) {
@@ -154,7 +179,8 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         guard uniqueId == otherRecipient.uniqueId else { return false }
         guard aciString == otherRecipient.aciString else { return false }
         guard pni == otherRecipient.pni else { return false }
-        guard phoneNumber == otherRecipient.phoneNumber else { return false }
+        guard phoneNumber?.stringValue == otherRecipient.phoneNumber?.stringValue else { return false }
+        guard phoneNumber?.isDiscoverable == otherRecipient.phoneNumber?.isDiscoverable else { return false }
         guard deviceIds == otherRecipient.deviceIds else { return false }
         guard unregisteredAtTimestamp == otherRecipient.unregisteredAtTimestamp else { return false }
         return true
@@ -166,7 +192,8 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         hasher.combine(uniqueId)
         hasher.combine(aciString)
         hasher.combine(pni)
-        hasher.combine(phoneNumber)
+        hasher.combine(phoneNumber?.stringValue)
+        hasher.combine(phoneNumber?.isDiscoverable)
         hasher.combine(deviceIds)
         hasher.combine(unregisteredAtTimestamp)
         return hasher.finalize()
@@ -181,6 +208,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         case phoneNumber = "recipientPhoneNumber"
         case deviceIds = "devices"
         case unregisteredAtTimestamp
+        case isPhoneNumberDiscoverable
     }
 
     public init(from decoder: Decoder) throws {
@@ -196,7 +224,14 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         aciString = try container.decodeIfPresent(String.self, forKey: .aciString)
         pni = try container.decodeIfPresent(String.self, forKey: .pni).map { try Pni.parseFrom(serviceIdString: $0) }
-        phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
+        if let phoneNumberStringValue = try container.decodeIfPresent(String.self, forKey: .phoneNumber) {
+            phoneNumber = PhoneNumber(
+                stringValue: phoneNumberStringValue,
+                isDiscoverable: try container.decodeIfPresent(Bool.self, forKey: .isPhoneNumberDiscoverable) ?? false
+            )
+        } else {
+            phoneNumber = nil
+        }
         let encodedDeviceIds = try container.decode(Data.self, forKey: .deviceIds)
         let deviceSetObjC: NSOrderedSet = try LegacySDSSerializer().deserializeLegacySDSData(encodedDeviceIds, propertyName: "devices")
         let deviceArray = (deviceSetObjC.array as? [NSNumber])?.map { $0.uint32Value }
@@ -214,7 +249,8 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encodeIfPresent(aciString, forKey: .aciString)
         try container.encodeIfPresent(pni?.serviceIdUppercaseString, forKey: .pni)
-        try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
+        try container.encodeIfPresent(phoneNumber?.stringValue, forKey: .phoneNumber)
+        try container.encodeIfPresent(phoneNumber?.isDiscoverable, forKey: .isPhoneNumberDiscoverable)
         let deviceSetObjC = NSOrderedSet(array: deviceIds.map { NSNumber(value: $0) })
         let encodedDevices = LegacySDSSerializer().serializeAsLegacySDSData(property: deviceSetObjC)
         try container.encode(encodedDevices, forKey: .deviceIds)
@@ -247,7 +283,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     public static func fetchAllPhoneNumbers(tx: SDSAnyReadTransaction) -> [String: Bool] {
         var result = [String: Bool]()
         Self.anyEnumerate(transaction: tx) { signalRecipient, _ in
-            guard let phoneNumber = signalRecipient.phoneNumber else {
+            guard let phoneNumber = signalRecipient.phoneNumber?.stringValue else {
                 return
             }
             result[phoneNumber] = signalRecipient.isRegistered
@@ -259,7 +295,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     @objc
     public var addressComponentsDescription: String {
-        SignalServiceAddress.addressComponentsDescription(uuidString: aciString, phoneNumber: phoneNumber)
+        SignalServiceAddress.addressComponentsDescription(uuidString: aciString, phoneNumber: phoneNumber?.stringValue)
     }
 }
 

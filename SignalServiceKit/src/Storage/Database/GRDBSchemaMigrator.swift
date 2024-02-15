@@ -246,6 +246,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addDeletedCallRecordTable
         case addFirstDeletedIndexToDeletedCallRecord
         case addCallRecordDeleteAllColumnsToJobRecord
+        case addPhoneNumberSharingAndDiscoverability
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -305,7 +306,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 64
+    public static let grdbSchemaVersionLatest: UInt = 65
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2577,6 +2578,16 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "CRDAJR_deleteAllBeforeTimestamp", .integer)
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.addPhoneNumberSharingAndDiscoverability) { tx in
+            try tx.database.alter(table: "model_SignalRecipient") { table in
+                table.add(column: "isPhoneNumberDiscoverable", .boolean)
+            }
+            try tx.database.alter(table: "model_OWSUserProfile") { table in
+                table.add(column: "isPhoneNumberShared", .boolean)
+            }
             return .success(())
         }
 

@@ -154,7 +154,7 @@ class RecipientMergerTest: XCTestCase {
                 for finalRecipient in testCase.finalState.reversed() {
                     let signalRecipient = d.recipientDatabaseTable.recipientTable.removeValue(forKey: finalRecipient.rowId)
                     XCTAssertEqual(signalRecipient?.aci, finalRecipient.aci, "\(idx)")
-                    XCTAssertEqual(signalRecipient?.phoneNumber, finalRecipient.phoneNumber?.stringValue, "\(idx)")
+                    XCTAssertEqual(signalRecipient?.phoneNumber?.stringValue, finalRecipient.phoneNumber?.stringValue, "\(idx)")
                 }
                 XCTAssertEqual(d.recipientDatabaseTable.recipientTable, [:], "\(idx)")
             }
@@ -310,14 +310,14 @@ class RecipientMergerTest: XCTestCase {
             }
 
             // Make sure the returned recipient has the correct details.
-            XCTAssertEqual(mergedRecipient?.phoneNumber, phone1.stringValue)
+            XCTAssertEqual(mergedRecipient?.phoneNumber?.stringValue, phone1.stringValue)
             XCTAssertEqual(mergedRecipient?.pni, pni1)
             if testCase.includeAci { XCTAssertEqual(mergedRecipient?.aci, aci1) }
 
             // Make sure all the recipients have been updated properly.
             for (idx, finalState) in testCase.finalState.enumerated() {
                 let recipient = try XCTUnwrap(d.recipientDatabaseTable.recipientTable.removeValue(forKey: idx + 1))
-                XCTAssertEqual(recipient.phoneNumber, finalState?.phoneNumber?.stringValue)
+                XCTAssertEqual(recipient.phoneNumber?.stringValue, finalState?.phoneNumber?.stringValue)
                 XCTAssertEqual(recipient.pni, finalState?.pni)
                 XCTAssertEqual(recipient.aci, finalState?.aci)
             }
@@ -381,7 +381,7 @@ class RecipientMergerTest: XCTestCase {
                     d.aciSessionStoreKeyValueStore.setData(Data(), key: recipient.uniqueId, transaction: tx)
                     let thread = TSContactThread(contactAddress: SignalServiceAddress(
                         serviceId: recipient.aci ?? recipient.pni,
-                        phoneNumber: recipient.phoneNumber,
+                        phoneNumber: recipient.phoneNumber?.stringValue,
                         cache: SignalServiceAddressCache(),
                         cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
                     ))
@@ -565,7 +565,7 @@ class RecipientMergerTest: XCTestCase {
             // Make sure all the recipients have been updated properly.
             for (idx, finalState) in testCase.finalState.enumerated() {
                 let recipient = try XCTUnwrap(d.recipientDatabaseTable.recipientTable.removeValue(forKey: idx + 1))
-                XCTAssertEqual(recipient.phoneNumber, finalState.phoneNumber?.stringValue)
+                XCTAssertEqual(recipient.phoneNumber?.stringValue, finalState.phoneNumber?.stringValue)
                 XCTAssertEqual(recipient.pni, finalState.pni)
                 XCTAssertEqual(recipient.aci, finalState.aci)
                 if finalState.isResult {

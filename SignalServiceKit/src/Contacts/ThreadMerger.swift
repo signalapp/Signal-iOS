@@ -291,7 +291,7 @@ final class ThreadMerger {
         if let finalThread = threadsToMerge.first {
             let normalizedAddress = NormalizedDatabaseRecordAddress(
                 aci: recipient.aci,
-                phoneNumber: recipient.phoneNumber,
+                phoneNumber: recipient.phoneNumber?.stringValue,
                 pni: recipient.pni
             )
             finalThread.contactUUID = normalizedAddress?.serviceId?.serviceIdUppercaseString

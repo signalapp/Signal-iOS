@@ -583,7 +583,7 @@ extension OWSContactsManager {
                     contact: contact,
                     contactAvatarHash: contactAvatarHash,
                     multipleAccountLabelText: multipleAccountLabelText,
-                    recipientPhoneNumber: signalRecipient.phoneNumber,
+                    recipientPhoneNumber: signalRecipient.phoneNumber?.stringValue,
                     recipientServiceId: recipientServiceId
                 )
                 signalAccounts.append(signalAccount)
@@ -965,10 +965,10 @@ extension OWSContactsManager {
             guard let phoneNumber = signalRecipient.phoneNumber else {
                 continue  // Can't happen.
             }
-            guard addressBookPhoneNumbers.contains(phoneNumber) else {
+            guard addressBookPhoneNumbers.contains(phoneNumber.stringValue) else {
                 continue  // Not in the address book -- no notification.
             }
-            guard phoneNumberRegistrationStatus[phoneNumber] != true else {
+            guard phoneNumberRegistrationStatus[phoneNumber.stringValue] != true else {
                 continue  // They were already registered -- no notification.
             }
             NewAccountDiscovery.postNotification(for: signalRecipient, tx: tx)
@@ -988,9 +988,9 @@ extension OWSContactsManager {
         let recipientHidingManager = DependenciesBridge.shared.recipientHidingManager
         for hiddenRecipient in recipientHidingManager.hiddenRecipients(tx: tx) {
             guard let phoneNumber = hiddenRecipient.phoneNumber else {
-                continue // Intersecting with contacts by phone number
+                continue // We can't unhide because of the address book w/o a phone number.
             }
-            guard addressBookPhoneNumbers.contains(phoneNumber) else {
+            guard addressBookPhoneNumbers.contains(phoneNumber.stringValue) else {
                 continue  // Not in the address book -- no unhiding.
             }
             DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(

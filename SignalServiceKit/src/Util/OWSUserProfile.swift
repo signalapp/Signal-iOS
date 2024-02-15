@@ -230,6 +230,21 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     @objc
     private(set) public var lastMessagingDate: Date?
 
+    /// Stores whether or not the phone number is shared for this account.
+    ///
+    /// Note that we may not yet know a phone number that's shared (and vice
+    /// versa). If the value is nil, then it means there's not a value, we've
+    /// never had a profile key for this user, or the value can't be decrypted.
+    private(set) public var isPhoneNumberShared: Bool?
+
+    public var isPhoneNumberSharedOrDefault: Bool {
+        return isPhoneNumberShared ?? Self.isPhoneNumberSharedByDefault
+    }
+
+    public static var isPhoneNumberSharedByDefault: Bool {
+        return PhoneNumberSharingMode.defaultValue == .everybody
+    }
+
     public convenience init(address: NormalizedDatabaseRecordAddress?) {
         owsAssertDebug(address != nil)
         self.init(
@@ -246,7 +261,8 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             bioEmoji: nil,
             badges: [],
             lastFetchDate: nil,
-            lastMessagingDate: nil
+            lastMessagingDate: nil,
+            isPhoneNumberShared: nil
         )
     }
 
@@ -264,7 +280,8 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         bioEmoji: String?,
         badges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date?,
-        lastMessagingDate: Date?
+        lastMessagingDate: Date?,
+        isPhoneNumberShared: Bool?
     ) {
         self.id = id
         self.uniqueId = uniqueId
@@ -280,6 +297,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         self.badges = badges
         self.lastFetchDate = lastFetchDate
         self.lastMessagingDate = lastMessagingDate
+        self.isPhoneNumberShared = isPhoneNumberShared
     }
 
     public func copy(with zone: NSZone? = nil) -> Any {
@@ -302,7 +320,8 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             bioEmoji: bioEmoji,
             badges: badges,
             lastFetchDate: lastFetchDate,
-            lastMessagingDate: lastMessagingDate
+            lastMessagingDate: lastMessagingDate,
+            isPhoneNumberShared: isPhoneNumberShared
         )
     }
 
@@ -324,6 +343,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         guard badges == otherProfile.badges else { return false }
         guard lastFetchDate == otherProfile.lastFetchDate else { return false }
         guard lastMessagingDate == otherProfile.lastMessagingDate else { return false }
+        guard isPhoneNumberShared == otherProfile.isPhoneNumberShared else { return false }
         return true
     }
 
@@ -346,6 +366,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         case isStoriesCapable
         case canReceiveGiftBadges
         case isPniCapable
+        case isPhoneNumberShared
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -368,6 +389,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         try container.encode(true, forKey: .isStoriesCapable)
         try container.encode(true, forKey: .canReceiveGiftBadges)
         try container.encode(true, forKey: .isPniCapable)
+        try container.encodeIfPresent(isPhoneNumberShared, forKey: .isPhoneNumberShared)
     }
 
     public init(from decoder: Decoder) throws {
@@ -395,6 +417,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         } ?? []
         lastFetchDate = try container.decodeIfPresent(Date.self, forKey: .lastFetchDate)
         lastMessagingDate = try container.decodeIfPresent(Date.self, forKey: .lastMessagingDate)
+        isPhoneNumberShared = try container.decodeIfPresent(Bool.self, forKey: .isPhoneNumberShared)
     }
 
     private static func decodeProfileKey(_ profileKeyData: Data) throws -> OWSAES256Key {
@@ -855,6 +878,12 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     }
 }
 
+extension Optional where Wrapped == OWSUserProfile {
+    public var isPhoneNumberSharedOrDefault: Bool {
+        return self?.isPhoneNumberSharedOrDefault ?? OWSUserProfile.isPhoneNumberSharedByDefault
+    }
+}
+
 // MARK: -
 
 extension OWSUserProfile {
@@ -932,6 +961,7 @@ private struct UserProfileChanges {
     var lastMessagingDate: OptionalChange<Date>
     var profileKey: OptionalChange<OWSAES256Key>
     var badges: OptionalChange<[OWSUserProfileBadgeInfo]>
+    var isPhoneNumberShared: OptionalChange<Bool?>
 }
 
 // MARK: - Update With... Methods
@@ -1024,6 +1054,7 @@ extension OWSUserProfile {
         visibleChangeCount += setIfChanged(changes.bioEmoji, keyPath: \.bioEmoji)
         visibleChangeCount += setIfChanged(changes.badges, keyPath: \.badges)
         visibleChangeCount += setIfChanged(changes.profileKey.map { $0 as OWSAES256Key? }, keyPath: \.profileKey)
+        visibleChangeCount += setIfChanged(changes.isPhoneNumberShared, keyPath: \.isPhoneNumberShared)
 
         // Some properties are invisible/"polled", so changes don't matter.
         _ = setIfChanged(changes.lastFetchDate.map { $0 as Date? }, keyPath: \.lastFetchDate)
@@ -1199,6 +1230,7 @@ extension OWSUserProfile {
         lastMessagingDate: OptionalChange<Date> = .noChange,
         profileKey: OptionalChange<OWSAES256Key> = .noChange,
         badges: OptionalChange<[OWSUserProfileBadgeInfo]> = .noChange,
+        isPhoneNumberShared: OptionalChange<Bool?> = .noChange,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction,
@@ -1215,7 +1247,8 @@ extension OWSUserProfile {
                 lastFetchDate: lastFetchDate,
                 lastMessagingDate: lastMessagingDate,
                 profileKey: profileKey,
-                badges: badges
+                badges: badges,
+                isPhoneNumberShared: isPhoneNumberShared
             ),
             userProfileWriter: userProfileWriter,
             authedAccount: authedAccount,

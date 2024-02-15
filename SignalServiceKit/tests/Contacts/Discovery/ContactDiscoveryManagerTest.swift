@@ -52,7 +52,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         initialRequestFuture.resolve([])
         waitForExpectations(timeout: 10)
 
-        XCTAssertEqual(queuedRequestResult?.map { $0.phoneNumber! }, ["+16505550101"])
+        XCTAssertEqual(queuedRequestResult?.map { $0.phoneNumber!.stringValue }, ["+16505550101"])
     }
 
     func testRateLimit() throws {
@@ -136,7 +136,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         }.cauterize()
         wait(for: [requestExpectation], timeout: 10)
         if let result {
-            return Set(result.map { $0.phoneNumber! })
+            return Set(result.map { $0.phoneNumber!.stringValue })
         }
         return nil
     }

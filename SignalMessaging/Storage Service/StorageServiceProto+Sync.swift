@@ -152,7 +152,7 @@ struct StorageServiceContact {
         }
         self.init(
             aci: signalRecipient.aci,
-            phoneNumber: E164.expectNilOrValid(stringValue: signalRecipient.phoneNumber),
+            phoneNumber: E164.expectNilOrValid(stringValue: signalRecipient.phoneNumber?.stringValue),
             pni: signalRecipient.pni,
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
@@ -447,7 +447,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             // Storage Service knows everything we know.
             needsUpdate: (
                 recipient.aci != contact.aci
-                || E164(recipient.phoneNumber) != contact.phoneNumber
+                || E164(recipient.phoneNumber?.stringValue) != contact.phoneNumber
                 || recipient.pni != contact.pni
             ),
             tx: transaction.asV2Write

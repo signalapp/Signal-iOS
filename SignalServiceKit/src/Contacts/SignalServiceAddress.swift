@@ -515,7 +515,7 @@ public class SignalServiceAddressCache: NSObject {
         updateRecipient(
             aci: signalRecipient.aci,
             pni: signalRecipient.pni,
-            phoneNumber: signalRecipient.phoneNumber
+            phoneNumber: signalRecipient.phoneNumber?.stringValue
         )
     }
 

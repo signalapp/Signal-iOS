@@ -91,7 +91,7 @@ class MockRecipientDatabaseTable: RecipientDatabaseTable {
     }
 
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient? {
-        return recipientTable.values.first(where: { $0.phoneNumber == phoneNumber })?.copyRecipient() ?? nil
+        return recipientTable.values.first(where: { $0.phoneNumber?.stringValue == phoneNumber })?.copyRecipient() ?? nil
     }
 
     func enumerateAll(tx: DBReadTransaction, block: (SignalRecipient) -> Void) {

@@ -40,7 +40,7 @@ enum UniqueRecipientObjectMerger {
         var results = [T]()
 
         let aci: Aci? = recipient.aci
-        let phoneNumber: E164? = E164(recipient.phoneNumber)
+        let phoneNumber: E164? = E164(recipient.phoneNumber?.stringValue)
         let pni: Pni? = recipient.pni
 
         // Find any objects already associated with the ACI. These definitely

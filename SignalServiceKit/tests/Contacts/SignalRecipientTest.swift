@@ -92,7 +92,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         write { transaction in
             let recipient = mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: transaction)
             XCTAssertEqual(recipient.aci, aci)
-            XCTAssertEqual(recipient.phoneNumber, phoneNumber.stringValue)
+            XCTAssertEqual(recipient.phoneNumber?.stringValue, phoneNumber.stringValue)
 
             // The incomplete address is automatically filled after marking the
             // complete address as registered.
@@ -654,14 +654,16 @@ final class SignalRecipient2Test: XCTestCase {
             XCTAssertEqual(signalRecipients[0].id, 18)
             XCTAssertEqual(signalRecipients[0].uniqueId, "00000000-0000-4000-8000-00000000000A")
             XCTAssertEqual(signalRecipients[0].deviceIds, [1, 2, 5, 4, 6])
-            XCTAssertEqual(signalRecipients[0].phoneNumber, "+16505550100")
+            XCTAssertEqual(signalRecipients[0].phoneNumber?.stringValue, "+16505550100")
+            XCTAssertEqual(signalRecipients[0].phoneNumber?.isDiscoverable, false)
             XCTAssertEqual(signalRecipients[0].aciString, "00000000-0000-4000-8000-000000000000")
             XCTAssertEqual(signalRecipients[0].unregisteredAtTimestamp, nil)
 
             XCTAssertEqual(signalRecipients[1].id, 21)
             XCTAssertEqual(signalRecipients[1].uniqueId, "00000000-0000-4000-8000-00000000000B")
             XCTAssertEqual(signalRecipients[1].deviceIds, [])
-            XCTAssertEqual(signalRecipients[1].phoneNumber, "+16505550101")
+            XCTAssertEqual(signalRecipients[1].phoneNumber?.stringValue, "+16505550101")
+            XCTAssertEqual(signalRecipients[1].phoneNumber?.isDiscoverable, false)
             XCTAssertEqual(signalRecipients[1].aciString, "00000000-0000-4000-8000-000000000001")
             XCTAssertEqual(signalRecipients[1].unregisteredAtTimestamp, 1683679214631)
         }

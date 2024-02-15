@@ -87,6 +87,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             guard let recipient else {
                 return
             }
+            setPhoneNumberDiscoverable(true, for: recipient, tx: tx)
             recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx)
 
             // We process all the results that we were provided, but we only return the
@@ -115,12 +116,28 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             // else we ignore; we will identify their current registration status
             // either when attempting to send a message or when fetching their profile.
             let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
-            guard let recipient, recipient.aci == nil, recipient.pni == nil else {
+            guard let recipient else {
+                return
+            }
+            setPhoneNumberDiscoverable(false, for: recipient, tx: tx)
+            guard recipient.aci == nil, recipient.pni == nil else {
                 return
             }
             recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx)
         }
 
         return registeredRecipients
+    }
+
+    private func setPhoneNumberDiscoverable(
+        _ isPhoneNumberDiscoverable: Bool,
+        for recipient: SignalRecipient,
+        tx: DBWriteTransaction
+    ) {
+        if recipient.phoneNumber?.isDiscoverable == isPhoneNumberDiscoverable {
+            return
+        }
+        recipient.phoneNumber?.isDiscoverable = isPhoneNumberDiscoverable
+        recipient.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }

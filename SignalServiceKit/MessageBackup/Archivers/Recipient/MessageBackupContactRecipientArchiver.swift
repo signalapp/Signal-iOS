@@ -55,7 +55,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
                 let contactAddress = MessageBackup.ContactAddress(
                     aci: recipient.aci,
                     pni: recipient.pni,
-                    e164: E164(recipient.phoneNumber)
+                    e164: E164(recipient.phoneNumber?.stringValue)
                 )
             else {
                 // Skip but don't add to the list of errors.
