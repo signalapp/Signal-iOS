@@ -553,19 +553,19 @@ public class SDSDatabaseStorage: NSObject {
         asyncRead(file: "objc", function: "block", line: 0, block: block, completion: completion)
     }
 
-    public func asyncRead(
+    public func asyncRead<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyReadTransaction) -> Void,
+        block: @escaping (SDSAnyReadTransaction) -> T,
         completionQueue: DispatchQueue = .main,
-        completion: (() -> Void)? = nil
+        completion: ((T) -> Void)? = nil
     ) {
         DispatchQueue.global().async {
-            self.read(file: file, function: function, line: line, block: block)
+            let result = self.read(file: file, function: function, line: line, block: block)
 
             if let completion {
-                completionQueue.async(execute: completion)
+                completionQueue.async(execute: { completion(result) })
             }
         }
     }
@@ -579,28 +579,28 @@ public class SDSDatabaseStorage: NSObject {
         asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
     }
 
-    public func asyncWrite(
+    public func asyncWrite<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyWriteTransaction) -> Void,
-        completion: (() -> Void)?
+        block: @escaping (SDSAnyWriteTransaction) -> T,
+        completion: ((T) -> Void)?
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completionQueue: .main, completion: completion)
     }
 
-    public func asyncWrite(
+    public func asyncWrite<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyWriteTransaction) -> Void,
+        block: @escaping (SDSAnyWriteTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: (() -> Void)?
+        completion: ((T) -> Void)?
     ) {
         self.asyncWriteQueue.async {
-            self.write(file: file, function: function, line: line, block: block)
+            let result = self.write(file: file, function: function, line: line, block: block)
             if let completion {
-                completionQueue.async(execute: completion)
+                completionQueue.async(execute: { completion(result) })
             }
         }
     }

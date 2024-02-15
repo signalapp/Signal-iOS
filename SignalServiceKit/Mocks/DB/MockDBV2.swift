@@ -120,40 +120,40 @@ public class MockDB: DB {
 
     // MARK: - Async Methods
 
-    public func asyncRead(
+    public func asyncRead<T>(
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBReadTransaction) -> Void,
+        block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: (() -> Void)?
+        completion: ((T) -> Void)?
     ) {
         queue.sync {
-            performRead(block: block)
+            let result = performRead(block: block)
 
             guard let completion else { return }
 
             completionQueue.sync {
-                completion()
+                completion(result)
             }
         }
     }
 
-    public func asyncWrite(
+    public func asyncWrite<T>(
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) -> Void,
+        block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: (() -> Void)?
+        completion: ((T) -> Void)?
     ) {
         queue.sync {
-            performWrite(block: block)
+            let result = performWrite(block: block)
 
             guard let completion else { return }
 
             completionQueue.sync {
-                completion()
+                completion(result)
             }
         }
     }
