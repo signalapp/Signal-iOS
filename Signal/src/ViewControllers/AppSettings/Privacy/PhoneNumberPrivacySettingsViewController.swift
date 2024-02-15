@@ -22,6 +22,11 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateTableContents()
+    }
+
     override func themeDidChange() {
         super.themeDidChange()
         updateTableContents()
@@ -158,6 +163,10 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     /// `phoneNumberSharingMode` and `phoneNumberDiscoverability` change as its
     /// height is calculated based on the text of each possible description.
     private func createSharingFooter() -> UIView {
+        let sharingDescriptionEverybody = sharingDescriptionEverybody()
+        let sharingDescriptionNobodyDiscoverabilityNobody = sharingDescriptionNobodyDiscoverabilityNobody()
+        let sharingDescriptionNobodyDiscoverabilityEverybody = sharingDescriptionNobodyDiscoverabilityEverybody()
+
         // Determine which footer text to show.
         switch (phoneNumberSharingMode!, phoneNumberDiscoverability!) {
         case (.everybody, _):
@@ -189,32 +198,32 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         return container
     }
 
-    private lazy var sharingDescriptionEverybody: UITextView = {
+    private func sharingDescriptionEverybody() -> UITextView {
         let textView = buildFooterTextView(withDeepInsets: true)
         textView.text = OWSLocalizedString(
             "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION",
             comment: "A user friendly description of the 'everybody' phone number sharing mode."
         )
         return textView
-    }()
+    }
 
-    private lazy var sharingDescriptionNobodyDiscoverabilityNobody: UITextView = {
+    private func sharingDescriptionNobodyDiscoverabilityNobody() -> UITextView {
         let textView = buildFooterTextView(withDeepInsets: true)
         textView.text = OWSLocalizedString(
             "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY",
             comment: "A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'."
         )
         return textView
-    }()
+    }
 
-    private lazy var sharingDescriptionNobodyDiscoverabilityEverybody: UITextView = {
+    private func sharingDescriptionNobodyDiscoverabilityEverybody() -> UITextView {
         let textView = buildFooterTextView(withDeepInsets: true)
         textView.text = OWSLocalizedString(
             "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY",
             comment: "A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'."
         )
         return textView
-    }()
+    }
 }
 
 // MARK: - PhoneNumberDiscoverability + strings
