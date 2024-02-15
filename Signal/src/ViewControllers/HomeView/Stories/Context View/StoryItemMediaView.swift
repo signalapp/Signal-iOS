@@ -278,9 +278,13 @@ class StoryItemMediaView: UIView {
             size: CGSize(square: 60)
         )
         guard downloadHitRegion.contains(gesture.location(in: self)) else { return false }
-        return item.startAttachmentDownloadIfNecessary { [weak self] in
+        guard let promise = item.startAttachmentDownloadIfNecessary() else {
+            return false
+        }
+        promise.observe(on: DispatchQueue.main) { [weak self] _ in
             self?.updateMediaView()
         }
+        return true
     }
 
     // MARK: - Author Row
@@ -1063,22 +1067,25 @@ extension StoryItem {
     // MARK: - Downloading
 
     @discardableResult
-    func startAttachmentDownloadIfNecessary(completion: (() -> Void)? = nil) -> Bool {
-        guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.attachment.state) else { return false }
+    func startAttachmentDownloadIfNecessary() -> Promise<Void>? {
+        guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.attachment.state) else {
+            return nil
+        }
 
-        attachmentDownloads.enqueueDownloadOfAttachments(
+        return attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: message.uniqueId,
             downloadBehavior: .bypassAll,
-            touchMessageImmediately: true) {
-                DispatchQueue.main.async { completion?() }
-            }
-
-        return true
+            touchMessageImmediately: true
+        )
     }
 
     var isPendingDownload: Bool {
-        guard case .pointer = attachment else { return false }
-        return true
+        switch attachment {
+        case .pointer:
+            return true
+        case .stream, .text:
+            return false
+        }
     }
 }
 

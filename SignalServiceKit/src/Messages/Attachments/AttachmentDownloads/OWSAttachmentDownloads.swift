@@ -16,7 +16,13 @@ public class OWSAttachmentDownloads: NSObject {
     private var activeJobMap = [AttachmentId: Job]()
     // This property should only be accessed with unfairLock.
     private var jobQueue = [Job]()
+    // Not used to determine whether a job should be run; the source of truth
+    // for that is the database Attachment's state.
+    // Just used to drive progress indicators.
     private var completeAttachmentMap = LRUCache<AttachmentId, Bool>(maxSize: 256)
+
+    private static let schedulers: Schedulers = DispatchQueueSchedulers()
+    private var schedulers: Schedulers { Self.schedulers }
 
     @objc
     public override init() {
@@ -151,75 +157,141 @@ public class OWSAttachmentDownloads: NSObject {
 
     // MARK: -
 
-    private func enqueueJob(job: Job) {
+    private func enqueueJobs(jobs: [Job]) {
         Self.unfairLock.withLock {
-            jobQueue.append(job)
+            jobQueue.append(contentsOf: jobs)
         }
 
         tryToStartNextDownload()
     }
 
-    private func dequeueNextJob() -> Job? {
-        Self.unfairLock.withLock {
+    private func dequeueNextJobs() -> [(Job, TSAttachmentPointer)] {
+        /// Within the lock we:
+        /// 1. Check if we have a job thats eligible to run
+        ///     a. Not too many parallel downloads
+        ///     b. A job for the same attachment is not already in progress or complete.
+        ///     c. The job has not been cancelled.
+        /// 2. Re-fetch the attachment for the job
+        ///     a. Ensure its not already downloaded, or was not deleted
+        /// 3. Mark the job as running
+        ///
+        /// Because we check whether we are already running a job and then mark the job
+        /// as running within the lock, we avoid races.
+        return Self.unfairLock.withLock {
             let kMaxSimultaneousDownloads: Int = CurrentAppContext().isNSE ? 1 : 4
-            guard activeJobMap.count < kMaxSimultaneousDownloads else {
-                return nil
+            let maxNumJobsToRun = kMaxSimultaneousDownloads - activeJobMap.count
+            guard maxNumJobsToRun > 0 else {
+                return []
             }
-            guard let job = jobQueue.first else {
-                return nil
+            var indexesToRemove = [Int]()
+            var jobsToRun = [(Job, TSAttachmentPointer)]()
+
+            // Go through each job in the queue, until we find jobs we can run,
+            // up to the count we can run at a time.
+            // Either:
+            // 1. The job can be run: assign it to jobToRun and break
+            // 2. The job can't be run yet, but might be later: leave it in the queue
+            // 3. The job is running already: join its promise to the running instance & remove
+            // 4. The already finished: remove it (we don't assign the promise as we assume
+            //    downstream actions already happened)
+            // 5. The job has been cancelled or attachment deleted: reject it and remove it
+            jobLoop: for (index, job) in jobQueue.enumerated() {
+                if _shouldCancelJobWithinLock(job, asOfDate: Date()) {
+                    // Job is cancelled! Fail it and drop it.
+                    job.future.reject(AttachmentDownloadError.cancelled)
+                    indexesToRemove.append(index)
+
+                    continue
+                }
+
+                if let existingJob = activeJobMap[job.attachmentId] {
+                    // Ensure we only have one download in flight at a time for a given attachment.
+                    Logger.warn("Ignoring duplicate download.")
+
+                    // Link up this job's promise to the other job, then remove it.
+                    job.future.resolve(on: schedulers.sync, with: existingJob.promise)
+                    indexesToRemove.append(index)
+
+                    continue
+                }
+                switch self.prepareDownload(job: job) {
+                case .alreadyDownloaded:
+                    self._markJobCompleteWithinLock(job, isAttachmentDownloaded: true)
+                    indexesToRemove.append(index)
+                    continue
+                case .attachmentDeleted:
+                    self._markJobCompleteWithinLock(job, isAttachmentDownloaded: true)
+                    indexesToRemove.append(index)
+                    continue
+                case .cannotDownload:
+                    // Just leave it in the queue. Maybe we can download it later.
+                    continue
+                case .downloadable(let tSAttachmentPointer):
+                    indexesToRemove.append(index)
+                    jobsToRun.append((job, tSAttachmentPointer))
+                    if jobsToRun.count == maxNumJobsToRun {
+                        break jobLoop
+                    }
+                }
             }
-            jobQueue.remove(at: 0)
-            guard activeJobMap[job.attachmentId] == nil else {
-                // Ensure we only have one download in flight at a time for a given attachment.
-                Logger.warn("Ignoring duplicate download.")
-                return nil
+            for indexToRemove in indexesToRemove.reversed() {
+                jobQueue.remove(at: indexToRemove)
             }
-            activeJobMap[job.attachmentId] = job
-            return job
+
+            jobsToRun.forEach { job, _  in
+                activeJobMap[job.attachmentId] = job
+            }
+
+            return jobsToRun
         }
     }
 
     private func markJobComplete(_ job: Job, isAttachmentDownloaded: Bool) {
         Self.unfairLock.withLock {
-            let attachmentId = job.attachmentId
-
-            owsAssertDebug(activeJobMap[attachmentId] != nil)
-            activeJobMap[attachmentId] = nil
-
-            cancellationRequestMap[attachmentId] = nil
-
-            if isAttachmentDownloaded {
-                owsAssertDebug(nil == completeAttachmentMap[attachmentId])
-                completeAttachmentMap[attachmentId] = true
-            }
+            _markJobCompleteWithinLock(job, isAttachmentDownloaded: isAttachmentDownloaded)
         }
         tryToStartNextDownload()
     }
 
+    private func _markJobCompleteWithinLock(_ job: Job, isAttachmentDownloaded: Bool) {
+        let attachmentId = job.attachmentId
+
+        activeJobMap[attachmentId] = nil
+
+        cancellationRequestMap[attachmentId] = nil
+
+        if isAttachmentDownloaded {
+            owsAssertDebug(nil == completeAttachmentMap[attachmentId])
+            completeAttachmentMap[attachmentId] = true
+        }
+    }
+
     private func tryToStartNextDownload() {
-        Self.serialQueue.async {
-            guard let job = self.dequeueNextJob() else {
-                return
-            }
+        let jobs = dequeueNextJobs()
+        guard !jobs.isEmpty else {
+            return
+        }
 
-            guard let attachmentPointer = self.prepareDownload(job: job) else {
-                // Abort.
-                self.markJobComplete(job, isAttachmentDownloaded: false)
-                return
-            }
-
-            firstly { () -> Promise<TSAttachmentStream> in
+        jobs.forEach { job, attachmentPointer in
+            firstly(on: schedulers.sync) { () -> Promise<TSAttachmentStream> in
                 self.retrieveAttachment(job: job, attachmentPointer: attachmentPointer)
-            }.done(on: Self.serialQueue) { (attachmentStream: TSAttachmentStream) in
+            }.done(on: schedulers.sync) { (attachmentStream: TSAttachmentStream) in
                 self.downloadDidSucceed(attachmentStream: attachmentStream, job: job)
-            }.catch(on: Self.serialQueue) { (error: Error) in
+            }.catch(on: schedulers.sync) { (error: Error) in
                 self.downloadDidFail(error: error, job: job)
             }
         }
     }
 
-    private func prepareDownload(job: Job) -> TSAttachmentPointer? {
-        Self.databaseStorage.write { (transaction) -> TSAttachmentPointer? in
+    enum PrepareDownloadResult {
+        case alreadyDownloaded
+        case attachmentDeleted
+        case cannotDownload
+        case downloadable(TSAttachmentPointer)
+    }
+
+    private func prepareDownload(job: Job) -> PrepareDownloadResult {
+        return Self.databaseStorage.write { (transaction) -> PrepareDownloadResult in
             // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
             guard let attachment = job.loadLatestAttachment(transaction: transaction) else {
                 // This isn't necessarily a bug.  For example:
@@ -229,20 +301,15 @@ public class OWSAttachmentDownloads: NSObject {
                 // * Receive read receipt for that message, causing it to be disappeared immediately.
                 // * Try to download that attachment - but it's missing.
                 Logger.warn("Missing attachment: \(job.category).")
-                return nil
+                return .attachmentDeleted
             }
             guard let attachmentPointer = attachment as? TSAttachmentPointer else {
                 // This isn't necessarily a bug.
                 //
                 // * An attachment may have been re-enqueued for download while it was already being downloaded.
-                owsFailDebug("Attachment already downloaded: \(job.category).")
+                Logger.info("Attachment already downloaded: \(job.category).")
 
-                Self.unfairLock.withLock {
-                    owsAssertDebug(nil == completeAttachmentMap[job.attachmentId])
-                    completeAttachmentMap[job.attachmentId] = true
-                }
-
-                return nil
+                return .alreadyDownloaded
             }
 
             switch job.jobType {
@@ -252,7 +319,7 @@ public class OWSAttachmentDownloads: NSObject {
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .failed,
                                                                    transaction: transaction)
-                    return nil
+                    return .cannotDownload
                 }
 
                 if self.isDownloadBlockedByActiveCall(job: job) {
@@ -260,11 +327,11 @@ public class OWSAttachmentDownloads: NSObject {
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingManualDownload,
                                                                    transaction: transaction)
-                    return nil
+                    return .cannotDownload
                 }
                 guard let message = TSMessage.anyFetchMessage(uniqueId: messageUniqueId, transaction: transaction) else {
                     Logger.info("Skipping media download due to missing message: \(job.category).")
-                    return nil
+                    return .attachmentDeleted
                 }
                 let blockedByPendingMessageRequest = self.isDownloadBlockedByPendingMessageRequest(
                     job: job,
@@ -277,7 +344,7 @@ public class OWSAttachmentDownloads: NSObject {
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingMessageRequest,
                                                                    transaction: transaction)
-                    return nil
+                    return .cannotDownload
                 }
                 let blockedByAutoDownloadSettings = self.isDownloadBlockedByAutoDownloadSettings(
                     job: job,
@@ -289,7 +356,7 @@ public class OWSAttachmentDownloads: NSObject {
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingManualDownload,
                                                                    transaction: transaction)
-                    return nil
+                    return .cannotDownload
                 }
             case .storyMessageAttachment:
                 if DebugFlags.forceAttachmentDownloadFailures.get() {
@@ -297,7 +364,7 @@ public class OWSAttachmentDownloads: NSObject {
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .failed,
                                                                    transaction: transaction)
-                    return nil
+                    return .cannotDownload
                 }
 
                 if self.isDownloadBlockedByActiveCall(job: job) {
@@ -305,7 +372,7 @@ public class OWSAttachmentDownloads: NSObject {
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingManualDownload,
                                                                    transaction: transaction)
-                    return nil
+                    return .cannotDownload
                 }
                 let blockedByAutoDownloadSettings = self.isDownloadBlockedByAutoDownloadSettings(
                     job: job,
@@ -317,7 +384,7 @@ public class OWSAttachmentDownloads: NSObject {
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingManualDownload,
                                                                    transaction: transaction)
-                    return nil
+                    return .cannotDownload
                 }
             case .contactSync:
                 // We don't need to apply attachment download settings
@@ -331,7 +398,7 @@ public class OWSAttachmentDownloads: NSObject {
 
             Self.touchAssociatedElement(for: job.jobType, tx: transaction)
 
-            return attachmentPointer
+            return .downloadable(attachmentPointer)
         }
     }
 
@@ -532,11 +599,15 @@ public class OWSAttachmentDownloads: NSObject {
 
     private func shouldCancelJob(downloadState: DownloadState) -> Bool {
         Self.unfairLock.withLock {
-            guard let cancellationDate = cancellationRequestMap[downloadState.job.attachmentId] else {
-                return false
-            }
-            return cancellationDate > downloadState.startDate
+            _shouldCancelJobWithinLock(downloadState.job, asOfDate: downloadState.startDate)
         }
+    }
+
+    private func _shouldCancelJobWithinLock(_ job: Job, asOfDate date: Date) -> Bool {
+        guard let cancellationDate = cancellationRequestMap[job.attachmentId] else {
+            return false
+        }
+        return cancellationDate > date
     }
 }
 
@@ -707,22 +778,13 @@ public extension OWSAttachmentDownloads {
 
     private func enqueueDownload(jobRequest: JobRequest) {
         guard !CurrentAppContext().isRunningTests else {
-            Self.serialQueue.async {
-                jobRequest.jobs.forEach {
-                    $0.future.reject(OWSAttachmentDownloads.buildError())
-                }
+            jobRequest.jobs.forEach {
+                $0.future.reject(OWSAttachmentDownloads.buildError())
             }
             return
         }
 
-        Self.serialQueue.async {
-            Self.databaseStorage.read { transaction in
-                self.enqueueJobs(
-                    jobRequest: jobRequest,
-                    transaction: transaction
-                )
-            }
-        }
+        self.enqueueJobs(jobRequest: jobRequest)
     }
 
     @objc
@@ -796,55 +858,59 @@ public extension OWSAttachmentDownloads {
         downloadBehavior: AttachmentDownloadBehavior,
         touchMessageImmediately: Bool
     ) {
-        Self.serialQueue.async {
-            guard !CurrentAppContext().isRunningTests else {
-                return
+        guard !CurrentAppContext().isRunningTests else {
+            return
+        }
+        let bundle: (TSMessage, MessageJobRequest)? = Self.databaseStorage.read { transaction in
+            guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: transaction) else {
+                return nil
             }
-            Self.databaseStorage.read { transaction in
-                guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: transaction) else {
-                    return
-                }
-                let jobRequest = MessageJobRequest(
-                    message: message,
-                    attachmentGroup: attachmentGroup,
-                    downloadBehavior: downloadBehavior,
-                    tx: transaction
-                )
-                guard !jobRequest.isEmpty else {
-                    return
-                }
-                self.enqueueJobs(
-                    jobRequest: jobRequest,
+            let jobRequest = MessageJobRequest(
+                message: message,
+                attachmentGroup: attachmentGroup,
+                downloadBehavior: downloadBehavior,
+                tx: transaction
+            )
+            guard !jobRequest.isEmpty else {
+                return nil
+            }
+
+            return (message, jobRequest)
+        }
+
+        guard let (message, jobRequest) = bundle else {
+            return
+        }
+
+        self.enqueueJobs(jobRequest: jobRequest)
+
+        if touchMessageImmediately {
+            Self.databaseStorage.asyncWrite { transaction in
+                Self.databaseStorage.touch(
+                    interaction: message,
+                    shouldReindex: false,
                     transaction: transaction
                 )
-
-                if touchMessageImmediately {
-                    Self.databaseStorage.asyncWrite { transaction in
-                        Self.databaseStorage.touch(interaction: message,
-                                                   shouldReindex: false,
-                                                   transaction: transaction)
-                    }
-                }
-
-                jobRequest.quotedReplyThumbnailPromise?.done(on: Self.serialQueue) { attachmentStream in
-                    Self.updateQuotedMessageThumbnail(
-                        messageId: messageId,
-                        attachmentStream: attachmentStream
-                    )
-                }.cauterize()
-
-                let jobCount = jobRequest.jobs.count
-
-                Promise.when(
-                    on: Self.serialQueue,
-                    fulfilled: jobRequest.jobs.map(\.promise)
-                ).done(on: Self.serialQueue) { _ in
-                    Logger.debug("Successfully fetched \(jobCount) attachment(s) for message: \(messageId)")
-                }.catch(on: Self.serialQueue) { error in
-                    Logger.warn("Failed to fetch attachments for message: \(messageId) with error: \(error)")
-                }.cauterize()
             }
         }
+
+        jobRequest.quotedReplyThumbnailPromise?.done(on: schedulers.global()) { attachmentStream in
+            Self.updateQuotedMessageThumbnail(
+                messageId: messageId,
+                attachmentStream: attachmentStream
+            )
+        }.cauterize()
+
+        let jobCount = jobRequest.jobs.count
+
+        Promise.when(
+            on: schedulers.sync,
+            fulfilled: jobRequest.jobs.map(\.promise)
+        ).done(on: schedulers.sync) { _ in
+            Logger.debug("Successfully fetched \(jobCount) attachment(s) for message: \(messageId)")
+        }.catch(on: schedulers.sync) { error in
+            Logger.warn("Failed to fetch attachments for message: \(messageId) with error: \(error)")
+        }.cauterize()
     }
 
     func enqueueDownloadOfAttachmentsForNewStoryMessage(_ message: StoryMessage, transaction: SDSAnyWriteTransaction) {
@@ -890,54 +956,51 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    @objc
+    @discardableResult
     func enqueueDownloadOfAttachments(
         forStoryMessageId storyMessageId: String,
         downloadBehavior: AttachmentDownloadBehavior,
-        touchMessageImmediately: Bool,
-        completion: (() -> Void)? = nil
-    ) {
-        Self.serialQueue.async {
-            guard !CurrentAppContext().isRunningTests else {
-                return
+        touchMessageImmediately: Bool
+    ) -> Promise<Void> {
+        guard !CurrentAppContext().isRunningTests else {
+            return .value(())
+        }
+        let bundle: (StoryMessage, StoryMessageJobRequest)? = Self.databaseStorage.read { transaction in
+            guard let message = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
+                Logger.warn("Failed to fetch StoryMessage to download attachments")
+                return nil
             }
-            Self.databaseStorage.read { transaction in
-                guard let message = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
-                    Logger.warn("Failed to fetch StoryMessage to download attachments")
-                    return
-                }
-                guard
-                    let jobRequest = StoryMessageJobRequest(
-                        storyMessage: message,
-                        downloadBehavior: downloadBehavior,
-                        tx: transaction
-                    ),
-                    !jobRequest.isEmpty
-                else {
-                    return
-                }
-                self.enqueueJobs(
-                    jobRequest: jobRequest,
-                    transaction: transaction
-                )
-
-                if touchMessageImmediately {
-                    Self.databaseStorage.asyncWrite { transaction in
-                        Self.databaseStorage.touch(storyMessage: message, transaction: transaction)
-                    }
-                }
-
-                Promise.when(
-                    on: Self.serialQueue,
-                    fulfilled: jobRequest.jobs.map(\.promise)
-                ).done(on: Self.serialQueue) { attachmentStreams in
-                    Logger.debug("Successfully fetched attachment for StoryMessage: \(storyMessageId)")
-                    completion?()
-                }.catch(on: Self.serialQueue) { error in
-                    Logger.warn("Failed to fetch attachments for StoryMessage: \(storyMessageId) with error: \(error)")
-                    completion?()
-                }.cauterize()
+            guard
+                let jobRequest = StoryMessageJobRequest(
+                    storyMessage: message,
+                    downloadBehavior: downloadBehavior,
+                    tx: transaction
+                ),
+                !jobRequest.isEmpty
+            else {
+                return nil
             }
+            return (message, jobRequest)
+        }
+        guard let (storyMessage, jobRequest) = bundle else {
+            return .value(())
+        }
+
+        self.enqueueJobs(jobRequest: jobRequest)
+
+        if touchMessageImmediately {
+            Self.databaseStorage.asyncWrite { transaction in
+                Self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
+            }
+        }
+
+        return Promise.when(
+            on: schedulers.sync,
+            fulfilled: jobRequest.jobs.map(\.promise)
+        ).done(on: schedulers.sync) { attachmentStreams in
+            Logger.debug("Successfully fetched attachment for StoryMessage: \(storyMessageId)")
+        }.catch(on: schedulers.sync) { error in
+            Logger.warn("Failed to fetch attachments for StoryMessage: \(storyMessageId) with error: \(error)")
         }
     }
 
@@ -1035,17 +1098,9 @@ public extension OWSAttachmentDownloads {
     }
 
     private func enqueueJobs(
-        jobRequest: JobRequest,
-        transaction: SDSAnyReadTransaction
+        jobRequest: JobRequest
     ) {
-        for job in jobRequest.jobs {
-            if let attachmentStream = job.loadLatestAttachment(transaction: transaction) as? TSAttachmentStream {
-                // If we already have a stream, succeed the job's promise right away.
-                job.future.resolve(attachmentStream)
-            } else {
-                self.enqueueJob(job: job)
-            }
-        }
+        self.enqueueJobs(jobs: jobRequest.jobs)
     }
 
     @objc
@@ -1059,7 +1114,7 @@ public extension OWSAttachmentDownloads {
     // MARK: -
 
     @objc
-    static let serialQueue: DispatchQueue = {
+    static let serialDecryptionQueue: DispatchQueue = {
         return DispatchQueue(label: "org.signal.attachment.download",
                              qos: .utility,
                              autoreleaseFrequency: .workItem)
@@ -1068,26 +1123,19 @@ public extension OWSAttachmentDownloads {
     private func retrieveAttachment(job: Job,
                                     attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
 
-        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "retrieveAttachment")
-
         // We want to avoid large downloads from a compromised or buggy service.
         let maxDownloadSize = RemoteConfig.maxAttachmentDownloadSizeBytes
 
-        return firstly(on: Self.serialQueue) { () -> Promise<URL> in
+        return firstly(on: schedulers.sync) { () -> Promise<URL> in
             self.download(
                 job: job,
                 attachmentPointer: attachmentPointer,
                 maxDownloadSizeBytes: maxDownloadSize
             )
-        }.then(on: Self.serialQueue) { (encryptedFileUrl: URL) -> Promise<TSAttachmentStream> in
+        }.then(on: schedulers.sync) { (encryptedFileUrl: URL) -> Promise<TSAttachmentStream> in
+            // This dispatches to its own queue
             Self.decrypt(encryptedFileUrl: encryptedFileUrl,
                          attachmentPointer: attachmentPointer)
-        }.ensure(on: Self.serialQueue) {
-            guard backgroundTask != nil else {
-                owsFailDebug("Missing backgroundTask.")
-                return
-            }
-            backgroundTask = nil
         }
     }
 
@@ -1110,7 +1158,7 @@ public extension OWSAttachmentDownloads {
 
         let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer)
 
-        return firstly(on: Self.serialQueue) { () -> Promise<URL> in
+        return firstly(on: schedulers.sync) { () -> Promise<URL> in
             self.downloadAttempt(
                 downloadState: downloadState,
                 maxDownloadSizeBytes: maxDownloadSizeBytes
@@ -1127,7 +1175,7 @@ public extension OWSAttachmentDownloads {
 
         let (promise, future) = Promise<URL>.pending()
 
-        firstly(on: Self.serialQueue) { () -> Promise<OWSUrlDownloadResponse> in
+        firstly(on: schedulers.global()) { () -> Promise<OWSUrlDownloadResponse> in
             let attachmentPointer = downloadState.attachmentPointer
             let urlSession = Self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
             let urlPath = try Self.urlPath(for: downloadState)
@@ -1159,7 +1207,7 @@ public extension OWSAttachmentDownloads {
                                                       headers: headers,
                                                       progress: progress)
             }
-        }.map(on: Self.serialQueue) { (response: OWSUrlDownloadResponse) in
+        }.map(on: schedulers.global()) { (response: OWSUrlDownloadResponse) in
             let downloadUrl = response.downloadUrl
             guard let fileSize = OWSFileSystem.fileSize(of: downloadUrl) else {
                 throw OWSAssertionError("Could not determine attachment file size.")
@@ -1168,17 +1216,17 @@ public extension OWSAttachmentDownloads {
                 throw OWSGenericError("Attachment download length exceeds max size.")
             }
             return downloadUrl
-        }.recover(on: Self.serialQueue) { (error: Error) -> Promise<URL> in
+        }.recover(on: schedulers.sync) { (error: Error) -> Promise<URL> in
             Logger.warn("Error: \(error)")
 
             let maxAttemptCount = 16
             if error.isNetworkFailureOrTimeout,
                attemptIndex < maxAttemptCount {
 
-                return firstly {
+                return firstly(on: Self.schedulers.sync) {
                     // Wait briefly before retrying.
-                    Guarantee.after(seconds: 0.25)
-                }.then { () -> Promise<URL> in
+                    Guarantee.after(on: Self.schedulers.global(), seconds: 0.25)
+                }.then(on: Self.schedulers.sync) { () -> Promise<URL> in
                     if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
                        !resumeData.isEmpty {
                         return self.downloadAttempt(
@@ -1198,9 +1246,9 @@ public extension OWSAttachmentDownloads {
             } else {
                 throw error
             }
-        }.done(on: Self.serialQueue) { url in
+        }.done(on: schedulers.sync) { url in
             future.resolve(url)
-        }.catch(on: Self.serialQueue) { error in
+        }.catch(on: schedulers.sync) { error in
             future.reject(error)
         }
 
@@ -1269,44 +1317,51 @@ public extension OWSAttachmentDownloads {
 
     // MARK: -
 
-    private class func decrypt(encryptedFileUrl: URL,
-                               attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
+    private class func decrypt(
+        encryptedFileUrl: URL,
+        attachmentPointer: TSAttachmentPointer
+    ) -> Promise<TSAttachmentStream> {
+        let (promise, future) = Promise<TSAttachmentStream>.pending()
 
         // Use serialQueue to ensure that we only load into memory
         // & decrypt a single attachment at a time.
-        return firstly(on: Self.serialQueue) { () -> TSAttachmentStream in
-            return try autoreleasepool {
-                let attachmentStream = databaseStorage.read { transaction in
-                    TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
+        Self.serialDecryptionQueue.async {
+            autoreleasepool {
+                do {
+                    let attachmentStream = databaseStorage.read { transaction in
+                        TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
+                    }
+
+                    guard let originalMediaURL = attachmentStream.originalMediaURL else {
+                        throw OWSAssertionError("Missing originalMediaURL.")
+                    }
+
+                    guard let encryptionKey = attachmentPointer.encryptionKey else {
+                        throw OWSAssertionError("Missing encryptionKey.")
+                    }
+
+                    try Cryptography.decryptAttachment(
+                        at: encryptedFileUrl,
+                        metadata: EncryptionMetadata(
+                            key: encryptionKey,
+                            digest: attachmentPointer.digest,
+                            plaintextLength: Int(attachmentPointer.byteCount)
+                        ),
+                        output: originalMediaURL
+                    )
+
+                    future.resolve(attachmentStream)
+                } catch let error {
+                    do {
+                        try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)
+                    } catch let deleteFileError {
+                        owsFailDebug("Error: \(deleteFileError).")
+                    }
+                    future.reject(error)
                 }
-
-                guard let originalMediaURL = attachmentStream.originalMediaURL else {
-                    throw OWSAssertionError("Missing originalMediaURL.")
-                }
-
-                guard let encryptionKey = attachmentPointer.encryptionKey else {
-                    throw OWSAssertionError("Missing encryptionKey.")
-                }
-
-                try Cryptography.decryptAttachment(
-                    at: encryptedFileUrl,
-                    metadata: EncryptionMetadata(
-                        key: encryptionKey,
-                        digest: attachmentPointer.digest,
-                        plaintextLength: Int(attachmentPointer.byteCount)
-                    ),
-                    output: originalMediaURL
-                )
-
-                return attachmentStream
-            }
-        }.ensure(on: Self.serialQueue) {
-            do {
-                try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)
-            } catch {
-                owsFailDebug("Error: \(error).")
             }
         }
+        return promise
     }
 
     // MARK: -
