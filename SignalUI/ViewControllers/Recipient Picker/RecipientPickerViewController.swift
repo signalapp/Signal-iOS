@@ -924,21 +924,9 @@ extension RecipientPickerViewController {
 
     private func contactAccessDeniedReminderItem() -> OWSTableItem {
         return OWSTableItem(customCellBlock: {
-            let reminderView = ReminderView(
-                style: .warning,
-                text: OWSLocalizedString(
-                    "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
-                    comment: "Multi-line label explaining why compose-screen contact picker is empty."
-                ),
-                tapAction: { CurrentAppContext().openSystemSettings() }
-            )
-
-            let cell = OWSTableItem.newCell()
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "missing_contacts")
-            cell.contentView.addSubview(reminderView)
-            reminderView.autoPinEdgesToSuperviewEdges()
-
-            return cell
+            ContactAccessDeniedReminderTableViewCell {
+                CurrentAppContext().openSystemSettings()
+            }
         })
     }
 
@@ -1599,5 +1587,59 @@ extension RecipientPickerViewController {
                 }
             )
         }
+    }
+}
+
+// MARK: - ContactAccessDeniedReminderTableViewCell
+
+private class ContactAccessDeniedReminderTableViewCell: UITableViewCell {
+    private let tapAction: () -> Void
+
+    init(openSettingsAction: @escaping () -> Void) {
+        self.tapAction = openSettingsAction
+        super.init(style: .default, reuseIdentifier: nil)
+
+        let label = UILabel()
+        contentView.addSubview(label)
+        label.autoPinEdgesToSuperviewMargins()
+        label.numberOfLines = 0
+        label.attributedText = NSAttributedString.composed(of: [
+            OWSLocalizedString(
+                "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
+                comment: "Multi-line label explaining why compose-screen contact picker is empty."
+            ),
+            "\n",
+            OWSLocalizedString(
+                "COMPOSE_SCREEN_MISSING_CONTACTS_CTA",
+                comment: "Button to open settings from an empty compose-screen contact picker."
+            ).styled(
+                with: .font(.dynamicTypeSubheadline.semibold()),
+                .alignment(.trailing)
+            )
+        ]).styled(
+            with: .font(.dynamicTypeSubheadline),
+            .color(Theme.primaryTextColor)
+        )
+
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc
+    private func didTap() {
+        tapAction()
+    }
+}
+
+extension ContactAccessDeniedReminderTableViewCell: CustomBackgroundColorCell {
+    func customBackgroundColor(forceDarkMode: Bool) -> UIColor {
+        ReminderView.warningBackgroundColor(forceDarkMode: forceDarkMode)
+    }
+
+    func customSelectedBackgroundColor(forceDarkMode: Bool) -> UIColor {
+        customBackgroundColor(forceDarkMode: forceDarkMode)
     }
 }
