@@ -6,6 +6,11 @@
 import Foundation
 
 public protocol SignalRecipientManager {
+    func fetchRecipientIfPhoneNumberVisible(
+        _ phoneNumber: String,
+        tx: DBReadTransaction
+    ) -> SignalRecipient?
+
     func modifyAndSave(
         _ recipient: SignalRecipient,
         deviceIdsToAdd: [UInt32],
@@ -46,15 +51,29 @@ extension SignalRecipientManager {
 }
 
 public class SignalRecipientManagerImpl: SignalRecipientManager {
+    private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
     private let recipientDatabaseTable: any RecipientDatabaseTable
     let storageServiceManager: any StorageServiceManager
 
     public init(
+        phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
         recipientDatabaseTable: any RecipientDatabaseTable,
         storageServiceManager: any StorageServiceManager
     ) {
+        self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
         self.recipientDatabaseTable = recipientDatabaseTable
         self.storageServiceManager = storageServiceManager
+    }
+
+    public func fetchRecipientIfPhoneNumberVisible(_ phoneNumber: String, tx: DBReadTransaction) -> SignalRecipient? {
+        let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx)
+        guard let recipient else {
+            return nil
+        }
+        guard phoneNumberVisibilityFetcher.isPhoneNumberVisible(for: recipient, tx: tx) else {
+            return nil
+        }
+        return recipient
     }
 
     public func markAsUnregisteredAndSave(

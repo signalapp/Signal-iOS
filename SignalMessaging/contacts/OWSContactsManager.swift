@@ -561,7 +561,7 @@ extension OWSContactsManager {
         var signalAccounts = [SignalAccount]()
         var seenServiceIds = Set<ServiceId>()
         for contact in systemContacts {
-            var signalRecipients = contact.systemContactRecipients(tx: transaction)
+            var signalRecipients = contact.discoverableRecipients(tx: transaction)
             // TODO: Confirm ordering.
             signalRecipients.sort { $0.address.compare($1.address) == .orderedAscending }
             let relatedAddresses = signalRecipients.map { $0.address }
@@ -674,6 +674,12 @@ extension OWSContactsManager {
                 newSignalAccount?.anyInsert(transaction: tx)
 
                 touchContactThread(for: newSignalAccount ?? oldSignalAccount)
+
+                updatePhoneNumberVisibilityIfNeeded(
+                    oldSignalAccount: oldSignalAccount,
+                    newSignalAccount: newSignalAccount,
+                    tx: tx.asV2Write
+                )
             }
 
             Logger.info("Updated \(signalAccountChanges.count) SignalAccounts; now have \(newSignalAccountsMap.count) total")
@@ -779,6 +785,29 @@ extension OWSContactsManager {
         }
 
         storageServiceManager.recordPendingUpdates(updatedAddresses: Array(addressesToUpdateInStorageService))
+    }
+
+    private func updatePhoneNumberVisibilityIfNeeded(
+        oldSignalAccount: SignalAccount?,
+        newSignalAccount: SignalAccount?,
+        tx: DBWriteTransaction
+    ) {
+        // Don't do anything unless an system contact was added/removed.
+        if (newSignalAccount == nil) == (oldSignalAccount == nil) {
+            return
+        }
+        guard let aci = (newSignalAccount ?? oldSignalAccount)!.recipientServiceId as? Aci else {
+            return
+        }
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx)
+        guard let recipient else {
+            return
+        }
+        // Tell the cache to refresh its state for this recipient. It will check
+        // whether or not the number should be visible based on this state and the
+        // state of system contacts.
+        signalServiceAddressCache.updateRecipient(recipient, tx: tx)
     }
 
     func didUpdateSignalAccounts(transaction: SDSAnyWriteTransaction) {
@@ -962,7 +991,7 @@ extension OWSContactsManager {
             return
         }
         for signalRecipient in intersectedRecipients {
-            guard let phoneNumber = signalRecipient.phoneNumber else {
+            guard let phoneNumber = signalRecipient.phoneNumber, phoneNumber.isDiscoverable else {
                 continue  // Can't happen.
             }
             guard addressBookPhoneNumbers.contains(phoneNumber.stringValue) else {
@@ -989,6 +1018,9 @@ extension OWSContactsManager {
         for hiddenRecipient in recipientHidingManager.hiddenRecipients(tx: tx) {
             guard let phoneNumber = hiddenRecipient.phoneNumber else {
                 continue // We can't unhide because of the address book w/o a phone number.
+            }
+            guard phoneNumber.isDiscoverable else {
+                continue // Not discoverable -- no unhiding.
             }
             guard addressBookPhoneNumbers.contains(phoneNumber.stringValue) else {
                 continue  // Not in the address book -- no unhiding.

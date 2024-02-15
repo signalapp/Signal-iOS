@@ -9,14 +9,14 @@ import Contacts
 
 @objc(OWSFakeContactsManager)
 public class FakeContactsManager: NSObject, ContactsManagerProtocol {
+    public var mockSignalAccounts = [SignalServiceAddress: SignalAccount]()
+
     public func fetchSignalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        fatalError()
+        return mockSignalAccounts[address]
     }
 
-    public var mockDisplayNames = [SignalServiceAddress: String]()
-
     public func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return mockDisplayNames[address] ?? "John Doe"
+        return systemContactName(for: address, tx: transaction) ?? "John Doe"
     }
 
     public func displayNames(forAddresses addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
@@ -50,7 +50,7 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
     }
 
     public func systemContactName(for address: SignalServiceAddress, tx transaction: SDSAnyReadTransaction) -> String? {
-        fatalError()
+        return fetchSignalAccount(for: address, transaction: transaction)?.contact?.fullName
     }
 
     public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {

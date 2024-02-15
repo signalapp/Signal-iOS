@@ -513,6 +513,11 @@ private class CachedAddress {
 public class SignalServiceAddressCache: NSObject {
     private let state = AtomicValue(CacheState(), lock: AtomicLock())
 
+    private let _phoneNumberVisibilityFetcher: PhoneNumberVisibilityFetcher?
+    private var phoneNumberVisibilityFetcher: PhoneNumberVisibilityFetcher {
+        return _phoneNumberVisibilityFetcher ?? DependenciesBridge.shared.phoneNumberVisibilityFetcher
+    }
+
     private struct CacheState {
         var serviceIdHashValues = [ServiceId: Int]()
         var phoneNumberHashValues = [String: Int]()
@@ -533,12 +538,34 @@ public class SignalServiceAddressCache: NSObject {
         var isVisible: Bool
     }
 
+    // TODO: Remove this initializer after fixing DependenciesBridge setup.
+    public override init() {
+        self._phoneNumberVisibilityFetcher = nil
+    }
+
+    public init(phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher) {
+        self._phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
+    }
+
     func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        databaseStorage.read { transaction in
-            SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
-                self.updateRecipient(recipient, isPhoneNumberVisible: true)
+        databaseStorage.read { tx in
+            let bulkFetcher: BulkPhoneNumberVisibilityFetcher?
+            do {
+                bulkFetcher = try phoneNumberVisibilityFetcher.fetchAll(tx: tx.asV2Read)
+            } catch {
+                Logger.warn("Couldn't fetch visible phone numbers. Hiding all of them…")
+                bulkFetcher = nil
+            }
+            SignalRecipient.anyEnumerate(transaction: tx) { recipient, _ in
+                updateRecipient(
+                    recipient,
+                    isPhoneNumberVisible: (
+                        bulkFetcher?.isPhoneNumberVisible(for: recipient)
+                        ?? OWSUserProfile.isPhoneNumberSharedByDefault
+                    )
+                )
             }
         }
     }
@@ -552,7 +579,7 @@ public class SignalServiceAddressCache: NSObject {
     public func updateRecipient(_ signalRecipient: SignalRecipient, tx: DBWriteTransaction) {
         updateRecipient(
             signalRecipient,
-            isPhoneNumberVisible: true
+            isPhoneNumberVisible: phoneNumberVisibilityFetcher.isPhoneNumberVisible(for: signalRecipient, tx: tx)
         )
     }
 

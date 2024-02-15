@@ -90,6 +90,19 @@ class SignalRecipientTest: SSKBaseTestSwift {
         XCTAssertNil(addressToBeUpdated.serviceId)
 
         write { transaction in
+            let aciProfile = OWSUserProfile.getOrBuildUserProfile(
+                for: SignalServiceAddress(aci),
+                authedAccount: .implicit(),
+                transaction: transaction
+            )
+            aciProfile.anyInsert(transaction: transaction)
+            aciProfile.update(
+                isPhoneNumberShared: .setTo(true),
+                userProfileWriter: .tests,
+                authedAccount: .implicit(),
+                transaction: transaction,
+                completion: nil
+            )
             let recipient = mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: transaction)
             XCTAssertEqual(recipient.aci, aci)
             XCTAssertEqual(recipient.phoneNumber?.stringValue, phoneNumber.stringValue)
@@ -146,6 +159,13 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 transaction: transaction
             )
             oldPhoneNumberProfile.anyInsert(transaction: transaction)
+            oldPhoneNumberProfile.update(
+                isPhoneNumberShared: .setTo(true),
+                userProfileWriter: .tests,
+                authedAccount: .implicit(),
+                transaction: transaction,
+                completion: nil
+            )
             let newPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: SignalServiceAddress(phoneNumber: newPhoneNumber.stringValue),
                 authedAccount: .implicit(),
@@ -230,6 +250,13 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 transaction: transaction
             )
             oldProfile.anyInsert(transaction: transaction)
+            oldProfile.update(
+                isPhoneNumberShared: .setTo(true),
+                userProfileWriter: .tests,
+                authedAccount: .implicit(),
+                transaction: transaction,
+                completion: nil
+            )
 
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
@@ -719,7 +746,11 @@ final class SignalRecipient2Test: XCTestCase {
         let mockDb = MockDB()
         let recipientTable = MockRecipientDatabaseTable()
         let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientTable)
-        let recipientManager = SignalRecipientManagerImpl(recipientDatabaseTable: recipientTable, storageServiceManager: FakeStorageServiceManager())
+        let recipientManager = SignalRecipientManagerImpl(
+            phoneNumberVisibilityFetcher: MockPhoneNumberVisibilityFetcher(),
+            recipientDatabaseTable: recipientTable,
+            storageServiceManager: FakeStorageServiceManager()
+        )
         mockDb.write { tx in
             let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
             XCTAssertNotNil(recipient.unregisteredAtTimestamp)
@@ -758,7 +789,11 @@ final class SignalRecipient2Test: XCTestCase {
         let mockDb = MockDB()
         let recipientTable = MockRecipientDatabaseTable()
         let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientTable)
-        let recipientManager = SignalRecipientManagerImpl(recipientDatabaseTable: recipientTable, storageServiceManager: FakeStorageServiceManager())
+        let recipientManager = SignalRecipientManagerImpl(
+            phoneNumberVisibilityFetcher: MockPhoneNumberVisibilityFetcher(),
+            recipientDatabaseTable: recipientTable,
+            storageServiceManager: FakeStorageServiceManager()
+        )
         mockDb.write { tx in
             for testCase in testCases {
                 let recipient = recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: tx)

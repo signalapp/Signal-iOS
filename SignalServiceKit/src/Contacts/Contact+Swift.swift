@@ -7,14 +7,11 @@ import Foundation
 
 @objc
 public extension Contact {
-
-    func systemContactRecipients(tx: SDSAnyReadTransaction) -> [SignalRecipient] {
+    func discoverableRecipients(tx: SDSAnyReadTransaction) -> [SignalRecipient] {
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        return e164sForIntersection.compactMap { e164Number in
-            guard let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: e164Number, transaction: tx.asV2Read) else {
-                return nil
-            }
-            guard recipient.isRegistered else {
+        return e164sForIntersection.compactMap { phoneNumber in
+            let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)
+            guard let recipient, recipient.isPhoneNumberDiscoverable else {
                 return nil
             }
             return recipient

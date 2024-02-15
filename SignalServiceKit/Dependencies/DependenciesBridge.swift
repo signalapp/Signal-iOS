@@ -83,6 +83,7 @@ public class DependenciesBridge {
     public let masterKeySyncManager: MasterKeySyncManager
 
     public let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
+    public let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
 
     public let pinnedThreadStore: PinnedThreadStore
     public let pinnedThreadManager: PinnedThreadManager
@@ -257,12 +258,6 @@ public class DependenciesBridge {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
-        let recipientManager = SignalRecipientManagerImpl(
-            recipientDatabaseTable: recipientDatabaseTable,
-            storageServiceManager: storageServiceManager
-        )
-        self.recipientManager = recipientManager
-
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
             dateProvider: dateProvider,
@@ -271,6 +266,21 @@ public class DependenciesBridge {
             schedulers: schedulers
         )
         self.tsAccountManager = tsAccountManager
+
+        let userProfileStore = UserProfileStoreImpl()
+        let phoneNumberVisibilityFetcher = PhoneNumberVisibilityFetcherImpl(
+            contactsManager: contactsManager,
+            tsAccountManager: tsAccountManager,
+            userProfileStore: userProfileStore
+        )
+        self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
+
+        let recipientManager = SignalRecipientManagerImpl(
+            phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
+            recipientDatabaseTable: recipientDatabaseTable,
+            storageServiceManager: storageServiceManager
+        )
+        self.recipientManager = recipientManager
 
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             db: db,
@@ -393,7 +403,6 @@ public class DependenciesBridge {
             keyValueStoreFactory: self.keyValueStoreFactory,
             notificationScheduler: self.schedulers.main
         )
-        let userProfileStore = UserProfileStoreImpl()
 
         self.disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
 

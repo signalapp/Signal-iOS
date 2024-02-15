@@ -175,4 +175,16 @@ public class SignalAccountFinder: NSObject {
         }
         return result
     }
+
+    func fetchAcis(tx: SDSAnyReadTransaction) throws -> [Aci] {
+        let sql = """
+            SELECT \(SignalAccount.columnName(.recipientServiceId)) FROM \(SignalAccount.databaseTableName)
+        """
+        do {
+            let serviceIdStrings = try String?.fetchAll(tx.unwrapGrdbRead.database, sql: sql)
+            return serviceIdStrings.compactMap(Aci.parseFrom(aciString:))
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
 }

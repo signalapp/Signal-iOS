@@ -1166,6 +1166,12 @@ extension OWSUserProfile {
             )
         }
 
+        updatePhoneNumberVisibilityIfNeeded(
+            oldUserProfile: oldInstance,
+            newUserProfile: newInstance,
+            tx: tx.asV2Write
+        )
+
         if changeResult == .nothing {
             return
         }
@@ -1216,6 +1222,29 @@ extension OWSUserProfile {
                 )
             }
         }
+    }
+
+    private func updatePhoneNumberVisibilityIfNeeded(
+        oldUserProfile: OWSUserProfile?,
+        newUserProfile: OWSUserProfile,
+        tx: DBWriteTransaction
+    ) {
+        // Don't do anything unless the sharing setting was changed.
+        if newUserProfile.isPhoneNumberSharedOrDefault == oldUserProfile.isPhoneNumberSharedOrDefault {
+            return
+        }
+        guard let aci = internalAddress.aci else {
+            return
+        }
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx)
+        guard let recipient else {
+            return
+        }
+        // Tell the cache to refresh its state for this recipient. It will check
+        // whether or not the number should be visible based on this state and the
+        // state of system contacts.
+        signalServiceAddressCache.updateRecipient(recipient, tx: tx)
     }
 
     /// Applies changes specified by the properties.

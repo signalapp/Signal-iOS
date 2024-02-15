@@ -297,6 +297,20 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     public var addressComponentsDescription: String {
         SignalServiceAddress.addressComponentsDescription(uuidString: aciString, phoneNumber: phoneNumber?.stringValue)
     }
+
+    // MARK: - System Contacts
+
+    /// Whether or not this recipient can be discovered by their phone number.
+    ///
+    /// In order to be considered discoverable, we must have... discovered
+    /// them... in the most recent CDS sync (which in turn implies they have a
+    /// phone number and are registered).
+    ///
+    /// - Important: This property is usually stale on linked devices because
+    /// they don't perform CDS syncs at regular intervals.
+    public var isPhoneNumberDiscoverable: Bool {
+        return isRegistered && phoneNumber?.isDiscoverable == true
+    }
 }
 
 // MARK: - SignalRecipientManagerImpl
