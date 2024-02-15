@@ -9,7 +9,7 @@ import SignalUI
 class StoryThumbnailView: UIView {
     enum Attachment: Equatable {
         case file(TSAttachment)
-        case text(TextAttachment)
+        case text(PreloadedTextAttachment)
         case missing
 
         static func from(_ storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> Self {
@@ -23,7 +23,7 @@ class StoryThumbnailView: UIView {
                 }
                 return .file(attachment)
             case .text(let attachment):
-                return .text(attachment)
+                return .text(.from(attachment, storyMessage: storyMessage, tx: transaction))
             }
         }
     }

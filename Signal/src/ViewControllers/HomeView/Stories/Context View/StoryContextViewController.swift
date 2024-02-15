@@ -350,7 +350,12 @@ class StoryContextViewController: OWSViewController {
             isLoopingVideo = resource?.isLoopingVideo ?? false
 
         case .text(let attachment):
-            return .init(message: message, numberOfReplies: replyCount, attachment: .text(attachment))
+            let preloadedAttachment = PreloadedTextAttachment.from(
+                attachment,
+                storyMessage: message,
+                tx: transaction
+            )
+            return .init(message: message, numberOfReplies: replyCount, attachment: .text(preloadedAttachment))
         }
 
         guard let attachment else {

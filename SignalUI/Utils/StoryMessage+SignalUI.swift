@@ -70,13 +70,4 @@ extension StoryMessage {
             }
         }
     }
-
-    func thumbnailView(spoilerState: SpoilerRenderState) -> UIView? {
-        guard case .text(let attachment) = attachment else { return nil }
-        return TextAttachmentView(
-            attachment: attachment,
-            interactionIdentifier: .fromStoryMessage(self),
-            spoilerState: spoilerState
-        ).asThumbnailView()
-    }
 }

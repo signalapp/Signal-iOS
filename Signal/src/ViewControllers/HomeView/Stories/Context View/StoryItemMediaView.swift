@@ -235,7 +235,7 @@ class StoryItemMediaView: UIView {
                 }
             }
         case .text(let attachment):
-            switch attachment.textContent {
+            switch attachment.textAttachment.textContent {
             case .empty:
                 glyphCount = nil
             case .styled(let text, _):
@@ -250,7 +250,7 @@ class StoryItemMediaView: UIView {
 
             // If a text attachment includes a link preview, play
             // for an additional 2s
-            if attachment.preview != nil { duration += 2 }
+            if attachment.textAttachment.preview != nil { duration += 2 }
         }
 
         // If we have a glyph count, increase the duration to allow it to be readable
@@ -1035,7 +1035,7 @@ class StoryItem: NSObject {
 
         case pointer(Pointer)
         case stream(Stream)
-        case text(TextAttachment)
+        case text(PreloadedTextAttachment)
     }
     var attachment: Attachment
 

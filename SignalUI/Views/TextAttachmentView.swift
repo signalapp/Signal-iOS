@@ -25,16 +25,17 @@ open class TextAttachmentView: UIView {
     }
 
     convenience public init(
-        attachment: TextAttachment,
+        attachment: PreloadedTextAttachment,
         interactionIdentifier: InteractionSnapshotIdentifier,
         spoilerState: SpoilerRenderState
     ) {
         self.init(
-            textContent: attachment.textContent,
-            textForegroundColor: attachment.textForegroundColor,
-            textBackgroundColor: attachment.textBackgroundColor,
-            background: attachment.background,
-            linkPreview: attachment.preview,
+            textContent: attachment.textAttachment.textContent,
+            textForegroundColor: attachment.textAttachment.textForegroundColor,
+            textBackgroundColor: attachment.textAttachment.textBackgroundColor,
+            background: attachment.textAttachment.background,
+            linkPreview: attachment.textAttachment.preview,
+            linkPreviewImageAttachment: attachment.linkPreviewAttachment,
             interactionIdentifier: interactionIdentifier,
             spoilerState: spoilerState
         )
@@ -47,6 +48,7 @@ open class TextAttachmentView: UIView {
             textBackgroundColor: attachment.textBackgroundColor,
             background: attachment.background,
             linkPreview: nil,
+            linkPreviewImageAttachment: nil,
             linkPreviewDraft: attachment.linkPreviewDraft,
             interactionIdentifier: nil,
             spoilerState: nil
@@ -59,7 +61,6 @@ open class TextAttachmentView: UIView {
         textForegroundColor: UIColor?,
         textBackgroundColor: UIColor?,
         background: TextAttachment.Background,
-        linkPreview: OWSLinkPreview?,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil
     ) {
         self.textContent = .styled(body: text, style: style)
@@ -70,7 +71,7 @@ open class TextAttachmentView: UIView {
         self.spoilerState = nil
 
         super.init(frame: .zero)
-        performSetup(linkPreview: linkPreview, linkPreviewDraft: linkPreviewDraft)
+        performSetup(linkPreview: nil, linkPreviewImageAttachment: nil, linkPreviewDraft: linkPreviewDraft)
     }
 
     private init(
@@ -79,6 +80,7 @@ open class TextAttachmentView: UIView {
         textBackgroundColor: UIColor?,
         background: TextAttachment.Background,
         linkPreview: OWSLinkPreview?,
+        linkPreviewImageAttachment: TSAttachment?,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
         interactionIdentifier: InteractionSnapshotIdentifier?,
         spoilerState: SpoilerRenderState?
@@ -91,10 +93,18 @@ open class TextAttachmentView: UIView {
         self.spoilerState = spoilerState
 
         super.init(frame: .zero)
-        performSetup(linkPreview: linkPreview, linkPreviewDraft: linkPreviewDraft)
+        performSetup(
+            linkPreview: linkPreview,
+            linkPreviewImageAttachment: linkPreviewImageAttachment,
+            linkPreviewDraft: linkPreviewDraft
+        )
     }
 
-    private func performSetup(linkPreview: OWSLinkPreview?, linkPreviewDraft: OWSLinkPreviewDraft?) {
+    private func performSetup(
+        linkPreview: OWSLinkPreview?,
+        linkPreviewImageAttachment: TSAttachment?,
+        linkPreviewDraft: OWSLinkPreviewDraft?
+    ) {
         clipsToBounds = true
 
         addLayoutGuide(contentLayoutGuide)
@@ -108,13 +118,9 @@ open class TextAttachmentView: UIView {
         addConstraints(constraints)
 
         if let linkPreview = linkPreview {
-            var attachment: TSAttachment?
-            if let imageAttachmentId = linkPreview.imageAttachmentId {
-                attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: imageAttachmentId, transaction: $0) })
-            }
             self.linkPreview = LinkPreviewSent(
                 linkPreview: linkPreview,
-                imageAttachment: attachment,
+                imageAttachment: linkPreviewImageAttachment,
                 conversationStyle: nil
             )
         } else if let linkPreviewDraft = linkPreviewDraft {

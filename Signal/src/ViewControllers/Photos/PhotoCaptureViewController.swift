@@ -1395,8 +1395,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
             style: .regular,
             textForegroundColor: .white,
             textBackgroundColor: nil,
-            background: TextStoryComposerView.defaultBackground,
-            linkPreview: nil
+            background: TextStoryComposerView.defaultBackground
         )
 
         // Placeholder Label

@@ -44,9 +44,28 @@ public class QuotedReplyModel: NSObject {
 
     public convenience init?(storyMessage: StoryMessage, reactionEmoji: String? = nil, transaction: SDSAnyReadTransaction) {
         let thumbnailImage = storyMessage.thumbnailImage(transaction: transaction)
+
+        let preloadedTextAttachment: PreloadedTextAttachment?
+        switch storyMessage.attachment {
+        case .file, .foreignReferenceAttachment:
+            preloadedTextAttachment = nil
+        case .text(let textAttachment):
+            preloadedTextAttachment = PreloadedTextAttachment.from(
+                textAttachment,
+                storyMessage: storyMessage,
+                tx: transaction
+            )
+        }
+
         let thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)?
-        if thumbnailImage == nil {
-            thumbnailViewFactory = { return storyMessage.thumbnailView(spoilerState: $0) }
+        if thumbnailImage == nil, let preloadedTextAttachment  {
+            thumbnailViewFactory = { spoilerState in
+                return TextAttachmentView(
+                    attachment: preloadedTextAttachment,
+                    interactionIdentifier: .fromStoryMessage(storyMessage),
+                    spoilerState: spoilerState
+                ).asThumbnailView()
+            }
         } else {
             thumbnailViewFactory = nil
         }

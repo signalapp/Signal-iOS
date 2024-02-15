@@ -781,7 +781,7 @@ extension StoryContextMenuGenerator {
                     }
                 case .text(let attachment):
                     if
-                        let urlString = attachment.preview?.urlString,
+                        let urlString = attachment.textAttachment.preview?.urlString,
                         let url = URL(string: urlString)
                     {
                         self?.isDisplayingFollowup = true
@@ -791,7 +791,7 @@ extension StoryContextMenuGenerator {
                         }
                     } else {
                         let text: String?
-                        switch attachment.textContent {
+                        switch attachment.textAttachment.textContent {
                         case .empty:
                             text = nil
                         case .styled(let body, _):
