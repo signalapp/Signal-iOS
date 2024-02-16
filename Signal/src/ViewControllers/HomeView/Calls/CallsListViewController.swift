@@ -21,6 +21,15 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallViewModel.ID>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallViewModel.ID>
 
+    private enum Constants {
+        /// The maximum number of search results to match.
+        static let maxSearchResults: UInt = 100
+
+        /// An interval to wait after the search term changes before actually
+        /// issuing a search.
+        static let searchDebounceInterval: TimeInterval = 0.1
+    }
+
     // MARK: - Dependencies
 
     private struct Dependencies {
@@ -31,7 +40,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let callService: CallService
         let contactsManager: ContactsManagerProtocol
         let db: SDSDatabaseStorage
-        let fullTextSearchFinder: CallRecordLoader.Shims.FullTextSearchFinder
+        let fullTextSearchFinder: FullTextSearchFinder.Type
         let interactionStore: InteractionStore
         let threadStore: ThreadStore
     }
@@ -44,7 +53,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         callService: NSObject.callService,
         contactsManager: NSObject.contactsManager,
         db: NSObject.databaseStorage,
-        fullTextSearchFinder: CallRecordLoader.Wrappers.FullTextSearchFinder(),
+        fullTextSearchFinder: FullTextSearchFinder.self,
         interactionStore: DependenciesBridge.shared.interactionStore,
         threadStore: DependenciesBridge.shared.threadStore
     )
@@ -499,37 +508,95 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         reloadRows(forIdentifiers: callViewModelIdsToReload)
     }
 
-    // MARK: - Call Record Loading
+    // MARK: - Call loading
 
-    /// Resets ``calls`` for the current UI state and kicks off an initial load.
+    private var _calls: LoadedCalls!
+    private var calls: LoadedCalls! {
+        get {
+            AssertIsOnMainThread()
+            return _calls
+        }
+        set(newValue) {
+            AssertIsOnMainThread()
+            _calls = newValue
+        }
+    }
+
+    /// Used to avoid concurrent calls to ``loadCallRecordsAnew(animated:)``
+    /// from clobbering each other.
+    private let loadCallRecordsAnewToken = AtomicUuid(lock: AtomicLock())
+
+    /// Asynchronously resets our current ``LoadedCalls`` for the current UI
+    /// state, then kicks off an initial page load.
+    ///
+    /// - Note
+    /// This method will perform an FTS search for our current search term, if
+    /// we have one. That operation can be painfully slow for users with a large
+    /// FTS index, so we need to do it asynchronously.
     private func loadCallRecordsAnew(animated: Bool) {
-        AssertIsOnMainThread()
-
+        let searchTerm = self.searchTerm
         let onlyLoadMissedCalls: Bool = {
-            switch currentFilterMode {
+            switch self.currentFilterMode {
             case .all: return false
             case .missed: return true
             }
         }()
 
-        // Build a loader for this view's current state.
-        let callRecordLoader = CallRecordLoader(
-            callRecordQuerier: deps.callRecordQuerier,
-            fullTextSearchFinder: deps.fullTextSearchFinder,
-            configuration: CallRecordLoader.Configuration(
-                onlyLoadMissedCalls: onlyLoadMissedCalls,
-                searchTerm: searchTerm
-            )
-        )
+        let loadIdentifier = loadCallRecordsAnewToken.rotate()
 
-        // Reset our loaded calls.
-        calls = LoadedCalls(
-            callRecordLoader: callRecordLoader,
-            createCallViewModelBlock: self.createCallViewModel
-        )
+        deps.db.asyncRead(
+            block: { tx -> CallRecordLoader.Configuration in
+                if let searchTerm {
+                    let threadRowIdsMatchingSearchTerm: [Int64] = self.deps.fullTextSearchFinder
+                        .findThreadsMatching(
+                            searchTerm: searchTerm,
+                            maxSearchResults: Constants.maxSearchResults,
+                            tx: tx
+                        )
+                        .map { thread in
+                            guard let sqliteRowId = thread.sqliteRowId else {
+                                owsFail("How did we match a thread in the FTS index that hasn't been inserted?")
+                            }
 
-        // Load the initial page of records.
-        loadMoreCalls(direction: .older, animated: animated)
+                            return sqliteRowId
+                        }
+
+                    return CallRecordLoader.Configuration(
+                        onlyLoadMissedCalls: onlyLoadMissedCalls,
+                        onlyMatchThreadRowIds: threadRowIdsMatchingSearchTerm
+                    )
+                } else {
+                    return CallRecordLoader.Configuration(
+                        onlyLoadMissedCalls: onlyLoadMissedCalls,
+                        onlyMatchThreadRowIds: nil
+                    )
+                }
+            },
+            completionQueue: .main,
+            completion: { configuration in
+                guard self.loadCallRecordsAnewToken.get() == loadIdentifier else {
+                    /// While we were building the configuration, another caller
+                    /// entered this method. Bail out in preference of the later
+                    /// caller!
+                    return
+                }
+
+                // Build a loader for this view's current state.
+                let callRecordLoader = CallRecordLoader(
+                    callRecordQuerier: self.deps.callRecordQuerier,
+                    configuration: configuration
+                )
+
+                // Reset our loaded calls.
+                self.calls = LoadedCalls(
+                    callRecordLoader: callRecordLoader,
+                    createCallViewModelBlock: self.createCallViewModel
+                )
+
+                // Load the initial page of records.
+                self.loadMoreCalls(direction: .older, animated: animated)
+            }
+        )
     }
 
     /// Load more calls as necessary given that a row for the given index path
@@ -689,6 +756,42 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
     }
 
+    // MARK: - Search term
+
+    /// - Important
+    /// Don't use this directly – use ``searchTerm``.
+    private var _searchTerm: String? {
+        didSet {
+            guard oldValue != searchTerm else {
+                // If the term hasn't changed, don't do anything.
+                return
+            }
+
+            searchTermDidChange()
+        }
+    }
+
+    /// The user's current search term. Coalesces empty strings into `nil`.
+    private var searchTerm: String? {
+        get { _searchTerm?.nilIfEmpty }
+        set { _searchTerm = newValue?.nilIfEmpty }
+    }
+
+    private func searchTermDidChange() {
+        let searchTermSnapshot = searchTerm
+
+        DispatchQueue.global().asyncAfter(deadline: .now() + Constants.searchDebounceInterval) {
+            guard self.searchTerm == searchTermSnapshot else {
+                /// The search term changed in the debounce period, so we'll
+                /// bail out here in preference for the later-changed search
+                /// term.
+                return
+            }
+
+            self.loadCallRecordsAnew(animated: true)
+        }
+    }
+
     // MARK: - Table view
 
     fileprivate enum Section: Int, Hashable {
@@ -811,37 +914,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     let tableView = UITableView(frame: .zero, style: .plain)
-
-    /// - Important
-    /// Don't use this directly – use ``searchTerm``.
-    private var _searchTerm: String? {
-        didSet {
-            guard oldValue != searchTerm else {
-                // If the term hasn't changed, don't do anything.
-                return
-            }
-
-            loadCallRecordsAnew(animated: true)
-        }
-    }
-
-    /// The user's current search term. Coalesces empty strings into `nil`.
-    private var searchTerm: String? {
-        get { _searchTerm?.nilIfEmpty }
-        set { _searchTerm = newValue?.nilIfEmpty }
-    }
-
-    private var _calls: LoadedCalls!
-    private var calls: LoadedCalls! {
-        get {
-            AssertIsOnMainThread()
-            return _calls
-        }
-        set(newValue) {
-            AssertIsOnMainThread()
-            _calls = newValue
-        }
-    }
 
     private static var callCellReuseIdentifier = "callCell"
 
@@ -1845,5 +1917,27 @@ private extension CallsListViewController {
                 delegate.showCallInfo(from: viewModel)
             }
         }
+    }
+}
+
+// MARK: - FullTextSearchFinder
+
+private extension FullTextSearchFinder {
+    static func findThreadsMatching(
+        searchTerm: String,
+        maxSearchResults: UInt,
+        tx: SDSAnyReadTransaction
+    ) -> [TSThread] {
+        var threads = [TSThread]()
+
+        FullTextSearchFinder.enumerateObjects(
+            searchText: searchTerm,
+            maxResults: maxSearchResults,
+            transaction: tx
+        ) { (thread: TSThread, _, _) in
+            threads.append(thread)
+        }
+
+        return threads
     }
 }

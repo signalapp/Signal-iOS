@@ -10,25 +10,22 @@ import XCTest
 
 final class CallRecordLoaderTest: XCTestCase {
     private var mockCallRecordQuerier: MockCallRecordQuerier!
-    private var mockFullTextSearchFinder: MockFullTextSearchFinder!
 
     private var callRecordLoader: CallRecordLoader!
 
     override func setUp() {
         mockCallRecordQuerier = MockCallRecordQuerier()
-        mockFullTextSearchFinder = MockFullTextSearchFinder()
     }
 
     private func setupCallRecordLoader(
         onlyLoadMissedCalls: Bool = false,
-        searchTerm: String? = nil
+        onlyMatchThreadRowIds: [Int64]? = nil
     ) {
         callRecordLoader = CallRecordLoader(
             callRecordQuerier: mockCallRecordQuerier,
-            fullTextSearchFinder: mockFullTextSearchFinder,
             configuration: CallRecordLoader.Configuration(
                 onlyLoadMissedCalls: onlyLoadMissedCalls,
-                searchTerm: searchTerm
+                onlyMatchThreadRowIds: onlyMatchThreadRowIds
             )
         )
     }
@@ -46,9 +43,7 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 1), .fixture(callId: 2)
         ]
 
-        mockFullTextSearchFinder.mockThreadRowIdsForSearchTerm = [:]
-
-        setupCallRecordLoader(searchTerm: "han solo")
+        setupCallRecordLoader(onlyMatchThreadRowIds: [1])
         XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
 
         setupCallRecordLoader(onlyLoadMissedCalls: true)
@@ -76,11 +71,7 @@ final class CallRecordLoaderTest: XCTestCase {
     }
 
     func testGetOlderPageSearching() {
-        setupCallRecordLoader(searchTerm: "boba fett")
-
-        mockFullTextSearchFinder.mockThreadRowIdsForSearchTerm = [
-            "boba fett": [1, 2]
-        ]
+        setupCallRecordLoader(onlyMatchThreadRowIds: [1, 2])
 
         mockCallRecordQuerier.mockCallRecords = [
             .fixture(callId: 1),
@@ -116,11 +107,7 @@ final class CallRecordLoaderTest: XCTestCase {
     }
 
     func testGetOlderPageForMissedSearching() {
-        setupCallRecordLoader(onlyLoadMissedCalls: true, searchTerm: "darth vader")
-
-        mockFullTextSearchFinder.mockThreadRowIdsForSearchTerm = [
-            "darth vader": [1, 2]
-        ]
+        setupCallRecordLoader(onlyLoadMissedCalls: true, onlyMatchThreadRowIds: [1, 2])
 
         mockCallRecordQuerier.mockCallRecords = [
             .fixture(callId: 1),
@@ -162,11 +149,7 @@ final class CallRecordLoaderTest: XCTestCase {
     }
 
     func testGetNewerPageSearching() {
-        setupCallRecordLoader(searchTerm: "boba fett")
-
-        mockFullTextSearchFinder.mockThreadRowIdsForSearchTerm = [
-            "boba fett": [1, 2]
-        ]
+        setupCallRecordLoader(onlyMatchThreadRowIds: [1, 2])
 
         mockCallRecordQuerier.mockCallRecords = [
             .fixture(callId: 1),
@@ -202,11 +185,7 @@ final class CallRecordLoaderTest: XCTestCase {
     }
 
     func testGetNewerPageForMissedSearching() {
-        setupCallRecordLoader(onlyLoadMissedCalls: true, searchTerm: "darth vader")
-
-        mockFullTextSearchFinder.mockThreadRowIdsForSearchTerm = [
-            "darth vader": [1, 2]
-        ]
+        setupCallRecordLoader(onlyLoadMissedCalls: true, onlyMatchThreadRowIds: [1, 2])
 
         mockCallRecordQuerier.mockCallRecords = [
             .fixture(callId: 1),
@@ -287,29 +266,6 @@ private class MockCallRecordQuerier: CallRecordQuerier {
 
     func fetchCursor(threadRowId: Int64, callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
         return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.threadRowId == threadRowId }, ordering: ordering))
-    }
-}
-
-private class MockFullTextSearchFinder: CallRecordLoader.Shims.FullTextSearchFinder {
-    var mockThreadRowIdsForSearchTerm: [String: [Int64]]?
-
-    func findThreadsMatching(searchTerm: String, maxSearchResults: UInt, tx: DBReadTransaction) -> [TSThread] {
-        guard let mockThreadRowIdsForSearchTerm else {
-            XCTFail("Mock not set!")
-            return []
-        }
-
-        self.mockThreadRowIdsForSearchTerm = nil
-
-        guard let threadRowIds = mockThreadRowIdsForSearchTerm[searchTerm] else {
-            return []
-        }
-
-        return threadRowIds.map { threadRowId in
-            let thread = TSThread(uniqueId: UUID().uuidString)
-            thread.updateRowId(threadRowId)
-            return thread
-        }
     }
 }
 

@@ -11,23 +11,16 @@ class CallRecordLoader {
         /// Whether the loader should only load missed calls.
         let onlyLoadMissedCalls: Bool
 
-        /// If present, the loader will only load calls that match this term.
-        let searchTerm: String?
-
-        // [CallsTab] TODO: do we want special behavior if a load exceeds this amount?
-        // [CallsTab] TODO: what happens if the search results change under us between loads?
-        /// The max number of matches for ``searchTerm`` used for an invocation
-        /// of ``CallRecordLoader/loadCallRecords(loadDirection:onlyMissedCalls:matchingSearchTerm:)``.
-        let maxSearchResults: UInt
+        /// If present, the loader will only load calls matching threads with
+        /// the given SQLite row IDs.
+        let onlyMatchThreadRowIds: [Int64]?
 
         init(
-            onlyLoadMissedCalls: Bool = false,
-            searchTerm: String? = nil,
-            maxSearchResults: UInt = 100
+            onlyLoadMissedCalls: Bool,
+            onlyMatchThreadRowIds: [Int64]?
         ) {
             self.onlyLoadMissedCalls = onlyLoadMissedCalls
-            self.searchTerm = searchTerm
-            self.maxSearchResults = maxSearchResults
+            self.onlyMatchThreadRowIds = onlyMatchThreadRowIds
         }
     }
 
@@ -37,28 +30,13 @@ class CallRecordLoader {
     }
 
     private let callRecordQuerier: CallRecordQuerier
-    private let fullTextSearchFinder: Shims.FullTextSearchFinder
-
     private let configuration: Configuration
-
-    /// The row IDs for the threads matching the search term in this loader's
-    /// ``Configuration``. Set during the first load with this configuration.
-    /// `nil` if this configuration does not contain a search term.
-    ///
-    /// If each time we loaded a new page of records we performed a new search,
-    /// we may end up with records for a different set of threads for the new
-    /// page than in the existing pages, if something changed in the search
-    /// index between loads. That'd be very bad.
-    private var threadRowIdsMatchingSearchTerm: [Int64]?
 
     init(
         callRecordQuerier: CallRecordQuerier,
-        fullTextSearchFinder: Shims.FullTextSearchFinder,
         configuration: Configuration
     ) {
         self.callRecordQuerier = callRecordQuerier
-        self.fullTextSearchFinder = fullTextSearchFinder
-
         self.configuration = configuration
     }
 
@@ -131,51 +109,12 @@ class CallRecordLoader {
         ordering: CallRecordQuerierFetchOrdering,
         tx: DBReadTransaction
     ) -> [CallRecordCursor] {
-        guard let searchTerm = configuration.searchTerm else {
-            if configuration.onlyLoadMissedCalls {
-                return CallRecord.CallStatus.missedCalls.compactMap { callStatus in
-                    callRecordQuerier.fetchCursor(
-                        callStatus: callStatus,
-                        ordering: ordering,
-                        tx: tx
-                    )
-                }
-            } else if let singleCursor = callRecordQuerier.fetchCursor(
-                ordering: ordering,
-                tx: tx
-            ) {
-                return [singleCursor]
-            }
-
-            return []
-        }
-
-        let threadRowIdsMatchingSearchTerm: [Int64] = {
-            if let threadsFromEarlierSearch = self.threadRowIdsMatchingSearchTerm {
-                return threadsFromEarlierSearch
-            }
-
-            let threadsMatchingSearch = fullTextSearchFinder.findThreadsMatching(
-                searchTerm: searchTerm,
-                maxSearchResults: configuration.maxSearchResults,
-                tx: tx
-            )
-
-            let threadRowIdsMatchingSearchTerm = threadsMatchingSearch.compactMap { thread -> Int64 in
-                guard let threadRowId = thread.sqliteRowId else {
-                    owsFail("How did we match a thread in the FTS index that doesn't have a SQLite row ID?")
-                }
-
-                return threadRowId
-            }
-
-            self.threadRowIdsMatchingSearchTerm = threadRowIdsMatchingSearchTerm
-            return threadRowIdsMatchingSearchTerm
-        }()
-
-        return threadRowIdsMatchingSearchTerm.flatMap { threadRowId -> [CallRecordCursor] in
-            if configuration.onlyLoadMissedCalls {
-                return CallRecord.CallStatus.missedCalls.compactMap { callStatus in
+        if
+            let onlyMatchThreadRowIds = configuration.onlyMatchThreadRowIds,
+            configuration.onlyLoadMissedCalls
+        {
+            return onlyMatchThreadRowIds.flatMap { threadRowId -> [CallRecordCursor] in
+                return CallRecord.CallStatus.missedCalls.compactMap { callStatus -> CallRecordCursor? in
                     return callRecordQuerier.fetchCursor(
                         threadRowId: threadRowId,
                         callStatus: callStatus,
@@ -183,14 +122,29 @@ class CallRecordLoader {
                         tx: tx
                     )
                 }
-            } else if let singleThreadCursor = callRecordQuerier.fetchCursor(
-                threadRowId: threadRowId,
-                ordering: ordering,
-                tx: tx
-            ) {
-                return [singleThreadCursor]
             }
-
+        } else if let onlyMatchThreadRowIds = configuration.onlyMatchThreadRowIds {
+            return onlyMatchThreadRowIds.compactMap { threadRowId -> CallRecordCursor? in
+                return callRecordQuerier.fetchCursor(
+                    threadRowId: threadRowId,
+                    ordering: ordering,
+                    tx: tx
+                )
+            }
+        } else if configuration.onlyLoadMissedCalls {
+            return CallRecord.CallStatus.missedCalls.compactMap { callStatus -> CallRecordCursor? in
+                return callRecordQuerier.fetchCursor(
+                    callStatus: callStatus,
+                    ordering: ordering,
+                    tx: tx
+                )
+            }
+        } else if let fetchCursor = callRecordQuerier.fetchCursor(
+            ordering: ordering,
+            tx: tx
+        ) {
+            return [fetchCursor]
+        } else {
             return []
         }
     }
@@ -243,47 +197,5 @@ private extension InterleavingCompositeCursor {
         }
 
         return results
-    }
-}
-
-// MARK: - Shims
-
-extension CallRecordLoader {
-    enum Shims {
-        typealias FullTextSearchFinder = CallRecordLoader_FullTextSearchFinder_Shim
-    }
-
-    enum Wrappers {
-        typealias FullTextSearchFinder = CallRecordLoader_FullTextSearchFinder_Wrapper
-    }
-}
-
-protocol CallRecordLoader_FullTextSearchFinder_Shim {
-    func findThreadsMatching(
-        searchTerm: String,
-        maxSearchResults: UInt,
-        tx: DBReadTransaction
-    ) -> [TSThread]
-}
-
-struct CallRecordLoader_FullTextSearchFinder_Wrapper: CallRecordLoader_FullTextSearchFinder_Shim {
-    init() {}
-
-    func findThreadsMatching(
-        searchTerm: String,
-        maxSearchResults: UInt,
-        tx: DBReadTransaction
-    ) -> [TSThread] {
-        var threads = [TSThread]()
-
-        FullTextSearchFinder.enumerateObjects(
-            searchText: searchTerm,
-            maxResults: maxSearchResults,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        ) { (thread: TSThread, _, _) in
-            threads.append(thread)
-        }
-
-        return threads
     }
 }

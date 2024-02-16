@@ -118,6 +118,23 @@ public class AtomicUInt: NSObject {
 
 // MARK: -
 
+public typealias AtomicUuid = AtomicValue<UUID>
+
+public extension AtomicUuid {
+    /// Rotates the contained UUID, returning the value post-rotation.
+    func rotate() -> UUID {
+        let newValue = UUID()
+        _ = swap(newValue)
+        return newValue
+    }
+
+    convenience init(lock: AtomicLock) {
+        self.init(UUID(), lock: lock)
+    }
+}
+
+// MARK: -
+
 public final class AtomicValue<T> {
     private let lock: AtomicLock
     private var value: T
