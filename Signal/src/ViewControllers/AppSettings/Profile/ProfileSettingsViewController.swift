@@ -242,10 +242,20 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         if FeatureFlags.usernames, let localUsernameState {
             let usernameSection = OWSTableSection()
-            usernameSection.footerTitle = OWSLocalizedString(
-                "PROFILE_VIEW_USERNAME_DESCRIPTION",
-                comment: "Footer below the usernames section of the profile settings explaining username visibility."
-            )
+
+            switch localUsernameState {
+            case .unset:
+                usernameSection.footerTitle = OWSLocalizedString(
+                    "PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION",
+                    comment: "Footer below the usernames section of the profile settings when a username has not been set."
+                )
+            case .available, .linkCorrupted, .usernameAndLinkCorrupted:
+                usernameSection.footerTitle = OWSLocalizedString(
+                    "PROFILE_VIEW_USERNAME_DESCRIPTION",
+                    comment: "Footer below the usernames section of the profile settings explaining username visibility."
+                )
+            }
+
             switch localUsernameState {
             case .unset:
                 usernameSection.add(usernameUnsetTableItem())
