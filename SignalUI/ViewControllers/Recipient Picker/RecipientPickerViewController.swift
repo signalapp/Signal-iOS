@@ -375,7 +375,8 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             ))
         }
 
-        if allowsAddByAddress && !isSearching {
+        // Can just combine this if block with the below when the feature flag is removed
+        if allowsAddByAddress && !isSearching && FeatureFlags.usernames {
             // Find by username
             staticSection.add(OWSTableItem.disclosureItem(
                 icon: .profileUsername,
@@ -391,7 +392,9 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                     self.navigationController?.pushViewController(viewController, animated: true)
                 }
             ))
+        }
 
+        if allowsAddByAddress && !isSearching {
             // Find by phone number
             staticSection.add(OWSTableItem.disclosureItem(
                 icon: .phoneNumber,
@@ -759,7 +762,7 @@ extension RecipientPickerViewController {
             )
         }
 
-        if allowsAddByAddress {
+        if allowsAddByAddress, FeatureFlags.usernames {
             addButton(
                 title: OWSLocalizedString(
                     "NO_CONTACTS_SEARCH_BY_USERNAME",
@@ -770,7 +773,9 @@ extension RecipientPickerViewController {
                 icon: .composeFindByUsernameLarge,
                 innerIconSize: 40
             )
+        }
 
+        if allowsAddByAddress {
             addButton(
                 title: OWSLocalizedString(
                     "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
