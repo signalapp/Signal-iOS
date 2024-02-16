@@ -595,9 +595,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Registration
 
     private func buildLaunchInterface(regLoader: RegistrationCoordinatorLoader) -> LaunchInterface {
-        // If user is missing profile name, we will redirect to onboarding flow.
-        let hasProfileName = profileManager.hasProfileName
-
         let (
             tsRegistrationState,
             lastMode
@@ -608,59 +605,54 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         }
 
-        let needsOnboarding = !hasProfileName && (tsRegistrationState.isPrimaryDevice ?? true)
-
         if let lastMode {
             Logger.info("Found ongoing registration; continuing")
             return .registration(regLoader, lastMode)
-        } else if needsOnboarding || !tsRegistrationState.isRegistered {
-            switch tsRegistrationState {
-
-            case .reregistering(let reregNumber, let reregAci):
-                if let reregE164 = E164(reregNumber), let reregAci {
-                    Logger.info("Found legacy re-registration; continuing in new registration")
-                    // A user who started re-registration before the new
-                    // registration flow shipped; kick them to new re-reg.
-                    return .registration(regLoader, .reRegistering(.init(e164: reregE164, aci: reregAci)))
-                } else {
-                    // If we're missing the e164 or aci, drop into normal reg.
-                    Logger.info("Found legacy initial registration; continuing in new registration")
-                    return .registration(regLoader, .registering)
-                }
-
-            case .relinking:
-                return .secondaryProvisioning
-
-            case .deregistered:
-                // If we are deregistered, go to the chat list in the deregistered state.
-                // The user can kick of re-registration from there, which will set the
-                // 'lastMode' var and short circuit before we get here next time around.
-                return .chatList
-            case .delinked:
-                // If we are delinked, go to the chat list in the delinked state.
-                // The user can kick of re-linking from there.
-                return .chatList
-
-            case
-                    .registered,
-                    .provisioned,
-                    .transferringIncoming,
-                    .transferringPrimaryOutgoing,
-                    .transferringLinkedOutgoing,
-                    .transferred:
-                // We got here (past the isRegistered check above) so these are invalid
-                // states, but default to "unregistered".
-                fallthrough
-
-            case .unregistered:
-                if UIDevice.current.isIPad {
-                    return .secondaryProvisioning
-                } else {
-                    return .registration(regLoader, .registering)
-                }
-            }
-        } else {
+        }
+        switch tsRegistrationState {
+        case .registered, .provisioned:
+            // We're already registered.
             return .chatList
+
+        case .reregistering(let reregNumber, let reregAci):
+            if let reregE164 = E164(reregNumber), let reregAci {
+                Logger.info("Found legacy re-registration; continuing in new registration")
+                // A user who started re-registration before the new
+                // registration flow shipped; kick them to new re-reg.
+                return .registration(regLoader, .reRegistering(.init(e164: reregE164, aci: reregAci)))
+            } else {
+                // If we're missing the e164 or aci, drop into normal reg.
+                Logger.info("Found legacy initial registration; continuing in new registration")
+                return .registration(regLoader, .registering)
+            }
+
+        case .relinking:
+            return .secondaryProvisioning
+
+        case .deregistered:
+            // If we are deregistered, go to the chat list in the deregistered state.
+            // The user can kick of re-registration from there, which will set the
+            // 'lastMode' var and short circuit before we get here next time around.
+            return .chatList
+
+        case .delinked:
+            // If we are delinked, go to the chat list in the delinked state.
+            // The user can kick of re-linking from there.
+            return .chatList
+
+        case
+                .transferringIncoming,
+                .transferringPrimaryOutgoing,
+                .transferringLinkedOutgoing,
+                .transferred:
+            fallthrough
+
+        case .unregistered:
+            if UIDevice.current.isIPad {
+                return .secondaryProvisioning
+            } else {
+                return .registration(regLoader, .registering)
+            }
         }
     }
 

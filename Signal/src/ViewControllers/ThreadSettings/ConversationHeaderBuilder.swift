@@ -502,8 +502,8 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies, Conversatio
 extension ConversationHeaderDelegate {
     func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String {
         var threadName: String
-        if thread.isNoteToSelf, !renderLocalUserAsNoteToSelf, let localName = profileManager.localFullName() {
-            threadName = localName
+        if thread.isNoteToSelf, !renderLocalUserAsNoteToSelf {
+            threadName = profileManager.localFullName() ?? ""
         } else {
             threadName = contactsManager.displayName(for: thread, transaction: transaction)
         }
