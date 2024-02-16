@@ -247,7 +247,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addFirstDeletedIndexToDeletedCallRecord
         case addCallRecordDeleteAllColumnsToJobRecord
         case addPhoneNumberSharingAndDiscoverability
-        case removeRedundantPhoneNumbers
+        case removeRedundantPhoneNumbers2
         case scheduleFullIntersection
 
         // NOTE: Every time we add a migration id, consider
@@ -2593,7 +2593,9 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
-        migrator.registerMigration(.removeRedundantPhoneNumbers) { tx in
+        migrator.registerMigration(.removeRedundantPhoneNumbers2) { tx in
+            removeMigration("removeRedundantPhoneNumbers", db: tx.database)
+            try removeLocalProfileSignalRecipient(in: tx.database)
             try removeRedundantPhoneNumbers(
                 in: tx.database,
                 tableName: "model_OWSUserProfile",
@@ -3309,12 +3311,29 @@ public class GRDBSchemaMigrator: NSObject {
         """)
     }
 
+    static func removeLocalProfileSignalRecipient(in db: Database) throws {
+        try db.execute(sql: """
+        DELETE FROM "model_SignalRecipient" WHERE "recipientPhoneNumber" = 'kLocalProfileUniqueId'
+        """)
+    }
+
     static func removeRedundantPhoneNumbers(
         in db: Database,
         tableName: StaticString,
         serviceIdColumn: StaticString,
         phoneNumberColumn: StaticString
     ) throws {
+        // If kLocalProfileUniqueId has a ServiceId, remove it. This should only
+        // exist for OWSUserProfile (and it shouldn't have a ServiceId), but it
+        // unfortunately exists for threads as well.
+        try db.execute(sql: """
+        UPDATE "\(tableName)"
+        SET
+            "\(serviceIdColumn)" = NULL
+        WHERE
+            "\(phoneNumberColumn)" = 'kLocalProfileUniqueId'
+        """)
+
         // If there are any rows with an ACI & phone number, remove the latter.
         try db.execute(sql: """
         UPDATE "\(tableName)"
@@ -3426,9 +3445,13 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
 
 private func hasRunMigration(_ identifier: String, transaction: GRDBReadTransaction) -> Bool {
     do {
-        return try String.fetchOne(transaction.database, sql: "SELECT identifier FROM grdb_migrations WHERE identifier = ?", arguments: [identifier]) != nil
+        return try String.fetchOne(
+            transaction.database,
+            sql: "SELECT identifier FROM grdb_migrations WHERE identifier = ?",
+            arguments: [identifier]
+        ) != nil
     } catch {
-        owsFail("Error: \(error)")
+        owsFail("Error: \(error.grdbErrorForLogging)")
     }
 }
 
@@ -3436,6 +3459,14 @@ private func insertMigration(_ identifier: String, db: Database) {
     do {
         try db.execute(sql: "INSERT INTO grdb_migrations (identifier) VALUES (?)", arguments: [identifier])
     } catch {
-        owsFail("Error: \(error)")
+        owsFail("Error: \(error.grdbErrorForLogging)")
+    }
+}
+
+private func removeMigration(_ identifier: String, db: Database) {
+    do {
+        try db.execute(sql: "DELETE FROM grdb_migrations WHERE identifier = ?", arguments: [identifier])
+    } catch {
+        owsFail("Error: \(error.grdbErrorForLogging)")
     }
 }

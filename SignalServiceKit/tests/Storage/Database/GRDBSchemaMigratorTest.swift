@@ -282,7 +282,8 @@ extension GRDBSchemaMigratorTest {
                 "recipientPhoneNumber", "recipientUUID"
             ) VALUES
                 ('+17635550100', '00000000-0000-4000-A000-000000000000'),
-                ('+17635550101', NULL);
+                ('+17635550101', NULL),
+                ('kLocalProfileUniqueId', '00000000-0000-4000-A000-000000000FFF');
 
             CREATE TABLE "SampleTable" (
                 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -301,8 +302,11 @@ extension GRDBSchemaMigratorTest {
                 ('+17635550100', 'PNI:00000000-0000-4000-A000-000000000000'),
                 ('+17635550100', NULL),
                 ('+17635550101', NULL),
-                ('+17635550102', NULL);
+                ('+17635550102', NULL),
+                ('kLocalProfileUniqueId', NULL),
+                ('kLocalProfileUniqueId', '00000000-0000-4000-A000-000000000EEE');
             """)
+            try GRDBSchemaMigrator.removeLocalProfileSignalRecipient(in: db)
             try GRDBSchemaMigrator.removeRedundantPhoneNumbers(
                 in: db,
                 tableName: "SampleTable",
@@ -331,6 +335,12 @@ extension GRDBSchemaMigratorTest {
             XCTAssertEqual(row[2] as String?, nil)
             row = try cursor.next()!
             XCTAssertEqual(row[1] as String?, "+17635550102")
+            XCTAssertEqual(row[2] as String?, nil)
+            row = try cursor.next()!
+            XCTAssertEqual(row[1] as String?, "kLocalProfileUniqueId")
+            XCTAssertEqual(row[2] as String?, nil)
+            row = try cursor.next()!
+            XCTAssertEqual(row[1] as String?, "kLocalProfileUniqueId")
             XCTAssertEqual(row[2] as String?, nil)
             XCTAssertNil(try cursor.next())
         }
