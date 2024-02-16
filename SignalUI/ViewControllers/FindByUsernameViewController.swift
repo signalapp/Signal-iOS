@@ -24,6 +24,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
             comment: "A placeholder value for the text field for finding an account by their username"
         )
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textField.addTarget(self, action: #selector(didTapNext), for: .editingDidEndOnExit)
         return textField
     }()
 
