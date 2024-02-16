@@ -317,8 +317,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             let qrCode = UsernameLinkQRCodeGenerator(
                 foregroundColor: self.qrCodeColor.foreground,
                 backgroundColor: qrCodeBackgroundColor
-            ).generateQRCode(url: usernameLink.url),
-            let screen = view.window?.windowScene?.screen
+            ).generateQRCode(url: usernameLink.url)
         else {
             return
         }
@@ -615,13 +614,11 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             reloadTableContents()
         }
 
-        firstly(on: schedulers.global()) { () -> Promise<Usernames.UsernameLink> in
+        firstly(on: schedulers.global()) { () -> Guarantee<Usernames.RemoteMutationResult<Usernames.UsernameLink>> in
             return self.db.write { tx in
                 self.localUsernameManager.rotateUsernameLink(tx: tx)
             }
-        }.ensure(on: schedulers.main) { [weak self] in
-            guard let self else { return }
-
+        }.map(on: schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.UsernameLink> in
             let latestUsernameState: Usernames.LocalUsernameState = self.db.read { tx in
                 self.localUsernameManager.usernameState(tx: tx)
             }
@@ -639,26 +636,29 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             self.usernameChangeDelegate?.usernameStateDidChange(
                 newState: latestUsernameState
             )
-        }.done(on: schedulers.main) { _ in
-            OWSActionSheets.showActionSheet(
-                message: OWSLocalizedString(
-                    "USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL",
-                    comment: "Text presenting an action sheet notifying the user their QR code and link were reset."
-                ),
-                fromViewController: self,
-                dismissalDelegate: self
-            )
-        }.catch(on: schedulers.main) { [weak self] error in
-            guard let self else { return }
 
-            OWSActionSheets.showActionSheet(
-                message: OWSLocalizedString(
-                    "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET",
-                    comment: "Text presented in an action sheet notifying the user their qr code and link are not set."
-                ),
-                fromViewController: self,
-                dismissalDelegate: self
-            )
+            return remoteMutationResult
+        }.done(on: schedulers.main) { remoteMutationResult in
+            switch remoteMutationResult {
+            case .success:
+                OWSActionSheets.showActionSheet(
+                    message: OWSLocalizedString(
+                        "USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL",
+                        comment: "Text presenting an action sheet notifying the user their QR code and link were reset."
+                    ),
+                    fromViewController: self,
+                    dismissalDelegate: self
+                )
+            case .failure:
+                OWSActionSheets.showActionSheet(
+                    message: OWSLocalizedString(
+                        "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET",
+                        comment: "Text presented in an action sheet notifying the user their qr code and link are not set."
+                    ),
+                    fromViewController: self,
+                    dismissalDelegate: self
+                )
+            }
         }
     }
 

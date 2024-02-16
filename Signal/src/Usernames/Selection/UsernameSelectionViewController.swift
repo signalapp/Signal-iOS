@@ -68,6 +68,8 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         )
         /// The username was rejected by the server during reservation.
         case reservationRejected
+        /// The reservation failed due to a network error.
+        case reservationFailedNetworkError
         /// The reservation failed, for an unknown reason.
         case reservationFailed
         /// The username is too short.
@@ -97,6 +99,8 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
                 return "reservationSuccessful"
             case .reservationRejected:
                 return "reservationRejected"
+            case .reservationFailedNetworkError:
+                return "reservationFailedNetworkError"
             case .reservationFailed:
                 return "reservationFailed"
             case .tooShort:
@@ -392,6 +396,7 @@ private extension UsernameSelectionViewController {
                     .noChangesToExisting,
                     .pending,
                     .reservationRejected,
+                    .reservationFailedNetworkError,
                     .reservationFailed,
                     .tooShort,
                     .tooLong,
@@ -428,6 +433,7 @@ private extension UsernameSelectionViewController {
             case
                     .pending,
                     .reservationRejected,
+                    .reservationFailedNetworkError,
                     .reservationFailed,
                     .tooShort,
                     .tooLong,
@@ -459,6 +465,7 @@ private extension UsernameSelectionViewController {
             self.usernameTextFieldWrapper.textField.configure(forConfirmedUsername: username)
         case
                 .reservationRejected,
+                .reservationFailedNetworkError,
                 .reservationFailed,
                 .tooShort,
                 .tooLong,
@@ -487,6 +494,8 @@ private extension UsernameSelectionViewController {
                     "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE",
                     comment: "An error message shown when the user wants to set their username to an unavailable value."
                 )
+            case .reservationFailedNetworkError:
+                return Usernames.RemoteMutationError.networkError.localizedDescription
             case .reservationFailed:
                 return CommonStrings.somethingWentWrongTryAgainLaterError
             case .tooShort:
@@ -618,6 +627,7 @@ private extension UsernameSelectionViewController {
                 .noChangesToExisting,
                 .pending,
                 .reservationRejected,
+                .reservationFailedNetworkError,
                 .reservationFailed,
                 .tooShort,
                 .tooLong,
@@ -639,30 +649,35 @@ private extension UsernameSelectionViewController {
         ) { modal in
             UsernameLogger.shared.info("Changing username case.")
 
-            firstly(on: self.context.schedulers.sync) { () -> Promise<Void> in
+            firstly(on: self.context.schedulers.sync) { () -> Guarantee<Usernames.RemoteMutationResult<Void>> in
                 return self.context.databaseStorage.write { tx in
                     self.context.localUsernameManager.updateVisibleCaseOfExistingUsername(
                         newUsername: newUsername.reassembled,
                         tx: tx.asV2Write
                     )
                 }
-            }.ensure(on: self.context.schedulers.main) {
+            }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Void> in
                 let newState = self.context.databaseStorage.read { tx in
                     return self.context.localUsernameManager.usernameState(tx: tx.asV2Read)
                 }
 
                 self.usernameChangeDelegate?.usernameStateDidChange(newState: newState)
-            }.done(on: self.context.schedulers.main) {
-                UsernameLogger.shared.info("Changed username case!")
 
-                modal.dismiss {
-                    self.dismiss(animated: true)
+                return remoteMutationResult
+            }.done(on: self.context.schedulers.main) { remoteMutationResult -> Void in
+                switch remoteMutationResult {
+                case .success:
+                    UsernameLogger.shared.info("Changed username case!")
+
+                    modal.dismiss {
+                        self.dismiss(animated: true)
+                    }
+                case .failure(let remoteMutationError):
+                    self.dismiss(
+                        modalActivityIndicator: modal,
+                        andPresentErrorMessage: remoteMutationError.localizedDescription
+                    )
                 }
-            }.catch(on: self.context.schedulers.main) { error in
-                self.dismiss(
-                    modalActivityIndicator: modal,
-                    andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
-                )
             }
         }
     }
@@ -699,22 +714,24 @@ private extension UsernameSelectionViewController {
         ) { modal in
             UsernameLogger.shared.info("Confirming username.")
 
-            firstly(on: self.context.schedulers.sync) { () -> Promise<Usernames.ConfirmationResult> in
-                return self.context.databaseStorage.write { tx -> Promise<Usernames.ConfirmationResult> in
+            firstly(on: self.context.schedulers.sync) { () -> Guarantee<Usernames.RemoteMutationResult<Usernames.ConfirmationResult>> in
+                return self.context.databaseStorage.write { tx in
                     return self.context.localUsernameManager.confirmUsername(
                         reservedUsername: reservedUsername,
                         tx: tx.asV2Write
                     )
                 }
-            }.ensure(on: self.context.schedulers.main) {
+            }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.ConfirmationResult> in
                 let newState = self.context.databaseStorage.read { tx in
                     return self.context.localUsernameManager.usernameState(tx: tx.asV2Read)
                 }
 
                 self.usernameChangeDelegate?.usernameStateDidChange(newState: newState)
-            }.done(on: self.context.schedulers.main) { confirmationResult -> Void in
-                switch confirmationResult {
-                case .success:
+
+                return remoteMutationResult
+            }.done(on: self.context.schedulers.main) { remoteMutationResult -> Void in
+                switch remoteMutationResult {
+                case .success(.success):
                     UsernameLogger.shared.info("Confirmed username!")
 
                     modal.dismiss {
@@ -722,26 +739,26 @@ private extension UsernameSelectionViewController {
                             self.usernameSelectionDelegate?.usernameSelectionDidDismissAfterConfirmation(username: reservedUsername.usernameString)
                         }
                     }
-                case .rejected:
+                case .success(.rejected):
                     UsernameLogger.shared.error("Failed to confirm the username, server rejected.")
 
                     self.dismiss(
                         modalActivityIndicator: modal,
                         andPresentErrorMessage: CommonStrings.somethingWentWrongError
                     )
-                case .rateLimited:
+                case .success(.rateLimited):
                     UsernameLogger.shared.error("Failed to confirm the username, rate-limited.")
 
                     self.dismiss(
                         modalActivityIndicator: modal,
                         andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
                     )
+                case .failure(let remoteMutationError):
+                    self.dismiss(
+                        modalActivityIndicator: modal,
+                        andPresentErrorMessage: remoteMutationError.localizedDescription
+                    )
                 }
-            }.catch(on: self.context.schedulers.main) { error in
-                self.dismiss(
-                    modalActivityIndicator: modal,
-                    andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
-                )
             }
         }
     }
@@ -888,9 +905,15 @@ private extension UsernameSelectionViewController {
     ) {
         AssertIsOnMainThread()
 
-        struct ReservationNotAttemptedError: Error {}
+        enum ReservationResult {
+            case notAttempted
+            case success(Usernames.ReservationResult)
+            case networkError
+            case unknownError
+        }
 
         let thisAttemptId = UUID()
+        let logger = UsernameLogger.shared.suffixed(with: "Attempt ID: \(thisAttemptId)")
 
         firstly(on: self.context.schedulers.sync) { () -> Guarantee<Void> in
             self.currentUsernameState = .pending(id: thisAttemptId)
@@ -899,62 +922,69 @@ private extension UsernameSelectionViewController {
             return Guarantee.after(
                 wallInterval: Constants.reservationDebounceTimeInternal
             )
-        }.then(on: self.context.schedulers.main) { () throws -> Promise<Usernames.ReservationResult> in
+        }.then(on: self.context.schedulers.main) { () -> Guarantee<ReservationResult> in
             // If this attempt is no longer current after debounce, we should
             // bail out without firing a reservation.
             guard
                 case let .pending(id) = self.currentUsernameState,
                 thisAttemptId == id
             else {
-                throw ReservationNotAttemptedError()
+                return .value(.notAttempted)
             }
 
-            UsernameLogger.shared.info("Attempting to reserve username. Attempt ID: \(thisAttemptId)")
+            logger.info("Attempting to reserve username.")
 
             return self.context.localUsernameManager.reserveUsername(
                 usernameCandidates: usernameCandidates
-            )
-        }.done(on: self.context.schedulers.main) { [weak self] reservationResult -> Void in
-            guard let self else { return }
-
+            ).map(on: self.context.schedulers.sync) { remoteMutationResult -> ReservationResult in
+                switch remoteMutationResult {
+                case .success(let reservationResult):
+                    return .success(reservationResult)
+                case .failure(.networkError):
+                    return .networkError
+                case .failure(.otherError):
+                    return .unknownError
+                }
+            }
+        }.done(on: self.context.schedulers.main) { (reservationResult: ReservationResult) -> Void in
             // If the reservation we just attempted is not current, we should
             // drop it and bail out.
             guard
                 case let .pending(id) = self.currentUsernameState,
                 thisAttemptId == id
             else {
-                UsernameLogger.shared.info("Dropping reservation result, attempt is outdated. Attempt ID: \(thisAttemptId)")
+                logger.info("Dropping reservation result, attempt is outdated.")
                 return
             }
 
             switch reservationResult {
-            case let .successful(username, hashedUsername):
-                UsernameLogger.shared.info("Successfully reserved nickname! Attempt ID: \(id)")
+            case .notAttempted:
+                return
+            case let .success(.successful(username, hashedUsername)):
+                logger.info("Successfully reserved nickname!")
 
                 self.currentUsernameState = .reservationSuccessful(
                     username: username,
                     hashedUsername: hashedUsername
                 )
-            case .rejected:
-                UsernameLogger.shared.warn("Reservation rejected. Attempt ID: \(id)")
+            case .success(.rejected):
+                logger.warn("Reservation rejected.")
 
                 self.currentUsernameState = .reservationRejected
-            case .rateLimited:
-                UsernameLogger.shared.error("Reservation rate-limited. Attempt ID: \(id)")
+            case .success(.rateLimited):
+                logger.error("Reservation rate-limited.")
 
                 // Hides the rate-limited error, but not incorrect.
                 self.currentUsernameState = .reservationFailed
+            case .networkError:
+                logger.error("Reservation failed due to a network error.")
+
+                self.currentUsernameState = .reservationFailedNetworkError
+            case .unknownError:
+                logger.error("Reservation failed due to an unknown error.")
+
+                self.currentUsernameState = .reservationFailed
             }
-        }.catch(on: self.context.schedulers.main) { [weak self] error in
-            guard let self else { return }
-
-            if error is ReservationNotAttemptedError {
-                return
-            }
-
-            self.currentUsernameState = .reservationFailed
-
-            UsernameLogger.shared.error("Reservation failed: \(error)!")
         }
     }
 }

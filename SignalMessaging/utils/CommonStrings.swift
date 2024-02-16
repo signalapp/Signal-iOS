@@ -248,7 +248,6 @@ public class CommonStrings: NSObject {
     static public var somethingWentWrongError: String {
         OWSLocalizedString(
             "SOMETHING_WENT_WRONG_ERROR",
-            value: "Something went wrong.",
             comment: "An error message generically indicating that something went wrong."
         )
     }
@@ -256,9 +255,24 @@ public class CommonStrings: NSObject {
     static public var somethingWentWrongTryAgainLaterError: String {
         OWSLocalizedString(
             "SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR",
-            value: "Something went wrong. Please try again later.",
             comment: "An error message generically indicating that something went wrong, and that the user should try again later."
         )
+    }
+}
+
+// MARK: -
+
+public extension Usernames.RemoteMutationError {
+    var localizedDescription: String {
+        switch self {
+        case .networkError:
+            return OWSLocalizedString(
+                "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION",
+                comment: "An error message indicating that a usernames-related requeset failed because of a network error."
+            )
+        case .otherError:
+            return CommonStrings.somethingWentWrongTryAgainLaterError
+        }
     }
 }
 
