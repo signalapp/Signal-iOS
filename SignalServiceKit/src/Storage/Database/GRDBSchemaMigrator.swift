@@ -248,6 +248,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addCallRecordDeleteAllColumnsToJobRecord
         case addPhoneNumberSharingAndDiscoverability
         case removeRedundantPhoneNumbers
+        case scheduleFullIntersection
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2611,6 +2612,17 @@ public class GRDBSchemaMigrator: NSObject {
                 serviceIdColumn: "uuidString",
                 phoneNumberColumn: "phoneNumber"
             )
+            return .success(())
+        }
+
+        // Perform a full sync to ensure isDiscoverable values are correct.
+        migrator.registerMigration(.scheduleFullIntersection) { tx in
+            try tx.database.execute(sql: """
+            DELETE FROM "keyvalue" WHERE (
+                "collection" = 'OWSContactsManagerCollection'
+                AND "key" = 'OWSContactsManagerKeyNextFullIntersectionDate2'
+            )
+            """)
             return .success(())
         }
 
