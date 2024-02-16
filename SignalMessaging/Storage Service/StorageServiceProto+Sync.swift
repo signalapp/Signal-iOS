@@ -189,6 +189,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
     private let recipientHidingManager: RecipientHidingManager
+    private let signalServiceAddressCache: SignalServiceAddressCache
 
     init(
         localIdentifiers: LocalIdentifiers,
@@ -203,7 +204,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         usernameLookupManager: UsernameLookupManager,
         recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
-        recipientHidingManager: RecipientHidingManager
+        recipientHidingManager: RecipientHidingManager,
+        signalServiceAddressCache: SignalServiceAddressCache
     ) {
         self.localIdentifiers = localIdentifiers
         self.isPrimaryDevice = isPrimaryDevice
@@ -218,6 +220,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
         self.recipientHidingManager = recipientHidingManager
+        self.signalServiceAddressCache = signalServiceAddressCache
     }
 
     func unknownFields(for record: StorageServiceProtoContactRecord) -> UnknownStorage? { record.unknownFields }
@@ -303,10 +306,17 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             usernameBetterIdentifierChecker.add(profileFamilyName: profileFamilyName)
         }
 
-        if
-            let account = contactsManager.fetchSignalAccount(for: anyAddress, transaction: tx),
-            let contact = account.contact
-        {
+        let systemContact = { () -> Contact? in
+            guard let phoneNumber = contact.phoneNumber else {
+                return nil
+            }
+            return contactsManager.fetchSignalAccount(
+                forPhoneNumber: phoneNumber.stringValue,
+                transaction: tx
+            )?.contact
+        }()
+
+        if let systemContact {
             // We have a contact for this address, whose name we may want to
             // add to this ContactRecord. We should add it if:
             //
@@ -320,21 +330,21 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             //   originally uploaded.
 
             let isPrimary = isPrimaryDevice
-            let isPrimaryAndHasLocalContact = isPrimary && contact.isFromLocalAddressBook
-            let isLinkedAndHasSyncedContact = !isPrimary && !contact.isFromLocalAddressBook
+            let isPrimaryAndHasLocalContact = isPrimary && systemContact.isFromLocalAddressBook
+            let isLinkedAndHasSyncedContact = !isPrimary && !systemContact.isFromLocalAddressBook
 
             if isPrimaryAndHasLocalContact || isLinkedAndHasSyncedContact {
-                if let systemGivenName = contact.firstName {
+                if let systemGivenName = systemContact.firstName {
                     builder.setSystemGivenName(systemGivenName)
                     usernameBetterIdentifierChecker.add(systemContactGivenName: systemGivenName)
                 }
 
-                if let systemFamilyName = contact.lastName {
+                if let systemFamilyName = systemContact.lastName {
                     builder.setSystemFamilyName(systemFamilyName)
                     usernameBetterIdentifierChecker.add(systemContactFamilyName: systemFamilyName)
                 }
 
-                if let systemNickname = contact.nickname {
+                if let systemNickname = systemContact.nickname {
                     builder.setSystemNickname(systemNickname)
                     usernameBetterIdentifierChecker.add(systemContactNickname: systemNickname)
                 }
@@ -510,7 +520,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             needsUpdate = true
         }
 
-        if mergeSystemContactNames(in: record, anyAddress: anyAddress, tx: tx) {
+        if mergeSystemContactNames(in: record, recipient: recipient, serviceIds: serviceIds, tx: tx) {
             needsUpdate = true
         }
 
@@ -639,10 +649,21 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     /// contact names.
     private func mergeSystemContactNames(
         in record: StorageServiceProtoContactRecord,
-        anyAddress: SignalServiceAddress,
+        recipient: SignalRecipient,
+        serviceIds: AtLeastOneServiceId,
         tx: DBWriteTransaction
     ) -> Bool {
-        let localAccount = contactsManager.fetchSignalAccount(for: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
+        // If there's no phone number, there's no system contact. If a phone number
+        // is removed, it'll be claimed by another account; if it's not claimed,
+        // the merging logic will delete the SignalAccount.
+        guard let phoneNumber = recipient.phoneNumber?.stringValue else {
+            return false
+        }
+
+        let localAccount = contactsManager.fetchSignalAccount(
+            forPhoneNumber: phoneNumber,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
 
         if isPrimaryDevice {
             let localContact = localAccount?.contact?.isFromLocalAddressBook == true ? localAccount?.contact : nil
@@ -666,7 +687,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             familyName: record.systemFamilyName,
             nickname: record.systemNickname
         )
-        if let systemFullName, let phoneNumber = anyAddress.phoneNumber {
+        if let systemFullName {
             let newContact = Contact(
                 phoneNumber: phoneNumber,
                 phoneNumberLabel: CommonStrings.mainPhoneNumberLabel,
@@ -690,7 +711,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 contactAvatarHash: nil,
                 multipleAccountLabelText: multipleAccountLabelText,
                 recipientPhoneNumber: phoneNumber,
-                recipientServiceId: anyAddress.serviceId
+                recipientServiceId: serviceIds.aciOrElsePni
             )
         } else {
             newAccount = nil
@@ -718,6 +739,16 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             }
             if didModifySignalAccount {
                 contactsManager.didUpdateSignalAccounts(transaction: SDSDB.shimOnlyBridge(tx))
+            }
+            let aciToUpdate = SignalAccount.aciForPhoneNumberVisibilityUpdate(
+                oldAccount: localAccount,
+                newAccount: newAccount
+            )
+            if aciToUpdate != nil {
+                // Tell the cache to refresh its state for this recipient. It will check
+                // whether or not the number should be visible based on this state and the
+                // state of system contacts.
+                signalServiceAddressCache.updateRecipient(recipient, tx: tx)
             }
         }
 

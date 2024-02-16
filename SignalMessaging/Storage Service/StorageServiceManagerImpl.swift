@@ -1607,7 +1607,8 @@ class StorageServiceOperation: OWSOperation {
                 usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
                 recipientManager: DependenciesBridge.shared.recipientManager,
                 recipientMerger: DependenciesBridge.shared.recipientMerger,
-                recipientHidingManager: DependenciesBridge.shared.recipientHidingManager
+                recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
+                signalServiceAddressCache: signalServiceAddressCache
             ),
             changeState: \.accountIdChangeMap,
             storageIdentifier: \.accountIdToIdentifierMap,

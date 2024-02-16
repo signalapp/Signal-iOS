@@ -18,6 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ContactsManagerProtocol <NSObject>
 
+/// Get the ``SignalAccount`` backed by the given phone number.
+- (nullable SignalAccount *)fetchSignalAccountForPhoneNumber:(NSString *)phoneNumber
+                                                 transaction:(SDSAnyReadTransaction *)transaction;
+
 /// Get the ``SignalAccount`` backed by the given address, if any.
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
                                              transaction:(SDSAnyReadTransaction *)transaction;

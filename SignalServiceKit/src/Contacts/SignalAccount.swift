@@ -370,6 +370,20 @@ extension SignalAccount {
             return contact == nil && otherContact == nil
         }
     }
+
+    public static func aciForPhoneNumberVisibilityUpdate(
+        oldAccount: SignalAccount?,
+        newAccount: SignalAccount?
+    ) -> Aci? {
+        let oldAci = oldAccount?.recipientServiceId as? Aci
+        let newAci = newAccount?.recipientServiceId as? Aci
+        // Don't do anything unless a system contact was added/removed or had an
+        // ACI added to/removed from it.
+        if (newAci == nil) == (oldAci == nil) {
+            return nil
+        }
+        return (newAci ?? oldAci)!
+    }
 }
 
 // MARK: - Avatar

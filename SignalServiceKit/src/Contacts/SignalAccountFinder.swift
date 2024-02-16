@@ -176,13 +176,12 @@ public class SignalAccountFinder: NSObject {
         return result
     }
 
-    func fetchAcis(tx: SDSAnyReadTransaction) throws -> [Aci] {
+    func fetchPhoneNumbers(tx: SDSAnyReadTransaction) throws -> [String] {
         let sql = """
-            SELECT \(SignalAccount.columnName(.recipientServiceId)) FROM \(SignalAccount.databaseTableName)
+            SELECT \(SignalAccount.columnName(.recipientPhoneNumber)) FROM \(SignalAccount.databaseTableName)
         """
         do {
-            let serviceIdStrings = try String?.fetchAll(tx.unwrapGrdbRead.database, sql: sql)
-            return serviceIdStrings.compactMap(Aci.parseFrom(aciString:))
+            return try String?.fetchAll(tx.unwrapGrdbRead.database, sql: sql).compacted()
         } catch {
             throw error.grdbErrorForLogging
         }

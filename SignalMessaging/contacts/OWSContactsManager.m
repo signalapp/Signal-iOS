@@ -294,6 +294,15 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     if (phoneNumber == nil) {
         return nil;
     }
+    return [self fetchSignalAccountForPhoneNumber:phoneNumber transaction:transaction];
+}
+
+- (nullable SignalAccount *)fetchSignalAccountForPhoneNumber:(NSString *)phoneNumber
+                                                 transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(phoneNumber);
+    OWSAssertDebug(transaction);
+
     return [self.modelReadCaches.signalAccountReadCache getSignalAccountWithPhoneNumber:phoneNumber
                                                                             transaction:transaction];
 }

@@ -34,18 +34,20 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         // for each test because we're using a new
         // SignalServiceAddressCache for each test and we need
         // consistent backingHashValue.
-        aliceRecipient = SignalServiceAddress(phoneNumber: "+12345678900")
-        bobRecipient = SignalServiceAddress(phoneNumber: "+49030183000")
+        let alicePhoneNumber = "+12345678900"
+        aliceRecipient = SignalServiceAddress(phoneNumber: alicePhoneNumber)
+        let bobPhoneNumber = "+49030183000"
+        bobRecipient = SignalServiceAddress(phoneNumber: bobPhoneNumber)
 
         // Replace this singleton.
         let fakeContactsManager = FakeContactsManager()
         fakeContactsManager.mockSignalAccounts = [
-            aliceRecipient: SignalAccount(
-                contact: Contact(phoneNumber: aliceRecipient.phoneNumber!, phoneNumberLabel: "", givenName: "Alice", familyName: nil, nickname: nil, fullName: "Alice"),
+            alicePhoneNumber: SignalAccount(
+                contact: Contact(phoneNumber: alicePhoneNumber, phoneNumberLabel: "", givenName: "Alice", familyName: nil, nickname: nil, fullName: "Alice"),
                 address: aliceRecipient
             ),
-            bobRecipient: SignalAccount(
-                contact: Contact(phoneNumber: bobRecipient.phoneNumber!, phoneNumberLabel: "", givenName: "Bob", familyName: "Barker", nickname: nil, fullName: "Bob Barker"),
+            bobPhoneNumber: SignalAccount(
+                contact: Contact(phoneNumber: bobPhoneNumber, phoneNumberLabel: "", givenName: "Bob", familyName: "Barker", nickname: nil, fullName: "Bob Barker"),
                 address: bobRecipient
             ),
         ]

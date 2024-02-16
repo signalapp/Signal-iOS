@@ -22,14 +22,14 @@ private func _isPhoneNumberVisible(
     for recipient: SignalRecipient,
     localAci: () -> Aci?,
     isPhoneNumberShared: (Aci) -> Bool,
-    isSystemContact: (Aci) -> Bool
+    isSystemContact: (_ phoneNumber: String) -> Bool
 ) -> Bool {
     // If there's no ACI, the phone number can't be hidden. (You hide a number
     // via your encrypted profile, and that only exists for ACIs.)
-    guard let aci = recipient.aci else {
+    guard let aci = recipient.aci, let phoneNumber = recipient.phoneNumber else {
         return true
     }
-    return (aci == localAci()) || isPhoneNumberShared(aci) || isSystemContact(aci)
+    return (aci == localAci()) || isPhoneNumberShared(aci) || isSystemContact(phoneNumber.stringValue)
 }
 
 public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetcher {
@@ -57,7 +57,7 @@ public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetche
                 userProfileStore.fetchUserProfiles(for: $0, tx: tx).first.isPhoneNumberSharedOrDefault
             },
             isSystemContact: {
-                contactsManager.fetchSignalAccount(for: SignalServiceAddress($0), transaction: SDSDB.shimOnlyBridge(tx)) != nil
+                contactsManager.fetchSignalAccount(forPhoneNumber: $0, transaction: SDSDB.shimOnlyBridge(tx)) != nil
             }
         )
     }
@@ -68,8 +68,8 @@ public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetche
             acisWithSharedPhoneNumbers: Set(
                 try UserProfileFinder().fetchAcisWithSharedPhoneNumbers(tx: SDSDB.shimOnlyBridge(tx))
             ),
-            acisWithSystemContacts: Set(
-                try SignalAccountFinder().fetchAcis(tx: SDSDB.shimOnlyBridge(tx))
+            phoneNumbersWithSystemContacts: Set(
+                try SignalAccountFinder().fetchPhoneNumbers(tx: SDSDB.shimOnlyBridge(tx))
             )
         )
     }
@@ -78,16 +78,16 @@ public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetche
 public final class BulkPhoneNumberVisibilityFetcher {
     private let localAci: Aci?
     private let acisWithSharedPhoneNumbers: Set<Aci>
-    private let acisWithSystemContacts: Set<Aci>
+    private let phoneNumbersWithSystemContacts: Set<String>
 
     init(
         localAci: Aci?,
         acisWithSharedPhoneNumbers: Set<Aci>,
-        acisWithSystemContacts: Set<Aci>
+        phoneNumbersWithSystemContacts: Set<String>
     ) {
         self.localAci = localAci
         self.acisWithSharedPhoneNumbers = acisWithSharedPhoneNumbers
-        self.acisWithSystemContacts = acisWithSystemContacts
+        self.phoneNumbersWithSystemContacts = phoneNumbersWithSystemContacts
     }
 
     func isPhoneNumberVisible(for recipient: SignalRecipient) -> Bool {
@@ -95,7 +95,7 @@ public final class BulkPhoneNumberVisibilityFetcher {
             for: recipient,
             localAci: { localAci },
             isPhoneNumberShared: { acisWithSharedPhoneNumbers.contains($0) },
-            isSystemContact: { acisWithSystemContacts.contains($0) }
+            isSystemContact: { phoneNumbersWithSystemContacts.contains($0) }
         )
     }
 }
@@ -105,7 +105,7 @@ public final class BulkPhoneNumberVisibilityFetcher {
 final class MockPhoneNumberVisibilityFetcher: PhoneNumberVisibilityFetcher {
     var localAci: Aci?
     var acisWithSharedPhoneNumbers = Set<Aci>()
-    var acisWithSystemContacts = Set<Aci>()
+    var phoneNumbersWithSystemContacts = Set<String>()
 
     func isPhoneNumberVisible(for recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
         return try! fetchAll(tx: tx).isPhoneNumberVisible(for: recipient)
@@ -115,7 +115,7 @@ final class MockPhoneNumberVisibilityFetcher: PhoneNumberVisibilityFetcher {
         return BulkPhoneNumberVisibilityFetcher(
             localAci: localAci,
             acisWithSharedPhoneNumbers: acisWithSharedPhoneNumbers,
-            acisWithSystemContacts: acisWithSystemContacts
+            phoneNumbersWithSystemContacts: phoneNumbersWithSystemContacts
         )
     }
 }

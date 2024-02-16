@@ -9,10 +9,14 @@ import Contacts
 
 @objc(OWSFakeContactsManager)
 public class FakeContactsManager: NSObject, ContactsManagerProtocol {
-    public var mockSignalAccounts = [SignalServiceAddress: SignalAccount]()
+    public var mockSignalAccounts = [String: SignalAccount]()
+
+    public func fetchSignalAccount(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount? {
+        return mockSignalAccounts[phoneNumber]
+    }
 
     public func fetchSignalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        return mockSignalAccounts[address]
+        return address.phoneNumber.flatMap { fetchSignalAccount(forPhoneNumber: $0, transaction: transaction) }
     }
 
     public func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {

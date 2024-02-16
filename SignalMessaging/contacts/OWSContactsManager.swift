@@ -792,15 +792,15 @@ extension OWSContactsManager {
         newSignalAccount: SignalAccount?,
         tx: DBWriteTransaction
     ) {
-        // Don't do anything unless an system contact was added/removed.
-        if (newSignalAccount == nil) == (oldSignalAccount == nil) {
-            return
-        }
-        guard let aci = (newSignalAccount ?? oldSignalAccount)!.recipientServiceId as? Aci else {
+        let aciToUpdate = SignalAccount.aciForPhoneNumberVisibilityUpdate(
+            oldAccount: oldSignalAccount,
+            newAccount: newSignalAccount
+        )
+        guard let aciToUpdate else {
             return
         }
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx)
+        let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aciToUpdate, transaction: tx)
         guard let recipient else {
             return
         }
