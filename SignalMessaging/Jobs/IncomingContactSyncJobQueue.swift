@@ -91,7 +91,15 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
 
         switch attachment {
         case let attachmentPointer as TSAttachmentPointer:
-            return try await attachmentDownloads.enqueueContactSyncDownload(attachmentPointer: attachmentPointer).awaitable()
+            let attachmentDownloads = self.attachmentDownloads
+            let (downloadPromise, downloadFuture) = Promise<TSAttachmentStream>.pending()
+            DispatchQueue.sharedBackground.async {
+                downloadFuture.resolve(
+                    on: SyncScheduler(),
+                    with: attachmentDownloads.enqueueContactSyncDownload(attachmentPointer: attachmentPointer)
+                )
+            }
+            return try await downloadPromise.awaitable()
         case let attachmentStream as TSAttachmentStream:
             return attachmentStream
         default:
