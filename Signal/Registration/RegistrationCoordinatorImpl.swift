@@ -58,24 +58,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func exitRegistration() -> Bool {
         Logger.info("")
 
-        guard canExitRegistrationFlow() else {
+        switch canExitRegistrationFlow() {
+        case .notAllowed:
             Logger.warn("User can't exit registration now")
             return false
-        }
-
-        switch mode {
-        case .registering, .reRegistering:
-            // Preserve all state so they can come back and pick up
-            // where they left off, probably on next app launch.
-            break
-        case .changingNumber:
-            // Wipe in progress state; presumably the user decided not
-            // to change number.
-            self.db.write { tx in
-                self.wipePersistedState(tx)
+        case .allowed(let shouldWipeState):
+            if shouldWipeState {
+                // Wipe in progress state; presumably the user decided not
+                // to proceed and should
+                // a) not be sent here by default next app launch
+                // b) start again from scratch if they do opt to return
+                self.db.write { tx in
+                    self.wipePersistedState(tx)
+                }
             }
+            return true
         }
-        return true
     }
 
     public func nextStep() -> Guarantee<RegistrationStep> {
@@ -478,6 +476,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private struct InMemoryState {
         var hasRestoredState = false
 
+        var tsRegistrationState: TSRegistrationState?
+
         // Whether some system permissions (contacts, APNS) are needed.
         var needsSomePermissions = false
 
@@ -830,6 +830,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         db.write { tx in
             self.loadLocalMasterKeyAndUpdateState(tx)
+            inMemoryState.tsRegistrationState = deps.tsAccountManager.registrationState(tx: tx)
             inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
             if
                 inMemoryState.pinFromDisk != nil,
@@ -3779,12 +3780,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .registering:
             return .registration(.initialRegistration(.init(
                 previouslyEnteredE164: persistedState.e164,
-                validationError: validationError
+                validationError: validationError,
+                canExitRegistration: canExitRegistrationFlow().canExit
             )))
         case .reRegistering(let state):
             return .registration(.reregistration(.init(
                 e164: state.e164,
-                validationError: validationError
+                validationError: validationError,
+                canExitRegistration: canExitRegistrationFlow().canExit
             )))
         case .changingNumber(let state):
             var rateLimitedError: RegistrationPhoneNumberViewState.ValidationError.RateLimited?
@@ -3823,7 +3826,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         validationError: RegistrationVerificationValidationError? = nil
     ) -> RegistrationVerificationState {
         let exitConfiguration: RegistrationVerificationState.ExitConfiguration
-        if canExitRegistrationFlow() {
+        if canExitRegistrationFlow().canExit {
             switch mode {
             case .registering:
                 exitConfiguration = .noExitAllowed
@@ -3858,7 +3861,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func pinCodeEntryExitConfiguration() -> RegistrationPinState.ExitConfiguration {
-        guard canExitRegistrationFlow() else {
+        guard canExitRegistrationFlow().canExit else {
             return .noExitAllowed
         }
         switch mode {
@@ -3901,7 +3904,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering: return .resetPhoneNumber
         case .reRegistering, .changingNumber:
-            if canExitRegistrationFlow() {
+            if canExitRegistrationFlow().canExit {
                 return .close
             } else {
                 return .none
@@ -3959,14 +3962,45 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Exit
 
-    private func canExitRegistrationFlow() -> Bool {
+    private enum RegExitState {
+        case allowed(shouldWipeState: Bool)
+        case notAllowed
+
+        var canExit: Bool {
+            switch self {
+            case .allowed:
+                return true
+            case .notAllowed:
+                return false
+            }
+        }
+    }
+
+    private func canExitRegistrationFlow() -> RegExitState {
         switch mode {
         case .registering:
-            return false
+            if persistedState.hasResetForReRegistration {
+                // Once you have reset its too late.
+                return .notAllowed
+            }
+            // If we had a bug that puts you into the reg flow despite being registered,
+            // we make that bug worse by keeping you in the reg flow forever. So allow
+            // exiting only if the reg state was registered. Doing so should wipe your state.
+            guard inMemoryState.tsRegistrationState?.isRegistered == true else {
+                return .notAllowed
+            }
+            return .allowed(shouldWipeState: true)
         case .reRegistering:
-            return persistedState.hasResetForReRegistration.negated
+            if persistedState.hasResetForReRegistration {
+                // Once you have reset its too late.
+                return .notAllowed
+            }
+            // Wipe if you were previously registered, so we don't send you here
+            // on every app launch. If you were deregistered, we _want_ to send
+            // you here by default and save your progress, so don't wipe state.
+            return .allowed(shouldWipeState: inMemoryState.tsRegistrationState?.isRegistered == true)
         case .changingNumber(let state):
-            return state.pniState == nil
+            return state.pniState == nil ? .allowed(shouldWipeState: true) : .notAllowed
         }
     }
 

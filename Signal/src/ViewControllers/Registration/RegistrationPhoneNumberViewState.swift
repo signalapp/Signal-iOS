@@ -25,11 +25,13 @@ public enum RegistrationPhoneNumberViewState: Equatable {
         /// Will be used to pre-populate the entry field.
         let previouslyEnteredE164: E164?
         let validationError: ValidationError?
+        let canExitRegistration: Bool
     }
 
     public struct Reregistration: Equatable {
         let e164: E164
         let validationError: ValidationError?
+        let canExitRegistration: Bool
     }
 
     public struct ChangeNumberInitialEntry: Equatable {

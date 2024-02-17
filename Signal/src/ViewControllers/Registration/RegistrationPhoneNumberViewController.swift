@@ -259,10 +259,14 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 }
             )
         ]
+        let canExitRegistration: Bool
         switch state {
-        case .initialRegistration:
-            break
-        case .reregistration:
+        case .initialRegistration(let subState):
+            canExitRegistration = subState.canExitRegistration
+        case .reregistration(let subState):
+            canExitRegistration = subState.canExitRegistration
+        }
+        if canExitRegistration {
             actions.append(.init(
                 title: OWSLocalizedString(
                     "EXIT_REREGISTRATION",
