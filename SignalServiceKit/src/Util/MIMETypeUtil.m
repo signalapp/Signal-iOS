@@ -579,7 +579,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken,
-        ^{ result = [self utiTypesForMIMETypes:[self supportedMaybeAnimatedMIMETypesToExtensionTypes].allKeys]; });
+        ^{ result = [self utiTypesForMIMETypes:[self supportedDefinitelyAnimatedMIMETypesToExtensionTypes].allKeys]; });
     return result;
 }
 
