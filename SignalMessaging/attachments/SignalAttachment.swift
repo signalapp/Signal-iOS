@@ -522,9 +522,14 @@ public class SignalAttachment: NSObject {
     }
 
     public var isAnimatedImage: Bool {
-        if dataUTI == (kUTTypePNG as String),
-            dataSource.imageMetadata.isAnimated {
-            return true
+        if dataUTI == (kUTTypePNG as String) {
+            // PNGs need special handling based solely on their internal metadata, not whether 
+            // they appear in the set of known animated image types
+            if dataSource.imageMetadata.isAnimated {
+                return true
+            } else {
+                return false
+            }
         }
 
         return SignalAttachment.animatedImageUTISet.contains(dataUTI)
