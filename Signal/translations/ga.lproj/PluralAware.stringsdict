@@ -668,15 +668,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>Tá an t-ainm céanna ar %1$d bhall amháin den ghrúpa.</string>
 			<key>two</key>
-			<string>%1$d group members have the same name.</string>
+			<string>Tá an t-ainm céanna ar %1$d bhall den ghrúpa.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name.</string>
+			<string>Tá an t-ainm céanna ar %1$d bhall den ghrúpa.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name.</string>
+			<string>Tá an t-ainm céanna ar %1$d mball den ghrúpa.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>Tá an t-ainm céanna ar an líon seo ball den ghrúpa: %1$d.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -690,15 +690,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>Aithníodh coinbhleacht le %1$d ainm amháin sa ghrúpa seo.</string>
 			<key>two</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Aithníodh coinbhleacht le %1$d ainm sa ghrúpa seo.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Aithníodh coinbhleacht le %1$d ainm sa ghrúpa seo.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Aithníodh coinbhleacht le %1$d n-ainm sa ghrúpa seo.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Aithníodh coinbhleacht leis an líon seo ainmneacha sa ghrúpa seo: %1$d.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -712,15 +712,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d Bhall</string>
 			<key>two</key>
-			<string>%1$d Members</string>
+			<string>%1$d Bhall</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d Bhall</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d mBall</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d Ball</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -734,15 +734,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>Fuarthas coinbhleacht le %1$d ainm sa ghrúpa seo. Déan athbhreithniú ar na baill thíos nó roghnaigh beart a dhéanamh.</string>
 			<key>two</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Fuarthas coinbhleacht le %1$d ainm sa ghrúpa seo. Déan athbhreithniú ar na baill thíos nó roghnaigh beart a dhéanamh.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Fuarthas coinbhleacht le %1$d ainm sa ghrúpa seo. Déan athbhreithniú ar na baill thíos nó roghnaigh beart a dhéanamh.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Fuarthas coinbhleacht le %1$d n-ainm sa ghrúpa seo. Déan athbhreithniú ar na baill thíos nó roghnaigh beart a dhéanamh.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Fuarthas coinbhleacht le %1$d ainm sa ghrúpa seo. Déan athbhreithniú ar na baill thíos nó roghnaigh beart a dhéanamh.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -756,15 +756,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>Tá an t-ainm céanna ar %1$d bhall amháin den ghrúpa. Athbhreithnigh an ball thíos nó roghnaigh beart a dhéanamh.</string>
 			<key>two</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>Tá an t-ainm céanna ar %1$d bhall den ghrúpa. Athbhreithnigh na baill thíos nó roghnaigh beart a dhéanamh.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>Tá an t-ainm céanna ar %1$d bhall den ghrúpa. Athbhreithnigh na baill thíos nó roghnaigh beart a dhéanamh.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>Tá an t-ainm céanna ar %1$d mball den ghrúpa. Athbhreithnigh na baill thíos nó roghnaigh beart a dhéanamh.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>Tá an t-ainm céanna ar an líon seo ball den ghrúpa: %1$d. Athbhreithnigh na baill thíos nó roghnaigh beart a dhéanamh.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

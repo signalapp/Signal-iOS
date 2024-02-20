@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই রকম।</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>গ্রুপের %1$d জনের একই নাম আছে।</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>এই গ্রুপে %1$d-টি নামের সংঘাত পাওয়া গেছে।</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>এই গ্রুপে %1$d-টি নামের সংঘাত পাওয়া গেছে।</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d জন সদস্য</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d জন সদস্য</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>এই গ্ৰুপে %1$dটি নামের সমস্যা পাওয়া গেছে। নিচে সদস্যদের রিভিউ করুন অথবা পদক্ষেপ নেওয়ার জন্য নির্বাচন করুন।</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>এই গ্ৰুপে %1$dটি নামের সমস্যা পাওয়া গেছে। নিচে সদস্যদের রিভিউ করুন অথবা পদক্ষেপ নেওয়ার জন্য নির্বাচন করুন।</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই। নিচের সদস্যকে পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই। নিচের সদস্যদের পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

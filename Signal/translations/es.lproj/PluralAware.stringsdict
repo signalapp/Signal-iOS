@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d participante usa el mismo nombre.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d participantes usan el mismo nombre.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>Se encontró %1$d conflicto de nombre en este grupo.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Se encontraron %1$d conflictos de nombre en este grupo.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d participante</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d participantes</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>Se encontró %1$d conflicto de nombre en este grupo. Revisa los participantes más abajo o elige tomar medidas.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Se encontraron %1$d conflictos de nombre en este grupo. Revisa los participantes más abajo o elige tomar medidas.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d participante del grupo usa el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d participantes del grupo usan el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

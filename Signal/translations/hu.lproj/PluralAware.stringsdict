@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>A csoport %1$d tagjának ugyanaz a neve.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>A csoport %1$d tagjának ugyanaz a neve.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>%1$d névütközés található ebben a csoportban.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>%1$d névütközés található ebben a csoportban.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d tag</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d tag</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d névütközés található ebben a csoportban. Tekintsd át a tagokat alább, vagy válassz műveletet.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d névütközés található ebben a csoportban. Tekintsd át a tagokat alább, vagy válassz műveletet.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d csoporttag azonos névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d csoporttag azonos névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

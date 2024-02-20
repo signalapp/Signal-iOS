@@ -608,13 +608,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d участник группы имеет одинаковое имя.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d участника группы имеют одинаковое имя.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d участников группы имеют одинаковое имя. Проверить участников</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d участника группы имеют одинаковое имя.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -628,13 +628,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>В этой группе был обнаружен %1$d конфликт имён.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>В этой группе было обнаружено %1$d конфликта имён.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>В этой группе было обнаружено %1$d конфликтов имён.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>В этой группе было обнаружено %1$d конфликта имён.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -648,13 +648,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d участник</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d участника</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d участников</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d участника</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -668,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>В этой группе был обнаружен %1$d конфликт имён. Ознакомьтесь с приведёнными ниже участниками или примите меры.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>В этой группе было обнаружено %1$d конфликта имён. Ознакомьтесь с приведёнными ниже участниками или примите меры.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>В этой группе было обнаружено %1$d конфликтов имён. Ознакомьтесь с приведёнными ниже участниками или примите меры.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>В этой группе было обнаружено %1$d конфликта имён. Ознакомьтесь с приведёнными ниже участниками или примите меры.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d участник группы имеет одинаковое имя. Просмотрите участников ниже и, если необходимо, примите меры.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d участника группы имеют одинаковое имя. Просмотрите участников ниже и, если необходимо, примите меры.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d участников группы имеют одинаковое имя. Просмотрите участников ниже и, если необходимо, примите меры.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d участника группы имеют одинаковое имя. Просмотрите участников ниже и, если необходимо, примите меры.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

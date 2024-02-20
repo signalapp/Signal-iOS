@@ -608,13 +608,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d član grupe ima isto ime.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d člana grupe imaju isto ime.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d članova grupe ima isto ime.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d članova grupe ima isto ime.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -628,13 +628,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>Pronađen je %1$d sukob imena u ovoj grupi.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Pronađena su %1$d sukoba imena u ovoj grupi.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Pronađeno je %1$d sukoba imena u ovoj grupi.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Pronađeno je %1$d sukoba imena u ovoj grupi.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -648,13 +648,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d član</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d člana</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d članova</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d članova</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -668,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d sukob imena pronađen je u ovoj grupi. Pregledajte članove u nastavku ili odaberite koju radnju poduzeti.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d sukoba imena pronađena su u ovoj grupi. Pregledajte članove u nastavku ili odaberite koju radnju poduzeti.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d sukoba imena pronađeno je u ovoj grupi. Pregledajte članove u nastavku ili odaberite koju radnju poduzeti.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d sukoba imena pronađeno je u ovoj grupi. Pregledajte članove u nastavku ili odaberite koju radnju poduzeti.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d član grupe ima isto ime. Pregledajte člana u nastavku i odaberite koju radnju poduzeti.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d člana grupe imaju isto ime. Pregledajte članove u nastavku i odaberite koju radnju poduzeti.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d članova grupe ima isto ime. Pregledajte članove u nastavku i odaberite koju radnju poduzeti.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d članova grupe ima isto ime. Pregledajte članove u nastavku i odaberite koju radnju poduzeti.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

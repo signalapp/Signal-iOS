@@ -456,7 +456,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d ئەزا</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -470,7 +470,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>بۇ گۇرۇپپىدا%1$d ئىسىم توقۇنۇشى بايقالدى. تۆۋەندىكى ئەزالارنى تەكشۈرۈپ بېقىڭ ياكى مەشغۇلات تاللاڭ.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>

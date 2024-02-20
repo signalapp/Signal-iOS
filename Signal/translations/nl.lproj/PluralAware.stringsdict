@@ -298,7 +298,7 @@
 			<key>one</key>
 			<string>Dit bericht kan slechts %1$d keer bewerkt worden.</string>
 			<key>other</key>
-			<string>Dit bericht kan slechts %1$d keren bewerkt worden.</string>
+			<string>Dit bericht kan slechts %1$d keer bewerkt worden.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d groepslid heeft dezelfde naam.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d groepsleden hebben dezelfde naam.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>%1$d naamconflict gevonden in deze groep.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>%1$d naamconflicten gevonden in deze groep.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d lid</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d leden</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>Er is %1$d naamconflict gevonden in deze groep. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Er zijn %1$d naamconflicten gevonden in deze groep. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als iemand anders.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d groepslid heeft dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d groepsleden hebben dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als iemand anders.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

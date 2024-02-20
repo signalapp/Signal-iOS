@@ -995,7 +995,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "العثور برقم الهاتف";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "البحث باسم المستخدم";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "البحث باسم المُستخدم";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يمكنك تفعيل الوصول إلى جهات الاتصال من خلال تطبيق إعدادات iOS لترى من يستخدم سيجنال من جهات الاتصالك.";
@@ -1025,19 +1025,19 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "ربط جهاز جديد";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "تم حَظر %1$@";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ موجود في جهات اتصالك";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ موجود في جهات اتصال نظامك";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "No direct messages with %1$@";
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "لا توجد رسائل مباشرة مع %1$@";
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Pending message request";
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "طلب مراسلة في الانتظار";
 
 /* A label indicating a user is a signal connection. */
-"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "جهات اتصال Signal";
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "جهة اتصال سيجنال";
 
 /* The title for a contact 'about' sheet. */
 "CONTACT_ABOUT_SHEET_TITLE" = "نبذة عن";
@@ -1496,7 +1496,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "اختر رمز الدولة";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "نُقدم لكم خصوصية رقم الهاتف وأسماء المستخدمين الاختيارية والروابط.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "نُقدم لكم خصوصية رقم الهاتف وأسماء المُستخدمين الاختيارية والروابط.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "طرق جديدة للاتصال";
@@ -1703,7 +1703,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "حذف";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "سيُحذف هذا الشخص من نظام جهات اتصالك. لن يظهر لك هذا الشخص عند البحث. سَتتلقّى طلب رسالة إذا راسلوك في المُستقبل.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "سيُحذف هذا الشخص من جهات اتصال نظامك. لن يظهر لك هذا الشخص عند البحث. سَتتلقّى طلب رسالة إذا راسلوك في المُستقبل.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "حذف جهة الاتصال وإزالتها من اللائحة؟";
@@ -2552,13 +2552,13 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "العثور على معلومات حسابك";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
+"FIND_BY_USERNAME_FOOTER" = "أدخل اسم مُستخدم كامل مع مجموعة الأرقام الخاصة به";
 
 /* A placeholder value for the text field for finding an account by their username */
-"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+"FIND_BY_USERNAME_PLACEHOLDER" = "اسم المُستخدم";
 
 /* Title for the view for finding accounts by their username */
-"FIND_BY_USERNAME_TITLE" = "Find by Username";
+"FIND_BY_USERNAME_TITLE" = "البحث باسم المُستخدم";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "علِّم كمُتحقَّق منه";
@@ -3572,7 +3572,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "دعوة الأصدقاء إلى سيجنال";
 
 /* Header label above a section for more options for adding contacts */
-"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "المزيد";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "بحث";
@@ -4010,7 +4010,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "حذف ومُغادرة المجموعة؟";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "This person has the same name as another contact";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "هذا الشخص له نفس الاسم الذي لدى جهة اتصال أخرى";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "إذا كنت غير مُتأكد من هوية صاحب الطلب، راجِع جهات الاتصال أدناه ثم اتخذ الإجراء.";
@@ -4217,7 +4217,7 @@
 "MY_STORY_TAP_TO_ADD" = "انقر للإضافة";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "غيّر مؤخرًا %1$@ اسم حسابه الشخصي من %2$@ إلى %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "تخطي";
@@ -4238,7 +4238,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "العثور برقم الهاتف";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "البحث باسم المُستخدم";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "مجموعة جديدة";
@@ -4331,7 +4331,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "اعثر على جهات الاتصال برقم الهاتف";
 
 /* Label for a button that lets users search for contacts by username */
-"NO_CONTACTS_SEARCH_BY_USERNAME" = "Find Contacts by Username";
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "البحث على جهات الاتصال باسم المستخدم";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "لا توجد مجموعات مُشتركة";
@@ -5291,10 +5291,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "حَول (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "لَقَد غيَّر %1$@ اِسم ملفه الشخصي مِن %2$@ إلى %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "لَقَد غيَّر %1$@ اِسم حسابه الشخصي مِن %2$@ إلى %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "لَقَد غيَّرَ %1$@ اِسم ملفه الشخصي إلى %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "لَقَد غيَّرَ %1$@ اِسم حسابه الشخصي إلى %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "اِسمُك";
@@ -5309,16 +5309,16 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "حدثت مشكلة مع اسم المُستخدم الخاص بك ولم يعُد مخصصًا لحسابك. يمكنك محاولة تعيينه من جديد أو اختيار اسم مُستخدم جديد.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "حذف اسم المستخدم";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "حذف اسم المُستخدم";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "إصلاح الآن";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "سيُؤدي هذا إلى إزالة اسم المستخدم الخاص بك وتعطيل رمز الاستجابة السريع والرابط الخاصين بك. \"%1$@\" ستُصبح متوفرة للآخرين ليستفيدوا منه. هل أنت متأكد؟";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "سيُؤدي هذا إلى إزالة اسم المُستخدم الخاص بك وتعطيل رمز الاستجابة السريع والرابط الخاصين بك. \"%1$@\" ستُصبح متوفرة للآخرين ليستفيدوا منه. هل أنت متأكد؟";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "حذف اسم المستخدم";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "حذف اسم المُستخدم";
 
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "تعديل اِسمُ المُستخدِم";
@@ -5354,7 +5354,7 @@
 "PROFILE_VIEW_TITLE" = "الملف الشخصي";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "اسم المستخدم الخاص بك ليس مرئيًا على حسابك الشخصي، وكذلك رمز ورابط الاستجابة السريعة الخاصين بك. شارك اسم المستخدم الخاص بك فقط مع الناس الذين تثق بهم.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "اسم المُستخدم الخاص بك ليس مرئيًا على حسابك الشخصي، وكذلك رمز ورابط الاستجابة السريعة الخاصين بك. شارك اسم المُستخدم الخاص بك فقط مع الناس الذين تثق بهم.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "عنوان الوكيل";
@@ -5678,7 +5678,7 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "إصلاح الآن";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "حدثت مشكلة مع رمز الاستجابة السريع ورابط اسم المستخدم الخاص بك، ولم يعد صالحًا. أنشئ رابطًا جديدًا للمشاركة مع الآخرين.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "حدثت مشكلة مع رمز الاستجابة السريع ورابط اسم المُستخدم الخاص بك، ولم يعد صالحًا. أنشئ رابطًا جديدًا للمشاركة مع الآخرين.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "إزالة المعاينة";
@@ -7262,7 +7262,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "قبول طلب التراسل معهم";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "وجودهم في نظام جهات اتصالك";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "وجودهم في جهات اتصال نظامك";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "يمكن لِجهات اتصالكَ رؤية اسمك وصورتك، كما يمكنهم الاطلاع على منشوراتك في \"قصتي\" إلا إذا أخفيتها عنهم.";
@@ -7274,7 +7274,7 @@
 "STORY_SETTINGS_TITLE" = "القِصَص";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "اِختر من يُمكنه رؤية قصتك من علاقات سيجنال. لن تؤثر التغييرات على القِصص التي أرسلتها من قبل.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "اِختر من يُمكنه رؤية قصتك من جهات اتصال سيجنال. لن تؤثر التغييرات على القِصص التي أرسلتها من قبل.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "من يمكنه مشاهدة هذه القصة";
@@ -7301,7 +7301,7 @@
 "STORY_VIEWS_OFF" = "المشاهدات غير مُشغلة";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "تمّ نسخ مُعرف المتبرّع إلى الحافظة";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم أمانك مع %1$@ متطابق. يمكنك تعليم جهة الاتصال هذه كمتحقق منها.";
@@ -7427,7 +7427,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "بعض ضبط المهلة، سوف تختفي رسائلك التي سوف يجري إرسالها بعد انقضاء %1$@.";
 
 /* A link at the end of a warning about an unknown thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "معرفة المزيد";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "لا وجود لمجموعات مشتركة. يُرجى مراجعة الطلبات بعناية.";
@@ -7658,7 +7658,7 @@
 "USE_PROXY_EXPLANATION" = "اِستخدم الوكيل فقط إذا تعذّر عليك الاتصال بسيجنال (عبر البيانات الخلوية أو عبر شبكة Wi-Fi).";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "أسماء المستخدمين لها رمز ورابط استجابة سريعة فريدين يُمكنك مُشاركتُهما مع أصدقائك لكي يبدؤوا الدردشة معك.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "أسماء المُستخدمين لها رمز ورابط استجابة سريعة فريدين يُمكنك مُشاركتُهما مع أصدقائك لكي يبدؤوا الدردشة معك.";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "رموز أو رابط الاستجابة السريعة";
@@ -7670,16 +7670,16 @@
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "خصوصية رقم الهاتف";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "إعداد اسم المستخدم الخاص بك";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "إعداد اسم المُستخدم الخاص بك";
 
 /* Title to set up signal username */
 "USERNAME_EDUCATION_TITLE" = "طرق جديدة للاتصال";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "يُمكن للناس مراسلتك الآن باستخدام اسم المستخدم الاختياري الخاص بك حتى لا تضطر إلى إعطاء رقم هاتفك. أسماء المستخدمين ليست مرئية على حسابك الشخصي.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "يُمكن للناس مراسلتك الآن باستخدام اسم المُستخدم الاختياري الخاص بك حتى لا تضطر إلى إعطاء رقم هاتفك. أسماء المُستخدمين ليست مرئية على حسابك الشخصي.";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "أسماء المستخدمين";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "أسماء المُستخدمين";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "اللون";
@@ -7688,7 +7688,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "اللون";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "لا تُشارك الرمز المربع الخاص بك والرابط إلاّ مع الأشخاص الذين تثق بهم. عند المشاركة، سيتمكن الآخرون من رؤية اسم المستخدم الخاص بك وبدء محادثة معك.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "لا تُشارك الرمز المربع الخاص بك والرابط إلاّ مع الأشخاص الذين تثق بهم. عند المشاركة، سيتمكن الآخرون من رؤية اسم المُستخدم الخاص بك وبدء محادثة معك.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "لم يتم تعيين رمز ورابط الاستجابة السريع. تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.";
@@ -7697,10 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "إعادة التعيين";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "إذا قمت بإعادة تعيين رمز الاستجابة السريعة الخاص بك، فلن يعمل رمز الاستجابة والرابط الخاصّين بك بعدها.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "تمت إعادة تعيين رمز ورابط الاستجابة السريعة وتم إنشاء رمز ورابط الاستجابة السريعة جديدين.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "المُشاركة";
@@ -7712,7 +7712,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "امسح ضوئيًا";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "تم نسخ اسم المستخدم";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "تم نسخ اسم المُستخدم";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "نُسخَ الرابط";
@@ -7724,7 +7724,7 @@
 "USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "نسخ الرابط";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "يُمكن لأي شخص يتوفر على هذا الرابط رؤية اسم المستخدم الخاص بك وبدء محادثة جديدة معك. شاركه مع من تثق فقط.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "يُمكن لأي شخص يتوفر على هذا الرابط رؤية اسم المُستخدم الخاص بك وبدء محادثة جديدة معك. شاركه مع من تثق فقط.";
 
 /* Title for a button to open a sheet for copying and sharing your username link. */
 "USERNAME_LINK_SHEET_BUTTON" = "الرابط";
@@ -7739,13 +7739,13 @@
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "حدث خطأ أثناء البحث عن اسم المُستخدم. يُرجى إعادة المُحاولة في وقت لاحق.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ ليس اسم مستخدم صالح. تأكد من أنك أدخلت اسم المستخدم كاملاً متبوعًا بمجموعة الأرقام الخاصة به.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ ليس اسم مُستخدم صالح. تأكد من أنك أدخلت اسم المُستخدم كاملاً متبوعًا بمجموعة الأرقام الخاصة به.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "اسم مستخدم غير صالح";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "اسم مُستخدم غير صالح";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
-"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "رابط اسم المستخدم لم يعد صالحًا.";
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "رابط اسم المُستخدم لم يعد صالحًا.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ليس مُستخدم سيجنال. تأكد من إدخالك لاسم المُستخدم الكامل.";
@@ -7763,28 +7763,28 @@
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "اسم المُستخدم لا يمكن أن يبدأ برقم.";
 
 /* A message explaining the side effects of changing your username. */
-"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "سيُؤدي تغيير اسم المستخدم الخاص بك إلى إعادة تعيين رمز الاستجابة السريع والرابط الحاليين الخاصين بك. هل أنت متأكد؟";
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "سيُؤدي تغيير اسم المُستخدم الخاص بك إلى إعادة تعيين رمز الاستجابة السريع والرابط الحاليين الخاصين بك. هل أنت متأكد؟";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "تسمح أسماء المُستخدمين للآخرين بمراسلتك دون الحاجة إلى رقم هاتفك. يتم إقرانها بمجموعة من الأرقام للمساعدة في الحفاظ على خصوصية عنوانك. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "يُرجى اختيار اسم المستخدم";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "يُرجى اختيار اسم المُستخدم";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "يُمكن أن تحتوي أسماء المُستخدمين على الحروف من a إلى z والأرقام من 0 إلى 9 والشرطة السُفلية _ فقط.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "اسم مستخدم غير صحيح، أدخل رمزيْن على الأقل";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "اسم مُستخدم غير صحيح، أدخل رمزيْن على الأقل";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "تُساعد هذه الأرقام في الحفاظ على خصوصية اسم المستخدم الخاص بك حتى تتجنب الرسائل غير المرغوب فيها. شارك اسم المستخدم الخاص بك فقط مع الأشخاص والمجموعات الذين ترغب في الدردشة معهم. إذا غيّرتَ أسماء المُستخدم الخاصة بك، فسَتحصل على مجموعة جديدة من الأرقام.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "تُساعد هذه الأرقام في الحفاظ على خصوصية اسم المُستخدم الخاص بك حتى تتجنب الرسائل غير المرغوب فيها. شارك اسم المُستخدم الخاص بك فقط مع الأشخاص والمجموعات الذين ترغب في الدردشة معهم. إذا غيّرتَ أسماء المُستخدم الخاصة بك، فسَتحصل على مجموعة جديدة من الأرقام.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "ماذا يعني هذا الرقم؟";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "اسم المستخدم هذا غير متاح.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "اسم المُستخدم هذا غير متاح.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "اسم المُستخدم";
@@ -7793,7 +7793,7 @@
 "USERNAME_SELECTION_TITLE" = "اسم المُستخدم";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "يجب أن تبدأ أسماء المستخدمين بـ %1$@ أحرف على الأقل.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "يجب أن تبدأ أسماء المُستخدمين بـ %1$@ أحرف على الأقل.";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "لا يُمكن لأسماء المُستخدمين أن تنتهي بـ 00. جرّب رقمًا آخر بين 1 و9";

@@ -1,1 +1,1 @@
-• New emoji are coming soon, and this update adds preliminary support so that Signal will be ready for the future of visual communication as soon as that future arrives. People keep asking us what our favorite new emoji is, but answering that question is a “lime” we won't cross.
+• Yeni emojiler çok yakında geliyor ve bu güncellemeyle ön destek ekleniyor böylece Signal emojiler hazır olur olmaz onları gönderip alabilecek. İnsanlar bize en sevdiğimiz yeni emojinin ne olduğunu sorup duruyor ancak bu soruyu yanıtlamak bizim için gerçekten zor çünkü hepsini biz ekledik.

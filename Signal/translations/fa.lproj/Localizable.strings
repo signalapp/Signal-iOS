@@ -1025,7 +1025,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "اتصال به دستگاه جدید";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ مسدود شده است";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ در مخاطبان سیستم شما است";
@@ -2555,10 +2555,10 @@
 "FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
 
 /* A placeholder value for the text field for finding an account by their username */
-"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+"FIND_BY_USERNAME_PLACEHOLDER" = "نام کاربری";
 
 /* Title for the view for finding accounts by their username */
-"FIND_BY_USERNAME_TITLE" = "Find by Username";
+"FIND_BY_USERNAME_TITLE" = "جستجو با نام کاربری";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "علامت‌گذاری به عنوان تأیید شده";
@@ -3572,7 +3572,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "دعوت دوستان به سیگنال";
 
 /* Header label above a section for more options for adding contacts */
-"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "بیشتر";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "جستجو";
@@ -4217,7 +4217,7 @@
 "MY_STORY_TAP_TO_ADD" = "برای افزودن ضربه بزنید";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ اخیراً نام نمایه خود را از %2$@ به %3$@ تغییر داده است";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "رد کردن";
@@ -4238,7 +4238,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "جستجو از طریق شماره تلفن";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "جستجو با نام کاربری";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "گروه جدید";
@@ -7427,7 +7427,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "زمان پیام ناپدید شونده هنگامی که به آن‌ها پیام دهید روی %1$@ تنظیم خواهد شد.";
 
 /* A link at the end of a warning about an unknown thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "بیشتر بدانید";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "هیچ گروه مشترکی وجود ندارد. به درخواست‌ها با دقت رسیدگی کنید.";
@@ -7697,10 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "بازنشانی";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "اگر پیوند و کد QR خود را بازنشانی کنید، پیوند و کد QR فعلی‌تان دیگر کار نخواهد کرد.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "پیوند و کد QR شما بازنشانی شده و پیوند و کد QR جدیدتان ایجاد شده است.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "اشتراک‌گذاری";

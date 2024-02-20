@@ -1,1 +1,1 @@
-• New emoji are coming soon, and this update adds preliminary support so that Signal will be ready for the future of visual communication as soon as that future arrives. People keep asking us what our favorite new emoji is, but answering that question is a “lime” we won't cross.
+• 新しい絵文字が間もなく登場します。今回のアップデートでは、絵文字が利用可能になり次第、Signalですぐに送受信できるようになるという予備的なサポートが追加されています。

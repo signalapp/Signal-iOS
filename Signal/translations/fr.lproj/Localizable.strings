@@ -23,10 +23,10 @@
 "ACCESSIBILITY_LABEL_MEDIA" = "Contenu multimédia";
 
 /* Accessibility label for stickers. */
-"ACCESSIBILITY_LABEL_STICKER" = "Autocollant";
+"ACCESSIBILITY_LABEL_STICKER" = "Sticker";
 
 /* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
-"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Autocollant ressemblant à %1$@";
+"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Sticker ressemblant à %1$@";
 
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Message vocal";
@@ -122,13 +122,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Compris";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "%1$@ vous a envoyé un message, un autocollant, une réaction, un accusé de lecture ou un contenu multimédia que nous n'avons pas pu vous remettre.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Impossible de distribuer du contenu de %1$@. Il peut s’agir d’un message, d’un sticker, d’une réaction, d’une confirmation de lecture ou d’un contenu multimédia.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problème de remise";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Un message, un autocollant, une réaction, un accusé de lecture ou un contenu multimédia de %1$@ n’a pas pu vous être remis. Cette personne pourrait avoir tenté de vous l’envoyer directement ou dans un groupe.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Impossible de distribuer du contenu de %1$@. Il peut s’agir d’un message, d’un sticker, d’une réaction, d’une confirmation de lecture ou d’un contenu multimédia que ce contact vous a envoyés directement ou dans un groupe.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Abandonner";
@@ -1025,16 +1025,16 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Relier un nouvel appareil";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ est bloqué";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ se trouve dans vos contacts système";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "No direct messages with %1$@";
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Aucun message privé avec %1$@";
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Pending message request";
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Invitation par message en attente";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Contact Signal";
@@ -1439,7 +1439,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Retirer %1$@ en tant qu’administrateur du groupe ?";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "Chercher";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "Rechercher";
 
 /* Label for button that sets 'send messages permission' for a group to 'all members'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Tous les membres";
@@ -2552,13 +2552,13 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Trouver les détails relatifs à votre compte";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
+"FIND_BY_USERNAME_FOOTER" = "Saisissez un nom d’utilisateur composé d’un nom, d’un point et d’une série de chiffres.";
 
 /* A placeholder value for the text field for finding an account by their username */
-"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+"FIND_BY_USERNAME_PLACEHOLDER" = "Nom d’utilisateur";
 
 /* Title for the view for finding accounts by their username */
-"FIND_BY_USERNAME_TITLE" = "Find by Username";
+"FIND_BY_USERNAME_TITLE" = "Rechercher par nom d’utilisateur";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marquer comme confirmé";
@@ -3548,7 +3548,7 @@
 "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER" = "Message";
 
 /* accessibility label for the button which shows the sticker picker */
-"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Autocollants";
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Stickers";
 
 /* accessibility hint for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Touchez deux fois et maintenez pour enregistrer. Relâchez pour envoyer ou faites glisser vers la gauche pour annuler. Touchez deux fois et faites glisser vers le haut pour enregistrer en continu.";
@@ -3572,10 +3572,10 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des amis à Signal";
 
 /* Header label above a section for more options for adding contacts */
-"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Plus";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Chercher";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Rechercher";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Inviter des amis";
@@ -3620,13 +3620,13 @@
 "KEY_COMMAND_PREVIOUS_CONVERSATION" = "Accéder à la conversation précédente";
 
 /* A keyboard command to begin a search on the conversation list. */
-"KEY_COMMAND_SEARCH" = "Chercher";
+"KEY_COMMAND_SEARCH" = "Rechercher";
 
 /* A keyboard command to present the application settings dialog. */
 "KEY_COMMAND_SETTINGS" = "Paramètres";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Afficher les autocollants";
+"KEY_COMMAND_STICKERS" = "Afficher les stickers";
 
 /* A keyboard command to unarchive the current conversation. */
 "KEY_COMMAND_UNARCHIVE" = "Désarchiver la conversation";
@@ -3728,7 +3728,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Activez Accès au réseau local";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Chercher par nom ou adresse";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Rechercher par nom ou par adresse";
 
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "Sélectionner un emplacement";
@@ -3863,7 +3863,7 @@
 "MESSAGE_ACTION_LINK_OPEN_PROXY" = "Ouvrir le proxy Signal";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Voir le paquet d’autocollants";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Afficher le pack de stickers";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_PAYMENT_DETAILS" = "Détails des paiements";
@@ -3899,7 +3899,7 @@
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Invitation à un groupe";
 
 /* Title for message actions for a sticker pack. */
-"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Paquet d’autocollants";
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Pack de stickers";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
@@ -4010,7 +4010,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Supprimer et quitter le groupe ?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "This person has the same name as another contact";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Cette personne porte le même nom qu’un autre contact.";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Si la provenance de la demande est incertaine, examinez les contacts ci-dessous et agissez en conséquence.";
@@ -4217,7 +4217,7 @@
 "MY_STORY_TAP_TO_ADD" = "Appuyez pour ajouter";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ a récemment changé son nom de profil de %2$@ à %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ignorer";
@@ -4238,7 +4238,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Trouver par numéro de téléphone";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Rechercher par nom d’utilisateur";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nouveau groupe";
@@ -4280,7 +4280,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Nouveau groupe";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Chercher";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Rechercher";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Trouver un utilisateur";
@@ -4331,7 +4331,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Trouver des contacts par numéro de téléphone";
 
 /* Label for a button that lets users search for contacts by username */
-"NO_CONTACTS_SEARCH_BY_USERNAME" = "Find Contacts by Username";
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Rechercher des contacts par leur nom d’utilisateur";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Aucun groupe en commun";
@@ -5447,7 +5447,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "A réagi par %1$@ à votre photo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "A réagi par %1$@ à votre autocollant";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "A réagi par %1$@ à votre sticker";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
 "REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "A réagi par %1$@ à : « %2$@ »";
@@ -6122,7 +6122,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Appels";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Les messages vocaux, médias éphémères et autocollants (inférieurs à 100 ko) sont toujours téléchargés automatiquement.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Les messages vocaux, médias éphémères et stickers (de moins de 100 ko) sont toujours téléchargés automatiquement.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Téléchargement automatique";
@@ -6224,7 +6224,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Vidéos";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Voyez et partagez la lecture et la saisie des messages. Si cette option est désactivée, vous ne verrez ni les accusés de lecture ni les indications de saisie des autres utilisateurs.";
+"SETTINGS_MESSAGING_FOOTER" = "Indiquez à vos interlocuteurs que vous avez lu leurs messages et que vous êtes en train de leur écrire. Si cette option est désactivée, vous ne verrez ni les confirmations de lecture, ni les indicateurs de saisie des autres utilisateurs.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Paramètres";
@@ -6782,7 +6782,7 @@
 "SETTINGS_PRIVACY_TITLE" = "Confidentialité";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Accusés de lecture";
+"SETTINGS_READ_RECEIPT" = "Confirmations de lecture";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Désactiver";
@@ -6974,7 +6974,7 @@
 "STICKER_CATEGORY_RECENTS_NAME" = "Récents";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "Message — Autocollant";
+"STICKER_MESSAGE_PREVIEW" = "Message – Sticker";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Installer";
@@ -6983,34 +6983,34 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Série artiste de Signal";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Autocollants que vous avez reçus";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers reçus";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Échec de chargement de certains paquets d’autocollants.";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Impossible de charger certains packs de stickers";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Autocollants installés";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Stickers installés";
 
 /* Label indicating that one or more known sticker packs is loading. */
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Chargement…";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Aucun autocollant n’est installé";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Aucun sticker n’est installé";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Les autocollants des messages entrants apparaîtront ici";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Les stickers des messages reçus s’affichent ici";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "Autocollants";
+"STICKERS_MANAGE_VIEW_TITLE" = "Stickers";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Paquet d’autocollants";
+"STICKERS_PACK_DEFAULT_TITLE" = "Pack de stickers";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Paquet d’autocollants";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Pack de stickers";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Échec de chargement du paquet d’autocollants";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Impossible de charger le pack de stickers";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Désinstaller";
@@ -7301,7 +7301,7 @@
 "STORY_VIEWS_OFF" = "Affichage désactivé";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Identifiant du donateur copié dans le presse-papiers";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Votre numéro de sécurité avec %1$@ correspond. Vous pouvez marquer ce contact comme confirmé.";
@@ -7427,7 +7427,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "La minuterie des messages éphémères sera définie sur %1$@ quand vous échangez des messages avec cette personne.";
 
 /* A link at the end of a warning about an unknown thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "En savoir plus";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Aucun groupe en commun. Examinez les demandes avec attention.";
@@ -7697,10 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Réinitialiser";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Une fois réinitialisés, votre lien et votre code QR existants ne fonctionneront plus.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Nous avons réinitialisé votre lien et votre code QR, et en avons généré de nouveaux.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Partager";

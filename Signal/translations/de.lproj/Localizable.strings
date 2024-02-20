@@ -191,7 +191,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Annehmen";
 
 /* notification body */
-"APN_Message" = "Du hast vielleicht neue Nachrichten";
+"APN_Message" = "Du könntest neue Nachrichten haben";
 
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kann nicht starten. Bitte sende ein Diagnoseprotokoll an support@signal.org, damit wir dieses Problem beheben können.";
@@ -1025,7 +1025,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Neues Gerät koppeln";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ ist blockiert";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ ist in deinen Telefonkontakten";
@@ -2555,10 +2555,10 @@
 "FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
 
 /* A placeholder value for the text field for finding an account by their username */
-"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+"FIND_BY_USERNAME_PLACEHOLDER" = "Nutzername";
 
 /* Title for the view for finding accounts by their username */
-"FIND_BY_USERNAME_TITLE" = "Find by Username";
+"FIND_BY_USERNAME_TITLE" = "Nach Nutzernamen suchen";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Als verifiziert markieren";
@@ -3572,7 +3572,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Freunde zu Signal einladen";
 
 /* Header label above a section for more options for adding contacts */
-"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Mehr";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Suchen";
@@ -4217,7 +4217,7 @@
 "MY_STORY_TAP_TO_ADD" = "Zum Hinzufügen antippen";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ hat kürzlich den Profilnamen von %2$@ zu %3$@ geändert";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Überspringen";
@@ -4238,7 +4238,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Telefonnummer suchen";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Nach Nutzernamen suchen";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Neue Gruppe";
@@ -7427,7 +7427,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Die Ablaufzeit für verschwindende Nachrichten wird auf %1$@ festgelegt, sobald du dem Nutzer eine Nachricht sendest.";
 
 /* A link at the end of a warning about an unknown thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Mehr erfahren";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Keine gemeinsamen Gruppen. Prüfe Anfragen sorgfältig.";
@@ -7697,10 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Zurücksetzen";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Wenn du deinen QR-Code und deinen Link zurücksetzt, funktionieren dein bisheriger QR-Code und dein Link nicht mehr.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Dein QR-Code und dein Link wurden zurückgesetzt. Ein neuer QR-Code und ein neuer Link wurden erstellt.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Teilen";

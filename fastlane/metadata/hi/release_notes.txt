@@ -1,1 +1,1 @@
-• New emoji are coming soon, and this update adds preliminary support so that Signal will be ready for the future of visual communication as soon as that future arrives. People keep asking us what our favorite new emoji is, but answering that question is a “lime” we won't cross.
+• नए इमोजी जल्द ही आ रहे हैं, और यह अपडेट प्रारंभिक सपोर्ट जोड़ता है ताकि भविष्य आते ही Signal दृश्य संचार के भविष्य के लिए तैयार हो जाए। लोग हमसे पूछते रहते हैं कि हमारा पसंदीदा नया इमोजी कौन सा है, लेकिन उस प्रश्न का उत्तर देना एक "नींबू<sub></sub>" है जिसे हम पार नहीं करेंगे।

@@ -929,7 +929,7 @@
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Det nye nummeret kan ikke være det samme som det gamle. Skriv inn et nytt telefonnummer for å bytte nummer.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Nummeret du oppgav hører ikke til kontoen din.";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Telefonnummeret du oppga hører ikke til kontoen din.";
 
 /* Error indicating that the user's new phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Det nye telefonnummeret er ugyldig. Skriv inn et gyldig telefonnummer for å endre nummeret i profilen.";
@@ -1025,16 +1025,16 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Koble til ny enhet";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ er blokkert";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ står i kontaktlisten på enheten din";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "No direct messages with %1$@";
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Ingen direktemeldinger med %1$@";
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Pending message request";
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Ventende meldingsforespørsel";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-kontakter";
@@ -1292,7 +1292,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Legg til eksisterende kontakt";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Legg til i systemkontakter";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Legg til i kontaktlisten på enheten";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administratorer";
@@ -1691,7 +1691,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Slett kontoen";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Nummeret du oppgav hører ikke til kontoen din.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Telefonummeret du oppga hører ikke til kontoen din.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Vil du slette alle meldingene i samtalen?";
@@ -1703,7 +1703,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Slett";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Personen slettes fra kontaktlisten din på Signal. Du vil ikke se personen når du søker. Du får en meldingsforespørsel hvis vedkommende sender deg en melding.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Personen slettes fra kontaktlisten på enheten din. Du vil ikke se personen når du søker. Du får en meldingsforespørsel hvis vedkommende sender deg en melding.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Vil du slette og fjerne denne personen fra kontaktlisten?";
@@ -2426,7 +2426,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Ugyldig svar fra tjenesten.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denne enheten er ikke lengre registrert med ditt telefonnummer. Reinstaller Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denne enheten er ikke registrert med ditt telefonnummer. Last ned Signal på nytt.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfeil. Vennligst forsøk igjen senere.";
@@ -2552,13 +2552,13 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Slik finner du bankopplysningene dine";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
+"FIND_BY_USERNAME_FOOTER" = "Skriv inn hele brukernavnet, inkludert tallrekken";
 
 /* A placeholder value for the text field for finding an account by their username */
-"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+"FIND_BY_USERNAME_PLACEHOLDER" = "Brukernavn";
 
 /* Title for the view for finding accounts by their username */
-"FIND_BY_USERNAME_TITLE" = "Find by Username";
+"FIND_BY_USERNAME_TITLE" = "Søk etter brukernavn";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merk som verifisert";
@@ -3572,7 +3572,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter venner til Signal";
 
 /* Header label above a section for more options for adding contacts */
-"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Mer";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Søk";
@@ -3686,10 +3686,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Lenkeforhåndsvisning";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Det er ikke lenger mulig å administrere systemkontakter på iPad. Åpne Signal på en telefon for å legge Signal-kontakter til i systemkontaktene dine.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Det er ikke lenger mulig å administrere kontaktlisten på iPad. Åpne Signal på en telefon for å legge Signal-kontakter til i kontaktlisten på enheten.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Det er ikke lenger mulig å administrere systemkontakter på iPad. Denne enheten vil fortsette å synkronisere alle endringene i kontaktlisten din fra Signal-appen på telefonen din.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Det er ikke lenger mulig å administrere kontaktlisten på iPad. Denne enheten vil fortsette å synkronisere alle endringene i kontaktlisten din fra Signal-appen på telefonen din.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Les mer";
@@ -4010,7 +4010,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Vil du slette og forlate gruppen?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "This person has the same name as another contact";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Denne personen har samme navn som en annen kontakt";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Hvis du ikke er sikker på hvem forespørselen er fra, se gjennom kontaktene nedenfor og velg handling.";
@@ -4217,7 +4217,7 @@
 "MY_STORY_TAP_TO_ADD" = "Trykk for å legge til";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ endret nylig profilnavnet fra %2$@ til %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Hopp over";
@@ -4238,7 +4238,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Finn via telefonnummer";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Søk etter brukernavn";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Ny gruppe";
@@ -4331,7 +4331,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Finn kontakter ved å søke på telefonnummer";
 
 /* Label for a button that lets users search for contacts by username */
-"NO_CONTACTS_SEARCH_BY_USERNAME" = "Find Contacts by Username";
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Finn kontakter ved å søke etter brukernavn";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Ingen grupper til felles";
@@ -6029,10 +6029,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "App-ikon";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis systemkontaktbilder hvis tilgjengelig.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis bilder fra kontaktlisten hvis tilgjengelig.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Benytt systemkontaktbilder";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Benytt bilder fra kontaktlisten";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -7262,7 +7262,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "godta en meldingsforespørsel";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "ha dem i kontaktlisten på enheten din";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "De står i kontaktlisten på enheten din";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Kontaktene dine kan se navnet og profilbildet ditt, i tillegg til det du deler på Min story, med mindre du skjuler det for dem.";
@@ -7301,7 +7301,7 @@
 "STORY_VIEWS_OFF" = "Visninger er slått av";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Givernummer kopiert til utklippstavlen";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Sikkerhetsnummeret for %1$@ stemmer. Du kan nå markere denne kontakten som verifisert.";
@@ -7427,7 +7427,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Utløpstiden for meldinger blir satt til %1$@ når du melder dem.";
 
 /* A link at the end of a warning about an unknown thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Les mer";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Ingen felles grupper. Gjennomgå forespørsler nøye.";
@@ -7697,10 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Tilbakestill";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "QR-koden og lenken din slutter å virke hvis du tilbakestiller dem.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "QR-koden og lenken er tilbakestilt, og vi har opprettet en ny QR-kode og lenke for deg.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Del";

@@ -608,13 +608,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>לחבר/ת קבוצה %1$d יש אותו שם.</string>
 			<key>two</key>
-			<string>%1$d group members have the same name.</string>
+			<string>ל–%1$d חברי קבוצה יש אותו שם.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name.</string>
+			<string>ל–%1$d חברי קבוצה יש אותו שם.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>ל–%1$d חברי קבוצה יש אותו שם.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -628,13 +628,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>התנגשות שם %1$d נמצאה בקבוצה זו.</string>
 			<key>two</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -648,13 +648,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>חבר/ה %1$d</string>
 			<key>two</key>
-			<string>%1$d Members</string>
+			<string>%1$d חברים</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d חברים</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d חברים</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -668,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>התנגשות שם %1$d נמצאה בקבוצה זו. אפשר לסקור את כל החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>two</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו. אפשר לסקור את כל החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו. אפשר לסקור את כל החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו. אפשר לסקור את כל החברים למטה או לבחור לנקוט בפעולה.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>לחבר/ת קבוצה %1$d יש שם זהה. אפשר לסקור את החבר/ה למטה או לבחור לנקוט בפעולה.</string>
 			<key>two</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>ל–%1$d חברי קבוצה יש שם זהה. אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>ל–%1$d חברי קבוצה יש שם זהה. אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>ל–%1$d חברי קבוצה יש שם זהה. אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

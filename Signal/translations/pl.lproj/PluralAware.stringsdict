@@ -608,13 +608,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d członek grupy nazywa się tak samo.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d członków grupy nazywa się tak samo.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d członków grupy nazywa się tak samo.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d członków grupy nazywa się tak samo.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -628,13 +628,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>W tej grupie wystąpił %1$d konflikt nazw.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>W tej grupie wystąpiły %1$d konflikty nazw.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>W tej grupie wystąpiło %1$d konfliktów nazw.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>W tej grupie wystąpiły %1$d konflikty nazw.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -648,13 +648,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d członek</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d członków</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d członków</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d członków</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -668,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>Wystąpił %1$d konflikt imion w tej grupie. Przejrzyj członków poniżej lub podejmij działanie.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Wystąpiły %1$d konflikty imion w tej grupie. Przejrzyj członków poniżej lub podejmij działanie.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Wystąpiło %1$d konfliktów imion w tej grupie. Przejrzyj członków poniżej lub podejmij działanie.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Wystąpiło %1$d konfliktu imion w tej grupie. Przejrzyj członków poniżej lub podejmij działanie.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d członek grupy nazywa się tak samo. Zobacz poniżej, o kim mowa, i podejmij działanie.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d członków grupy nazywa się tak samo. Przejrzyj poniższych członków i podejmij działanie.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d członków grupy nazywa się tak samo. Przejrzyj poniższych członków i podejmij działanie.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d członków grupy nazywa się tak samo. Przejrzyj poniższych członków i podejmij działanie.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

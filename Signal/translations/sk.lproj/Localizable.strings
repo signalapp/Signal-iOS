@@ -1025,16 +1025,16 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Prepojiť nové zariadenie";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Používateľ %1$@ je blokovaný";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ je vo vašich systémových kontaktoch";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "No direct messages with %1$@";
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Žiadne priame správy s používateľom %1$@";
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Pending message request";
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Čaká sa na žiadosť o správu";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal spojenie";
@@ -2552,13 +2552,13 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Nájdite informácie o svojom účte";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
+"FIND_BY_USERNAME_FOOTER" = "Zadajte celé používateľské meno so sadou číslic";
 
 /* A placeholder value for the text field for finding an account by their username */
-"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+"FIND_BY_USERNAME_PLACEHOLDER" = "Používateľské meno";
 
 /* Title for the view for finding accounts by their username */
-"FIND_BY_USERNAME_TITLE" = "Find by Username";
+"FIND_BY_USERNAME_TITLE" = "Nájsť podľa používateľského mena";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Označiť ako overené";
@@ -3572,7 +3572,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozvať priateľov do Signalu";
 
 /* Header label above a section for more options for adding contacts */
-"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Viac";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Hľadať";
@@ -4010,7 +4010,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Vymazať a opustiť skupinu?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "This person has the same name as another contact";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Táto osoba má rovnaké meno ako iný kontakt";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Ak si nie ste istý/á, od koho je táto žiadosť, overte nižšie zobrazené kontakty a zvoľte úkon.";
@@ -4217,7 +4217,7 @@
 "MY_STORY_TAP_TO_ADD" = "Pridajte ťuknutím";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ nedávno zmenil/a názov svojho profilu z %2$@ na %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Preskočiť";
@@ -4238,7 +4238,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Nájsť podľa telefónneho čísla";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Nájsť podľa používateľského mena";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nová skupina";
@@ -4331,7 +4331,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Nájsť kontakty podľa telefónneho čísla";
 
 /* Label for a button that lets users search for contacts by username */
-"NO_CONTACTS_SEARCH_BY_USERNAME" = "Find Contacts by Username";
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Nájsť kontakty podľa používateľského mena";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Žiadne spoločné skupiny";
@@ -7301,7 +7301,7 @@
 "STORY_VIEWS_OFF" = "Pozretia vypnuté";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID prispievateľa bolo skopírované do schránky";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Vaše bezpečnostné číslo s %1$@ sa zhoduje. Tento kontakt môžete označiť ako overený.";
@@ -7427,7 +7427,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Keď odošlete správu, čas zmiznutia správy bude nastavený na %1$@.";
 
 /* A link at the end of a warning about an unknown thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Zistiť viac";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Žiadne spoločné skupiny. Žiadosť starostlivo skontrolujte.";
@@ -7697,10 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Resetovať";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Ak resetujete svoj QR kód a odkaz, váš existujúci QR kód a odkaz už nebudú fungovať.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Váš QR kód a odkaz boli resetované a bol vytvorený nový QR kód a odkaz.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Zdieľať";

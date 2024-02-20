@@ -1025,16 +1025,16 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Pautkan Peranti Baru";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is blocked";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ telah disekat";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ berada dalam kenalan sistem anda";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "No direct messages with %1$@";
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Tiada mesej terus dengan %1$@";
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Pending message request";
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Permintaan mesej belum selesai";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Hubungan Signal";
@@ -2552,13 +2552,13 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Cari Maklumat Akaun Anda";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a full username with its set of digits";
+"FIND_BY_USERNAME_FOOTER" = "Masukkan nama pengguna penuh dengan pasangan digitnya";
 
 /* A placeholder value for the text field for finding an account by their username */
-"FIND_BY_USERNAME_PLACEHOLDER" = "Username";
+"FIND_BY_USERNAME_PLACEHOLDER" = "Nama Pengguna";
 
 /* Title for the view for finding accounts by their username */
-"FIND_BY_USERNAME_TITLE" = "Find by Username";
+"FIND_BY_USERNAME_TITLE" = "Cari dengan Nama Pengguna";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Tanda sebagai Disahkan";
@@ -3572,7 +3572,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Jemput Rakan ke Signal";
 
 /* Header label above a section for more options for adding contacts */
-"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "More";
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Lagi";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Cari";
@@ -4010,7 +4010,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Padam dan Tinggalkan Kumpulan?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "This person has the same name as another contact";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Orang ini mempunyai nama yang sama dengan kenalan lain";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Jika anda tidak pasti tentang penghantar permintaan ini, semak kenalan di bawah dan ambil tindakan.";
@@ -4217,7 +4217,7 @@
 "MY_STORY_TAP_TO_ADD" = "Ketik untuk menambah";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ recently changed their profile name from %2$@ to %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ baru-baru ini menukar nama profil mereka daripada %2$@ kepada %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Langkau";
@@ -4238,7 +4238,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Cari dengan Nombor Telefon";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "Find by Username";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Cari dengan Nama Pengguna";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Kumpulan Baru";
@@ -4331,7 +4331,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Cari Kenalan mengikut Nombor Telefon";
 
 /* Label for a button that lets users search for contacts by username */
-"NO_CONTACTS_SEARCH_BY_USERNAME" = "Find Contacts by Username";
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Cari Kenalan dengan Nama Pengguna";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Tiada kumpulan yang serupa";
@@ -7301,7 +7301,7 @@
 "STORY_VIEWS_OFF" = "Tontonan dimatikan";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Menyalin id penderma ke papan keratan";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Nombor keselamatan anda dengan %1$@ sepadan. Anda boleh tandakan kenalan ini sebagai disahkan.";
@@ -7427,7 +7427,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Masa mesej hilang akan ditetapkan kepada %1$@ apabila anda menghantar mesej tersebut.";
 
 /* A link at the end of a warning about an unknown thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Learn more";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE" = "Ketahui lebih lanjut";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Tidak ada kumpulan yang sama. Semak permintaan dengan teliti.";
@@ -7697,10 +7697,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Tetap semula";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code and link, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Jika anda tetapkan semula kod QR dan pautan anda, kod QR dan pautan sedia ada anda tidak akan berfungsi lagi.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Your QR code and link have been reset and a new QR code and link has been created.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Kod QR dan pautan anda telah ditetapkan semula dan kod QR dan pautan baharu telah dibuat.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Kongsi";

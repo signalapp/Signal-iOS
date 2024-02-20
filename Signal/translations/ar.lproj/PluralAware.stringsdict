@@ -728,17 +728,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d عضو بالمجموعة لهم نفس الاسم.</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d عضو بالمجموعة له نفس الاسم.</string>
 			<key>two</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d عضوان بالمجموعة لهما نفس الاسم.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d أعضاء بالمجموعة لهم نفس الاسم.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d عضو بالمجموعة لهم نفس الاسم.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d عضوا بالمجموعة لهم نفس اﻻسم.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -752,17 +752,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>تم العثور على %1$d تضاربات أسماء في هذه المجموعة.</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة.</string>
 			<key>two</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>تم العثور على %1$d تضاربات أسماء في هذه المجموعة.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -776,17 +776,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d Members</string>
+			<string>%1$d أعضاء</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d عضو</string>
 			<key>two</key>
-			<string>%1$d Members</string>
+			<string>%1$d عضويْن</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d أعضاء</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d عضوًا</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d عضو</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -800,17 +800,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>تم العثور على %1$d تضاربات أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>تم العثور على %1$d تضارب اسم في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>two</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>تم العثور على %1$d تضاربي أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>تم العثور على %1$d تضاربات أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -824,17 +824,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d عضو بالمجموعة له نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d عضو بالمجموعة له نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
 			<key>two</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d عضوان بالمجموعة لهما نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d أعضاء بالمجموعة لهم نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d عضوًا بالمجموعة لهم نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d عضو بالمجموعة لهم نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

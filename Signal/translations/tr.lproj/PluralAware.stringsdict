@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d grup üyesi aynı ada sahip.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d grup üyesi aynı ada sahip.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>Bu grupta %1$d ad çakışması bulundu.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Bu grupta %1$d ad çakışması bulundu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d Üye</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d Üye</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>Bu grupta %1$d ad çakışması bulundu. Aşağıdaki üyeleri incele veya işlem yapmayı seç.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Bu grupta %1$d ad çakışması bulundu. Aşağıdaki üyeleri incele veya işlem yapmayı seç.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d grup üyesi aynı ada sahip. Aşağıdaki üyeyi gözden geçir veya başka bir işlem seç.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d grup üyesi aynı ada sahip. Aşağıdaki üyeleri gözden geçir veya başka bir işlem seç.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tüm Signal Bağlantıları · %1$d Görüntüleyen</string>
+			<string>Tüm Signal Kişileri· %1$d Görüntüleyen</string>
 			<key>other</key>
-			<string>Tüm Signal Bağlantıları · %1$d Görüntüleyen</string>
+			<string>Tüm Signal Kişileri · %1$d Görüntüleyen</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tüm Signal Bağlantıları · %1$d Kişi Hariç Tutuldu</string>
+			<string>Tüm Signal Kişileri · %1$d Kişi Hariç Tutuldu</string>
 			<key>other</key>
-			<string>Tüm Signal Bağlantıları · %1$d Kişi Hariç Tutuldu</string>
+			<string>Tüm Signal Kişileri · %1$d Kişi Hariç Tutuldu</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
