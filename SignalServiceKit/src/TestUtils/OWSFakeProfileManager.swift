@@ -23,15 +23,11 @@ extension OWSFakeProfileManager: ProfileManager {
 
     public func updateProfile(
         address: SignalServiceAddress,
-        givenName: String?,
-        familyName: String?,
-        bio: String?,
-        bioEmoji: String?,
-        remoteAvatarUrlPath: String?,
-        localAvatarFileUrl: URL?,
+        decryptedProfile: DecryptedProfile?,
+        avatarUrlPath: OptionalChange<String?>,
+        avatarFileName: OptionalChange<String?>,
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
-        isPhoneNumberShared: Bool?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction

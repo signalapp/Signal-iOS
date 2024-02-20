@@ -32,7 +32,7 @@ final class LocalProfileChecker {
 
     struct RemoteProfile {
         var avatarUrlPath: String?
-        var decryptedProfile: DecryptedProfile
+        var decryptedProfile: DecryptedProfile?
     }
 
     private struct State {
@@ -100,6 +100,10 @@ final class LocalProfileChecker {
             guard let localProfile = profileManager.getUserProfile(for: localAddress, transaction: SDSDB.shimOnlyBridge(tx)) else {
                 return false
             }
+            guard let decryptedProfile = mostRecentRemoteProfile.decryptedProfile else {
+                Logger.warn("Will reupload; couldn't decrypt our own profile")
+                return true
+            }
             // We check these because they are considered "Storage Service properties"
             // in OWSUserProfile.applyChanges & consider the local state to be the
             // source of truth.
@@ -107,14 +111,14 @@ final class LocalProfileChecker {
             if localProfile.avatarUrlPath != mostRecentRemoteProfile.avatarUrlPath {
                 mismatchedProperties.append("avatarUrlPath")
             }
-            if localProfile.givenName != mostRecentRemoteProfile.decryptedProfile.givenName {
+            if localProfile.givenName != decryptedProfile.givenName {
                 mismatchedProperties.append("givenName")
             }
-            if localProfile.familyName != mostRecentRemoteProfile.decryptedProfile.familyName {
+            if localProfile.familyName != decryptedProfile.familyName {
                 mismatchedProperties.append("familyName")
             }
             let localPhoneNumberSharing = udManager.phoneNumberSharingMode(tx: tx).orDefault == .everybody
-            if localPhoneNumberSharing != mostRecentRemoteProfile.decryptedProfile.phoneNumberSharing {
+            if localPhoneNumberSharing != decryptedProfile.phoneNumberSharing {
                 mismatchedProperties.append("phoneNumberSharing")
             }
 

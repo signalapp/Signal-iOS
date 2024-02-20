@@ -633,7 +633,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return try? Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.keyData)
     }
 
-    class func decrypt(profileNameData: Data, profileKey: OWSAES256Key) -> PersonNameComponents? {
+    class func decrypt(profileNameData: Data, profileKey: OWSAES256Key) -> (givenName: String, familyName: String?)? {
         guard let decryptedData = decrypt(profileData: profileNameData, profileKey: profileKey) else {
             return nil
         }
@@ -650,11 +650,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             return nil
         }
 
-        var nameComponents = PersonNameComponents()
-        nameComponents.givenName = givenName
-        // Family name is optional
-        nameComponents.familyName = parseNameSegment(nameSegments.dropFirst().first)
-        return nameComponents
+        return (givenName, parseNameSegment(nameSegments.dropFirst().first))
     }
 
     class func decrypt(profileStringData: Data, profileKey: OWSAES256Key) -> String? {

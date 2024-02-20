@@ -33,15 +33,11 @@ extension OWSProfileManager: ProfileManager {
 
     public func updateProfile(
         address: SignalServiceAddress,
-        givenName: String?,
-        familyName: String?,
-        bio: String?,
-        bioEmoji: String?,
-        remoteAvatarUrlPath: String?,
-        localAvatarFileUrl: URL?,
+        decryptedProfile: DecryptedProfile?,
+        avatarUrlPath: OptionalChange<String?>,
+        avatarFileName: OptionalChange<String?>,
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
-        isPhoneNumberShared: Bool?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction
@@ -59,34 +55,16 @@ extension OWSProfileManager: ProfileManager {
             transaction: tx
         )
 
-        guard userProfile.profileKey != nil else {
-            userProfile.update(
-                lastFetchDate: .setTo(lastFetchDate),
-                userProfileWriter: userProfileWriter,
-                authedAccount: authedAccount,
-                transaction: tx,
-                completion: nil
-            )
-            return
-        }
-
-        let newAvatarFileName: OptionalChange<String?>
-        if let avatarFileName = localAvatarFileUrl?.lastPathComponent {
-            newAvatarFileName = .setTo(avatarFileName)
-        } else {
-            newAvatarFileName = .noChange
-        }
-
         userProfile.update(
-            givenName: .setTo(givenName),
-            familyName: .setTo(familyName),
-            bio: .setTo(bio),
-            bioEmoji: .setTo(bioEmoji),
-            avatarUrlPath: .setTo(remoteAvatarUrlPath),
-            avatarFileName: newAvatarFileName,
+            givenName: decryptedProfile.map { .setTo($0.givenName) } ?? .noChange,
+            familyName: decryptedProfile.map { .setTo($0.familyName) } ?? .noChange,
+            bio: decryptedProfile.map { .setTo($0.bio) } ?? .noChange,
+            bioEmoji: decryptedProfile.map { .setTo($0.bioEmoji) } ?? .noChange,
+            avatarUrlPath: avatarUrlPath,
+            avatarFileName: avatarFileName,
             lastFetchDate: .setTo(lastFetchDate),
             badges: .setTo(profileBadges),
-            isPhoneNumberShared: .setTo(isPhoneNumberShared),
+            isPhoneNumberShared: decryptedProfile.map { .setTo($0.phoneNumberSharing) } ?? .noChange,
             userProfileWriter: userProfileWriter,
             authedAccount: authedAccount,
             transaction: tx,

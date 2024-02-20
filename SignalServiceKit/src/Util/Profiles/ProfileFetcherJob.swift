@@ -234,20 +234,26 @@ public class ProfileFetcherJob: NSObject {
     ) async throws {
         await updateProfile(
             fetchedProfile: fetchedProfile,
-            localAvatarUrlIfDownloaded: try await downloadAvatarIfNeeded(fetchedProfile),
+            avatarDownloadResult: try await downloadAvatarIfNeeded(fetchedProfile),
             localIdentifiers: localIdentifiers
         )
     }
 
-    private func downloadAvatarIfNeeded(_ fetchedProfile: FetchedProfile) async throws -> URL? {
+    private struct AvatarDownloadResult {
+        var remoteRelativePath: OptionalChange<String?>
+        var localFileUrl: OptionalChange<URL?>
+    }
+
+    private func downloadAvatarIfNeeded(_ fetchedProfile: FetchedProfile) async throws -> AvatarDownloadResult {
+        guard let profileKey = fetchedProfile.profileKey, fetchedProfile.decryptedProfile != nil else {
+            // If we don't have a profile key for this user, or if the rest of their
+            // encrypted profile wasn't valid, don't change their avatar because we
+            // aren't changing their name.
+            return AvatarDownloadResult(remoteRelativePath: .noChange, localFileUrl: .noChange)
+        }
         guard let newAvatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
             // If profile has no avatar, we don't need to download the avatar.
-            return nil
-        }
-        guard let profileKey = fetchedProfile.profileKey else {
-            // If we don't have a profile key for this user, don't bother downloading
-            // their avatar - we can't decrypt it.
-            return nil
+            return AvatarDownloadResult(remoteRelativePath: .setTo(nil), localFileUrl: .setTo(nil))
         }
         let profileAddress = SignalServiceAddress(fetchedProfile.profile.serviceId)
         let didAlreadyDownloadAvatar = databaseStorage.read { transaction -> Bool in
@@ -263,9 +269,9 @@ public class ProfileFetcherJob: NSObject {
             )
         }
         if didAlreadyDownloadAvatar {
-            return nil
+            return AvatarDownloadResult(remoteRelativePath: .noChange, localFileUrl: .noChange)
         }
-        let avatarData: Data
+        let avatarData: Data?
         do {
             avatarData = try await profileManager.downloadAndDecryptAvatar(
                 avatarUrlPath: newAvatarUrlPath,
@@ -289,29 +295,21 @@ public class ProfileFetcherJob: NSObject {
             //   afterward). This might be due to a race with an update that is in
             //   flight. We should eventually recover since profile updates are
             //   durable.
-            return nil
+            avatarData = nil
         }
-        return avatarData.isEmpty ? nil : profileManager.writeAvatarDataToFile(avatarData)
+        return AvatarDownloadResult(
+            remoteRelativePath: .setTo(newAvatarUrlPath),
+            localFileUrl: .setTo(avatarData.flatMap { profileManager.writeAvatarDataToFile($0) })
+        )
     }
 
     private func updateProfile(
         fetchedProfile: FetchedProfile,
-        localAvatarUrlIfDownloaded: URL?,
+        avatarDownloadResult: AvatarDownloadResult,
         localIdentifiers: LocalIdentifiers
     ) async {
         let profile = fetchedProfile.profile
         let serviceId = profile.serviceId
-
-        if let decryptedProfile = fetchedProfile.decryptedProfile, decryptedProfile.givenName == nil {
-            Logger.warn("Decrypted a profile that was missing its givenName.")
-        }
-
-        let givenName = fetchedProfile.decryptedProfile?.givenName
-        let familyName = fetchedProfile.decryptedProfile?.familyName
-        let bio = fetchedProfile.decryptedProfile?.bio
-        let bioEmoji = fetchedProfile.decryptedProfile?.bioEmoji
-        let paymentAddress = fetchedProfile.decryptedProfile?.paymentAddress(identityKey: fetchedProfile.identityKey)
-        let isPhoneNumberShared = fetchedProfile.decryptedProfile?.phoneNumberSharing
 
         await databaseStorage.awaitableWrite { transaction in
             Self.updateUnidentifiedAccess(
@@ -341,15 +339,11 @@ public class ProfileFetcherJob: NSObject {
 
             self.profileManager.updateProfile(
                 address: SignalServiceAddress(serviceId),
-                givenName: givenName,
-                familyName: familyName,
-                bio: bio,
-                bioEmoji: bioEmoji,
-                remoteAvatarUrlPath: profile.avatarUrlPath,
-                localAvatarFileUrl: localAvatarUrlIfDownloaded,
+                decryptedProfile: fetchedProfile.decryptedProfile,
+                avatarUrlPath: avatarDownloadResult.remoteRelativePath,
+                avatarFileName: avatarDownloadResult.localFileUrl.map { $0?.lastPathComponent },
                 profileBadges: profileBadgeMetadata,
                 lastFetchDate: Date(),
-                isPhoneNumberShared: isPhoneNumberShared,
                 userProfileWriter: .profileFetch,
                 authedAccount: self.options.authedAccount,
                 tx: transaction
@@ -362,6 +356,7 @@ public class ProfileFetcherJob: NSObject {
             let identityManager = DependenciesBridge.shared.identityManager
             identityManager.saveIdentityKey(profile.identityKey, for: serviceId, tx: transaction.asV2Write)
 
+            let paymentAddress = fetchedProfile.decryptedProfile?.paymentAddress(identityKey: fetchedProfile.identityKey)
             self.paymentsHelper.setArePaymentsEnabled(
                 for: ServiceIdObjC.wrapValue(serviceId),
                 hasPaymentsEnabled: paymentAddress != nil,
@@ -398,7 +393,6 @@ public class ProfileFetcherJob: NSObject {
             }
 
             guard expectedVerifier.ows_constantTimeIsEqual(to: verifier) else {
-                Logger.verbose("verifier mismatch, new profile key?")
                 return .disabled
             }
 
@@ -408,9 +402,6 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func reconcileLocalProfileIfNeeded(fetchedProfile: FetchedProfile) {
-        guard let decryptedProfile = fetchedProfile.decryptedProfile else {
-            return
-        }
         guard CurrentAppContext().isMainApp else {
             return
         }
@@ -420,7 +411,7 @@ public class ProfileFetcherJob: NSObject {
         }
         DependenciesBridge.shared.localProfileChecker.didFetchLocalProfile(LocalProfileChecker.RemoteProfile(
             avatarUrlPath: fetchedProfile.profile.avatarUrlPath,
-            decryptedProfile: decryptedProfile
+            decryptedProfile: fetchedProfile.decryptedProfile
         ))
     }
 
@@ -442,7 +433,7 @@ public class ProfileFetcherJob: NSObject {
 // MARK: -
 
 public struct DecryptedProfile {
-    public let givenName: String?
+    public let givenName: String
     public let familyName: String?
     public let bio: String?
     public let bioEmoji: String?
@@ -472,6 +463,9 @@ public struct FetchedProfile {
         let nameComponents = profile.profileNameEncrypted.flatMap {
             OWSUserProfile.decrypt(profileNameData: $0, profileKey: profileKey)
         }
+        guard let nameComponents else {
+            return nil
+        }
         let bio = profile.bioEncrypted.flatMap {
             OWSUserProfile.decrypt(profileStringData: $0, profileKey: profileKey)
         }
@@ -485,8 +479,8 @@ public struct FetchedProfile {
             OWSUserProfile.decrypt(profileBooleanData: $0, profileKey: profileKey)
         }
         return DecryptedProfile(
-            givenName: nameComponents?.givenName,
-            familyName: nameComponents?.familyName,
+            givenName: nameComponents.givenName,
+            familyName: nameComponents.familyName,
             bio: bio,
             bioEmoji: bioEmoji,
             paymentAddressData: paymentAddressData,
