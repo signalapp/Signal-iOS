@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d μέλος της ομάδας έχει το ίδιο όνομα.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d μέλη της ομάδας έχουν το ίδιο όνομα.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>Υπάρχει σύγκρουση μεταξύ %1$d ονόματος σε αυτήν την ομάδα.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>Υπάρχει σύγκρουση μεταξύ %1$d ονομάτων σε αυτήν την ομάδα.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d μέλος</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d μέλη</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>Υπάρχει σύγκρουση μεταξύ %1$d ονόματος σε αυτήν την ομάδα. Ελέγξτε τα μέλη παρακάτω ή αναλάβετε δράση.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>Υπάρχει σύγκρουση μεταξύ %1$d ονομάτων σε αυτήν την ομάδα. Ελέγξτε τα μέλη παρακάτω ή αναλάβετε δράση.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d μέλος της ομάδας έχει το ίδιο όνομα. Έλεγξε το μέλος παρακάτω ή επίλεξε ενέργεια.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d από τα μέλη της ομάδας έχουν το ίδιο όνομα. Έλεγξε τα μέλη παρακάτω ή επίλεξε ενέργεια.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

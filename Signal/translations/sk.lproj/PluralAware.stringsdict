@@ -608,13 +608,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d člen skupiny má rovnaké meno.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d členovia skupiny majú rovnaké meno.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d člena skupiny má rovnaké meno.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d členov skupiny má rovnaké meno.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -628,13 +628,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>V tejto skupine sa vyskytol %1$d konflikt mien.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>V tejto skupine sa vyskytli %1$d konflikty mien.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>V tejto skupine sa vyskytlo %1$d konfliktu mien.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>V tejto skupine sa vyskytlo %1$d konfliktov mien.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -648,13 +648,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d člen</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d členovia</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d člena</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d členov</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -668,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>V tejto skupine sa vyskytol %1$d konflikt mien. Overte členov nižšie alebo vykonajte akciu.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>V tejto skupine sa vyskytli %1$d konflikty mien. Overte členov nižšie alebo vykonajte akciu.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>V tejto skupine sa vyskytlo %1$d konfliktu mien. Overte členov nižšie alebo vykonajte akciu.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>V tejto skupine sa vyskytlo %1$d konfliktov mien. Overte členov nižšie alebo vykonajte akciu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d člen skupiny má rovnaké meno. Skontrolujte člena nižšie alebo vykonajte akciu.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d členovia skupiny majú rovnaké meno. Skontrolujte členov nižšie alebo vykonajte akciu.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d člena skupiny má rovnaké meno. Skontrolujte členov nižšie alebo vykonajte akciu.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d členov skupiny má rovnaké meno. Skontrolujte členov nižšie alebo vykonajte akciu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

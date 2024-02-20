@@ -648,13 +648,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d учасник</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d учасники</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d учасників</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d учасника</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -668,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>У групі виявлено %1$d конфлікт імен. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>У групі виявлено %1$d конфлікти імен. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>У групі виявлено %1$d конфліктів імен. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>У групі виявлено %1$d конфлікту імен. Перегляньте учасників нижче або виберіть дію.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>

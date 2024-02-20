@@ -548,11 +548,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d membru al grupului are același nume.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d membri ai grupului au același nume.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d de membri ai grupului au același nume.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -566,11 +566,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>%1$d suprapunere de nume a fost găsită în acest grup.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>%1$d suprapuneri de nume au fost găsite în acest grup.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>%1$d de suprapuneri de nume au fost găsite în acest grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -584,11 +584,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Member</string>
+			<string>%1$d membru</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d membri</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d de membri</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -602,11 +602,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d conflict de nume a fost găsit în acest grup. Examinează membrii de mai jos sau alege să acționezi.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d conflicte de nume au fost găsite în acest grup. Examinează membrii de mai jos sau alege să acționezi.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group. Review the members below or choose to take action.</string>
+			<string>%1$d de conflicte de nume au fost găsite în acest grup. Examinează membrii de mai jos sau alege să acționezi.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -620,11 +620,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d membru al grupului are același nume. Revizuiește membrul de mai jos sau ia măsuri.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d membri ai grupului au același nume. Revizuiește membrii de mai jos sau ia măsuri.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d de membri ai grupului au același nume. Revizuiește membrii de mai jos sau ia măsuri.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
