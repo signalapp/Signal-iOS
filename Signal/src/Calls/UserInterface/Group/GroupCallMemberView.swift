@@ -436,7 +436,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 }
 
 extension RemoteDeviceState {
-    var address: SignalServiceAddress {
-        return SignalServiceAddress(Aci(fromUUID: userId))
-    }
+    var aci: Aci { Aci(fromUUID: userId) }
+    var address: SignalServiceAddress { SignalServiceAddress(aci) }
 }

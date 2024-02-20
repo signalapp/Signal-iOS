@@ -60,9 +60,10 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     // MARK: -
 
     struct JoinedMember {
-        let address: SignalServiceAddress
+        let aci: Aci
         let displayName: String
         let comparableName: String
+        let lastResortSortKey: Int
         let isAudioMuted: Bool?
         let isVideoMuted: Bool?
         let isPresenting: Bool?
@@ -71,13 +72,18 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     private var sortedMembers = [JoinedMember]()
     func updateMembers() {
         let unsortedMembers: [JoinedMember] = databaseStorage.read { transaction in
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+                return []
+            }
+
             var members = [JoinedMember]()
 
             if self.call.groupCall.localDeviceState.joinState == .joined {
                 members += self.call.groupCall.remoteDeviceStates.values.map { member in
                     let displayName: String
                     let comparableName: String
-                    if member.address.isLocalAddress {
+                    if member.aci == localIdentifiers.aci {
                         displayName = OWSLocalizedString(
                             "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                             comment: "Text describing the local user in the group call members sheet when connected from another device."
@@ -89,28 +95,24 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                     }
 
                     return JoinedMember(
-                        address: member.address,
+                        aci: member.aci,
                         displayName: displayName,
                         comparableName: comparableName,
+                        lastResortSortKey: Int(member.demuxId),
                         isAudioMuted: member.audioMuted,
                         isVideoMuted: member.videoMuted,
                         isPresenting: member.presenting
                     )
                 }
 
-                guard let localAddress = DependenciesBridge.shared.tsAccountManager
-                    .localIdentifiersWithMaybeSneakyTransaction?.aciAddress
-                else {
-                    return members
-                }
-
                 let displayName = CommonStrings.you
                 let comparableName = displayName
 
                 members.append(JoinedMember(
-                    address: localAddress,
+                    aci: localIdentifiers.aci,
                     displayName: displayName,
                     comparableName: comparableName,
+                    lastResortSortKey: 0,
                     isAudioMuted: self.call.groupCall.isOutgoingAudioMuted,
                     isVideoMuted: self.call.groupCall.isOutgoingVideoMuted,
                     isPresenting: false
@@ -119,14 +121,16 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                 // If we're not yet in the call, `remoteDeviceStates` will not exist.
                 // We can get the list of joined members still, provided we are connected.
                 members += self.call.groupCall.peekInfo?.joinedMembers.map { aciUuid in
-                    let address = SignalServiceAddress(Aci(fromUUID: aciUuid))
+                    let aci = Aci(fromUUID: aciUuid)
+                    let address = SignalServiceAddress(aci)
                     let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
                     let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
 
                     return JoinedMember(
-                        address: address,
+                        aci: aci,
                         displayName: displayName,
                         comparableName: comparableName,
+                        lastResortSortKey: 0,
                         isAudioMuted: nil,
                         isVideoMuted: nil,
                         isPresenting: nil
@@ -137,7 +141,16 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
             return members
         }
 
-        sortedMembers = unsortedMembers.sorted { $0.comparableName.caseInsensitiveCompare($1.comparableName) == .orderedAscending }
+        sortedMembers = unsortedMembers.sorted {
+            let nameComparison = $0.comparableName.caseInsensitiveCompare($1.comparableName)
+            if nameComparison != .orderedSame {
+                return nameComparison == .orderedAscending
+            }
+            if $0.aci != $1.aci {
+                return $0.aci.serviceIdString < $1.aci.serviceIdString
+            }
+            return $0.lastResortSortKey < $1.lastResortSortKey
+        }
 
         tableView.reloadData()
     }
@@ -309,7 +322,7 @@ private class GroupCallMemberCell: UITableViewCell {
 
         nameLabel.text = item.displayName
         avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .address(item.address)
+            config.dataSource = .address(SignalServiceAddress(item.aci))
         }
     }
 }
