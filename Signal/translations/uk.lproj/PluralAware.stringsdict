@@ -608,13 +608,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>%1$d учасник групи має таке саме ім&apos;я.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d учасники групи мають таке саме ім&apos;я.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d учасників групи мають таке саме ім&apos;я.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>%1$d учасника групи мають таке саме ім&apos;я.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -628,13 +628,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>У групі виявлено %1$d конфлікт імен.</string>
 			<key>few</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>У групі виявлено %1$d конфлікти імен.</string>
 			<key>many</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>У групі виявлено %1$d конфліктів імен.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>У групі виявлено %1$d конфлікту імен.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>%1$d учасник групи має таке саме ім&apos;я. Перегляньте учасника нижче або виберіть дію.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d учасники групи мають однакові імена. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d учасників групи мають однакові імена. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>%1$d учасника групи мають однакові імена. Перегляньте учасників нижче або виберіть дію.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
