@@ -997,6 +997,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Najít podle uživatelského jména";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Pro nalezení kontaktů používajících Signal povolte přístup ke kontaktům v nastavení iOS.";
 
@@ -5356,6 +5359,9 @@
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Vaše uživatelské jméno, QR kód a odkaz se na vašem profilu nezobrazují. Své uživatelské jméno sdílejte jen s lidmi, kterým věříte.";
 
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Proxy adresa";
 
@@ -7797,6 +7803,9 @@
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Uživatelská jména nemůžou končit číslicemi 00. Zkuste jiné číslice od 1 do 9";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Jméno zařízení nemůže být prázdné";

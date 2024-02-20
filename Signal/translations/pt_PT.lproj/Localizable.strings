@@ -997,6 +997,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Procurar por nome de utilizador";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Para ver quais dos seus contactos são utilizadores do Signal, permita o acesso aos contactos nas definições iOS da aplicação.";
 
@@ -5356,6 +5359,9 @@
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "O seu nome de utilizador, código QR e link não estão visíveis no seu perfil. Partilhe o seu nome de utilizador apenas com pessoas da sua confiança.";
 
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Endereço proxy";
 
@@ -7797,6 +7803,9 @@
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Os nomes de utilizador não podem terminar em 00. Tente outro algarismo entre 1 e 9";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "O nome do dispositivo não pode estar em branco";

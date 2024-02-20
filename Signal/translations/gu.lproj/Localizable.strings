@@ -997,6 +997,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "યુઝરનેમ દ્વારા શોધો";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "તમારા કયા સંપર્કો Signal વપરાશકર્તાઓ છે તે જોવા માટે તમે iOS સેટિંગ્સ ઍપમાં સંપર્કોનો ઍક્સેસ સક્ષમ કરી શકો છો.";
 
@@ -5356,6 +5359,9 @@
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "તમારું યુઝરનેમ, QR કોડ અને લિંક તમારી પ્રોફાઇલ પર દેખાતા નથી. તમારું યુઝરનેમ ફક્ત એવા લોકો સાથે જ શેર કરો જેમના પર તમને વિશ્વાસ હોય.";
 
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "પ્રોક્સી એડ્રેસ";
 
@@ -7797,6 +7803,9 @@
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "યુઝરનેમ 00થી સમાપ્ત ન થઈ શકે. 1-9ની વચ્ચેનો અન્ય અંક અજમાવો";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "ડિવાઇસનું નામ ખાલી હોઈ શકતું નથી";
