@@ -93,12 +93,14 @@ public enum OWSActionSheets {
 
     public static func showErrorAlert(
         message: String,
-        fromViewController: UIViewController? = nil
+        fromViewController: UIViewController? = nil,
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil
     ) {
         showActionSheet(
             title: CommonStrings.errorAlertTitle,
             message: message,
-            fromViewController: fromViewController
+            fromViewController: fromViewController,
+            dismissalDelegate: dismissalDelegate
         )
     }
 

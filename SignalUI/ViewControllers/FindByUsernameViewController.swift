@@ -89,11 +89,13 @@ public class FindByUsernameViewController: OWSTableViewController2 {
     @objc
     private func didTapNext() {
         guard let username = usernameTextField.text else { return }
+        usernameTextField.resignFirstResponder()
         databaseStorage.read { tx in
             UsernameQuerier().queryForUsername(
                 username: username,
                 fromViewController: self,
                 tx: tx,
+                failureSheetDismissalDelegate: self,
                 onSuccess: { [weak self] aci in
                     AssertIsOnMainThread()
                     self?.findByUsernameDelegate?.findByUsername(address: SignalServiceAddress(aci))
@@ -102,4 +104,10 @@ public class FindByUsernameViewController: OWSTableViewController2 {
         }
     }
 
+}
+
+extension FindByUsernameViewController: SheetDismissalDelegate {
+    public func didDismissPresentedSheet() {
+        usernameTextField.becomeFirstResponder()
+    }
 }

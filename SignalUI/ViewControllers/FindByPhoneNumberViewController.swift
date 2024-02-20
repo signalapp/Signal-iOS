@@ -249,19 +249,33 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
                     modal.dismissIfNotCanceled {
                         guard let self = self else { return }
                         guard let recipient = recipients.first else {
-                            return OWSActionSheets.showErrorAlert(message: MessageSenderNoSuchSignalRecipientError().userErrorDescription)
+                            return OWSActionSheets.showErrorAlert(
+                                message: MessageSenderNoSuchSignalRecipientError().userErrorDescription,
+                                dismissalDelegate: self
+                            )
                         }
                         self.findByPhoneNumberDelegate?.findByPhoneNumber(self, didSelectAddress: recipient.address)
                     }
                 }.catch(on: DispatchQueue.main) { error in
                     modal.dismissIfNotCanceled {
-                        OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
+                        OWSActionSheets.showErrorAlert(
+                            message: error.userErrorDescription,
+                            dismissalDelegate: self
+                        )
                     }
                 }
             }
         } else {
             findByPhoneNumberDelegate?.findByPhoneNumber(self, didSelectAddress: SignalServiceAddress(phoneNumber: phoneNumber))
         }
+    }
+}
+
+// MARK: - SheetDismissalDelegate
+
+extension FindByPhoneNumberViewController: SheetDismissalDelegate {
+    public func didDismissPresentedSheet() {
+        phoneNumberTextField.becomeFirstResponder()
     }
 }
 

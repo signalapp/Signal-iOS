@@ -107,7 +107,7 @@ public struct UsernameQuerier {
                     forUsername: username
                 ) else {
                     modal.dismissIfNotCanceled {
-                        showInvalidUsernameError(username: username)
+                        showInvalidUsernameError(username: username, dismissalDelegate: nil)
                     }
                     return
                 }
@@ -115,10 +115,11 @@ public struct UsernameQuerier {
                 queryServiceForUsernameBehindSpinner(
                     presentedModalActivityIndicator: modal,
                     hashedUsername: hashedUsername,
+                    failureSheetDismissalDelegate: nil,
                     onSuccess: onSuccess
                 )
             }.catch(on: schedulers.main) { _ in
-                showGenericError(presentedModal: modal)
+                showGenericError(presentedModal: modal, dismissalDelegate: nil)
             }
         }
     }
@@ -133,6 +134,7 @@ public struct UsernameQuerier {
         username: String,
         fromViewController: UIViewController,
         tx: SDSAnyReadTransaction,
+        failureSheetDismissalDelegate: (any SheetDismissalDelegate)? = nil,
         onSuccess: @escaping (Aci) -> Void
     ) {
         if
@@ -147,7 +149,10 @@ public struct UsernameQuerier {
         guard let hashedUsername = try? Usernames.HashedUsername(
             forUsername: username
         ) else {
-            showInvalidUsernameError(username: username)
+            showInvalidUsernameError(
+                username: username,
+                dismissalDelegate: failureSheetDismissalDelegate
+            )
             return
         }
 
@@ -158,6 +163,7 @@ public struct UsernameQuerier {
             queryServiceForUsernameBehindSpinner(
                 presentedModalActivityIndicator: modal,
                 hashedUsername: hashedUsername,
+                failureSheetDismissalDelegate: failureSheetDismissalDelegate,
                 onSuccess: onSuccess
             )
         }
@@ -190,6 +196,7 @@ public struct UsernameQuerier {
     private func queryServiceForUsernameBehindSpinner(
         presentedModalActivityIndicator modal: ModalActivityIndicatorViewController,
         hashedUsername: Usernames.HashedUsername,
+        failureSheetDismissalDelegate: (any SheetDismissalDelegate)?,
         onSuccess: @escaping (Aci) -> Void
     ) {
         firstly(on: schedulers.sync) { () -> Promise<Aci?> in
@@ -212,12 +219,16 @@ public struct UsernameQuerier {
                     }
                 } else {
                     self.showUsernameNotFoundError(
-                        username: hashedUsername.usernameString
+                        username: hashedUsername.usernameString,
+                        dismissalDelegate: failureSheetDismissalDelegate
                     )
                 }
             }
         }.catch(on: schedulers.main) { _ in
-            showGenericError(presentedModal: modal)
+            showGenericError(
+                presentedModal: modal,
+                dismissalDelegate: failureSheetDismissalDelegate
+            )
         }
     }
 
@@ -261,7 +272,10 @@ public struct UsernameQuerier {
 
     // MARK: - Errors
 
-    private func showInvalidUsernameError(username: String) {
+    private func showInvalidUsernameError(
+        username: String,
+        dismissalDelegate: (any SheetDismissalDelegate)?
+    ) {
         OWSActionSheets.showActionSheet(
             title: OWSLocalizedString(
                 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE",
@@ -273,11 +287,15 @@ public struct UsernameQuerier {
                     comment: "A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}."
                 ),
                 username
-            )
+            ),
+            dismissalDelegate: dismissalDelegate
         )
     }
 
-    private func showUsernameNotFoundError(username: String) {
+    private func showUsernameNotFoundError(
+        username: String,
+        dismissalDelegate: (any SheetDismissalDelegate)?
+    ) {
         OWSActionSheets.showActionSheet(
             title: OWSLocalizedString(
                 "USERNAME_LOOKUP_NOT_FOUND_TITLE",
@@ -289,7 +307,8 @@ public struct UsernameQuerier {
                     comment: "A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}."
                 ),
                 username
-            )
+            ),
+            dismissalDelegate: dismissalDelegate
         )
     }
 
@@ -304,15 +323,19 @@ public struct UsernameQuerier {
     }
 
     private func showGenericError(
-        presentedModal modal: ModalActivityIndicatorViewController
+        presentedModal modal: ModalActivityIndicatorViewController,
+        dismissalDelegate: (any SheetDismissalDelegate)?
     ) {
         Logger.error("Error while querying for username!")
 
         modal.dismissIfNotCanceled {
-            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
-                "USERNAME_LOOKUP_ERROR_MESSAGE",
-                comment: "A message indicating that username lookup failed."
-            ))
+            OWSActionSheets.showErrorAlert(
+                message: OWSLocalizedString(
+                    "USERNAME_LOOKUP_ERROR_MESSAGE",
+                    comment: "A message indicating that username lookup failed."
+                ),
+                dismissalDelegate: dismissalDelegate
+            )
         }
     }
 }
