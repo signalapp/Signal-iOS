@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Zjistit informace o vašem účtu";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Zadejte celé uživatelské jméno s příslušnou sadou číslic.";
+"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "Uživatelské jméno";
@@ -4282,11 +4282,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Vybrat skupinu";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Vyhledat";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Najít uživatele";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Název příběhu";
@@ -7307,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "Zobrazení vypnuta";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID dárce zkopírováno do schránky";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Vaše bezpečnostní číslo s %1$@ se shoduje. Můžete jej označit jako ověřený.";
@@ -7772,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Změnou uživatelského jména zresetuje váš současný QR kód a odkaz. Jste si jisti?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Uživatelská jména umožňují ostatním posílat vám zprávy, aniž by potřebovali znát vaše telefonní číslo. Jsou spárována se sadou číslic, které pomáhá udržet vaši adresu v soukromí. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Zvolte si své uživatelské jméno";

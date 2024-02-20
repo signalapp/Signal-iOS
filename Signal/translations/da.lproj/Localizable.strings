@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Find dine kontooplysninger";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Angiv et fuldt brugernavn med de tilhørende tal";
+"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "Brugernavn";
@@ -4282,11 +4282,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Vælg gruppe";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Søg";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find bruger";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Navngiv historie";
@@ -7307,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "Visninger deaktiveret";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Donor-id kopieret til udklipsholder";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Dit sikkerhedsnummer med %1$@ matcher. Du kan markere kontakten som verificeret";
@@ -7772,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Hvis du ændrer dit brugernavn, nulstilles din eksisterende QR-kode og dit link. Er du sikker?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Brugernavne gør det muligt for andre sende dig beskeder uden dit telefonnummer. De er forbundet med et sæt cifre, der hjælper med at beskytte din adresse. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Vælg dit brugernavn";

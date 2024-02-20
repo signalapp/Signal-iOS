@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "アカウント情報を確認する";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "ユーザーネーム氏名と、それに続く数字を入力してください";
+"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "ユーザーネーム";
@@ -4282,11 +4282,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "グループを選択";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "検索";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ユーザを検索";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "ストーリー名";
@@ -7307,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "閲覧をオフにする";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "寄付者IDをクリップボードにコピーしました";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%1$@ に対する安全番号が一致しました。この相手は検証済みにできます。";
@@ -7772,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "ユーザーネームを変更すると、これまでのQRコードとリンクがリセットされます。本当に変更しますか？";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ユーザーネームを使用すると、相手は電話番号なしであなたにメッセージを送ることができますユーザーネームは数字と対になっているのでアドレスを非公開にすることができます。%1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "ユーザーネームを選択してください";

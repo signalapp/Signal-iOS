@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name.</string>
+			<string>‏%1$d عضو گروه نام یکسان دارد.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name.</string>
+			<string>‏%1$d عضو گروه نام یکسان دارند.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d name conflict was found in this group.</string>
+			<string>‏%1$d تعارض اسمی در این گروه یافت شد.</string>
 			<key>other</key>
-			<string>%1$d name conflicts were found in this group.</string>
+			<string>‏%1$d تعارض اسمی در این گروه یافت شد.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d group member has the same name. Review the member below or choose to take action.</string>
+			<string>‏%1$d عضو گروه نام یکسان دارد، عضو را در پایین مرور کنید یا اقدام لازم را انجام دهید.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name. Review the members below or choose to take action.</string>
+			<string>‏%1$d عضو گروه نام‌های یکسان دارند، اعضا را در پایین مرور کنید یا اقدام لازم را انجام دهید.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>

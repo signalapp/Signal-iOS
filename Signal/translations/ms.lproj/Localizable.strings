@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Cari Maklumat Akaun Anda";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Masukkan nama pengguna penuh dengan pasangan digitnya";
+"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "Nama Pengguna";
@@ -4282,11 +4282,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Pilih Kumpulan";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Cari";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Cari Pengguna";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Nama Cerita";
@@ -7307,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "Tontonan dimatikan";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Menyalin id penderma ke papan keratan";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Nombor keselamatan anda dengan %1$@ sepadan. Anda boleh tandakan kenalan ini sebagai disahkan.";
@@ -7772,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Menukar nama pengguna anda akan menetapkan semula kod dan pautan QR anda yang sedia ada. Adakah anda pasti?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Nama pengguna membenarkan orang lain menghantar mesej kepada anda tanpa memerlukan nombor telefon anda. Ia dipasangkan dengan set digit untuk membantu mengekalkan privasi alamat anda. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Pilih nama pengguna anda";
