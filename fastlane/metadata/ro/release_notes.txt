@@ -1,1 +1,7 @@
-• New emoji are coming soon, and this update adds preliminary support so that Signal will be ready for the future of visual communication as soon as that future arrives. People keep asking us what our favorite new emoji is, but answering that question is a “lime” we won't cross.
+We’re introducing new ways to keep your phone number private on Signal.
+
+• Your phone number will no longer be visible to anyone on the latest version of Signal unless they have it saved in their phone’s contacts. You can change this in Settings.
+
+• You can now set and share an optional username to let people chat with you without giving them your phone number.
+
+• A new privacy setting lets you control who can find you by your phone number on Signal.
