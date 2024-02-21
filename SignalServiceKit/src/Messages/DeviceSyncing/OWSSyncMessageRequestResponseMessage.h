@@ -11,7 +11,9 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSSyncMessageRequestResponseType) {
     OWSSyncMessageRequestResponseType_Accept,
     OWSSyncMessageRequestResponseType_Delete,
     OWSSyncMessageRequestResponseType_Block,
-    OWSSyncMessageRequestResponseType_BlockAndDelete
+    OWSSyncMessageRequestResponseType_BlockAndDelete,
+    OWSSyncMessageRequestResponseType_Spam,
+    OWSSyncMessageRequestResponseType_BlockAndSpam
 };
 
 @interface OWSSyncMessageRequestResponseMessage : OWSOutgoingSyncMessage

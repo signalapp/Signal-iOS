@@ -45,6 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
             return SSKProtoSyncMessageMessageRequestResponseTypeBlock;
         case OWSSyncMessageRequestResponseType_BlockAndDelete:
             return SSKProtoSyncMessageMessageRequestResponseTypeBlockAndDelete;
+        case OWSSyncMessageRequestResponseType_Spam:
+            return SSKProtoSyncMessageMessageRequestResponseTypeSpam;
+        case OWSSyncMessageRequestResponseType_BlockAndSpam:
+            return SSKProtoSyncMessageMessageRequestResponseTypeBlockAndSpam;
     }
 }
 

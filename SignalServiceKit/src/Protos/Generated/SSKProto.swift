@@ -11717,6 +11717,8 @@ public enum SSKProtoSyncMessageMessageRequestResponseType: Int32 {
     case delete = 2
     case block = 3
     case blockAndDelete = 4
+    case spam = 5
+    case blockAndSpam = 6
 }
 
 private func SSKProtoSyncMessageMessageRequestResponseTypeWrap(_ value: SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum) -> SSKProtoSyncMessageMessageRequestResponseType {
@@ -11726,6 +11728,8 @@ private func SSKProtoSyncMessageMessageRequestResponseTypeWrap(_ value: SignalSe
     case .delete: return .delete
     case .block: return .block
     case .blockAndDelete: return .blockAndDelete
+    case .spam: return .spam
+    case .blockAndSpam: return .blockAndSpam
     }
 }
 
@@ -11736,6 +11740,8 @@ private func SSKProtoSyncMessageMessageRequestResponseTypeUnwrap(_ value: SSKPro
     case .delete: return .delete
     case .block: return .block
     case .blockAndDelete: return .blockAndDelete
+    case .spam: return .spam
+    case .blockAndSpam: return .blockAndSpam
     }
 }
 
