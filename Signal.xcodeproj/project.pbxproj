@@ -1597,6 +1597,7 @@
 		D9C42C2F2B6C60600086B142 /* CallRecordDeleteManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C42C2E2B6C60600086B142 /* CallRecordDeleteManagerTest.swift */; };
 		D9C42C312B6C60FE0086B142 /* MockDeletedCallRecordCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C42C302B6C60FE0086B142 /* MockDeletedCallRecordCleanupManager.swift */; };
 		D9C42C332B6C66320086B142 /* MockCallRecordDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C42C322B6C66320086B142 /* MockCallRecordDeleteManager.swift */; };
+		D9C5442D2B865B060036F274 /* CallsListViewController+Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C5442C2B865B060036F274 /* CallsListViewController+Strings.swift */; };
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
 		D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */; };
 		D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */; };
@@ -4372,6 +4373,7 @@
 		D9C42C2E2B6C60600086B142 /* CallRecordDeleteManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordDeleteManagerTest.swift; sourceTree = "<group>"; };
 		D9C42C302B6C60FE0086B142 /* MockDeletedCallRecordCleanupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDeletedCallRecordCleanupManager.swift; sourceTree = "<group>"; };
 		D9C42C322B6C66320086B142 /* MockCallRecordDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordDeleteManager.swift; sourceTree = "<group>"; };
+		D9C5442C2B865B060036F274 /* CallsListViewController+Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallsListViewController+Strings.swift"; sourceTree = "<group>"; };
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
 		D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManifest.swift; sourceTree = "<group>"; };
 		D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+SSK.swift"; sourceTree = "<group>"; };
@@ -8436,6 +8438,7 @@
 		B93955E12B06D46400F35940 /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				D9C5442C2B865B060036F274 /* CallsListViewController+Strings.swift */,
 				B93955E22B06D47000F35940 /* CallsListViewController.swift */,
 				B935268F2B0E63C300421E6A /* NewCallViewController.swift */,
 			);
@@ -12309,6 +12312,7 @@
 				E1E78CB12B573C3100B6FC2D /* CallMemberWaitingAndErrorView.swift in Sources */,
 				D93108092B337A23006A034E /* CallRecordLoader.swift in Sources */,
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
+				D9C5442D2B865B060036F274 /* CallsListViewController+Strings.swift in Sources */,
 				B93955E32B06D47000F35940 /* CallsListViewController.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* CameraCaptureSession.swift in Sources */,

@@ -80,7 +80,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.titleView = tabPicker
+        navigationItem.titleView = filterPicker
         updateBarButtonItems()
 
         let searchController = UISearchController(searchResultsController: nil)
@@ -153,7 +153,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             actions: { settingsAction in
                 [
                     .init(
-                        title: "Select", // [CallsTab] TODO: Localize
+                        title: Strings.selectCallsButtonTitle,
                         image: Theme.iconImage(.contextMenuSelect),
                         attributes: []
                     ) { [weak self] _ in
@@ -305,7 +305,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private func deleteAllCallsButton() -> UIBarButtonItem {
         return UIBarButtonItem(
-            title: "Clear", // [CallsTab] TODO: Localize
+            title: Strings.deleteAllCallsButtonTitle,
             style: .plain,
             target: self,
             action: #selector(promptAboutDeletingAllCalls)
@@ -314,11 +314,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     @objc
     private func promptAboutDeletingAllCalls() {
-        // [Calls Tab] TODO: Localize
         OWSActionSheets.showConfirmationAlert(
-            title: "Clear call history?",
-            message: "This will permanently delete all call history.",
-            proceedTitle: "Clear",
+            title: Strings.deleteAllCallsPromptTitle,
+            message: Strings.deleteAllCallsPromptMessage,
+            proceedTitle: Strings.deleteAllCallsButtonTitle,
             proceedStyle: .destructive
         ) { _ in
             self.deps.db.asyncWrite { tx in
@@ -341,8 +340,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case missed = 1
     }
 
-    private lazy var tabPicker: UISegmentedControl = {
-        let segmentedControl = UISegmentedControl(items: ["All", "Missed"]) // [CallsTab] TODO: Localize
+    private lazy var filterPicker: UISegmentedControl = {
+        let segmentedControl = UISegmentedControl(items: [
+            Strings.filterPickerOptionAll,
+            Strings.filterPickerOptionMissed
+        ])
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(tabChanged), for: .valueChanged)
         return segmentedControl
@@ -355,7 +357,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     private var currentFilterMode: FilterMode {
-        FilterMode(rawValue: tabPicker.selectedSegmentIndex) ?? .all
+        FilterMode(rawValue: filterPicker.selectedSegmentIndex) ?? .all
     }
 
     // MARK: - Observers and Notifications
@@ -831,11 +833,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             var label: String {
                 switch self {
                 case .outgoing:
-                    return "Outgoing" // [CallsTab] TODO: Localize
+                    return Strings.callDirectionLabelOutgoing
                 case .incoming:
-                    return "Incoming" // [CallsTab] TODO: Localize
+                    return Strings.callDirectionLabelIncoming
                 case .missed:
-                    return "Missed" // [CallsTab] TODO: Localize
+                    return Strings.callDirectionLabelMissed
                 }
             }
         }
@@ -1027,7 +1029,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func updateEmptyStateMessage() {
         switch (calls.allLoadedViewModelIds.count, searchTerm) {
         case (0, .some(let searchTerm)) where !searchTerm.isEmpty:
-            noSearchResultsView.text = "No results found for '\(searchTerm)'" // [CallsTab] TODO: Localize
+            noSearchResultsView.text = String(
+                format: Strings.searchNoResultsFoundLabelFormat,
+                arguments: [searchTerm]
+            )
             noSearchResultsView.layer.opacity = 1
             emptyStateMessageView.layer.opacity = 0
         case (0, _):
@@ -1035,14 +1040,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 switch currentFilterMode {
                 case .all:
                     return [
-                        "No recent calls", // [CallsTab] TODO: Localize
+                        Strings.noRecentCallsLabel,
                         "\n",
-                        "Get started by calling a friend" // [CallsTab] TODO: Localize
+                        Strings.noRecentCallsSuggestionLabel
                             .styled(with: .font(.dynamicTypeSubheadline)),
                     ]
                 case .missed:
                     return [
-                        "No missed calls" // [CallsTab] TODO: Localize
+                        Strings.noMissedCallsLabel
                     ]
                 }
             }())
@@ -1163,7 +1168,7 @@ extension CallsListViewController: UITableViewDelegate {
             style: .normal,
             color: .ows_accentBlue,
             image: "arrow-square-upright-fill",
-            title: "Go to Chat" // [CallsTab] TODO: Localize
+            title: Strings.goToChatActionTitle
         ) { [weak self] in
             self?.goToChat(from: viewModel)
         }
@@ -1230,10 +1235,10 @@ extension CallsListViewController: UITableViewDelegate {
             let joinCallIconName: String
             switch viewModel.callType {
             case .audio:
-                joinCallTitle = "Join Audio Call" // [CallsTab] TODO: Localize
+                joinCallTitle = Strings.joinAudioCallActionTitle
                 joinCallIconName = Theme.iconName(.contextMenuVoiceCall)
             case .video:
-                joinCallTitle = "Join Video Call" // [CallsTab] TODO: Localize
+                joinCallTitle = Strings.joinVideoCallActionTitle
                 joinCallIconName = Theme.iconName(.contextMenuVideoCall)
             }
             let joinCallAction = UIAction(
@@ -1253,7 +1258,7 @@ extension CallsListViewController: UITableViewDelegate {
                 returnToCallIconName = Theme.iconName(.contextMenuVideoCall)
             }
             let returnToCallAction = UIAction(
-                title: "Return to Call", // [CallsTab] TODO: Localize
+                title: Strings.returnToCallActionTitle,
                 image: UIImage(named: returnToCallIconName),
                 attributes: []
             ) { [weak self] _ in
@@ -1264,7 +1269,7 @@ extension CallsListViewController: UITableViewDelegate {
             switch viewModel.recipientType {
             case .individual:
                 let audioCallAction = UIAction(
-                    title: "Audio Call", // [CallsTab] TODO: Localize
+                    title: Strings.startAudioCallActionTitle,
                     image: Theme.iconImage(.contextMenuVoiceCall),
                     attributes: []
                 ) { [weak self] _ in
@@ -1276,7 +1281,7 @@ extension CallsListViewController: UITableViewDelegate {
             }
 
             let videoCallAction = UIAction(
-                title: "Video Call", // [CallsTab] TODO: Localize
+                title: Strings.startVideoCallActionTitle,
                 image: Theme.iconImage(.contextMenuVideoCall),
                 attributes: []
             ) { [weak self] _ in
@@ -1286,7 +1291,7 @@ extension CallsListViewController: UITableViewDelegate {
         }
 
         let goToChatAction = UIAction(
-            title: "Go to Chat", // [CallsTab] TODO: Localize
+            title: Strings.goToChatActionTitle,
             image: Theme.iconImage(.contextMenuOpenInChat),
             attributes: []
         ) { [weak self] _ in
@@ -1295,7 +1300,7 @@ extension CallsListViewController: UITableViewDelegate {
         actions.append(goToChatAction)
 
         let infoAction = UIAction(
-            title: "Info", // [CallsTab] TODO: Localize
+            title: Strings.viewCallInfoActionTitle,
             image: Theme.iconImage(.contextMenuInfo),
             attributes: []
         ) { [weak self] _ in
@@ -1304,7 +1309,7 @@ extension CallsListViewController: UITableViewDelegate {
         actions.append(infoAction)
 
         let selectAction = UIAction(
-            title: "Select", // [CallsTab] TODO: Localize
+            title: Strings.selectCallActionTitle,
             image: Theme.iconImage(.contextMenuSelect),
             attributes: []
         ) { [weak self] _ in
@@ -1315,7 +1320,7 @@ extension CallsListViewController: UITableViewDelegate {
         switch viewModel.state {
         case .active, .ended:
             let deleteAction = UIAction(
-                title: "Delete", // [CallsTab] TODO: Localize
+                title: Strings.deleteCallActionTitle,
                 image: Theme.iconImage(.contextMenuDelete),
                 attributes: .destructive
             ) { [weak self] _ in
@@ -1766,9 +1771,9 @@ private extension CallsListViewController {
             let text: String
             switch viewModel.state {
             case .active:
-                text = "Join" // [CallsTab] TODO: Localize
+                text = Strings.joinCallButtonTitle
             case .participating:
-                text = "Return" // [CallsTab] TODO: Localize
+                text = Strings.returnToCallButtonTitle
             case .ended:
                 return nil
             }
