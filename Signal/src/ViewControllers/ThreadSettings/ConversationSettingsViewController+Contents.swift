@@ -334,12 +334,6 @@ extension ConversationSettingsViewController {
     private func buildBlockAndLeaveSection() -> OWSTableSection {
         let section = OWSTableSection()
 
-        section.footerTitle = isGroupThread
-            ? OWSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER",
-                                comment: "Footer text for the 'block and leave' section of group conversation settings view.")
-            : OWSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER",
-                                comment: "Footer text for the 'block and leave' section of contact conversation settings view.")
-
         if isGroupThread, isLocalUserFullOrInvitedMember {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
@@ -401,6 +395,32 @@ extension ConversationSettingsViewController {
                 self?.didTapBlockThread()
             }
         }))
+
+        let hasReportedSpam = NSObject.databaseStorage.read { tx in
+            return InteractionFinder(threadUniqueId: thread.uniqueId).hasUserReportedSpam(transaction: tx)
+        }
+        // TODO[SPAM]: Temporarily disable spam reporting for groups
+        if !isGroupThread && !hasReportedSpam {
+            section.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
+                }
+
+                return OWSTableItem.buildCell(
+                    icon: .spam,
+                    itemName: OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_REPORT_SPAM",
+                        comment: "Label for 'report spam' action in conversation settings view."
+                    ),
+                    customColor: UIColor.ows_accentRed,
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "report_spam")
+                )
+            },
+            actionBlock: { [weak self] in
+                self?.didTapReportSpam()
+            }))
+        }
 
         return section
     }

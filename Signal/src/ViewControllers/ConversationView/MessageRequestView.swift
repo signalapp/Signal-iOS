@@ -12,6 +12,7 @@ protocol MessageRequestDelegate: AnyObject {
     func messageRequestViewDidTapDelete()
     func messageRequestViewDidTapAccept(mode: MessageRequestMode, unblockThread: Bool, unhideRecipient: Bool)
     func messageRequestViewDidTapUnblock(mode: MessageRequestMode)
+    func messageRequestViewDidTapReport()
     func messageRequestViewDidTapLearnMore()
 }
 
@@ -31,6 +32,7 @@ public struct MessageRequestType: Equatable {
     let isThreadBlocked: Bool
     let hasSentMessages: Bool
     let isThreadFromHiddenRecipient: Bool
+    let hasReportedSpam: Bool
 }
 
 // MARK: -
@@ -49,6 +51,10 @@ class MessageRequestView: UIStackView {
         static let delete = OWSLocalizedString(
             "MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
             comment: "incoming message request button text which deletes a conversation"
+        )
+        static let report = OWSLocalizedString(
+            "MESSAGE_REQUEST_VIEW_REPORT_BUTTON",
+            comment: "incoming message request button text which reports a conversation as spam"
         )
         static let accept = OWSLocalizedString(
             "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
@@ -78,6 +84,9 @@ class MessageRequestView: UIStackView {
     }
     private var isThreadFromHiddenRecipient: Bool {
         messageRequestType.isThreadFromHiddenRecipient
+    }
+    private var hasReportedSpam: Bool {
+        messageRequestType.hasReportedSpam || isGroupV2Thread /* TODO[SPAM]: Temp disable UI for groups */
     }
 
     weak var delegate: MessageRequestDelegate?
@@ -140,13 +149,16 @@ class MessageRequestView: UIStackView {
                 tx: transaction.asV2Read
             )
         }
-        let hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
+        let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
+        let hasSentMessages = finder.existsOutgoingMessage(transaction: transaction)
+        let hasReportedSpam = finder.hasUserReportedSpam(transaction: transaction)
         return MessageRequestType(
             isGroupV1Thread: isGroupV1Thread,
             isGroupV2Thread: isGroupV2Thread,
             isThreadBlocked: isThreadBlocked,
             hasSentMessages: hasSentMessages,
-            isThreadFromHiddenRecipient: isThreadFromHiddenRecipient
+            isThreadFromHiddenRecipient: isThreadFromHiddenRecipient,
+            hasReportedSpam: hasReportedSpam
         )
     }
 
@@ -260,55 +272,97 @@ class MessageRequestView: UIStackView {
         var buttons = [UIView]()
 
         if isThreadBlocked {
-            buttons = [
+            buttons.append(
                 prepareButton(
                     title: LocalizedStrings.delete,
                     titleColor: .ows_accentRed
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapDelete()
-                },
+                }
+            )
+            if !hasReportedSpam {
+                buttons.append(
+                    prepareButton(
+                        title: LocalizedStrings.report,
+                        titleColor: .ows_accentRed
+                    ) { [weak self] in
+                        self?.delegate?.messageRequestViewDidTapReport()
+                    }
+                )
+            }
+            buttons.append(
                 prepareButton(
                     title: LocalizedStrings.unblock,
                     titleColor: Theme.primaryTextColor
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapUnblock(mode: mode)
-                },
-            ]
+                }
+            )
         } else if isThreadFromHiddenRecipient {
-            buttons = [
+            buttons.append(
                 prepareButton(
                     title: LocalizedStrings.block,
                     titleColor: .ows_accentRed
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
-                },
-                prepareButton(
-                    title: LocalizedStrings.delete,
-                    titleColor: .ows_accentRed
-                ) { [weak self] in
-                    self?.delegate?.messageRequestViewDidTapDelete()
-                },
+                }
+            )
+            if !hasReportedSpam {
+                buttons.append(
+                    prepareButton(
+                        title: LocalizedStrings.report,
+                        titleColor: .ows_accentRed
+                    ) { [weak self] in
+                        self?.delegate?.messageRequestViewDidTapReport()
+                    }
+                )
+            } else {
+                buttons.append(
+                    prepareButton(
+                        title: LocalizedStrings.delete,
+                        titleColor: .ows_accentRed
+                    ) { [weak self] in
+                        self?.delegate?.messageRequestViewDidTapDelete()
+                    }
+                )
+            }
+            buttons.append(
                 prepareButton(
                     title: LocalizedStrings.accept,
                     titleColor: Theme.primaryTextColor
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: true)
-                },
-            ]
+                }
+            )
         } else if hasSentMessages {
-            buttons = [
+            buttons.append(
                 prepareButton(
                     title: LocalizedStrings.block,
                     titleColor: .ows_accentRed
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
-                },
-                prepareButton(
-                    title: LocalizedStrings.delete,
-                    titleColor: .ows_accentRed
-                ) { [weak self] in
-                    self?.delegate?.messageRequestViewDidTapDelete()
-                },
+                }
+            )
+            if !hasReportedSpam {
+                buttons.append(
+                    prepareButton(
+                        title: LocalizedStrings.report,
+                        titleColor: .ows_accentRed
+                    ) { [weak self] in
+                        self?.delegate?.messageRequestViewDidTapReport()
+                    }
+                )
+            } else {
+                buttons.append(
+                    prepareButton(
+                        title: LocalizedStrings.delete,
+                        titleColor: .ows_accentRed
+                    ) { [weak self] in
+                        self?.delegate?.messageRequestViewDidTapDelete()
+                    }
+                )
+            }
+            buttons.append(
                 prepareButton(
                     title: LocalizedStrings.continue,
                     titleColor: Theme.primaryTextColor
@@ -317,29 +371,44 @@ class MessageRequestView: UIStackView {
                     // with slightly different visuals if the user has already been messaging
                     // this user in the past but didn't share their profile.
                     self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
-                },
-            ]
+                }
+            )
         } else {
-            buttons = [
+            buttons.append(
                 prepareButton(
                     title: LocalizedStrings.block,
                     titleColor: .ows_accentRed
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
-                },
-                prepareButton(
-                    title: LocalizedStrings.delete,
-                    titleColor: .ows_accentRed
-                ) { [weak self] in
-                    self?.delegate?.messageRequestViewDidTapDelete()
-                },
+                }
+            )
+            if !hasReportedSpam {
+                buttons.append(
+                    prepareButton(
+                        title: LocalizedStrings.report,
+                        titleColor: .ows_accentRed
+                    ) { [weak self] in
+                        self?.delegate?.messageRequestViewDidTapReport()
+                    }
+                )
+            } else {
+                buttons.append(
+                    prepareButton(
+                        title: LocalizedStrings.delete,
+                        titleColor: .ows_accentRed
+                    ) { [weak self] in
+                        self?.delegate?.messageRequestViewDidTapDelete()
+                    }
+                )
+            }
+            buttons.append(
                 prepareButton(
                     title: LocalizedStrings.accept,
                     titleColor: Theme.primaryTextColor
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
-                },
-            ]
+                }
+            )
         }
 
         return prepareButtonStack(buttons)
@@ -364,26 +433,45 @@ class MessageRequestView: UIStackView {
 
     func prepareGroupV2InviteButtons() -> UIStackView {
         let mode = self.mode
-        let buttons = [
+        var buttons = [UIView]()
+
+        buttons.append(
             prepareButton(
                 title: LocalizedStrings.block,
                 titleColor: .ows_accentRed
             ) { [weak self] in
                 self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
-            },
-            prepareButton(
-                title: LocalizedStrings.delete,
-                titleColor: .ows_accentRed)
-            { [weak self] in
-                self?.delegate?.messageRequestViewDidTapDelete()
-            },
+            }
+        )
+
+        if !hasReportedSpam {
+            buttons.append(
+                prepareButton(
+                    title: LocalizedStrings.report,
+                    titleColor: .ows_accentRed
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapReport()
+                }
+            )
+        } else {
+            buttons.append(
+                prepareButton(
+                    title: LocalizedStrings.delete,
+                    titleColor: .ows_accentRed
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapDelete()
+                }
+            )
+        }
+
+        buttons.append(
             prepareButton(
                 title: LocalizedStrings.accept,
                 titleColor: Theme.primaryTextColor
             ) { [weak self] in
                 self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
-            },
-        ]
+            }
+        )
         return prepareButtonStack(buttons)
     }
 

@@ -711,6 +711,16 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         }
     }
 
+    func didTapReportSpam() {
+        ReportSpamUIUtils.showReportSpamActionSheet(
+            thread,
+            isBlocked: threadViewModel.isBlocked,
+            from: self
+        ) { [weak self] _ in
+            self?.reloadThreadAndUpdateContent()
+        }
+    }
+
     func didTapInternalSettings() {
         let view = ConversationInternalViewController(thread: thread)
         navigationController?.pushViewController(view, animated: true)

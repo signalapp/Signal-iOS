@@ -1052,6 +1052,43 @@ public class InteractionFinder: NSObject {
         }
     }
 
+    public func hasUserReportedSpam(transaction: SDSAnyReadTransaction) -> Bool {
+        // In DEBUG builds, confirm that we use the expected index.
+        let indexedBy: String
+        #if DEBUG
+        indexedBy = "INDEXED BY index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"
+        #else
+        indexedBy = ""
+        #endif
+
+        let sql = """
+            SELECT EXISTS(
+                SELECT 1
+                FROM \(InteractionRecord.databaseTableName)
+                \(indexedBy)
+                WHERE \(interactionColumn: .threadUniqueId) = ?
+                AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+                AND \(interactionColumn: .messageType) = \(TSInfoMessageType.reportedSpam.rawValue)
+                LIMIT 1
+            )
+        """
+
+        let arguments: StatementArguments = [threadUniqueId]
+        do {
+            return try Bool.fetchOne(
+                transaction.unwrapGrdbRead.database,
+                sql: sql,
+                arguments: arguments
+            )!
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find info message")
+        }
+    }
+
     func hasUserInitiatedInteraction(transaction: SDSAnyReadTransaction) -> Bool {
         let infoMessageTypes: [TSInfoMessageType] = [
             .typeGroupQuit,

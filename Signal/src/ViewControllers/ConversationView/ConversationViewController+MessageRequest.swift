@@ -25,6 +25,11 @@ extension ConversationViewController: MessageRequestDelegate {
         }
     }
 
+    func messageRequestViewDidTapReport() {
+        let reportSheet = createReportThreadActionSheet()
+        presentActionSheet(reportSheet)
+    }
+
     func showBlockInviteActionSheet() {
         Logger.info("")
 
@@ -121,14 +126,10 @@ extension ConversationViewController: MessageRequestDelegate {
         leaveAndSoftDeleteThread()
     }
 
-    func blockThreadAndReportSpam() {
-        databaseStorage.write { transaction in
-            blockingManager.addBlockedThread(thread,
-                                             blockMode: .localShouldNotLeaveGroups,
-                                             transaction: transaction)
+    func blockThreadAndReportSpam(in thread: TSThread) {
+        databaseStorage.write { tx in
+            ReportSpamUIUtils.blockAndReport(in: thread, tx: tx)
         }
-        syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread, responseType: .block)
-        reportSpam()
 
         presentToastCVC(
             OWSLocalizedString(
@@ -139,83 +140,18 @@ extension ConversationViewController: MessageRequestDelegate {
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
-    func reportSpam() {
-        guard let contactThread = thread as? TSContactThread else {
-            return owsFailDebug("Unexpected thread type for reporting spam \(type(of: thread))")
+    func reportSpamInThread() {
+        databaseStorage.write { tx in
+            ReportSpamUIUtils.report(in: thread, tx: tx)
         }
 
-        guard let aci = contactThread.contactAddress.serviceId as? Aci else {
-            return owsFailDebug("Missing ACI for reporting spam from \(contactThread.contactAddress)")
-        }
-
-        // TODO[SPAM]: Consolidate the writes
-        databaseStorage.write { transaction in
-            let infoMessage = TSInfoMessage(thread: thread, messageType: .reportedSpam)
-            infoMessage.anyInsert(transaction: transaction)
-        }
-
-        // We only report a selection of the N most recent messages
-        // in the conversation.
-        let maxMessagesToReport = 3
-
-        let (guidsToReport, reportingToken) = databaseStorage.read { transaction -> ([String], SpamReportingToken?) in
-            var guidsToReport = [String]()
-            do {
-                try InteractionFinder(
-                    threadUniqueId: self.thread.uniqueId
-                ).enumerateRecentInteractions(
-                    transaction: transaction
-                ) { interaction, stop in
-                    guard let incomingMessage = interaction as? TSIncomingMessage else { return }
-                    if let serverGuid = incomingMessage.serverGuid {
-                        guidsToReport.append(serverGuid)
-                    }
-                    guard guidsToReport.count < maxMessagesToReport else {
-                        stop.pointee = true
-                        return
-                    }
-                }
-            } catch {
-                owsFailDebug("Failed to lookup guids to report \(error)")
-            }
-
-            var reportingToken: SpamReportingToken?
-            do {
-                reportingToken = try SpamReportingTokenRecord.reportingToken(
-                    for: aci,
-                    database: transaction.unwrapGrdbRead.database
-                )
-            } catch {
-                owsFailBeta("Failed to look up spam reporting token. Continuing on, as the parameter is optional. Error: \(error)")
-            }
-
-            return (guidsToReport, reportingToken)
-        }
-
-        guard !guidsToReport.isEmpty else {
-            Logger.warn("No messages with serverGuids to report.")
-            return
-        }
-
-        Logger.info(
-            "Reporting \(guidsToReport.count) message(s) from \(aci) as spam. We \(reportingToken == nil ? "do not have" : "have") a reporting token"
-        )
-
-        var promises = [Promise<Void>]()
-        for guid in guidsToReport {
-            let request = OWSRequestFactory.reportSpam(
-                from: aci,
-                withServerGuid: guid,
-                reportingToken: reportingToken
+        presentToastCVC(
+            OWSLocalizedString(
+                "MESSAGE_REQUEST_SPAM_REPORTED",
+                comment: "String indicating that spam has been reported."
             )
-            promises.append(networkManager.makePromise(request: request).asVoid())
-        }
-
-        Promise.when(fulfilled: promises).done {
-            Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(aci) as spam.")
-        }.catch { error in
-            owsFailDebug("Failed to report message(s) from \(aci) as spam with error: \(error)")
-        }
+        )
+        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
     private func blockUserAndDelete(_ aci: Aci) {
@@ -385,7 +321,9 @@ extension ConversationViewController: MessageRequestDelegate {
     }
 }
 
-extension ConversationViewController: NameCollisionResolutionDelegate {
+// MARK: - Action Sheets
+
+extension ConversationViewController {
 
     func createBlockThreadActionSheet(sheetCompletion: ((Bool) -> Void)? = nil) -> ActionSheetController {
         Logger.info("")
@@ -393,40 +331,62 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
         let actionSheetTitleFormat: String
         let actionSheetMessage: String
         if thread.isGroupThread {
-            actionSheetTitleFormat = OWSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
-                                                       comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}")
-            actionSheetMessage = OWSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
-                                                   comment: "Action sheet message to confirm blocking a group via a message request.")
+            actionSheetTitleFormat = OWSLocalizedString(
+                "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
+                comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}"
+            )
+            actionSheetMessage = OWSLocalizedString(
+                "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
+                comment: "Action sheet message to confirm blocking a group via a message request."
+            )
         } else {
-            actionSheetTitleFormat = OWSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
-                                                       comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}")
-            actionSheetMessage = OWSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
-                                                   comment: "Action sheet message to confirm blocking a conversation via a message request.")
+            actionSheetTitleFormat = OWSLocalizedString(
+                "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
+                comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}"
+            )
+            actionSheetMessage = OWSLocalizedString(
+                "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
+                comment: "Action sheet message to confirm blocking a conversation via a message request."
+            )
         }
 
-        let threadName = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
+        let (threadName, hasReportedSpam) = databaseStorage.read { tx in
+            let threadName = contactsManager.displayName(for: thread, transaction: tx)
+            let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
+            let hasReportedSpam = finder.hasUserReportedSpam(transaction: tx)
+            return (threadName, hasReportedSpam)
+        }
         let actionSheetTitle = String(format: actionSheetTitleFormat, threadName)
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
 
-        let blockActionTitle = OWSLocalizedString("MESSAGE_REQUEST_BLOCK_ACTION",
-                                                 comment: "Action sheet action to confirm blocking a thread via a message request.")
-        let blockAndDeleteActionTitle = OWSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
-                                                          comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")
-        let blockAndReportSpamActionTitle = OWSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION",
-                                                              comment: "Action sheet action to confirm blocking and report spam for a thread via a message request.")
+        let blockActionTitle = OWSLocalizedString(
+            "MESSAGE_REQUEST_BLOCK_ACTION",
+            comment: "Action sheet action to confirm blocking a thread via a message request."
+        )
+        let blockAndDeleteActionTitle = OWSLocalizedString(
+            "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
+            comment: "Action sheet action to confirm blocking and deleting a thread via a message request."
+        )
+        let blockAndReportSpamActionTitle = OWSLocalizedString(
+            "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION",
+            comment: "Action sheet action to confirm blocking and reporting spam for a thread via a message request."
+        )
 
         actionSheet.addAction(ActionSheetAction(title: blockActionTitle) { [weak self] _ in
             self?.blockThread()
             sheetCompletion?(true)
         })
-        if thread.isGroupThread {
-            actionSheet.addAction(ActionSheetAction(title: blockAndDeleteActionTitle) { [weak self] _ in
-                self?.blockThreadAndDelete()
+
+        // TODO[SPAM]: Temporarily disable reporting for groups
+        if !thread.isGroupThread && !hasReportedSpam {
+            actionSheet.addAction(ActionSheetAction(title: blockAndReportSpamActionTitle) { [weak self] _ in
+                guard let self else { return }
+                self.blockThreadAndReportSpam(in: self.thread)
                 sheetCompletion?(true)
             })
         } else {
-            actionSheet.addAction(ActionSheetAction(title: blockAndReportSpamActionTitle) { [weak self] _ in
-                self?.blockThreadAndReportSpam()
+            actionSheet.addAction(ActionSheetAction(title: blockAndDeleteActionTitle) { [weak self] _ in
+                self?.blockThreadAndDelete()
                 sheetCompletion?(true)
             })
         }
@@ -448,19 +408,31 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
         }
 
         if isMemberOfGroup {
-            actionSheetTitle = OWSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE",
-                                                 comment: "Action sheet title to confirm deleting a group via a message request.")
-            actionSheetMessage = OWSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE",
-                                                   comment: "Action sheet message to confirm deleting a group via a message request.")
-            confirmationText = OWSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION",
-                                                 comment: "Action sheet action to confirm deleting a group via a message request.")
+            actionSheetTitle = OWSLocalizedString(
+                "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE",
+                comment: "Action sheet title to confirm deleting a group via a message request."
+            )
+            actionSheetMessage = OWSLocalizedString(
+                "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE",
+                comment: "Action sheet message to confirm deleting a group via a message request."
+            )
+            confirmationText = OWSLocalizedString(
+                "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION",
+                comment: "Action sheet action to confirm deleting a group via a message request."
+            )
         } else { // either 1:1 thread, or a group of which I'm not a member
-            actionSheetTitle = OWSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE",
-                                                 comment: "Action sheet title to confirm deleting a conversation via a message request.")
-            actionSheetMessage = OWSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE",
-                                                   comment: "Action sheet message to confirm deleting a conversation via a message request.")
-            confirmationText = OWSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION",
-                                                 comment: "Action sheet action to confirm deleting a conversation via a message request.")
+            actionSheetTitle = OWSLocalizedString(
+                "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE",
+                comment: "Action sheet title to confirm deleting a conversation via a message request."
+            )
+            actionSheetMessage = OWSLocalizedString(
+                "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE",
+                comment: "Action sheet message to confirm deleting a conversation via a message request."
+            )
+            confirmationText = OWSLocalizedString(
+                "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION",
+                comment: "Action sheet action to confirm deleting a conversation via a message request."
+            )
         }
 
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
@@ -472,6 +444,17 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel))
         return actionSheet
     }
+
+    // TODO[SPAM]: For groups, fetch the inviter to add to the message
+    func createReportThreadActionSheet() -> ActionSheetController {
+        return ReportSpamUIUtils.createReportSpamActionSheet(
+            for: thread,
+            isBlocked: threadViewModel.isBlocked
+        )
+    }
+}
+
+extension ConversationViewController: NameCollisionResolutionDelegate {
 
     func nameCollisionControllerDidComplete(_ controller: NameCollisionResolutionViewController, dismissConversationView: Bool) {
         if dismissConversationView {
