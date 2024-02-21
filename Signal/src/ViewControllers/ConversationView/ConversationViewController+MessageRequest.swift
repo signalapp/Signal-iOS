@@ -148,6 +148,12 @@ extension ConversationViewController: MessageRequestDelegate {
             return owsFailDebug("Missing ACI for reporting spam from \(contactThread.contactAddress)")
         }
 
+        // TODO[SPAM]: Consolidate the writes
+        databaseStorage.write { transaction in
+            let infoMessage = TSInfoMessage(thread: thread, messageType: .reportedSpam)
+            infoMessage.anyInsert(transaction: transaction)
+        }
+
         // We only report a selection of the N most recent messages
         // in the conversation.
         let maxMessagesToReport = 3

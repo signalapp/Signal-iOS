@@ -1258,6 +1258,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapSendPayment() {}
 
     func didTapThreadMergeLearnMore(phoneNumber: String) {}
+
+    func didTapReportSpamLearnMore() {}
 }
 
 extension MessageDetailViewController: UINavigationControllerDelegate {

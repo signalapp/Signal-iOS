@@ -1006,4 +1006,23 @@ extension ConversationViewController: CVComponentDelegate {
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))
         presentActionSheet(actionSheet)
     }
+
+    public func didTapReportSpamLearnMore() {
+        AssertIsOnMainThread()
+
+        let alert = ActionSheetController(
+            title: OWSLocalizedString(
+                "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE",
+                comment: "Title of the alert shown when a user taps on 'learn more' via the spam info message."
+            ),
+            message: OWSLocalizedString(
+                "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE",
+                comment: "Body message of the alert shown when a user taps on 'learn more' via the spam info message.")
+        )
+        alert.addAction(OWSActionSheets.okayAction)
+
+        inputToolbar?.clearDesiredKeyboard()
+        dismissKeyBoard()
+        self.presentActionSheet(alert)
+    }
 }

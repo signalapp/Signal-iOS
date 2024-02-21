@@ -74,6 +74,7 @@ extension TSInteraction {
             case .recipientHidden: return false
             case .threadMerge: return false
             case .sessionSwitchover: return false
+            case .reportedSpam: return false
             case .typeGroupUpdate:
                 guard
                     let localIdentifiers = DependenciesBridge.shared.tsAccountManager

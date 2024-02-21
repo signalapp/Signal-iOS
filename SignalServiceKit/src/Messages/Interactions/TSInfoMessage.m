@@ -358,6 +358,9 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             return [self threadMergeDescriptionWithTx:transaction];
         case TSInfoMessageSessionSwitchover:
             return [self sessionSwitchoverDescriptionWithTx:transaction];
+        case TSInfoMessageReportedSpam:
+            return OWSLocalizedString(
+                @"INFO_MESSAGE_REPORTED_SPAM", @"Shown when a user reports a conversation as spam.");
     }
 
     OWSFailDebug(@"Unknown info message type");
@@ -388,6 +391,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessagePaymentsActivated:
         case TSInfoMessageThreadMerge:
         case TSInfoMessageSessionSwitchover:
+        case TSInfoMessageReportedSpam:
             return NO;
         case TSInfoMessageUserJoinedSignal:
             // In the conversation list, we want conversations with an unread "new user" notification to

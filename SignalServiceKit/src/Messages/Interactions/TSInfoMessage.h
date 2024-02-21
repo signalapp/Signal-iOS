@@ -34,6 +34,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessagePaymentsActivated,
     TSInfoMessageThreadMerge,
     TSInfoMessageSessionSwitchover,
+    TSInfoMessageReportedSpam,
 };
 
 typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;

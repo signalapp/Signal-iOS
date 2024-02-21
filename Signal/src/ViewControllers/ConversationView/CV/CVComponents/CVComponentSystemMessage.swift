@@ -811,6 +811,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.merge16)
             case .sessionSwitchover:
                 return Theme.iconImage(.info16)
+            case .reportedSpam:
+                return Theme.iconImage(.spam)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -1263,6 +1265,12 @@ extension CVComponentSystemMessage {
             )
         case .sessionSwitchover:
             return nil
+        case .reportedSpam:
+            return CVMessageAction(
+                title: CommonStrings.learnMore,
+                accessibilityIdentifier: "learn_more",
+                action: .didTapReportSpamLearnMore
+            )
         }
     }
 

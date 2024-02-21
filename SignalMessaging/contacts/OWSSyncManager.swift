@@ -198,11 +198,10 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             thread.softDelete(with: transaction)
             blockingManager.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
         case .spam:
-            // TODO[SPAM]: insert spam info message
-            break
+            TSInfoMessage(thread: thread, messageType: .reportedSpam).anyInsert(transaction: transaction)
         case .blockAndSpam:
-            // TODO[SPAM]: insert spam info message
             blockingManager.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
+            TSInfoMessage(thread: thread, messageType: .reportedSpam).anyInsert(transaction: transaction)
         case .unknown, .none:
             owsFailDebug("unexpected message request response type")
         }

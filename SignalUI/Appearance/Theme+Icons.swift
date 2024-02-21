@@ -73,6 +73,7 @@ public enum ThemeIcon: UInt {
     case maximize
     case minimize
     case refresh
+    case spam
     case official
     case qrCode
     case qrCodeLight
@@ -325,6 +326,8 @@ public extension Theme {
             return "minimize"
         case .refresh:
             return "refresh"
+        case .spam:
+            return "spam"
         case .official:
             return isDarkThemeEnabled ? "official-dark" : "official"
         case .qrCode:
