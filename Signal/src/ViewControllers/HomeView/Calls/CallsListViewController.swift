@@ -120,6 +120,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         loadCallRecordsAnew(animated: false)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        updateDisplayedDateForAllCallCells()
+    }
+
     override func themeDidChange() {
         super.themeDidChange()
         applyTheme()
@@ -359,6 +363,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func attachSelfAsObservers() {
         NotificationCenter.default.addObserver(
             self,
+            selector: #selector(significantTimeChangeOccurred),
+            name: UIApplication.significantTimeChangeNotification,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
             selector: #selector(groupCallInteractionWasUpdated),
             name: GroupCallInteractionUpdatedNotification.name,
             object: nil
@@ -376,6 +387,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             observer: self,
             syncStateImmediately: false
         )
+    }
+
+    /// A significant time change has occurred, according to the system. We
+    /// should update the displayed date for all visible calls.
+    @objc
+    private func significantTimeChangeOccurred() {
+        updateDisplayedDateForAllCallCells()
+    }
+
+    private func updateDisplayedDateForAllCallCells() {
+        for callCell in tableView.visibleCells.compactMap({ $0 as? CallCell }) {
+            callCell.updateDisplayedDateAndScheduleRefresh()
+        }
     }
 
     /// When a group call interaction changes, we'll reload the row for the call
@@ -1829,6 +1853,56 @@ private extension CallsListViewController {
             fatalError("init(coder:) has not been implemented")
         }
 
+        deinit {
+            timestampDisplayRefreshTimer?.invalidate()
+        }
+
+        // MARK: Dynamically-refreshing timestamp
+
+        /// A timer tracking the next time this cell should refresh its
+        /// displayed timestamp.
+        private var timestampDisplayRefreshTimer: Timer?
+
+        /// Immediately update the display timestamp for this cell, and schedule
+        /// an automatic refresh of the display timestamp as appropriate.
+        func updateDisplayedDateAndScheduleRefresh() {
+            AssertIsOnMainThread()
+
+            timestampDisplayRefreshTimer?.invalidate()
+            timestampDisplayRefreshTimer = nil
+
+            guard let viewModel else { return }
+
+            let date: Date? = {
+                switch viewModel.state {
+                case .active, .participating:
+                    /// Don't show a date for active calls.
+                    return nil
+                case .ended:
+                    return viewModel.callBeganDate
+                }
+            }()
+
+            guard let date else {
+                timestampLabel.text = nil
+                return
+            }
+
+            let (formattedDate, nextRefreshDate) = DateUtil.formatDynamicDateShort(date)
+
+            timestampLabel.text = formattedDate
+
+            if let nextRefreshDate {
+                timestampDisplayRefreshTimer = .scheduledTimer(
+                    withTimeInterval: max(1, nextRefreshDate.timeIntervalSinceNow),
+                    repeats: false
+                ) { [weak self] _ in
+                    guard let self else { return }
+                    self.updateDisplayedDateAndScheduleRefresh()
+                }
+            }
+        }
+
         // MARK: Updates
 
         private func updateContents() {
@@ -1873,17 +1947,13 @@ private extension CallsListViewController {
                     joinPill.autoVCenterInSuperview()
                     joinPill.autoPinWidthToSuperviewMargins()
                 }
-
-                timestampLabel.text = nil
             case .ended:
                 // Info button
                 detailsButton.setImage(imageName: "info")
                 detailsButton.tintColor = Theme.primaryIconColor
-
-                timestampLabel.text = DateUtil.formatDateShort(viewModel.callBeganDate)
-                // [CallsTab] TODO: Automatic updates
-                // See ChatListCell.nextUpdateTimestamp
             }
+
+            updateDisplayedDateAndScheduleRefresh()
         }
 
         private func applyTheme() {

@@ -138,8 +138,8 @@ public class DateUtil {
         return formatDateShort(NSDate.ows_date(withMillisecondsSince1970: timestamp))
     }
 
-    public static func formatDateShort(_ date: Date) -> String {
-        let dayDifference = daysFrom(firstDate: date, toSecondDate: Date())
+    public static func formatDateShort(_ date: Date, nowDate: Date = Date()) -> String {
+        let dayDifference = daysFrom(firstDate: date, toSecondDate: nowDate)
         let dateIsOlderThanToday = dayDifference > 0
         let dateIsOlderThanOneWeek = dayDifference > 6
 
@@ -401,5 +401,56 @@ public class DateUtil {
 
     public static func format(interval: TimeInterval) -> String {
         String(format: "%0.3f", interval)
+    }
+
+    // MARK: Dynamic timestamp refresh
+
+    /// Formats the given date, whose display is expected to dynamically update
+    /// as time goes on.
+    ///
+    /// For example, this method may be called when the given date is 3s away,
+    /// at which point the formatted result will be "Now"; however, in 57s the
+    /// display of this date should switch to "1m".
+    ///
+    /// - Note
+    /// Even if this method returns a `nil` `nextRefreshTimestamp`, callers may
+    /// want to trigger additional refreshes; for example, when a view appears,
+    /// or in response to a ``UIApplication/significantTimeChangeNotification``.
+    ///
+    /// - Returns
+    /// The formatted date, and a time at which the caller should re-invoke this
+    /// method to get an updated formatting for the given date.
+    ///
+    /// A `nil` `nextRefreshTimestamp` indicates that the next refresh time is
+    /// sufficiently far in the future as to not merit scheduling a refresh. At
+    /// the time of writing, the threshold for not returning a refresh time is
+    /// 1h.
+    public static func formatDynamicDateShort(_ date: Date) -> (
+        formatted: String,
+        nextRefreshTime: Date?
+    ) {
+        let nowDate = Date()
+
+        let nextRefreshDate: Date? = {
+            let calendar = Calendar.current
+            let dateDiff = calendar.dateComponents([.minute, .second], from: date, to: nowDate)
+
+            if dateDiff.minute! > 60 {
+                /// If we're more than an hour away, don't bother scheduling a
+                /// refresh. The display string won't change for a long time.
+                return nil
+            } else {
+                /// If we're less than an hour away the display string is going
+                /// to change on a minute-by-minute basis, so we'll return a
+                /// refresh time for when we'll cross the next minute boundary.
+                let secondsDiff = dateDiff.second!
+                return nowDate.addingTimeInterval(Double(60 - secondsDiff))
+            }
+        }()
+
+        return (
+            formatDateShort(date, nowDate: nowDate),
+            nextRefreshDate
+        )
     }
 }

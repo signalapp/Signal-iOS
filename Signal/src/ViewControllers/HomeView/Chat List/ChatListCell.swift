@@ -413,14 +413,14 @@ class ChatListCell: UITableViewCell {
 
         dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
         self.nextUpdateTimestamp = nil
-        if let date = configuration.timestamp, !DateUtil.dateIsOlderThanToday(date) {
-            self.dateTimeLabel.text = DateUtil.formatDateShort(date)
-            let calendar = Calendar.current
-            let minutesDiff = calendar.dateComponents([.minute], from: date, to: Date()).minute ?? 0
-            if minutesDiff <= 60 {
-                let secondsDiff = (calendar.dateComponents([.second], from: date, to: Date()).second ?? 0) % 60
-                self.nextUpdateTimestamp = Date().addingTimeInterval(Double(60 - secondsDiff))
-            }
+        if
+            let date = configuration.timestamp,
+            !DateUtil.dateIsOlderThanToday(date)
+        {
+            let (formattedDate, nextRefreshTime) = DateUtil.formatDynamicDateShort(date)
+
+            self.dateTimeLabel.text = formattedDate
+            self.nextUpdateTimestamp = nextRefreshTime
         }
 
         topRowStackSubviews.append(dateTimeLabel)
