@@ -56,24 +56,31 @@ extension NewCallViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, accessoryViewForRecipient recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView? {
-        // [CallsTab] TODO: Add support for group cell accessory views
-        // [CallsTab] TODO: Adjust for dark mode
-        // These tint colors do already appear properly in light and dark mode
-        // initially, but changing theme while displayed does not change these.
-        let voiceCallImageView = UIImageView(image: Theme.iconImage(.buttonVoiceCall))
-        // [CallsTab] TODO: Enable user interation on ContactCellConfiguration
+        // [CallsTab] TODO: Enable user interaction on ContactCellConfiguration
         // In order for this button to work, ContactCellConfiguration.allowUserInteraction needs to be true.
         // Check before enabling the calls tab feature flag if that hard-coded
         // bool can be flipped or if it needs to be made configurable.
-        let videoCallButton = OWSButton(imageName: Theme.iconName(.buttonVideoCall), tintColor: nil) { [weak self] in
-            self?.startCall(recipient: recipient, withVideo: true)
-        }
-        let stackView = UIStackView(arrangedSubviews: [
-            voiceCallImageView,
-            videoCallButton,
-        ])
+        let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 20
+        stackView.tintColor = Theme.primaryTextColor
+
+        switch recipient.identifier {
+        case .address(_):
+            // This doesn't actually need to be hooked up to any action
+            // since tapping the row already starts a voice call.
+            let voiceCallImageView = UIImageView(image: Theme.iconImage(.buttonVoiceCall))
+            let videoCallButton = OWSButton(imageName: Theme.iconName(.buttonVideoCall), tintColor: nil) { [weak self] in
+                self?.startCall(recipient: recipient, withVideo: true)
+            }
+            stackView.addArrangedSubviews([
+                voiceCallImageView,
+                videoCallButton,
+            ])
+        case .group(_):
+            stackView.addArrangedSubview(UIImageView(image: Theme.iconImage(.buttonVideoCall)))
+        }
+
         return .init(accessoryView: stackView, size: .init(width: 24 * 2 + 20, height: 24))
     }
 }

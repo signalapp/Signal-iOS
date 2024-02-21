@@ -12,8 +12,10 @@ public class GroupTableViewCell: UITableViewCell {
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let accessoryLabel = UILabel()
+    private let customAccessoryContainer = UIView()
 
     var accessoryMessage: String?
+    var customAccessoryView: UIView?
 
     public init() {
         super.init(style: .default, reuseIdentifier: GroupTableViewCell.logTag())
@@ -28,7 +30,7 @@ public class GroupTableViewCell: UITableViewCell {
         textRows.axis = .vertical
         textRows.alignment = .leading
 
-        let columns = UIStackView(arrangedSubviews: [avatarView, textRows, accessoryLabel])
+        let columns = UIStackView(arrangedSubviews: [avatarView, textRows, accessoryLabel, customAccessoryContainer])
         columns.axis = .horizontal
         columns.alignment = .center
         columns.spacing = ContactCellView.avatarTextHSpacing
@@ -42,6 +44,8 @@ public class GroupTableViewCell: UITableViewCell {
         accessoryLabel.textColor = .ows_middleGray
         accessoryLabel.textAlignment = .right
         accessoryLabel.isHidden = true
+
+        customAccessoryContainer.isHiddenInStackView = true
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -69,6 +73,15 @@ public class GroupTableViewCell: UITableViewCell {
             accessoryLabel.isHidden = false
         } else {
             accessoryLabel.isHidden = true
+        }
+
+        if let customAccessoryView {
+            customAccessoryContainer.addSubview(customAccessoryView)
+            customAccessoryView.autoPinEdgesToSuperviewEdges()
+            customAccessoryContainer.isHiddenInStackView = false
+        } else {
+            customAccessoryContainer.removeAllSubviews()
+            customAccessoryContainer.isHiddenInStackView = true
         }
 
         nameLabel.textColor = customTextColor ?? Theme.primaryTextColor

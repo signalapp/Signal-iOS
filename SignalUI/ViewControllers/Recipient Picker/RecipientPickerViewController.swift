@@ -1159,9 +1159,9 @@ extension RecipientPickerViewController {
             if delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
                 cell.selectionStyle = .none
             }
-
-            cell.accessoryMessage = databaseStorage.read {
-                delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: $0)
+            databaseStorage.read { tx in
+                cell.accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: tx)
+                cell.customAccessoryView = delegate.recipientPicker(self, accessoryViewForRecipient: recipient, transaction: tx)?.accessoryView
             }
         }
 
