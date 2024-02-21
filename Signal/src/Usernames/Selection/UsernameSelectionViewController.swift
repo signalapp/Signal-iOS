@@ -68,6 +68,8 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         )
         /// The username was rejected by the server during reservation.
         case reservationRejected
+        /// The reservation was rejected by the server due to rate limiting.
+        case reservationRateLimited
         /// The reservation failed due to a network error.
         case reservationFailedNetworkError
         /// The reservation failed, for an unknown reason.
@@ -99,6 +101,8 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
                 return "reservationSuccessful"
             case .reservationRejected:
                 return "reservationRejected"
+            case .reservationRateLimited:
+                return "reservationRateLimited"
             case .reservationFailedNetworkError:
                 return "reservationFailedNetworkError"
             case .reservationFailed:
@@ -396,6 +400,7 @@ private extension UsernameSelectionViewController {
                     .noChangesToExisting,
                     .pending,
                     .reservationRejected,
+                    .reservationRateLimited,
                     .reservationFailedNetworkError,
                     .reservationFailed,
                     .tooShort,
@@ -433,6 +438,7 @@ private extension UsernameSelectionViewController {
             case
                     .pending,
                     .reservationRejected,
+                    .reservationRateLimited,
                     .reservationFailedNetworkError,
                     .reservationFailed,
                     .tooShort,
@@ -465,6 +471,7 @@ private extension UsernameSelectionViewController {
             self.usernameTextFieldWrapper.textField.configure(forConfirmedUsername: username)
         case
                 .reservationRejected,
+                .reservationRateLimited,
                 .reservationFailedNetworkError,
                 .reservationFailed,
                 .tooShort,
@@ -493,6 +500,11 @@ private extension UsernameSelectionViewController {
                 return OWSLocalizedString(
                     "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE",
                     comment: "An error message shown when the user wants to set their username to an unavailable value."
+                )
+            case .reservationRateLimited:
+                return OWSLocalizedString(
+                    "USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE",
+                    comment: "An error message shown when the user has attempted too many username reservations."
                 )
             case .reservationFailedNetworkError:
                 return Usernames.RemoteMutationError.networkError.localizedDescription
@@ -627,6 +639,7 @@ private extension UsernameSelectionViewController {
                 .noChangesToExisting,
                 .pending,
                 .reservationRejected,
+                .reservationRateLimited,
                 .reservationFailedNetworkError,
                 .reservationFailed,
                 .tooShort,
@@ -974,8 +987,7 @@ private extension UsernameSelectionViewController {
             case .success(.rateLimited):
                 logger.error("Reservation rate-limited.")
 
-                // Hides the rate-limited error, but not incorrect.
-                self.currentUsernameState = .reservationFailed
+                self.currentUsernameState = .reservationRateLimited
             case .networkError:
                 logger.error("Reservation failed due to a network error.")
 
