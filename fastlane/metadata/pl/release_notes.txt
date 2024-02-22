@@ -1,7 +1,7 @@
 We’re introducing new ways to keep your phone number private on Signal.
 
-• Your phone number will no longer be visible to anyone on the latest version of Signal unless they have it saved in their phone’s contacts. You can change this in Settings.
+• W najnowszej wersji Signal Twojego numeru nie zobaczy żaden użytkownik z wyjątkiem tych, którzy zapiszą numer w kontaktach telefonu. Zmienisz to w Ustawieniach.
 
-• You can now set and share an optional username to let people chat with you without giving them your phone number.
+• Od teraz możesz ustawić i udostępnić opcjonalną nazwę użytkownika — dzięki niej umożliwiasz innym kontakt bez podawania im swojego numeru.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• A new privacy setting lets you control who can find you by your phone number on Signal.

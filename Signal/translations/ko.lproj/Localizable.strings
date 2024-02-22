@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "사용자 이름으로 검색";
 
 /* Button to open settings from an empty compose-screen contact picker. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "설정 열기";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS 설정 앱에서 연락처 권한을 허용하면 내 연락처에서 누가 Signal을 사용하고 있는지 알 수 있습니다.";
@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "계좌 정보를 찾으세요";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
+"FIND_BY_USERNAME_FOOTER" = "사용자 이름 뒤에 마침표와 해당 세트 번호를 입력하세요.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "사용자 이름";
@@ -4283,7 +4283,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "그룹 선택";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "전화번호로 찾기";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "스토리 이름 지정";
@@ -5357,7 +5357,7 @@
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "사용자 이름과 QR 코드, 링크가 프로필에 표시되지 않습니다. 신뢰하는 사람과만 사용자 이름을 공유하세요.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
-"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "이제 나에게 메시지를 보낼 때 선택적 사용자 이름을 사용할 수 있으므로 다른 사람과 전화번호를 공유할 필요가 없습니다.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "프록시 주소";
@@ -7304,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "보기 사용 안 함";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "기부자 ID를 클립보드에 복사함";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%1$@ 님과의 안전 번호가 일치합니다. 이 연락처를 검증했다고 표시할 수 있습니다.";
@@ -7769,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "사용자 이름을 변경하면 기존 QR 코드와 링크가 초기화됩니다. 계속할까요?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "사용자 이름은 항상 숫자와 짝지어 쓰입니다. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "사용자 이름을 선택하세요.";

@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "以使用者名稱搜尋";
 
 /* Button to open settings from an empty compose-screen contact picker. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "開啟設定";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "你可以在 iOS 設定中允許取用聯絡資訊，以確認哪位聯絡人是 Signal 的使用者。";
@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "搜尋你的帳戶資料";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
+"FIND_BY_USERNAME_FOOTER" = "輸入用戶名稱，後面跟著一個點及其配對數字。";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "使用者名稱";
@@ -4283,7 +4283,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "選擇群組";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "以電話號碼搜尋";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "為限動命名";
@@ -5357,7 +5357,7 @@
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "你的個人資料不會顯示用戶名稱、二維碼及連結。僅與你信任的人分享你的用戶名稱。";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
-"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "其他人現在可以使用你的自選用戶名稱向你發送訊息，因此你不需提供你的電話號碼。";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "代理伺服器位址";
@@ -7304,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "已讀標記已關閉";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "捐款者識別碼已複製至剪貼簿";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "你與 %1$@的安全碼相符合。你可以將此聯絡人標記為已驗證。";
@@ -7769,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "更改用戶名稱將重設你現有的二維碼和連結。你確定嗎？";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "用戶名稱都會與一組數字配對。 %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "選擇你的使用者名稱";

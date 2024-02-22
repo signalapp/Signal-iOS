@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Buscar por alias";
 
 /* Button to open settings from an empty compose-screen contact picker. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Abrir ajustes";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Al activar el acceso a los contactos en «Ajustes» de iOS puedes saber quien usa Signal. Tus contactos no se guardarán en el servidor de Signal.";
@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Buscar información de tu cuenta";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
+"FIND_BY_USERNAME_FOOTER" = "Introduce un alias seguido de un punto y su conjunto de números.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "Alias";
@@ -4283,7 +4283,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Seleccionar grupo";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Encontrar por núm. de teléfono";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Poner título a la historia";
@@ -5357,7 +5357,7 @@
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Tu alias, código QR y enlace no son visibles en tu perfil. Comparte tu alias solo con personas de confianza.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
-"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Ahora, la gente puede enviarte mensajes usando tu alias opcional, con lo que no necesitas dar tu número de teléfono.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Dirección del proxy";
@@ -7304,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "Visualizaciones desactivadas";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Id de donante copiada al portapapeles";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Tus cifras de seguridad con %1$@ coinciden. Puedes marcar su identidad como verificada.";
@@ -7769,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Cambiar tu alias restablecerá tu código QR y tu enlace. ¿Seguro que quieres hacer esto?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Los alias siempre están emparejados con un conjunto de números. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Elige tu alias";

@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ユーザーネームで検索";
 
 /* Button to open settings from an empty compose-screen contact picker. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "設定を開く";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "連絡先からSignalユーザを見つけるには、iOSの設定で連絡先へのアクセスを有効にしてください。";
@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "アカウント情報を確認する";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
+"FIND_BY_USERNAME_FOOTER" = "ユーザーネームの後ろに「.（ドット）」と、対になる数字を入力してください。";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "ユーザーネーム";
@@ -4283,7 +4283,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "グループを選択";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "電話番号で検索";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "ストーリー名";
@@ -5357,7 +5357,7 @@
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "ユーザーネーム、QRコード、リンクはプロフィールに表示されません。ユーザーネームは信頼できる人とのみ共有してください。";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
-"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "オプションのユーザーネームを使ってメッセージを送れるようになったので、電話番号を教える必要はありません。";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "プロキシアドレス";
@@ -7304,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "閲覧をオフにする";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "寄付者IDをクリップボードにコピーしました";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%1$@ に対する安全番号が一致しました。この相手は検証済みにできます。";
@@ -7769,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "ユーザーネームを変更すると、これまでのQRコードとリンクがリセットされます。本当に変更しますか？";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ユーザーネームは、常に一組の数字とペアになっています。 %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "ユーザーネームを選択してください";

@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ব্যবহারকারীর নাম দিয়ে খুঁজুন";
 
 /* Button to open settings from an empty compose-screen contact picker. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "সেটিংস খুলুন";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "আপনার পরিচিতি গুলির মধ্যে কোনটি Signal ব্যবহারকারী তা দেখতে আপনি iOS সেটিংস অ্যাপ থেকে পরিচিতি অ্যাক্সেস সক্ষম করতে পারেন।";
@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "আপনার অ্যাকাউন্টের তথ্য দেখুন";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
+"FIND_BY_USERNAME_FOOTER" = "একটি ব্যবহারকারীর নামের পরে একটি ডট ও একগুচ্ছ সংখ্যা লিখুন।";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "ব্যবহারকারীর নাম";
@@ -4283,7 +4283,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "গ্ৰুপ বেছে নিন";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ফোন নাম্বার দিয়ে খুজুন";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "স্টোরি-র নাম দিন";
@@ -5357,7 +5357,7 @@
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "আপনার ব্যবহারকারীর নাম, QR কোড এবং লিংক আপনার প্রোফাইলে দৃশ্যমান নয়। শুধুমাত্র আপনি আস্থা রাখতে পারেন এমন ব্যক্তিদের সাথে আপনার ব্যবহারকারীর নাম শেয়ার করুন।";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
-"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "লোকজন এখন আপনার ঐচ্ছিক ব্যবহারকারীর নাম ব্যবহার করে আপনাকে মেসেজ পাঠাতে পারবেন যাতে আপনাকে আপনার ফোন নম্বর দিতে না হয়।";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "প্রক্সি ঠিকানা";
@@ -7304,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "ভিউ বন্ধ";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ক্লিপবোর্ডে ডোনারের আইডি কপি করা হয়েছে";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%1$@ এর  সাথে আপনার নিরাপত্তা নাম্বার মিল আছে। আপনি এই পরিচিতি যাচাইকৃত হিসাবে চিহ্নিত করতে পারেন।";
@@ -7769,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "আপনার 'ব্যবহারকারীর নাম' পরিবর্তন করলে আপনার বিদ্যমান QR কোড ও লিংক রিসেট করা হবে। আপনি কি নিশ্চিত?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ব্যবহারকারীর নাম সবসময় একগুচ্ছ সংখ্যার সাথে যুক্ত করা হয়। %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "আপনার ব্যবহারকারীর নামটি বেছে নিন";

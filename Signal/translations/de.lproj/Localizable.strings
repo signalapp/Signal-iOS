@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Nach Nutzernamen suchen";
 
 /* Button to open settings from an empty compose-screen contact picker. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Einstellungen öffnen";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kannst den Zugriff auf deine Kontakte in der iOS-App »Einstellungen« aktivieren, um zu sehen, welche deiner Kontakte Signal verwenden.";
@@ -1034,7 +1034,7 @@
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ ist in deinen Telefonkontakten";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Keine Direktnachrichten mit %1$@";
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Keine Einzelchats mit %1$@";
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Ausstehende Unterhaltungsanfrage";
@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Deine Kontodaten finden";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
+"FIND_BY_USERNAME_FOOTER" = "Gib einen Nutzernamen gefolgt von einem Punkt und den dazugehörigen Ziffern ein.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "Nutzername";
@@ -4283,7 +4283,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Gruppe wählen";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Telefonnummer suchen";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Story benennen";
@@ -5357,7 +5357,7 @@
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Dein Nutzername, der QR-Code und der Link sind in deinem Profil nicht sichtbar. Teile deinen Nutzernamen nur mit Leuten, denen du vertraust.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
-"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Andere können dir jetzt über deinen optionalen Nutzernamen eine Nachricht schicken, sodass du deine Telefonnummer nicht mehr herausgeben musst.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Proxyadresse";
@@ -7304,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "Anzeigen aus";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Spender-ID in die Zwischenablage kopiert";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Deine Sicherheitsnummer mit %1$@ stimmt überein. Du kannst diesen Kontakt als verifiziert markieren.";
@@ -7769,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Wenn du deinen Nutzernamen änderst, werden dein bisheriger QR-Code und dein Link zurückgesetzt. Bist du dir sicher?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Nutzernamen sind immer mit einer Reihe von Zahlen gekoppelt. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Wähle deinen Nutzernamen";

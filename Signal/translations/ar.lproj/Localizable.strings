@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "البحث باسم المُستخدم";
 
 /* Button to open settings from an empty compose-screen contact picker. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "فتح الإعدادات";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يمكنك تفعيل الوصول إلى جهات الاتصال من خلال تطبيق إعدادات iOS لترى من يستخدم سيجنال من جهات الاتصالك.";
@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "العثور على معلومات حسابك";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
+"FIND_BY_USERNAME_FOOTER" = "أدخل اسم مستخدم متبوعًا بنقطة ومجموعة من الأرقام الخاصة به.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "اسم المُستخدم";
@@ -4283,7 +4283,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "اختيار مجموعة";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "العثور برقم الهاتف";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "اسم القصة";
@@ -5357,7 +5357,7 @@
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "اسم المُستخدم الخاص بك ليس مرئيًا على حسابك الشخصي، وكذلك رمز ورابط الاستجابة السريعة الخاصين بك. شارك اسم المُستخدم الخاص بك فقط مع الناس الذين تثق بهم.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
-"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "يُمكن للناس مراسلتك الآن باستخدام اسم المُستخدم الاختياري الخاص بك حتى لا تضطر إلى إعطاء رقم هاتفك.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "عنوان الوكيل";
@@ -7304,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "المشاهدات غير مُشغلة";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "تمّ نسخ مُعرف المتبرّع إلى الحافظة";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم أمانك مع %1$@ متطابق. يمكنك تعليم جهة الاتصال هذه كمتحقق منها.";
@@ -7769,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "سيُؤدي تغيير اسم المُستخدم الخاص بك إلى إعادة تعيين رمز الاستجابة السريع والرابط الحاليين الخاصين بك. هل أنت متأكد؟";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "يتم دائمًا إقران أسماء المستخدمين بمجموعة من الأرقام. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "يُرجى اختيار اسم المُستخدم";

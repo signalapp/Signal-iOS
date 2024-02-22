@@ -998,7 +998,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ئىشلەتكۈچى نامى بويىچە ئىزدەش";
 
 /* Button to open settings from an empty compose-screen contact picker. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Open Settings";
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "تەڭشەكنى ئېچىش";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "سىز iOS نىڭ تەڭشەكلەردىن ئالاقەداشلار زىيارەت ھوقۇقىنى قوزغىتىپ، كىملەرنىڭ Signal ئىشلەتكۈچىسى ئىكەنلىكىنى كۆرەلەيسىز.";
@@ -2555,7 +2555,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "ھېسابات ئۇچۇرلىرىڭىزنى ئىزدەش";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Enter a username followed by a dot and its set of numbers.";
+"FIND_BY_USERNAME_FOOTER" = "كەينىدە بىر چېكىت ۋە بىر يۈرۈش نومۇر بار ئىشلەتكۈچى نامىنى كىرگۈزۈڭ.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "ئىشلەتكۈچى نامى";
@@ -4283,7 +4283,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "گۇرۇپپا تاللاش";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find by Phone Number";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "تېلېفون نومۇرى بىلەن تېپىڭ";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "ھېكايىگە نام قويۇش";
@@ -5357,7 +5357,7 @@
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "ئىشلەتكۈچى نامىڭىز، QR كودىڭىز ۋە ئۇلانمىڭىز ئارخىپىڭىزدا كۆرۈنمەيدۇ. ئىشلەتكۈچى نامىڭىزنى پەقەت سىز ئىشىنىدىغان كىشىلەر بىلەنلا ئورتاقلىشىڭ.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
-"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number.";
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "باشقىلار ئەمدى تاللانما ئىشلەتكۈچى نامىڭىزنى ئىشلىتىپ سىزگە ئۇچۇر يوللىسا بولىدۇ، تېلېفون نومۇرىڭىزنى ئېيتىپ بېرىشنىڭ ھاجىتى يوق.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "ۋاكالەتچى ئادرېس";
@@ -7304,7 +7304,7 @@
 "STORY_VIEWS_OFF" = "كۆرۈپ بېقىش ئېتىك";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied donor ID to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ئىئانە قىلغۇچى ID سى چاپلاش تاختىسىغا كۆچۈرۈلدى";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "سىزنىڭ %1$@ بىلەن بولغان بىخەتەرلىك نومۇرىڭىز ئۆز-ئارا ماس كەلدى. بۇ ئالاقىداشقا دەلىللەنگەن دەپ بەلگە قويسىڭىز بولىدۇ.";
@@ -7769,7 +7769,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "ئىشلەتكۈچى نامىڭىزنى ئۆزگەرتسىڭىز، سىزنىڭ ھازىرقى QR كودىڭىز ۋە ئۇلانمىڭىز قايتىدىن تۈزۈلىدۇ. جەزىملەشتۈرەمسىز؟";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames are always paired with a set of numbers. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ئىشلەتكۈچى نامى داۋاملىق بىر يۈرۈش سان بىلەن ماس كېلىدۇ. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "ئىشلەتكۈچى نامىڭىزنى تاللاڭ";
