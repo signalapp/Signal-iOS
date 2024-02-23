@@ -53,7 +53,7 @@ public class OWSAttachmentDownloads: NSObject {
 
         // If a thread was newly whitelisted, try and start any
         // downloads that were pending on a message request.
-        Self.databaseStorage.read { transaction in
+        let requestsToEnqueue = Self.databaseStorage.read { transaction -> [(messageId: String, jobRequest: MessageJobRequest)] in
             guard let whitelistedThread = ({ () -> TSThread? in
                 if let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
                    address.isValid,
@@ -66,10 +66,12 @@ public class OWSAttachmentDownloads: NSObject {
                 }
                 return nil
             }()) else {
-                return
+                return []
             }
-            self.enqueueDownloadOfAllAttachments(forThread: whitelistedThread,
-                                                 transaction: transaction)
+            return jobRequestsForAllAttachments(for: whitelistedThread, tx: transaction)
+        }
+        for (messageId, jobRequest) in requestsToEnqueue {
+            enqueueMessageJobRequest(jobRequest, messageId: messageId)
         }
     }
 
@@ -787,23 +789,30 @@ public extension OWSAttachmentDownloads {
         self.enqueueJobs(jobRequest: jobRequest)
     }
 
-    @objc
-    func enqueueDownloadOfAllAttachments(
-        forThread thread: TSThread,
-        transaction: SDSAnyReadTransaction
-    ) {
+    private func jobRequestsForAllAttachments(
+        for thread: TSThread,
+        tx: SDSAnyReadTransaction
+    ) -> [(messageId: String, jobRequest: MessageJobRequest)] {
         do {
+            var requestsToEnqueue = [(messageId: String, jobRequest: MessageJobRequest)]()
             let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
-            try finder.enumerateMessagesWithAttachments(transaction: transaction) { (message, _) in
-                self.enqueueDownloadOfAttachments(
-                    forMessageId: message.uniqueId,
+            try finder.enumerateMessagesWithAttachments(transaction: tx) { (message, _) in
+                let messageId = message.uniqueId
+                let jobRequest = buildMessageJobRequest(
+                    for: messageId,
                     attachmentGroup: .allAttachments,
                     downloadBehavior: .default,
-                    touchMessageImmediately: false
+                    tx: tx
                 )
+                guard let jobRequest else {
+                    return
+                }
+                requestsToEnqueue.append((messageId, jobRequest))
             }
+            return requestsToEnqueue
         } catch {
-            owsFailDebug("Error: \(error)")
+            owsFailDebug("Error: \(error.grdbErrorForLogging)")
+            return []
         }
     }
 
@@ -861,38 +870,60 @@ public extension OWSAttachmentDownloads {
         guard !CurrentAppContext().isRunningTests else {
             return
         }
-        let bundle: (TSMessage, MessageJobRequest)? = Self.databaseStorage.read { transaction in
-            guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: transaction) else {
-                return nil
-            }
-            let jobRequest = MessageJobRequest(
-                message: message,
+
+        let jobRequest = Self.databaseStorage.read { tx in
+            return buildMessageJobRequest(
+                for: messageId,
                 attachmentGroup: attachmentGroup,
                 downloadBehavior: downloadBehavior,
-                tx: transaction
+                tx: tx
             )
-            guard !jobRequest.isEmpty else {
-                return nil
-            }
-
-            return (message, jobRequest)
         }
 
-        guard let (message, jobRequest) = bundle else {
+        guard let jobRequest else {
             return
         }
 
-        self.enqueueJobs(jobRequest: jobRequest)
+        enqueueMessageJobRequest(jobRequest, messageId: messageId)
 
         if touchMessageImmediately {
-            Self.databaseStorage.asyncWrite { transaction in
+            Self.databaseStorage.asyncWrite { tx in
+                guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: tx) else {
+                    return
+                }
                 Self.databaseStorage.touch(
                     interaction: message,
                     shouldReindex: false,
-                    transaction: transaction
+                    transaction: tx
                 )
             }
         }
+    }
+
+    private func buildMessageJobRequest(
+        for messageId: String,
+        attachmentGroup: AttachmentGroup,
+        downloadBehavior: AttachmentDownloadBehavior,
+        tx: SDSAnyReadTransaction
+    ) -> MessageJobRequest? {
+        guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: tx) else {
+            return nil
+        }
+        let jobRequest = MessageJobRequest(
+            message: message,
+            attachmentGroup: attachmentGroup,
+            downloadBehavior: downloadBehavior,
+            tx: tx
+        )
+        guard !jobRequest.isEmpty else {
+            return nil
+        }
+
+        return jobRequest
+    }
+
+    private func enqueueMessageJobRequest(_ jobRequest: MessageJobRequest, messageId: String) {
+        self.enqueueJobs(jobRequest: jobRequest)
 
         jobRequest.quotedReplyThumbnailPromise?.done(on: schedulers.global()) { attachmentStream in
             Self.updateQuotedMessageThumbnail(
