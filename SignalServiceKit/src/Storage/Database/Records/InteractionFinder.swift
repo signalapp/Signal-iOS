@@ -751,7 +751,7 @@ public class InteractionFinder: NSObject {
 
     public func enumerateMessagesWithAttachments(
         transaction: SDSAnyReadTransaction,
-        block: @escaping (TSMessage, inout Bool) -> Void
+        block: (TSMessage, inout Bool) -> Void
     ) throws {
         let emptyArraySerializedData = try! NSKeyedArchiver.archivedData(withRootObject: [String](), requiringSecureCoding: true)
 
