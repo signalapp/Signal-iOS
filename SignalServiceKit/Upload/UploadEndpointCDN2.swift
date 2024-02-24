@@ -87,7 +87,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
     internal func getResumableUploadProgress(attempt: Upload.Attempt) async throws -> Upload.ResumeProgress {
         var headers = [String: String]()
         headers["Content-Length"] = "0"
-        headers["Content-Range"] = "bytes */\(OWSFormat.formatInt(attempt.localMetadata.encryptedDataLength))"
+        headers["Content-Range"] = "bytes */\(attempt.localMetadata.encryptedDataLength)"
 
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber)
         let response = try await urlSession.dataTaskPromise(
@@ -154,13 +154,12 @@ struct UploadEndpointCDN2: UploadEndpoint {
         attempt: Upload.Attempt,
         progress progressBlock: @escaping UploadEndpointProgress
     ) async throws -> Upload.Result {
-        let formatInt = OWSFormat.formatInt
         let totalDataLength = attempt.localMetadata.encryptedDataLength
         var headers = [String: String]()
         let fileUrl: URL
 
         if startPoint == 0 {
-            headers["Content-Length"] = formatInt(totalDataLength)
+            headers["Content-Length"] = "\(totalDataLength)"
             fileUrl = attempt.localMetadata.fileUrl
         } else {
             // Resuming, slice attachment data in memory.
@@ -180,8 +179,8 @@ struct UploadEndpointCDN2: UploadEndpoint {
             // Example: Resuming after uploading 2359296 of 7351375 bytes.
             // Content-Range: bytes 2359296-7351374/7351375
             // Content-Length: 4992079
-            headers["Content-Length"] = formatInt(dataSliceLength)
-            headers["Content-Range"] = "bytes \(formatInt(startPoint))-\(formatInt(totalDataLength - 1))/\(formatInt(totalDataLength))"
+            headers["Content-Length"] = "\(dataSliceLength)"
+            headers["Content-Range"] = "bytes \(startPoint)-\(totalDataLength - 1)/\(totalDataLength)"
         }
 
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber)
