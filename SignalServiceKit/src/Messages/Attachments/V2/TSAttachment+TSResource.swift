@@ -7,6 +7,10 @@ import Foundation
 
 extension TSAttachment: TSResource {
 
+    public var resourceId: TSResourceId {
+        return .legacy(uniqueId: self.uniqueId)
+    }
+
     public var transitCdnNumber: UInt32? {
         return cdnNumber
     }

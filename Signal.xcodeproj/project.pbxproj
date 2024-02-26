@@ -945,8 +945,8 @@
 		669FAE102B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE0F2B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift */; };
 		669FAE122B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */; };
 		669FAE152B75968D009EE2FE /* OWSAttachmentDownloadJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */; };
-		669FAE1B2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */; };
 		669FAE182B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */; };
+		669FAE1B2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */; };
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
@@ -1017,6 +1017,7 @@
 		66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */; };
 		66D13F0A2A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */; };
 		66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */; };
+		66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD4F2B80126200C56B7B /* TSResourceId.swift */; };
 		66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */; };
 		66F0F1DD29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */; };
 		66F0F1DF29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */; };
@@ -3651,8 +3652,8 @@
 		669FAE0F2B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyQuotedMessageAttachmentHelper.swift; sourceTree = "<group>"; };
 		669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedMessageAttachmentHelperImpl.swift; sourceTree = "<group>"; };
 		669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAttachmentDownloadJob.swift; sourceTree = "<group>"; };
-		669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLinkPreviewSerializationTest.swift; sourceTree = "<group>"; };
 		669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSLinkPreview+Attachment.swift"; sourceTree = "<group>"; };
+		669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLinkPreviewSerializationTest.swift; sourceTree = "<group>"; };
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
@@ -3722,6 +3723,7 @@
 		66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentOnboarding.swift; sourceTree = "<group>"; };
 		66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecipientHidingManager+SignalServiceAddress.swift"; sourceTree = "<group>"; };
 		66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextAssociatedData.swift; sourceTree = "<group>"; };
+		66E1AD4F2B80126200C56B7B /* TSResourceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceId.swift; sourceTree = "<group>"; };
 		66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinator.swift; sourceTree = "<group>"; };
 		66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorLoader.swift; sourceTree = "<group>"; };
 		66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorDependencies.swift; sourceTree = "<group>"; };
@@ -7419,6 +7421,7 @@
 			children = (
 				66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */,
 				66C102F12B61E38100B47EC2 /* TSResource.swift */,
+				66E1AD4F2B80126200C56B7B /* TSResourceId.swift */,
 				66C102F52B61E3D700B47EC2 /* TSResourcePointer.swift */,
 				66C102F32B61E3CD00B47EC2 /* TSResourceStream.swift */,
 				66C102F72B6306B900B47EC2 /* TSResourceThumbnail.swift */,
@@ -13788,6 +13791,7 @@
 				66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */,
 				6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */,
 				66C102F22B61E38100B47EC2 /* TSResource.swift in Sources */,
+				66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */,
 				66C102F62B61E3D700B47EC2 /* TSResourcePointer.swift in Sources */,
 				66C102F42B61E3CD00B47EC2 /* TSResourceStream.swift in Sources */,
 				66C102F82B6306B900B47EC2 /* TSResourceThumbnail.swift in Sources */,

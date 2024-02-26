@@ -8,6 +8,8 @@ import Foundation
 /// Bridging protocol between v1 attachments (TSAttachment) and v2 attachments (Attachment, coming soon).
 public protocol TSResource {
 
+    var resourceId: TSResourceId { get }
+
     // TODO: this will become non-optional
     var blurHash: String? { get }
 
