@@ -29,7 +29,11 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         case allGroupsWhenSearching
     }
 
-    public weak var delegate: RecipientPickerDelegate?
+    public weak var delegate: RecipientPickerDelegate? {
+        didSet {
+            recipientContextMenuHelper.delegate = delegate
+        }
+    }
 
     // MARK: Configuration
 
@@ -302,7 +306,8 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
             accountManager: DependenciesBridge.shared.tsAccountManager,
             contactsManager: contactsManager,
-            fromViewController: self
+            fromViewController: self,
+            delegate: self.delegate
         )
     }()
 
@@ -1124,7 +1129,8 @@ extension RecipientPickerViewController {
                 },
                 actionBlock: { [weak self] in
                     self?.tryToSelectRecipient(recipient)
-                }
+                },
+                contextMenuActionProvider: recipientContextMenuHelper.actionProvider(groupThread: groupThread)
             )
         }
     }

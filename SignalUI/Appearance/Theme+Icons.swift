@@ -118,6 +118,7 @@ public enum ThemeIcon: UInt {
     case contextMenuOpenInChat
     case contextMenuVoiceCall
     case contextMenuVideoCall
+    case contextMenuMessage
 
     case composeNewGroupLarge
     case composeFindByUsernameLarge
@@ -416,6 +417,8 @@ public extension Theme {
             return "phone-light"
         case .contextMenuVideoCall:
             return "video-light"
+        case .contextMenuMessage:
+            return "chat-light"
 
             // Empty chat list
         case .composeNewGroupLarge:

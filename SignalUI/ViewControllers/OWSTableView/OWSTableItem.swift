@@ -38,11 +38,13 @@ public class OWSTableItem {
     public convenience init(
         customCellBlock: @escaping () -> UITableViewCell,
         willDisplayBlock: ((UITableViewCell) -> Void)? = nil,
-        actionBlock: (() -> Void)? = nil
+        actionBlock: (() -> Void)? = nil,
+        contextMenuActionProvider: UIContextMenuActionProvider? = nil
     ) {
         self.init(title: nil, actionBlock: actionBlock)
         self.customCellBlock = customCellBlock
         self.willDisplayBlock = willDisplayBlock
+        self.contextMenuActionProvider = contextMenuActionProvider
     }
 
     public convenience init(

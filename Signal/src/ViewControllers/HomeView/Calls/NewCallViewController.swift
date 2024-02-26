@@ -7,7 +7,13 @@ import SignalUI
 import SignalCoreKit
 import SignalServiceKit
 
+protocol NewCallViewControllerDelegate: AnyObject {
+    func goToChat(for thread: TSThread)
+}
+
 class NewCallViewController: RecipientPickerContainerViewController {
+    weak var delegate: (any NewCallViewControllerDelegate)?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -32,19 +38,79 @@ class NewCallViewController: RecipientPickerContainerViewController {
         dismiss(animated: true)
     }
 
-    private func startCall(recipient: PickedRecipient, withVideo: Bool) {
-        switch recipient.identifier {
-        case let .address(address):
-            let thread = TSContactThread.getOrCreateThread(contactAddress: address)
-            // [CallsTab] TODO: See ConversationViewController.startIndividualCall(withVideo:)
-            callService.initiateCall(thread: thread, isVideo: withVideo)
-            self.dismiss(animated: false)
-        case let .group(groupThread):
-            // [CallsTab] TODO: See ConversationViewController.showGroupLobbyOrActiveCall()
-            GroupCallViewController.presentLobby(thread: groupThread)
-        }
+    private func startIndividualCall(thread: TSContactThread, withVideo: Bool) {
+        // [CallsTab] TODO: See ConversationViewController.startIndividualCall(withVideo:)
+        callService.initiateCall(thread: thread, isVideo: withVideo)
+        self.dismiss(animated: false)
+    }
+
+    private func startGroupCall(thread: TSGroupThread) {
+        // [CallsTab] TODO: See ConversationViewController.showGroupLobbyOrActiveCall()
+        GroupCallViewController.presentLobby(thread: thread)
+        self.dismiss(animated: false)
     }
 }
+
+// MARK: - RecipientContextMenuHelperDelegate
+
+extension NewCallViewController: RecipientContextMenuHelperDelegate {
+    private func goToChatAction(thread: TSThread) -> UIAction {
+        UIAction(
+            title: OWSLocalizedString(
+                "NEW_CALL_MESSAGE_ACTION_TITLE",
+                comment: "Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker"
+            ),
+            image: Theme.iconImage(.contextMenuMessage)
+        ) { [weak self] _ in
+            self?.delegate?.goToChat(for: thread)
+        }
+    }
+
+    private func startVoiceCallAction(thread: TSContactThread) -> UIAction {
+        UIAction(
+            title: OWSLocalizedString(
+                "NEW_CALL_AUDIO_CALL_ACTION_TITLE",
+                comment: "Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker"
+            ),
+            image: Theme.iconImage(.contextMenuVoiceCall)
+        ) { [weak self] _ in
+            self?.startIndividualCall(thread: thread, withVideo: false)
+        }
+    }
+
+    private func startVideoCallAction(handler: @escaping UIActionHandler) -> UIAction {
+        UIAction(
+            title: OWSLocalizedString(
+                "NEW_CALL_VIDEO_CALL_ACTION_TITLE",
+                comment: "Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker"
+            ),
+            image: Theme.iconImage(.contextMenuVideoCall),
+            handler: handler
+        )
+    }
+
+    func additionalActions(for address: SignalServiceAddress) -> [UIAction] {
+        let thread = TSContactThread.getOrCreateThread(contactAddress: address)
+        return [
+            goToChatAction(thread: thread),
+            startVoiceCallAction(thread: thread),
+            startVideoCallAction { [weak self] _ in
+                self?.startIndividualCall(thread: thread, withVideo: true)
+            },
+        ]
+    }
+
+    func additionalActions(for groupThread: TSGroupThread) -> [UIAction] {
+        [
+            goToChatAction(thread: groupThread),
+            startVideoCallAction { [weak self] _ in
+                self?.startGroupCall(thread: groupThread)
+            }
+        ]
+    }
+}
+
+// MARK: - RecipientPickerDelegate
 
 extension NewCallViewController: RecipientPickerDelegate {
     func recipientPicker(_ recipientPickerViewController: SignalUI.RecipientPickerViewController, getRecipientState recipient: SignalUI.PickedRecipient) -> SignalUI.RecipientPickerRecipientState {
@@ -52,7 +118,13 @@ extension NewCallViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: SignalUI.RecipientPickerViewController, didSelectRecipient recipient: SignalUI.PickedRecipient) {
-        startCall(recipient: recipient, withVideo: false)
+        switch recipient.identifier {
+        case let .address(address):
+            let thread = TSContactThread.getOrCreateThread(contactAddress: address)
+            startIndividualCall(thread: thread, withVideo: false)
+        case let .group(groupThread):
+            startGroupCall(thread: groupThread)
+        }
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, accessoryViewForRecipient recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView? {
@@ -66,12 +138,16 @@ extension NewCallViewController: RecipientPickerDelegate {
         stackView.tintColor = Theme.primaryTextColor
 
         switch recipient.identifier {
-        case .address(_):
+        case .address(let address):
             // This doesn't actually need to be hooked up to any action
             // since tapping the row already starts a voice call.
             let voiceCallImageView = UIImageView(image: Theme.iconImage(.buttonVoiceCall))
-            let videoCallButton = OWSButton(imageName: Theme.iconName(.buttonVideoCall), tintColor: nil) { [weak self] in
-                self?.startCall(recipient: recipient, withVideo: true)
+            let videoCallButton = OWSButton(
+                imageName: Theme.iconName(.buttonVideoCall),
+                tintColor: nil
+            ) { [weak self] in
+                let thread = TSContactThread.getOrCreateThread(contactAddress: address)
+                self?.startIndividualCall(thread: thread, withVideo: true)
             }
             stackView.addArrangedSubviews([
                 voiceCallImageView,

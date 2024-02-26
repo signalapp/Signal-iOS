@@ -13,7 +13,7 @@ public enum RecipientPickerRecipientState: Int {
     case unknownError
 }
 
-public protocol RecipientPickerDelegate: AnyObject {
+public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState
 

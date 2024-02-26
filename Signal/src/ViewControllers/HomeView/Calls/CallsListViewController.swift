@@ -263,8 +263,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     @objc
     private func newCall() {
-        Logger.debug("New call")
         let viewController = NewCallViewController()
+        viewController.delegate = self
         let modal = OWSNavigationController(rootViewController: viewController)
         self.navigationController?.presentFormSheet(modal, animated: true)
     }
@@ -1337,7 +1337,7 @@ extension CallsListViewController: UITableViewDelegate {
 
 // MARK: - Actions
 
-extension CallsListViewController: CallCellDelegate {
+extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelegate {
 
     private func callBack(from viewModel: CallViewModel) {
         switch viewModel.callType {
@@ -1371,7 +1371,7 @@ extension CallsListViewController: CallCellDelegate {
     }
 
     private func goToChat(from viewModel: CallViewModel) {
-        SignalApp.shared.presentConversationForThread(viewModel.thread, action: .compose, animated: false)
+        goToChat(for: viewModel.thread)
     }
 
     private func deleteCalls(viewModelIds: [CallViewModel.ID]) {
@@ -1419,6 +1419,12 @@ extension CallsListViewController: CallCellDelegate {
 
     fileprivate func showCallInfo(from viewModel: CallViewModel) {
         Logger.debug("Show call info")
+    }
+
+    // MARK: NewCallViewControllerDelegate
+
+    func goToChat(for thread: TSThread) {
+        SignalApp.shared.presentConversationForThread(thread, action: .compose, animated: false)
     }
 }
 
