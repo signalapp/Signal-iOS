@@ -35,7 +35,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
         localUserAci: Aci,
         interactionId: MessageBackup.InteractionUniqueId
     ) -> MessageBackup.ArchiveInteractionResult<BackupProtoGroupChangeChatUpdateUpdate> {
-        var localAciData = localUserAci.rawUUID.data
+        let localAciData = localUserAci.rawUUID.data
         func aciData(_ aci: AciUuid) -> Data {
             return aci.wrappedValue.rawUUID.data
         }

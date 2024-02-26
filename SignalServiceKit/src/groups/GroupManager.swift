@@ -271,7 +271,7 @@ public class GroupManager: NSObject {
                 self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModel)
             }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModelV2 in
                 let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModelV2 in
-                    var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
+                    let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
                                                                              transaction: transaction)
                     return try builder.buildAsV2()
                 }

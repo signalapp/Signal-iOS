@@ -130,7 +130,7 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
     ) -> [TSInfoMessage.PersistableGroupUpdateItem] {
         let groupUpdateSource = groupUpdateSource.sanitize(recipientDatabaseTable: recipientDatabaseTable, tx: tx)
 
-        var precomputedItems = NewGroupUpdateItemBuilder(
+        let precomputedItems = NewGroupUpdateItemBuilder(
             contactsManager: contactsManager
         ).buildGroupUpdateItems(
             newGroupModel: newGroupModel,

@@ -389,7 +389,7 @@ public class StorageServiceUnknownFieldMigrator {
             guard RecordType.self == Migration.RecordType.self else {
                 return
             }
-            var builder = _builder ?? record.asBuilder()
+            let builder = _builder ?? record.asBuilder()
             var typecastBuilder = builder as! Migration.RecordType.Builder
             migration.interceptRemoteManifest(record as! Migration.RecordType, &typecastBuilder, isPrimaryDevice, tx)
             _builder = (typecastBuilder as! RecordType.Builder)
@@ -432,7 +432,7 @@ public class StorageServiceUnknownFieldMigrator {
             guard RecordType.self == Migration.RecordType.self else {
                 return
             }
-            var builder = _builder ?? record.asBuilder()
+            let builder = _builder ?? record.asBuilder()
             var typecastBuilder = builder as! Migration.RecordType.Builder
             migration.interceptLocalManifest(record as! Migration.RecordType, &typecastBuilder, isPrimaryDevice, tx)
             _builder = (typecastBuilder as! RecordType.Builder)
