@@ -283,7 +283,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     @objc
     private func cancelMultiselect() {
-        Logger.debug("Cancel selecting calls")
         tableView.setEditing(false, animated: true)
         updateBarButtonItems()
         hideToolbar()
@@ -1410,11 +1409,17 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     // MARK: CallCellDelegate
 
     fileprivate func joinCall(from viewModel: CallViewModel) {
-        Logger.debug("Join call")
+        guard case let .group(groupThread: thread) = viewModel.recipientType else {
+            owsFailBeta("Individual call should not be showing a join button")
+            return
+        }
+        // TODO: Check if it's joinable
+        GroupCallViewController.presentLobby(thread: thread)
     }
 
     fileprivate func returnToCall(from viewModel: CallViewModel) {
-        Logger.debug("Return to call")
+        guard WindowManager.shared.hasCall else { return }
+        WindowManager.shared.returnToCallView()
     }
 
     fileprivate func showCallInfo(from viewModel: CallViewModel) {
