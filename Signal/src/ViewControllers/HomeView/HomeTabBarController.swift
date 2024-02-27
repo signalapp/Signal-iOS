@@ -36,8 +36,8 @@ class HomeTabBarController: UITabBarController {
     lazy var callsListNavController = OWSNavigationController(rootViewController: callsListViewController)
     lazy var callsListTabBarItem = UITabBarItem(
         title: OWSLocalizedString("CALLS_LIST_TITLE", comment: "Title for the calls list view."),
-        image: UIImage(systemName: "phone.fill"),
-        selectedImage: UIImage(systemName: "phone.fill")
+        image: UIImage(named: "tab-calls"),
+        selectedImage: UIImage(named: "tab-calls")
     )
 
     var selectedTab: Tabs {
