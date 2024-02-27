@@ -8,7 +8,7 @@ import SignalMessaging
 import SignalServiceKit
 
 public struct UsernameQuerier {
-    private let contactsManager: ContactsManagerProtocol
+    private let contactsManager: any ContactManager
     private let databaseStorage: SDSDatabaseStorage
     private let localUsernameManager: LocalUsernameManager
     private let networkManager: NetworkManager
@@ -44,7 +44,7 @@ public struct UsernameQuerier {
     }
 
     public init(
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
         localUsernameManager: LocalUsernameManager,
         networkManager: NetworkManager,

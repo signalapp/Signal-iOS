@@ -19,7 +19,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
     /// but we are moving towards more explicit dependencies.
     private let dependencies: Dependencies
     private struct Dependencies {
-        let contactsManager: ContactsManagerProtocol
+        let contactsManager: any ContactManager
         let databaseStorage: SDSDatabaseStorage
         let recipientHidingManager: RecipientHidingManager
         let tsAccountManager: TSAccountManager
@@ -39,7 +39,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         e164: E164,
         serviceId: ServiceId?,
         viewControllerPresentingToast: UIViewController,
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
         recipientHidingManager: RecipientHidingManager,
         tsAccountManager: TSAccountManager

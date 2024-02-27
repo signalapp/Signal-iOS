@@ -13,7 +13,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
     static func cvComponentAction(
         items: [Self],
         groupThread: () -> TSGroupThread?,
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         tx: SDSAnyReadTransaction
     ) -> CVComponentSystemMessage.Action? {
         guard !items.isEmpty else {
@@ -79,7 +79,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
 
     private func cvComponentAction(
         groupThread: () -> TSGroupThread?,
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         tx: SDSAnyReadTransaction
     ) -> CVComponentSystemMessage.Action? {
         typealias Action = CVComponentSystemMessage.Action
@@ -146,7 +146,7 @@ fileprivate extension CVComponentSystemMessage.Action {
         requester: Aci,
         isTail: Bool,
         groupThread: () -> TSGroupThread?,
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         tx: SDSAnyReadTransaction
     ) -> Self? {
         guard isTail else { return nil }

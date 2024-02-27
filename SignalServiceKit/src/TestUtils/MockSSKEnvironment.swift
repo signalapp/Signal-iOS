@@ -64,7 +64,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         )
         let attachmentDownloads = OWSAttachmentDownloads()
         let blockingManager = BlockingManager()
-        let contactsManager = FakeContactsManager()
+        let contactManager = FakeContactsManager()
         let dateProvider = Date.provider
         let earlyMessageManager = EarlyMessageManager()
         let groupsV2 = MockGroupsV2()
@@ -105,7 +105,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             appVersion: AppVersionImpl.shared,
             attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             earlyMessageManager: earlyMessageManager,
@@ -193,7 +193,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         )
 
         super.init(
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             linkPreviewManager: linkPreviewManager,
             messageSender: messageSender,
             pendingReceiptRecorder: pendingReceiptRecorder,

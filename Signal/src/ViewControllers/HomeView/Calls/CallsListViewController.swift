@@ -38,7 +38,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let callRecordQuerier: CallRecordQuerier
         let callRecordStore: CallRecordStore
         let callService: CallService
-        let contactsManager: ContactsManagerProtocol
+        let contactsManager: any ContactManager
         let db: SDSDatabaseStorage
         let fullTextSearchFinder: FullTextSearchFinder.Type
         let interactionStore: InteractionStore

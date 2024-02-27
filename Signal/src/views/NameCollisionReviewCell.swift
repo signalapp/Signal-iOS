@@ -33,7 +33,7 @@ extension NameCollision {
         identityManager: any OWSIdentityManager,
         profileManager: any ProfileManager,
         blockingManager: BlockingManager,
-        contactsManager: any ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         viewControllerForPresentation: UIViewController,
         tx: SDSAnyReadTransaction
     ) -> [NameCollisionCellModel] {

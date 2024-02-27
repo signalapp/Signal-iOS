@@ -31,13 +31,13 @@ public protocol NameResolver {
 }
 
 public class NameResolverImpl: NameResolver {
-    private let contactsManager: ContactsManagerProtocol
+    private let contactsManager: any ContactManager
 
     private var displayNameCache = [SignalServiceAddress: String]()
     private var shortDisplayNameCache = [SignalServiceAddress: String]()
     private var comparableNameCache = [SignalServiceAddress: String]()
 
-    public init(contactsManager: ContactsManagerProtocol) {
+    public init(contactsManager: any ContactManager) {
         self.contactsManager = contactsManager
     }
 

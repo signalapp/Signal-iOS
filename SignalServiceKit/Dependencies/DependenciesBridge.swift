@@ -137,7 +137,7 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
-        contactsManager: ContactsManagerProtocol,
+        contactManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         earlyMessageManager: EarlyMessageManager,
@@ -175,7 +175,7 @@ public class DependenciesBridge {
             appVersion: appVersion,
             attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             earlyMessageManager: earlyMessageManager,
@@ -218,7 +218,7 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
-        contactsManager: ContactsManagerProtocol,
+        contactManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         earlyMessageManager: EarlyMessageManager,
@@ -269,7 +269,7 @@ public class DependenciesBridge {
 
         let userProfileStore = UserProfileStoreImpl()
         let phoneNumberVisibilityFetcher = PhoneNumberVisibilityFetcherImpl(
-            contactsManager: contactsManager,
+            contactsManager: contactManager,
             tsAccountManager: tsAccountManager,
             userProfileStore: userProfileStore
         )
@@ -345,7 +345,7 @@ public class DependenciesBridge {
         )
 
         let groupUpdateItemBuilder = GroupUpdateItemBuilderImpl(
-            contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactsManager),
+            contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactManager),
             recipientDatabaseTable: recipientDatabaseTable
         )
 

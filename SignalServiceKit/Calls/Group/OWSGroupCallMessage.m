@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"Text in conversation view for a group call that someone started. We don't know who");
 
     NSArray<SignalServiceAddress *> *addresses =
-        [self.contactsManager sortSignalServiceAddressesObjC:self.joinedMemberAddresses transaction:transaction];
+        [self.contactManagerObjC sortSignalServiceAddressesObjC:self.joinedMemberAddresses transaction:transaction];
 
     NSUInteger localUserInsertionIndex = 0, creatorInsertionIndex = 0;
     NSMutableArray<SignalServiceAddress *> *sortedAddresses = [NSMutableArray array];
@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (address.isLocalAddress) {
         return OWSLocalizedString(@"YOU", "Second person pronoun to represent the local user.");
     } else {
-        return [self.contactsManager displayNameForAddress:address transaction:transaction];
+        return [self.contactManagerObjC displayNameForAddress:address transaction:transaction];
     }
 }
 

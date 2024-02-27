@@ -710,6 +710,7 @@
 		506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */; };
 		506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */; };
 		506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
+		506A99D42B86B39F00E3C753 /* ContactManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A99D32B86B39F00E3C753 /* ContactManager.swift */; };
 		506ABE6B2A43AECA008844D1 /* UserProfileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506ABE6A2A43AECA008844D1 /* UserProfileStore.swift */; };
 		506ABE6E2A43B2FE008844D1 /* UserProfileMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506ABE6C2A43B2C0008844D1 /* UserProfileMergerTest.swift */; };
 		5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryE164CollectionTest.swift */; };
@@ -3414,6 +3415,7 @@
 		506695EE29C533A400B6D8D0 /* GroupMemberUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdater.swift; sourceTree = "<group>"; };
 		506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManager.swift; sourceTree = "<group>"; };
 		506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerContainerViewController.swift; sourceTree = "<group>"; };
+		506A99D32B86B39F00E3C753 /* ContactManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactManager.swift; sourceTree = "<group>"; };
 		506ABE6A2A43AECA008844D1 /* UserProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileStore.swift; sourceTree = "<group>"; };
 		506ABE6C2A43B2C0008844D1 /* UserProfileMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileMergerTest.swift; sourceTree = "<group>"; };
 		5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdaterTest.swift; sourceTree = "<group>"; };
@@ -10088,6 +10090,7 @@
 		F9C5CA00289453B100548EEE /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				506A99D32B86B39F00E3C753 /* ContactManager.swift */,
 				F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */,
 				F9C5CA06289453B100548EEE /* NotificationsProtocol.h */,
 				664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */,
@@ -13071,6 +13074,7 @@
 				F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */,
 				5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */,
 				66C2B1542A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift in Sources */,
+				506A99D42B86B39F00E3C753 /* ContactManager.swift in Sources */,
 				F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */,
 				F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */,
 				F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */,

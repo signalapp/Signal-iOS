@@ -93,7 +93,7 @@ public class AppSetup {
         let versionedProfiles = VersionedProfilesImpl()
 
         let usernameLookupManager = UsernameLookupManagerImpl()
-        let contactsManager = OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
+        let contactManager = OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
             usernameLookupManager: usernameLookupManager
         ))
 
@@ -103,7 +103,7 @@ public class AppSetup {
             appVersion: appVersion,
             attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             earlyMessageManager: earlyMessageManager,
@@ -218,7 +218,7 @@ public class AppSetup {
         SMEnvironment.setShared(smEnvironment)
 
         let sskEnvironment = SSKEnvironment(
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             linkPreviewManager: linkPreviewManager,
             messageSender: messageSender,
             pendingReceiptRecorder: pendingReceiptRecorder,

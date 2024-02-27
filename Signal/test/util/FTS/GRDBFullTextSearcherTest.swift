@@ -40,8 +40,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         bobRecipient = SignalServiceAddress(phoneNumber: bobPhoneNumber)
 
         // Replace this singleton.
-        let fakeContactsManager = FakeContactsManager()
-        fakeContactsManager.mockSignalAccounts = [
+        let fakeContactManager = FakeContactsManager()
+        fakeContactManager.mockSignalAccounts = [
             alicePhoneNumber: SignalAccount(
                 contact: Contact(phoneNumber: alicePhoneNumber, phoneNumberLabel: "", givenName: "Alice", familyName: nil, nickname: nil, fullName: "Alice"),
                 address: aliceRecipient
@@ -51,7 +51,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 address: bobRecipient
             ),
         ]
-        SSKEnvironment.shared.setContactsManagerForUnitTests(fakeContactsManager)
+        SSKEnvironment.shared.setContactManagerForUnitTests(fakeContactManager)
 
         // ensure local client has necessary "registered" state
         let localE164Identifier = "+13235551234"

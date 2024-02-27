@@ -275,8 +275,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             return OWSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
             if (self.unregisteredAddress.isValid) {
-                NSString *recipientName = [self.contactsManager displayNameForAddress:self.unregisteredAddress
-                                                                          transaction:transaction];
+                NSString *recipientName = [self.contactManagerObjC displayNameForAddress:self.unregisteredAddress
+                                                                             transaction:transaction];
                 return [NSString stringWithFormat:OWSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
                                                       @"Format string for 'unregistered user' error. Embeds {{the "
                                                       @"unregistered user's name or signal id}}."),
@@ -307,7 +307,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageUserJoinedSignal: {
             SignalServiceAddress *address = [TSContactThread contactAddressFromThreadId:self.uniqueThreadId
                                                                             transaction:transaction];
-            NSString *recipientName = [self.contactsManager displayNameForAddress:address transaction:transaction];
+            NSString *recipientName = [self.contactManagerObjC displayNameForAddress:address transaction:transaction];
             NSString *format = OWSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
                 @"Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact "
                 @"name}}");
@@ -329,7 +329,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 return @"";
             }
             SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithServiceIdObjC:aci];
-            NSString *userName = [self.contactsManager displayNameForAddress:address transaction:transaction];
+            NSString *userName = [self.contactManagerObjC displayNameForAddress:address transaction:transaction];
 
             NSString *format = OWSLocalizedString(@"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT",
                 @"Indicates that another user has changed their phone number. Embeds: {{ the user's name}}".);

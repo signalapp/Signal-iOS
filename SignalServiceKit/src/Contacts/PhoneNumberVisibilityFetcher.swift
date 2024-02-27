@@ -33,12 +33,12 @@ private func _isPhoneNumberVisible(
 }
 
 public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetcher {
-    private let contactsManager: any ContactsManagerProtocol
+    private let contactsManager: any ContactManager
     private let tsAccountManager: any TSAccountManager
     private let userProfileStore: any UserProfileStore
 
     init(
-        contactsManager: any ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         tsAccountManager: any TSAccountManager,
         userProfileStore: any UserProfileStore
     ) {

@@ -8,7 +8,7 @@ import Contacts
 #if TESTABLE_BUILD
 
 @objc(OWSFakeContactsManager)
-public class FakeContactsManager: NSObject, ContactsManagerProtocol {
+public class FakeContactsManager: NSObject, ContactManager {
     public var mockSignalAccounts = [String: SignalAccount]()
 
     public func fetchSignalAccount(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount? {

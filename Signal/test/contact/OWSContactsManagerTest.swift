@@ -27,7 +27,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         }
 
         // Replace the fake contacts manager with the real one just for this test.
-        SSKEnvironment.shared.setContactsManagerForUnitTests(makeContactsManager())
+        SSKEnvironment.shared.setContactManagerForUnitTests(makeContactsManager())
     }
 
     override func tearDown() {

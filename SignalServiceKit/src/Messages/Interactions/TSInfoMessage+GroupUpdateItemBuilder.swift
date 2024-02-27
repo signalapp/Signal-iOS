@@ -2466,9 +2466,9 @@ protocol _GroupUpdateCopy_ContactsManager_Shim {
 }
 
 class _GroupUpdateCopy_ContactsManager_Wrapper: _GroupUpdateCopy_ContactsManager_Shim {
-    private let contactsManager: ContactsManagerProtocol
+    private let contactsManager: any ContactManager
 
-    init(_ contactsManager: ContactsManagerProtocol) {
+    init(_ contactsManager: any ContactManager) {
         self.contactsManager = contactsManager
     }
 

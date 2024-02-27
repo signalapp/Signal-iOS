@@ -20,13 +20,13 @@ public class SSKEnvironment: NSObject {
     }
 
     #if TESTABLE_BUILD
-    private(set) public var contactsManagerRef: ContactsManagerProtocol
+    private(set) public var contactManagerRef: any ContactManager
     private(set) public var messageSenderRef: MessageSender
     private(set) public var networkManagerRef: NetworkManager
     private(set) public var paymentsHelperRef: PaymentsHelperSwift
     private(set) public var groupsV2Ref: GroupsV2Swift
     #else
-    public let contactsManagerRef: ContactsManagerProtocol
+    public let contactManagerRef: any ContactManager
     public let messageSenderRef: MessageSender
     public let networkManagerRef: NetworkManager
     public let paymentsHelperRef: PaymentsHelperSwift
@@ -92,7 +92,7 @@ public class SSKEnvironment: NSObject {
     private let pniSignalProtocolStoreRef: SignalProtocolStore
 
     public init(
-        contactsManager: ContactsManagerProtocol,
+        contactManager: any ContactManager,
         linkPreviewManager: OWSLinkPreviewManager,
         messageSender: MessageSender,
         pendingReceiptRecorder: PendingReceiptRecorder,
@@ -152,7 +152,7 @@ public class SSKEnvironment: NSObject {
         localUserLeaveGroupJobQueue: LocalUserLeaveGroupJobQueue,
         callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
     ) {
-        self.contactsManagerRef = contactsManager
+        self.contactManagerRef = contactManager
         self.linkPreviewManagerRef = linkPreviewManager
         self.messageSenderRef = messageSender
         self.pendingReceiptRecorderRef = pendingReceiptRecorder
@@ -275,8 +275,8 @@ public class SSKEnvironment: NSObject {
 
     #if TESTABLE_BUILD
 
-    public func setContactsManagerForUnitTests(_ contactsManager: ContactsManagerProtocol) {
-        self.contactsManagerRef = contactsManager
+    public func setContactManagerForUnitTests(_ contactManager: any ContactManager) {
+        self.contactManagerRef = contactManager
     }
 
     public func setMessageSenderForUnitTests(_ messageSender: MessageSender) {

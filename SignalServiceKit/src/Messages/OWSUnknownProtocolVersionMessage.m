@@ -167,7 +167,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
         }
     }
 
-    NSString *senderName = [self.contactsManager displayNameForAddress:self.sender transaction:transaction];
+    NSString *senderName = [self.contactManagerObjC displayNameForAddress:self.sender transaction:transaction];
 
     if (self.isProtocolVersionUnknown) {
         if (senderName.length > 0) {

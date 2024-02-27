@@ -12,12 +12,12 @@ public class OWSFingerprintBuilder {
         public let fingerprint: OWSFingerprint
     }
 
-    private let contactsManager: ContactsManagerProtocol
+    private let contactsManager: any ContactManager
     private let identityManager: OWSIdentityManager
     private let tsAccountManager: TSAccountManager
 
     public init(
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         identityManager: OWSIdentityManager,
         tsAccountManager: TSAccountManager
     ) {

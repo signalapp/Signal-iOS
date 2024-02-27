@@ -12,7 +12,7 @@ public enum StoryUtil: Dependencies {
 
     static func authorDisplayName(
         for storyMessage: StoryMessage,
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         useFullNameForLocalAddress: Bool = true,
         useShortGroupName: Bool = true,
         transaction: SDSAnyReadTransaction
