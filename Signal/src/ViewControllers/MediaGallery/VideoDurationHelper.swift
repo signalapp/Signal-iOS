@@ -243,12 +243,14 @@ class VideoDurationHelper {
             AVURLAsset.loadDuration(url: url) { duration in
                 // Warning! We might be in AVFoundation's private queue.
 
-                // A dirty trick to make `url` remain vaild until we're all done. Once
-                // `signalAttachment` gets deinit'ed, it unlinks its file.
-                withExtendedLifetime(signalAttachment) { }
+                DispatchQueue.global().async {
+                    // A dirty trick to make `url` remain vaild until we're all done. Once
+                    // `signalAttachment` gets deinit'ed, it unlinks its file.
+                    withExtendedLifetime(signalAttachment) { }
 
-                result.duration = duration
-                self.save(result)
+                    result.duration = duration
+                    self.save(result)
+                }
             }
         } catch {
             save(result)
