@@ -1717,8 +1717,6 @@ private extension CallsListViewController {
         private static var verticalMargin: CGFloat = 11
         private static var horizontalMargin: CGFloat = 20
         private static var joinButtonMargin: CGFloat = 18
-        // [CallsTab] TODO: Dynamic type?
-        private static var subtitleIconSize: CGFloat = 16
 
         weak var delegate: CallCellDelegate?
 
@@ -1741,12 +1739,7 @@ private extension CallsListViewController {
             return label
         }()
 
-        private lazy var subtitleIcon: UIImageView = UIImageView()
-        private lazy var subtitleLabel: UILabel = {
-            let label = UILabel()
-            label.font = .dynamicTypeBody2
-            return label
-        }()
+        private lazy var subtitleLabel = UILabel()
 
         private lazy var timestampLabel: UILabel = {
             let label = UILabel()
@@ -1771,7 +1764,7 @@ private extension CallsListViewController {
         private func makeJoinPill() -> UIView? {
             guard let viewModel else { return nil }
 
-            let icon: UIImage?
+            let icon: UIImage
             switch viewModel.callType {
             case .audio:
                 icon = Theme.iconImage(.phoneFill16)
@@ -1789,21 +1782,26 @@ private extension CallsListViewController {
                 return nil
             }
 
-            let iconView = UIImageView(image: icon)
-            iconView.tintColor = .ows_white
-
-            let label = UILabel()
-            label.text = text
-            label.font = .dynamicTypeBody2Clamped.bold()
-            label.textColor = .ows_white
-
-            let stackView = UIStackView(arrangedSubviews: [iconView, label])
-            stackView.addPillBackgroundView(backgroundColor: .ows_accentGreen)
-            stackView.layoutMargins = .init(hMargin: 12, vMargin: 4)
-            stackView.isLayoutMarginsRelativeArrangement = true
-            stackView.isUserInteractionEnabled = false
-            stackView.spacing = 4
-            return stackView
+            let button = OWSRoundedButton()
+            let font = UIFont.dynamicTypeBody2.bold()
+            let title = NSAttributedString.composed(of: [
+                NSAttributedString.with(
+                    image: icon,
+                    font: .dynamicTypeCallout,
+                    centerVerticallyRelativeTo: font,
+                    heightReference: .pointSize
+                ),
+                " ",
+                text,
+            ]).styled(
+                with: .font(font),
+                .color(.ows_white)
+            )
+            button.setAttributedTitle(title, for: .normal)
+            button.backgroundColor = .ows_accentGreen
+            button.contentEdgeInsets = .init(hMargin: 12, vMargin: 4)
+            button.setCompressionResistanceHigh()
+            return button
         }
 
         // MARK: Init
@@ -1811,14 +1809,9 @@ private extension CallsListViewController {
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-            let subtitleHStack = UIStackView(arrangedSubviews: [subtitleIcon, subtitleLabel])
-            subtitleHStack.axis = .horizontal
-            subtitleHStack.spacing = 6
-            subtitleIcon.autoSetDimensions(to: .square(Self.subtitleIconSize))
-
             let bodyVStack = UIStackView(arrangedSubviews: [
                 titleLabel,
-                subtitleHStack,
+                subtitleLabel,
             ])
             bodyVStack.axis = .vertical
             bodyVStack.spacing = 2
@@ -1827,6 +1820,7 @@ private extension CallsListViewController {
                 avatarView,
                 bodyVStack,
             ])
+            leadingHStack.alignment = .center
             leadingHStack.axis = .horizontal
             leadingHStack.spacing = 12
 
@@ -1933,7 +1927,6 @@ private extension CallsListViewController {
             }
 
             self.titleLabel.text = viewModel.title
-            self.subtitleLabel.text = viewModel.direction.label
 
             switch viewModel.direction {
             case .incoming, .outgoing:
@@ -1942,12 +1935,26 @@ private extension CallsListViewController {
                 titleLabel.textColor = .ows_accentRed
             }
 
-            switch viewModel.callType {
-            case .audio:
-                subtitleIcon.image = Theme.iconImage(.phone16)
-            case .video:
-                subtitleIcon.image = Theme.iconImage(.video16)
-            }
+            self.subtitleLabel.attributedText = {
+                let icon: ThemeIcon
+                switch viewModel.callType {
+                case .audio:
+                    icon = .phone16
+                case .video:
+                    icon = .video16
+                }
+
+                return .composed(of: [
+                    NSAttributedString.with(
+                        image: Theme.iconImage(icon),
+                        font: .dynamicTypeCallout,
+                        centerVerticallyRelativeTo: .dynamicTypeBody2,
+                        heightReference: .pointSize
+                    ),
+                    " ",
+                    viewModel.direction.label,
+                ]).styled(with: .font(.dynamicTypeBody2))
+            }()
 
             self.joinPill?.removeFromSuperview()
 
@@ -1978,7 +1985,6 @@ private extension CallsListViewController {
             multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
 
             titleLabel.textColor = Theme.primaryTextColor
-            subtitleIcon.tintColor = Theme.secondaryTextAndIconColor
             subtitleLabel.textColor = Theme.secondaryTextAndIconColor
             timestampLabel.textColor = Theme.secondaryTextAndIconColor
         }
