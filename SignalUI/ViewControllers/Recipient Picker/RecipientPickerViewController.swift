@@ -1152,6 +1152,8 @@ extension RecipientPickerViewController {
                 if let attributedSubtitle = delegate.recipientPicker(self, attributedSubtitleForRecipient: recipient, transaction: transaction) {
                     configuration.attributedSubtitle = attributedSubtitle
                 }
+
+                configuration.allowUserInteraction = delegate.recipientPicker(self, shouldAllowUserInteractionForRecipient: recipient, transaction: transaction)
             }
             cell.configure(configuration: configuration, transaction: transaction)
         }

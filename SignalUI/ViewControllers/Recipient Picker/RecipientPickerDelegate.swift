@@ -14,27 +14,45 @@ public enum RecipientPickerRecipientState: Int {
 }
 
 public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        getRecipientState recipient: PickedRecipient
+    ) -> RecipientPickerRecipientState
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         didSelectRecipient recipient: PickedRecipient)
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        didSelectRecipient recipient: PickedRecipient
+    )
 
     /// This delegate method is only used if shouldUseAsyncSelection is set.
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        prepareToSelectRecipient recipient: PickedRecipient
+    ) -> AnyPromise
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         accessoryMessageForRecipient recipient: PickedRecipient,
-                         transaction: SDSAnyReadTransaction) -> String?
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        accessoryMessageForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> String?
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         accessoryViewForRecipient recipient: PickedRecipient,
-                         transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView?
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        accessoryViewForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> ContactCellAccessoryView?
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         attributedSubtitleForRecipient recipient: PickedRecipient,
-                         transaction: SDSAnyReadTransaction) -> NSAttributedString?
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        attributedSubtitleForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> NSAttributedString?
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        shouldAllowUserInteractionForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController)
 
@@ -69,6 +87,12 @@ public extension RecipientPickerDelegate {
         attributedSubtitleForRecipient recipient: PickedRecipient,
         transaction: SDSAnyReadTransaction
     ) -> NSAttributedString? { nil }
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        shouldAllowUserInteractionForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool { false }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 

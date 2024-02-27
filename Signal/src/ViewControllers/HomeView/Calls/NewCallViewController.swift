@@ -17,7 +17,10 @@ class NewCallViewController: RecipientPickerContainerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "New Call" // [CallsTab] TODO: Localize
+        title = OWSLocalizedString(
+            "NEW_CALL_TITLE",
+            comment: "Title for the contact picker that allows new calls to be started"
+        )
 
         recipientPicker.allowsAddByAddress = true
         recipientPicker.shouldShowInvites = true
@@ -128,10 +131,6 @@ extension NewCallViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, accessoryViewForRecipient recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView? {
-        // [CallsTab] TODO: Enable user interaction on ContactCellConfiguration
-        // In order for this button to work, ContactCellConfiguration.allowUserInteraction needs to be true.
-        // Check before enabling the calls tab feature flag if that hard-coded
-        // bool can be flipped or if it needs to be made configurable.
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 20
@@ -158,5 +157,9 @@ extension NewCallViewController: RecipientPickerDelegate {
         }
 
         return .init(accessoryView: stackView, size: .init(width: 24 * 2 + 20, height: 24))
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, shouldAllowUserInteractionForRecipient recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool {
+        true
     }
 }

@@ -4336,6 +4336,9 @@
 /* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_MESSAGE_ACTION_TITLE" = "Message";
 
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "New Call";
+
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Video Call";
 
