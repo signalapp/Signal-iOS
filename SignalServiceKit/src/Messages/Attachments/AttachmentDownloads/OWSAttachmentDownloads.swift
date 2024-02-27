@@ -263,7 +263,7 @@ public class OWSAttachmentDownloads: NSObject {
         cancellationRequestMap[attachmentId] = nil
 
         if isAttachmentDownloaded {
-            owsAssertDebug(nil == completeAttachmentMap[attachmentId])
+            owsAssertDebug(completeAttachmentMap[attachmentId] != false)
             completeAttachmentMap[attachmentId] = true
         }
     }
