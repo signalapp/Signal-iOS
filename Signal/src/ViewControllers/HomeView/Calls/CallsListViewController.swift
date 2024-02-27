@@ -1153,6 +1153,15 @@ extension CallsListViewController: UITableViewDelegate {
         }
     }
 
+    func tableView(_ tableView: UITableView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool {
+        true
+    }
+
+    func tableView(_ tableView: UITableView, didBeginMultipleSelectionInteractionAt indexPath: IndexPath) {
+        updateBarButtonItems()
+        showToolbar()
+    }
+
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         return self.longPressActions(forRowAt: indexPath)
             .map { actions in UIMenu.init(children: actions) }
