@@ -68,9 +68,11 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
                         return false
                     }
 
-                    guard GroupsV2MessageProcessor.discardMode(forMessageFrom: sender,
-                                                               groupId: groupId,
-                                                               transaction: transaction) == .doNotDiscard else {
+                    guard GroupsV2MessageProcessor.discardMode(
+                        forMessageFrom: sender,
+                        groupId: groupId,
+                        tx: transaction
+                    ) == .doNotDiscard else {
                         NSELogger.uncorrelated.warn("discarding group ring \(ringId) from \(sender)")
                         return false
                     }

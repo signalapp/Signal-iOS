@@ -1531,9 +1531,11 @@ extension CallService: CallManagerDelegate {
                 return .cancel
             }
 
-            guard GroupsV2MessageProcessor.discardMode(forMessageFrom: caller,
-                                                       groupId: groupId,
-                                                       transaction: transaction) == .doNotDiscard else {
+            guard GroupsV2MessageProcessor.discardMode(
+                forMessageFrom: caller,
+                groupId: groupId,
+                tx: transaction
+            ) == .doNotDiscard else {
                 Logger.warn("discarding group ring \(ringId) from \(senderAci)")
                 return .cancel
             }

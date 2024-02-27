@@ -59,7 +59,7 @@ public class MessageProcessor: NSObject {
 
         var shouldWaitForMessageProcessing = self.hasPendingEnvelopes
         var shouldWaitForGV2MessageProcessing = self.databaseStorage.read {
-            Self.groupsV2MessageProcessor.hasPendingJobs(transaction: $0)
+            Self.groupsV2MessageProcessor.hasPendingJobs(tx: $0)
         }
         // Check if processing is suspended; if so we need to fork behavior.
         if self.messagePipelineSupervisor.isMessageProcessingPermitted.negated {
@@ -89,7 +89,7 @@ public class MessageProcessor: NSObject {
         } else if shouldWaitForGV2MessageProcessing {
             if DebugFlags.internalLogging {
                 let pendingJobCount = databaseStorage.read {
-                    Self.groupsV2MessageProcessor.pendingJobCount(transaction: $0)
+                    Self.groupsV2MessageProcessor.pendingJobCount(tx: $0)
                 }
 
                 Logger.info("groupsV2MessageProcessor.hasPendingJobs, pendingJobCount: \(pendingJobCount)")
@@ -430,7 +430,7 @@ public class MessageProcessor: NSObject {
                 plaintextData: decryptedEnvelope.plaintextData,
                 wasReceivedByUD: decryptedEnvelope.wasReceivedByUD,
                 serverDeliveryTimestamp: request.receivedEnvelope.serverDeliveryTimestamp,
-                transaction: transaction
+                tx: transaction
             )
             return nil
         case .messageReceiverRequest(let messageReceiverRequest):
@@ -600,7 +600,7 @@ private struct ProcessingRequestBuilder {
 
         guard GroupsV2MessageProcessor.canContextBeProcessedImmediately(
             groupContext: groupContextV2,
-            transaction: tx
+            tx: tx
         ) else {
             // Some v2 group messages required group state to be
             // updated before they can be processed.
@@ -609,7 +609,7 @@ private struct ProcessingRequestBuilder {
         let discardMode = GroupsMessageProcessor.discardMode(
             forMessageFrom: SignalServiceAddress(decryptedEnvelope.sourceAci),
             groupContext: groupContextV2,
-            transaction: tx
+            tx: tx
         )
         switch discardMode {
         case .discard:
