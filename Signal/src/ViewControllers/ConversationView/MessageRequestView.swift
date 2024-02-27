@@ -121,7 +121,7 @@ class MessageRequestView: UIStackView {
         layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 20 + safeAreaInset, trailing: 16)
         isLayoutMarginsRelativeArrangement = true
 
-        let backgroundView = UIVisualEffectView(effect: Theme.barBlurEffect)
+        let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
