@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Contacts
 import Foundation
 import LibSignalClient
 import SignalCoreKit
@@ -12,6 +13,7 @@ import SignalServiceKit
 
 class OWSContactsManagerSwiftValues {
     fileprivate let avatarBlurringCache = LowTrustCache()
+    fileprivate let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
     fileprivate let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: AtomicLock())
     fileprivate let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>([:], lock: AtomicLock())
     fileprivate var systemContactsCache: SystemContactsCache?
@@ -400,7 +402,7 @@ extension OWSContactsManager: ContactManager {
             let phoneNumber = address.phoneNumber,
             let contact = contact(forPhoneNumber: phoneNumber, transaction: transaction),
             let cnContactId = contact.cnContactId,
-            let avatarData = self.avatarData(forCNContactId: cnContactId),
+            let avatarData = self.avatarData(for: cnContactId),
             let validData = validateIfNecessary(avatarData)
         {
             return validData
@@ -410,7 +412,7 @@ extension OWSContactsManager: ContactManager {
         if let signalAccount = self.fetchSignalAccount(for: address, transaction: transaction) {
             if let contact = signalAccount.contact,
                let cnContactId = contact.cnContactId,
-               let avatarData = self.avatarData(forCNContactId: cnContactId),
+               let avatarData = self.avatarData(for: cnContactId),
                let validData = validateIfNecessary(avatarData) {
                 return validData
             }
@@ -424,13 +426,13 @@ extension OWSContactsManager: ContactManager {
 
     // MARK: - Intersection
 
-    private static func buildContactAvatarHash(contact: Contact) -> Data? {
+    private func buildContactAvatarHash(contact: Contact) -> Data? {
         return autoreleasepool {
             guard let cnContactId: String = contact.cnContactId else {
                 owsFailDebug("Missing cnContactId.")
                 return nil
             }
-            guard let contactAvatarData = Self.contactsManager.avatarData(forCNContactId: cnContactId) else {
+            guard let contactAvatarData = avatarData(for: cnContactId) else {
                 return nil
             }
             guard let contactAvatarHash = Cryptography.computeSHA256Digest(contactAvatarData) else {
@@ -465,7 +467,7 @@ extension OWSContactsManager: ContactManager {
                     for: signalRecipient.address,
                     relatedAddresses: relatedAddresses
                 )
-                let contactAvatarHash = Self.buildContactAvatarHash(contact: contact)
+                let contactAvatarHash = buildContactAvatarHash(contact: contact)
                 let signalAccount = SignalAccount(
                     contact: contact,
                     contactAvatarHash: contactAvatarHash,
@@ -730,7 +732,7 @@ extension OWSContactsManager: ContactManager {
             setContactsMaps(contactsMaps, localNumber: localNumber, transaction: tx)
             return (localNumber, contactsMaps)
         }
-        cnContactCache.removeAllObjects()
+        swiftValues.cnContactCache.removeAllObjects()
 
         NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerContactsDidChange, object: nil)
 
@@ -1062,18 +1064,6 @@ extension OWSContactsManager: ContactManager {
         }
     }
 
-    @objc
-    public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
-        if let cachedValue = swiftValues.systemContactsCache?.contactsMaps.get() {
-            return cachedValue.phoneNumberToContactMap[phoneNumber]
-        }
-        guard let dataProvider = swiftValues.systemContactsDataProvider.get() else {
-            owsFailDebug("Can't access contacts until registration is finished.")
-            return nil
-        }
-        return dataProvider.fetchSystemContact(for: phoneNumber, transaction: transaction)
-    }
-
     private func buildContactsMaps(
         using dataProvider: SystemContactsDataProvider,
         transaction: SDSAnyReadTransaction
@@ -1095,6 +1085,36 @@ extension OWSContactsManager: ContactManager {
             localNumber: localNumber,
             transaction: transaction
         )
+    }
+
+    public func cnContact(withId cnContactId: String?) -> CNContact? {
+        guard let cnContactId else {
+            return nil
+        }
+        if let cnContact = swiftValues.cnContactCache[cnContactId] {
+            return cnContact
+        }
+        let cnContact = systemContactsFetcher.fetchCNContact(contactId: cnContactId)
+        if let cnContact {
+            swiftValues.cnContactCache[cnContactId] = cnContact
+        }
+        return cnContact
+    }
+
+    @objc
+    public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
+        if let cachedValue = swiftValues.systemContactsCache?.contactsMaps.get() {
+            return cachedValue.phoneNumberToContactMap[phoneNumber]
+        }
+        guard let dataProvider = swiftValues.systemContactsDataProvider.get() else {
+            owsFailDebug("Can't access contacts until registration is finished.")
+            return nil
+        }
+        return dataProvider.fetchSystemContact(for: phoneNumber, transaction: transaction)
+    }
+
+    public func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
+        return contact(forPhoneNumber: phoneNumber, transaction: transaction) != nil
     }
 
     private func fetchUnsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
@@ -1144,13 +1164,36 @@ extension OWSContactsManager: ContactManager {
         Dictionary(displayNamesRefinery(for: addresses, transaction: transaction))
     }
 
-    @objc(objc_displayNamesForAddresses:transaction:)
-    func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
+    @objc
+    public func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
         displayNamesRefinery(for: addresses, transaction: transaction).values.map { $0! }
+    }
+
+    public func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        if
+            let nameComponents = self.nameComponents(for: address, transaction: transaction),
+            let givenName = nameComponents.givenName?.nilIfEmpty,
+            let familyName = nameComponents.familyName?.nilIfEmpty
+        {
+            let shouldSortByGivenName = CNContactsUserDefaults.shared().sortOrder == .givenName
+            let leftName = shouldSortByGivenName ? givenName : familyName
+            let rightName = shouldSortByGivenName ? familyName : givenName
+            return "\(leftName)\t\(rightName)"
+        }
+
+        return displayName(for: address, transaction: transaction)
     }
 
     func phoneNumbers(for addresses: [SignalServiceAddress]) -> [String?] {
         return addresses.map { E164($0.phoneNumber)?.stringValue }
+    }
+
+    public func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease {
+        return modelReadCaches.signalAccountReadCache.leaseCacheSize(cacheSize)
+    }
+
+    public func fetchSignalAccount(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount? {
+        return modelReadCaches.signalAccountReadCache.getSignalAccount(phoneNumber: phoneNumber, transaction: transaction)
     }
 
     func fetchSignalAccounts(
@@ -1166,8 +1209,15 @@ extension OWSContactsManager: ContactManager {
     }
 
     @objc
-    func _systemContactName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String? {
-        return systemContactNames(for: AnySequence([address]), tx: tx)[0]
+    public func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
+        return (
+            fetchSignalAccount(for: address, transaction: transaction)?.contactPersonNameComponents(userDefaults: .standard)
+            ?? profileManager.nameComponentsForProfile(with: address, transaction: transaction)
+        )
+    }
+
+    public func systemContactName(for address: SignalServiceAddress, tx transaction: SDSAnyReadTransaction) -> String? {
+        return systemContactNames(for: AnySequence([address]), tx: transaction)[0]
     }
 
     func systemContactNames(for addresses: AnySequence<SignalServiceAddress>, tx: SDSAnyReadTransaction) -> [String?] {

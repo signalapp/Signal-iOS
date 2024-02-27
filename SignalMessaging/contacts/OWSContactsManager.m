@@ -26,7 +26,6 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
 
 @property (nonatomic) BOOL isContactsUpdateInFlight;
 
-@property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (atomic) BOOL isSetup;
 
 @end
@@ -46,9 +45,6 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
-    _cnContactCache = [[AnyLRUCache alloc] initWithMaxSize:50
-                                                nseMaxSize:0
-                                shouldEvacuateInBackground:YES];
     _swiftValues = swiftValues;
 
     OWSSingletonAssert();
@@ -154,53 +150,6 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     });
 }
 
-#pragma mark - CNContacts
-
-- (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId
-{
-    if (!contactId) {
-        return nil;
-    }
-    
-    CNContact *_Nullable cnContact = (CNContact *)[self.cnContactCache objectForKey:contactId];
-    if (cnContact != nil) {
-        return cnContact;
-    }
-    cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
-    if (cnContact != nil) {
-        [self.cnContactCache setObject:cnContact forKey:contactId];
-    }
-    return cnContact;
-}
-
-- (nullable NSData *)avatarDataForCNContactId:(nullable NSString *)contactId
-{
-    // Don't bother to cache avatar data.
-    CNContact *_Nullable cnContact = [self cnContactWithId:contactId];
-    return [Contact avatarDataForCNContact:cnContact];
-}
-
-- (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId
-{
-    if (contactId == nil) {
-        return nil;
-    }
-    NSData *_Nullable avatarData = [self avatarDataForCNContactId:contactId];
-    if (avatarData == nil) {
-        return nil;
-    }
-    if ([avatarData ows_isValidImage]) {
-        OWSLogWarn(@"Invalid image.");
-        return nil;
-    }
-    UIImage *_Nullable avatarImage = [UIImage imageWithData:avatarData];
-    if (avatarImage == nil) {
-        OWSLogWarn(@"Could not load image.");
-        return nil;
-    }
-    return avatarImage;
-}
-
 #pragma mark - SystemContactsFetcherDelegate
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemsContactsFetcher
@@ -232,28 +181,9 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     }
 }
 
-- (nullable NSString *)systemContactNameForAddress:(SignalServiceAddress *)address
-                                       transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self _systemContactNameFor:address tx:transaction];
-}
-
-- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(phoneNumber.length > 0);
-
-    return [self contactForPhoneNumber:phoneNumber transaction:transaction] != nil;
-}
-
-- (NSArray<NSString *> *)displayNamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                      transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self objc_displayNamesForAddresses:addresses transaction:transaction];
-}
-
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
-    return [self displayNamesForAddresses:@[ address ] transaction:transaction].firstObject;
+    return [self displayNamesFor:@[ address ] transaction:transaction].firstObject;
 }
 
 - (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
@@ -261,7 +191,7 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
 {
     OWSAssertDebug(address.isValid);
 
-    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:address transaction:transaction];
+    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsFor:address transaction:transaction];
     if (nameComponents.nickname.length > 0) {
         return nameComponents.nickname;
     }
@@ -272,68 +202,10 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     return [OWSFormat formatNameComponentsShort:nameComponents];
 }
 
-- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
-                                                  transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(address.isValid);
-
-    return ({
-        SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-        [signalAccount contactPersonNameComponentsWithUserDefaults:NSUserDefaults.standardUserDefaults];
-    })
-        ?: ({ [self.profileManagerObjC nameComponentsForProfileWithAddress:address transaction:transaction]; });
-}
-
-- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
-                                             transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(address);
-    OWSAssertDebug(transaction);
-
-    NSString *phoneNumber = address.phoneNumber;
-    if (phoneNumber == nil) {
-        return nil;
-    }
-    return [self fetchSignalAccountForPhoneNumber:phoneNumber transaction:transaction];
-}
-
-- (nullable SignalAccount *)fetchSignalAccountForPhoneNumber:(NSString *)phoneNumber
-                                                 transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(phoneNumber);
-    OWSAssertDebug(transaction);
-
-    return [self.modelReadCaches.signalAccountReadCache getSignalAccountWithPhoneNumber:phoneNumber
-                                                                            transaction:transaction];
-}
-
 - (NSArray<SignalServiceAddress *> *)sortSignalServiceAddressesObjC:(NSArray<SignalServiceAddress *> *)addresses
                                                         transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self _sortSignalServiceAddressesObjC:addresses transaction:transaction];
-}
-
-- (BOOL)shouldSortByGivenName
-{
-    return [[CNContactsUserDefaults sharedDefaults] sortOrder] == CNContactSortOrderGivenName;
-}
-
-- (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
-{
-    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:address transaction:transaction];
-
-    if (nameComponents != nil && nameComponents.givenName.length > 0 && nameComponents.familyName.length > 0) {
-        NSString *leftName = self.shouldSortByGivenName ? nameComponents.givenName : nameComponents.familyName;
-        NSString *rightName = self.shouldSortByGivenName ? nameComponents.familyName : nameComponents.givenName;
-        return [NSString stringWithFormat:@"%@\t%@", leftName, rightName];
-    }
-
-    // Fall back to non-system contact, non-profile display name.
-    return [self displayNameForAddress:address transaction:transaction];
-}
-
-- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {
-    return [self.modelReadCaches.signalAccountReadCache leaseCacheSize:size];
 }
 
 @end

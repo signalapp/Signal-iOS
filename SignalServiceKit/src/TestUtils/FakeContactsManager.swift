@@ -15,15 +15,11 @@ public class FakeContactsManager: NSObject, ContactManager {
         return mockSignalAccounts[phoneNumber]
     }
 
-    public func fetchSignalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        return address.phoneNumber.flatMap { fetchSignalAccount(forPhoneNumber: $0, transaction: transaction) }
-    }
-
     public func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         return systemContactName(for: address, tx: transaction) ?? "John Doe"
     }
 
-    public func displayNames(forAddresses addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
+    public func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
         return addresses.map { displayName(for: $0, transaction: transaction) }
     }
 
@@ -57,19 +53,11 @@ public class FakeContactsManager: NSObject, ContactManager {
         return fetchSignalAccount(for: address, transaction: transaction)?.contact?.fullName
     }
 
-    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {
-        return nil
+    public func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease {
+        fatalError()
     }
 
     public func cnContact(withId contactId: String?) -> CNContact? {
-        return nil
-    }
-
-    public func avatarData(forCNContactId contactId: String?) -> Data? {
-        return nil
-    }
-
-    public func avatarImage(forCNContactId contactId: String?) -> UIImage? {
         return nil
     }
 }

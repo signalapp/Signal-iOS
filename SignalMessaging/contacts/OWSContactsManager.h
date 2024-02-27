@@ -19,6 +19,7 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 @class SDSKeyValueStore;
 @class SignalAccount;
 @class SignalServiceAddress;
+@class SystemContactsFetcher;
 @class UIFont;
 
 @protocol ContactsManagerCache;
@@ -55,7 +56,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 - (id)initWithSwiftValues:(OWSContactsManagerSwiftValues *)swiftValues;
 
 @property (nonatomic, readonly) OWSContactsManagerSwiftValues *swiftValues;
-@property (nonatomic, readonly) AnyLRUCache *cnContactCache;
+@property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 
 #pragma mark - Accessors
 
@@ -94,11 +95,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 // but not prompt for contact access. Also, it will always notify delegates, even if
 // contacts haven't changed, and will clear out any stale cached SignalAccounts
 - (AnyPromise *)userRequestedSystemContactsRefresh;
-
-/**
- * Used for sorting, respects system contacts name sort order preference.
- */
-- (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

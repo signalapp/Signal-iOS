@@ -145,8 +145,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
         // Build a dictionary mapping displayName -> (All addresses with that name)
         let groupMembers = groupThread.groupModel.groupMembers
-        let displayNames = SignalServiceAddressCache.contactsManager.displayNames(forAddresses: groupMembers,
-                                                                                  transaction: transaction)
+        let displayNames = NSObject.contactsManager.displayNames(for: groupMembers, transaction: transaction)
         var collisionMap = [String: [SignalServiceAddress]]()
         for (address, name) in zip(groupMembers, displayNames) {
             collisionMap[name, default: []].append(address)

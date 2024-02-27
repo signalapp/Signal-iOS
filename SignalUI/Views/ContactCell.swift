@@ -86,7 +86,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
 
         var contactImage: UIImage?
         if let cnContact {
-            if let avatarImage = contactsManager.avatarImage(forCNContactId: cnContact.identifier) {
+            if let avatarImage = contactsManager.avatarImage(for: cnContact.identifier) {
                 contactImage = avatarImage
             } else if cnContact.imageDataAvailable, let contactImageData = cnContact.imageData {
                 contactImage = UIImage(data: contactImageData)

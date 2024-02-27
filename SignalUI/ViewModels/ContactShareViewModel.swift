@@ -50,7 +50,7 @@ public class ContactShareViewModel: NSObject {
         signalContact: @autoclosure () -> Contact,
         tx: SDSAnyReadTransaction
     ) -> (avatarData: Data?, isProfileAvatarData: Bool) {
-        if let systemAvatarImageData = contactsManager.avatarData(forCNContactId: cnContact.identifier) {
+        if let systemAvatarImageData = contactsManager.avatarData(for: cnContact.identifier) {
             return (systemAvatarImageData, false)
         }
 
