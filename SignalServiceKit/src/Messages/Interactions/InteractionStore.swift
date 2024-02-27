@@ -38,6 +38,11 @@ public protocol InteractionStore {
         block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
     ) throws
 
+    func messageHasRenderableContent(
+        _ message: TSMessage,
+        tx: DBReadTransaction
+    ) -> Bool
+
     // MARK: -
 
     /// Insert the given interaction to the databse.
@@ -147,6 +152,10 @@ public class InteractionStoreImpl: InteractionStore {
                 break
             }
         }
+    }
+
+    public func messageHasRenderableContent(_ message: TSMessage, tx: DBReadTransaction) -> Bool {
+        return message.hasRenderableContent(tx: SDSDB.shimOnlyBridge(tx))
     }
 
     // MARK: -
@@ -286,6 +295,10 @@ open class MockInteractionStore: InteractionStore {
                 break
             }
         }
+    }
+
+    open func messageHasRenderableContent(_ message: TSMessage, tx: DBReadTransaction) -> Bool {
+        return true
     }
 
     // MARK: -

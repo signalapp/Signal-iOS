@@ -57,6 +57,9 @@ public class CVComponentStateWrapper: NSObject, CVItemViewModel {
         return componentState.linkPreview?.linkPreviewAttachment
     }
 
+    public var hasRenderableContent: Bool {
+        return componentState.hasRenderableContent
+    }
 }
 
 // This class should only be accessed on the main thread.

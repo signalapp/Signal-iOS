@@ -36,7 +36,7 @@ public final class ThreadUtil: Dependencies {
         Self.enqueueSendAsyncWrite { transaction in
             message.anyInsert(transaction: transaction)
             SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
-            if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
+            if message.hasRenderableContent(tx: transaction) { thread.donateSendMessageIntent(for: message, transaction: transaction) }
         }
 
         return message
@@ -60,7 +60,7 @@ public final class ThreadUtil: Dependencies {
             isHighPriority: isHighPriority,
             transaction: transaction
         )
-        if message.hasRenderableContent() {
+        if message.hasRenderableContent(tx: transaction) {
             message.thread(tx: transaction)?.donateSendMessageIntent(for: message, transaction: transaction)
         }
         return promise

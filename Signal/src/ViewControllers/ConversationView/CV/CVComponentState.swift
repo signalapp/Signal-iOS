@@ -108,6 +108,8 @@ public class CVComponentState: Equatable, Dependencies {
     }
     let viewOnce: ViewOnce?
 
+    let hasRenderableContent: Bool
+
     struct QuotedReply: Equatable {
         let viewState: QuotedMessageView.State
 
@@ -316,7 +318,8 @@ public class CVComponentState: Equatable, Dependencies {
                      bottomButtons: BottomButtons?,
                      failedOrPendingDownloads: FailedOrPendingDownloads?,
                      sendFailureBadge: SendFailureBadge?,
-                     messageHasBodyAttachments: Bool) {
+                     messageHasBodyAttachments: Bool,
+                     hasRenderableContent: Bool) {
 
         self.messageCellType = messageCellType
         self.senderName = senderName
@@ -344,6 +347,7 @@ public class CVComponentState: Equatable, Dependencies {
         self.failedOrPendingDownloads = failedOrPendingDownloads
         self.sendFailureBadge = sendFailureBadge
         self.messageHasBodyAttachments = messageHasBodyAttachments
+        self.hasRenderableContent = hasRenderableContent
     }
 
     // MARK: - Equatable
@@ -434,12 +438,14 @@ public class CVComponentState: Equatable, Dependencies {
         var failedOrPendingDownloads: FailedOrPendingDownloads?
         var sendFailureBadge: SendFailureBadge?
         var messageHasBodyAttachments: Bool
+        var hasRenderableContent: Bool
 
         var bottomButtonsActions = [CVMessageAction]()
 
         init(interaction: TSInteraction, itemBuildingContext: CVItemBuildingContext) {
             self.interaction = interaction
             self.messageHasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(with: itemBuildingContext.transaction) ?? false
+            self.hasRenderableContent = (interaction as? TSMessage)?.hasRenderableContent(tx: itemBuildingContext.transaction) ?? false
             self.itemBuildingContext = itemBuildingContext
         }
 
@@ -474,7 +480,8 @@ public class CVComponentState: Equatable, Dependencies {
                                     bottomButtons: bottomButtons,
                                     failedOrPendingDownloads: failedOrPendingDownloads,
                                     sendFailureBadge: sendFailureBadge,
-                                    messageHasBodyAttachments: messageHasBodyAttachments)
+                                    messageHasBodyAttachments: messageHasBodyAttachments,
+                                    hasRenderableContent: hasRenderableContent)
         }
 
         // MARK: -

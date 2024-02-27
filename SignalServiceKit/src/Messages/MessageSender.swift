@@ -496,8 +496,12 @@ public class MessageSender: Dependencies {
     // MARK: - Constructing Message Sends
 
     public func sendMessage(_ outgoingMessagePreparer: OutgoingMessagePreparer) async throws {
-        let message: TSOutgoingMessage = try await databaseStorage.awaitableWrite { tx in
-            return try outgoingMessagePreparer.prepareMessage(transaction: tx)
+        let (message, priority): (TSOutgoingMessage, Operation.QueuePriority)  = try await databaseStorage.awaitableWrite { tx in
+            let message = try outgoingMessagePreparer.prepareMessage(transaction: tx)
+            return (
+                message,
+                Self.sendingQueuePriority(for: message, tx: tx)
+            )
         }
 
         if let body = message.body {
@@ -514,7 +518,7 @@ public class MessageSender: Dependencies {
             let sendMessageOperation = AwaitableAsyncBlockOperation(completionContinuation: continuation) {
                 try await self.sendPreparedMessage(message)
             }
-            sendMessageOperation.queuePriority = Self.sendingQueuePriority(for: message)
+            sendMessageOperation.queuePriority = priority
 
             for attachmentId in (outgoingMessagePreparer.savedAttachmentIds ?? []) {
                 let uploadOperation = AsyncBlockOperation {
@@ -551,8 +555,8 @@ public class MessageSender: Dependencies {
         }
     }
 
-    static func sendingQueuePriority(for message: TSOutgoingMessage) -> Operation.QueuePriority {
-        return message.hasRenderableContent() ? .normal : .low
+    static func sendingQueuePriority(for message: TSOutgoingMessage, tx: SDSAnyReadTransaction) -> Operation.QueuePriority {
+        return message.hasRenderableContent(tx: tx) ? .normal : .low
     }
 
     private func waitForPreKeyRotationIfNeeded() async throws {
@@ -820,7 +824,7 @@ public class MessageSender: Dependencies {
                     return thread.canSendReactionToThread
                 }
                 let isChatMessage = (
-                    message.hasRenderableContent()
+                    message.hasRenderableContent(tx: tx)
                     || message is OutgoingGroupCallUpdateMessage
                     || message is OWSOutgoingCallMessage
                 )
@@ -1101,8 +1105,8 @@ public class MessageSender: Dependencies {
     /// It is important to be conservative about which messages unhide a
     /// recipient. It is far better to not unhide when should than to
     /// unhide when we should not.
-    private func shouldMessageSendUnhideRecipient(_ message: TSOutgoingMessage) -> Bool {
-        if message.hasRenderableContent() {
+    private func shouldMessageSendUnhideRecipient(_ message: TSOutgoingMessage, tx: SDSAnyReadTransaction) -> Bool {
+        if message.hasRenderableContent(tx: tx) {
             return true
         }
         if message is OWSOutgoingReactionMessage {
@@ -1126,7 +1130,7 @@ public class MessageSender: Dependencies {
         await databaseStorage.awaitableWrite { tx in
             if
                 let thread = message.thread(tx: tx) as? TSContactThread,
-                self.shouldMessageSendUnhideRecipient(message),
+                self.shouldMessageSendUnhideRecipient(message, tx: tx),
                 let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress,
                 !localAddress.isEqualToAddress(thread.contactAddress)
             {

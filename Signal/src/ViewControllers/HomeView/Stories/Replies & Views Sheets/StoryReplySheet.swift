@@ -73,7 +73,7 @@ extension StoryReplySheet {
             message.anyInsert(transaction: transaction)
             SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
 
-            if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
+            if message.hasRenderableContent(tx: transaction) { thread.donateSendMessageIntent(for: message, transaction: transaction) }
 
             transaction.addAsyncCompletionOnMain { self?.didSendMessage() }
         }

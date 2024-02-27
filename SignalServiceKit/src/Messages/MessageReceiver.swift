@@ -1040,7 +1040,7 @@ public final class MessageReceiver: Dependencies {
         // built and doesn't have the attachments yet, we check for attachments
         // explicitly. Story replies cannot have attachments, so we can bail on
         // them here immediately.
-        guard message.hasRenderableContent() || (!dataMessage.attachments.isEmpty && !message.isStoryReply) else {
+        guard message.hasRenderableContent(tx: tx) || (!dataMessage.attachments.isEmpty && !message.isStoryReply) else {
             Logger.warn("Ignoring empty: \(messageDescription)")
             return nil
         }
@@ -1070,7 +1070,7 @@ public final class MessageReceiver: Dependencies {
             message.addBodyAttachments(attachmentPointers, transaction: tx)
         }
 
-        owsAssertDebug(message.hasRenderableContent())
+        owsAssertDebug(message.hasRenderableContent(tx: tx))
 
         earlyMessageManager.applyPendingMessages(for: message, transaction: tx)
 

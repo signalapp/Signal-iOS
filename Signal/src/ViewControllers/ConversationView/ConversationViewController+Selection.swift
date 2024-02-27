@@ -39,13 +39,16 @@ public struct CVSelectionItem {
         self.selectionType = selectionType
     }
 
-    init(interaction: TSInteraction,
-         selectionType: CVSelectionType) {
+    init(
+        interaction: TSInteraction,
+        hasRenderableContent: Bool,
+        selectionType: CVSelectionType
+    ) {
 
         self.interactionId = interaction.uniqueId
         self.interactionType = interaction.interactionType
         if let message = interaction as? TSMessage {
-            self.isForwardable = (message.hasRenderableContent() &&
+            self.isForwardable = (hasRenderableContent &&
                                     !message.isViewOnceMessage &&
                                     !message.wasRemotelyDeleted)
         } else {
@@ -74,7 +77,7 @@ public class CVSelectionState: NSObject {
 
     public var interactionCount: Int { itemMap.count }
 
-    public func add(interaction: TSInteraction, selectionType: CVSelectionType) {
+    public func add(interaction: TSInteraction, hasRenderableContent: Bool, selectionType: CVSelectionType) {
         AssertIsOnMainThread()
 
         guard !selectionType.isEmpty else {
@@ -86,8 +89,11 @@ public class CVSelectionState: NSObject {
         owsAssertDebug(!isSelected(interactionId, selectionType: selectionType))
 
         if let oldItem = itemMap[interactionId] {
-            let newItem = CVSelectionItem(interaction: interaction,
-                                          selectionType: oldItem.selectionType.union(selectionType))
+            let newItem = CVSelectionItem(
+                interaction: interaction,
+                hasRenderableContent: hasRenderableContent,
+                selectionType: oldItem.selectionType.union(selectionType)
+            )
             owsAssertDebug(!newItem.selectionType.isEmpty)
             owsAssertDebug(oldItem.interactionId == newItem.interactionId)
             owsAssertDebug(oldItem.interactionType == newItem.interactionType)
@@ -97,18 +103,25 @@ public class CVSelectionState: NSObject {
             }
             itemMap[interactionId] = newItem
         } else {
-            let newItem = CVSelectionItem(interaction: interaction,
-                                          selectionType: selectionType)
+            let newItem = CVSelectionItem(
+                interaction: interaction,
+                hasRenderableContent: hasRenderableContent,
+                selectionType: selectionType
+            )
             itemMap[interactionId] = newItem
         }
         delegate?.selectionStateDidChange()
     }
 
     public func add(itemViewModel: CVItemViewModel, selectionType: CVSelectionType) {
-        add(interaction: itemViewModel.interaction, selectionType: selectionType)
+        add(
+            interaction: itemViewModel.interaction,
+            hasRenderableContent: itemViewModel.hasRenderableContent,
+            selectionType: selectionType
+        )
     }
 
-    public func remove(interaction: TSInteraction, selectionType: CVSelectionType) {
+    public func remove(interaction: TSInteraction, hasRenderableContent: Bool, selectionType: CVSelectionType) {
         AssertIsOnMainThread()
 
         guard !selectionType.isEmpty else {
@@ -120,8 +133,11 @@ public class CVSelectionState: NSObject {
         owsAssertDebug(isSelected(interactionId, selectionType: selectionType))
 
         if let oldItem = itemMap[interactionId] {
-            let newItem = CVSelectionItem(interaction: interaction,
-                                          selectionType: oldItem.selectionType.subtracting(selectionType))
+            let newItem = CVSelectionItem(
+                interaction: interaction,
+                hasRenderableContent: hasRenderableContent,
+                selectionType: oldItem.selectionType.subtracting(selectionType)
+            )
             owsAssertDebug(oldItem.interactionId == newItem.interactionId)
             owsAssertDebug(oldItem.interactionType == newItem.interactionType)
             guard oldItem.selectionType != newItem.selectionType else {
@@ -141,7 +157,11 @@ public class CVSelectionState: NSObject {
     }
 
     public func remove(itemViewModel: CVItemViewModel, selectionType: CVSelectionType) {
-        remove(interaction: itemViewModel.interaction, selectionType: selectionType)
+        remove(
+            interaction: itemViewModel.interaction,
+            hasRenderableContent: itemViewModel.hasRenderableContent,
+            selectionType: selectionType
+        )
     }
 
     public func isSelected(_ interactionId: String, selectionType: CVSelectionType) -> Bool {

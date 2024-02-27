@@ -460,10 +460,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             let selectionState = componentDelegate.selectionState
             if selectionState.hasAnySelection(interaction: interaction) {
                 selectionView.isSelected = false
-                selectionState.remove(interaction: interaction, selectionType: .allContent)
+                selectionState.remove(interaction: interaction, hasRenderableContent: true, selectionType: .allContent)
             } else {
                 selectionView.isSelected = true
-                selectionState.add(interaction: interaction, selectionType: .allContent)
+                selectionState.add(interaction: interaction, hasRenderableContent: true, selectionType: .allContent)
             }
             // Suppress other tap handling during selection mode.
             return true

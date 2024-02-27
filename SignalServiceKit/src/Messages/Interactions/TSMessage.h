@@ -208,7 +208,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (BOOL)shouldStartExpireTimer;
 
-- (BOOL)hasRenderableContent;
+- (BOOL)hasRenderableContentWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(hasRenderableContent(tx:));
 
 #pragma mark - Update With... Methods
 

@@ -79,7 +79,7 @@ public extension ThreadUtil {
             }
         }
 
-        if message.hasRenderableContent() {
+        if message.hasRenderableContent(tx: readTransaction) {
             thread.donateSendMessageIntent(for: message, transaction: readTransaction)
         }
         return message

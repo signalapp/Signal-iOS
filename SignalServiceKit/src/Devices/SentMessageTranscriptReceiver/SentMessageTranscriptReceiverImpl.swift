@@ -175,7 +175,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
         // But since outgoingMessage is partially built and doesn't have the attachments yet, we check
         // for attachments explicitly.
-        let outgoingMessageHasContent = outgoingMessage.hasRenderableContent()
+        let hasRenderableContent = interactionStore.messageHasRenderableContent(outgoingMessage, tx: tx)
+        let outgoingMessageHasContent = hasRenderableContent
             || messageParams.attachmentPointerProtos.isEmpty.negated
         if !outgoingMessageHasContent && !outgoingMessage.isViewOnceMessage {
             switch messageParams.target {
@@ -216,7 +217,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             }
             interactionStore.addBodyAttachments(attachmentPointers, to: outgoingMessage, tx: tx)
         }
-        owsAssertDebug(outgoingMessage.hasRenderableContent())
+        owsAssertDebug(hasRenderableContent)
 
         interactionStore.updateRecipientsFromNonLocalDevice(
             outgoingMessage,
