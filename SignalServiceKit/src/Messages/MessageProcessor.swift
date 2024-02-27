@@ -432,6 +432,7 @@ public class MessageProcessor: NSObject {
                 serverDeliveryTimestamp: request.receivedEnvelope.serverDeliveryTimestamp,
                 tx: transaction
             )
+            messageReceiver.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
             return nil
         case .messageReceiverRequest(let messageReceiverRequest):
             messageReceiver.handleRequest(messageReceiverRequest, context: context, tx: transaction)
