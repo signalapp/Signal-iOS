@@ -156,10 +156,6 @@ class ChatListCell: UITableViewCell {
         UIFont.dynamicTypeBodyClamped.italic()
     }
 
-    private static var snippetColor: ThemedColor {
-        return ThemedColor(light: .ows_gray45, dark: .ows_gray25)
-    }
-
     // This value is now larger than AvatarBuilder.standardAvatarSizePoints.
     private static let avatarSize: UInt = 56
     private static let muteIconSize: CGFloat = 16
@@ -407,7 +403,7 @@ class ChatListCell: UITableViewCell {
 
         if configuration.shouldShowMuteIndicator {
             muteIconView.image = UIImage(imageLiteralResourceName: "bell-slash")
-            muteIconView.tintColor = Self.snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+            muteIconView.tintColor = Theme.snippetColor
             topRowStackSubviews.append(muteIconView)
         }
 
@@ -592,7 +588,7 @@ class ChatListCell: UITableViewCell {
         }
 
         var statusIndicatorImage: UIImage?
-        var messageStatusViewTintColor = snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+        var messageStatusViewTintColor = Theme.snippetColor
         var shouldAnimateStatusIcon = false
 
         switch messageStatus {
@@ -738,7 +734,7 @@ class ChatListCell: UITableViewCell {
                     ),
                     attributes: [
                         .font: snippetFont,
-                        .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+                        .foregroundColor: Theme.snippetColor
                     ]
                 )
             )
@@ -756,7 +752,7 @@ class ChatListCell: UITableViewCell {
                         string: String(format: addedToGroupFormat, addedToGroupByName),
                         attributes: [
                             .font: snippetFont,
-                            .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+                            .foregroundColor: Theme.snippetColor
                         ]
                     )
                 )
@@ -771,7 +767,7 @@ class ChatListCell: UITableViewCell {
                         string: text,
                         attributes: [
                             .font: snippetFont,
-                            .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+                            .foregroundColor: Theme.snippetColor
                         ]
                     )
                 )
@@ -795,21 +791,21 @@ class ChatListCell: UITableViewCell {
                 ),
                 attributes: [
                     .font: snippetFont.italic(),
-                    .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+                    .foregroundColor: Theme.snippetColor
                 ]
             )
             snippetText.append(
                 "🎤",
                 attributes: [
                     .font: snippetFont,
-                    .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+                    .foregroundColor: Theme.snippetColor
                 ]
             )
             snippetText.append(
                 " ",
                 attributes: [
                     .font: snippetFont,
-                    .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+                    .foregroundColor: Theme.snippetColor
                 ]
             )
             snippetText.append(
@@ -819,7 +815,7 @@ class ChatListCell: UITableViewCell {
                 ),
                 attributes: [
                     .font: snippetFont,
-                    .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+                    .foregroundColor: Theme.snippetColor
                 ]
             )
             return .attributedText(snippetText)
@@ -849,7 +845,7 @@ class ChatListCell: UITableViewCell {
         return CVLabelConfig.unstyledText(
             text,
             font: dateTimeFont,
-            textColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled),
+            textColor: Theme.snippetColor,
             textAlignment: .trailing
         )
     }
@@ -880,7 +876,7 @@ class ChatListCell: UITableViewCell {
     }
 
     private static func snippetLabelConfig(configuration: Configuration) -> CVLabelConfig {
-        let textColor = snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+        let textColor = Theme.snippetColor
         let text: CVTextValue
         let displayConfig: HydratedMessageBody.DisplayConfiguration
         if let overrideSnippet = configuration.overrideSnippet {
@@ -888,7 +884,7 @@ class ChatListCell: UITableViewCell {
             displayConfig = overrideSnippet.config
         } else {
             text = self.cvTextSnippet(configuration: configuration)
-            displayConfig = .conversationListSnippet(font: snippetFont, textColor: snippetColor)
+            displayConfig = .conversationListSnippet(font: snippetFont, textColor: ThemedColor(light: Theme.lightThemeSnippetColor, dark: Theme.darkThemeSnippetColor))
         }
         return CVLabelConfig(
             text: text,

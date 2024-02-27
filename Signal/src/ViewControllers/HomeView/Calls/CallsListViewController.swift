@@ -1818,7 +1818,6 @@ private extension CallsListViewController {
                 subtitleLabel,
             ])
             bodyVStack.axis = .vertical
-            bodyVStack.spacing = 2
 
             let leadingHStack = UIStackView(arrangedSubviews: [
                 avatarView,
@@ -1989,8 +1988,8 @@ private extension CallsListViewController {
             multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
 
             titleLabel.textColor = Theme.primaryTextColor
-            subtitleLabel.textColor = Theme.secondaryTextAndIconColor
-            timestampLabel.textColor = Theme.secondaryTextAndIconColor
+            subtitleLabel.textColor = Theme.snippetColor
+            timestampLabel.textColor = Theme.snippetColor
         }
 
         // MARK: Actions
