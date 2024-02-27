@@ -754,12 +754,16 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         if let action = threadDetails.mutualGroupsTapAction {
             let location = sender.location(in: componentView.mutualGroupsLabel)
             if componentView.mutualGroupsLabel.bounds.contains(location) {
-                switch action {
-                case .unknownThreadWarningContact:
-                    componentDelegate.didTapUnknownThreadWarningContact()
-                case .unknownThreadWarningGroup:
-                    componentDelegate.didTapUnknownThreadWarningGroup()
-                }
+                let type: SafetyTipsType = {
+                    switch action {
+                    case .unknownThreadWarningContact:
+                        return .contact
+                    case .unknownThreadWarningGroup:
+                        return .group
+                    }
+                }()
+                let viewController = SafetyTipsViewController(type: type)
+                UIApplication.shared.frontmostViewController?.present(viewController, animated: true)
                 return true
             }
         }

@@ -1426,6 +1426,7 @@
 		C1CD0E402A6B37BF00307F1A /* SSKPreKeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */; };
 		C1D5836F2B03DFED00EE8FD9 /* Stripe+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */; };
 		C1D9B1532B7E949500D94595 /* SpamReportingUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */; };
+		C1D9B1552B7FA28200D94595 /* SafetyTipsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */; };
 		C1DB22C329C9F95500757380 /* EditManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DB22C229C9F95500757380 /* EditManager.swift */; };
 		C1DF3F432B0283C5004B6986 /* UploadEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */; };
 		C1DF3F442B0283C5004B6986 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3D2B0283C5004B6986 /* UploadManager.swift */; };
@@ -4209,6 +4210,7 @@
 		C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKPreKeyStoreTests.swift; sourceTree = "<group>"; };
 		C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+IDEAL.swift"; sourceTree = "<group>"; };
 		C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingUIUtils.swift; sourceTree = "<group>"; };
+		C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyTipsViewController.swift; sourceTree = "<group>"; };
 		C1DB22C229C9F95500757380 /* EditManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManager.swift; sourceTree = "<group>"; };
 		C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpoint.swift; sourceTree = "<group>"; };
 		C1DF3F3D2B0283C5004B6986 /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
@@ -6432,6 +6434,7 @@
 				881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */,
 				88DF81A028E1538000F8BA80 /* ProxyLinkSheetViewController.swift */,
 				342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */,
+				C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */,
 				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
 				3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */,
 			);
@@ -12815,6 +12818,7 @@
 				342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */,
 				348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */,
 				66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */,
+				C1D9B1552B7FA28200D94595 /* SafetyTipsViewController.swift in Sources */,
 				7677E41329F84C2100AC6A75 /* ScreenLockUI.swift in Sources */,
 				45069FCE29D64CB300D0DD14 /* SelectionButton.swift in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
