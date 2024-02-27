@@ -41,12 +41,37 @@ public protocol CallRecordStore {
     /// Posts a `.deleted` ``CallRecordStoreNotification``.
     func delete(callRecords: [CallRecord], tx: DBWriteTransaction)
 
-    /// Update the status of the given call record.
+    /// Update the call status and unread status of the given call record.
+    ///
+    /// - Note
+    /// In practice, call records are created in a "read" state, and only if a
+    /// call's status changes to a "missed call" status is the call considered
+    /// "unread". An unread (missed) call can later be marked as read without
+    /// changing its status.
+    ///
+    /// An edge-case exception to this is if a call is created with a "missed"
+    /// status, in which case it will be unread. At the time of writing this
+    /// shouldn't normally happen, since the call should have been created with
+    /// a ringing status before later becoming missed.
+    ///
+    /// - SeeAlso: ``markAsRead(callRecord:tx:)``
+    ///
     /// - Important
     /// Posts a `.statusUpdated` ``CallRecordStoreNotification``.
-    func updateRecordStatus(
+    func updateCallAndUnreadStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
+        tx: DBWriteTransaction
+    )
+
+    /// Updates the unread status of the given call record to `.read`.
+    ///
+    /// - Note
+    /// In practice, only missed calls are ever in an "unread" state. This API
+    /// can then be used to mark them as "read".
+    /// - SeeAlso: ``updateCallAndUnreadStatus(callRecord:newCallStatus:tx:)``
+    func markAsRead(
+        callRecord: CallRecord,
         tx: DBWriteTransaction
     )
 
@@ -137,12 +162,12 @@ class CallRecordStoreImpl: CallRecordStore {
         )
     }
 
-    func updateRecordStatus(
+    func updateCallAndUnreadStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
         tx: DBWriteTransaction
     ) {
-        updateRecordStatus(
+        updateCallAndUnreadStatus(
             callRecord: callRecord,
             newCallStatus: newCallStatus,
             db: SDSDB.shimOnlyBridge(tx).database
@@ -153,6 +178,13 @@ class CallRecordStoreImpl: CallRecordStore {
                 record: CallRecordStoreNotification.CallRecordIdentifier(callRecord)
             ),
             tx: tx
+        )
+    }
+
+    func markAsRead(callRecord: CallRecord, tx: DBWriteTransaction) {
+        markAsRead(
+            callRecord: callRecord,
+            db: SDSDB.shimOnlyBridge(tx).database
         )
     }
 
@@ -254,16 +286,25 @@ class CallRecordStoreImpl: CallRecordStore {
         }
     }
 
-    func updateRecordStatus(
+    func updateCallAndUnreadStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
         db: Database
     ) {
         let logger = CallRecordLogger.shared.suffixed(with: " \(callRecord.callStatus) -> \(newCallStatus)")
-
         logger.info("Updating existing call record.")
 
         callRecord.callStatus = newCallStatus
+        callRecord.unreadStatus = CallRecord.CallUnreadStatus(callStatus: newCallStatus)
+        do {
+            try callRecord.update(db)
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+        }
+    }
+
+    func markAsRead(callRecord: CallRecord, db: Database) {
+        callRecord.unreadStatus = .read
         do {
             try callRecord.update(db)
         } catch let error {

@@ -113,6 +113,28 @@ public protocol CallRecordQuerier {
         ordering: FetchOrdering,
         tx: DBReadTransaction
     ) -> CallRecordCursor?
+
+    /// Returns a cursor over all ``CallRecord``s with the given call status
+    /// whose ``CallRecord/unreadStatus`` is `.unread`.
+    ///
+    /// - Note
+    /// In practice, all unread calls should have a "missed call" status.
+    /// - SeeAlso: ``CallRecord/CallStatus/missedCalls``
+    /// - SeeAlso: ``CallRecord/unreadStatus``
+    /// - SeeAlso: ``CallRecordStore/updateCallAndUnreadStatus(callRecord:newCallStatus:tx:)``
+    ///
+    /// - Note
+    /// The cursor should be ordered by ``CallRecord/callBeganTimestamp``,
+    /// according to the given ordering.
+    ///
+    /// - Note
+    /// The implementation of this method in ``CallRecordQuerierImpl`` relies on
+    /// the index `index_call_record_on_callStatus_and_unreadStatus_and_timestamp`.
+    func fetchCursorForUnread(
+        callStatus: CallRecord.CallStatus,
+        ordering: FetchOrdering,
+        tx: DBReadTransaction
+    ) -> CallRecordCursor?
 }
 
 // MARK: -
@@ -240,6 +262,35 @@ class CallRecordQuerierImpl: CallRecordQuerier {
             columnArgs: [
                 ColumnArg(.threadRowId, threadRowId),
                 ColumnArg(.callStatus, callStatus.intValue)
+            ],
+            ordering: ordering,
+            db: db
+        )
+    }
+
+    // MARK: -
+
+    func fetchCursorForUnread(
+        callStatus: CallRecord.CallStatus,
+        ordering: FetchOrdering,
+        tx: DBReadTransaction
+    ) -> CallRecordCursor? {
+        return fetchCursorForUnread(
+            callStatus: callStatus,
+            ordering: ordering,
+            db: SDSDB.shimOnlyBridge(tx).database
+        )
+    }
+
+    func fetchCursorForUnread(
+        callStatus: CallRecord.CallStatus,
+        ordering: FetchOrdering,
+        db: Database
+    ) -> CallRecordCursor? {
+        return fetchCursor(
+            columnArgs: [
+                ColumnArg(.callStatus, callStatus.intValue),
+                ColumnArg(.unreadStatus, CallRecord.CallUnreadStatus.unread.rawValue)
             ],
             ordering: ordering,
             db: db

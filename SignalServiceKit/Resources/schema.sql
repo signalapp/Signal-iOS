@@ -1491,6 +1491,7 @@ CREATE
         ,"status" INTEGER NOT NULL
         ,"timestamp" INTEGER NOT NULL
         ,"groupCallRingerAci" BLOB
+        ,"unreadStatus" INTEGER NOT NULL DEFAULT 0
 )
 ;
 
@@ -1552,5 +1553,13 @@ CREATE
 CREATE
     INDEX "index_deleted_call_record_on_deletedAtTimestamp"
         ON "DeletedCallRecord"("deletedAtTimestamp"
+)
+;
+
+CREATE
+    INDEX "index_call_record_on_callStatus_and_unreadStatus_and_timestamp"
+        ON "CallRecord"("status"
+    ,"unreadStatus"
+    ,"timestamp"
 )
 ;

@@ -95,7 +95,7 @@ class GroupCallRecordRingingCleanupManager {
         let callRecordsToPeek = ringingCallRecords.prefix(Constants.maxRingingCallsToPeek)
 
         for ringingCallRecord in ringingCallRecords {
-            _ = callRecordStore.updateRecordStatus(
+            callRecordStore.updateCallAndUnreadStatus(
                 callRecord: ringingCallRecord,
                 newCallStatus: .group(.ringingMissed),
                 tx: tx

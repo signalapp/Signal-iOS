@@ -252,7 +252,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             return
         }
 
-        callRecordStore.updateRecordStatus(
+        callRecordStore.updateCallAndUnreadStatus(
             callRecord: existingCallRecord,
             newCallStatus: .group(newGroupCallStatus),
             tx: tx

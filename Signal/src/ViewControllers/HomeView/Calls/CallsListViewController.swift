@@ -33,8 +33,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     // MARK: - Dependencies
 
     private struct Dependencies {
+        let badgeManager: BadgeManager
         let callRecordDeleteManager: CallRecordDeleteManager
         let callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
+        let callRecordMissedCallManager: CallRecordMissedCallManager
         let callRecordQuerier: CallRecordQuerier
         let callRecordStore: CallRecordStore
         let callService: CallService
@@ -46,8 +48,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     private lazy var deps: Dependencies = Dependencies(
+        badgeManager: AppEnvironment.shared.badgeManager,
         callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
         callRecordDeleteAllJobQueue: SSKEnvironment.shared.callRecordDeleteAllJobQueueRef,
+        callRecordMissedCallManager: DependenciesBridge.shared.callRecordMissedCallManager,
         callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
         callRecordStore: DependenciesBridge.shared.callRecordStore,
         callService: NSObject.callService,
@@ -122,6 +126,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     override func viewWillAppear(_ animated: Bool) {
         updateDisplayedDateForAllCallCells()
+        clearMissedCallsIfNecessary()
     }
 
     override func themeDidChange() {
@@ -542,6 +547,42 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
 
         reloadRows(forIdentifiers: callViewModelIdsToReload)
+    }
+
+    // MARK: - Clear missed calls
+
+    /// A serial queue for clearing the missed-call badge.
+    private let clearMissedCallQueue = DispatchQueue(label: "org.signal.calls-list-clear-missed")
+
+    /// Asynchronously clears any missed-call badges, avoiding write
+    /// transactions if possible.
+    ///
+    /// - Important
+    /// The asynchronous work enqueued by this method is executed serially, such
+    /// that multiple calls to this method will not race.
+    private func clearMissedCallsIfNecessary() {
+        clearMissedCallQueue.async {
+            let unreadMissedCallCount = self.deps.db.read { tx in
+                self.deps.callRecordMissedCallManager.countUnreadMissedCalls(
+                    tx: tx.asV2Read
+                )
+            }
+
+            /// We expect that the only unread calls to mark as read will be
+            /// missed calls, so if there's no unread missed calls no need to
+            /// open a write transaction.
+            guard unreadMissedCallCount > 0 else { return }
+
+            self.deps.db.write { tx in
+                self.deps.callRecordMissedCallManager.markUnreadCallsAsRead(
+                    tx: tx.asV2Write
+                )
+
+                tx.addAsyncCompletionOnMain {
+                    self.deps.badgeManager.invalidateBadgeValue()
+                }
+            }
+        }
     }
 
     // MARK: - Call loading

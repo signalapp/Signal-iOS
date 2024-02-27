@@ -249,6 +249,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addPhoneNumberSharingAndDiscoverability
         case removeRedundantPhoneNumbers2
         case scheduleFullIntersection
+        case addUnreadToCallRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -308,7 +309,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 66
+    public static let grdbSchemaVersionLatest: UInt = 67
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2625,6 +2626,36 @@ public class GRDBSchemaMigrator: NSObject {
                 AND "key" = 'OWSContactsManagerKeyNextFullIntersectionDate2'
             )
             """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addUnreadToCallRecord) { tx in
+            /// Annoyingly, we need to provide a DEFAULT value in this migration
+            /// to cover all existing rows. I'd prefer that we make the column
+            /// not have a default value that applies going forward, since all
+            /// records inserted after this migration runs will provide a value
+            /// for this column.
+            ///
+            /// However, SQLite doesn't know that, and consequently won't allow
+            /// us to create a NOT NULL column without a default – even if we
+            /// were to run a separate SQL statement after creating the column
+            /// to populate it for existing rows.
+            try tx.database.alter(table: "CallRecord") { table in
+                table.add(column: "unreadStatus", .integer)
+                    .notNull()
+                    .defaults(to: CallRecord.CallUnreadStatus.read.rawValue)
+            }
+
+            try tx.database.create(
+                index: "index_call_record_on_callStatus_and_unreadStatus_and_timestamp",
+                on: "CallRecord",
+                columns: [
+                    "status",
+                    "unreadStatus",
+                    "timestamp",
+                ]
+            )
+
             return .success(())
         }
 

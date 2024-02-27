@@ -193,8 +193,13 @@ class HomeTabBarController: UITabBarController {
 }
 
 extension HomeTabBarController: BadgeObserver {
-    func didUpdateBadgeValue(_ badgeManager: BadgeManager, badgeValue: UInt) {
-        chatListTabBarItem.badgeValue = badgeValue > 0 ? "\(badgeValue)" : nil
+    func didUpdateBadgeCount(_ badgeManager: BadgeManager, badgeCount: BadgeCount) {
+        func stringify(_ badgeValue: UInt) -> String? {
+            return badgeValue > 0 ? "\(badgeValue)" : nil
+        }
+
+        chatListTabBarItem.badgeValue = stringify(badgeCount.unreadChatCount)
+        callsListTabBarItem.badgeValue = stringify(badgeCount.unreadCallsCount)
     }
 }
 

@@ -267,6 +267,10 @@ private class MockCallRecordQuerier: CallRecordQuerier {
     func fetchCursor(threadRowId: Int64, callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
         return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.threadRowId == threadRowId }, ordering: ordering))
     }
+
+    func fetchCursorForUnread(callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.unreadStatus == .unread }, ordering: ordering))
+    }
 }
 
 private extension Array {

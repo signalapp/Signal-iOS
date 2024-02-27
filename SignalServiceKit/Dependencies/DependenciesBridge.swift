@@ -43,10 +43,14 @@ public class DependenciesBridge {
     public let appExpiry: AppExpiry
     public let authorMergeHelper: AuthorMergeHelper
 
+    public let badgeCountFetcher: BadgeCountFetcher
+
     let deletedCallRecordStore: DeletedCallRecordStore
     public let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
+
     public let callRecordStore: CallRecordStore
     public let callRecordDeleteManager: CallRecordDeleteManager
+    public let callRecordMissedCallManager: CallRecordMissedCallManager
     public let callRecordQuerier: CallRecordQuerier
 
     public let groupCallRecordManager: GroupCallRecordManager
@@ -298,6 +302,8 @@ public class DependenciesBridge {
             schedulers: schedulers
         )
 
+        self.badgeCountFetcher = BadgeCountFetcherImpl()
+
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientIdFinder = recipientIdFinder
@@ -453,6 +459,11 @@ public class DependenciesBridge {
                 threadStore: self.threadStore
             )
             self.callRecordQuerier = CallRecordQuerierImpl()
+
+            self.callRecordMissedCallManager = CallRecordMissedCallManagerImpl(
+                callRecordQuerier: self.callRecordQuerier,
+                callRecordStore: self.callRecordStore
+            )
 
             self.groupCallRecordManager = GroupCallRecordManagerImpl(
                 callRecordStore: self.callRecordStore,

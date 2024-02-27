@@ -19,7 +19,7 @@ class AppIconBadgeUpdater {
 }
 
 extension AppIconBadgeUpdater: BadgeObserver {
-    func didUpdateBadgeValue(_ badgeManager: BadgeManager, badgeValue: UInt) {
-        UIApplication.shared.applicationIconBadgeNumber = Int(badgeValue)
+    func didUpdateBadgeCount(_ badgeManager: BadgeManager, badgeCount: BadgeCount) {
+        UIApplication.shared.applicationIconBadgeNumber = Int(badgeCount.unreadTotalCount)
     }
 }

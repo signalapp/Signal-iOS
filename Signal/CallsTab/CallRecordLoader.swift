@@ -150,19 +150,6 @@ class CallRecordLoader {
     }
 }
 
-extension CallRecord.CallStatus {
-    static var missedCalls: [CallRecord.CallStatus] {
-        return [
-            .individual(.incomingMissed),
-            .group(.ringingMissed)
-        ]
-    }
-
-    var isMissedCall: Bool {
-        return Self.missedCalls.contains(self)
-    }
-}
-
 // MARK: -
 
 private extension CallRecordLoader {
