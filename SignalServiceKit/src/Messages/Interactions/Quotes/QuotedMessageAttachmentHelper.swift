@@ -18,7 +18,9 @@ public class QuotedThumbnailAttachmentMetadata: NSObject {
 
     internal let attachmentReferenceType: OWSAttachmentInfoReference
 
-    public let attachmentId: String
+    /// For attachments with a thumbnail, the id for that attachment.
+    /// Other types (e.g. audio file) might have mimeType and sourceFileName set but no id.
+    public let thumbnailAttachmentId: String?
     public let mimeType: String?
     public let sourceFilename: String?
     // For internal use only.
@@ -26,13 +28,13 @@ public class QuotedThumbnailAttachmentMetadata: NSObject {
 
     internal init(
         attachmentReferenceType: OWSAttachmentInfoReference,
-        attachmentId: String,
+        thumbnailAttachmentId: String?,
         mimeType: String?,
         sourceFilename: String?,
         attachmentType: TSAttachmentType?
     ) {
         self.attachmentReferenceType = attachmentReferenceType
-        self.attachmentId = attachmentId
+        self.thumbnailAttachmentId = thumbnailAttachmentId
         self.mimeType = mimeType
         self.sourceFilename = sourceFilename
         self.attachmentType = attachmentType

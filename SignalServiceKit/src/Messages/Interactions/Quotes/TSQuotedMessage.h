@@ -59,6 +59,10 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 @property (nonatomic) OWSAttachmentInfoReference attachmentType;
 @property (nonatomic) NSString *rawAttachmentId;
 
+/// rawAttachmentId, above, is Mantel-decoded and transforms nil values into empty strings
+/// (Mantle provides "reasonable" defaults). This undoes that; empty string values are reverted to nil.
+@property (nonatomic, readonly, nullable) NSString *attachmentId;
+
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 @end

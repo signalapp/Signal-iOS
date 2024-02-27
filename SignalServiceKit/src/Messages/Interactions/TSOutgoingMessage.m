@@ -1132,10 +1132,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             [SSKProtoDataMessageQuoteQuotedAttachment builder];
         quotedAttachmentBuilder.contentType = thumbnailAttachment.mimeType;
         quotedAttachmentBuilder.fileName = thumbnailAttachment.sourceFilename;
-        quotedAttachmentBuilder.thumbnail =
-            [TSAttachmentStream buildProtoForAttachmentId:thumbnailAttachment.attachmentId
-                                        containingMessage:self
-                                              transaction:transaction];
+        if (thumbnailAttachment.thumbnailAttachmentId) {
+            quotedAttachmentBuilder.thumbnail =
+                [TSAttachmentStream buildProtoForAttachmentId:thumbnailAttachment.thumbnailAttachmentId
+                                            containingMessage:self
+                                                  transaction:transaction];
+        }
 
         NSError *error;
         SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =

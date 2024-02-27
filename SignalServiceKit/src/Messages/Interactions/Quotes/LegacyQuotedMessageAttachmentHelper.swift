@@ -24,7 +24,7 @@ internal class LegacyQuotedMessageAttachmentHelper: QuotedMessageAttachmentHelpe
         }
         return .init(
             attachmentReferenceType: info.attachmentType,
-            attachmentId: info.rawAttachmentId,
+            thumbnailAttachmentId: info.attachmentId,
             mimeType: info.contentType,
             sourceFilename: info.sourceFilename,
             // for legacy TSAttachments, this lives on the attachment object
@@ -124,7 +124,10 @@ internal class LegacyQuotedMessageAttachmentHelper: QuotedMessageAttachmentHelpe
             return nil
         }
 
-        guard let attachment = TSAttachment.anyFetch(uniqueId: info.rawAttachmentId, transaction: tx) else {
+        guard
+            let attachmentId = info.attachmentId,
+            let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: tx)
+        else {
             return nil
         }
         // We should clone the attachment if it's been downloaded but our quotedMessage doesn't have its own copy.
@@ -193,8 +196,9 @@ internal class LegacyQuotedMessageAttachmentHelper: QuotedMessageAttachmentHelpe
         // - Otherwise, we should copy the attachment stream to a new attachment
         // - Updating the message's state to now point to the new attachment
         guard
+            let attachmentId = info.attachmentId,
             let attachmentStream = TSAttachmentStream.anyFetchAttachmentStream(
-                uniqueId: info.rawAttachmentId,
+                uniqueId: attachmentId,
                 transaction: tx
             )
         else {

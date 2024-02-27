@@ -18,6 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAttachmentInfo
 
+- (nullable NSString *)attachmentId
+{
+    return _rawAttachmentId.ows_nilIfEmpty;
+}
+
 - (instancetype)initWithoutThumbnailWithContentType:(NSString *)contentType sourceFilename:(NSString *)sourceFilename
 {
     self = [super init];
@@ -515,7 +520,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)fetchThumbnailAttachmentIdForParentMessage:(id)message
                                                       transaction:(SDSAnyReadTransaction *)transaction
 {
-    return [[self.attachmentHelper thumbnailAttachmentMetadataWithParentMessage:message tx:transaction] attachmentId];
+    return [[self.attachmentHelper thumbnailAttachmentMetadataWithParentMessage:message
+                                                                             tx:transaction] thumbnailAttachmentId];
 }
 
 - (nullable DisplayableQuotedThumbnailAttachment *)
