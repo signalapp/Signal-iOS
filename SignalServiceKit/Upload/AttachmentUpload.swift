@@ -90,6 +90,7 @@ public struct AttachmentUpload {
     /// error that requires a full restart, this is the method that will be called to fetch a new upload form and
     /// rebuild the endpoint and upload state before trying again
     private func attemptUpload(localMetadata: Upload.LocalUploadMetadata, count: UInt = 0, progress: Upload.ProgressBlock?) async throws -> Upload.Result {
+        logger.info("Begin upload.")
         do {
             let attempt = try await buildAttempt(for: localMetadata, count: count, logger: logger)
             return try await performResumableUpload(attempt: attempt, progress: progress)
@@ -134,6 +135,7 @@ public struct AttachmentUpload {
             {
                 throw error
             }
+            attempt.logger.info("Retry fetching upload progress.")
             return try await getResumableUploadProgress(attempt: attempt, count: count + 1)
         }
     }
@@ -154,10 +156,13 @@ public struct AttachmentUpload {
         let uploadProgress = try await getResumableUploadProgress(attempt: attempt)
         switch uploadProgress {
         case .complete(let result):
+            attempt.logger.info("Complete upload reported by endpoint.")
             return result
         case .uploaded(let updatedBytesAlreadUploaded):
+            attempt.logger.info("Endpoint reported \(updatedBytesAlreadUploaded)/\(attempt.localMetadata.encryptedDataLength) uploaded.")
             bytesAlreadyUploaded = updatedBytesAlreadUploaded
         case .restart:
+            attempt.logger.warn("Error with fetching progress. Restart upload.")
             let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count + 1)
             throw Upload.Error.uploadFailure(recovery: .restart(.afterDelay(backoff)))
         }
@@ -176,11 +181,13 @@ public struct AttachmentUpload {
         }
 
         do {
-            return try await attempt.endpoint.performUpload(
+            let result = try await attempt.endpoint.performUpload(
                 startPoint: bytesAlreadyUploaded,
                 attempt: attempt,
                 progress: wrappedProgressBlock
             )
+            attempt.logger.info("Attachment uploaded successfully.")
+            return result
         } catch {
             if let statusCode = error.httpStatusCode {
                 attempt.logger.warn("Encountered error during upload. (code=\(statusCode)")
@@ -205,9 +212,9 @@ public struct AttachmentUpload {
             case .resume(let recoveryMode):
                 switch recoveryMode {
                 case .immediately:
-                    attempt.logger.warn("Retry upload immediately")
+                    attempt.logger.warn("Retry upload immediately.")
                 case .afterDelay(let delay):
-                    attempt.logger.warn("Retry upload after \(delay) seconds")
+                    attempt.logger.warn("Retry upload after \(delay) seconds.")
                     try await sleep(for: delay)
                 }
             case .restart:
@@ -216,6 +223,7 @@ public struct AttachmentUpload {
                 throw error
             }
 
+            attempt.logger.info("Resuming upload.")
             return try await performResumableUpload(attempt: attempt, count: count + 1, progress: progress)
         }
     }
@@ -275,7 +283,7 @@ public struct AttachmentUpload {
         }
 
         guard let digest = metadata.digest else {
-            throw OWSAssertionError("Digest missing for attachment")
+            throw OWSAssertionError("Digest missing for attachment.")
         }
 
         return Upload.LocalUploadMetadata(
