@@ -200,6 +200,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         toolbarContainer.autoPinEdge(toSuperviewEdge: .bottom)
         self.multiselectToolbarContainer = toolbarContainer
 
+        let bottomInset = tabController.tabBar.height - tabController.tabBar.safeAreaInsets.bottom
+        self.tableView.contentInset.bottom = bottomInset
+        self.tableView.verticalScrollIndicatorInsets.bottom = bottomInset
+
         tabController.setTabBarHidden(true, animated: true, duration: 0.1) { _ in
             // See ChatListViewController.showToolbar for why this is async
             DispatchQueue.main.async {
@@ -207,8 +211,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }
             UIView.animate(withDuration: 0.25) {
                 toolbarContainer.alpha = 1
-            } completion: { _ in
-                self.tableView.contentSize.height += toolbarContainer.height
             }
         }
     }
@@ -292,11 +294,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         guard let multiselectToolbarContainer else { return }
         UIView.animate(withDuration: 0.25) {
             multiselectToolbarContainer.alpha = 0
-            self.tableView.contentSize.height = self.tableView.sizeThatFitsMaxSize.height
         } completion: { _ in
             multiselectToolbarContainer.removeFromSuperview()
             guard let tabController = self.tabBarController as? HomeTabBarController else { return }
-            tabController.setTabBarHidden(false, animated: true, duration: 0.1)
+            tabController.setTabBarHidden(false, animated: true, duration: 0.1) { _ in
+                self.tableView.contentInset.bottom = 0
+                self.tableView.verticalScrollIndicatorInsets.bottom = 0
+            }
         }
     }
 
