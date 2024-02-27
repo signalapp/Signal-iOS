@@ -4333,6 +4333,12 @@
 /* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
 
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Select a contact or group to start a new call with.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "New Call";
+
 /* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_MESSAGE_ACTION_TITLE" = "Message";
 

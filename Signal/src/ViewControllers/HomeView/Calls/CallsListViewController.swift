@@ -259,7 +259,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             target: self,
             action: #selector(newCall)
         )
-        // [CallsTab] TODO: Accessibility label
+        barButtonItem.accessibilityLabel = OWSLocalizedString(
+            "NEW_CALL_LABEL",
+            comment: "Accessibility label for the new call button on the Calls Tab"
+        )
+        barButtonItem.accessibilityHint = OWSLocalizedString(
+            "NEW_CALL_HINT",
+            comment: "Accessibility hint describing the action of the new call button on the Calls Tab"
+        )
         return barButtonItem
     }
 
