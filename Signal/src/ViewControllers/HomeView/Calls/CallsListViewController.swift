@@ -575,12 +575,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
             self.deps.db.write { tx in
                 self.deps.callRecordMissedCallManager.markUnreadCallsAsRead(
+                    beforeTimestamp: nil,
+                    sendMarkedAsReadSyncMessage: true,
                     tx: tx.asV2Write
                 )
-
-                tx.addAsyncCompletionOnMain {
-                    self.deps.badgeManager.invalidateBadgeValue()
-                }
             }
         }
     }

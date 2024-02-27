@@ -20,38 +20,40 @@ final class OutogingCallLogEventSyncMessageTest: SSKBaseTestSwift {
             )
         }
 
-        let syncMessage: OutgoingCallLogEventSyncMessage = write { tx in
-            return OutgoingCallLogEventSyncMessage(
-                callLogEvent: OutgoingCallLogEventSyncMessage.CallLogEvent(
-                    eventType: .clear,
-                    timestamp: 12
-                ),
-                thread: ContactThreadFactory().create(transaction: tx),
-                tx: tx
+        for (idx, eventType) in OutgoingCallLogEventSyncMessage.CallLogEvent.EventType.allCases.enumerated() {
+            let syncMessage: OutgoingCallLogEventSyncMessage = write { tx in
+                return OutgoingCallLogEventSyncMessage(
+                    callLogEvent: OutgoingCallLogEventSyncMessage.CallLogEvent(
+                        eventType: eventType,
+                        timestamp: UInt64(idx * 100)
+                    ),
+                    thread: ContactThreadFactory().create(transaction: tx),
+                    tx: tx
+                )
+            }
+
+            let archivedData = try NSKeyedArchiver.archivedData(
+                withRootObject: syncMessage,
+                requiringSecureCoding: false
+            )
+
+            guard let deserializedSyncMessage = try NSKeyedUnarchiver.unarchivedObject(
+                ofClass: OutgoingCallLogEventSyncMessage.self,
+                from: archivedData,
+                requiringSecureCoding: false
+            ) else {
+                XCTFail("Got nil when unarchiving!")
+                return
+            }
+
+            XCTAssertEqual(
+                syncMessage.callLogEvent.eventType,
+                deserializedSyncMessage.callLogEvent.eventType
+            )
+            XCTAssertEqual(
+                syncMessage.callLogEvent.timestamp,
+                deserializedSyncMessage.callLogEvent.timestamp
             )
         }
-
-        let archivedData = try NSKeyedArchiver.archivedData(
-            withRootObject: syncMessage,
-            requiringSecureCoding: false
-        )
-
-        guard let deserializedSyncMessage = try NSKeyedUnarchiver.unarchivedObject(
-            ofClass: OutgoingCallLogEventSyncMessage.self,
-            from: archivedData,
-            requiringSecureCoding: false
-        ) else {
-            XCTFail("Got nil when unarchiving!")
-            return
-        }
-
-        XCTAssertEqual(
-            syncMessage.callLogEvent.eventType,
-            deserializedSyncMessage.callLogEvent.eventType
-        )
-        XCTAssertEqual(
-            syncMessage.callLogEvent.timestamp,
-            deserializedSyncMessage.callLogEvent.timestamp
-        )
     }
 }

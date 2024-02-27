@@ -13073,18 +13073,21 @@ extension SSKProtoSyncMessagePniChangeNumberBuilder {
 
 @objc
 public enum SSKProtoSyncMessageCallLogEventType: Int32 {
-    case clear = 0
+    case cleared = 0
+    case markedAsRead = 1
 }
 
 private func SSKProtoSyncMessageCallLogEventTypeWrap(_ value: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum) -> SSKProtoSyncMessageCallLogEventType {
     switch value {
-    case .clear: return .clear
+    case .cleared: return .cleared
+    case .markedAsRead: return .markedAsRead
     }
 }
 
 private func SSKProtoSyncMessageCallLogEventTypeUnwrap(_ value: SSKProtoSyncMessageCallLogEventType) -> SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum {
     switch value {
-    case .clear: return .clear
+    case .cleared: return .cleared
+    case .markedAsRead: return .markedAsRead
     }
 }
 

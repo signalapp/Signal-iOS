@@ -204,7 +204,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 
         let outgoingCallLogEventSyncMessage = OutgoingCallLogEventSyncMessage(
             callLogEvent: OutgoingCallLogEventSyncMessage.CallLogEvent(
-                eventType: .clear,
+                eventType: .cleared,
                 timestamp: beforeTimestamp
             ),
             thread: localThread,

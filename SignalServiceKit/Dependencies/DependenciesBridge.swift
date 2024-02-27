@@ -462,7 +462,9 @@ public class DependenciesBridge {
 
             self.callRecordMissedCallManager = CallRecordMissedCallManagerImpl(
                 callRecordQuerier: self.callRecordQuerier,
-                callRecordStore: self.callRecordStore
+                callRecordStore: self.callRecordStore,
+                messageSenderJobQueue: messageSenderJobQueue,
+                threadStore: self.threadStore
             )
 
             self.groupCallRecordManager = GroupCallRecordManagerImpl(

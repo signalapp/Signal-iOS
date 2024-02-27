@@ -57,9 +57,14 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
 public extension OutgoingCallLogEventSyncMessage {
     @objc(OutgoingCallLogEvent)
     class CallLogEvent: NSObject, NSCoding {
-        public enum EventType: UInt {
-            /// Indicates we should clear our call log.
-            case clear = 0
+        public enum EventType: UInt, CaseIterable {
+            /// Indicates we cleared our call log of calls before the timestamp
+            /// in this event.
+            case cleared = 0
+
+            /// Indicates we marked calls as read before the timestamp in this
+            /// event.
+            case markedAsRead = 1
         }
 
         let eventType: EventType
@@ -106,7 +111,8 @@ public extension OutgoingCallLogEventSyncMessage {
 private extension OutgoingCallLogEventSyncMessage.CallLogEvent.EventType {
     var protoType: SSKProtoSyncMessageCallLogEventType {
         switch self {
-        case .clear: return .clear
+        case .cleared: return .cleared
+        case .markedAsRead: return .markedAsRead
         }
     }
 }

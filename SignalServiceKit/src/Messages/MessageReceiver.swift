@@ -623,12 +623,19 @@ public final class MessageReceiver: Dependencies {
             }
 
             switch callLogEventType {
-            case .clear:
+            case .cleared:
                 SSKEnvironment.shared.callRecordDeleteAllJobQueueRef
                     .addJob(
                         sendDeleteAllSyncMessage: false,
                         deleteAllBeforeTimestamp: callLogEvent.timestamp,
                         tx: tx
+                    )
+            case .markedAsRead:
+                DependenciesBridge.shared.callRecordMissedCallManager
+                    .markUnreadCallsAsRead(
+                        beforeTimestamp: callLogEvent.timestamp,
+                        sendMarkedAsReadSyncMessage: false,
+                        tx: tx.asV2Write
                     )
             }
         } else if let pniChangeNumber = syncMessage.pniChangeNumber {

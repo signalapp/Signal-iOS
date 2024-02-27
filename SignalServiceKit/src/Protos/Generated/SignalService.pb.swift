@@ -3652,7 +3652,7 @@ struct SignalServiceProtos_SyncMessage {
     // methods supported on all messages.
 
     var type: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum {
-      get {return _type ?? .clear}
+      get {return _type ?? .cleared}
       set {_type = newValue}
     }
     /// Returns true if `type` has been explicitly set.
@@ -3673,22 +3673,25 @@ struct SignalServiceProtos_SyncMessage {
 
     enum TypeEnum: SwiftProtobuf.Enum {
       typealias RawValue = Int
-      case clear // = 0
+      case cleared // = 0
+      case markedAsRead // = 1
 
       init() {
-        self = .clear
+        self = .cleared
       }
 
       init?(rawValue: Int) {
         switch rawValue {
-        case 0: self = .clear
+        case 0: self = .cleared
+        case 1: self = .markedAsRead
         default: return nil
         }
       }
 
       var rawValue: Int {
         switch self {
-        case .clear: return 0
+        case .cleared: return 0
+        case .markedAsRead: return 1
         }
       }
 
@@ -8305,7 +8308,8 @@ extension SignalServiceProtos_SyncMessage.CallLogEvent: SwiftProtobuf.Message, S
 
 extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "CLEAR"),
+    0: .same(proto: "CLEARED"),
+    1: .same(proto: "MARKED_AS_READ"),
   ]
 }
 
