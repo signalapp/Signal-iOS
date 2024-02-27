@@ -7865,7 +7865,7 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Username cannot begin with a number.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Username cannot begin with a number";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Changing your username will reset your existing QR code and link. Are you sure?";
@@ -7877,7 +7877,7 @@
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
@@ -7889,10 +7889,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
@@ -7901,7 +7901,7 @@
 "USERNAME_SELECTION_TITLE" = "Username";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "This number can’t be 00. Enter a digit between 1–9";
