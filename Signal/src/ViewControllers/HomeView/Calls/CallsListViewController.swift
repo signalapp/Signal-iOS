@@ -89,10 +89,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         navigationItem.titleView = filterPicker
         updateBarButtonItems()
 
-        let searchController = UISearchController(searchResultsController: nil)
-        navigationItem.searchController = searchController
-        searchController.searchResultsUpdater = self
-
         view.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
         tableView.delegate = self
@@ -366,6 +362,18 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         segmentedControl.addTarget(self, action: #selector(tabChanged), for: .valueChanged)
         return segmentedControl
     }()
+
+    // MARK: Search bar
+
+    /// Sets the navigation item's search controller if it hasn't already been
+    /// set. Call this after loading the table the first time so that the search
+    /// bar is collapsed by default.
+    func setSearchControllerIfNeeded() {
+        guard navigationItem.searchController == nil else { return }
+        let searchController = UISearchController(searchResultsController: nil)
+        navigationItem.searchController = searchController
+        searchController.searchResultsUpdater = self
+    }
 
     @objc
     private func tabChanged() {
@@ -732,6 +740,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         DispatchQueue.main.async {
             self.updateSnapshot(animated: animated)
+            // Add the search bar after loading table content the first time so
+            // that it is collapsed by default.
+            self.setSearchControllerIfNeeded()
         }
     }
 
