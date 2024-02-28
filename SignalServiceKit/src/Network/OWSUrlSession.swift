@@ -561,7 +561,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         Logger.verbose("Making request: \(rawRequest.description)")
 
         return firstly(on: DispatchQueue.global()) { () throws -> Promise<HTTPResponse> in
-            urlSession.uploadTaskPromise(request: request, data: requestBody)
+            urlSession.uploadTaskPromise(request: request, data: requestBody, progress: nil)
         }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> HTTPResponse in
             Logger.info("Success: \(rawRequest.description)")
             return response

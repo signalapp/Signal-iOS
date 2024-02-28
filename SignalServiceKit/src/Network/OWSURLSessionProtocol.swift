@@ -210,14 +210,6 @@ public extension OWSURLSessionProtocol {
     // MARK: - Upload Tasks Convenience
 
     func uploadTaskPromise(
-        request: URLRequest,
-        data requestData: Data,
-        progress progressBlock: ProgressBlock? = nil
-    ) -> Promise<HTTPResponse> {
-        return self.uploadTaskPromise(request: request, data: requestData, progress: progressBlock)
-    }
-
-    func uploadTaskPromise(
         _ urlString: String,
         method: HTTPMethod,
         headers: [String: String]? = nil,
