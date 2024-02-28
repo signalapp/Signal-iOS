@@ -63,6 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         transaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable NSString *)comparableNonUnknownNameForAddress:(SignalServiceAddress *)address
+                                              transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)systemContactNameForAddress:(SignalServiceAddress *)address
                                        transaction:(SDSAnyReadTransaction *)transaction

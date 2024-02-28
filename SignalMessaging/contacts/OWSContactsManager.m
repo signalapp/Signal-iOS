@@ -332,6 +332,21 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     return [self displayNameForAddress:address transaction:transaction];
 }
 
+- (nullable NSString *)comparableNonUnknownNameForAddress:(SignalServiceAddress *)address
+                                              transaction:(SDSAnyReadTransaction *)transaction
+{
+    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:address transaction:transaction];
+
+    if (nameComponents != nil && nameComponents.givenName.length > 0 && nameComponents.familyName.length > 0) {
+        NSString *leftName = self.shouldSortByGivenName ? nameComponents.givenName : nameComponents.familyName;
+        NSString *rightName = self.shouldSortByGivenName ? nameComponents.familyName : nameComponents.givenName;
+        return [NSString stringWithFormat:@"%@\t%@", leftName, rightName];
+    }
+
+    // Fall back to non-system contact, non-profile display name.
+    return [self _nonUnknownDisplayNameFor:address transaction:transaction];
+}
+
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {
     return [self.modelReadCaches.signalAccountReadCache leaseCacheSize:size];
 }

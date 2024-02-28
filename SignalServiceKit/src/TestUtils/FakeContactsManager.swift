@@ -53,6 +53,10 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return displayName(for: address, transaction: transaction)
     }
 
+    public func comparableNonUnknownName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return displayName(for: address, transaction: transaction)
+    }
+
     public func systemContactName(for address: SignalServiceAddress, tx transaction: SDSAnyReadTransaction) -> String? {
         return fetchSignalAccount(for: address, transaction: transaction)?.contact?.fullName
     }

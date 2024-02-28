@@ -323,14 +323,14 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                 resolvedAddresses.remove(localIdentifiers.aciAddress)
             }
 
-            let sortableAddresses = contactsManagerImpl.sortedSortableAddresses(for: resolvedAddresses, tx: tx)
+            let sortableAddresses = contactsManagerImpl.sortedNonUnknownSortableAddresses(for: resolvedAddresses, tx: tx)
             signalConnections = sortableAddresses.map { sortableAddress in
                 return SignalConnection(
                     address: sortableAddress.address,
                     comparableName: sortableAddress.comparableName
                 )
             }
-            signalConnectionAddresses = resolvedAddresses
+            signalConnectionAddresses = Set(signalConnections.lazy.map { $0.address })
         }
     }
 

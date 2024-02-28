@@ -1279,6 +1279,30 @@ extension OWSContactsManager {
         }
     }
 
+    private func displayNamesOptionalRefinery(
+        for addresses: [SignalServiceAddress],
+        transaction: SDSAnyReadTransaction
+    ) -> Refinery<SignalServiceAddress, String?> {
+        return .init(addresses).refine { addresses -> [String??] in
+            // Prefer a saved name from system contacts, if available.
+            systemContactNames(for: addresses, tx: transaction)
+        }.refine { addresses -> [String??] in
+            profileManager.fullNames(for: Array(addresses), tx: transaction)
+        }.refine { addresses -> [String??] in
+            phoneNumbers(for: Array(addresses)).lazy.map { $0?.nilIfEmpty }
+        }.refine { addresses -> [String??] in
+            swiftValues.usernameLookupManager.fetchUsernames(
+                forAddresses: addresses,
+                transaction: transaction.asV2Read
+            )
+        }.refine { addresses -> [String??] in
+            return addresses.lazy.map {
+                self.fetchProfile(forUnknownAddress: $0)
+                return nil
+            }
+        }
+    }
+
     public func displayNamesByAddress(
         for addresses: [SignalServiceAddress],
         transaction: SDSAnyReadTransaction
@@ -1289,6 +1313,11 @@ extension OWSContactsManager {
     @objc(objc_displayNamesForAddresses:transaction:)
     func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
         displayNamesRefinery(for: addresses, transaction: transaction).values.map { $0! }
+    }
+
+    @objc
+    func _nonUnknownDisplayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
+        return displayNamesOptionalRefinery(for: [address], transaction: transaction).values[0]!
     }
 
     func phoneNumbers(for addresses: [SignalServiceAddress]) -> [String?] {
@@ -1396,6 +1425,22 @@ extension ContactsManagerProtocol {
             return SortableAddress(
                 address: address,
                 comparableName: comparableName(for: address, transaction: tx)
+            )
+        }
+        return sortableAddresses.sorted()
+    }
+
+    public func sortedNonUnknownSortableAddresses(
+        for addresses: some Sequence<SignalServiceAddress>,
+        tx: SDSAnyReadTransaction
+    ) -> [SortableAddress] {
+        let sortableAddresses = addresses.compactMap { address -> SortableAddress? in
+            guard let comparableName = comparableNonUnknownName(for: address, transaction: tx) else {
+                return nil
+            }
+            return SortableAddress(
+                address: address,
+                comparableName: comparableName
             )
         }
         return sortableAddresses.sorted()
