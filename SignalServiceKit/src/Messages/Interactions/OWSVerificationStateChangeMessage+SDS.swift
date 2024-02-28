@@ -127,7 +127,7 @@ class OWSVerificationStateChangeMessageSerializer: SDSSerializer {
         let paymentNotification: Data? = nil
         let paymentRequest: Data? = nil
         let viewed: Bool? = nil
-        let serverGuid: String? = nil
+        let serverGuid: String? = model.serverGuid
         let storyAuthorUuidString: String? = model.storyAuthorUuidString
         let storyTimestamp: UInt64? = archiveOptionalNSNumber(model.storyTimestamp, conversion: { $0.uint64Value })
         let isGroupStoryReply: Bool? = model.isGroupStoryReply

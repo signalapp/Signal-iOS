@@ -135,6 +135,7 @@ public protocol GroupsV2Swift: GroupsV2 {
                                           ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions
 
     func updateGroupWithChangeActions(groupId: Data,
+                                      spamReportingMetadata: GroupUpdateSpamReportingMetadata,
                                       changeActionsProto: GroupsProtoGroupChangeActions,
                                       ignoreSignature: Bool,
                                       groupSecretParamsData: Data) throws -> Promise<TSGroupThread>
@@ -338,10 +339,12 @@ public protocol GroupV2UpdatesSwift: GroupV2Updates {
                                                            groupSecretParamsData: Data) -> Promise<TSGroupThread>
 
     func tryToRefreshV2GroupThread(groupId: Data,
+                                   spamReportingMetadata: GroupUpdateSpamReportingMetadata,
                                    groupSecretParamsData: Data,
                                    groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread>
 
     func updateGroupWithChangeActions(groupId: Data,
+                                      spamReportingMetadata: GroupUpdateSpamReportingMetadata,
                                       changeActionsProto: GroupsProtoGroupChangeActions,
                                       downloadedAvatars: GroupV2DownloadedAvatars,
                                       transaction: SDSAnyWriteTransaction) throws -> TSGroupThread
@@ -654,6 +657,7 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
     }
 
     public func updateGroupWithChangeActions(groupId: Data,
+                                             spamReportingMetadata: GroupUpdateSpamReportingMetadata,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
                                              ignoreSignature: Bool,
                                              groupSecretParamsData: Data) throws -> Promise<TSGroupThread> {
@@ -767,12 +771,14 @@ public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
     }
 
     public func tryToRefreshV2GroupThread(groupId: Data,
+                                          spamReportingMetadata: GroupUpdateSpamReportingMetadata,
                                           groupSecretParamsData: Data,
                                           groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
     public func updateGroupWithChangeActions(groupId: Data,
+                                             spamReportingMetadata: GroupUpdateSpamReportingMetadata,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
                                              downloadedAvatars: GroupV2DownloadedAvatars,
                                              transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {

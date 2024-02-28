@@ -61,6 +61,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhone
 @property (nonatomic, readonly) TSInfoMessageType messageType;
 @property (nonatomic, readonly, nullable) NSString *customMessage;
 @property (nonatomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
+@property (nonatomic, readonly, nullable) NSString *serverGuid;
 
 @property (nonatomic, nullable) NSDictionary<InfoMessageUserInfoKey, id> *infoMessageUserInfo;
 
@@ -99,6 +100,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhone
 
 - (instancetype)initWithThread:(TSThread *)thread
                      timestamp:(uint64_t)timestamp
+                    serverGuid:(nullable NSString *)serverGuid
                    messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
 
 // Convenience initializer which is neither "designated" nor "unavailable".
@@ -114,6 +116,13 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhone
 // Convenience initializer which is neither "designated" nor "unavailable".
 - (instancetype)initWithThread:(TSThread *)thread
                      timestamp:(uint64_t)timestamp
+                   messageType:(TSInfoMessageType)infoMessage
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
+
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                    serverGuid:(nullable NSString *)serverGuid
                    messageType:(TSInfoMessageType)infoMessage
            infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
 
@@ -158,8 +167,9 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhone
              infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
+                      serverGuid:(nullable NSString *)serverGuid
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:customMessage:infoMessageUserInfo:messageType:read:serverGuid:unregisteredAddress:));
 
 // clang-format on
 

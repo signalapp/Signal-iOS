@@ -364,6 +364,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             return firstly {
                 // We can ignoreSignature because these protos came from the service.
                 return self.updateGroupWithChangeActions(groupId: groupId,
+                                                         spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                                                          changeActionsProto: changeActionsProto,
                                                          justUploadedAvatars: downloadedAvatars,
                                                          ignoreSignature: true,
@@ -486,24 +487,46 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         }
     }
 
+    // This method can process protos from another client, so there's a possibility
+    // the serverGuid may be present and can be passed along to record with the update.
     public func updateGroupWithChangeActions(groupId: Data,
+                                             spamReportingMetadata: GroupUpdateSpamReportingMetadata,
                                              changeActionsProto: GroupsProtoGroupChangeActions,
                                              ignoreSignature: Bool,
                                              groupSecretParamsData: Data) throws -> Promise<TSGroupThread> {
         let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
-        return updateGroupWithChangeActions(groupId: groupId,
-                                            changeActionsProto: changeActionsProto,
-                                            justUploadedAvatars: nil,
-                                            ignoreSignature: ignoreSignature,
-                                            groupV2Params: groupV2Params)
+        return _updateGroupWithChangeActions(
+            groupId: groupId,
+            spamReportingMetadata: spamReportingMetadata,
+            changeActionsProto: changeActionsProto,
+            justUploadedAvatars: nil,
+            ignoreSignature: ignoreSignature,
+            groupV2Params: groupV2Params
+        )
     }
 
     private func updateGroupWithChangeActions(groupId: Data,
+                                              spamReportingMetadata: GroupUpdateSpamReportingMetadata,
                                               changeActionsProto: GroupsProtoGroupChangeActions,
                                               justUploadedAvatars: GroupV2DownloadedAvatars?,
                                               ignoreSignature: Bool,
                                               groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
+        return _updateGroupWithChangeActions(
+            groupId: groupId,
+            spamReportingMetadata: spamReportingMetadata,
+            changeActionsProto: changeActionsProto,
+            justUploadedAvatars: justUploadedAvatars,
+            ignoreSignature: ignoreSignature,
+            groupV2Params: groupV2Params
+        )
+    }
 
+    private func _updateGroupWithChangeActions(groupId: Data,
+                                               spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+                                               changeActionsProto: GroupsProtoGroupChangeActions,
+                                               justUploadedAvatars: GroupV2DownloadedAvatars?,
+                                               ignoreSignature: Bool,
+                                               groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
         return firstly {
             self.fetchAllAvatarData(changeActionsProto: changeActionsProto,
                                     justUploadedAvatars: justUploadedAvatars,
@@ -512,6 +535,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         }.map(on: DispatchQueue.global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> TSGroupThread in
             return try self.databaseStorage.write { transaction in
                 try self.groupV2Updates.updateGroupWithChangeActions(groupId: groupId,
+                                                                     spamReportingMetadata: spamReportingMetadata,
                                                                      changeActionsProto: changeActionsProto,
                                                                      downloadedAvatars: downloadedAvatars,
                                                                      transaction: transaction)
@@ -1232,6 +1256,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
         firstly {
             self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupId,
+                                                          spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                                                           groupSecretParamsData: groupModelV2.secretParamsData,
                                                           groupUpdateMode: groupUpdateMode)
         }.done { _ in
@@ -2039,6 +2064,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     newlyLearnedPniToAciAssociations: [:],
                     groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                     localIdentifiers: localIdentifiers,
+                    spamReportingMetadata: .createdByLocalAction,
                     transaction: transaction
                 )
 
@@ -2079,6 +2105,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
                 GroupManager.insertGroupUpdateInfoMessageForNewGroup(
                     localIdentifiers: localIdentifiers,
+                    spamReportingMetadata: .createdByLocalAction,
                     groupThread: groupThread,
                     groupModel: groupModel,
                     disappearingMessageToken: dmToken,
@@ -2234,6 +2261,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 newlyLearnedPniToAciAssociations: [:],
                 groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                 localIdentifiers: localIdentifiers,
+                spamReportingMetadata: .createdByLocalAction,
                 transaction: transaction
             )
 
@@ -2389,6 +2417,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     newlyLearnedPniToAciAssociations: [:],
                     groupUpdateSource: .unknown,
                     localIdentifiers: localIdentifiers,
+                    spamReportingMetadata: .createdByLocalAction,
                     transaction: transaction
                 )
             }

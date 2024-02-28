@@ -86,6 +86,15 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                      timestamp:(uint64_t)timestamp
                    messageType:(TSInfoMessageType)infoMessage
 {
+    self = [self initWithThread:thread timestamp:0 serverGuid:nil messageType:infoMessage];
+    return self;
+}
+
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                    serverGuid:(nullable NSString *)serverGuid
+                   messageType:(TSInfoMessageType)infoMessage
+{
     TSMessageBuilder *builder;
     if (timestamp > 0) {
         builder = [TSMessageBuilder messageBuilderWithThread:thread timestamp:timestamp messageBody:nil];
@@ -97,6 +106,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         return self;
     }
 
+    _serverGuid = serverGuid;
     _messageType = infoMessage;
     _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
 
@@ -146,6 +156,23 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                    serverGuid:(nullable NSString *)serverGuid
+                   messageType:(TSInfoMessageType)infoMessageType
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
+{
+    self = [self initWithThread:thread timestamp:timestamp serverGuid:serverGuid messageType:infoMessageType];
+    if (!self) {
+        return self;
+    }
+
+    _infoMessageUserInfo = infoMessageUserInfo;
+
+    return self;
+}
+
+
+- (instancetype)initWithThread:(TSThread *)thread
                    messageType:(TSInfoMessageType)infoMessage
            unregisteredAddress:(SignalServiceAddress *)unregisteredAddress
 {
@@ -192,6 +219,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
              infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
+                      serverGuid:(nullable NSString *)serverGuid
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
 {
     self = [super initWithGrdbId:grdbId
@@ -229,6 +257,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     _infoMessageUserInfo = infoMessageUserInfo;
     _messageType = messageType;
     _read = read;
+    _serverGuid = serverGuid;
     _unregisteredAddress = unregisteredAddress;
 
     return self;

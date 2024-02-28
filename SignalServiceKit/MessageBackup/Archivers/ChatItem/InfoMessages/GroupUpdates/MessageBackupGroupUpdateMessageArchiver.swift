@@ -252,8 +252,12 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
             return .success(())
         }
 
+        // serverGuid is intentionally dropped here. In most cases,
+        // this token will be too old to be useful, so don't worry
+        // about restoring it.
         let infoMessage = TSInfoMessage.newGroupUpdateInfoMessage(
             timestamp: chatItem.dateSent,
+            spamReportingMetadata: .unreportable,
             groupThread: groupThread,
             updateItems: persistableUpdates
         )

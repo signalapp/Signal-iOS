@@ -95,6 +95,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
              infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
+                      serverGuid:(nullable NSString *)serverGuid
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                  protocolVersion:(NSUInteger)protocolVersion
                           sender:(nullable SignalServiceAddress *)sender
@@ -129,6 +130,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                infoMessageUserInfo:infoMessageUserInfo
                        messageType:messageType
                               read:read
+                        serverGuid:serverGuid
                unregisteredAddress:unregisteredAddress];
 
     if (!self) {

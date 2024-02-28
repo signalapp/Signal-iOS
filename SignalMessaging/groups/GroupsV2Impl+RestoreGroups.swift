@@ -238,6 +238,7 @@ public extension GroupsV2Impl {
                 let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
                 firstly {
                     self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupContextInfo.groupId,
+                                                                  spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                                                                   groupSecretParamsData: groupContextInfo.groupSecretParamsData,
                                                                   groupUpdateMode: groupUpdateMode)
                 }.done { _ in

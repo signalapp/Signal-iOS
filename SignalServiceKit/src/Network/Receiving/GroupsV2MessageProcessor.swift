@@ -765,8 +765,14 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             guard changeActionsProto.revision == contextRevision else {
                 throw OWSAssertionError("Embedded change proto revision doesn't match context revision.")
             }
+
+            let spamReportingMetadata: GroupUpdateSpamReportingMetadata = {
+                guard let serverGuid = jobInfo.envelope?.serverGuid else { return .unreportable }
+                return .reportable(serverGuid: serverGuid)
+            }()
             let updatedGroupThread = try await groupsV2Swift.updateGroupWithChangeActions(
                 groupId: oldGroupModel.groupId,
+                spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,
                 ignoreSignature: false,
                 groupSecretParamsData: oldGroupModel.secretParamsData
@@ -816,10 +822,15 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         // See GroupV2UpdatesImpl.
         // This will try to update the group using incremental "changes" but
         // failover to using a "snapshot".
+        let spamReportingMetadata: GroupUpdateSpamReportingMetadata = {
+            guard let serverGuid = jobInfo.envelope?.serverGuid else { return .unreportable }
+            return .reportable(serverGuid: serverGuid)
+        }()
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
         do {
             _ = try await groupV2Updates.tryToRefreshV2GroupThread(
                 groupId: groupContextInfo.groupId,
+                spamReportingMetadata: spamReportingMetadata,
                 groupSecretParamsData: groupContextInfo.groupSecretParamsData,
                 groupUpdateMode: groupUpdateMode
             ).awaitable()

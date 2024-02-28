@@ -287,6 +287,7 @@ public class GroupManager: NSObject {
                     disappearingMessageToken: disappearingMessageToken,
                     groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                     localIdentifiers: localIdentifiers,
+                    spamReportingMetadata: .createdByLocalAction,
                     transaction: transaction
                 )
                 self.profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
@@ -442,6 +443,7 @@ public class GroupManager: NSObject {
             didAddLocalUserToV2Group: false,
             infoMessagePolicy: infoMessagePolicy,
             localIdentifiers: localIdentifiers,
+            spamReportingMetadata: .unreportable,
             transaction: transaction
         )
     }
@@ -561,6 +563,7 @@ public class GroupManager: NSObject {
                         tx: transaction
                     ).resolvedValue()
                 }
+
                 let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
                     thread: thread,
                     configuration: result.newConfiguration,
@@ -894,6 +897,7 @@ public class GroupManager: NSObject {
                     groupUpdateSource: .unknown,
                     infoMessagePolicy: .always,
                     localIdentifiers: localIdentifiers,
+                    spamReportingMetadata: .createdByLocalAction,
                     transaction: transaction
                 )
             } catch {
@@ -994,6 +998,7 @@ public class GroupManager: NSObject {
         groupUpdateSource: GroupUpdateSource,
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
     ) -> TSGroupThread {
 
@@ -1030,6 +1035,7 @@ public class GroupManager: NSObject {
         case .always, .insertsOnly:
             insertGroupUpdateInfoMessageForNewGroup(
                 localIdentifiers: localIdentifiers,
+                spamReportingMetadata: spamReportingMetadata,
                 groupThread: groupThread,
                 groupModel: groupModel,
                 disappearingMessageToken: newDisappearingMessageToken,
@@ -1063,6 +1069,7 @@ public class GroupManager: NSObject {
         didAddLocalUserToV2Group: Bool,
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
     ) throws -> UpsertGroupResult {
 
@@ -1097,6 +1104,7 @@ public class GroupManager: NSObject {
                 groupUpdateSource: shouldAttributeAuthor ? groupUpdateSource : .unknown,
                 infoMessagePolicy: infoMessagePolicy,
                 localIdentifiers: localIdentifiers,
+                spamReportingMetadata: spamReportingMetadata,
                 transaction: transaction
             )
 
@@ -1110,6 +1118,7 @@ public class GroupManager: NSObject {
             groupUpdateSource: groupUpdateSource,
             infoMessagePolicy: infoMessagePolicy,
             localIdentifiers: localIdentifiers,
+            spamReportingMetadata: spamReportingMetadata,
             transaction: transaction
         )
     }
@@ -1128,6 +1137,7 @@ public class GroupManager: NSObject {
         groupUpdateSource: GroupUpdateSource,
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
     ) throws -> UpsertGroupResult {
 
@@ -1302,6 +1312,7 @@ public class GroupManager: NSObject {
                 newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
                 groupUpdateSource: groupUpdateSource,
                 localIdentifiers: localIdentifiers,
+                spamReportingMetadata: spamReportingMetadata,
                 transaction: transaction
             )
         default:
