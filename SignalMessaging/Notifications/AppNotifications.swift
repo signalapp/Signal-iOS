@@ -757,8 +757,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
             notificationBody = String(format: NotificationStrings.incomingReactionStickerMessageFormat, reaction.emoji)
         } else if message.contactShare != nil {
             notificationBody = String(format: NotificationStrings.incomingReactionContactShareMessageFormat, reaction.emoji)
-        } else if message.hasBodyAttachments(with: transaction) {
-            let mediaAttachments = message.mediaAttachments(with: transaction)
+        } else if message.hasBodyAttachments(transaction: transaction) {
+            let mediaAttachments = message.mediaAttachments(transaction: transaction)
             let firstAttachment = mediaAttachments.first
             let firstAttachmentType = firstAttachment?.attachmentType(forContainingMessage: message, transaction: transaction)
 

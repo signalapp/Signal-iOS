@@ -328,7 +328,7 @@ extension SharingThreadPickerViewController {
                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
 
         let attachmentIds: [String]? = databaseStorage.read { tx in
-            return self.outgoingMessages.first?.bodyAttachmentIds(with: tx)
+            return self.outgoingMessages.first?.bodyAttachmentIds(transaction: tx)
         }
 
         var progressPerAttachment = [String: Float]()

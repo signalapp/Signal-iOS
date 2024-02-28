@@ -103,7 +103,7 @@ public class OutgoingMessagePreparer: NSObject {
     private static func prepareAttachments(message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) -> [String] {
         var attachmentIds = [String]()
 
-        attachmentIds.append(contentsOf: message.bodyAttachmentIds(with: tx))
+        attachmentIds.append(contentsOf: message.bodyAttachmentIds(transaction: tx))
 
         if message.quotedMessage?.fetchThumbnailAttachmentId(forParentMessage: message, transaction: tx) != nil {
             // We need to update the message record here to reflect the new attachments we may create.

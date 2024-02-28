@@ -18,7 +18,7 @@ public protocol UploadManager {
 public actor UploadManagerImpl: UploadManager {
 
     private let db: DB
-    private let attachmentStore: AttachmentStore
+    private let attachmentStore: TSAttachmentStore
     private let interactionStore: InteractionStore
     private let networkManager: NetworkManager
     private let socketManager: SocketManager
@@ -29,7 +29,7 @@ public actor UploadManagerImpl: UploadManager {
 
     public init(
         db: DB,
-        attachmentStore: AttachmentStore,
+        attachmentStore: TSAttachmentStore,
         interactionStore: InteractionStore,
         networkManager: NetworkManager,
         socketManager: SocketManager,

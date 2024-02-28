@@ -11,7 +11,7 @@ public class FailedAttachmentDownloadsJob {
 
     public func runSync(databaseStorage: SDSDatabaseStorage) {
         databaseStorage.write { tx in
-            let attachmentIds = AttachmentFinder.attachmentPointerIdsToMarkAsFailed(tx: tx)
+            let attachmentIds = TSAttachmentStoreImpl().attachmentPointerIdsToMarkAsFailed(tx: tx.asV2Read)
             attachmentIds.forEach { attachmentId in
                 // Since we can't directly mutate the enumerated attachments, we store only
                 // their ids in hopes of saving a little memory and then enumerate the

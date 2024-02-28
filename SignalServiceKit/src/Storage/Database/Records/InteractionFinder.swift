@@ -781,7 +781,7 @@ public class InteractionFinder: NSObject {
             // Attachment (once it exists) will not use this method; this is used
             // for orphan data cleanup which will take just a completely different
             // form with Attachment, this message enumeration will be obsolete.
-            guard message.hasBodyAttachments(with: transaction) else {
+            guard message.hasBodyAttachments(transaction: transaction) else {
                 owsFailDebug("message unexpectedly has no attachments")
                 continue
             }

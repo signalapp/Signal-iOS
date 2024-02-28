@@ -8,7 +8,7 @@ import Foundation
 
 extension Upload {
     enum Mocks {
-        typealias AttachmentStore = _UploadManager_AttachmentStoreMock
+        typealias TSAttachmentStore = _UploadManager_TSAttachmentStoreMock
         typealias NetworkManager = _UploadManager_NetworkManagerMock
         typealias URLSession = _UploadManager_OWSURLSessionMock
         typealias SocketManager = _UploadManager_SocketManagerMock
@@ -19,7 +19,7 @@ extension Upload {
     }
 }
 
-class _UploadManager_AttachmentStoreMock: AttachmentStoreMock {
+class _UploadManager_TSAttachmentStoreMock: TSAttachmentStoreMock {
     var filename: String!
     var size: Int!
     var uploadedAttachments = [TSAttachmentStream]()

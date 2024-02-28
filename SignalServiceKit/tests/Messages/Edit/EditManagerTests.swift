@@ -35,7 +35,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock(),
-                receiptManagerShim: ReceiptManagerMock()
+                receiptManagerShim: ReceiptManagerMock(),
+                tsResourceStore: TSResourceStoreMock()
             )
         )
 
@@ -80,7 +81,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock(),
-                receiptManagerShim: ReceiptManagerMock()
+                receiptManagerShim: ReceiptManagerMock(),
+                tsResourceStore: TSResourceStoreMock()
             )
         )
 
@@ -113,7 +115,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock(),
-                receiptManagerShim: ReceiptManagerMock()
+                receiptManagerShim: ReceiptManagerMock(),
+                tsResourceStore: TSResourceStoreMock()
             )
         )
 
@@ -145,7 +148,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock(),
-                receiptManagerShim: ReceiptManagerMock()
+                receiptManagerShim: ReceiptManagerMock(),
+                tsResourceStore: TSResourceStoreMock()
             )
         )
 
@@ -181,7 +185,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock(),
-                receiptManagerShim: ReceiptManagerMock()
+                receiptManagerShim: ReceiptManagerMock(),
+                tsResourceStore: TSResourceStoreMock()
             )
         )
 
@@ -333,33 +338,12 @@ class EditManagerTests: SSKBaseTestSwift {
             self.targetMessage = targetMessage
         }
 
-        func getBodyAttachmentIds(
-            message: TSMessage,
-            tx: DBReadTransaction
-        ) -> [String] {
-            return []
-        }
-
-        func getMediaAttachments(
-            message: TSMessage,
-            tx: DBReadTransaction
-        ) -> [TSAttachment] {
-            return []
-        }
-
         func getIsVoiceMessage(
             forAttachment attachment: TSAttachment,
             on message: TSMessage,
             tx: DBReadTransaction
         ) -> Bool {
             return false
-        }
-
-        func getOversizedTextAttachments(
-            message: TSMessage,
-            tx: DBReadTransaction
-        ) -> TSAttachment? {
-            return nil
         }
 
         func insertMessageCopy(message: TSMessage, tx: DBWriteTransaction) {

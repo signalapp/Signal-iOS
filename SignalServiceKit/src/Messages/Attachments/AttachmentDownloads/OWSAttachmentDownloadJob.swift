@@ -189,7 +189,7 @@ extension OWSAttachmentDownloads {
 
             var bodyAttachmentJobs = [Job]()
             var bodyAttachmentPromises = [Promise<TSAttachmentStream>]()
-            for attachment in message.bodyAttachments(with: tx) {
+            for attachment in message.bodyAttachments(transaction: tx) {
                 let category: AttachmentCategory = {
                     if attachment.isImageMimeType {
                         return .bodyMediaImage

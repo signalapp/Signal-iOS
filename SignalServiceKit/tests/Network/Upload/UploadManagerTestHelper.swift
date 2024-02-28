@@ -31,7 +31,7 @@ class UploadManagerMockHelper {
     var mockServiceManager = OWSSignalServiceMock()
     var mockSocketManager = Upload.Mocks.SocketManager()
     var mockAttachmentEncrypter = Upload.Mocks.AttachmentEncrypter()
-    var mockAttachmentStore = Upload.Mocks.AttachmentStore()
+    var mockAttachmentStore = Upload.Mocks.TSAttachmentStore()
     var mockBlurHash = Upload.Mocks.BlurHash()
     var mockFileSystem = Upload.Mocks.FileSystem()
     var mockInteractionStore = MockInteractionStore()

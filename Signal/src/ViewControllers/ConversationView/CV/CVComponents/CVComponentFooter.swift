@@ -229,7 +229,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 forMcReceiptData: receiptData,
                 transaction: transaction).first
         else {
-            let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(with: transaction) ?? false
+            let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: transaction) ?? false
             let timestampText = Self.timestampText(
                 forInteraction: interaction,
                 shouldUseLongFormat: false,
@@ -351,7 +351,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
     static func buildState(interaction: TSInteraction, hasTapForMore: Bool, transaction: SDSAnyReadTransaction) -> State {
 
-        let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(with: transaction) ?? false
+        let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: transaction) ?? false
         let timestampText = Self.timestampText(
             forInteraction: interaction,
             shouldUseLongFormat: false,

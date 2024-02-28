@@ -28,7 +28,7 @@ public class MessageRecipientStatusUtils {
         recipientState: TSOutgoingMessageRecipientState,
         transaction: SDSAnyReadTransaction
     ) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
-        let hasBodyAttachments = outgoingMessage.hasBodyAttachments(with: transaction)
+        let hasBodyAttachments = outgoingMessage.hasBodyAttachments(transaction: transaction)
         return recipientStatusAndStatusMessage(
             outgoingMessage: outgoingMessage,
             recipientState: recipientState,
@@ -104,7 +104,7 @@ public class MessageRecipientStatusUtils {
         outgoingMessage: TSOutgoingMessage,
         transaction: SDSAnyReadTransaction
     ) -> (status: MessageReceiptStatus, message: String) {
-        let hasBodyAttachments = outgoingMessage.hasBodyAttachments(with: transaction)
+        let hasBodyAttachments = outgoingMessage.hasBodyAttachments(transaction: transaction)
         return receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
     }
 

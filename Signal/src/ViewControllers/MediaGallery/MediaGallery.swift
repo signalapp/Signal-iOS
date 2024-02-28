@@ -59,7 +59,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         self.sender = sender
         self.attachmentStream = attachmentStream
         self.galleryDate = GalleryDate(message: message)
-        let albumAttachmentIds = message.bodyAttachmentIds(with: transaction)
+        let albumAttachmentIds = message.bodyAttachmentIds(transaction: transaction)
         self.albumIndex = albumAttachmentIds.firstIndex(of: attachmentStream.uniqueId) ?? 0
         self.numItemsInAlbum = albumAttachmentIds.count
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
@@ -752,7 +752,7 @@ class MediaGallery: Dependencies {
                     // We always have to check the database in case we do more than one deletion (at a time or in a
                     // row) without reloading existing media items and their associated message models.
                     let shouldDeleteMessage: Bool = try {
-                        if message.hasBodyAttachments(with: tx).negated {
+                        if message.hasBodyAttachments(transaction: tx).negated {
                             return true
                         }
                         let upToDateCount = try self.mediaGalleryFinder.countAllAttachments(of: message, transaction: tx.unwrapGrdbRead)

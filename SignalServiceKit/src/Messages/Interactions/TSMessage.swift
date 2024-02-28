@@ -17,26 +17,106 @@ public extension TSMessage {
 
     // MARK: - Attachments
 
+    @objc
+    func bodyAttachmentIds(transaction: SDSAnyReadTransaction) -> [String] {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyAttachments(for: self, tx: transaction.asV2Read)
+            .ids.map(\.bridgeUniqueId)
+    }
+
+    @objc
+    func hasBodyAttachments(transaction: SDSAnyReadTransaction) -> Bool {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyAttachments(for: self, tx: transaction.asV2Read)
+            .ids.isEmpty.negated
+    }
+
+    @objc
+    func bodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyAttachments(for: self, tx: transaction.asV2Read)
+            .fetch(tx: transaction.asV2Read).map(\.bridge)
+    }
+
+    @objc
+    func hasMediaAttachments(transaction: SDSAnyReadTransaction) -> Bool {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyMediaAttachments(for: self, tx: transaction.asV2Read)
+            .ids.isEmpty.negated
+    }
+
+    @objc
+    func mediaAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyMediaAttachments(for: self, tx: transaction.asV2Read)
+            .fetch(tx: transaction.asV2Read).map(\.bridge)
+    }
+
+    @objc
+    func oversizeTextAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
+        return DependenciesBridge.shared.tsResourceStore
+            .oversizeTextAttachment(for: self, tx: transaction.asV2Read)?
+            .fetch(tx: transaction.asV2Read)?.bridge
+    }
+
+    @objc
+    func allAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
+        return DependenciesBridge.shared.tsResourceStore
+            .allAttachments(for: self, tx: transaction.asV2Read)
+            .fetch(tx: transaction.asV2Read).map(\.bridge)
+    }
+
+    // Returns ids for all attachments, including message ("body") attachments,
+    // quoted reply thumbnails, contact share avatars, link preview images, etc.
+    @objc
+    func allAttachmentIds(transaction: SDSAnyReadTransaction) -> [String] {
+        return DependenciesBridge.shared.tsResourceStore
+            .allAttachments(for: self, tx: transaction.asV2Read)
+            .ids.map(\.bridgeUniqueId)
+    }
+
+    @objc
+    func oversizeText(transaction: SDSAnyReadTransaction) -> String? {
+        guard
+            let attachment = self.oversizeTextAttachment(transaction: transaction)?.bridge,
+            let attachmentStream = attachment as? TSAttachmentStream,
+            let fileUrl = attachmentStream.originalMediaURL
+        else {
+            return nil
+        }
+
+        guard let data = try? Data(contentsOf: fileUrl) else {
+            //        OWSFailDebug(@"Can't load oversize text data.");
+            return nil
+        }
+
+        guard let text = String(data: data, encoding: .utf8) else {
+            owsFailDebug("Can't parse oversize text data.")
+            return nil
+        }
+        return text
+    }
+
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = allAttachments(with: transaction)
+        let attachments: [TSAttachment] = allAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.failed]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = allAttachments(with: transaction)
+        let attachments: [TSAttachment] = allAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.failed, .pendingMessageRequest, .pendingManualDownload]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func failedBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = bodyAttachments(with: transaction)
+        let attachments: [TSAttachment] = bodyAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.failed]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func pendingBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = bodyAttachments(with: transaction)
+        let attachments: [TSAttachment] = bodyAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.pendingMessageRequest, .pendingManualDownload]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
@@ -478,7 +558,7 @@ public extension TSMessage {
             }
         }
 
-        let mediaAttachment = self.mediaAttachments(with: tx).first
+        let mediaAttachment = self.mediaAttachments(transaction: tx).first
         let attachmentEmoji = mediaAttachment?.emoji(forContainingMessage: self, transaction: tx)
         let attachmentDescription = mediaAttachment?.previewText(forContainingMessage: self, transaction: tx)
 

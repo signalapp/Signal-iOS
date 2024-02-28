@@ -78,19 +78,22 @@ public class EditManager {
         let keyValueStoreFactory: KeyValueStoreFactory
         let linkPreviewShim: EditManager.Shims.LinkPreview
         let receiptManagerShim: EditManager.Shims.ReceiptManager
+        let tsResourceStore: TSResourceStore
 
         public init(
             dataStore: EditManager.Shims.DataStore,
             groupsShim: EditManager.Shims.Groups,
             keyValueStoreFactory: KeyValueStoreFactory,
             linkPreviewShim: EditManager.Shims.LinkPreview,
-            receiptManagerShim: EditManager.Shims.ReceiptManager
+            receiptManagerShim: EditManager.Shims.ReceiptManager,
+            tsResourceStore: TSResourceStore
         ) {
             self.dataStore = dataStore
             self.groupsShim = groupsShim
             self.keyValueStoreFactory = keyValueStoreFactory
             self.linkPreviewShim = linkPreviewShim
             self.receiptManagerShim = receiptManagerShim
+            self.tsResourceStore = tsResourceStore
         }
     }
 
@@ -271,7 +274,7 @@ public class EditManager {
 
         let editTarget = OutgoingEditMessageWrapper.wrap(
             message: targetMessage,
-            dataStore: self.context.dataStore,
+            tsResourceStore: context.tsResourceStore,
             tx: tx
         )
 
@@ -282,15 +285,11 @@ public class EditManager {
         ) { messageBuilder in
             updateBlock(messageBuilder)
 
-            let attachments = self.context.dataStore.getMediaAttachments(
-                message: editTarget.message,
+            let attachments = self.context.tsResourceStore.bodyMediaAttachments(
+                for: editTarget.message,
                 tx: tx
             )
-            // Remove existing long text messages. Any new long text
-            // attachments should be added as part of the message sending
-            messageBuilder.attachmentIds = attachments
-                .filter { !$0.isOversizeTextMimeType }
-                .map { $0.uniqueId  }
+            messageBuilder.attachmentIds = attachments.ids.map(\.bridgeUniqueId)
 
             messageBuilder.timestamp = NSDate.ows_millisecondTimeStamp()
         }
@@ -343,6 +342,7 @@ public class EditManager {
         // Create a new copy of the original message
         let newMessage = editTarget.createMessageCopy(
             dataStore: context.dataStore,
+            tsResourceStore: context.tsResourceStore,
             thread: thread,
             isLatestRevision: false,
             tx: tx,
@@ -356,6 +356,7 @@ public class EditManager {
         // copied from the original message
         editTarget.updateMessageCopy(
             dataStore: context.dataStore,
+            tsResourceStore: context.tsResourceStore,
             newMessageCopy: newMessage,
             tx: tx
         )
@@ -392,6 +393,7 @@ public class EditManager {
 
         let editedMessage = editTarget.createMessageCopy(
             dataStore: context.dataStore,
+            tsResourceStore: context.tsResourceStore,
             thread: thread,
             isLatestRevision: true,
             tx: tx) { builder in
@@ -469,10 +471,10 @@ public class EditManager {
             return false
         }
 
-        let currentAttachments = context.dataStore.getMediaAttachments(
-            message: targetMessage,
+        let currentAttachments = context.tsResourceStore.bodyMediaAttachments(
+            for: targetMessage,
             tx: tx
-        )
+        ).fetch(tx: tx).map(\.bridge)
 
         // Voice memos only ever have one attachment; only need to check the first.
         if
@@ -526,14 +528,20 @@ public class EditManager {
         let oversizeText = newAttachments.filter({ $0.isOversizeTextMimeType }).first
 
         // check for existing oversized text
-        let existingText = context.dataStore.getOversizedTextAttachments(
-            message: targetMessage,
+        let existingText = context.tsResourceStore.oversizeTextAttachment(
+            for: targetMessage,
             tx: tx
-        )
+        )?.fetch(tx: tx)?.bridge
 
-        var newAttachmentIds = context.dataStore
-            .getBodyAttachmentIds(message: targetMessage, tx: tx)
-            .filter { $0 != existingText?.uniqueId }
+        var newAttachmentIds = context.tsResourceStore
+            .bodyAttachments(for: targetMessage, tx: tx)
+            .ids
+            .compactMap { id -> String? in
+                guard id.bridgeUniqueId != existingText?.uniqueId else {
+                    return nil
+                }
+                return id.bridgeUniqueId
+            }
         if let oversizeText {
             // insert the new oversized text attachment
             context.dataStore.insertAttachment(attachment: oversizeText, tx: tx)

@@ -124,6 +124,9 @@ public class DependenciesBridge {
 
     public let tsAccountManager: TSAccountManager
 
+    public let tsAttachmentStore: TSAttachmentStore
+    public let tsResourceStore: TSResourceStore
+
     public let uploadManager: UploadManager
 
     public let usernameApiClient: UsernameApiClient
@@ -262,6 +265,11 @@ public class DependenciesBridge {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
+        let tsAttachmentStore = TSAttachmentStoreImpl()
+        self.tsAttachmentStore = tsAttachmentStore
+        let tsResourceStore = TSResourceStoreImpl(tsAttachmentStore: tsAttachmentStore)
+        self.tsResourceStore = tsResourceStore
+
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
             dateProvider: dateProvider,
@@ -346,7 +354,8 @@ public class DependenciesBridge {
                 groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
                 keyValueStoreFactory: keyValueStoreFactory,
                 linkPreviewShim: EditManager.Wrappers.LinkPreview(),
-                receiptManagerShim: EditManager.Wrappers.ReceiptManager(receiptManager: receiptManager)
+                receiptManagerShim: EditManager.Wrappers.ReceiptManager(receiptManager: receiptManager),
+                tsResourceStore: tsResourceStore
             )
         )
 
@@ -674,7 +683,7 @@ public class DependenciesBridge {
 
         self.sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
             attachmentDownloads: SentMessageTranscriptReceiverImpl.Wrappers.AttachmentDownloads(attachmentDownloads),
-            attachmentStore: AttachmentStoreImpl(),
+            attachmentStore: tsAttachmentStore,
             disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
             earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
             groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
@@ -736,7 +745,7 @@ public class DependenciesBridge {
 
         self.uploadManager = UploadManagerImpl(
             db: db,
-            attachmentStore: AttachmentStoreImpl(),
+            attachmentStore: tsAttachmentStore,
             interactionStore: InteractionStoreImpl(),
             networkManager: networkManager,
             socketManager: socketManager,

@@ -444,7 +444,7 @@ public class CVComponentState: Equatable, Dependencies {
 
         init(interaction: TSInteraction, itemBuildingContext: CVItemBuildingContext) {
             self.interaction = interaction
-            self.messageHasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(with: itemBuildingContext.transaction) ?? false
+            self.messageHasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: itemBuildingContext.transaction) ?? false
             self.hasRenderableContent = (interaction as? TSMessage)?.hasRenderableContent(tx: itemBuildingContext.transaction) ?? false
             self.itemBuildingContext = itemBuildingContext
         }
@@ -883,7 +883,7 @@ fileprivate extension CVComponentState.Builder {
 
         do {
             // TODO: Rename this method to TSMessage.bodyAttachments(...)?
-            let bodyAttachments = message.mediaAttachments(with: transaction)
+            let bodyAttachments = message.mediaAttachments(transaction: transaction)
             let mediaAlbumItems = buildMediaAlbumItems(for: bodyAttachments, message: message)
             if mediaAlbumItems.count > 0 {
                 var mediaAlbumHasFailedAttachment = false
@@ -970,7 +970,7 @@ fileprivate extension CVComponentState.Builder {
             if message.isViewOnceComplete {
                 return buildViewOnce(viewOnceState: .incomingExpired)
             }
-            let hasMoreThanOneAttachment: Bool = message.bodyAttachmentIds(with: transaction).count > 1
+            let hasMoreThanOneAttachment: Bool = message.bodyAttachmentIds(transaction: transaction).count > 1
             let hasBodyText: Bool = !(message.body?.isEmpty ?? true)
             if hasMoreThanOneAttachment || hasBodyText {
                 // Refuse to render incoming "view once" messages if they
@@ -978,7 +978,7 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Invalid content.")
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
-            let mediaAttachments: [TSAttachment] = message.mediaAttachments(with: transaction)
+            let mediaAttachments: [TSAttachment] = message.mediaAttachments(transaction: transaction)
             // We currently only support single attachments for view-once messages.
             guard let mediaAttachment = mediaAttachments.first else {
                 owsFailDebug("Missing attachment.")

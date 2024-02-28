@@ -23,6 +23,7 @@ public protocol EditMessageWrapper {
 
     func createMessageCopy(
         dataStore: EditManager.Shims.DataStore,
+        tsResourceStore: TSResourceStore,
         thread: TSThread,
         isLatestRevision: Bool,
         tx: DBReadTransaction,
@@ -31,6 +32,7 @@ public protocol EditMessageWrapper {
 
     func updateMessageCopy(
         dataStore: EditManager.Shims.DataStore,
+        tsResourceStore: TSResourceStore,
         newMessageCopy: MessageType,
         tx: DBWriteTransaction
     )
@@ -81,6 +83,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
     public func createMessageCopy(
         dataStore: EditManager.Shims.DataStore,
+        tsResourceStore: TSResourceStore,
         thread: TSThread,
         isLatestRevision: Bool,
         tx: DBReadTransaction,
@@ -105,7 +108,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             authorAci: authorAci,
             messageBody: message.body,
             bodyRanges: message.bodyRanges,
-            attachmentIds: dataStore.getBodyAttachmentIds(message: message, tx: tx),
+            attachmentIds: tsResourceStore.bodyAttachments(for: message, tx: tx).ids.map(\.bridgeUniqueId),
             editState: editState,
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
@@ -132,6 +135,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
     public func updateMessageCopy(
         dataStore: EditManager.Shims.DataStore,
+        tsResourceStore: TSResourceStore,
         newMessageCopy: TSIncomingMessage,
         tx: DBWriteTransaction
     ) {}
@@ -149,12 +153,12 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public static func wrap(
         message: TSOutgoingMessage,
-        dataStore: EditManager.Shims.DataStore,
+        tsResourceStore: TSResourceStore,
         tx: DBReadTransaction
     ) -> Self {
         return .init(
             message: message,
-            messageBodyAttachmentIds: dataStore.getBodyAttachmentIds(message: message, tx: tx)
+            messageBodyAttachmentIds: tsResourceStore.bodyAttachments(for: message, tx: tx).ids.map(\.bridgeUniqueId)
         )
     }
 
@@ -191,6 +195,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public func createMessageCopy(
         dataStore: EditManager.Shims.DataStore,
+        tsResourceStore: TSResourceStore,
         thread: TSThread,
         isLatestRevision: Bool,
         tx: DBReadTransaction,
@@ -208,6 +213,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public func updateMessageCopy(
         dataStore: EditManager.Shims.DataStore,
+        tsResourceStore: TSResourceStore,
         newMessageCopy: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) {
