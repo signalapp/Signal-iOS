@@ -226,44 +226,24 @@ fileprivate extension HTTPUtils {
     }
 
     static func isNetworkFailureOrTimeout(forError error: Error?) -> Bool {
-        guard let error = error else {
+        guard let error else {
             return false
         }
-
-        if (error as NSError).domain == NSURLErrorDomain {
-            guard let cvNetworkError = CFNetworkErrors(rawValue: Int32((error as NSError).code)) else {
-                return false
-            }
-            switch cvNetworkError {
-            case .cfurlErrorTimedOut,
-                    .cfurlErrorCannotConnectToHost,
-                    .cfurlErrorNetworkConnectionLost,
-                    .cfurlErrorDNSLookupFailed,
-                    .cfurlErrorNotConnectedToInternet,
-                    .cfurlErrorSecureConnectionFailed,
-                    .cfurlErrorCannotLoadFromNetwork,
-                    .cfurlErrorCannotFindHost,
-                    .cfurlErrorBadURL:
-                return true
-            default:
-                return false
-            }
-        }
-
-        let isNetworkProtocolError = (error as NSError).domain == NSPOSIXErrorDomain && (error as NSError).code == 100
-        if isNetworkProtocolError {
-            return true
-        }
-
         switch error {
-        case let httpError as OWSHTTPError:
-            return httpError.isNetworkConnectivityError
-        case GroupsV2Error.timeout:
-            return true
-        case PaymentsError.timeout:
-            return true
-        default:
-            return false
+        case URLError.timedOut: return true
+        case URLError.cannotConnectToHost: return true
+        case URLError.networkConnectionLost: return true
+        case URLError.dnsLookupFailed: return true
+        case URLError.notConnectedToInternet: return true
+        case URLError.secureConnectionFailed: return true
+        case URLError.cannotLoadFromNetwork: return true
+        case URLError.cannotFindHost: return true
+        case URLError.badURL: return true
+        case POSIXError.EPROTO: return true
+        case let httpError as OWSHTTPError: return httpError.isNetworkConnectivityError
+        case GroupsV2Error.timeout: return true
+        case PaymentsError.timeout: return true
+        default: return false
         }
     }
 }
