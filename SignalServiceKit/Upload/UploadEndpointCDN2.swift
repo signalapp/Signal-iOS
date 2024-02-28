@@ -157,6 +157,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         let totalDataLength = attempt.localMetadata.encryptedDataLength
         var headers = [String: String]()
         let fileUrl: URL
+        var fileToCleanup: URL?
 
         if startPoint == 0 {
             headers["Content-Length"] = "\(totalDataLength)"
@@ -168,19 +169,23 @@ struct UploadEndpointCDN2: UploadEndpoint {
                 start: startPoint
             )
             fileUrl = dataSliceFileUrl
-            defer {
-                do {
-                    try fileSystem.deleteFile(url: dataSliceFileUrl)
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                }
-            }
+            fileToCleanup = dataSliceFileUrl
 
             // Example: Resuming after uploading 2359296 of 7351375 bytes.
             // Content-Range: bytes 2359296-7351374/7351375
             // Content-Length: 4992079
             headers["Content-Length"] = "\(dataSliceLength)"
             headers["Content-Range"] = "bytes \(startPoint)-\(totalDataLength - 1)/\(totalDataLength)"
+        }
+
+        defer {
+            if let fileToCleanup {
+                do {
+                    try fileSystem.deleteFile(url: fileToCleanup)
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
+            }
         }
 
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber)
