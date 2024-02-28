@@ -34,6 +34,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private struct Dependencies {
         let badgeManager: BadgeManager
+        let blockingManager: BlockingManager
         let callRecordDeleteManager: CallRecordDeleteManager
         let callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
         let callRecordMissedCallManager: CallRecordMissedCallManager
@@ -49,6 +50,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private lazy var deps: Dependencies = Dependencies(
         badgeManager: AppEnvironment.shared.badgeManager,
+        blockingManager: SSKEnvironment.shared.blockingManagerRef,
         callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
         callRecordDeleteAllJobQueue: SSKEnvironment.shared.callRecordDeleteAllJobQueueRef,
         callRecordMissedCallManager: DependenciesBridge.shared.callRecordMissedCallManager,
@@ -1403,25 +1405,40 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         }
     }
 
+    private var callStarterContext: CallStarter.Context {
+        .init(
+            blockingManager: deps.blockingManager,
+            databaseStorage: deps.db,
+            callService: deps.callService
+        )
+    }
+
     private func startAudioCall(from viewModel: CallViewModel) {
-        // [CallsTab] TODO: See ConversationViewController.startIndividualCall(withVideo:)
         switch viewModel.recipientType {
         case let .individual(_, contactThread):
-            callService.initiateCall(thread: contactThread, isVideo: false)
+            CallStarter(
+                contactThread: contactThread,
+                withVideo: false,
+                context: self.callStarterContext
+            ).startCall(from: self)
         case .group:
             owsFail("Shouldn't be able to start audio call from group")
         }
     }
 
     private func startVideoCall(from viewModel: CallViewModel) {
-        // [CallsTab] TODO: Check if the conversation is blocked or there's a message request.
-        // See ConversationViewController.startIndividualCall(withVideo:)
-        // and  ConversationViewController.showGroupLobbyOrActiveCall()
         switch viewModel.recipientType {
         case let .individual(_, contactThread):
-            callService.initiateCall(thread: contactThread, isVideo: true)
+            CallStarter(
+                contactThread: contactThread,
+                withVideo: true,
+                context: self.callStarterContext
+            ).startCall(from: self)
         case let .group(groupThread):
-            GroupCallViewController.presentLobby(thread: groupThread)
+            CallStarter(
+                groupThread: groupThread,
+                context: self.callStarterContext
+            ).startCall(from: self)
         }
     }
 
@@ -1465,12 +1482,14 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     // MARK: CallCellDelegate
 
     fileprivate func joinCall(from viewModel: CallViewModel) {
-        guard case let .group(groupThread: thread) = viewModel.recipientType else {
+        guard case let .group(groupThread) = viewModel.recipientType else {
             owsFailBeta("Individual call should not be showing a join button")
             return
         }
-        // TODO: Check if it's joinable
-        GroupCallViewController.presentLobby(thread: thread)
+        CallStarter(
+            groupThread: groupThread,
+            context: self.callStarterContext
+        ).startCall(from: self)
     }
 
     fileprivate func returnToCall(from viewModel: CallViewModel) {

@@ -20,39 +20,29 @@ public extension ConversationViewController {
         ConversationViewController.canCall(threadViewModel: threadViewModel)
     }
 
+    private var callStarterContext: CallStarter.Context {
+        .init(
+            blockingManager: blockingManager,
+            databaseStorage: databaseStorage,
+            callService: callService
+        )
+    }
+
     @objc
     func showGroupLobbyOrActiveCall() {
-        if isCurrentCallForThread {
-            WindowManager.shared.returnToCallView()
-            return
-        }
-
         guard let groupThread = thread as? TSGroupThread else {
             owsFailDebug("Tried to present group call for non-group thread.")
             return
         }
 
-        guard canCall else {
-            owsFailDebug("Tried to initiate a call but thread is not callable.")
-            return
+        let startCallResult = CallStarter(
+            groupThread: groupThread,
+            context: self.callStarterContext
+        ).startCall(from: self)
+
+        if startCallResult.callDidStartOrResume {
+            removeGroupCallTooltip()
         }
-
-        if thread.isBlockedByAnnouncementOnly {
-            OWSActionSheets.showActionSheet(
-                title: OWSLocalizedString("GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE",
-                                           comment: "Title for error alert indicating that only group administrators can start calls in announcement-only groups."),
-                message: OWSLocalizedString("GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE",
-                                         comment: "Message for error alert indicating that only group administrators can start calls in announcement-only groups.")
-            )
-            return
-        }
-
-        removeGroupCallTooltip()
-
-        // We initiated a call, so if there was a pending message request we should accept it.
-        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
-
-        GroupCallViewController.presentLobby(thread: groupThread)
     }
 
     @objc
@@ -71,26 +61,21 @@ public extension ConversationViewController {
             return
         }
 
-        guard canCall else {
-            Logger.warn("Tried to initiate a call but thread is not callable.")
-            return
+        let startCallResult = CallStarter(
+            contactThread: contactThread,
+            withVideo: withVideo,
+            context: self.callStarterContext
+        ).startCall(from: self)
+
+        switch startCallResult {
+        case .callStarted:
+            NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
+        case .callNotStarted:
+            break
+        case .promptedToUnblock:
+            self.userHasScrolled = false
         }
 
-        if isBlockedConversation() {
-            showUnblockConversationUI { [weak self] isBlocked in
-                guard let self = self else { return }
-                if !isBlocked {
-                    self.startIndividualCall(withVideo: withVideo)
-                }
-            }
-            return
-        }
-
-        // We initiated a call, so if there was a pending message request we should accept it.
-        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
-        callService.initiateCall(thread: contactThread, isVideo: withVideo)
-
-        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
     func refreshCallState() {

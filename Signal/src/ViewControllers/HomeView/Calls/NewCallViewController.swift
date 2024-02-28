@@ -41,16 +41,35 @@ class NewCallViewController: RecipientPickerContainerViewController {
         dismiss(animated: true)
     }
 
+    private var callStarterContext: CallStarter.Context {
+        .init(
+            blockingManager: blockingManager,
+            databaseStorage: databaseStorage,
+            callService: callService
+        )
+    }
+
     private func startIndividualCall(thread: TSContactThread, withVideo: Bool) {
-        // [CallsTab] TODO: See ConversationViewController.startIndividualCall(withVideo:)
-        callService.initiateCall(thread: thread, isVideo: withVideo)
-        self.dismiss(animated: false)
+        self.startCall(callStarter: CallStarter(
+            contactThread: thread,
+            withVideo: withVideo,
+            context: self.callStarterContext
+        ))
+
     }
 
     private func startGroupCall(thread: TSGroupThread) {
-        // [CallsTab] TODO: See ConversationViewController.showGroupLobbyOrActiveCall()
-        GroupCallViewController.presentLobby(thread: thread)
-        self.dismiss(animated: false)
+        self.startCall(callStarter: CallStarter(
+            groupThread: thread,
+            context: self.callStarterContext
+        ))
+    }
+
+    private func startCall(callStarter: CallStarter) {
+        let startCallResult = callStarter.startCall(from: self)
+        if startCallResult.callDidStartOrResume {
+            self.dismiss(animated: false)
+        }
     }
 }
 

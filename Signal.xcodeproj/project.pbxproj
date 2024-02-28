@@ -1388,6 +1388,7 @@
 		B9439F3DDBE241269273DD6F /* Pods_SignalServiceKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
+		B98D246A2B8D2A2A00B1A8CC /* CallStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */; };
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
@@ -4178,6 +4179,7 @@
 		B93955E22B06D47000F35940 /* CallsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListViewController.swift; sourceTree = "<group>"; };
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
+		B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStarter.swift; sourceTree = "<group>"; };
 		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
 		B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewController.swift; sourceTree = "<group>"; };
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
@@ -8264,6 +8266,7 @@
 				88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */,
 				88D23D2B23CEC17400B0E74B /* CallAudioService.swift */,
 				88588D25252E59CE00405414 /* CallService.swift */,
+				B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */,
 				8841584B252F9F1C0078903D /* SignalCall.swift */,
 			);
 			path = Calls;
@@ -12370,6 +12373,7 @@
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
 				D9C5442D2B865B060036F274 /* CallsListViewController+Strings.swift in Sources */,
 				B93955E32B06D47000F35940 /* CallsListViewController.swift in Sources */,
+				B98D246A2B8D2A2A00B1A8CC /* CallStarter.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* CameraCaptureSession.swift in Sources */,
 				4C46361122EB98EC00185951 /* CameraFirstCaptureSendFlow.swift in Sources */,
