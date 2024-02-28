@@ -169,6 +169,10 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         if let mutualGroupsText = self.mutualGroupsText {
             let mutualGroupsLabel = componentView.mutualGroupsLabel
+            let showTipsButton = componentView.showTipsButton
+
+            let groupInfoWrapper = ManualLayoutViewWithLayer(name: "groupWrapper")
+            var groupInfoSubviewInfos = [ManualStackSubviewInfo]()
 
             if conversationStyle.hasWallpaper {
                 // Add divider before mutual groups
@@ -181,30 +185,58 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                     alpha: 0.12
                 )
                 innerViews.append(divider)
-
-                mutualGroupsLabel.contentEdgeInsets = .zero
             } else {
-                // Add border around mutual groups
-                mutualGroupsLabel.contentEdgeInsets = .init(margin: mutualGroupsPadding)
-                mutualGroupsLabel.layer.cornerRadius = 18
-                mutualGroupsLabel.layer.borderWidth = 2
+                groupInfoWrapper.layer.cornerRadius = 18
+                groupInfoWrapper.layer.borderWidth = 2
                 if Theme.isDarkThemeEnabled {
-                    mutualGroupsLabel.layer.borderColor = nil
-                    mutualGroupsLabel.backgroundColor = UIColor(white: 1, alpha: 0.08)
+                    groupInfoWrapper.layer.borderColor = nil
+                    groupInfoWrapper.backgroundColor = UIColor(white: 1, alpha: 0.08)
                 } else {
-                    mutualGroupsLabel.layer.borderColor = UIColor(white: 0, alpha: 0.06).cgColor
-                    mutualGroupsLabel.backgroundColor = Theme.backgroundColor
-                    mutualGroupsLabel.setShadow(radius: 4, opacity: 0.04, offset: .init(width: 0, height: 2))
+                    groupInfoWrapper.layer.borderColor = UIColor(white: 0, alpha: 0.06).cgColor
+                    groupInfoWrapper.backgroundColor = Theme.backgroundColor
+                    groupInfoWrapper.setShadow(radius: 4, opacity: 0.04, offset: .init(width: 0, height: 2))
+                    groupInfoWrapper.setShadow(radius: 4, opacity: 0.04, offset: .init(width: 0, height: 2))
                 }
             }
+            innerViews.append(groupInfoWrapper)
 
-            mutualGroupsLabelConfig(attributedText: mutualGroupsText)
-                .applyForRendering(button: mutualGroupsLabel)
-            innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
-            innerViews.append(mutualGroupsLabel)
-            // We're using a button for the sake of the contentEdgeInsets,
-            // but the tap action is handled by handleTap.
-            mutualGroupsLabel.isEnabled = false
+            let maxWidth = cellMeasurement.cellSize.width
+                - outerStackConfig.layoutMargins.totalWidth
+                - innerStackConfig.layoutMargins.totalWidth
+                - (mutualGroupsPadding * 2)
+
+            let mutualGroupsLabelConfig = mutualGroupsLabelConfig(attributedText: mutualGroupsText)
+            mutualGroupsLabelConfig.applyForRendering(label: mutualGroupsLabel)
+            let mutualGroupsLabelSize = CVText.measureLabel(config: mutualGroupsLabelConfig, maxWidth: maxWidth)
+            groupInfoSubviewInfos.append(mutualGroupsLabelSize.asManualSubviewInfo)
+
+            let safetyButtonLabelConfig = safetyTipsConfig()
+            safetyButtonLabelConfig.applyForRendering(button: showTipsButton)
+            showTipsButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray05
+            showTipsButton.contentEdgeInsets = .init(hMargin: 12.0, vMargin: 4.0)
+            showTipsButton.dimsWhenHighlighted = true
+            showTipsButton.block = { [weak self] in
+                self?.didShowTips()
+            }
+
+            let groupInfoStack = ManualStackView(name: "groupInfoStack")
+            groupInfoSubviewInfos.append(showTipsButton.sizeThatFitsMaxSize.asManualSubviewInfo)
+            let groupInfoStackMeasurement = ManualStackView.measure(
+                config: groupStackConfig,
+                subviewInfos: groupInfoSubviewInfos
+            )
+            groupInfoStack.configure(
+                config: groupStackConfig,
+                measurement: groupInfoStackMeasurement,
+                subviews: [
+                    mutualGroupsLabel,
+                    showTipsButton
+                ]
+            )
+            groupInfoWrapper.addSubviewToCenterOnSuperview(
+                groupInfoStack,
+                size: groupInfoStackMeasurement.measuredSize
+            )
         }
 
         innerStackView.configure(config: innerStackConfig,
@@ -220,7 +252,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private let vSpacingSubtitle: CGFloat = 2
     private let vSpacingMutualGroups: CGFloat = 16
-    private let mutualGroupsPadding: CGFloat = 20
+    private let mutualGroupsPadding: CGFloat = 24
 
     private var titleLabelConfig: CVLabelConfig {
         let font = UIFont.dynamicTypeTitle1.semibold()
@@ -327,6 +359,16 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             textAlignment: .center
         )
     }
+    private func safetyTipsConfig() -> CVLabelConfig {
+        CVLabelConfig.unstyledText(
+            OWSLocalizedString(
+                "SAFETY_TIPS_BUTTON_ACTION_TITLE",
+                comment: "Title for Safety Tips button in thread details."
+            ),
+            font: UIFont.dynamicTypeSubheadlineClamped,
+            textColor: Theme.isDarkThemeEnabled ? .ows_white : .ows_black
+        )
+    }
 
     private func groupDescriptionTextLabelConfig(text: String) -> CVLabelConfig {
         CVLabelConfig.unstyledText(
@@ -373,13 +415,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 groupDescriptionText: nil
             )
         }
-    }
-
-    private static var learnMoreString: String {
-        OWSLocalizedString(
-            "SYSTEM_MESSAGE_UNKNOWN_THREAD_LEARN_MORE",
-            comment: "A link at the end of a warning about an unknown thread."
-        )
     }
 
     private static func buildComponentState(
@@ -431,110 +466,11 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             )
         }()
 
-        var shouldShowLearnMore = false
-
-        let mutualGroupsText = { () -> NSAttributedString? in
-
-            guard !contactThread.contactAddress.isLocalAddress else {
-                // Don't show mutual groups for "Note to Self".
-                return nil
-            }
-
-            let groupThreads = TSGroupThread.groupThreads(with: contactThread.contactAddress, transaction: transaction)
-            let mutualGroupNames = groupThreads.filter { $0.isLocalUserFullMember && $0.shouldThreadBeVisible }.map { $0.groupNameOrDefault }
-
-            let formatString: String
-            var formatArgs: [AttributedFormatArg] = mutualGroupNames.map { name in
-                return .string(name, attributes: [.font: Self.mutualGroupsFont.semibold()])
-            }
-
-            switch mutualGroupNames.count {
-            case 0:
-                guard contactsManagerImpl.shouldShowUnknownThreadWarning(
-                    thread: contactThread,
-                    transaction: transaction
-                ) else {
-                    return nil
-                }
-                formatString = OWSLocalizedString(
-                    "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
-                    comment: "Indicator warning about an unknown contact thread."
-                )
-                shouldShowLearnMore = true
-            case 1:
-                formatString = OWSLocalizedString(
-                    "THREAD_DETAILS_ONE_MUTUAL_GROUP",
-                    comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}"
-                )
-            case 2:
-                formatString = OWSLocalizedString(
-                    "THREAD_DETAILS_TWO_MUTUAL_GROUP",
-                    comment: "A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}}"
-                )
-            case 3:
-                formatString = OWSLocalizedString(
-                    "THREAD_DETAILS_THREE_MUTUAL_GROUP",
-                    comment: "A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}}"
-                )
-            default:
-                formatString = OWSLocalizedString(
-                    "THREAD_DETAILS_MORE_MUTUAL_GROUP",
-                    comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}}"
-                )
-
-                // For this string, we want to use the first two groups' names
-                // and add a final format arg for the number of remaining
-                // groups.
-                let firstTwoGroups = Array(formatArgs[0..<2])
-                let remainingGroupsCount = mutualGroupNames.count - firstTwoGroups.count
-                formatArgs = firstTwoGroups + [.raw(remainingGroupsCount)]
-            }
-
-            let icon: String
-            if mutualGroupNames.isEmpty {
-                icon = "error-circle-20"
-            } else {
-                icon = "group-resizable"
-            }
-
-            // In order for the phone number to appear in the same box as the
-            // mutual groups, it needs to be part of the same label.
-            let phoneNumberString: NSAttributedString = {
-                if case .phoneNumber = displayName {
-                    return NSAttributedString()
-                }
-                let phoneNumber = contactThread.contactAddress.phoneNumber
-                let formattedPhoneNumber = phoneNumber.map(PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber:))
-                guard let formattedPhoneNumber else {
-                    return NSAttributedString()
-                }
-                return NSAttributedString.composed(of: [
-                    NSAttributedString.with(image: Theme.iconImage(.contactInfoPhone), font: Self.mutualGroupsFont),
-                    "  ",
-                    formattedPhoneNumber,
-                    "\n"
-                ]).styled(
-                    with: .paragraphSpacingAfter(Self.mutualGroupsFont.lineHeight * 0.5),
-                    .alignment(.center)
-                )
-            }()
-
-            return NSAttributedString.composed(of: [
-                phoneNumberString, // Will be empty if unknown
-                NSAttributedString.with(
-                    image: UIImage(named: icon)!,
-                    font: Self.mutualGroupsFont
-                ),
-                "  ",
-                NSAttributedString.make(
-                    fromFormat: formatString,
-                    attributedFormatArgs: formatArgs
-                ),
-            ] + (shouldShowLearnMore ? [
-                " ",
-                Self.learnMoreString.styled(with: .underline(.single, Self.mutualGroupsTextColor)),
-            ] : []))
-        }()
+        let (mutualGroupsText, shouldShowLearnMore) = Self.buildMutualGroupsContactString(
+            for: displayName,
+            in: contactThread,
+            tx: transaction
+        )
 
         return CVComponentState.ThreadDetails(
             avatarDataSource: avatarDataSource,
@@ -579,28 +515,10 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
         }()
 
-        let mutualGroupsText = { () -> NSAttributedString? in
-            guard contactsManagerImpl.shouldShowUnknownThreadWarning(
-                thread: groupThread,
-                transaction: transaction
-            ) else {
-                return nil
-            }
-            return NSAttributedString.composed(of: [
-                NSAttributedString.with(
-                    image: UIImage(named: "error-circle-20")!,
-                    font: Self.mutualGroupsFont
-                ),
-                "  ",
-                OWSLocalizedString(
-                    "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
-                    comment: "Indicator warning about an unknown group thread."
-                ),
-                " ",
-                Self.learnMoreString.styled(with: .underline(.single, Self.mutualGroupsTextColor)),
-            ])
-        }()
-
+        let mutualGroupsText = Self.buildMutualGroupsGroupString(
+            from: groupThread,
+            tx: transaction
+        )
         let descriptionText: String? = {
             guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else { return nil }
             return groupModelV2.descriptionText
@@ -634,6 +552,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             alignment: .center,
             spacing: 3,
             layoutMargins: UIEdgeInsets(top: 20, leading: 16, bottom: 24, trailing: 16)
+        )
+    }
+
+    private var groupStackConfig: CVStackViewConfig {
+        ManualStackView.Config(
+            axis: .vertical,
+            alignment: .center,
+            spacing: 12,
+            layoutMargins: .init(hMargin: mutualGroupsPadding, vMargin: 24.0)
         )
     }
 
@@ -675,29 +602,32 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             )
             groupDescriptionSize.width = maxContentWidth
             innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
-            innerSubviewInfos.append(groupDescriptionSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
         if let mutualGroupsText = self.mutualGroupsText {
+            let mutualGroupsSize: CGSize
             if conversationStyle.hasWallpaper {
                 innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
                 innerSubviewInfos.append(CGSize(width: maxContentWidth - 16, height: 1).asManualSubviewInfo)
             }
 
-            let mutualGroupsSize: CGSize
-            if conversationStyle.hasWallpaper {
-                mutualGroupsSize = CVText.measureLabel(
-                    config: mutualGroupsLabelConfig(attributedText: mutualGroupsText),
-                    maxWidth: maxContentWidth
-                )
-            } else {
-                mutualGroupsSize = CVText.measureLabel(
-                    config: mutualGroupsLabelConfig(attributedText: mutualGroupsText),
-                    maxWidth: maxContentWidth - mutualGroupsPadding * 2
-                )
-                .plus(.square(mutualGroupsPadding * 2))
-            }
-            innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
+            let maxGroupWidth = maxContentWidth - mutualGroupsPadding * 2
+            let safetyTipSize = CVText.measureLabel(
+                config: safetyTipsConfig(),
+                maxWidth: maxGroupWidth
+            )
+            let groupLabelSize = CVText.measureLabel(
+                config: mutualGroupsLabelConfig(attributedText: mutualGroupsText),
+                maxWidth: maxGroupWidth
+            )
+            let groupInfoSubviewInfos = [
+                safetyTipSize.asManualSubviewInfo,
+                groupLabelSize.asManualSubviewInfo
+            ]
+            mutualGroupsSize = ManualStackView.measure(
+                config: groupStackConfig,
+                subviewInfos: groupInfoSubviewInfos
+            ).measuredSize
             innerSubviewInfos.append(mutualGroupsSize.asManualSubviewInfo)
         }
 
@@ -749,24 +679,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 return true
             }
         }
-
-        if let action = threadDetails.mutualGroupsTapAction {
-            let location = sender.location(in: componentView.mutualGroupsLabel)
-            if componentView.mutualGroupsLabel.bounds.contains(location) {
-                let type: SafetyTipsType = {
-                    switch action {
-                    case .unknownThreadWarningContact:
-                        return .contact
-                    case .unknownThreadWarningGroup:
-                        return .group
-                    }
-                }()
-                let viewController = SafetyTipsViewController(type: type)
-                UIApplication.shared.frontmostViewController?.present(viewController, animated: true)
-                return true
-            }
-        }
-
         return false
     }
 
@@ -783,7 +695,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let bioLabel = CVLabel()
         fileprivate let detailsLabel = CVLabel()
 
-        fileprivate let mutualGroupsLabel = CVButton()
+        fileprivate let mutualGroupsLabel = CVLabel()
+        fileprivate let showTipsButton = OWSRoundedButton()
         fileprivate let groupDescriptionPreviewView = GroupDescriptionPreviewView(
             shouldDeactivateConstraints: true
         )
@@ -819,7 +732,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             titleButton.reset()
             bioLabel.text = nil
             detailsLabel.text = nil
-            mutualGroupsLabel.reset()
+            mutualGroupsLabel.text = nil
             groupDescriptionPreviewView.descriptionText = nil
             avatarView = nil
 
@@ -827,5 +740,149 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             wallpaperBlurView?.resetContentAndConfiguration()
         }
 
+    }
+}
+
+extension CVComponentThreadDetails {
+
+    private func didShowTips() {
+        let type: SafetyTipsType = {
+            switch threadDetails.mutualGroupsTapAction {
+            case .none, .unknownThreadWarningContact:
+                return .contact
+            case .unknownThreadWarningGroup:
+                return .group
+            }
+        }()
+        let viewController = SafetyTipsViewController(type: type)
+        UIApplication.shared.frontmostViewController?.present(viewController, animated: true)
+    }
+
+    private static func buildMutualGroupsGroupString(
+        from groupThread: TSGroupThread,
+        tx: SDSAnyReadTransaction
+    ) -> NSAttributedString? {
+        guard contactsManagerImpl.shouldShowUnknownThreadWarning(
+            thread: groupThread,
+            transaction: tx
+        ) else {
+            return nil
+        }
+        return NSAttributedString.composed(of: [
+            NSAttributedString.with(
+                image: UIImage(named: "error-circle-20")!,
+                font: Self.mutualGroupsFont
+            ),
+            "  ",
+            OWSLocalizedString(
+                "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
+                comment: "Indicator warning about an unknown group thread."
+            )
+        ])
+    }
+
+    private static func buildMutualGroupsContactString(
+        for displayName: DisplayName,
+        in contactThread: TSContactThread,
+        tx: SDSAnyReadTransaction
+    ) -> (NSAttributedString?, Bool) {
+        var shouldShowLearnMore = false
+
+        guard !contactThread.contactAddress.isLocalAddress else {
+            // Don't show mutual groups for "Note to Self".
+            return (nil, shouldShowLearnMore)
+        }
+
+        let groupThreads = TSGroupThread.groupThreads(with: contactThread.contactAddress, transaction: tx)
+        let mutualGroupNames = groupThreads.filter { $0.isLocalUserFullMember && $0.shouldThreadBeVisible }.map { $0.groupNameOrDefault }
+
+        let formatString: String
+        var formatArgs: [AttributedFormatArg] = mutualGroupNames.map { name in
+            return .string(name, attributes: [.font: Self.mutualGroupsFont.semibold()])
+        }
+
+        switch mutualGroupNames.count {
+        case 0:
+            guard contactsManagerImpl.shouldShowUnknownThreadWarning(
+                thread: contactThread,
+                transaction: tx
+            ) else {
+                return (nil, shouldShowLearnMore)
+            }
+            formatString = OWSLocalizedString(
+                "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
+                comment: "Indicator warning about an unknown contact thread."
+            )
+            shouldShowLearnMore = true
+        case 1:
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_ONE_MUTUAL_GROUP",
+                comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}"
+            )
+        case 2:
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_TWO_MUTUAL_GROUP",
+                comment: "A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}}"
+            )
+        case 3:
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_THREE_MUTUAL_GROUP",
+                comment: "A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}}"
+            )
+        default:
+            formatString = OWSLocalizedString(
+                "THREAD_DETAILS_MORE_MUTUAL_GROUP",
+                comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}}"
+            )
+
+            // For this string, we want to use the first two groups' names
+            // and add a final format arg for the number of remaining
+            // groups.
+            let firstTwoGroups = Array(formatArgs[0..<2])
+            let remainingGroupsCount = mutualGroupNames.count - firstTwoGroups.count
+            formatArgs = firstTwoGroups + [.raw(remainingGroupsCount)]
+        }
+
+        let icon: String
+        if mutualGroupNames.isEmpty {
+            icon = "error-circle-20"
+        } else {
+            icon = "group-resizable"
+        }
+
+        // In order for the phone number to appear in the same box as the
+        // mutual groups, it needs to be part of the same label.
+        let phoneNumberString: NSAttributedString = {
+            if case .phoneNumber = displayName {
+                return NSAttributedString()
+            }
+            let phoneNumber = contactThread.contactAddress.phoneNumber
+            let formattedPhoneNumber = phoneNumber.map(PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber:))
+            guard let formattedPhoneNumber else {
+                return NSAttributedString()
+            }
+            return NSAttributedString.composed(of: [
+                NSAttributedString.with(image: Theme.iconImage(.contactInfoPhone), font: Self.mutualGroupsFont),
+                "  ",
+                formattedPhoneNumber,
+                "\n"
+            ]).styled(
+                with: .paragraphSpacingAfter(Self.mutualGroupsFont.lineHeight * 0.5),
+                .alignment(.center)
+            )
+        }()
+
+        return (NSAttributedString.composed(of: [
+            phoneNumberString, // Will be empty if unknown
+            NSAttributedString.with(
+                image: UIImage(named: icon)!,
+                font: Self.mutualGroupsFont
+            ),
+            "  ",
+            NSAttributedString.make(
+                fromFormat: formatString,
+                attributedFormatArgs: formatArgs
+            )
+        ]), shouldShowLearnMore)
     }
 }
