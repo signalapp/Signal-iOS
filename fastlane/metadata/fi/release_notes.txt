@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Esittelemme uusia tapoja pitää puhelinnumerosi yksityisenä Signalissa.
 
 • Signalin uusimmassa versiossa puhelinnumerosi ei enää näy kenellekään, ellei sitä ole tallennettu vastaanottajan yhteystietoihin. Voit muuttaa tämän asetuksissa.
 
 • Voit nyt määrittää valinnaisen käyttäjätunnuksen ja jakaa sen, jotta ihmiset voivat keskustella kanssasi näkemättä puhelinnumeroasi.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Uuden yksityisyysasetuksen avulla voit hallita, kuka voi löytää sinut puhelinnumerosi perusteella Signalissa.

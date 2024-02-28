@@ -7790,7 +7790,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "এই ব্যবহারকারীর নামটি উপলভ্য নেই।";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "অনেকবার চেষ্টা করা হয়ে গেছে, অনুগ্রহ করে পরে আবার চেষ্টা করুন।";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "ব্যবহারকারীর নাম";
@@ -7805,7 +7805,7 @@
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "ব্যবহারকারীর নাম 00-তে শেষ হতে পারবে না। 1-9-এর মধ্যে আরেকটি সংখ্যা দিয়ে চেষ্টা করুন";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
-"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "শুধুমাত্র ইন্টারনেটের সাথে সংযুক্ত হলেই ব্যবহারকারীর নাম আপডেট করা যাবে।";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "ডিভাইস এর নাম খালি থাকা যাবেনা";

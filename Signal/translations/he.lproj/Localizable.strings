@@ -7790,7 +7790,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "שם משתמש לא זמין.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "נעשו יותר מדי ניסיונות, יש לנסות שוב מאוחר יותר.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "שם משתמש";
@@ -7805,7 +7805,7 @@
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "שמות משתמש לא יכולים להסתיים ב–00. יש לנסות ספרה אחרת בין 9–1";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
-"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "שמות משתמש יכולים להתעדכן רק בזמן חיבור לאינטרנט.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "שם מכשיר אינו יכול להיות ריק";

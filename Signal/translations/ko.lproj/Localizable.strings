@@ -7790,7 +7790,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "이 사용자 이름은 사용할 수 없습니다.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "너무 많이 시도했습니다. 나중에 다시 시도해 주세요.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "사용자 이름";
@@ -7805,7 +7805,7 @@
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "사용자 이름은 00으로 끝날 수 없습니다. 1~9 중 하나로 시도해 보세요.";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
-"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "사용자 이름은 인터넷에 연결됐을 때만 업데이트할 수 있습니다.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "기기 이름은 비워둘 수 없습니다";

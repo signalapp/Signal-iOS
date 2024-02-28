@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+We introduceren nieuwe manieren om je telefoonnummer privé te houden op Signal.
 
 • In de nieuwste Signal-versie is je telefoonnummer voor niemand meer zichtbaar, tenzij ze het hebben opgeslagen in de contacten van hun telefoon. Dit kun je wijzigen in Instellingen.
 
 • Je kunt nu een optionele gebruikersnaam instellen en delen, zodat mensen met je kunnen chatten zonder je telefoonnummer.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Dankzij een nieuwe privacyinstelling bepaal je zelf wie jou via je telefoonnummer kan vinden op Signal.

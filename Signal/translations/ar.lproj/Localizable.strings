@@ -7790,7 +7790,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "اسم المُستخدم هذا غير متاح.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "قمتَ بمحاولات كثيرة. يُرجى المحاولة لاحقاً";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "اسم المُستخدم";
@@ -7805,7 +7805,7 @@
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "لا يُمكن لأسماء المُستخدمين أن تنتهي بـ 00. جرّب رقمًا آخر بين 1 و9";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
-"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "يُمكن تحديث أسماء المُستخدمين فقط عند وجود اتصال بالإنترنت.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "لا يُمكن أن يكون اسم الجهاز فارغ";

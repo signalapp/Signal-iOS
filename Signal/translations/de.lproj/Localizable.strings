@@ -4238,7 +4238,7 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "WLAN und Mobilfunk";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Telefonnummer suchen";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Nach Telefonnummer suchen";
 
 /* A label for the cell that lets you add a new member by their username */
 "NEW_CONVERSATION_FIND_BY_USERNAME" = "Nach Nutzernamen suchen";
@@ -4283,7 +4283,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Gruppe wählen";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Telefonnummer suchen";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Nach Telefonnummer suchen";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Story benennen";
@@ -4847,7 +4847,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Unterhaltungsanfrage akzeptieren.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Unterhaltungsanfrage akzeptieren. Sende ihm eine Nachricht, um eine Nachrichtenanfrage zu stellen.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Unterhaltungsanfrage akzeptieren. Sende ihm eine Nachricht, um eine Unterhaltungsanfrage zu stellen.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Zahlung kann nicht gesendet werden";
@@ -7790,7 +7790,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Dein Nutzername ist nicht verfügbar.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Zu viele Versuche. Bitte versuche es später erneut.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Nutzername";
@@ -7805,7 +7805,7 @@
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Nutzernamen dürfen nicht auf 00 enden. Verwende eine andere Zahl von 1 bis 9";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
-"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Nutzernamen können nur aktualisiert werden, wenn eine Verbindung zum Internet besteht.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Gerätename darf nicht leer sein";

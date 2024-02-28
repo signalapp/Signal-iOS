@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Hem introduït noves maneres de mantenir en privat el teu número de telèfon a Signal.
 
 • El teu número de telèfon no serà visible per a ningú tret que el tingui guardat als contactes del seu telèfon. Pots canviar això a Ajustos.
 
 • Ara pots establir i compartir un àlies opcional perquè la gent pugui xatejar amb tu sense que hagis de donar-los el teu número de telèfon.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Una nova funció de privacitat et permet controlar qui pot trobar-te pel teu número de telèfon a Signal.

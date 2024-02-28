@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Prinášame nové spôsoby, ako utajiť svoje telefónne číslo v aplikácii Signal.
 
 • Vaše telefónne číslo už nebude viditeľné pre nikoho na najnovšej verzii Signalu, pokiaľ ho nebude mať uložené v kontaktoch. Môžete to zmeniť v nastaveniach.
 
 • Teraz si môžete nastaviť a zdieľať voliteľné používateľské meno, aby s vami mohli ľudia četovať bez toho, aby ste museli zdieľať svoje telefónne číslo.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Nové nastavenie súkromia vám umožňuje určiť, kto vás môže v aplikácii nájsť podľa telefónneho čísla.

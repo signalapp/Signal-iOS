@@ -83,7 +83,7 @@
 "ACTION_VIDEO_CALL" = "Video-oproep";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Groespleden toevoegen";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Groepsleden toevoegen";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Wil je jouw profiel voor deze groep zichtbaar maken?";
@@ -227,7 +227,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Opslagruimte bijna vol";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "De overgezette gegevens van je oude apparaat konden niet worden hersteld op dit apparaat. Stuur een foutopsporingslog naar support@signal.org zodat we we een oplossing kunnen zoeken voor dit probleem. Als je Signal opnieuw installeert, gaat je gespreksgeschiedenis misschien verloren.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "De overgezette gegevens van je oude apparaat konden niet worden hersteld op dit apparaat. Stuur een foutopsporingslog naar support@signal.org zodat we een oplossing kunnen zoeken voor dit probleem. Als je Signal opnieuw installeert, gaat je gespreksgeschiedenis misschien verloren.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Het overzetten van je Signal-account kon niet succesvol worden afgerond";
@@ -3131,10 +3131,10 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%1$@ is toegevoegd aan de groep.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "Één persoon heeft een uitnodiging om lid te worden van de groep verworpen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "Eén persoon heeft een uitnodiging om lid te worden van de groep verworpen.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "Één persoon, die door %1$@ was uitgenodigd om lid te worden van de groep, heeft de uitnodiging verworpen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "Eén persoon, die door %1$@ was uitgenodigd om lid te worden van de groep, heeft de uitnodiging verworpen.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ heeft je uitnodiging om lid te worden van de groep verworpen.";
@@ -3185,7 +3185,7 @@
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft het verzoek om lid te worden van de groep ingetrokken.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Je hebt het verzoek van %1$@ om lid te te worden van de groep geweigerd.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Je hebt het verzoek van %1$@ om lid te worden van de groep geweigerd.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ rejecting user name }}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ heeft een verzoek van %1$@ om lid te worden van de groep geweigerd.";
@@ -3242,7 +3242,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsafbeelding verwijderd.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "De groepsafbeeldig is aangepast.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "De groepsafbeelding is aangepast.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Jij hebt de groepsafbeelding aangepast.";
@@ -5075,13 +5075,13 @@
 "PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signals servers zodat alleen jij er toegang toe hebt. Je kunt hierdoor je profiel, instellingen en contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de pincode niet nodig om de app te openen.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Meer over PINs";
+"PIN_CREATION_LEARN_MORE" = "Meer over pincodes";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
 "PIN_CREATION_LEARN_MORE_TEXT" = "Pincodes houden je informatie versleuteld opgeslagen bij Signal, zodat alleen jij er toegang toe hebt. Je profiel, instellingen en contacten worden hersteld wanneer je opnieuw installeert.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "Over Signal-PINs";
+"PIN_CREATION_LEARN_MORE_TITLE" = "Over Signal-pincodes";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
@@ -5822,7 +5822,7 @@
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Op je andere apparaat wordt een verouderde versie van Signal uitgevoerd welke het scannen van QR-codes van iPads niet ondersteund. Installeer de meest recente versie van Signal en probeer het opnieuw.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Scannent apparaat bijwerken";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Scannend apparaat bijwerken";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Koppelen van je apparaat is mislukt";
@@ -7751,7 +7751,7 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Deze gebruikersnaam is niet meer geldig.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is geen Signal-gebruiker. Ga na dat je de complete gebruikersnaam hebt ingevuld.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is geen Signal-gebruiker. Controleer of je de volledige gebruikersnaam hebt ingevoerd.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Deze persoon is niet gevonden";
@@ -7790,7 +7790,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Deze gebruikersnaam is niet beschikbaar.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Je hebt te veel pogingen gedaan. Probeer het later opnieuw.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Gebruikersnaam";
@@ -7805,7 +7805,7 @@
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Dit nummer kan niet 00 zijn. Voer een cijfer tussen 1-9 in";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
-"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Gebruikersnamen kunnen alleen worden bijgewerkt als je bent verbonden met het internet.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Apparaatnaam mag niet leeg zijn";

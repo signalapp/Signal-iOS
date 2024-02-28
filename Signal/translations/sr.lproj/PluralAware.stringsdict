@@ -77,7 +77,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ставки: 1</string>
+			<string>Ставки: %1$d</string>
 			<key>other</key>
 			<string>Ставки: %1$d</string>
 		</dict>

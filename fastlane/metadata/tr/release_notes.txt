@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Signal'de telefon numaranı gizli tutmanın yeni yollarını sunuyoruz.
 
 • Signal'in en son sürümünde telefon numaran, telefon rehberinde kayıtlı olmadığı sürece artık kimse tarafından görülmez. Bu özelliği Ayarlar'dan değiştirebilirsin.
 
 • Artık insanlara telefon numaranı vermeden seninle sohbet etmesine izin vermek için isteğe bağlı bir kullanıcı adı belirleyebilir ve paylaşabilirsin.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Yeni bir gizlilik ayarı, Signal'de telefon numarana göre seni kimin bulabileceğini kontrol etmeni sağlar.

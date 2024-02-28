@@ -7790,7 +7790,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "આ યુઝરનેમ ઉપલબ્ધ નથી.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "ઘણા બધા પ્રયત્નો થઈ ગયા છે, કૃપા કરીને પછીથી ફરી પ્રયત્ન કરો.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "યુઝરનેમ";
@@ -7805,7 +7805,7 @@
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "યુઝરનેમ 00થી સમાપ્ત ન થઈ શકે. 1-9ની વચ્ચેનો અન્ય અંક અજમાવો";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
-"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "યુઝરનેમ ત્યારે જ અપડેટ કરી શકાય છે જ્યારે ઇન્ટરનેટ કનેક્શન ચાલુ હોય.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "ડિવાઇસનું નામ ખાલી હોઈ શકતું નથી";

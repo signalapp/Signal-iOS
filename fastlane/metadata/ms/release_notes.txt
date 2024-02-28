@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Kami kenalkan cara baharu untuk pastikan nombor telefon anda dirahsiakan di Signal.
 
 • Nombor telefon anda tidak akan kelihatan kepada sesiapa pada versi terkini Signal melainkan mereka menyimpannya dalam kenalan telefon. Anda boleh tukar ini dalam Tetapan.
 
 • Anda kini boleh tetapkan dan kongsi nama pengguna untuk bersembang tanpa memberi nombor telefon anda.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Tetapan privasi baharu membolehkan anda mengawal orang yang boleh cari anda melalui nombor telefon di Signal.

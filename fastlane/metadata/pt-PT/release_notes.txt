@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Estamos a introduzir novas formas de manter o seu número de telemóvel privado no Signal.
 
 • Na versão mais recente do Signal, o seu número já não será visível para toda a gente, a menos que esteja guardado nos contactos do telemóvel. Pode alterar isto nas Definições.
 
 • Pode definir e partilhar um nome de utilizador opcional para as pessoas o contactarem sem ser preciso o seu número.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Nova definição para controlar quem o pode encontrar no Signal através do seu número de telemóvel.

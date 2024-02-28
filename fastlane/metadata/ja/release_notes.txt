@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Signalは、電話番号を非公開にする新しい方法を導入します。
 
 • Signalの最新バージョンでは、あなたの電話番号は、その番号を携帯電話の連絡先に保存している人にしか表示されなくなります。これはSignalの設定で変更できます。
 
 • オプションのユーザーネームを設定して共有することで、電話番号を教えずにチャットができるようになりました。
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• 新しいプライバシー設定により、Signal上で、電話番号からあなたを見つけることができるユーザーを指定することができます。

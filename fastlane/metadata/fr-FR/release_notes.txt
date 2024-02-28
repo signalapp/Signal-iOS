@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Une confidentialité renforcée grâce à ces nouvelles fonctionnalités.
 
 • Les utilisateurs disposant de la dernière version de l’appli n’ont désormais plus accès à votre numéro, à moins qu’ils l’aient enregistré dans leurs contacts. Vous pouvez modifier ces préférences dans les Paramètres.
 
 • Vous pouvez aussi définir et partager un nom d’utilisateur facultatif, afin de discuter sans communiquer votre numéro.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Vous choisissez qui peut vous retrouver sur Signal avec votre numéro, grâce à un nouveau paramètre de confidentialité.

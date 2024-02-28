@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Predstavljamo nove postavke privatnosti broja telefona na Signalu.
 
 • Vaš broj telefona neće više biti vidljiv nikome s najnovijom verzijom Signala, osim korisnicima u čijim se kontaktima već nalazi. To možete promijeniti u postavkama Signala.
 
 • Ako želite, možete postaviti korisničko ime kako biste omogućili drugima da vam šalju poruke, a da im ne morate dati svoj broj.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Nova postavka privatnosti omogućuje vam kontrolu nad tim tko vas može pronaći putem vašeg broja telefona na Signalu.

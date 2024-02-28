@@ -1,9 +1,9 @@
-NSAppleMusicUsageDescription = "Signal користи Apple Music за репродукцију медијских прилога.";
-NSCameraUsageDescription = "Signal користи вашу камеру за фотографисање и видео позиве.";
-NSContactsUsageDescription = "Signal користи именик да пронађе ваше познанике. Ваше контакте не складиштимо на серверу.";
+NSAppleMusicUsageDescription = "Signal користи Apple Music за пуштање медија из прилога.";
+NSCameraUsageDescription = "Signal користи вашу камеру за снимање фотографија и за видео позиве.";
+NSContactsUsageDescription = "Signal користи ваше контакте да пронађе људе које познајете. Ваше контакте не складиштимо на серверу.";
 NSFaceIDUsageDescription = "Signal-ово закључавање екрана користи Face ID.";
 NSLocationWhenInUseUsageDescription = "Signal-у је потребан приступ вашој локацији како бисте је могли делити.";
 NSMicrophoneUsageDescription = "Signal-у је потребан приступ микрофону за разговоре и снимање гласовних порука.";
-NSPhotoLibraryAddUsageDescription = "Signal ће сачувати фотографије у вашу галерију.";
+NSPhotoLibraryAddUsageDescription = "Signal ће сачувати слике у вашу галерију.";
 NSPhotoLibraryUsageDescription = "Signal вам омогућава избор фотографија за слање из ваше галерије.";
-NSLocalNetworkUsageDescription = "Signal користи локалну мрежу како би вам омогућио да директно пребаците свој налог на нови телефон. Неће се користити уколико изричито не одлучите да започнете пренос на нови уређај.";
+NSLocalNetworkUsageDescription = "Signal користи локалну мрежу да би вам омогућио да директно пребаците налог на нови телефон. Неће се користити осим ако изричито не одлучите да започнете пренос на нови уређај.";

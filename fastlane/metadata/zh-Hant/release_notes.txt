@@ -1,8 +1,8 @@
-We’re introducing new ways to keep your phone number private on Signal.
+我們現正推出全新方式，讓你的電話號碼在 Signal 中保密。
 
 • 在最新版本的 Signal 中，任何人都無法看到你的電話號碼，除非他們將其儲存在手機通訊錄中。你可以在設定中進行更改。
 
 • 你現在可以設定和分享選定的用戶名稱，以便人們與你聊天，而無需向他們提供你的電話號碼。
 
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• 新的隱私設定可讓你在 Signal 中控制誰可以用你的電話號碼找到你。

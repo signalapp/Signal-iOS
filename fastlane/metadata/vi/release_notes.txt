@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+Chúng tôi triển khai các cách mới để giúp số điện thoại của bạn được riêng tư trên Signal.
 
 • Số điện thoại của bạn sẽ không hiển thị với bất kỳ ai trên phiên bản mới nhất của Signal trừ khi người đó đã lưu số điện thoại của bạn trên danh bạ của mình. Bạn có thể thay đổi trong mục Cài đặt.
 
 • Bạn có thể đặt và chia sẻ tên người dùng để mọi người trò chuyện với bạn mà không cần có số điện thoại của bạn.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• Một cài đặt mới để kiểm soát người có thể tìm bạn bằng số điện thoại trên Signal.

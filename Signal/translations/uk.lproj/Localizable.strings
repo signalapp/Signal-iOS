@@ -5357,7 +5357,7 @@
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Ім'я користувача, QR-код і посилання не відображаються у вашому профілі. Діліться імʼям користувача тільки з людьми, яким ви довіряєте.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
-"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Тепер вам можуть писати, використовуючи ваше додаткове ім'я користувача, тож вам не треба ділитися своїм номером телефону.";
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Тепер люди можуть писати вам, знаючи ваше ім'я користувача. Його можна створити в разі потреби не повідомляти свого номера телефону.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Проксі адреса";
@@ -7679,7 +7679,7 @@
 "USERNAME_EDUCATION_TITLE" = "Нові способи додавання контактів";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Тепер вам можуть писати, використовуючи ваше додаткове ім'я користувача, тож вам не треба ділитися своїм номером телефону. Ім'я користувача не відображатиметься у вашому профілі.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Тепер люди можуть писати вам, знаючи ваше ім'я користувача. Його можна створити в разі потреби не повідомляти свого номера телефону. Ім'я користувача не відображається у вашому профілі.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Імена користувачів";
@@ -7790,7 +7790,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Це ім'я користувача недоступне.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Забагато спроб. Краще спробувати знову пізніше.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Ім'я користувача";
@@ -7805,7 +7805,7 @@
 "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Ім'я користувача не може закінчуватися цифрами 00. Спробуйте цифру від 1 до 9";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
-"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Usernames can only be updated when connected to the internet.";
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Ім'я користувача можна оновити лише за наявності підключення до інтернету.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Ім'я пристрою не може бути порожнім";

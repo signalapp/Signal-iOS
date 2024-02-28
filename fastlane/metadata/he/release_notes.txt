@@ -1,7 +1,7 @@
-We’re introducing new ways to keep your phone number private on Signal.
+אנחנו מציגים דרכים חדשות לשמור על פרטיות מספר הטלפון שלך ב–Signal.
 
 • מספר הטלפון שלך כבר לא יהיה גלוי לאף אחד בגרסה האחרונה של Signal, אלא אם כן המספר שמור ברשימת אנשי הקשר שלו או שלה. אפשר לשנות את זה בהגדרות.
 
 • מעכשיו אפשר להגדיר ולשתף שם משתמש אופציונלי כדי לאפשר לאנשים לשוחח איתך בצ׳אט מבלי לתת להם את מספר הטלפון שלך.
 
-• A new privacy setting lets you control who can find you by your phone number on Signal.
+• הגדרת פרטיות חדשה מאפשרת לך לשלוט במי שיוכל למצוא אותך לפי מספר הטלפון שלך ב–Signal.
