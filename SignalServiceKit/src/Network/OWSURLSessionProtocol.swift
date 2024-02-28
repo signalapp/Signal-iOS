@@ -238,13 +238,6 @@ public extension OWSURLSessionProtocol {
     // MARK: - Data Tasks Convenience
 
     func dataTaskPromise(
-        request: URLRequest,
-        ignoreAppExpiry: Bool = false
-    ) -> Promise<HTTPResponse> {
-        return dataTaskPromise(request: request, ignoreAppExpiry: ignoreAppExpiry)
-    }
-
-    func dataTaskPromise(
         on scheduler: Scheduler = DispatchQueue.global(),
         _ urlString: String,
         method: HTTPMethod,
