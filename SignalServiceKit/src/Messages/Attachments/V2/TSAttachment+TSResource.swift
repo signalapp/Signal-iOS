@@ -74,6 +74,22 @@ extension TSAttachmentStream: TSResourceStream {
         return URL(fileURLWithPath: filePath)
     }
 
+    public func decryptedLongText() -> String? {
+        guard let fileUrl = self.originalMediaURL else {
+            return nil
+        }
+
+        guard let data = try? Data(contentsOf: fileUrl) else {
+            return nil
+        }
+
+        guard let text = String(data: data, encoding: .utf8) else {
+            owsFailDebug("Can't parse oversize text data.")
+            return nil
+        }
+        return text
+    }
+
     public func decryptedImage() async throws -> UIImage {
         // TSAttachments keep the file decrypted on disk.
         guard let originalImage = self.originalImage else {

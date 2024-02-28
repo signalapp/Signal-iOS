@@ -75,26 +75,14 @@ public extension TSMessage {
             .ids.map(\.bridgeUniqueId)
     }
 
-    @objc
-    func oversizeText(transaction: SDSAnyReadTransaction) -> String? {
-        guard
-            let attachment = self.oversizeTextAttachment(transaction: transaction)?.bridge,
-            let attachmentStream = attachment as? TSAttachmentStream,
-            let fileUrl = attachmentStream.originalMediaURL
-        else {
-            return nil
+    /// The raw body contains placeholders for things like mentions and is not user friendly.
+    /// If you want a constant string representing the body of this message, this is it.
+    @objc(rawBodyWithTransaction:)
+    func rawBody(transaction: SDSAnyReadTransaction) -> String? {
+        if let oversizeText = self.oversizeTextAttachment(transaction: transaction)?.asStream()?.decryptedLongText() {
+            return oversizeText
         }
-
-        guard let data = try? Data(contentsOf: fileUrl) else {
-            //        OWSFailDebug(@"Can't load oversize text data.");
-            return nil
-        }
-
-        guard let text = String(data: data, encoding: .utf8) else {
-            owsFailDebug("Can't parse oversize text data.")
-            return nil
-        }
-        return text
+        return self.body?.nilIfEmpty
     }
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
@@ -531,7 +519,7 @@ public extension TSMessage {
             )
         }
 
-        let bodyDescription = self.rawBody(with: tx)
+        let bodyDescription = self.rawBody(transaction: tx)
         if
             bodyDescription == nil,
             let storyReactionEmoji,

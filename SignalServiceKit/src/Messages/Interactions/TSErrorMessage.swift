@@ -101,7 +101,7 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
 extension TSErrorMessage {
 
     public func plaintextBody(_ tx: SDSAnyReadTransaction) -> String {
-        return self.rawBody(with: tx) ?? ""
+        return self.rawBody(transaction: tx) ?? ""
     }
 
     @objc

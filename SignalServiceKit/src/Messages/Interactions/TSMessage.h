@@ -183,11 +183,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (void)removeAttachment:(TSAttachment *)attachment
              transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
 
-// The raw body contains placeholders for things like mentions and is not
-// user friendly. If you want a constant string representing the body of
-// this message, this is it.
-- (nullable NSString *)rawBodyWithTransaction:(SDSAnyReadTransaction *)transaction;
-
 - (BOOL)shouldStartExpireTimer;
 
 - (BOOL)hasRenderableContentWithTransaction:(SDSAnyReadTransaction *)transaction

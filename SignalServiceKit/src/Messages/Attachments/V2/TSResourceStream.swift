@@ -57,6 +57,9 @@ public protocol TSResourceStream: TSResource {
 
     func fileURLForDeletion() throws -> URL
 
+    /// Interprets the data on disk as a string with standard encoding (utf-8, but thats an implementation detail).
+    func decryptedLongText() -> String?
+
     func decryptedImage() async throws -> UIImage
 
     var concreteStreamType: ConcreteTSResourceStream { get }

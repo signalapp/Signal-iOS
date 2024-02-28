@@ -390,19 +390,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-- (nullable NSString *)rawBodyWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    NSString *_Nullable oversizeText = [self oversizeTextWithTransaction:transaction];
-    if (oversizeText) {
-        return oversizeText;
-    }
-
-    if (self.body.length > 0) {
-        return self.body;
-    }
-
-    return nil;
-}
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
