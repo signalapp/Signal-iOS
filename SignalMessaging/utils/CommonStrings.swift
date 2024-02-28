@@ -37,6 +37,14 @@ public class CommonStrings: NSObject {
     static public var selectButton: String {
         OWSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode")
     }
+  
+    static public var selectAllButton: String {
+        OWSLocalizedString("BUTTON_SELECT_ALL", comment: "Button text to select all in batch selection mode")
+    }
+  
+    static public var selectNoneButton: String {
+        OWSLocalizedString("BUTTON_SELECT_NONE", comment: "Button text to select none in batch selection mode")
+    }
 
     static public var doneButton: String {
         OWSLocalizedString("BUTTON_DONE", comment: "Label for generic done button.")
