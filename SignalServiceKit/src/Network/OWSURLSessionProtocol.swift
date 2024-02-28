@@ -223,20 +223,6 @@ public extension OWSURLSessionProtocol {
     }
 
     func uploadTaskPromise(
-        request: URLRequest,
-        fileUrl: URL,
-        ignoreAppExpiry: Bool = false,
-        progress progressBlock: ProgressBlock? = nil
-    ) -> Promise<HTTPResponse> {
-        return self.uploadTaskPromise(
-            request: request,
-            fileUrl: fileUrl,
-            ignoreAppExpiry: ignoreAppExpiry,
-            progress: progressBlock
-        )
-    }
-
-    func uploadTaskPromise(
         _ urlString: String,
         method: HTTPMethod,
         headers: [String: String]? = nil,
@@ -245,7 +231,7 @@ public extension OWSURLSessionProtocol {
     ) -> Promise<HTTPResponse> {
         firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers)
-            return self.uploadTaskPromise(request: request, fileUrl: fileUrl, progress: progressBlock)
+            return self.uploadTaskPromise(request: request, fileUrl: fileUrl, ignoreAppExpiry: false, progress: progressBlock)
         }
     }
 
