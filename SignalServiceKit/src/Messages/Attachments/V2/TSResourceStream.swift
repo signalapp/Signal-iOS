@@ -59,6 +59,8 @@ public protocol TSResourceStream: TSResource {
 
     func decryptedImage() async throws -> UIImage
 
+    var concreteStreamType: ConcreteTSResourceStream { get }
+
     // MARK: - Cached media properties
 
     /// The validated content type from the content itself, not just the one declared by the

@@ -40,6 +40,10 @@ extension TSAttachment: TSResource {
         return contentType
     }
 
+    public var concreteType: ConcreteTSResource {
+        return .legacy(self)
+    }
+
     public func asStream() -> TSResourceStream? {
         let stream = self as? TSAttachmentStream
         guard stream?.originalFilePath != nil else {
@@ -76,6 +80,10 @@ extension TSAttachmentStream: TSResourceStream {
             throw OWSAssertionError("Not a valid image!")
         }
         return originalImage
+    }
+
+    public var concreteStreamType: ConcreteTSResourceStream {
+        return .legacy(self)
     }
 
     public var cachedContentType: TSResourceContentType? {

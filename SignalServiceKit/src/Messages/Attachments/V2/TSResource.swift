@@ -37,6 +37,8 @@ public protocol TSResource {
 
     // MARK: - Converters
 
+    var concreteType: ConcreteTSResource { get }
+
     func asStream() -> TSResourceStream?
 
     // MARK: - Table Join Getters
