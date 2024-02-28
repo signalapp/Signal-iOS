@@ -197,10 +197,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
-    public let svr2PreviousEnclaves: [MrEnclave] = [
-        // Add the current `svr2Enclave` value here when replacing it.
-        MrEnclave("6ee1042f9e20f880326686dd4ba50c25359f01e9f733eeba4382bca001d45094")
-    ]
+    public let svr2PreviousEnclaves: [MrEnclave] = []
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
 
@@ -251,10 +248,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
-    public let svr2PreviousEnclaves: [MrEnclave] = [
-        // Add the current `svr2Enclave` value here when replacing it.
-        MrEnclave("a8a261420a6bb9b61aa25bf8a79e8bd20d7652531feb3381cbffd446d270be95")
-    ]
+    public let svr2PreviousEnclaves: [MrEnclave] = []
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group.staging"
 
