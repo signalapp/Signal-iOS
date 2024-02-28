@@ -177,20 +177,15 @@ class ContactAboutSheet: StackSheetViewController {
             return
         }
 
-        contactName = {
-            let name = contactsManager.displayName(for: thread, transaction: tx)
-            if name == thread.contactAddress.phoneNumber {
-                return PhoneNumber
-                    .bestEffortFormatPartialUserSpecifiedText(
-                        toLookLikeAPhoneNumber: name
-                    )
-            }
-            return name
-        }()
-        contactShortName = contactsManager.shortDisplayName(
-            for: thread.contactAddress,
-            transaction: tx
-        )
+        let displayName = contactsManager.displayName(for: thread.contactAddress, tx: tx)
+        self.contactName = displayName.resolvedValue()
+        self.contactShortName = displayName.resolvedValue(useShortNameIfAvailable: true)
+
+        if case .phoneNumber(let phoneNumber) = displayName {
+            self.contactName = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(
+                toLookLikeAPhoneNumber: phoneNumber.stringValue
+            )
+        }
     }
 
     // MARK: Verified

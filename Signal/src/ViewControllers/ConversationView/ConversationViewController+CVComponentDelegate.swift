@@ -502,7 +502,7 @@ extension ConversationViewController: CVComponentDelegate {
         headerImageView.autoSetDimension(.width, toSize: 200)
         headerImageView.autoSetDimension(.height, toSize: 110)
 
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
         let messageFormat = OWSLocalizedString("UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT",
                                               comment: "Description for the unverified safety number change. Embeds {name of contact with identity change}")
 
@@ -526,7 +526,7 @@ extension ConversationViewController: CVComponentDelegate {
         AssertIsOnMainThread()
 
         let keyOwner = databaseStorage.read { tx in
-            return contactsManager.displayName(for: message.theirSignalAddress(), transaction: tx)
+            return contactsManager.displayName(for: message.theirSignalAddress(), tx: tx).resolvedValue()
         }
         let titleFormat = OWSLocalizedString("SAFETY_NUMBERS_ACTIONSHEET_TITLE", comment: "Action sheet heading")
         let titleText = String(format: titleFormat, keyOwner)
@@ -667,7 +667,7 @@ extension ConversationViewController: CVComponentDelegate {
         }
 
         let displayName = databaseStorage.read { tx in
-            return contactsManager.displayName(for: contactThread.contactAddress, transaction: tx)
+            return contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
         }
 
         let alert = ActionSheetController(title: CallStrings.callBackAlertTitle,
@@ -700,7 +700,7 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
         let address = contactThread.contactAddress
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
 
         let alert = ActionSheetController(
             title: String(
@@ -984,7 +984,7 @@ extension ConversationViewController: CVComponentDelegate {
             )
             let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
             let shortDisplayName = databaseStorage.read { tx in
-                return contactsManager.shortDisplayName(for: contactAddress, transaction: tx)
+                return contactsManager.displayName(for: contactAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true)
             }
             return String(format: formatString, formattedPhoneNumber, shortDisplayName)
         }()

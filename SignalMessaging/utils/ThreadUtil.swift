@@ -410,12 +410,28 @@ extension TSThread {
         }
     }
 
-    private func inPersonForRecipient(_ recipient: SignalServiceAddress,
-                                      transaction: SDSAnyReadTransaction) -> INPerson {
+    private func inPersonForRecipient(
+        _ recipient: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) -> INPerson {
 
         // Generate recipient name
-        let contactName = contactsManager.displayName(for: recipient, transaction: transaction)
-        let nameComponents = contactsManager.nameComponents(for: recipient, transaction: transaction)
+        let displayName = contactsManager.displayName(for: recipient, tx: transaction)
+
+        let nameComponents: PersonNameComponents?
+        switch displayName {
+        case .systemContactName(let systemContactName):
+            nameComponents = systemContactName.nameComponents
+        case .profileName(let profileNameComponents):
+            nameComponents = profileNameComponents
+        case .phoneNumber, .username, .unknown:
+            nameComponents = nil
+        }
+
+        var filteredNameComponents = PersonNameComponents()
+        filteredNameComponents.givenName = nameComponents?.givenName?.filterForDisplay
+        filteredNameComponents.familyName = nameComponents?.familyName?.filterForDisplay
+        filteredNameComponents.nickname = nameComponents?.nickname?.filterForDisplay
 
         // Generate contact handle
         let handle: INPersonHandle
@@ -431,9 +447,9 @@ extension TSThread {
         // Generate avatar
         let image = intentRecipientAvatarImage(recipient: recipient, transaction: transaction)
         if #available(iOS 15, *) {
-            return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
+            return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: displayName.resolvedValue(), image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
         } else {
-            return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false)
+            return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: displayName.resolvedValue(), image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false)
         }
     }
 

@@ -248,7 +248,7 @@ class MessageRequestView: UIStackView {
             }
 
             let shortName = databaseStorage.read { transaction in
-                return self.contactsManager.shortDisplayName(for: thread.contactAddress, transaction: transaction)
+                return self.contactsManager.displayName(for: thread.contactAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
             }
 
             return preparePromptTextView(

@@ -74,23 +74,21 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
 public class ContactSearchResult: Comparable, Dependencies {
 
     public let recipientAddress: SignalServiceAddress
-    private let comparableName: String
+    private let comparableName: ComparableDisplayName
 
     init(recipientAddress: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
         self.recipientAddress = recipientAddress
-        self.comparableName = Self.contactsManager.comparableName(for: recipientAddress, transaction: transaction)
+        self.comparableName = ComparableDisplayName(
+            address: recipientAddress,
+            displayName: Self.contactsManager.displayName(for: recipientAddress, tx: transaction),
+            config: .current()
+        )
     }
 
     // MARK: Comparable
 
     public static func < (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        var comparisonResult = lhs.comparableName.caseInsensitiveCompare(rhs.comparableName)
-
-        if comparisonResult == .orderedSame {
-            comparisonResult = lhs.recipientAddress.stringForDisplay.compare(rhs.recipientAddress.stringForDisplay)
-        }
-
-        return comparisonResult == .orderedAscending
+        return lhs.comparableName < rhs.comparableName
     }
 
     // MARK: Equatable
@@ -991,7 +989,7 @@ public class FullTextSearcher: NSObject {
     }
 
     private func indexingString(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        let displayName = contactsManager.displayName(for: address, transaction: transaction)
+        let displayName = contactsManager.displayName(for: address, tx: transaction).resolvedValue()
 
         return "\(address.phoneNumber ?? "") \(displayName)"
     }

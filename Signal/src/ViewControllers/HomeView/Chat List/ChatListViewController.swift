@@ -1032,14 +1032,14 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             return
         }
 
-        let userName = contactsManager.shortDisplayName(for: address, transaction: transaction)
+        let shortName = contactsManager.displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         let formattedAmount = PaymentsFormat.format(paymentAmount: paymentAmount,
                                                     isShortForm: true,
                                                     withCurrencyCode: true,
                                                     withSpace: true)
         let format = OWSLocalizedString("PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT",
                                        comment: "Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}.")
-        let title = String(format: format, userName, formattedAmount)
+        let title = String(format: format, shortName, formattedAmount)
 
         let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.paymentsBannerAvatarSize), localUserDisplayMode: .asUser)
         avatarView.update(transaction) { config in
@@ -1047,7 +1047,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,
-                                                      displayName: userName)
+                                                      displayName: shortName)
 
         configureUnreadPaymentsBanner(paymentsReminderView,
                                       title: title,
@@ -1534,16 +1534,20 @@ extension ChatListViewController: GetStartedBannerViewControllerDelegate {
 extension ChatListViewController {
 
     func updateFirstConversationLabel() {
-        let contactNames = databaseStorage.read { tx in
-            let contactAddresses = contactsManagerImpl.sortSignalServiceAddresses(
-                profileManager.allWhitelistedRegisteredAddresses(tx: tx),
-                transaction: tx
+        let contactNames = databaseStorage.read { tx -> [ComparableDisplayName] in
+            let comparableNames = contactsManager.sortedComparableNames(
+                for: profileManager.allWhitelistedRegisteredAddresses(tx: tx),
+                tx: tx
             )
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            let localAddress = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
-            return Array(contactAddresses.lazy.filter { $0 != localAddress }.prefix(3).map {
-                return self.contactsManager.displayName(for: $0, transaction: tx)
-            })
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                return []
+            }
+            return Array(
+                comparableNames.lazy
+                    .filter { !localIdentifiers.contains(address: $0.address) }
+                    .prefix(3)
+            )
         }
 
         let formatString = { () -> String in
@@ -1575,8 +1579,11 @@ extension ChatListViewController {
 
         let attributedString = NSAttributedString.make(
             fromFormat: formatString,
-            attributedFormatArgs: contactNames.map { name in
-                return .string(name, attributes: [.font: firstConversationLabel.font.semibold()])
+            attributedFormatArgs: contactNames.map { comparableName in
+                return .string(
+                    comparableName.resolvedValue(),
+                    attributes: [.font: firstConversationLabel.font.semibold()]
+                )
             }
         )
 

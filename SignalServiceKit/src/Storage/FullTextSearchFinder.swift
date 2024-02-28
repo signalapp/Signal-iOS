@@ -623,11 +623,10 @@ class AnySearchIndexer: Dependencies {
         // In the UI, we give preference to the system contact name
         // (as opposed to the contact's self-selected profile name),
         // so our first choice is to index by system contact names.
-        insert(account.contactPreferredDisplayName())
-        if let nameComponents = account.contactPersonNameComponents() {
-            insert(nameComponents.givenName)
-            insert(nameComponents.familyName)
-            insert(nameComponents.nickname)
+        if let nameComponents = account.contactNameComponents() {
+            insert(nameComponents.givenName?.filterForDisplay)
+            insert(nameComponents.familyName?.filterForDisplay)
+            insert(nameComponents.nickname?.filterForDisplay)
         }
         if nameStrings.isEmpty {
             // If the system contact has no names, fall back to
@@ -650,12 +649,14 @@ class AnySearchIndexer: Dependencies {
         // TODO: `displayName` is a performance bottleneck. Its slowness is ultimately
         // due to fetching SignalAccounts from the SignalAccountReadCache. The role of
         // read caches in the app is being revisited and may solve this problem.
-        var nameStrings: Set<String> = [contactsManager.displayName(for: recipientAddress, transaction: tx)]
-        if let nameComponents = contactsManager.nameComponents(for: recipientAddress, transaction: tx) {
-            let insert: (String?) -> Void = { if let s = $0 { nameStrings.insert(s) } }
-            insert(nameComponents.givenName)
-            insert(nameComponents.familyName)
-            insert(nameComponents.nickname)
+        var nameStrings = Set<String>()
+        let displayName = contactsManager.displayName(for: recipientAddress, tx: tx)
+        switch displayName {
+        case .systemContactName, .profileName:
+            nameStrings.insert(displayName.resolvedValue())
+            nameStrings.insert(displayName.resolvedValue(config: DisplayName.Config(shouldUseNicknames: false)))
+        case .phoneNumber, .username, .unknown:
+            break
         }
         return contactIndexStrings(nameStrings: nameStrings, recipientAddress: recipientAddress)
     }

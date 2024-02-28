@@ -38,10 +38,10 @@ public enum StoryUtil: Dependencies {
             if storyMessage.authorAddress.isLocalAddress {
                 authorShortName = CommonStrings.you
             } else {
-                authorShortName = contactsManager.shortDisplayName(
+                authorShortName = contactsManager.displayName(
                     for: storyMessage.authorAddress,
-                    transaction: transaction
-                )
+                    tx: transaction
+                ).resolvedValue(useShortNameIfAvailable: true)
             }
 
             let nameFormat = OWSLocalizedString(
@@ -55,8 +55,8 @@ public enum StoryUtil: Dependencies {
             }
             return contactsManager.displayName(
                 for: storyMessage.authorAddress,
-                transaction: transaction
-            )
+                tx: transaction
+            ).resolvedValue()
         }
     }
 

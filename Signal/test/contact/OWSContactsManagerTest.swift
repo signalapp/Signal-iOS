@@ -106,6 +106,26 @@ class OWSContactsManagerTest: SignalBaseTest {
         )
     }
 
+    private func makeUserProfile(givenName: String, familyName: String) -> OWSUserProfile {
+        return OWSUserProfile(
+            id: nil,
+            uniqueId: "",
+            serviceIdString: nil,
+            phoneNumber: nil,
+            avatarFileName: nil,
+            avatarUrlPath: nil,
+            profileKey: nil,
+            givenName: givenName,
+            familyName: familyName,
+            bio: nil,
+            bioEmoji: nil,
+            badges: [],
+            lastFetchDate: nil,
+            lastMessagingDate: nil,
+            isPhoneNumberShared: nil
+        )
+    }
+
     // MARK: - Display Names
 
     func testGetDisplayNamesWithCachedContactNames() {
@@ -120,7 +140,7 @@ class OWSContactsManagerTest: SignalBaseTest {
 
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
-            let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
+            let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice Aliceson (home)", "Bob Bobson (home)"]
             XCTAssertEqual(actual, expected)
         }
@@ -128,13 +148,13 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     func testGetDisplayNamesWithProfileFullNames() {
         let addresses = [SignalServiceAddress.randomForTesting(), SignalServiceAddress.randomForTesting()]
-        (self.profileManager as! OWSFakeProfileManager).fakeDisplayNames = [
-            addresses[0]: "Alice Aliceson",
-            addresses[1]: "Bob Bobson"
+        (self.profileManager as! OWSFakeProfileManager).fakeUserProfiles = [
+            addresses[0]: makeUserProfile(givenName: "Alice", familyName: "Aliceson"),
+            addresses[1]: makeUserProfile(givenName: "Bob", familyName: "Bobson"),
         ]
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
-            let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
+            let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice Aliceson", "Bob Bobson"]
             XCTAssertEqual(actual, expected)
         }
@@ -146,10 +166,10 @@ class OWSContactsManagerTest: SignalBaseTest {
             SignalServiceAddress(phoneNumber: "+17035559901")
         ]
         // Prevent default fake name from being used.
-        (self.profileManager as! OWSFakeProfileManager).fakeDisplayNames = [:]
+        (self.profileManager as! OWSFakeProfileManager).fakeUserProfiles = [:]
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
-            let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
+            let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["+17035559900", "+17035559901"]
             XCTAssertEqual(actual, expected)
         }
@@ -169,11 +189,11 @@ class OWSContactsManagerTest: SignalBaseTest {
         }
 
         // Prevent default fake names from being used.
-        (profileManager as! OWSFakeProfileManager).fakeDisplayNames = [:]
+        (profileManager as! OWSFakeProfileManager).fakeUserProfiles = [:]
 
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
-            let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
+            let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["alice", "bob"]
             XCTAssertEqual(actual, expected)
         }
@@ -184,11 +204,11 @@ class OWSContactsManagerTest: SignalBaseTest {
 
         // Intentionally do not set any mock usernames. Additionally, prevent
         // default fake names from being used.
-        (profileManager as! OWSFakeProfileManager).fakeDisplayNames = [:]
+        (profileManager as! OWSFakeProfileManager).fakeUserProfiles = [:]
 
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
-            let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
+            let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Unknown", "Unknown"]
             XCTAssertEqual(actual, expected)
         }
@@ -202,7 +222,9 @@ class OWSContactsManagerTest: SignalBaseTest {
         createAccounts([aliceAccount])
 
         let bobAddress = SignalServiceAddress.randomForTesting()
-        (profileManager as! OWSFakeProfileManager).fakeDisplayNames = [bobAddress: "Bob Bobson"]
+        (profileManager as! OWSFakeProfileManager).fakeUserProfiles = [
+            bobAddress: makeUserProfile(givenName: "Bob", familyName: "Bobson"),
+        ]
 
         let carolAddress = SignalServiceAddress(phoneNumber: "+17035559900")
 
@@ -217,7 +239,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
             let addresses = [aliceAddress, bobAddress, carolAddress, daveAddress, eveAddress]
-            let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
+            let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice Aliceson (home)", "Bob Bobson", "+17035559900", "dave", "Unknown"]
             XCTAssertEqual(actual, expected)
         }
@@ -235,7 +257,7 @@ class OWSContactsManagerTest: SignalBaseTest {
 
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
-            let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
+            let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
             let expected = ["Alice (home)", "Bob (home)"]
             XCTAssertEqual(actual, expected)
         }
@@ -254,18 +276,9 @@ class OWSContactsManagerTest: SignalBaseTest {
         })
         let contactsManager = makeContactsManager()
         read { transaction in
-            let actual = contactsManager.systemContactNames(for: AnySequence(addresses), tx: transaction)
+            let actual = contactsManager.systemContactNames(for: addresses.map { $0.phoneNumber! }, tx: transaction).map { $0?.resolvedValue() }
             let expected = ["Alice Aliceson (home)", "Bob Bobson (home)"]
             XCTAssertEqual(actual, expected)
-        }
-    }
-
-    func testCachedContactNameWithNonSignalContactsLackingPhoneNumbers() {
-        let addresses = [SignalServiceAddress.randomForTesting(), SignalServiceAddress.randomForTesting()]
-        let contactsManager = makeContactsManager()
-        read { transaction in
-            let actual = contactsManager.systemContactNames(for: AnySequence(addresses), tx: transaction)
-            XCTAssertEqual(actual, [nil, nil])
         }
     }
 
@@ -278,12 +291,13 @@ class OWSContactsManagerTest: SignalBaseTest {
         createAccounts([aliceAccount])
 
         // Who the heck is Chuck?
-        let chuckAddress = SignalServiceAddress.randomForTesting()
+        let chuckAci = Aci.randomForTesting()
+        let chuckAddress = SignalServiceAddress(serviceId: chuckAci, phoneNumber: "+16505550101")
 
         let contactsManager = makeContactsManager()
         read { transaction in
             let addresses = [aliceAddress, chuckAddress]
-            let actual = contactsManager.systemContactNames(for: AnySequence(addresses), tx: transaction)
+            let actual = contactsManager.systemContactNames(for: addresses.map { $0.phoneNumber! }, tx: transaction).map { $0?.resolvedValue() }
             let expected = ["Alice Aliceson (home)", nil]
             XCTAssertEqual(actual, expected)
         }

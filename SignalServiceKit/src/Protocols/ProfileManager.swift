@@ -39,8 +39,8 @@ public enum OptionalChange<Wrapped: Equatable>: Equatable {
 }
 
 public protocol ProfileManager: ProfileManagerProtocol {
-    func fullNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [String?]
     func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile>
+    func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?]
 
     /// Downloads an avatar if it hasn't been downloaded yet.
     ///

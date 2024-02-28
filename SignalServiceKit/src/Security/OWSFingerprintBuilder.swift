@@ -44,7 +44,7 @@ public class OWSFingerprintBuilder {
         }
         let myAci = localIdentifiers.aci
 
-        let theirName = contactsManager.displayName(for: SignalServiceAddress(theirAci), transaction: tx)
+        let theirName = contactsManager.displayName(for: SignalServiceAddress(theirAci), tx: tx).resolvedValue()
 
         let aciFingerprint = OWSFingerprint(
             myAci: myAci,

@@ -27,16 +27,14 @@ extension Usernames {
 
         public static func assembleByQuerying(
             forRecipient recipient: SignalRecipient,
-            profileManager: ProfileManager,
+            profileManager: any ProfileManager,
             contactManager: any ContactManager,
             transaction: SDSAnyReadTransaction
         ) -> BetterIdentifierChecker {
             var checker = BetterIdentifierChecker(forRecipient: recipient)
 
-            if let profileNameComponents = profileManager.nameComponentsForProfile(
-                with: recipient.address,
-                transaction: transaction
-            ) {
+            let userProfile = profileManager.getUserProfile(for: recipient.address, transaction: transaction)
+            if let userProfile, let profileNameComponents = userProfile.filteredNameComponents {
                 checker.add(profileGivenName: profileNameComponents.givenName)
                 checker.add(profileFamilyName: profileNameComponents.familyName)
             }

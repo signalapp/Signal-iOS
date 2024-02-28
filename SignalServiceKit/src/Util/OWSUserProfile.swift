@@ -601,6 +601,16 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // MARK: - Name
 
+    public var nameComponents: PersonNameComponents? {
+        guard let givenName = self.givenName?.strippedOrNil else {
+            return nil
+        }
+        var result = PersonNameComponents()
+        result.givenName = givenName
+        result.familyName = self.familyName?.strippedOrNil
+        return result
+    }
+
     @objc
     public var filteredGivenName: String? { givenName?.filterForDisplay }
 

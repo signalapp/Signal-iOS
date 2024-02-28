@@ -331,10 +331,10 @@ extension StoryContextMenuGenerator {
                         comment: "Name to display for the 'system' sender, e.g. for release notes and the onboarding story"
                     )
                 }
-                return Self.contactsManager.shortDisplayName(
+                return Self.contactsManager.displayName(
                     for: SignalServiceAddress(authorAci),
-                    transaction: transaction
-                )
+                    tx: transaction
+                ).resolvedValue(useShortNameIfAvailable: true)
             case .privateStory:
                 owsFailDebug("Unexpectedly had private story when hiding")
                 return nil

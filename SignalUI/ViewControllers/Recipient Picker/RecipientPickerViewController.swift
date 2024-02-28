@@ -49,12 +49,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     // MARK: Signal Connections
 
-    fileprivate struct SignalConnection {
-        var address: SignalServiceAddress
-        var comparableName: String
-    }
-
-    private var signalConnections = [SignalConnection]()
+    private var signalConnections = [ComparableDisplayName]()
     private var signalConnectionAddresses = Set<SignalServiceAddress>()
 
     // MARK: Picker
@@ -328,13 +323,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                 resolvedAddresses.remove(localIdentifiers.aciAddress)
             }
 
-            let sortableAddresses = contactsManagerImpl.sortedSortableAddresses(for: resolvedAddresses, tx: tx)
-            signalConnections = sortableAddresses.map { sortableAddress in
-                return SignalConnection(
-                    address: sortableAddress.address,
-                    comparableName: sortableAddress.comparableName
-                )
-            }
+            signalConnections = contactsManagerImpl.sortedComparableNames(for: resolvedAddresses, tx: tx)
             signalConnectionAddresses = resolvedAddresses
         }
     }
@@ -992,19 +981,6 @@ extension RecipientPickerViewController {
 // MARK: - Contacts, Connections, & Groups
 
 extension RecipientPickerViewController {
-    private class CollatableSignalConnection: NSObject {
-        private let rawValue: SignalConnection
-
-        init(_ rawValue: SignalConnection) {
-            self.rawValue = rawValue
-        }
-
-        @objc
-        func collationString() -> String {
-            return rawValue.comparableName
-        }
-    }
-
     private func contactsSection() -> [OWSTableSection] {
         guard !signalConnections.isEmpty else {
             return [ noContactsTableSection() ]
@@ -1021,11 +997,11 @@ extension RecipientPickerViewController {
             )]
         }
 
-        var collatedSignalConnections = collation.sectionTitles.map { _ in return [SignalConnection]() }
+        var collatedSignalConnections = collation.sectionTitles.map { _ in return [ComparableDisplayName]() }
         for signalConnection in signalConnections {
             let section = collation.section(
-                for: CollatableSignalConnection(signalConnection),
-                collationStringSelector: #selector(CollatableSignalConnection.collationString)
+                for: CollatableComparableDisplayName(signalConnection),
+                collationStringSelector: #selector(CollatableComparableDisplayName.collationString)
             )
             guard section >= 0 else {
                 continue

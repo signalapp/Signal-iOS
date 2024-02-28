@@ -233,7 +233,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                 let threadName = contactsManager.displayName(for: thread, transaction: transaction)
                 let callerNameForGroupCall: String?
                 if thread.isGroupThread {
-                    callerNameForGroupCall = contactsManager.displayName(for: caller, transaction: transaction)
+                    callerNameForGroupCall = contactsManager.displayName(for: caller, tx: transaction).resolvedValue()
                 } else {
                     callerNameForGroupCall = nil
                 }
@@ -601,7 +601,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
 
         let messageText = rawMessageText.filterStringForDisplay()
 
-        let senderName = contactsManager.displayName(for: incomingMessage.authorAddress, transaction: transaction)
+        let senderName = contactsManager.displayName(for: incomingMessage.authorAddress, tx: transaction).resolvedValue()
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -724,7 +724,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
         // disturb the user for a non-message
         guard previewType == .namePreview else { return }
 
-        let senderName = contactsManager.displayName(for: reaction.reactor, transaction: transaction)
+        let senderName = contactsManager.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
 
         let notificationTitle: String
 

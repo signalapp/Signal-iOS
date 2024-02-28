@@ -2473,6 +2473,6 @@ class _GroupUpdateCopy_ContactsManager_Wrapper: _GroupUpdateCopy_ContactsManager
     }
 
     func displayName(address: SignalServiceAddress, tx: DBReadTransaction) -> String {
-        return contactsManager.displayName(for: address, transaction: SDSDB.shimOnlyBridge(tx))
+        return contactsManager.displayName(for: address, tx: SDSDB.shimOnlyBridge(tx)).resolvedValue()
     }
 }

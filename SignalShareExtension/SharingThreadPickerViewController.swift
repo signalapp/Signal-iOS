@@ -460,7 +460,7 @@ extension SharingThreadPickerViewController {
                 comment: "alert body when sharing file failed because of untrusted/changed identity keys"
             )
             let displayName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: SignalServiceAddress(untrustedServiceId), transaction: tx)
+                return contactsManager.displayName(for: SignalServiceAddress(untrustedServiceId), tx: tx).resolvedValue()
             }
             let failureMessage = String(format: failureFormat, displayName)
 

@@ -72,31 +72,19 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     }
 
     func updateModel() {
-        cellModels = databaseStorage.read(block: { readTx in
+        cellModels = databaseStorage.read { readTx -> [[NameCollisionCellModel]] in
             if self.groupViewHelper == nil, self.thread.isGroupThread {
                 let threadViewModel = ThreadViewModel(thread: self.thread, forChatList: false, transaction: readTx)
                 self.groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
                 self.groupViewHelper?.delegate = self
             }
 
-            let standardSort = self.collisionFinder.findCollisions(transaction: readTx).standardSort(readTx: readTx)
-            guard standardSort.count > 0, standardSort.allSatisfy({ $0.elements.count >= 2 }) else { return [] }
-
-            let sortedCollisions: [NameCollision]
-            if let contactAddress = (self.thread as? TSContactThread)?.contactAddress,
-               standardSort.count == 1,
-               let requesterIndex = standardSort[0].elements.firstIndex(where: { $0.address == contactAddress }) {
-                // If we're in a contact thread, the one exception to the standard sorting of collisions
-                // is that the message requester should appear first
-                var collidingElements = standardSort[0].elements
-                let requesterElement = collidingElements.remove(at: requesterIndex)
-                collidingElements.insert(requesterElement, at: 0)
-                sortedCollisions = [NameCollision(collidingElements)]
-            } else {
-                sortedCollisions = standardSort
+            let collisions = self.collisionFinder.findCollisions(transaction: readTx)
+            if collisions.isEmpty {
+                return []
             }
 
-            return sortedCollisions.map { $0.collisionCellModels(
+            return collisions.map { $0.collisionCellModels(
                 thread: self.thread,
                 identityManager: DependenciesBridge.shared.identityManager,
                 profileManager: profileManager,
@@ -105,7 +93,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
                 viewControllerForPresentation: self,
                 tx: readTx
             ) }
-        })
+        }
     }
 
     func updateTableContents() {

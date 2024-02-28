@@ -14,10 +14,6 @@ class OWSProfileManagerSwiftValues {
 }
 
 extension OWSProfileManager: ProfileManager {
-    public func fullNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [String?] {
-        return userProfilesRefinery(for: addresses, tx: tx).values.map { $0?.filteredFullName }
-    }
-
     public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         do {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
@@ -627,6 +623,10 @@ extension OWSProfileManager: ProfileManager {
     }
 
     // MARK: - Bulk Fetching
+
+    public func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        return userProfilesRefinery(for: addresses, tx: tx).values
+    }
 
     private func userProfilesRefinery(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> Refinery<SignalServiceAddress, OWSUserProfile> {
         let resolvedAddresses = addresses.map { OWSUserProfile.internalAddress(for: $0) }

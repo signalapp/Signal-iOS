@@ -41,8 +41,8 @@ public class ContactsMentionHydrator {
         let address = SignalServiceAddress(mentionAci)
         let displayName = GlobalDependencies.contactsManager.displayName(
             for: address,
-            transaction: SDSDB.shimOnlyBridge(transaction)
-        )
+            tx: SDSDB.shimOnlyBridge(transaction)
+        ).resolvedValue()
         return (address, displayName)
     }
 

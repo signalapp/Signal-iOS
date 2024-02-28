@@ -159,7 +159,9 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
                             let collectionView = BadgeCollectionView(dataSource: self)
 
                             if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
-                                let localShortName = self.databaseStorage.read { self.contactsManager.shortDisplayName(for: localAddress, transaction: $0) }
+                                let localShortName = self.databaseStorage.read {
+                                    return self.contactsManager.displayName(for: localAddress, tx: $0).resolvedValue(useShortNameIfAvailable: true)
+                                }
                                 collectionView.badgeSelectionMode = .detailsSheet(owner: .local(shortName: localShortName))
                             } else {
                                 owsFailDebug("Unexpectedly missing local address")

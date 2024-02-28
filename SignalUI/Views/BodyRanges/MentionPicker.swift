@@ -50,7 +50,7 @@ class MentionPicker: UIView {
 
                 return MentionableUser(
                     address: address,
-                    displayName: Self.contactsManager.displayName(for: address, transaction: transaction)
+                    displayName: Self.contactsManager.displayName(for: address, tx: transaction).resolvedValue()
                 )
             }
         }

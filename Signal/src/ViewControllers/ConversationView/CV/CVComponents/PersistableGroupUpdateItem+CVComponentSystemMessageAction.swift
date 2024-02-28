@@ -177,10 +177,10 @@ fileprivate extension CVComponentSystemMessage.Action {
             accessibilityIdentifier: "block_join_request_button",
             action: .didTapBlockRequest(
                 groupModel: mostRecentGroupModel,
-                requesterName: contactsManager.shortDisplayName(
+                requesterName: contactsManager.displayName(
                     for: SignalServiceAddress(requester),
-                    transaction: tx
-                ),
+                    tx: tx
+                ).resolvedValue(useShortNameIfAvailable: true),
                 requesterAci: requester
             )
         )

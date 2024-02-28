@@ -133,137 +133,62 @@ class SignalAccountTest: XCTestCase {
 
     private var userDefaults = TestUtils.userDefaults()
 
-    func testPreferredDisplayName() {
-        guard let signalAccount = SignalAccount.constants.first?.0 else {
-            XCTFail("Cannot find mock SignalAccount")
-            return
-        }
-
-        userDefaults.setNicknamePreferred(isPreferred: false)
-
-        XCTAssert(signalAccount.contactFirstName == "matata")
-        XCTAssert(signalAccount.contactLastName == "what")
-        // `signalAccount` does have a nickname on it, but because user defaults indicate
-        // it is not preferred, we don't have it here.
-        XCTAssert(signalAccount.contactNicknameIfAvailable(userDefaults: self.userDefaults) == nil)
-        XCTAssert(signalAccount.contactPreferredDisplayName(userDefaults: self.userDefaults) == "matata what")
-
-        var expectedNameComponents = PersonNameComponents()
-        expectedNameComponents.givenName = "matata"
-        expectedNameComponents.familyName = "what"
-        XCTAssert(signalAccount.contactPersonNameComponents(userDefaults: self.userDefaults) == expectedNameComponents)
-    }
-
-    func testNicknamePreferred() {
+    func testContactNameComponents() {
         let contact = Contact(
-            phoneNumber: "myPhoneNumber",
-            phoneNumberLabel: "hakuna",
-            givenName: "matata",
-            familyName: "what",
-            // white space should be stripped because string processed for display
-            nickname: "a ",
-            fullName: "wonderful"
+            phoneNumber: "+16505550100",
+            phoneNumberLabel: "Mobile",
+            givenName: "Shabby",
+            familyName: "Thesealion",
+            nickname: "Shabs ",
+            fullName: "Shabby Thesealion"
         )
-        let signalAccount = SignalAccount.buildMock(contact: contact)
-
-        userDefaults.setNicknamePreferred(isPreferred: true)
-
-        XCTAssert(signalAccount.contactFirstName == "matata")
-        XCTAssert(signalAccount.contactLastName == "what")
-        XCTAssert(signalAccount.contactNicknameIfAvailable(userDefaults: self.userDefaults) == "a")
-        XCTAssert(signalAccount.contactPreferredDisplayName(userDefaults: self.userDefaults) == "a")
-
-        var expectedNameComponents = PersonNameComponents()
-        expectedNameComponents.givenName = "matata"
-        expectedNameComponents.familyName = "what"
-        expectedNameComponents.nickname = "a"
-        XCTAssert(signalAccount.contactPersonNameComponents(userDefaults: self.userDefaults) == expectedNameComponents)
-    }
-
-    func testEmptyNickname() {
-        let contact = Contact(
-            phoneNumber: "myPhoneNumber",
-            phoneNumberLabel: "hakuna",
-            givenName: " matata",
-            familyName: " what",
-            nickname: "",
-            fullName: "wonderful"
+        let signalAccount = SignalAccount(
+            contact: contact,
+            contactAvatarHash: nil,
+            multipleAccountLabelText: "Mobile",
+            recipientPhoneNumber: "+16505550100",
+            recipientServiceId: Aci.constantForTesting("00000000-0000-4000-A000-000000000000")
         )
-        let signalAccount = SignalAccount.buildMock(contact: contact)
 
-        userDefaults.setNicknamePreferred(isPreferred: true)
+        let nameComponents = signalAccount.contactNameComponents()!
+        XCTAssertEqual(nameComponents.givenName, "Shabby")
+        XCTAssertEqual(nameComponents.familyName, "Thesealion")
+        XCTAssertEqual(nameComponents.nickname, "Shabs")
 
-        // test stripping white space; litmus test for having called `.displayStringIfNonEmpty`
-        XCTAssert(signalAccount.contactFirstName == "matata")
-        XCTAssert(signalAccount.contactLastName == "what")
-
-        XCTAssert(signalAccount.contactNicknameIfAvailable(userDefaults: self.userDefaults) == nil)
-        XCTAssert(signalAccount.contactPreferredDisplayName(userDefaults: self.userDefaults) == "matata what")
-
-        var expectedNameComponents = PersonNameComponents()
-        expectedNameComponents.givenName = "matata"
-        expectedNameComponents.familyName = "what"
-        XCTAssert(signalAccount.contactPersonNameComponents(userDefaults: self.userDefaults) == expectedNameComponents)
-    }
-
-    func testNilNickname() {
-        let contact = Contact(
-            phoneNumber: "myPhoneNumber",
-            phoneNumberLabel: "hakuna",
-            givenName: "matata",
-            familyName: "what",
-            nickname: nil,
-            fullName: "wonderful"
+        let systemContactName = DisplayName.SystemContactName(
+            nameComponents: nameComponents,
+            multipleAccountLabel: "Mobile"
         )
-        let signalAccount = SignalAccount.buildMock(contact: contact)
 
-        userDefaults.setNicknamePreferred(isPreferred: true)
-
-        XCTAssert(signalAccount.contactNicknameIfAvailable(userDefaults: self.userDefaults) == nil)
-        XCTAssert(signalAccount.contactPreferredDisplayName(userDefaults: self.userDefaults) == "matata what")
-
-        var expectedNameComponents = PersonNameComponents()
-        expectedNameComponents.givenName = "matata"
-        expectedNameComponents.familyName = "what"
-        XCTAssert(signalAccount.contactPersonNameComponents(userDefaults: self.userDefaults) == expectedNameComponents)
+        XCTAssertEqual(
+            systemContactName.resolvedValue(config: DisplayName.Config(shouldUseNicknames: false)),
+            "Shabby Thesealion (Mobile)"
+        )
+        XCTAssertEqual(
+            systemContactName.resolvedValue(config: DisplayName.Config(shouldUseNicknames: true)),
+            "Shabs (Mobile)"
+        )
     }
 
     func testFullNameOnly() {
         let contact = Contact(
-            phoneNumber: "myPhoneNumber",
-            phoneNumberLabel: "hakuna",
-            givenName: "",
-            familyName: "",
+            phoneNumber: "+16505550100",
+            phoneNumberLabel: "",
+            givenName: nil,
+            familyName: nil,
             nickname: nil,
-            // string should end up processed such that white space stripped
-            fullName: "wonderful "
+            fullName: "Company Name"
         )
-        let signalAccount = SignalAccount.buildMock(contact: contact)
-
-        XCTAssert(signalAccount.contactFirstName == nil)
-        XCTAssert(signalAccount.contactLastName == nil)
-        XCTAssert(signalAccount.contactPreferredDisplayName(userDefaults: self.userDefaults) == "wonderful")
-
-        var expectedNameComponents = PersonNameComponents()
-        expectedNameComponents.givenName = "wonderful"
-        XCTAssert(signalAccount.contactPersonNameComponents(userDefaults: self.userDefaults) == expectedNameComponents)
-    }
-
-    func testNoNames() {
-        let contact = Contact(
-            phoneNumber: "myPhoneNumber",
-            phoneNumberLabel: "hakuna",
-            givenName: "",
-            familyName: "",
-            nickname: nil,
-            fullName: ""
+        let signalAccount = SignalAccount(
+            contact: contact,
+            contactAvatarHash: nil,
+            multipleAccountLabelText: nil,
+            recipientPhoneNumber: "+16505550100",
+            recipientServiceId: Aci.constantForTesting("00000000-0000-4000-A000-000000000000")
         )
-        let signalAccount = SignalAccount.buildMock(contact: contact)
 
-        XCTAssert(signalAccount.contactFirstName == nil)
-        XCTAssert(signalAccount.contactLastName == nil)
-        XCTAssert(signalAccount.contactPreferredDisplayName(userDefaults: self.userDefaults) == nil)
-        XCTAssert(signalAccount.contactPersonNameComponents(userDefaults: self.userDefaults) == nil)
+        let nameComponents = signalAccount.contactNameComponents()!
+        XCTAssertEqual(nameComponents.givenName, "Company Name")
     }
 }
 

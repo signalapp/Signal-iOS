@@ -11,28 +11,34 @@ import Contacts
 public class FakeContactsManager: NSObject, ContactManager {
     public var mockSignalAccounts = [String: SignalAccount]()
 
-    public func fetchSignalAccount(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        return mockSignalAccounts[phoneNumber]
+    public func fetchSignalAccounts(for phoneNumbers: [String], transaction: SDSAnyReadTransaction) -> [SignalAccount?] {
+        return phoneNumbers.map { mockSignalAccounts[$0] }
     }
 
-    public func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return systemContactName(for: address, tx: transaction) ?? "John Doe"
+    public func displayNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [DisplayName] {
+        return addresses.map { address in
+            if let phoneNumber = address.e164 {
+                if let contact = mockSignalAccounts[phoneNumber.stringValue]?.contact {
+                    var nameComponents = PersonNameComponents()
+                    nameComponents.givenName = contact.firstName
+                    nameComponents.familyName = contact.lastName
+                    return .systemContactName(DisplayName.SystemContactName(
+                        nameComponents: nameComponents,
+                        multipleAccountLabel: nil
+                    ))
+                }
+                return .phoneNumber(phoneNumber)
+            }
+            return .unknown
+        }
     }
 
-    public func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
-        return addresses.map { displayName(for: $0, transaction: transaction) }
+    public func displayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return displayName(for: address, tx: transaction).resolvedValue(config: DisplayName.Config(shouldUseNicknames: false))
     }
 
-    public func shortDisplayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return displayName(for: address, transaction: transaction)
-    }
-
-    public func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
-        let nameComponents = displayName(for: address, transaction: transaction).split(separator: " ")
-        var result = PersonNameComponents()
-        result.givenName = nameComponents.first.map(String.init(_:))
-        result.familyName = nameComponents.dropFirst().first.map(String.init(_:))
-        return result
+    public func shortDisplayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return displayNameString(for: address, transaction: transaction)
     }
 
     public var systemContactPhoneNumbers: [String] = []
@@ -43,14 +49,6 @@ public class FakeContactsManager: NSObject, ContactManager {
 
     public func sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         return addresses
-    }
-
-    public func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return displayName(for: address, transaction: transaction)
-    }
-
-    public func systemContactName(for address: SignalServiceAddress, tx transaction: SDSAnyReadTransaction) -> String? {
-        return fetchSignalAccount(for: address, transaction: transaction)?.contact?.fullName
     }
 
     public func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease {

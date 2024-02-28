@@ -104,10 +104,8 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         let nameAndAvatarSection = OWSTableSection()
 
         let members = databaseStorage.read { transaction in
-            BaseGroupMemberViewController.orderedMembers(recipientSet: self.recipientSet,
-                                                         shouldSort: true,
-                                                         transaction: transaction)
-        }.compactMap { $0.address }
+            BaseGroupMemberViewController.sortedMemberAddresses(recipientSet: self.recipientSet, tx: transaction)
+        }
 
         if members.isEmpty {
             nameAndAvatarSection.footerTitle = OWSLocalizedString("GROUP_MEMBERS_NO_OTHER_MEMBERS",
@@ -304,7 +302,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         } else {
             alertTitle = String.localizedStringWithFormat(alertTitleFormat, 1)
             let inviteeName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: firstPendingMember, transaction: tx)
+                return contactsManager.displayName(for: firstPendingMember, tx: tx).resolvedValue()
             }
             let alertMessageFormat = OWSLocalizedString("GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT",
                                                      comment: "Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }}")

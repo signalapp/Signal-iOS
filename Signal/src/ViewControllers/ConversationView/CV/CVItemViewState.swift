@@ -757,29 +757,24 @@ private class ItemBuilder {
 // MARK: -
 
 class DisplayNameCache: Dependencies {
-    private var shortDisplayNameCache = [ServiceId: String]()
+    private var displayNameCache = [ServiceId: DisplayName]()
 
-    func shortDisplayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        if let serviceId = address.serviceId, let value = shortDisplayNameCache[serviceId] {
-            return value
+    private func _displayName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> DisplayName {
+        if let serviceId = address.serviceId, let displayName = displayNameCache[serviceId] {
+            return displayName
         }
-        let value = contactsManager.shortDisplayName(for: address, transaction: transaction)
+        let displayName = contactsManager.displayName(for: address, tx: tx)
         if let serviceId = address.serviceId {
-            shortDisplayNameCache[serviceId] = value
+            displayNameCache[serviceId] = displayName
         }
-        return value
+        return displayName
     }
 
-    private var displayNameCache = [ServiceId: String]()
+    func shortDisplayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return _displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+    }
 
     func displayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        if let serviceId = address.serviceId, let value = displayNameCache[serviceId] {
-            return value
-        }
-        let value = contactsManager.displayName(for: address, transaction: transaction)
-        if let serviceId = address.serviceId {
-            displayNameCache[serviceId] = value
-        }
-        return value
+        return _displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: false)
     }
 }

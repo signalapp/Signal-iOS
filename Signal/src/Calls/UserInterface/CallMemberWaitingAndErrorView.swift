@@ -95,7 +95,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                 comment: "Text describing the local user in the group call members sheet when connected from another device.")
         } else {
-            displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+            displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
         }
 
         let blockFormat = OWSLocalizedString(

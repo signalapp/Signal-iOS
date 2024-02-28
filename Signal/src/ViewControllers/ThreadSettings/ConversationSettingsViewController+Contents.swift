@@ -150,7 +150,7 @@ extension ConversationSettingsViewController {
 
         let (visibleBadges, shortName) = databaseStorage.read { readTx -> ([OWSUserProfileBadgeInfo], String) in
             let profile = OWSUserProfile.getUserProfile(for: contactAddress, transaction: readTx)
-            let shortName = contactsManager.shortDisplayName(for: contactAddress, transaction: readTx)
+            let shortName = contactsManager.displayName(for: contactAddress, tx: readTx).resolvedValue(useShortNameIfAvailable: true)
             return (profile?.visibleBadges ?? [], shortName)
         }
         guard !visibleBadges.isEmpty else { return }

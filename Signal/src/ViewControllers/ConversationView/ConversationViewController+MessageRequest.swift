@@ -66,7 +66,7 @@ extension ConversationViewController: MessageRequestDelegate {
 
         if let addedByAci = groupMembership.addedByAci(forInvitedMember: invitedAtServiceId) {
             let addedByName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: SignalServiceAddress(addedByAci), transaction: tx)
+                return contactsManager.displayName(for: SignalServiceAddress(addedByAci), tx: tx).resolvedValue()
             }
 
             actionSheet.addAction(ActionSheetAction(
@@ -286,7 +286,7 @@ extension ConversationViewController: MessageRequestDelegate {
                 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE", comment: "An explanation of what unblocking a group means.")
         } else if let contactThread = thread as? TSContactThread {
             threadName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: contactThread.contactAddress, transaction: tx)
+                return contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
             }
             message = OWSLocalizedString(
                 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE", comment: "An explanation of what unblocking a contact means.")

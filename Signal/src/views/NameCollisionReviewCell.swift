@@ -38,10 +38,10 @@ extension NameCollision {
         tx: SDSAnyReadTransaction
     ) -> [NameCollisionCellModel] {
         elements.map {
-            NameCollisionCellModel(
+            return NameCollisionCellModel(
                 address: $0.address,
-                name: $0.currentName,
-                shortName: $0.shortName,
+                name: $0.comparableName.resolvedValue(),
+                shortName: $0.comparableName.resolvedValue(useShortNameIfAvailable: true),
                 oldName: $0.oldName,
                 updateTimestamp: $0.latestUpdateTimestamp,
                 thread: thread,
@@ -50,7 +50,8 @@ extension NameCollision {
                 isConnection: profileManager.isUser(inProfileWhitelist: $0.address, transaction: tx),
                 isBlocked: blockingManager.isAddressBlocked($0.address, transaction: tx),
                 hasPendingRequest: ContactThreadFinder().contactThread(for: $0.address, tx: tx)?.hasPendingMessageRequest(transaction: tx) ?? false,
-                isSystemContact: contactsManager.fetchSignalAccount(for: $0.address, transaction: tx) != nil, viewControllerForPresentation: viewControllerForPresentation
+                isSystemContact: contactsManager.fetchSignalAccount(for: $0.address, transaction: tx) != nil,
+                viewControllerForPresentation: viewControllerForPresentation
             )
         }
     }

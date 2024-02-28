@@ -26,7 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Username
 /// - Phone number
 /// - "Unknown"
-- (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)displayNameStringForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction;
 
 /// Returns the user's nickname / first name, if supported by the name's locale.
 /// If we don't know the user's name components, falls back to displayNameForAddress:
@@ -39,12 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///     * Family Name Only
 ///     * Prefer Nicknames
 ///     * Full Names Only
-- (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
-                             transaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)shortDisplayNameStringForAddress:(SignalServiceAddress *)address
+                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSArray<SignalServiceAddress *> *)sortSignalServiceAddressesObjC:(NSArray<SignalServiceAddress *> *)addresses
                                                         transaction:(SDSAnyReadTransaction *)transaction;
-
 
 @end
 

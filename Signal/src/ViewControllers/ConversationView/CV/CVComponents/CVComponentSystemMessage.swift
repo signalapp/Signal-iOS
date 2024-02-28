@@ -693,7 +693,7 @@ extension CVComponentSystemMessage {
             return errorMessage.previewText(transaction: transaction)
         } else if let verificationMessage = interaction as? OWSVerificationStateChangeMessage {
             let isVerified = verificationMessage.verificationState == .verified
-            let displayName = contactsManager.displayName(for: verificationMessage.recipientAddress, transaction: transaction)
+            let displayName = contactsManager.displayName(for: verificationMessage.recipientAddress, tx: transaction).resolvedValue()
             let format = (isVerified
                             ? (verificationMessage.isLocalChange
                                 ? OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
@@ -1165,7 +1165,10 @@ extension CVComponentSystemMessage {
             guard let profileChangeNewNameComponents = infoMessage.profileChangeNewNameComponents else {
                 return nil
             }
-            let systemContactName = contactsManager.systemContactName(for: profileChangeAddress, tx: transaction)
+            guard let profileChangePhoneNumber = profileChangeAddress.phoneNumber else {
+                return nil
+            }
+            let systemContactName = contactsManager.systemContactName(for: profileChangePhoneNumber, tx: transaction)
             guard let systemContactName else {
                 return nil
             }
@@ -1174,7 +1177,7 @@ extension CVComponentSystemMessage {
 
             // Only show the button if the address book contact's name is different
             // than the profile name.
-            guard systemContactName != newProfileName else {
+            guard systemContactName.resolvedValue() != newProfileName else {
                 return nil
             }
 

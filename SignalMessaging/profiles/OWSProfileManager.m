@@ -1097,16 +1097,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return userProfile.filteredFamilyName;
 }
 
-- (nullable NSPersonNameComponents *)nameComponentsForProfileWithAddress:(SignalServiceAddress *)address
-                                                             transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(address.isValid);
-
-    OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
-
-    return userProfile.filteredNameComponents;
-}
-
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction
 {

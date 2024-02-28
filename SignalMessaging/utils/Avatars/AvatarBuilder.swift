@@ -308,7 +308,7 @@ public class AvatarBuilder: NSObject {
             theme = .default
         }
         let requestType: RequestType = {
-            if let initials = Self.contactInitials(forPersonNameComponents: personNameComponents) {
+            if let initials = Self.contactInitials(for: personNameComponents) {
                 return .text(text: initials, theme: theme)
             } else {
                 return .contactDefaultIcon(theme: theme)
@@ -363,14 +363,10 @@ public class AvatarBuilder: NSObject {
             }
 
             let theme = AvatarTheme.forAddress(localAddress)
-            let nameComponents = Self.contactsManager.nameComponents(
-                for: localAddress,
-                transaction: transaction
-            )
 
-            if let nameComponents = nameComponents,
-               let initials = Self.contactInitials(forPersonNameComponents: nameComponents) {
-                return .text(text: initials, theme: theme)
+            let displayName = Self.contactsManager.displayName(for: localAddress, tx: transaction)
+            if let contactInitials = Self.contactInitials(for: displayName) {
+                return .text(text: contactInitials, theme: theme)
             } else {
                 return .contactDefaultIcon(theme: theme)
             }
@@ -540,23 +536,35 @@ public class AvatarBuilder: NSObject {
 
     // MARK: -
 
-    private static func contactInitials(forPersonNameComponents personNameComponents: PersonNameComponents?) -> String? {
-        guard let personNameComponents = personNameComponents else {
+    private static func contactInitials(for displayName: DisplayName) -> String? {
+        let nameComponents: PersonNameComponents
+
+        switch displayName {
+        case .systemContactName(let systemContactName):
+            nameComponents = systemContactName.nameComponents
+        case .profileName(let profileNameComponents):
+            nameComponents = profileNameComponents
+        case .phoneNumber, .username, .unknown:
             return nil
         }
 
-        guard let abbreviation = OWSFormat.formatNameComponents(personNameComponents, style: .abbreviated).strippedOrNil else {
+        return contactInitials(for: nameComponents)
+    }
+
+    private static func contactInitials(for nameComponents: PersonNameComponents) -> String? {
+        let formattedAbbreviation = OWSFormat.formatNameComponents(nameComponents, style: .abbreviated)
+        guard let formattedAbbreviation = formattedAbbreviation.filterForDisplay.nilIfEmpty else {
             Logger.warn("Could not abbreviate name.")
             return nil
         }
         // Some languages, such as Arabic, don't natively support abbreviations or
         // have default abbreviations that are too long. In this case, we will not
         // show an abbreviation. This matches the behavior of iMessage.
-        guard abbreviation.glyphCount < 4 else {
-            Logger.warn("Abbreviation too long: \(abbreviation.glyphCount).")
+        guard formattedAbbreviation.count < 4 else {
+            Logger.warn("Abbreviation too long: \(formattedAbbreviation.count).")
             return nil
         }
-        return abbreviation
+        return formattedAbbreviation
     }
 
     // MARK: - Content
@@ -782,10 +790,8 @@ public class AvatarBuilder: NSObject {
                         )
                     }
 
-                    if
-                        let nameComponents = Self.contactsManager.nameComponents(for: address, transaction: transaction),
-                        let contactInitials = Self.contactInitials(forPersonNameComponents: nameComponents)
-                    {
+                    let displayName = Self.contactsManager.displayName(for: address, tx: transaction)
+                    if let contactInitials = Self.contactInitials(for: displayName) {
                         return AvatarContentTypes(
                             contentType: .text(text: contactInitials, theme: theme),
                             failoverContentType: .contactDefaultIcon(theme: theme)

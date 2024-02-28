@@ -157,7 +157,7 @@ private class QuotedMessageSnippetView: UIView {
             quotedAuthor = CommonStrings.you
         } else {
             let authorName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: quotedMessage.authorAddress, transaction: tx)
+                return contactsManager.displayName(for: quotedMessage.authorAddress, tx: tx).resolvedValue()
             }
             quotedAuthor = String(
                 format: NSLocalizedString(

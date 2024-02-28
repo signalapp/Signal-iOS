@@ -98,9 +98,11 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
             nameComponents.familyName = contact.lastName
 
             let avatar = databaseStorage.read { transaction in
-                Self.avatarBuilder.avatarImage(personNameComponents: nameComponents,
-                                               diameterPoints: UInt(ContactCell.avatarDiameter),
-                                               transaction: transaction)
+                Self.avatarBuilder.avatarImage(
+                    personNameComponents: nameComponents,
+                    diameterPoints: UInt(ContactCell.avatarDiameter),
+                    transaction: transaction
+                )
             }
             contactImage = avatar
         }

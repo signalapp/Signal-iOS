@@ -35,7 +35,7 @@ public class BlockListUIUtils: Dependencies {
         from viewController: UIViewController,
         completion: Completion?
     ) {
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
         showBlockAddressesActionSheet(address, displayName: displayName, from: viewController, completion: completion)
     }
 
@@ -241,7 +241,7 @@ public class BlockListUIUtils: Dependencies {
         from viewController: UIViewController,
         completion: Completion?
     ) {
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
         showUnblockAddressesActionSheet([address], displayName: displayName, from: viewController, completion: completion)
     }
 

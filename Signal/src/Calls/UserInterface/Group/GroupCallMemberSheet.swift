@@ -62,7 +62,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     struct JoinedMember {
         let aci: Aci
         let displayName: String
-        let comparableName: String
+        let comparableName: DisplayName.ComparableValue
         let lastResortSortKey: Int
         let isAudioMuted: Bool?
         let isVideoMuted: Bool?
@@ -78,25 +78,26 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
             }
 
             var members = [JoinedMember]()
-
+            let config: DisplayName.ComparableValue.Config = .current()
             if self.call.groupCall.localDeviceState.joinState == .joined {
                 members += self.call.groupCall.remoteDeviceStates.values.map { member in
-                    let displayName: String
-                    let comparableName: String
+                    let resolvedName: String
+                    let comparableName: DisplayName.ComparableValue
                     if member.aci == localIdentifiers.aci {
-                        displayName = OWSLocalizedString(
+                        resolvedName = OWSLocalizedString(
                             "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                             comment: "Text describing the local user in the group call members sheet when connected from another device."
                         )
-                        comparableName = displayName
+                        comparableName = .nameValue(resolvedName)
                     } else {
-                        displayName = self.contactsManager.displayName(for: member.address, transaction: transaction)
-                        comparableName = self.contactsManager.comparableName(for: member.address, transaction: transaction)
+                        let displayName = self.contactsManager.displayName(for: member.address, tx: transaction)
+                        resolvedName = displayName.resolvedValue(config: config.displayNameConfig)
+                        comparableName = displayName.comparableValue(config: config)
                     }
 
                     return JoinedMember(
                         aci: member.aci,
-                        displayName: displayName,
+                        displayName: resolvedName,
                         comparableName: comparableName,
                         lastResortSortKey: Int(member.demuxId),
                         isAudioMuted: member.audioMuted,
@@ -106,7 +107,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                 }
 
                 let displayName = CommonStrings.you
-                let comparableName = displayName
+                let comparableName: DisplayName.ComparableValue = .nameValue(displayName)
 
                 members.append(JoinedMember(
                     aci: localIdentifiers.aci,
@@ -123,13 +124,11 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                 members += self.call.groupCall.peekInfo?.joinedMembers.map { aciUuid in
                     let aci = Aci(fromUUID: aciUuid)
                     let address = SignalServiceAddress(aci)
-                    let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
-                    let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
-
+                    let displayName = self.contactsManager.displayName(for: address, tx: transaction)
                     return JoinedMember(
                         aci: aci,
-                        displayName: displayName,
-                        comparableName: comparableName,
+                        displayName: displayName.resolvedValue(config: config.displayNameConfig),
+                        comparableName: displayName.comparableValue(config: config),
                         lastResortSortKey: 0,
                         isAudioMuted: nil,
                         isVideoMuted: nil,
@@ -142,9 +141,9 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
         }
 
         sortedMembers = unsortedMembers.sorted {
-            let nameComparison = $0.comparableName.caseInsensitiveCompare($1.comparableName)
-            if nameComparison != .orderedSame {
-                return nameComparison == .orderedAscending
+            let nameComparison = $0.comparableName.isLessThanOrNilIfEqual($0.comparableName)
+            if let nameComparison {
+                return nameComparison
             }
             if $0.aci != $1.aci {
                 return $0.aci.serviceIdString < $1.aci.serviceIdString

@@ -553,7 +553,9 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     func presentPrimaryBadgeSheet() {
         guard let contactAddress = (thread as? TSContactThread)?.contactAddress else { return }
         guard let primaryBadge = availableBadges.first?.badge else { return }
-        let contactShortName = databaseStorage.read { contactsManager.shortDisplayName(for: contactAddress, transaction: $0) }
+        let contactShortName = databaseStorage.read {
+            return contactsManager.displayName(for: contactAddress, tx: $0).resolvedValue(useShortNameIfAvailable: true)
+        }
 
         let badgeSheet = BadgeDetailsSheet(focusedBadge: primaryBadge, owner: .remote(shortName: contactShortName))
         present(badgeSheet, animated: true, completion: nil)

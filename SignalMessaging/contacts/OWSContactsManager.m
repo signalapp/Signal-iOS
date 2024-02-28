@@ -181,25 +181,16 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     }
 }
 
-- (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)displayNameStringForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction
 {
-    return [self displayNamesFor:@[ address ] transaction:transaction].firstObject;
+    return [self _displayNameStringFor:address tx:transaction];
 }
 
-- (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
-                             transaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)shortDisplayNameStringForAddress:(SignalServiceAddress *)address
+                                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(address.isValid);
-
-    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsFor:address transaction:transaction];
-    if (nameComponents.nickname.length > 0) {
-        return nameComponents.nickname;
-    }
-    if (!nameComponents) {
-        return [self displayNameForAddress:address transaction:transaction];
-    }
-    
-    return [OWSFormat formatNameComponentsShort:nameComponents];
+    return [self _shortDisplayNameStringFor:address tx:transaction];
 }
 
 - (NSArray<SignalServiceAddress *> *)sortSignalServiceAddressesObjC:(NSArray<SignalServiceAddress *> *)addresses

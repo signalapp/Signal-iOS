@@ -243,44 +243,27 @@ extension SignalAccount {
 // MARK: - Contact Display Name
 
 extension SignalAccount {
-
-    /// The display name to use for the contact.
-    ///
-    /// - Returns: A non-empty string or nil.
-    public func contactPreferredDisplayName(userDefaults: UserDefaults = UserDefaults.standard) -> String? {
-        guard let components = contactPersonNameComponents(userDefaults: userDefaults) else {
-            return nil
-        }
-        if let nickname = components.nickname {
-            return nickname
-        } else {
-            return OWSFormat.formatNameComponents(components).displayStringIfNonEmpty
-        }
-    }
-
-    /// Name components for the contact. Each name string in the resulting
-    /// components object has been processed for display. No empty strings
-    /// will be present. If a non-nil value is returned, it is guaranteed
-    /// that at least one string in the components object is non-nil.
-    @objc
-    public func contactPersonNameComponents(userDefaults: UserDefaults = UserDefaults.standard) -> PersonNameComponents? {
+    /// Name components for the contact. No empty strings will be present. If a
+    /// non-nil value is returned, it is guaranteed that at least one string in
+    /// the components object is non-nil.
+    public func contactNameComponents() -> PersonNameComponents? {
         var components = PersonNameComponents()
-        if let firstName = contactFirstName {
+        if let firstName = self.contact?.firstName?.strippedOrNil {
             components.givenName = firstName
         }
-        if let lastName = contactLastName {
+        if let lastName = self.contact?.lastName?.strippedOrNil {
             components.familyName = lastName
         }
 
         if
             components.givenName == nil,
             components.familyName == nil,
-            let fullName = self.contact?.fullName.displayStringIfNonEmpty
+            let fullName = self.contact?.fullName.strippedOrNil
         {
             components.givenName = fullName
         }
 
-        if let nickname = self.contactNicknameIfAvailable(userDefaults: userDefaults) {
+        if let nickname = self.contact?.nickname?.strippedOrNil {
             components.nickname = nickname
         }
 
@@ -295,42 +278,10 @@ extension SignalAccount {
         return components
     }
 
-    /// The contact's nickname if it exists, is non-empty, and is preferred.
-    ///
-    /// - SeeAlso: ``shouldUseNicknames``.
-    /// - Note:
-    /// `userDefaults` parameter should only be set to something other than
-    /// the default value in testing.
-    @objc
-    public func contactNicknameIfAvailable(userDefaults: UserDefaults = UserDefaults.standard) -> String? {
-        guard
-            self.shouldUseNicknames(userDefaults: userDefaults),
-            let nickname = self.contact?.nickname,
-            !nickname.isEmpty
-        else {
-            return nil
-        }
-        return nickname.displayStringIfNonEmpty
-    }
-
-    /// The contact's first name, processed for display.
-    ///
-    /// - Returns: A non-empty string or nil.
-    public var contactFirstName: String? {
-        return self.contact?.firstName?.displayStringIfNonEmpty
-    }
-
-    /// The contact's last name, processed for display.
-    ///
-    /// - Returns: A non-empty string or nil.
-    public var contactLastName: String? {
-        return self.contact?.lastName?.displayStringIfNonEmpty
-    }
-
     /// Whether nicknames should be used.
     ///
     /// - SeeAlso: docs on``kSignalPreferNicknamesPreference``.
-    private func shouldUseNicknames(userDefaults: UserDefaults) -> Bool {
+    public static func shouldUseNicknames(userDefaults: UserDefaults = .standard) -> Bool {
         userDefaults.bool(forKey: kSignalPreferNicknamesPreference)
     }
 }

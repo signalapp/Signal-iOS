@@ -364,7 +364,7 @@ extension MemberActionSheet: ConversationHeaderDelegate {
         let (profile, shortName) = databaseStorage.read { transaction in
             return (
                 profileManager.getUserProfile(for: address, transaction: transaction),
-                contactsManager.shortDisplayName(for: address, transaction: transaction)
+                contactsManager.displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
             )
         }
         guard let primaryBadge = profile?.primaryBadge?.badge else { return }

@@ -11,14 +11,23 @@ import SignalServiceKit
 public struct NameCollision {
     public struct Element {
         public let address: SignalServiceAddress
-        public let currentName: String
-        public let shortName: String
+        public let comparableName: ComparableDisplayName
         public let oldName: String?
         public let latestUpdateTimestamp: UInt64?
+
+        fileprivate init(comparableName: ComparableDisplayName, oldName: String? = nil, latestUpdateTimestamp: UInt64? = nil) {
+            self.address = comparableName.address
+            self.comparableName = comparableName
+            self.oldName = oldName
+            self.latestUpdateTimestamp = latestUpdateTimestamp
+        }
     }
 
     public let elements: [Element]
-    public init(_ elements: [Element]) {
+    public init?(_ elements: [Element]) {
+        guard elements.count >= 2 else {
+            return nil
+        }
         self.elements = elements
     }
 }
@@ -73,50 +82,42 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
             return []
         }
 
-        var candidateAddresses = Set<SignalServiceAddress>()
-        candidateAddresses.formUnion(profileManager.allWhitelistedRegisteredAddresses(tx: transaction))
-        // Include all SignalAccounts as well (even though most are redundant) to
-        // ensure we check against blocked system contact names.
-        candidateAddresses.formUnion(SignalAccount.anyFetchAll(transaction: transaction).map { $0.recipientAddress })
+        let candidateAddresses = { () -> [SignalServiceAddress] in
+            var result = Set<SignalServiceAddress>()
+            result.formUnion(profileManager.allWhitelistedRegisteredAddresses(tx: transaction))
+            // Include all SignalAccounts as well (even though most are redundant) to
+            // ensure we check against blocked system contact names.
+            result.formUnion(SignalAccount.anyFetchAll(transaction: transaction).map { $0.recipientAddress })
+            result = result.filter { !$0.isLocalAddress }
+            return Array(result)
+        }()
 
-        let collidingAddresses = candidateAddresses
-            .filter { !$0.isLocalAddress }
-            .filter { isCollision($0, contactThread.contactAddress, transaction: transaction) }
+        let config: DisplayName.ComparableValue.Config = .current()
 
-        if collidingAddresses.isEmpty {
-            return []
-        } else {
-            let collidingAddresses = [contactThread.contactAddress] + collidingAddresses
-            let collision = NameCollision(collidingAddresses.map {
-                NameCollision.Element(
-                    address: $0,
-                    currentName: $0.displayName(transaction: transaction),
-                    shortName: $0.shortDisplayName(tx: transaction),
-                    oldName: nil,
-                    latestUpdateTimestamp: nil)
-            })
+        let targetName = ComparableDisplayName(
+            address: contactThread.contactAddress,
+            displayName: contactsManager.displayName(for: contactThread.contactAddress, tx: transaction),
+            config: config
+        )
 
-            // Contact threads can only have one collision
-            return [collision]
+        var collisionElements = [NameCollision.Element]()
+        collisionElements.append(NameCollision.Element(comparableName: targetName))
+
+        let candidateNames = contactsManager.displayNames(for: candidateAddresses, tx: transaction)
+        for (candidateAddress, candidateName) in zip(candidateAddresses, candidateNames) {
+            let candidateName = ComparableDisplayName(address: candidateAddress, displayName: candidateName, config: config)
+            guard candidateName.resolvedValue() == targetName.resolvedValue() else {
+                continue
+            }
+            collisionElements.append(NameCollision.Element(comparableName: candidateName))
         }
+
+        return [NameCollision(collisionElements)].compacted()
     }
 
     public func markCollisionsAsResolved(transaction: SDSAnyWriteTransaction) {
         // Do nothing
         // Contact threads always display all collisions
-    }
-
-    // MARK: Utils
-
-    private func isCollision(
-        _ address1: SignalServiceAddress,
-        _ address2: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction) -> Bool {
-
-        guard address1 != address2 else { return false }
-        let name1 = address1.displayName(transaction: transaction)
-        let name2 = address2.displayName(transaction: transaction)
-        return name1 == name2
     }
 }
 
@@ -143,18 +144,21 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         }
         groupThread = updatedThread
 
+        let config: DisplayName.ComparableValue.Config = .current()
+
         // Build a dictionary mapping displayName -> (All addresses with that name)
         let groupMembers = groupThread.groupModel.groupMembers
-        let displayNames = NSObject.contactsManager.displayNames(for: groupMembers, transaction: transaction)
-        var collisionMap = [String: [SignalServiceAddress]]()
-        for (address, name) in zip(groupMembers, displayNames) {
-            collisionMap[name, default: []].append(address)
+        let displayNames = NSObject.contactsManager.displayNames(for: groupMembers, tx: transaction)
+        var collisionMap = [String: [ComparableDisplayName]]()
+        for (address, displayName) in zip(groupMembers, displayNames) {
+            let comparableName = ComparableDisplayName(address: address, displayName: displayName, config: config)
+            collisionMap[comparableName.resolvedValue(), default: []].append(comparableName)
         }
-        let allAddressCollisions = Array(collisionMap.values.filter { $0.count >= 2 })
+        let allCollisions = Array(collisionMap.values.filter { $0.count >= 2 })
 
         // Early-exit to avoid fetching unnecessary profile update messages
         // Move our start search pointer to try and proactively reduce our future interaction search space
-        guard !allAddressCollisions.isEmpty else {
+        if allCollisions.isEmpty {
             setRecentProfileUpdateSearchStartIdToMax(transaction: transaction)
             return []
         }
@@ -175,21 +179,20 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         //  or something similar. We'll want to sort by most recent profile change, so we grab the newest update
         //  message's timestamp as well.
 
-        let filteredCollisions = allAddressCollisions
-            .filter { $0.contains(where: { address in profileUpdates[address] != nil }) }
-            .map { collidingAddresses in
-                NameCollision(collidingAddresses.map { address in
-                    let profileUpdateMessages = profileUpdates[address]
+        let filteredCollisions = allCollisions
+            .filter { $0.contains(where: { profileUpdates[$0.address] != nil }) }
+            .map { collidingNames in
+                NameCollision(collidingNames.map {
+                    let profileUpdateMessages = profileUpdates[$0.address]
                     let oldestUpdateMessage = profileUpdateMessages?.min(by: { $0.sortId < $1.sortId })
                     let newestUpdateMessage = profileUpdateMessages?.max(by: { $0.sortId < $1.sortId })
 
                     return NameCollision.Element(
-                        address: address,
-                        currentName: address.displayName(transaction: transaction),
-                        shortName: address.shortDisplayName(tx: transaction),
+                        comparableName: $0,
                         oldName: oldestUpdateMessage?.profileChangesOldFullName,
-                        latestUpdateTimestamp: newestUpdateMessage?.timestamp)
-                })
+                        latestUpdateTimestamp: newestUpdateMessage?.timestamp
+                    )
+                })!
             }
 
         // Neat! No collisions. Let's make sure we update our search space since we know there are no collisions
@@ -200,7 +203,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
             }
         }
 
-        return filteredCollisions
+        return filteredCollisions.standardSort(readTx: transaction)
     }
 
     private func fetchRecentProfileUpdates(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress: [TSInfoMessage]] {
@@ -267,59 +270,27 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
 // MARK: - Helpers
 
-fileprivate extension SignalServiceAddress {
-    func displayName(transaction readTx: SDSAnyReadTransaction) -> String {
-        Self.contactsManager.displayName(for: self, transaction: readTx)
-    }
-
-    func shortDisplayName(tx: SDSAnyReadTransaction) -> String {
-        Self.contactsManager.shortDisplayName(for: self, transaction: tx)
-    }
-}
-
-public extension NameCollision {
+private extension NameCollision {
     func standardSort(readTx: SDSAnyReadTransaction) -> NameCollision {
         NameCollision(
-            elements.sorted { element1, element2 in
+            elements.sorted { lhs, rhs in
                 // Given two colliding elements, we sort by:
                 // - Most recent profile update first (if available)
                 // - SignalServiceAddress UUID otherwise, to ensure stable sorting
-                if element1.latestUpdateTimestamp != nil || element2.latestUpdateTimestamp != nil {
-                    return (element1.latestUpdateTimestamp ?? 0) > (element2.latestUpdateTimestamp ?? 0)
-
+                if lhs.latestUpdateTimestamp != nil || rhs.latestUpdateTimestamp != nil {
+                    return (lhs.latestUpdateTimestamp ?? 0) > (rhs.latestUpdateTimestamp ?? 0)
                 } else {
-                    return element1.address.sortKey < element2.address.sortKey
+                    return lhs.address.sortKey < rhs.address.sortKey
                 }
             }
-        )
+        )!
     }
 }
 
-public extension Array where Element == NameCollision {
+private extension Array where Element == NameCollision {
     func standardSort(readTx: SDSAnyReadTransaction) -> [NameCollision] {
-        self
-            .map { $0.standardSort(readTx: readTx) }
-            .sorted { set1, set2 in
-                // Across collision sets, (e.g. two independent collisions, two people named Michelle, two people named Nora)
-                // We'll sort by the smallest comparable name in each collision set
-                // (Usually they're all the same, but this might change in the future when comparing homographs)
-                // This is to try and maintain stable sorting as individual elements within the set are resolved
-
-                let smallestName1 = set1.elements
-                    .map { SSKEnvironment.shared.contactsManager.comparableName(for: $0.address, transaction: readTx )}
-                    .min()
-                let smallestName2 = set2.elements
-                    .map { SSKEnvironment.shared.contactsManager.comparableName(for: $0.address, transaction: readTx )}
-                    .min()
-
-                switch (smallestName1, smallestName2) {
-                case let (name1?, name2?):
-                    return name1 < name2
-                case (_?, nil):
-                    return true
-                case (nil, _):
-                    return false
-                }
+        self.map { $0.standardSort(readTx: readTx) }.sorted { lhs, rhs in
+            return lhs.elements[0].comparableName < rhs.elements[1].comparableName
         }
     }
 }

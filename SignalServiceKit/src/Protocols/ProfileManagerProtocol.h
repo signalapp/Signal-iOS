@@ -58,9 +58,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable NSPersonNameComponents *)nameComponentsForProfileWithAddress:(SignalServiceAddress *)address
-                                                             transaction:(SDSAnyReadTransaction *)transaction;
-
 - (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam
                                           transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address

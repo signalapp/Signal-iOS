@@ -322,9 +322,9 @@ public extension TSMessage {
     @objc(previewTextForGiftBadgeWithTransaction:)
     func previewTextForGiftBadge(transaction: SDSAnyReadTransaction) -> String {
         if let incomingMessage = self as? TSIncomingMessage {
-            let senderShortName = contactsManager.shortDisplayName(
-                for: incomingMessage.authorAddress, transaction: transaction
-            )
+            let senderShortName = contactsManager.displayName(
+                for: incomingMessage.authorAddress, tx: transaction
+            ).resolvedValue(useShortNameIfAvailable: true)
             let format = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING",
                 comment: "A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}."
@@ -334,9 +334,9 @@ public extension TSMessage {
             let recipientShortName: String
             let recipients = outgoingMessage.recipientAddresses()
             if let recipient = recipients.first, recipients.count == 1 {
-                recipientShortName = contactsManager.shortDisplayName(
-                    for: recipient, transaction: transaction
-                )
+                recipientShortName = contactsManager.displayName(
+                    for: recipient, tx: transaction
+                ).resolvedValue(useShortNameIfAvailable: true)
             } else {
                 owsFailDebug("[Gifting] Expected exactly 1 recipient but got \(recipients.count)")
                 recipientShortName = OWSLocalizedString(
@@ -458,14 +458,14 @@ public extension TSMessage {
             storyReactionEmoji.isEmpty.negated
         {
             if let storyAuthorAddress, storyAuthorAddress.isLocalAddress.negated {
-                let storyAuthorName = self.contactsManager.shortDisplayName(for: storyAuthorAddress, transaction: tx)
+                let storyAuthorName = self.contactsManager.displayName(for: storyAuthorAddress, tx: tx)
                 return .storyReactionEmoji(String(
                     format: OWSLocalizedString(
                         "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT",
                         comment: "inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}"
                     ),
                     storyReactionEmoji,
-                    storyAuthorName
+                    storyAuthorName.resolvedValue(useShortNameIfAvailable: true)
                 ))
             } else {
                 return .storyReactionEmoji(String(

@@ -246,7 +246,7 @@ public extension TSInfoMessage {
             guard let address = TSContactThread.contactAddress(fromThreadId: uniqueThreadId, transaction: tx) else {
                 return nil
             }
-            return contactsManager.displayName(for: address, transaction: tx)
+            return contactsManager.displayName(for: address, tx: tx).resolvedValue()
         }()
         return result ?? OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
     }
@@ -391,11 +391,8 @@ extension TSInfoMessage {
             )
         }
 
-        let name = contactsManager.displayName(
-            for: SignalServiceAddress(aci),
-            transaction: transaction
-        )
-        return String(format: formatString, name)
+        let displayName = contactsManager.displayName(for: SignalServiceAddress(aci), tx: transaction)
+        return String(format: formatString, displayName.resolvedValue())
     }
 
     @objc
@@ -409,15 +406,12 @@ extension TSInfoMessage {
                 comment: "Shown when a user activates payments from a chat"
             )
         case .incoming(let aci):
-            let name = contactsManager.displayName(
-                for: SignalServiceAddress(aci),
-                transaction: transaction
-            )
+            let displayName = contactsManager.displayName(for: SignalServiceAddress(aci), tx: transaction)
             let format = OWSLocalizedString(
                 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED",
                 comment: "Shown when a user activates payments from a chat. Embeds: {{ the user's name}}"
             )
-            return String(format: format, name)
+            return String(format: format, displayName.resolvedValue())
         }
     }
 }

@@ -400,16 +400,16 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             transaction: transaction
         )
 
-        let contactName = Self.contactsManager.displayName(
+        let displayName = Self.contactsManager.displayName(
             for: contactThread.contactAddress,
-            transaction: transaction
+            tx: transaction
         )
 
         let titleText = { () -> String in
             if contactThread.isNoteToSelf {
                 return MessageStrings.noteToSelf
             } else {
-                return contactName
+                return displayName.resolvedValue()
             }
         }()
 
@@ -500,13 +500,12 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             // In order for the phone number to appear in the same box as the
             // mutual groups, it needs to be part of the same label.
             let phoneNumberString: NSAttributedString = {
+                if case .phoneNumber = displayName {
+                    return NSAttributedString()
+                }
                 let phoneNumber = contactThread.contactAddress.phoneNumber
                 let formattedPhoneNumber = phoneNumber.map(PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber:))
-                guard
-                    let formattedPhoneNumber,
-                    phoneNumber != contactName,
-                    formattedPhoneNumber != contactName
-                else {
+                guard let formattedPhoneNumber else {
                     return NSAttributedString()
                 }
                 return NSAttributedString.composed(of: [

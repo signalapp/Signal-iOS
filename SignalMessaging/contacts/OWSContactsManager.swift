@@ -1136,23 +1136,25 @@ extension OWSContactsManager: ContactManager {
     private func displayNamesRefinery(
         for addresses: [SignalServiceAddress],
         transaction: SDSAnyReadTransaction
-    ) -> Refinery<SignalServiceAddress, String> {
-        return .init(addresses).refine { addresses in
+    ) -> Refinery<SignalServiceAddress, DisplayName> {
+        return .init(addresses).refine { addresses -> [DisplayName?] in
             // Prefer a saved name from system contacts, if available.
-            systemContactNames(for: addresses, tx: transaction)
-        }.refine { addresses in
-            profileManager.fullNames(for: Array(addresses), tx: transaction)
-        }.refine { addresses in
-            phoneNumbers(for: Array(addresses)).lazy.map { $0?.nilIfEmpty }
-        }.refine { addresses -> [String?] in
-            swiftValues.usernameLookupManager.fetchUsernames(
+            return systemContactNames(for: addresses, tx: transaction)
+                .map { $0.map { .systemContactName($0) } }
+        }.refine { addresses -> [DisplayName?] in
+            return profileManager.fetchUserProfiles(for: Array(addresses), tx: transaction)
+                .map { $0?.nameComponents.map { .profileName($0) } }
+        }.refine { addresses -> [DisplayName?] in
+            return addresses.map { $0.e164.map { .phoneNumber($0) } }
+        }.refine { addresses -> [DisplayName?] in
+            return swiftValues.usernameLookupManager.fetchUsernames(
                 forAddresses: addresses,
                 transaction: transaction.asV2Read
-            )
+            ).map { $0.map { .username($0) } }
         }.refine { addresses in
             return addresses.lazy.map {
                 self.fetchProfile(forUnknownAddress: $0)
-                return Self.unknownUserLabel
+                return .unknown
             }
         }
     }
@@ -1160,68 +1162,44 @@ extension OWSContactsManager: ContactManager {
     public func displayNamesByAddress(
         for addresses: [SignalServiceAddress],
         transaction: SDSAnyReadTransaction
-    ) -> [SignalServiceAddress: String] {
+    ) -> [SignalServiceAddress: DisplayName] {
         Dictionary(displayNamesRefinery(for: addresses, transaction: transaction))
     }
 
+    public func displayNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [DisplayName] {
+        displayNamesRefinery(for: addresses, transaction: tx).values.map { $0! }
+    }
+
+    @available(swift, obsoleted: 1.0)
     @objc
-    public func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
-        displayNamesRefinery(for: addresses, transaction: transaction).values.map { $0! }
+    func _displayNameString(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String {
+        return displayName(for: address, tx: tx).resolvedValue()
     }
 
-    public func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        if
-            let nameComponents = self.nameComponents(for: address, transaction: transaction),
-            let givenName = nameComponents.givenName?.nilIfEmpty,
-            let familyName = nameComponents.familyName?.nilIfEmpty
-        {
-            let shouldSortByGivenName = CNContactsUserDefaults.shared().sortOrder == .givenName
-            let leftName = shouldSortByGivenName ? givenName : familyName
-            let rightName = shouldSortByGivenName ? familyName : givenName
-            return "\(leftName)\t\(rightName)"
-        }
-
-        return displayName(for: address, transaction: transaction)
+    @available(swift, obsoleted: 1.0)
+    @objc
+    func _shortDisplayNameString(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String {
+        return displayName(for: address, tx: tx).resolvedValue(useShortNameIfAvailable: true)
     }
 
-    func phoneNumbers(for addresses: [SignalServiceAddress]) -> [String?] {
-        return addresses.map { E164($0.phoneNumber)?.stringValue }
+    private func systemContactNames(for addresses: some Sequence<SignalServiceAddress>, tx: SDSAnyReadTransaction) -> [DisplayName.SystemContactName?] {
+        let phoneNumbers = addresses.map { $0.phoneNumber }
+        var compactedResult = systemContactNames(for: phoneNumbers.compacted(), tx: tx).makeIterator()
+        return phoneNumbers.map { $0 != nil ? compactedResult.next()! : nil }
     }
 
     public func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease {
         return modelReadCaches.signalAccountReadCache.leaseCacheSize(cacheSize)
     }
 
-    public func fetchSignalAccount(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        return modelReadCaches.signalAccountReadCache.getSignalAccount(phoneNumber: phoneNumber, transaction: transaction)
-    }
-
-    func fetchSignalAccounts(
-        for addresses: some Sequence<SignalServiceAddress>,
+    public func fetchSignalAccounts(
+        for phoneNumbers: [String],
         transaction: SDSAnyReadTransaction
     ) -> [SignalAccount?] {
-        let phoneNumbers = addresses.map { $0.phoneNumber }
-        var compactedResult = modelReadCaches.signalAccountReadCache.getSignalAccounts(
-            phoneNumbers: phoneNumbers.compacted(),
+        return modelReadCaches.signalAccountReadCache.getSignalAccounts(
+            phoneNumbers: phoneNumbers,
             transaction: transaction
-        ).makeIterator()
-        return phoneNumbers.map { $0 != nil ? compactedResult.next()! : nil }
-    }
-
-    @objc
-    public func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
-        return (
-            fetchSignalAccount(for: address, transaction: transaction)?.contactPersonNameComponents(userDefaults: .standard)
-            ?? profileManager.nameComponentsForProfile(with: address, transaction: transaction)
         )
-    }
-
-    public func systemContactName(for address: SignalServiceAddress, tx transaction: SDSAnyReadTransaction) -> String? {
-        return systemContactNames(for: AnySequence([address]), tx: transaction)[0]
-    }
-
-    func systemContactNames(for addresses: AnySequence<SignalServiceAddress>, tx: SDSAnyReadTransaction) -> [String?] {
-        return fetchSignalAccounts(for: addresses, transaction: tx).map { $0?.fullName }
     }
 
     public func shortestDisplayName(
@@ -1229,10 +1207,12 @@ extension OWSContactsManager: ContactManager {
         inGroup groupModel: TSGroupModel,
         transaction: SDSAnyReadTransaction
     ) -> String {
-
-        let fullName = displayName(for: groupMember, transaction: transaction)
-        let shortName = shortDisplayName(for: groupMember, transaction: transaction)
-        guard shortName != fullName else { return fullName }
+        let displayName = self.displayName(for: groupMember, tx: transaction)
+        let fullName = displayName.resolvedValue()
+        let shortName = displayName.resolvedValue(useShortNameIfAvailable: true)
+        guard fullName != shortName else {
+            return fullName
+        }
 
         // Try to return just the short name unless the group contains another
         // member with the same short name.
@@ -1242,11 +1222,9 @@ extension OWSContactsManager: ContactManager {
 
             // Use the full name if the member's short name matches
             // another member's full or short name.
-            let otherFullName = displayName(for: otherMember, transaction: transaction)
-            guard otherFullName != shortName else { return fullName }
-
-            let otherShortName = shortDisplayName(for: otherMember, transaction: transaction)
-            guard otherShortName != shortName else { return fullName }
+            let otherDisplayName = self.displayName(for: otherMember, tx: transaction)
+            guard otherDisplayName.resolvedValue() != shortName else { return fullName }
+            guard otherDisplayName.resolvedValue(useShortNameIfAvailable: true) != shortName else { return fullName }
         }
 
         return shortName
@@ -1257,56 +1235,49 @@ extension OWSContactsManager: ContactManager {
     func _sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         sortSignalServiceAddresses(addresses, transaction: transaction)
     }
-
-    @objc
-    public static var unknownUserLabel: String {
-        return OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
-    }
 }
 
 // MARK: - ContactManager
 
 extension ContactManager {
-    public func nameForAddress(_ address: SignalServiceAddress,
-                               localUserDisplayMode: LocalUserDisplayMode,
-                               short: Bool,
-                               transaction: SDSAnyReadTransaction) -> NSAttributedString {
-        let name: String
-        if address.isLocalAddress {
-            switch localUserDisplayMode {
-            case .noteToSelf:
-                name = MessageStrings.noteToSelf
-            case .asLocalUser:
-                name = CommonStrings.you
-            case .asUser:
-                if short {
-                    name = shortDisplayName(for: address, transaction: transaction)
-                } else {
-                    name = displayName(for: address, transaction: transaction)
+    public func nameForAddress(
+        _ address: SignalServiceAddress,
+        localUserDisplayMode: LocalUserDisplayMode,
+        short: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> NSAttributedString {
+        return { () -> String in
+            if address.isLocalAddress {
+                switch localUserDisplayMode {
+                case .noteToSelf:
+                    return MessageStrings.noteToSelf
+                case .asLocalUser:
+                    return CommonStrings.you
+                case .asUser:
+                    break
                 }
             }
-        } else {
-            if short {
-                name = shortDisplayName(for: address, transaction: transaction)
-            } else {
-                name = displayName(for: address, transaction: transaction)
-            }
-        }
-        return name.asAttributedString
+            let displayName = self.displayName(for: address, tx: transaction)
+            return displayName.resolvedValue(useShortNameIfAvailable: short)
+        }().asAttributedString
     }
 
     public func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
+        return displayName(for: thread, tx: transaction)?.resolvedValue() ?? ""
+    }
+
+    public func displayName(for thread: TSThread, tx: SDSAnyReadTransaction) -> ThreadDisplayName? {
         if thread.isNoteToSelf {
-            return MessageStrings.noteToSelf
+            return .noteToSelf
         }
         switch thread {
         case let thread as TSContactThread:
-            return displayName(for: thread.contactAddress, transaction: transaction)
+            return .contactThread(displayName(for: thread.contactAddress, tx: tx))
         case let thread as TSGroupThread:
-            return thread.groupNameOrDefault
+            return .groupThread(thread.groupNameOrDefault)
         default:
             owsFailDebug("Unexpected thread type: \(type(of: thread))")
-            return ""
+            return nil
         }
     }
 
@@ -1314,37 +1285,27 @@ extension ContactManager {
         _ addresses: some Sequence<SignalServiceAddress>,
         transaction: SDSAnyReadTransaction
     ) -> [SignalServiceAddress] {
-        return sortedSortableAddresses(for: addresses, tx: transaction).map { $0.address }
+        return sortedComparableNames(for: addresses, tx: transaction).map { $0.address }
     }
 
-    public func sortedSortableAddresses(
+    public func sortedComparableNames(
         for addresses: some Sequence<SignalServiceAddress>,
         tx: SDSAnyReadTransaction
-    ) -> [SortableAddress] {
-        let sortableAddresses = addresses.map { address in
-            return SortableAddress(
+    ) -> [ComparableDisplayName] {
+        let addresses = Array(addresses)
+        let displayNames = self.displayNames(for: addresses, tx: tx)
+        let config = DisplayName.ComparableValue.Config.current()
+        return zip(addresses, displayNames).map { (address, displayName) in
+            return ComparableDisplayName(
                 address: address,
-                comparableName: comparableName(for: address, transaction: tx)
+                displayName: displayName,
+                config: config
             )
-        }
-        return sortableAddresses.sorted()
+        }.sorted(by: <)
     }
 }
 
 // MARK: - SignalAccount
-
-private extension SignalAccount {
-    var fullName: String? {
-        // Name may be either the nickname or the full name of the contact
-        guard let fullName = contactPreferredDisplayName() else {
-            return nil
-        }
-        guard let label = multipleAccountLabelText.nilIfEmpty else {
-            return fullName
-        }
-        return "\(fullName) (\(label))"
-    }
-}
 
 public extension Array where Element == SignalAccount {
     func stableSort() -> [SignalAccount] {
@@ -1355,45 +1316,21 @@ public extension Array where Element == SignalAccount {
     }
 }
 
-// MARK: - SortableAddress
+// MARK: - ThreadDisplayName
 
-public struct SortableAddress: Equatable, Comparable {
-    public let address: SignalServiceAddress
-    public let comparableName: String
-    private let comparableAddress: String
+public enum ThreadDisplayName {
+    case noteToSelf
+    case contactThread(DisplayName)
+    case groupThread(String)
 
-    init(address: SignalServiceAddress, comparableName: String) {
-        self.address = address
-        self.comparableName = comparableName.lowercased()
-        self.comparableAddress = address.stringForDisplay
-    }
-
-    // MARK: - Equatable
-
-    public static func == (lhs: SortableAddress, rhs: SortableAddress) -> Bool {
-        return (
-            lhs.comparableName == rhs.comparableName
-            && lhs.comparableAddress == rhs.comparableAddress
-        )
-    }
-
-    // MARK: - Comparable
-
-    public static func < (lhs: SortableAddress, rhs: SortableAddress) -> Bool {
-        // We want to sort E164 phone numbers _after_ names.
-        switch (lhs.comparableName.hasPrefix("+"), rhs.comparableName.hasPrefix("+")) {
-        case (true, true), (false, false):
-            break
-        case (true, false):
-            return false
-        case (false, true):
-            return true
+    public func resolvedValue() -> String {
+        switch self {
+        case .noteToSelf:
+            return MessageStrings.noteToSelf
+        case .contactThread(let displayName):
+            return displayName.resolvedValue()
+        case .groupThread(let groupName):
+            return groupName
         }
-
-        if lhs.comparableName != rhs.comparableName {
-            return lhs.comparableName < rhs.comparableName
-        }
-
-        return lhs.comparableAddress < rhs.comparableAddress
     }
 }

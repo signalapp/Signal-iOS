@@ -7,18 +7,11 @@ import Contacts
 import Foundation
 
 public protocol ContactManager: ContactsManagerProtocol {
-    /// Get the ``SignalAccount`` backed by the given phone number.
-    func fetchSignalAccount(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount?
+    func fetchSignalAccounts(for phoneNumbers: [String], transaction: SDSAnyReadTransaction) -> [SignalAccount?]
 
-    func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String]
-
-    func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents?
+    func displayNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [DisplayName]
 
     func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool
-
-    func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String
-
-    func systemContactName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String?
 
     func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease
 
@@ -31,6 +24,30 @@ extension ContactManager {
             return nil
         }
         return fetchSignalAccount(forPhoneNumber: phoneNumber, transaction: transaction)
+    }
+
+    public func fetchSignalAccount(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount? {
+        return fetchSignalAccounts(for: [phoneNumber], transaction: transaction)[0]
+    }
+
+    public func systemContactName(for phoneNumber: String, tx transaction: SDSAnyReadTransaction) -> DisplayName.SystemContactName? {
+        return systemContactNames(for: [phoneNumber], tx: transaction)[0]
+    }
+
+    public func systemContactNames(for phoneNumbers: [String], tx: SDSAnyReadTransaction) -> [DisplayName.SystemContactName?] {
+        return fetchSignalAccounts(for: phoneNumbers, transaction: tx).map {
+            guard let nameComponents = $0?.contactNameComponents() else {
+                return nil
+            }
+            return DisplayName.SystemContactName(
+                nameComponents: nameComponents,
+                multipleAccountLabel: $0?.multipleAccountLabelText
+            )
+        }
+    }
+
+    public func displayName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> DisplayName {
+        return displayNames(for: [address], tx: tx)[0]
     }
 
     public func avatarData(for cnContactId: String?) -> Data? {

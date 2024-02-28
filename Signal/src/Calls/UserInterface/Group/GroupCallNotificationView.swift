@@ -174,15 +174,9 @@ private class BannerView: UIView {
             backgroundColor = .ows_blackAlpha40
         }
 
-        let displayNames = databaseStorage.read { transaction in
-            return addresses.map { address in
-                return (
-                    displayName: self.contactsManager.displayName(for: address, transaction: transaction),
-                    comparableName: self.contactsManager.comparableName(for: address, transaction: transaction)
-                )
-            }
-        }.sorted { $0.comparableName.caseInsensitiveCompare($1.comparableName) == .orderedAscending }
-        .map { $0.displayName }
+        let displayNames = databaseStorage.read { tx in
+            return contactsManagerImpl.sortedComparableNames(for: addresses, tx: tx)
+        }.sorted(by: <).map { $0.resolvedValue() }
 
         let actionText: String
         if displayNames.count > 2 {

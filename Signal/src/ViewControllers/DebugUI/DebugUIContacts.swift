@@ -29,8 +29,6 @@ class DebugUIContacts: DebugUIPage {
                          actionBlock: { DebugContactsUtils.deleteAllContacts() }),
             OWSTableItem(title: "New Unregistered Contact Thread",
                          actionBlock: { DebugUIContacts.createUnregisteredContactThread() }),
-            OWSTableItem(title: "Log SignalAccounts",
-                         actionBlock: { DebugContactsUtils.logSignalAccounts() })
         ])
     }
 

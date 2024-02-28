@@ -89,7 +89,7 @@ extension ConversationViewController {
             } else {
                 let fullName = self.databaseStorage.read { transaction -> String in
                     let authorAddress = incomingMessage.authorAddress
-                    return self.contactsManager.displayName(for: authorAddress, transaction: transaction)
+                    return self.contactsManager.displayName(for: authorAddress, tx: transaction).resolvedValue()
                 }
                 mode = .giftNotRedeemed(fullName: fullName)
             }
@@ -100,7 +100,7 @@ extension ConversationViewController {
         if isRedeemed {
             let shortName = self.databaseStorage.read { transaction -> String in
                 let authorAddress = incomingMessage.authorAddress
-                return self.contactsManager.shortDisplayName(for: authorAddress, transaction: transaction)
+                return self.contactsManager.displayName(for: authorAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
             }
             return BadgeGiftingAlreadyRedeemedSheet(badge: profileBadge, shortName: shortName)
         }
@@ -110,7 +110,7 @@ extension ConversationViewController {
     private func giftRedemptionSheet(incomingMessage: TSIncomingMessage, profileBadge: ProfileBadge) -> UIViewController {
         let authorAddress = incomingMessage.authorAddress
         let shortName = self.databaseStorage.read { transaction in
-            self.contactsManager.shortDisplayName(for: authorAddress, transaction: transaction)
+            self.contactsManager.displayName(for: authorAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         }
         return BadgeThanksSheet(
             newBadge: profileBadge,

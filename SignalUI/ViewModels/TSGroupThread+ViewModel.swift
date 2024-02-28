@@ -30,11 +30,11 @@ public extension TSGroupThread {
         nameResolver: NameResolver = NameResolverImpl(contactsManager: TSGroupThread.contactsManager),
         transaction: SDSAnyReadTransaction
     ) -> [String] {
-        let transactionV2 = transaction.asV2Read
+        let tx = transaction.asV2Read
+        let config: DisplayName.ComparableValue.Config = .current()
 
         let members = groupMembership.fullMembers.compactMap { address -> (
-            address: SignalServiceAddress,
-            comparableName: String,
+            comparableName: ComparableDisplayName,
             matchedDisplayName: String?
         )? in
             guard !address.isLocalAddress else {
@@ -44,23 +44,18 @@ public extension TSGroupThread {
                 return nil
             }
 
+            let displayName = nameResolver.displayName(for: address, tx: tx)
+            let comparableName = ComparableDisplayName(address: address, displayName: displayName, config: config)
+
             var wrappedDisplayNameMatch: String?
             if let searchText {
                 wrappedDisplayNameMatch = wrapIfMatch(
                     searchText: searchText,
-                    displayName: nameResolver.displayName(
-                        for: address,
-                        useShortNameIfAvailable: useShortNameIfAvailable,
-                        transaction: transactionV2
-                    )
+                    displayName: comparableName.resolvedValue(useShortNameIfAvailable: useShortNameIfAvailable)
                 )
             }
 
-            return (
-                address: address,
-                comparableName: nameResolver.comparableName(for: address, transaction: transactionV2),
-                matchedDisplayName: wrappedDisplayNameMatch
-            )
+            return (comparableName: comparableName, matchedDisplayName: wrappedDisplayNameMatch)
         }
 
         let sortedMembers = members.sorted { lhs, rhs in
@@ -68,23 +63,14 @@ public extension TSGroupThread {
             if (rhs.matchedDisplayName != nil) != (lhs.matchedDisplayName != nil) {
                 return lhs.matchedDisplayName != nil
             }
-            // Sort numbers to the end of the list
-            if lhs.comparableName.hasPrefix("+") != rhs.comparableName.hasPrefix("+") {
-                return !lhs.comparableName.hasPrefix("+")
-            }
-            // Otherwise, sort by comparable name
-            return lhs.comparableName.caseInsensitiveCompare(rhs.comparableName) == .orderedAscending
+            return lhs.comparableName < rhs.comparableName
         }
 
         return sortedMembers.lazy.prefix(limit).map {
             if let matchedDisplayName = $0.matchedDisplayName {
                 return matchedDisplayName
             }
-            return nameResolver.displayName(
-                for: $0.address,
-                useShortNameIfAvailable: useShortNameIfAvailable,
-                transaction: transactionV2
-            )
+            return $0.comparableName.resolvedValue(useShortNameIfAvailable: useShortNameIfAvailable)
         }
     }
 

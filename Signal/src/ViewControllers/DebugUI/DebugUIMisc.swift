@@ -134,10 +134,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 DebugUIMisc.logSignalRecipients()
             }),
 
-            OWSTableItem(title: "Log SignalAccounts", actionBlock: {
-                DebugUIMisc.logSignalAccounts()
-            }),
-
             OWSTableItem(title: "Clear Profile Key Credentials", actionBlock: {
                 DebugUIMisc.clearProfileKeyCredentials()
             }),
@@ -383,14 +379,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
         Self.databaseStorage.read { tx in
             SignalRecipient.anyEnumerate(transaction: tx, batchingPreference: .batched(32)) { signalRecipient, _ in
                 Logger.verbose("SignalRecipient: \(signalRecipient.addressComponentsDescription)")
-            }
-        }
-    }
-
-    private static func logSignalAccounts() {
-        Self.databaseStorage.read { transaction in
-            SignalAccount.anyEnumerate(transaction: transaction, batchingPreference: .batched(32)) { (signalAccount, _) in
-                Logger.verbose("SignalAccount: \(signalAccount.addressComponentsDescription)")
             }
         }
     }

@@ -164,38 +164,32 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
     }
 
     private func updateMemberBar() {
-        memberBar.setMembers(databaseStorage.read { transaction in
-            self.orderedMembers(shouldSort: false, transaction: transaction)
+        memberBar.setMembers(databaseStorage.read { tx in
+            let members = self.recipientSet.orderedMembers.compactMap { (pickedRecipient) -> (PickedRecipient, SignalServiceAddress)? in
+                guard let address = pickedRecipient.address else {
+                    return nil
+                }
+                return (pickedRecipient, address)
+            }
+            let displayNames = contactsManager.displayNames(for: members.map { (_, address) in address }, tx: tx)
+            return zip(members, displayNames).map { (member, displayName) in
+                return NewMember(
+                    recipient: member.0,
+                    address: member.1,
+                    shortName: displayName.resolvedValue(useShortNameIfAvailable: true)
+                )
+            }
         })
     }
 
-    private func orderedMembers(shouldSort: Bool, transaction: SDSAnyReadTransaction) -> [NewMember] {
-        return Self.orderedMembers(recipientSet: recipientSet, shouldSort: shouldSort, transaction: transaction)
-    }
-
-    public class func orderedMembers(recipientSet: OrderedSet<PickedRecipient>,
-                                     shouldSort: Bool,
-                                     transaction: SDSAnyReadTransaction) -> [NewMember] {
-        var members = recipientSet.orderedMembers.compactMap { (recipient: PickedRecipient) -> NewMember? in
-            guard let address = recipient.address else {
-                owsFailDebug("Invalid recipient.")
-                return nil
-            }
-            let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
-            let shortDisplayName = self.contactsManager.shortDisplayName(for: address, transaction: transaction)
-            let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
-            return NewMember(recipient: recipient,
-                             address: address,
-                             displayName: displayName,
-                             shortName: shortDisplayName,
-                             comparableName: comparableName)
-        }
-        if shouldSort {
-            members.sort { (left, right) in
-                return left.comparableName < right.comparableName
-            }
-        }
-        return members
+    public class func sortedMemberAddresses(
+        recipientSet: OrderedSet<PickedRecipient>,
+        tx: SDSAnyReadTransaction
+    ) -> [SignalServiceAddress] {
+        return contactsManager.sortSignalServiceAddresses(
+            recipientSet.orderedMembers.compactMap { $0.address },
+            transaction: tx
+        )
     }
 
     // MARK: -

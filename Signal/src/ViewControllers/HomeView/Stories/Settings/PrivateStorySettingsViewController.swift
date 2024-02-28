@@ -275,7 +275,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
 
         let actionSheet = ActionSheetController(
             title: String.localizedStringWithFormat(format, databaseStorage.read { tx in
-                return contactsManager.displayName(for: address, transaction: tx)
+                return contactsManager.displayName(for: address, tx: tx).resolvedValue()
             }),
             message: OWSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION",

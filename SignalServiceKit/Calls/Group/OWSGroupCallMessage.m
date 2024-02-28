@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (address.isLocalAddress) {
         return OWSLocalizedString(@"YOU", "Second person pronoun to represent the local user.");
     } else {
-        return [self.contactManagerObjC displayNameForAddress:address transaction:transaction];
+        return [self.contactManagerObjC displayNameStringForAddress:address transaction:transaction];
     }
 }
 

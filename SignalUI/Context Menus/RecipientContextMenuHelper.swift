@@ -210,10 +210,8 @@ class RecipientContextMenuHelper {
         }
         let (localAddress, recipientDisplayName) = databaseStorage.read { tx in
             let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
-            let recipientDisplayName = contactsManager.displayName(
-                for: address,
-                transaction: tx
-            ).formattedForActionSheetTitle()
+            let recipientDisplayName = contactsManager.displayName(for: address, tx: tx)
+                .resolvedValue().formattedForActionSheetTitle()
             return (localAddress, recipientDisplayName)
         }
         guard
@@ -302,10 +300,8 @@ class RecipientContextMenuHelper {
             recipientDisplayName
         ) = databaseStorage.read { tx in
             let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
-            let recipientDisplayName = contactsManager.displayName(
-                for: address,
-                transaction: tx
-            ).formattedForActionSheetTitle()
+            let recipientDisplayName = contactsManager.displayName(for: address, tx: tx)
+                .resolvedValue().formattedForActionSheetTitle()
             return (
                 accountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true,
                 localAddress,

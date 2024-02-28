@@ -225,7 +225,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         super.viewDidLoad()
 
         contactNameLabel.text = databaseStorage.read { tx in
-            return contactsManager.displayName(for: thread.contactAddress, transaction: tx)
+            return contactsManager.displayName(for: thread.contactAddress, tx: tx).resolvedValue()
         }
         updateAvatarImage()
 
@@ -810,10 +810,10 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         contactAvatarContainerView.autoSetDimension(.height, toSize: 200)
 
         let shortName = SDSDatabaseStorage.shared.read {
-            return self.contactsManager.shortDisplayName(
+            return self.contactsManager.displayName(
                 for: self.thread.contactAddress,
-                transaction: $0
-            )
+                tx: $0
+            ).resolvedValue(useShortNameIfAvailable: true)
         }
 
         let needPermissionLabel = UILabel()

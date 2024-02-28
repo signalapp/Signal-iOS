@@ -548,18 +548,18 @@ public class GroupManager: NSObject {
                 case .legacyE164(let e164):
                     remoteContactName = contactsManager.displayName(
                         for: .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue),
-                        transaction: transaction
-                    )
+                        tx: transaction
+                    ).resolvedValue()
                 case .aci(let aci):
                     remoteContactName = contactsManager.displayName(
                         for: .init(aci),
-                        transaction: transaction
-                    )
+                        tx: transaction
+                    ).resolvedValue()
                 case .rejectedInviteToPni(let pni):
                     remoteContactName = contactsManager.displayName(
                         for: .init(pni),
-                        transaction: transaction
-                    )
+                        tx: transaction
+                    ).resolvedValue()
                 }
                 let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
                     thread: thread,

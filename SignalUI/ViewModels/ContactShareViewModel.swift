@@ -98,9 +98,11 @@ public class ContactShareViewModel: NSObject {
         // This could mislead the user into thinking
         // that an avatar they did not share was in fact included in the
         // contact share.
-        return Self.avatarBuilder.avatarImage(personNameComponents: name.components,
-                                              diameterPoints: UInt(diameter),
-                                              transaction: transaction)
+        return Self.avatarBuilder.avatarImage(
+            personNameComponents: name.components,
+            diameterPoints: UInt(diameter),
+            transaction: transaction
+        )
     }
 
     // MARK: Delegated -> dbRecord

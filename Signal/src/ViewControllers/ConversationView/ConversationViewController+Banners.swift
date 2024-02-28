@@ -107,8 +107,7 @@ public extension ConversationViewController {
         guard let (avatar1, avatar2) = databaseStorage.read(block: { tx -> (UIImage?, UIImage?)? in
             guard
                 viewState.shouldShowMessageRequestNameCollisionBanner(transaction: tx),
-                let collision = collisionFinder.findCollisions(transaction: tx).first,
-                collision.elements.count >= 2
+                let collision = collisionFinder.findCollisions(transaction: tx).first
             else { return nil }
 
             return (
@@ -171,8 +170,8 @@ public extension ConversationViewController {
 
         // Fetch the necessary info to build the banner
         guard let (title, avatar1, avatar2) = databaseStorage.read(block: { readTx -> (String, UIImage?, UIImage?)? in
-            let collisionSets = collisionFinder.findCollisions(transaction: readTx).standardSort(readTx: readTx)
-            guard !collisionSets.isEmpty, collisionSets[0].elements.count >= 2 else { return nil }
+            let collisionSets = collisionFinder.findCollisions(transaction: readTx)
+            guard !collisionSets.isEmpty else { return nil }
 
             let totalCollisionElementCount = collisionSets.reduce(0) { $0 + $1.elements.count }
 
@@ -549,7 +548,7 @@ extension ConversationViewController {
 
             case 1:
                 let address = noLongerVerifiedIdentityKeys.first!.key
-                let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+                let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
                 let format = (isGroupConversation
                                 ? OWSLocalizedString("MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
                                                     comment: "Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}.")

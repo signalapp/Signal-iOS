@@ -120,12 +120,11 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
         ))
 
         let viewerAddresses = databaseStorage.read { transaction in
-            BaseMemberViewController.orderedMembers(
+            return BaseMemberViewController.sortedMemberAddresses(
                 recipientSet: self.recipientSet,
-                shouldSort: true,
-                transaction: transaction
+                tx: transaction
             )
-        }.compactMap { $0.address }
+        }
 
         let viewersSection = OWSTableSection()
         viewersSection.headerTitle = OWSLocalizedString(

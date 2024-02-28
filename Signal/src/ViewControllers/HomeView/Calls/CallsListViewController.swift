@@ -810,10 +810,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
             return CallViewModel(
                 backingCallRecord: callRecord,
-                title: deps.contactsManager.displayName(
-                    for: contactThread.contactAddress,
-                    transaction: tx
-                ),
+                title: deps.contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue(),
                 recipientType: .individual(type: callType, contactThread: contactThread),
                 direction: callDirection,
                 state: callState
