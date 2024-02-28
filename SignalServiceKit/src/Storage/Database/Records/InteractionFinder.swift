@@ -1052,6 +1052,44 @@ public class InteractionFinder: NSObject {
         }
     }
 
+    public func enumerateRecentGroupUpdateMessages(
+        transaction: SDSAnyReadTransaction,
+        block: (TSInfoMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) throws {
+        // In DEBUG builds, confirm that we use the expected index.
+        let indexedBy: String
+        #if DEBUG
+        indexedBy = "INDEXED BY index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"
+        #else
+        indexedBy = ""
+        #endif
+
+        let sql = """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            \(indexedBy)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+            AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
+            ORDER BY \(interactionColumn: .id) DESC
+        """
+
+        let cursor = TSInfoMessage.grdbFetchCursor(
+            sql: sql,
+            arguments: [threadUniqueId],
+            transaction: transaction.unwrapGrdbRead
+        )
+
+        while let interaction = try cursor.next() {
+            guard let infoMessage = interaction as? TSInfoMessage else { return }
+            var stop: ObjCBool = false
+            block(infoMessage, &stop)
+            if stop.boolValue {
+                return
+            }
+        }
+    }
+
     public func hasUserReportedSpam(transaction: SDSAnyReadTransaction) -> Bool {
         // In DEBUG builds, confirm that we use the expected index.
         let indexedBy: String

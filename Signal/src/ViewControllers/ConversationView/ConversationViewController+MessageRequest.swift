@@ -377,8 +377,7 @@ extension ConversationViewController {
             sheetCompletion?(true)
         })
 
-        // TODO[SPAM]: Temporarily disable reporting for groups
-        if !thread.isGroupThread && !hasReportedSpam {
+        if !hasReportedSpam {
             actionSheet.addAction(ActionSheetAction(title: blockAndReportSpamActionTitle) { [weak self] _ in
                 guard let self else { return }
                 self.blockThreadAndReportSpam(in: self.thread)

@@ -85,9 +85,11 @@ public struct ReportSpamUIUtils {
 
     private static func reportSpam(in thread: TSThread, tx: SDSAnyWriteTransaction) {
         var aci: Aci?
+        var isGroup = false
         if let contactThread = thread as? TSContactThread {
             aci = contactThread.contactAddress.serviceId as? Aci
         } else if let groupThread = thread as? TSGroupThread {
+            isGroup = true
             let accountManager = DependenciesBridge.shared.tsAccountManager
             guard let localIdentifiers = accountManager.localIdentifiers(tx: tx.asV2Read) else {
                 return owsFailDebug("Missing local identifiers")
@@ -111,20 +113,52 @@ public struct ReportSpamUIUtils {
         // in the conversation.
         let maxMessagesToReport = 3
 
-        var guidsToReport = [String]()
+        var guidsToReport = Set<String>()
         do {
-            try InteractionFinder(
-                threadUniqueId: thread.uniqueId
-            ).enumerateRecentInteractions(
-                transaction: tx
-            ) { interaction, stop in
-                guard let incomingMessage = interaction as? TSIncomingMessage else { return }
-                if let serverGuid = incomingMessage.serverGuid {
-                    guidsToReport.append(serverGuid)
-                }
-                guard guidsToReport.count < maxMessagesToReport else {
-                    stop.pointee = true
+            if isGroup {
+                guard let localIdentifiers: LocalIdentifiers =
+                        DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                    owsFailDebug("Unable to find local identifiers")
                     return
+                }
+                try InteractionFinder(
+                    threadUniqueId: thread.uniqueId
+                ).enumerateRecentGroupUpdateMessages(
+                    transaction: tx
+                ) { infoMessage, stop in
+                    guard let groupUpdateItems = infoMessage.computedGroupUpdateItems(localIdentifiers: localIdentifiers, tx: tx) else {
+                        return
+                    }
+
+                    for item in groupUpdateItems {
+                        if
+                            let serverGuid = infoMessage.serverGuid,
+                            let updaterAci = item.aciForSpamReporting,
+                            updaterAci.wrappedValue == aci
+                        {
+                            guidsToReport.insert(serverGuid)
+                        }
+                    }
+                    guard guidsToReport.count < maxMessagesToReport else {
+                        stop.pointee = true
+                        return
+                    }
+                }
+
+            } else {
+                try InteractionFinder(
+                    threadUniqueId: thread.uniqueId
+                ).enumerateRecentInteractions(
+                    transaction: tx
+                ) { interaction, stop in
+                    guard let incomingMessage = interaction as? TSIncomingMessage else { return }
+                    if let serverGuid = incomingMessage.serverGuid {
+                        guidsToReport.insert(serverGuid)
+                    }
+                    guard guidsToReport.count < maxMessagesToReport else {
+                        stop.pointee = true
+                        return
+                    }
                 }
             }
         } catch {

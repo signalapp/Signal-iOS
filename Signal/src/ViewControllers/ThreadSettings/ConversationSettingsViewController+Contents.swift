@@ -521,8 +521,8 @@ extension ConversationSettingsViewController {
         let hasReportedSpam = NSObject.databaseStorage.read { tx in
             return InteractionFinder(threadUniqueId: thread.uniqueId).hasUserReportedSpam(transaction: tx)
         }
-        // TODO[SPAM]: Temporarily disable spam reporting for groups
-        if !isGroupThread && !hasReportedSpam {
+
+        if !hasReportedSpam {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")

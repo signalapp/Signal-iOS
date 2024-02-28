@@ -86,7 +86,7 @@ class MessageRequestView: UIStackView {
         messageRequestType.isThreadFromHiddenRecipient
     }
     private var hasReportedSpam: Bool {
-        messageRequestType.hasReportedSpam || isGroupV2Thread /* TODO[SPAM]: Temp disable UI for groups */
+        messageRequestType.hasReportedSpam
     }
 
     weak var delegate: MessageRequestDelegate?
