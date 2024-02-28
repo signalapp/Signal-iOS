@@ -254,21 +254,6 @@ public extension OWSURLSessionProtocol {
     // MARK: - Download Tasks Convenience
 
     func downloadTaskPromise(
-        requestUrl: URL,
-        resumeData: Data,
-        progress progressBlock: ProgressBlock? = nil
-    ) -> Promise<OWSUrlDownloadResponse> {
-        return self.downloadTaskPromise(requestUrl: requestUrl, resumeData: resumeData, progress: progressBlock)
-    }
-
-    func downloadTaskPromise(
-        request: URLRequest,
-        progress progressBlock: ProgressBlock? = nil
-    ) -> Promise<OWSUrlDownloadResponse> {
-        return self.downloadTaskPromise(request: request, progress: progressBlock)
-    }
-
-    func downloadTaskPromise(
         on scheduler: Scheduler = DispatchQueue.global(),
         _ urlString: String,
         method: HTTPMethod,
