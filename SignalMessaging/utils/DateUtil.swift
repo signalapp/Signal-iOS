@@ -212,6 +212,11 @@ public class DateUtil {
         }
     }
 
+    /// Format an old date with the year. For example, "Mar 8, 2017"
+    public static func formatOldDate(_ date: Date) -> String {
+        dateHeaderOldDateFormatter.string(from: date)
+    }
+
     public static func formatTimestampRelatively(_ timestamp: UInt64) -> String {
         let date = clampBeforeNow(Date(millisecondsSince1970: timestamp))
         let calendar = Calendar.current

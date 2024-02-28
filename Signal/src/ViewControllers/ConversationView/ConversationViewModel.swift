@@ -17,13 +17,7 @@ class ConversationViewModel {
             .filter { $0.joinedMemberAddresses.count > 0 }
             .count > 0
 
-        let isSystemContact: Bool
-        if let contactThread = thread as? TSContactThread {
-            let contactsManager = NSObject.contactsManagerImpl
-            isSystemContact = contactsManager.fetchSignalAccount(for: contactThread.contactAddress, transaction: tx) != nil
-        } else {
-            isSystemContact = false
-        }
+        let isSystemContact = thread.isSystemContact(contactsManager: NSObject.contactsManagerImpl, tx: tx)
 
         let unreadMentionMessageIds = MentionFinder.messagesMentioning(
             aci: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)!.aci,

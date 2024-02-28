@@ -874,7 +874,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case primary = 0
     }
 
-    fileprivate struct CallViewModel: Hashable, Identifiable {
+    struct CallViewModel: Hashable, Identifiable {
         enum Direction: Hashable {
             case outgoing
             case incoming
@@ -1500,7 +1500,31 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     }
 
     fileprivate func showCallInfo(from viewModel: CallViewModel) {
-        Logger.debug("Show call info")
+        AssertIsOnMainThread()
+
+        let (threadViewModel, isSystemContact) = deps.db.read { tx in
+            let thread = viewModel.thread
+            let threadViewModel = ThreadViewModel(
+                thread: thread,
+                forChatList: false,
+                transaction: tx
+            )
+            let isSystemContact = thread.isSystemContact(
+                contactsManager: deps.contactsManager,
+                tx: tx
+            )
+            return (threadViewModel, isSystemContact)
+        }
+
+        let callDetailsView = ConversationSettingsViewController(
+            threadViewModel: threadViewModel,
+            isSystemContact: isSystemContact,
+            // Nothing would have been revealed, so this can be a fresh instance
+            spoilerState: SpoilerRenderState(),
+            callViewModel: viewModel
+        )
+
+        navigationController?.pushViewController(callDetailsView, animated: true)
     }
 
     // MARK: NewCallViewControllerDelegate

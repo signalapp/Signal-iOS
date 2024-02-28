@@ -591,10 +591,18 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
     var tableViewController: OWSTableViewController2 { self }
 
     func buildMainHeader() -> UIView {
-        ConversationHeaderBuilder.buildHeader(
+        let options: ConversationHeaderBuilder.Options
+        if callViewModel == nil {
+            options = [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf]
+        } else {
+            // Call details
+            options = [.message, .videoCall, .audioCall, .mute]
+        }
+
+        return ConversationHeaderBuilder.buildHeader(
             for: thread,
             sizeClass: .eightyEight,
-            options: [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf],
+            options: options,
             delegate: self
         )
     }

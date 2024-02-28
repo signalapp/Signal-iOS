@@ -32,12 +32,22 @@ extension ConversationSettingsViewController {
 
         let isNoteToSelf = thread.isNoteToSelf
 
-        // Main section.
         let mainSection = OWSTableSection()
+
+        let firstSection: OWSTableSection
+        if let callViewModel {
+            let callDetailsSection = createCallSection(callViewModel: callViewModel)
+            firstSection = callDetailsSection
+            contents.add(callDetailsSection)
+        } else {
+            firstSection = mainSection
+        }
+
         let header = buildMainHeader()
         lastContentWidth = view.width
-        mainSection.customHeaderView = header
+        firstSection.customHeaderView = header
 
+        // Main section.
         addDisappearingMessagesItem(to: mainSection)
         addColorAndWallpaperSettingsItem(to: mainSection)
         if !isNoteToSelf { addSoundAndNotificationSettingsItem(to: mainSection) }
@@ -46,9 +56,11 @@ extension ConversationSettingsViewController {
 
         contents.add(mainSection)
 
+        // Middle sections
         addAllMediaSectionIfNecessary(to: contents)
         addBadgesItemIfNecessary(to: contents)
 
+        // Group sections
         if let groupModel = currentGroupModel, !groupModel.isPlaceholder {
             contents.add(buildGroupMembershipSection(groupModel: groupModel, sectionIndex: contents.sections.count))
 
@@ -59,6 +71,7 @@ extension ConversationSettingsViewController {
             contents.add(buildMutualGroupsSection(sectionIndex: contents.sections.count))
         }
 
+        // Bottom sections
         if
             !isNoteToSelf,
             !thread.isGroupV1Thread
@@ -78,6 +91,111 @@ extension ConversationSettingsViewController {
 
         updateNavigationBar()
     }
+
+    // MARK: Calls section
+
+    private func createCallSection(callViewModel: CallViewModel) -> OWSTableSection {
+        let section = OWSTableSection()
+
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 8
+
+        let dateLabel = UILabel()
+        dateLabel.font = .dynamicTypeBody
+        dateLabel.textColor = Theme.primaryTextColor
+        // We always want to show the absolute date with year
+        dateLabel.text = DateUtil.formatOldDate(callViewModel.callBeganDate)
+        stackView.addArrangedSubview(dateLabel)
+        stackView.setCustomSpacing(10, after: dateLabel)
+
+        let description: String
+        switch callViewModel.direction {
+        case .outgoing:
+            switch callViewModel.recipientType {
+            case .individual(type: .audio, contactThread: _):
+                description = OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL",
+                    comment: "A label indicating that a call was an outgoing audio call"
+                )
+            case .individual(type: .video, contactThread: _), .group(groupThread: _):
+                description = OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL",
+                    comment: "A label indicating that a call was an outgoing video call"
+                )
+            }
+        case .incoming:
+            switch callViewModel.recipientType {
+            case .individual(type: .audio, contactThread: _):
+                description = OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL",
+                    comment: "A label indicating that a call was an incoming audio call"
+                )
+            case .individual(type: .video, contactThread: _), .group(groupThread: _):
+                description = OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL",
+                    comment: "A label indicating that a call was an incoming video call"
+                )
+            }
+        case .missed:
+            switch callViewModel.recipientType {
+            case .individual(type: .audio, contactThread: _):
+                description = OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL",
+                    comment: "A label indicating that a call was an missed audio call"
+                )
+            case .individual(type: .video, contactThread: _), .group(groupThread: _):
+                description = OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL",
+                    comment: "A label indicating that a call was an missed video call"
+                )
+            }
+        }
+
+        let icon: ThemeIcon
+        switch callViewModel.recipientType {
+        case .individual(type: .audio, contactThread: _):
+            icon = .phone16
+        case .individual(type: .video, contactThread: _), .group(groupThread: _):
+            icon = .video16
+        }
+
+        let timestamp = DateUtil.formatDateAsTime(callViewModel.callBeganDate)
+
+        stackView.addArrangedSubview({
+            let hStack = UIStackView()
+            hStack.axis = .horizontal
+            hStack.spacing = 6
+            hStack.addArrangedSubview(UIImageView.withTemplateIcon(
+                icon,
+                tintColor: Theme.primaryTextColor,
+                constrainedTo: .square(16)
+            ))
+            hStack.tintColor = Theme.primaryTextColor
+            let descriptionLabel = UILabel()
+            descriptionLabel.font = .dynamicTypeSubheadline
+            descriptionLabel.textColor = Theme.primaryTextColor
+            descriptionLabel.text = description
+            hStack.addArrangedSubview(descriptionLabel)
+            let timestampLabel = UILabel()
+            timestampLabel.font = .dynamicTypeSubheadline
+            timestampLabel.textColor = Theme.secondaryTextAndIconColor
+            timestampLabel.text = timestamp
+            hStack.addArrangedSubview(timestampLabel)
+            return hStack
+        }())
+
+        section.add(.init(customCellBlock: {
+            let cell = OWSTableItem.newCell()
+            cell.contentView.addSubview(stackView)
+            stackView.autoPinEdgesToSuperviewMargins()
+            return cell
+        }))
+
+        return section
+    }
+
+    // MARK: Middle sections
 
     private func addAllMediaSectionIfNecessary(to contents: OWSTableContents) {
         guard !recentMedia.isEmpty else { return }
@@ -178,6 +296,8 @@ extension ConversationSettingsViewController {
             footerTitle: OWSLocalizedString("CONVERSATION_SETTINGS_BADGES_FOOTER", comment: "Footer string for a contact's badges in conversation settings"))
         )
     }
+
+    // MARK: Main section
 
     private func addSafetyNumberItemIfNecessary(to section: OWSTableSection) {
         guard !thread.isNoteToSelf, !isGroupThread, thread.hasSafetyNumbers() else { return }
@@ -331,6 +451,8 @@ extension ConversationSettingsViewController {
         ))
     }
 
+    // MARK: Bottom sections
+
     private func buildBlockAndLeaveSection() -> OWSTableSection {
         let section = OWSTableSection()
 
@@ -448,23 +570,7 @@ extension ConversationSettingsViewController {
         return section
     }
 
-    private func accessoryLabel(forAccess access: GroupV2Access) -> String {
-        switch access {
-        case .any, .member:
-            if access != .member {
-                owsFailDebug("Invalid attributes access: \(access.rawValue)")
-            }
-            return OWSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER",
-                                             comment: "Label indicating that all group members can update the group's attributes: name, avatar, etc.")
-        case .administrator:
-            return OWSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR",
-                                     comment: "Label indicating that only administrators can update the group's attributes: name, avatar, etc.")
-        case .unknown, .unsatisfiable:
-            owsFailDebug("Invalid access")
-            return OWSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE",
-                                     comment: "Label indicating that no member can update the group's attributes: name, avatar, etc.")
-        }
-    }
+    // MARK: Group sections
 
     private func buildGroupMembershipSection(groupModel: TSGroupModel, sectionIndex: Int) -> OWSTableSection {
         let section = OWSTableSection()
