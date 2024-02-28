@@ -954,14 +954,14 @@ private struct NewGroupUpdateItemBuilder {
         var items = [PersistableGroupUpdateItem]()
 
         // We're just learning of the group.
-        let groupWasInsertedItem = groupWasInsertedItem(
+        let groupInsertedUpdateItems = groupInsertedUpdateItems(
             groupUpdateSource: groupUpdateSource,
             localIdentifiers: localIdentifiers,
             newGroupModel: newGroupModel,
             newGroupMembership: newGroupModel.groupMembership
         )
 
-        groupWasInsertedItem.map { items.append($0) }
+        items.append(contentsOf: groupInsertedUpdateItems)
 
         // Skip update items for things like name, avatar, current members. Do
         // add update items for the current disappearing messages state. We can
@@ -975,10 +975,7 @@ private struct NewGroupUpdateItemBuilder {
             forceUnknownAttribution: true
         ).map { items.append($0) }
 
-        if
-            let groupWasInsertedItem,
-            case .createdByLocalUser = groupWasInsertedItem
-        {
+        if items.contains(where: { if case .createdByLocalUser = $0 { return true } ; return false }) {
             // If we just created the group, add an update item to let users
             // know about the group link.
             items.append(.inviteFriendsToNewlyCreatedGroup)
@@ -987,30 +984,40 @@ private struct NewGroupUpdateItemBuilder {
         return items
     }
 
-    private func groupWasInsertedItem(
+    private func groupInsertedUpdateItems(
         groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers,
         newGroupModel: TSGroupModel,
         newGroupMembership: GroupMembership
-    ) -> PersistableGroupUpdateItem? {
+    ) -> [PersistableGroupUpdateItem] {
         guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
             // This is a V1 group. While we may be able to be more specific, we
             // shouldn't stress over V1 group update messages.
-            return .createdByUnknownUser
+            return [.createdByUnknownUser]
         }
 
-        let wasGroupJustCreated = newGroupModel.revision == 0
-        if wasGroupJustCreated {
-            switch groupUpdateSource {
-            case .localUser:
-                return .createdByLocalUser
-            case let .aci(updaterAci):
-                return .createdByOtherUser(updaterAci: updaterAci.codableUuid)
-            case .rejectedInviteToPni, .legacyE164, .unknown:
-                return .createdByUnknownUser
-            }
-        }
+        let inviteItem = groupInviteItems(
+            groupUpdateSource: groupUpdateSource,
+            localIdentifiers: localIdentifiers,
+            newGroupModel: newGroupModel,
+            newGroupMembership: newGroupMembership
+        )
 
+        let createItem: PersistableGroupUpdateItem? = groupCreationUpdateItems(
+            groupUpdateSource: groupUpdateSource,
+            newGroupModel: newGroupModel,
+            wasInvited: inviteItem != nil
+        )
+
+        return [createItem, inviteItem].compacted()
+    }
+
+    private func groupInviteItems(
+        groupUpdateSource: GroupUpdateSource,
+        localIdentifiers: LocalIdentifiers,
+        newGroupModel: TSGroupModelV2,
+        newGroupMembership: GroupMembership
+    ) -> PersistableGroupUpdateItem? {
         switch MembershipStatus.local(
             localIdentifiers: localIdentifiers,
             groupMembership: newGroupMembership
@@ -1047,6 +1054,27 @@ private struct NewGroupUpdateItemBuilder {
             owsFailDebug("Group was inserted without local membership!")
             return nil
         }
+    }
+
+    private func groupCreationUpdateItems(
+        groupUpdateSource: GroupUpdateSource,
+        newGroupModel: TSGroupModelV2,
+        wasInvited: Bool
+    ) -> PersistableGroupUpdateItem? {
+        let wasGroupJustCreated = newGroupModel.revision == 0
+        if wasGroupJustCreated {
+            switch groupUpdateSource {
+            case .localUser:
+                return .createdByLocalUser
+            case let .aci(updaterAci):
+                return .createdByOtherUser(updaterAci: updaterAci.codableUuid)
+            case .rejectedInviteToPni, .legacyE164, .unknown:
+                // If an invite item was created above, this item doesn't
+                // add much value to the messaging, so skip it.
+                return wasInvited ? nil : .createdByUnknownUser
+            }
+        }
+        return nil
     }
 }
 
