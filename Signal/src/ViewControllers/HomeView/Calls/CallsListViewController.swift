@@ -99,16 +99,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         tableView.register(CallCell.self, forCellReuseIdentifier: Self.callCellReuseIdentifier)
         tableView.dataSource = dataSource
 
-        // [CallsTab] TODO: Remove when releasing
-        let internalReminder = ReminderView(
-            style: .warning,
-            text: "The calls tab is internal-only. Some features are not yet implemented."
-        )
-        // tableHeaderView doesn't like autolayout. I'm sure I could get it to
-        // work but it's internal anyway so I'm not gonna bother.
-        internalReminder.frame.height = 100
-        tableView.tableHeaderView = internalReminder
-
         view.addSubview(emptyStateMessageView)
         emptyStateMessageView.autoCenterInSuperview()
 

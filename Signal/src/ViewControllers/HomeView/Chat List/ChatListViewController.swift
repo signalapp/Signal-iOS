@@ -110,9 +110,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         isViewVisible = true
 
-        // Ensure the tabBar is always hidden if it's disabled or we're in the archive.
-        let isTabBarEnabled = (tabBarController as? HomeTabBarController)?.isTabBarEnabled ?? false
-        let shouldHideTabBar = !isTabBarEnabled || chatListMode == .archive
+        // Ensure the tabBar is always hidden if we're in the archive.
+        let shouldHideTabBar = chatListMode == .archive
         if shouldHideTabBar {
             tabBarController?.tabBar.isHidden = true
             extendedLayoutIncludesOpaqueBars = true

@@ -47,28 +47,6 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     // MARK: -
 
     func countUnreadMissedCalls(tx: DBReadTransaction) -> UInt {
-        guard FeatureFlags.shouldShowCallsTab else { return 0 }
-
-        return _countUnreadMissedCalls(tx: tx)
-    }
-
-    func markUnreadCallsAsRead(
-        beforeTimestamp: UInt64?,
-        sendMarkedAsReadSyncMessage: Bool,
-        tx: DBWriteTransaction
-    ) {
-        guard FeatureFlags.shouldShowCallsTab else { return }
-
-        _markUnreadCallsAsRead(
-            beforeTimestamp: beforeTimestamp,
-            sendMarkedAsReadSyncMessage: sendMarkedAsReadSyncMessage,
-            tx: tx
-        )
-    }
-
-    // MARK: -
-
-    private func _countUnreadMissedCalls(tx: DBReadTransaction) -> UInt {
         var unreadMissedCallCount: UInt = 0
 
         for missedCallStatus in CallRecord.CallStatus.missedCalls {
@@ -91,7 +69,7 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         return unreadMissedCallCount
     }
 
-    private func _markUnreadCallsAsRead(
+    func markUnreadCallsAsRead(
         beforeTimestamp: UInt64?,
         sendMarkedAsReadSyncMessage: Bool,
         tx: DBWriteTransaction
