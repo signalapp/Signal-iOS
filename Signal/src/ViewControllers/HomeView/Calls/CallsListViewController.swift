@@ -380,6 +380,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     // MARK: - Observers and Notifications
 
     private func attachSelfAsObservers() {
+        deps.db.appendDatabaseChangeDelegate(self)
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(significantTimeChangeOccurred),
@@ -1514,6 +1516,20 @@ extension CallsListViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         self.searchTerm = searchController.searchBar.text
     }
+}
+
+// MARK: - DatabaseChangeDelegate
+
+extension CallsListViewController: DatabaseChangeDelegate {
+    /// If the database changed externally – which is to say, in the NSE – state
+    /// that this view relies on may have changed. We can't know if it'll have
+    /// affected us, so we'll simply reload everything anew.
+    func databaseChangesDidUpdateExternally() {
+        loadCallRecordsAnew(animated: false)
+    }
+
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {}
+    func databaseChangesDidReset() {}
 }
 
 // MARK: - LoadedCalls
