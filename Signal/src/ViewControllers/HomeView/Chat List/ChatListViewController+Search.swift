@@ -7,15 +7,6 @@ import SignalCoreKit
 import SignalUI
 
 extension ChatListViewController: OWSNavigationChildController {
-
-    private var shouldShowSearchBarCancelButton: Bool {
-        searchBar.isFirstResponder || !(searchBar.text as String?).isEmptyOrNil
-    }
-
-    public var prefersNavigationBarHidden: Bool {
-        shouldShowSearchBarCancelButton
-    }
-
     func focusSearch() {
         AssertIsOnMainThread()
 
@@ -30,41 +21,18 @@ extension ChatListViewController: OWSNavigationChildController {
         searchBar.becomeFirstResponder()
     }
 
-    func dismissSearchKeyboard() {
-        AssertIsOnMainThread()
-
-        searchBar.resignFirstResponder()
-        owsAssertDebug(!searchBar.isFirstResponder)
+    func cancelSearch() {
+        // Deactivating the search controller has a different animation if it's
+        // scrolled to the top or not. It gets confused whether it's at the top
+        // or not and has a buggy animation when this is activated while
+        // scrolling, so force an offset to ensure it always uses the
+        // not-at-the-top animation.
+        tableView.contentOffset.y += 1
+        viewState.searchController.isActive = false
     }
 
-    func ensureSearchBarCancelButton() {
-        let shouldShowCancelButton = shouldShowSearchBarCancelButton
-        let shouldHideNavigationBar = shouldShowCancelButton
-
-        if searchBar.showsCancelButton != shouldShowCancelButton {
-            searchBar.setShowsCancelButton(shouldShowCancelButton, animated: isViewVisible)
-        }
-
-        if let owsNavigationController, shouldHideNavigationBar != owsNavigationController.isNavigationBarHidden {
-            owsNavigationController.updateNavbarAppearance(animated: isViewVisible)
-        }
-    }
-
-    func updateSearchResultsVisibility() {
-        AssertIsOnMainThread()
-
-        let searchText = (searchBar.text ?? "").stripped
-        searchResultsController.searchText = searchText
-        let isSearching = !searchText.isEmpty
-        searchResultsController.view.isHidden = !isSearching
-
-        if isSearching {
-            scrollSearchBarToTop()
-            tableView.isScrollEnabled = false
-        } else {
-            tableView.isScrollEnabled = true
-        }
-    }
+    private var searchText: String { (searchBar.text ?? "").stripped }
+    var isSearching: Bool { !searchText.isEmpty }
 
     func scrollSearchBarToTop(animated: Bool = false) {
         let topInset = view.safeAreaInsets.top
@@ -72,39 +40,24 @@ extension ChatListViewController: OWSNavigationChildController {
     }
 }
 
-extension ChatListViewController: UISearchBarDelegate {
-
-    public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        scrollSearchBarToTop()
-        updateSearchResultsVisibility()
-        ensureSearchBarCancelButton()
-    }
-
-    public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        updateSearchResultsVisibility()
-        ensureSearchBarCancelButton()
-    }
-
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        updateSearchResultsVisibility()
-        ensureSearchBarCancelButton()
-    }
-
-    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        updateSearchResultsVisibility()
-    }
-
-    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = nil
-        dismissSearchKeyboard()
-        updateSearchResultsVisibility()
-        ensureSearchBarCancelButton()
+extension ChatListViewController: UISearchResultsUpdating {
+    public func updateSearchResults(for searchController: UISearchController) {
+        AssertIsOnMainThread()
+        guard isSearching else { return }
+        viewState.searchResultsController.searchText = searchText
     }
 }
 
 extension ChatListViewController: ConversationSearchViewDelegate {
 
     public func conversationSearchViewWillBeginDragging() {
-        dismissSearchKeyboard()
+        AssertIsOnMainThread()
+        searchBar.resignFirstResponder()
+        owsAssertDebug(!searchBar.isFirstResponder)
+    }
+
+    public func conversationSearchDidSelectRow() {
+        AssertIsOnMainThread()
+        viewState.shouldFocusSearchOnAppear = searchBar.resignFirstResponder()
     }
 }

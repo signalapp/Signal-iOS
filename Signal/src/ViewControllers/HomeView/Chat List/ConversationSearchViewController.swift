@@ -14,6 +14,7 @@ typealias StringStyle = BonMot.StringStyle
 
 public protocol ConversationSearchViewDelegate: AnyObject {
     func conversationSearchViewWillBeginDragging()
+    func conversationSearchDidSelectRow()
 }
 
 public class ConversationSearchViewController: UITableViewController {
@@ -30,6 +31,7 @@ public class ConversationSearchViewController: UITableViewController {
 
     public var searchText = "" {
         didSet {
+            guard searchText != oldValue else { return }
             AssertIsOnMainThread()
 
             // Use a slight delay to debounce updates.
@@ -181,6 +183,8 @@ public class ConversationSearchViewController: UITableViewController {
             owsFailDebug("unknown section selected.")
             return
         }
+
+        delegate?.conversationSearchDidSelectRow()
 
         switch searchSection {
         case .noResults:

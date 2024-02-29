@@ -192,7 +192,7 @@ extension CLVTableDataSource: UIScrollViewDelegate {
             return
         }
 
-        viewController.dismissSearchKeyboard()
+        viewController.cancelSearch()
     }
 }
 
@@ -341,7 +341,9 @@ extension CLVTableDataSource: UITableViewDelegate {
             return
         }
 
-        viewController.dismissSearchKeyboard()
+        defer {
+            viewController.cancelSearch()
+        }
 
         guard let section = ChatListSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
