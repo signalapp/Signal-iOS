@@ -1558,9 +1558,13 @@ extension CallsListViewController: UISearchResultsUpdating {
 extension CallsListViewController: DatabaseChangeDelegate {
     /// If the database changed externally – which is to say, in the NSE – state
     /// that this view relies on may have changed. We can't know if it'll have
-    /// affected us, so we'll simply reload everything anew.
+    /// affected us, so we'll simply load calls fresh and make the table view
+    /// reload all the cells.
     func databaseChangesDidUpdateExternally() {
+        logger.info("Database changed externally, loading calls anew and reloading all rows.")
+
         loadCallRecordsAnew(animated: false)
+        reloadAllRows()
     }
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {}
