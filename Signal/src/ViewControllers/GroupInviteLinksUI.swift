@@ -372,11 +372,15 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                     return Promise.value((groupInviteLinkPreview, nil))
                 }
             }.then(on: DispatchQueue.global()) { (groupInviteLinkPreview: GroupInviteLinkPreview, avatarData: Data?) in
-                GroupManager.joinGroupViaInviteLink(groupId: self.groupV2ContextInfo.groupId,
-                                                    groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
-                                                    inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
-                                                    groupInviteLinkPreview: groupInviteLinkPreview,
-                                                    avatarData: avatarData)
+                Promise.wrapAsync {
+                    try await GroupManager.joinGroupViaInviteLink(
+                        groupId: self.groupV2ContextInfo.groupId,
+                        groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                        inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
+                        groupInviteLinkPreview: groupInviteLinkPreview,
+                        avatarData: avatarData
+                    )
+                }
             }.done { [weak self] (groupThread: TSGroupThread) in
                 modalActivityIndicator.dismiss {
                     AssertIsOnMainThread()

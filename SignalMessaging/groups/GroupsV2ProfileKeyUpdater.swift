@@ -268,7 +268,9 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
 
             return firstly {
                 if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] ensure local profile has commitment if necessary") }
-                return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+                return Promise.wrapAsync {
+                    try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+                }
             }.then(on: DispatchQueue.global()) { () throws -> Promise<Void> in
                 // Before we can update the group state on the service,
                 // we need to ensure that the group state in the local

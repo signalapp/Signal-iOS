@@ -3301,7 +3301,14 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let members = uuidMembers + [DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress]
         let groupName = "UUID Group"
 
-        _ = GroupManager.localCreateNewGroup(members: members, name: groupName, disappearingMessageToken: .disabledToken, shouldSendMessage: true)
+        Task {
+            _ = try? await GroupManager.localCreateNewGroup(
+                members: members,
+                name: groupName,
+                disappearingMessageToken: .disabledToken,
+                shouldSendMessage: true
+            )
+        }
     }
 
     // MARK: Fake Threads & Messages
@@ -3639,23 +3646,26 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             }
         }
 
-        let groupName = randomShortText()
-        createRandomGroupWithName(groupName, member: recipientAddress, completion: completion)
+        Task {
+            let groupName = randomShortText()
+            await createRandomGroupWithName(groupName, member: recipientAddress, completion: completion)
+        }
     }
 
     private static func createRandomGroupWithName(
         _ groupName: String,
         member: SignalServiceAddress,
         completion: @escaping (TSGroupThread) -> Void
-    ) {
+    ) async {
         let members = [ member, DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress ]
-        GroupManager.localCreateNewGroup(
-            members: members,
-            disappearingMessageToken: .disabledToken,
-            shouldSendMessage: true
-        ).done { groupThread in
+        do {
+            let groupThread = try await GroupManager.localCreateNewGroup(
+                members: members,
+                disappearingMessageToken: .disabledToken,
+                shouldSendMessage: true
+            )
             completion(groupThread)
-        }.catch { error in
+        } catch {
             owsFailDebug("Error: \(error)")
         }
     }
@@ -3690,7 +3700,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 )
 
                 let member = SignalServiceAddress(Aci(fromUUID: UUID()))
-                createRandomGroupWithName(string, member: member, completion: { _ in })
+                Task {
+                    await createRandomGroupWithName(string, member: member, completion: { _ in })
+                }
             }
         }
     }
@@ -3715,7 +3727,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 )
 
                 let member = SignalServiceAddress(Aci(fromUUID: UUID()))
-                createRandomGroupWithName(string, member: member, completion: { _ in })
+                Task {
+                    await createRandomGroupWithName(string, member: member, completion: { _ in })
+                }
             }
         }
     }
@@ -3738,7 +3752,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 )
 
                 let member = SignalServiceAddress(Aci(fromUUID: UUID()))
-                createRandomGroupWithName(string, member: member, completion: { _ in })
+                Task {
+                    await createRandomGroupWithName(string, member: member, completion: { _ in })
+                }
             }
         }
     }

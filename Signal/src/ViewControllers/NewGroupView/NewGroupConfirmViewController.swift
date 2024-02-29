@@ -218,31 +218,37 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         let disappearingMessageToken = disappearingMessagesConfiguration.asToken
 
         // GroupsV2 TODO: Should we allow cancel here?
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false) { modalActivityIndicator in
-                                                        firstly {
-                                                            GroupManager.localCreateNewGroup(members: members,
-                                                                                             groupId: nil,
-                                                                                             name: groupName,
-                                                                                             avatarData: avatarData,
-                                                                                             disappearingMessageToken: disappearingMessageToken,
-                                                                                             newGroupSeed: newGroupSeed,
-                                                                                             shouldSendMessage: true)
-                                                        }.done { groupThread in
-                                                            self.groupWasCreated(groupThread: groupThread,
-                                                                                 modalActivityIndicator: modalActivityIndicator)
-                                                        }.catch { error in
-                                                            owsFailDebug("Could not create group: \(error)")
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false
+        ) { modalActivityIndicator in
+            Task {
+                do {
+                    let groupThread = try await GroupManager.localCreateNewGroup(
+                        members: members,
+                        groupId: nil,
+                        name: groupName,
+                        avatarData: avatarData,
+                        disappearingMessageToken: disappearingMessageToken,
+                        newGroupSeed: newGroupSeed,
+                        shouldSendMessage: true
+                    )
+                    self.groupWasCreated(
+                        groupThread: groupThread,
+                        modalActivityIndicator: modalActivityIndicator)
+                } catch {
+                    owsFailDebug("Could not create group: \(error)")
 
-                                                            modalActivityIndicator.dismiss {
-                                                                // Partial success could create the group on the service.
-                                                                // This would cause retries to fail with 409.  Therefore
-                                                                // we must rotate the seed after every failure.
-                                                                self.newGroupState.deriveNewGroupSeedForRetry()
+                    modalActivityIndicator.dismiss {
+                        // Partial success could create the group on the service.
+                        // This would cause retries to fail with 409.  Therefore
+                        // we must rotate the seed after every failure.
+                        self.newGroupState.deriveNewGroupSeedForRetry()
 
-                                                                NewGroupConfirmViewController.showCreateErrorUI(error: error)
-                                                            }
-                                                        }
+                        NewGroupConfirmViewController.showCreateErrorUI(error: error)
+                    }
+                }
+            }
         }
     }
 

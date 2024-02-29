@@ -156,7 +156,9 @@ class DebugUIStress: DebugUIPage, Dependencies {
         }
 
         items.append(OWSTableItem(title: "Make group w. unregistered users", actionBlock: {
-            DebugUIStress.makeUnregisteredGroup()
+            Task {
+                try await DebugUIStress.makeUnregisteredGroup()
+            }
         }))
 
         // Other
@@ -211,7 +213,8 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
     // MARK: Groups
 
-    private static func makeUnregisteredGroup() {
+    @MainActor
+    private static func makeUnregisteredGroup() async throws {
         var recipientAddresses = [SignalServiceAddress]()
 
         recipientAddresses.append(contentsOf: (0...2).map { _ in SignalServiceAddress(Aci(fromUUID: UUID())) })
@@ -222,16 +225,13 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
         recipientAddresses.append(contentsOf: (0...2).map { _ in SignalServiceAddress(Aci(fromUUID: UUID())) })
 
-        GroupManager.localCreateNewGroup(
+        let groupThread = try await GroupManager.localCreateNewGroup(
             members: recipientAddresses,
             name: UUID().uuidString,
             disappearingMessageToken: .disabledToken,
             shouldSendMessage: false
-        ).done { groupThread in
-            SignalApp.shared.presentConversationForThread(groupThread, animated: true)
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
+        )
+        SignalApp.shared.presentConversationForThread(groupThread, animated: true)
     }
 
     private static func copyToAnotherGroup(_ srcGroupThread: TSGroupThread, fromViewController: UIViewController) {

@@ -21,10 +21,12 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 return
             }
 
-            firstly {
-                GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
-            }.catch { error in
-                Logger.warn("Local profile update failed with error: \(error)")
+            Task {
+                do {
+                    try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+                } catch {
+                    Logger.warn("Local profile update failed with error: \(error)")
+                }
             }
         }
 

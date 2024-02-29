@@ -479,7 +479,9 @@ private extension GroupV2UpdatesImpl {
     ) -> Promise<TSGroupThread> {
 
         return firstly {
-            return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+            Promise.wrapAsync {
+                try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+            }
         }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
             // Try to use individual changes.
             return firstly(on: DispatchQueue.global()) {

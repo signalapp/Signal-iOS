@@ -55,7 +55,9 @@ extension GroupManager {
 
         public override func run() {
             firstly {
-                GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+                Promise.wrapAsync {
+                    try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+                }
             }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
                 self.groupsV2Swift.updateGroupV2(
                     groupId: self.groupId,
