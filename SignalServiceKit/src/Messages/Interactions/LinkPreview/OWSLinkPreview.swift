@@ -635,7 +635,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies, LinkPreviewManager {
         }.then(on: Self.workQueue) { (groupInviteLinkInfo: GroupInviteLinkInfo) -> Promise<OWSLinkPreviewDraft> in
             let groupV2ContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
             return firstly {
-                Self.groupsV2Swift.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
+                Self.groupsV2.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
                                                                groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData,
                                                                allowCached: false)
             }.then(on: Self.workQueue) { (groupInviteLinkPreview: GroupInviteLinkPreview) in
@@ -644,7 +644,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies, LinkPreviewManager {
                         return Promise.value(nil)
                     }
                     return firstly { () -> Promise<Data> in
-                        self.groupsV2Swift.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
+                        self.groupsV2.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
                                                                       groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
                     }.map { (avatarData: Data) -> Data? in
                         return avatarData

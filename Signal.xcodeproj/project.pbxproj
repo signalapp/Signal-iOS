@@ -1414,6 +1414,7 @@
 		C167387529E8397B0068EA92 /* EditMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167387429E8397B0068EA92 /* EditMessageFinder.swift */; };
 		C167F1E52A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */; };
 		C169095F2A4DE2A200B6A65D /* EditMessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */; };
+		C16B8B752B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16B8B742B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift */; };
 		C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyTarget.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
@@ -4206,6 +4207,7 @@
 		C167387429E8397B0068EA92 /* EditMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageFinder.swift; sourceTree = "<group>"; };
 		C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStoreTest.swift; sourceTree = "<group>"; };
 		C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageWrapper.swift; sourceTree = "<group>"; };
+		C16B8B742B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingSentMessageTranscript.swift; sourceTree = "<group>"; };
 		C17345BA2A5E000300C6426D /* PreKeyTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTarget.swift; sourceTree = "<group>"; };
 		C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
@@ -9754,6 +9756,7 @@
 				6619A1C62B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift */,
 				F9C5C8C0289453B100548EEE /* OWSOutgoingSentMessageTranscript.h */,
 				F9C5C8CD289453B100548EEE /* OWSOutgoingSentMessageTranscript.m */,
+				C16B8B742B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift */,
 				F9C5C8D2289453B100548EEE /* OWSOutgoingSyncMessage.h */,
 				F9C5C8C2289453B100548EEE /* OWSOutgoingSyncMessage.m */,
 				F9C5C8C9289453B100548EEE /* OWSSyncConfigurationMessage.h */,
@@ -13463,6 +13466,7 @@
 				505B228329F73ABE005578F3 /* OWSOutgoingResendResponse.swift in Sources */,
 				F9C5CC89289453B300548EEE /* OWSOutgoingSenderKeyDistributionMessage.m in Sources */,
 				F9C5CBC2289453B300548EEE /* OWSOutgoingSentMessageTranscript.m in Sources */,
+				C16B8B752B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift in Sources */,
 				F9C5CBB7289453B300548EEE /* OWSOutgoingSyncMessage.m in Sources */,
 				6642A87A2A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift in Sources */,
 				6642A8722A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m in Sources */,

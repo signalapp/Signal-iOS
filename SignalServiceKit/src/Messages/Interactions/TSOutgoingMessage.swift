@@ -215,6 +215,30 @@ public extension TSOutgoingMessage {
         return builder.buildInfallibly()
     }
 
+    @objc
+    func addGroupsV2ToDataMessageBuilder(
+        _ builder: SSKProtoDataMessageBuilder,
+        groupThread: TSGroupThread,
+        tx: SDSAnyReadTransaction
+    ) -> OutgoingGroupProtoResult {
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return .error
+        }
+
+        do {
+            let groupContextV2 = try groupsV2.buildGroupContextV2Proto(
+                groupModel: groupModel,
+                changeActionsProtoData: self.changeActionsProtoData
+            )
+            builder.setGroupV2(groupContextV2)
+            return .addedWithoutGroupAvatar
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return .error
+        }
+    }
+
     fileprivate func maybeClearShouldSharePhoneNumber(
         for recipientAddress: SignalServiceAddress,
         recipientDeviceId deviceId: UInt32,

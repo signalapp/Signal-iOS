@@ -34,9 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSThread *messageThread;
 @property (nonatomic, readonly) BOOL isRecipientUpdate;
 
-- (BOOL)prepareDataSyncMessageContentWithSentBuilder:(SSKProtoSyncMessageSentBuilder *)sentBuilder
-                                         transaction:(SDSAnyReadTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

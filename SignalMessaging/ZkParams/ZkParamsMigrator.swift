@@ -8,7 +8,7 @@ import SignalServiceKit
 
 class ZkParamsMigrator {
     private let db: DB
-    private let groupsV2: GroupsV2Swift
+    private let groupsV2: GroupsV2
     private let migrationStore: KeyValueStore
     private let profileManager: ProfileManager
     private let tsAccountManager: TSAccountManager
@@ -17,7 +17,7 @@ class ZkParamsMigrator {
     init(
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
-        groupsV2: GroupsV2Swift,
+        groupsV2: GroupsV2,
         profileManager: ProfileManager,
         tsAccountManager: TSAccountManager,
         versionedProfiles: VersionedProfilesSwift

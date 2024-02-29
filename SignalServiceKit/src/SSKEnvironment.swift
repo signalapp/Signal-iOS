@@ -24,13 +24,13 @@ public class SSKEnvironment: NSObject {
     private(set) public var messageSenderRef: MessageSender
     private(set) public var networkManagerRef: NetworkManager
     private(set) public var paymentsHelperRef: PaymentsHelperSwift
-    private(set) public var groupsV2Ref: GroupsV2Swift
+    private(set) public var groupsV2Ref: GroupsV2
     #else
     public let contactManagerRef: any ContactManager
     public let messageSenderRef: MessageSender
     public let networkManagerRef: NetworkManager
     public let paymentsHelperRef: PaymentsHelperSwift
-    public let groupsV2Ref: GroupsV2Swift
+    public let groupsV2Ref: GroupsV2
     #endif
 
     public let linkPreviewManagerRef: OWSLinkPreviewManager
@@ -59,7 +59,7 @@ public class SSKEnvironment: NSObject {
     public let storageServiceManagerRef: StorageServiceManager
     public let storageCoordinatorRef: StorageCoordinator
     public let sskPreferencesRef: SSKPreferences
-    public let groupV2UpdatesRef: GroupV2UpdatesSwift
+    public let groupV2UpdatesRef: GroupV2Updates
     public let messageFetcherJobRef: MessageFetcherJob
     public let bulkProfileFetchRef: BulkProfileFetch
     public let versionedProfilesRef: VersionedProfilesSwift
@@ -122,8 +122,8 @@ public class SSKEnvironment: NSObject {
         storageServiceManager: StorageServiceManager,
         storageCoordinator: StorageCoordinator,
         sskPreferences: SSKPreferences,
-        groupsV2: GroupsV2Swift,
-        groupV2Updates: GroupV2UpdatesSwift,
+        groupsV2: GroupsV2,
+        groupV2Updates: GroupV2Updates,
         messageFetcherJob: MessageFetcherJob,
         bulkProfileFetch: BulkProfileFetch,
         versionedProfiles: VersionedProfilesSwift,
@@ -291,9 +291,8 @@ public class SSKEnvironment: NSObject {
         self.paymentsHelperRef = paymentsHelper
     }
 
-    @objc
     public func setGroupsV2ForUnitTests(_ groupsV2: GroupsV2) {
-        self.groupsV2Ref = groupsV2 as! GroupsV2Swift
+        self.groupsV2Ref = groupsV2
     }
 
     #endif

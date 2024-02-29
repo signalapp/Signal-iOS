@@ -151,7 +151,7 @@ public class GroupV2UpdatesImpl: Dependencies {
 
 // MARK: - GroupV2UpdatesSwift
 
-extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
+extension GroupV2UpdatesImpl: GroupV2Updates {
 
     public func updateGroupWithChangeActions(
         groupId: Data,

@@ -231,7 +231,7 @@ extension BlockingManager {
 
                 // Refresh unblocked group.
                 if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-                    groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
+                    groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
                 }
             }
         }

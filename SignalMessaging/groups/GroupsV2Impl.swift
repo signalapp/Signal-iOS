@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import LibSignalClient
 
-public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
+public class GroupsV2Impl: GroupsV2, Dependencies {
 
     private var urlSession: OWSURLSessionProtocol {
         return self.signalService.urlSessionForStorageService()

@@ -212,7 +212,7 @@ public class GroupManager: NSObject {
 
         // Try to get profile key credentials for all group members, since
         // we need them to fully add (rather than merely inviting) members.
-        try await groupsV2Swift.tryToFetchProfileKeyCredentials(
+        try await groupsV2.tryToFetchProfileKeyCredentials(
             for: initialGroupMembership.allMembersOfAnyKind.compactMap { $0.serviceId as? Aci },
             ignoreMissingProfiles: false,
             forceRefresh: false
@@ -245,7 +245,7 @@ public class GroupManager: NSObject {
 
         if let avatarData = avatarData {
             // Upload avatar.
-            let avatarUrlPath = try await groupsV2Swift.uploadGroupAvatar(
+            let avatarUrlPath = try await groupsV2.uploadGroupAvatar(
                 avatarData: avatarData,
                 groupSecretParamsData: proposedGroupModel.secretParamsData
             ).awaitable()
@@ -256,12 +256,12 @@ public class GroupManager: NSObject {
             proposedGroupModel = try builder.buildAsV2()
         }
 
-        try await groupsV2Swift.createNewGroupOnService(
+        try await groupsV2.createNewGroupOnService(
             groupModel: proposedGroupModel,
             disappearingMessageToken: disappearingMessageToken
         ).awaitable()
 
-        let groupV2Snapshot = try await groupsV2Swift.fetchCurrentGroupV2Snapshot(
+        let groupV2Snapshot = try await groupsV2.fetchCurrentGroupV2Snapshot(
             groupModel: proposedGroupModel
         ).awaitable()
 
@@ -315,7 +315,7 @@ public class GroupManager: NSObject {
         for address in newMembers {
             // We must call this _after_ we try to fetch profile key credentials for
             // all members.
-            let hasCredential = groupsV2Swift.hasProfileKeyCredential(for: address, transaction: tx)
+            let hasCredential = groupsV2.hasProfileKeyCredential(for: address, transaction: tx)
             guard let role = newGroupMembership.role(for: address) else {
                 owsFailDebug("Missing role: \(address)")
                 continue
@@ -733,7 +733,7 @@ public class GroupManager: NSObject {
     }
 
     public static func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
-        try groupsV2Swift.groupInviteLink(forGroupModelV2: groupModelV2)
+        try groupsV2.groupInviteLink(forGroupModelV2: groupModelV2)
     }
 
     @objc
@@ -754,7 +754,7 @@ public class GroupManager: NSObject {
 
     @objc
     public static func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
-        groupsV2Swift.parseGroupInviteLink(url)
+        groupsV2.parseGroupInviteLink(url)
     }
 
     public static func joinGroupViaInviteLink(
@@ -765,7 +765,7 @@ public class GroupManager: NSObject {
         avatarData: Data?
     ) async throws -> TSGroupThread {
         try await ensureLocalProfileHasCommitmentIfNecessary()
-        let groupThread = try await NSObject.groupsV2Swift.joinGroupViaInviteLink(
+        let groupThread = try await NSObject.groupsV2.joinGroupViaInviteLink(
             groupId: groupId,
             groupSecretParamsData: groupSecretParamsData,
             inviteLinkPassword: inviteLinkPassword,
@@ -804,7 +804,7 @@ public class GroupManager: NSObject {
         let description = "Cancel Member Request"
 
         return firstly(on: DispatchQueue.global()) {
-            self.groupsV2Swift.cancelMemberRequests(groupModel: groupModel)
+            self.groupsV2.cancelMemberRequests(groupModel: groupModel)
         }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
             GroupsV2Error.timeout
         }
@@ -813,8 +813,8 @@ public class GroupManager: NSObject {
     @objc
     public static func cachedGroupInviteLinkPreview(groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkPreview? {
         do {
-            let groupContextInfo = try self.groupsV2Swift.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
-            return groupsV2Swift.cachedGroupInviteLinkPreview(groupSecretParamsData: groupContextInfo.groupSecretParamsData)
+            let groupContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
+            return groupsV2.cachedGroupInviteLinkPreview(groupSecretParamsData: groupContextInfo.groupSecretParamsData)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
@@ -892,7 +892,7 @@ public class GroupManager: NSObject {
         if let groupModelV2 = groupModel as? TSGroupModelV2,
            groupModelV2.isPlaceholderModel {
             Logger.warn("Ignoring 403 for placeholder group.")
-            groupsV2Swift.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
+            groupsV2.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
                 groupModel: groupModelV2,
                 removeLocalUserBlock: removeLocalUserBlock
             )
@@ -1346,7 +1346,7 @@ public class GroupManager: NSObject {
             // We only need to notify the storage service about v2 groups.
             return
         }
-        guard !groupsV2Swift.isGroupKnownToStorageService(groupModel: groupModel,
+        guard !groupsV2.isGroupKnownToStorageService(groupModel: groupModel,
                                                           transaction: transaction) else {
             // To avoid redundant storage service writes,
             // don't bother notifying the storage service
@@ -1479,7 +1479,7 @@ public class GroupManager: NSObject {
                 guard let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
                     throw OWSAssertionError("Missing localAddress.")
                 }
-                return NSObject.groupsV2Swift.hasProfileKeyCredential(for: localAddress, transaction: tx)
+                return NSObject.groupsV2.hasProfileKeyCredential(for: localAddress, transaction: tx)
             }
         }
 
@@ -1561,7 +1561,7 @@ extension GroupManager {
             // the add below, since we depend on credential state to decide
             // whether to add or invite a user.
 
-            self.groupsV2Swift.tryToFetchProfileKeyCredentials(
+            self.groupsV2.tryToFetchProfileKeyCredentials(
                 for: serviceIds.compactMap { $0 as? Aci },
                 ignoreMissingProfiles: false,
                 forceRefresh: false
@@ -1577,7 +1577,7 @@ extension GroupManager {
 
                         // Important that at this point we already have the
                         // profile keys for these users
-                        let hasCredential = self.groupsV2Swift.hasProfileKeyCredential(
+                        let hasCredential = self.groupsV2.hasProfileKeyCredential(
                             for: SignalServiceAddress(serviceId),
                             transaction: transaction
                         )
@@ -1624,7 +1624,7 @@ extension GroupManager {
                 return .value(nil)
             }
 
-            return self.groupsV2Swift.uploadGroupAvatar(
+            return self.groupsV2.uploadGroupAvatar(
                 avatarData: avatarData,
                 groupSecretParamsData: existingGroupModel.secretParamsData
             ).map { Optional.some($0) }

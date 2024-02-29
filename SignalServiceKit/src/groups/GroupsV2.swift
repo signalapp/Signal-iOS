@@ -68,8 +68,7 @@ public enum GroupsV2LinkMode: UInt, CustomStringConvertible {
 
 // MARK: -
 
-@objc
-public protocol GroupsV2: AnyObject {
+public protocol GroupsV2 {
 
     func generateGroupSecretParamsData() throws -> Data
 
@@ -99,11 +98,6 @@ public protocol GroupsV2: AnyObject {
     func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool
 
     func clearTemporalCredentials(transaction: SDSAnyWriteTransaction)
-}
-
-// MARK: -
-
-public protocol GroupsV2Swift: GroupsV2 {
 
     typealias ProfileKeyCredentialMap = [Aci: ExpiringProfileKeyCredential]
 
@@ -325,16 +319,12 @@ public enum GroupUpdateMode {
 
 // MARK: -
 
-@objc
-public protocol GroupV2Updates: AnyObject {
+public protocol GroupV2Updates {
+
     func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread)
 
     func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread)
-}
 
-// MARK: -
-
-public protocol GroupV2UpdatesSwift: GroupV2Updates {
     func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
                                                            groupSecretParamsData: Data) -> Promise<TSGroupThread>
 
@@ -556,7 +546,7 @@ public struct InvalidInvite: Equatable {
 
 // MARK: -
 
-public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
+public class MockGroupsV2: GroupsV2 {
 
     public func createNewGroupOnService(groupModel: TSGroupModelV2,
                                         disappearingMessageToken: DisappearingMessageToken) -> Promise<Void> {
@@ -754,13 +744,11 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
 
 // MARK: -
 
-public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
-    @objc
+public class MockGroupV2Updates: GroupV2Updates {
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
         owsFail("Not implemented.")
     }
 
-    @objc
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread) {
         owsFail("Not implemented.")
     }

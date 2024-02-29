@@ -19,7 +19,7 @@ public extension ConversationViewController {
         }
         // Try to update the v2 group to latest from the service.
         // This will help keep us in sync if we've missed any group updates, etc.
-        groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
+        groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
     }
 
     func showUnblockConversationUI(completion: BlockListUIUtils.Completion?) {

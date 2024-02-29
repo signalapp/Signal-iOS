@@ -19,11 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
-typedef NS_CLOSED_ENUM(NSUInteger, OutgoingGroupProtoResult) {
-    OutgoingGroupProtoResult_AddedWithoutGroupAvatar,
-    OutgoingGroupProtoResult_Error
-};
-
 NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRecipientAll";
 
 NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value)
@@ -924,7 +919,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                 result = OutgoingGroupProtoResult_Error;
                 break;
             case GroupsVersionV2:
-                result = [self addGroupsV2ToDataMessageBuilder:builder groupThread:groupThread transaction:transaction];
+                result = [self addGroupsV2ToDataMessageBuilder:builder groupThread:groupThread tx:transaction];
                 break;
         }
         switch (result) {
@@ -1060,33 +1055,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     [builder setRequiredProtocolVersion:(uint32_t)requiredProtocolVersion];
     return builder;
-}
-
-- (OutgoingGroupProtoResult)addGroupsV2ToDataMessageBuilder:(SSKProtoDataMessageBuilder *)builder
-                                                groupThread:(TSGroupThread *)groupThread
-                                                transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(builder);
-    OWSAssertDebug(groupThread);
-    OWSAssertDebug(transaction);
-
-    if (![groupThread.groupModel isKindOfClass:[TSGroupModelV2 class]]) {
-        OWSFailDebug(@"Invalid group model.");
-        return OutgoingGroupProtoResult_Error;
-    }
-    TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
-
-    NSError *error;
-    SSKProtoGroupContextV2 *_Nullable groupContextV2 =
-        [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel
-                                       changeActionsProtoData:self.changeActionsProtoData
-                                                        error:&error];
-    if (groupContextV2 == nil || error != nil) {
-        OWSFailDebug(@"Error: %@", error);
-        return OutgoingGroupProtoResult_Error;
-    }
-    [builder setGroupV2:groupContextV2];
-    return OutgoingGroupProtoResult_AddedWithoutGroupAvatar;
 }
 
 - (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction

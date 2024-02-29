@@ -204,7 +204,7 @@ public extension GroupsV2Impl {
                             let recordUpdater = StorageServiceGroupV2RecordUpdater(
                                 authedAccount: account,
                                 blockingManager: blockingManager,
-                                groupsV2: groupsV2Swift,
+                                groupsV2: groupsV2,
                                 profileManager: profileManager
                             )
                             _ = recordUpdater.mergeRecord(groupRecord, transaction: transaction)

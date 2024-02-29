@@ -98,7 +98,7 @@ public class GroupsV2Protos {
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken,
         groupV2Params: GroupV2Params,
-        profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap,
+        profileKeyCredentialMap: GroupsV2.ProfileKeyCredentialMap,
         localAci: Aci
     ) throws -> GroupsProtoGroup {
         // Collect credential for self.

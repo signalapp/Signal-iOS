@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setDestinationServiceID:self.sentRecipientAddress.serviceIdString];
     [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 
-    if (![self prepareDataSyncMessageContentWithSentBuilder:sentBuilder transaction:transaction]) {
+    if (![self prepareDataSyncMessageContentWithSentBuilder:sentBuilder tx:transaction]) {
         return nil;
     }
 
@@ -135,69 +135,6 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     [syncMessageBuilder setSent:sentProto];
     return syncMessageBuilder;
-}
-
-- (BOOL)prepareDataSyncMessageContentWithSentBuilder:(SSKProtoSyncMessageSentBuilder *)sentBuilder
-                                         transaction:(SDSAnyReadTransaction *)transaction
-{
-    SSKProtoDataMessage *_Nullable dataMessage;
-    if (self.message.isViewOnceMessage) {
-        // Create data message without renderable content.
-        SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
-        [dataBuilder setTimestamp:self.message.timestamp];
-        [dataBuilder setExpireTimer:self.message.expiresInSeconds];
-        [dataBuilder setIsViewOnce:YES];
-        [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtoDataMessageProtocolVersionViewOnceVideo];
-
-        if (self.messageThread.isGroupThread) {
-            TSGroupThread *groupThread = (TSGroupThread *)self.messageThread;
-
-            switch (groupThread.groupModel.groupsVersion) {
-                case GroupsVersionV1: {
-                    OWSLogError(@"[GV1] Failed to build sync message contents for V1 groups message!");
-                    return NO;
-                }
-                case GroupsVersionV2: {
-                    if (![groupThread.groupModel isKindOfClass:[TSGroupModelV2 class]]) {
-                        OWSFailDebug(@"Invalid group model.");
-                        return NO;
-                    }
-                    TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
-
-                    NSError *error;
-                    SSKProtoGroupContextV2 *_Nullable groupContextV2 =
-                        [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel
-                                                       changeActionsProtoData:nil
-                                                                        error:&error];
-                    if (groupContextV2 == nil || error != nil) {
-                        OWSFailDebug(@"Error: %@", error);
-                        return NO;
-                    }
-                    [dataBuilder setGroupV2:groupContextV2];
-                    break;
-                }
-            }
-        }
-
-        NSError *error;
-        dataMessage = [dataBuilder buildAndReturnError:&error];
-        if (error || !dataMessage) {
-            OWSFailDebug(@"could not build protobuf: %@", error);
-            return NO;
-        }
-    } else {
-        dataMessage = [self.message buildDataMessage:self.messageThread transaction:transaction];
-    }
-
-    if (!dataMessage) {
-        OWSFailDebug(@"could not build protobuf.");
-        return NO;
-    }
-
-    [sentBuilder setMessage:dataMessage];
-    [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
-
-    return YES;
 }
 
 - (NSSet<NSString *> *)relatedUniqueIds

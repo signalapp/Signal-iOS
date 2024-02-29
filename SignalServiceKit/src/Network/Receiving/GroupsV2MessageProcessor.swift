@@ -439,7 +439,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         }
         jobInfo.groupContext = groupContext
         do {
-            jobInfo.groupContextInfo = try groupsV2Swift.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+            jobInfo.groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
         } catch {
             owsFailDebug("Invalid group context: \(error).")
             return jobInfo
@@ -757,7 +757,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         do {
             // We need to verify the signatures because these protos came from
             // another client, not the service.
-            let changeActionsProto = try groupsV2Swift.parseAndVerifyChangeActionsProto(
+            let changeActionsProto = try groupsV2.parseAndVerifyChangeActionsProto(
                 changeActionsProtoData,
                 ignoreSignature: false
             )
@@ -770,7 +770,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 guard let serverGuid = jobInfo.envelope?.serverGuid else { return .unreportable }
                 return .reportable(serverGuid: serverGuid)
             }()
-            let updatedGroupThread = try await groupsV2Swift.updateGroupWithChangeActions(
+            let updatedGroupThread = try await groupsV2.updateGroupWithChangeActions(
                 groupId: oldGroupModel.groupId,
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,

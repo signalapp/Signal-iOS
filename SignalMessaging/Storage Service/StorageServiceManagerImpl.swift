@@ -1568,7 +1568,7 @@ class StorageServiceOperation: OWSOperation {
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
-                groupsV2: groupsV2Swift,
+                groupsV2: groupsV2,
                 legacyChangePhoneNumber: legacyChangePhoneNumber,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager,
                 paymentsHelper: paymentsHelperSwift,
@@ -1630,7 +1630,7 @@ class StorageServiceOperation: OWSOperation {
             recordUpdater: StorageServiceGroupV2RecordUpdater(
                 authedAccount: authedAccount,
                 blockingManager: blockingManager,
-                groupsV2: groupsV2Swift,
+                groupsV2: groupsV2,
                 profileManager: profileManager
             ),
             changeState: \.groupV2ChangeMap,

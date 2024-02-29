@@ -844,13 +844,13 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
 
     private let authedAccount: AuthedAccount
     private let blockingManager: BlockingManager
-    private let groupsV2: GroupsV2Swift
+    private let groupsV2: GroupsV2
     private let profileManager: ProfileManager
 
     init(
         authedAccount: AuthedAccount,
         blockingManager: BlockingManager,
-        groupsV2: GroupsV2Swift,
+        groupsV2: GroupsV2,
         profileManager: ProfileManager
     ) {
         self.authedAccount = authedAccount

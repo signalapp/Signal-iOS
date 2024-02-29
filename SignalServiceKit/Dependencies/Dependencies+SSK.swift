@@ -57,14 +57,6 @@ public extension NSObject {
         SSKEnvironment.shared.disappearingMessagesJobRef
     }
 
-    final var groupV2UpdatesObjc: GroupV2Updates {
-        SSKEnvironment.shared.groupV2UpdatesRef
-    }
-
-    static var groupV2UpdatesObjc: GroupV2Updates {
-        SSKEnvironment.shared.groupV2UpdatesRef
-    }
-
     final var linkPreviewManager: OWSLinkPreviewManager {
         SSKEnvironment.shared.linkPreviewManagerRef
     }
@@ -241,14 +233,6 @@ public extension NSObject {
 
     static var messageProcessor: MessageProcessor {
         SSKEnvironment.shared.messageProcessorRef
-    }
-
-    final var groupsV2: GroupsV2 {
-        SSKEnvironment.shared.groupsV2Ref
-    }
-
-    static var groupsV2: GroupsV2 {
-        SSKEnvironment.shared.groupsV2Ref
     }
 
     @nonobjc
@@ -671,14 +655,6 @@ public extension Dependencies {
         SSKEnvironment.shared.remoteConfigManagerRef
     }
 
-    var groupsV2: GroupsV2 {
-        SSKEnvironment.shared.groupsV2Ref
-    }
-
-    static var groupsV2: GroupsV2 {
-        SSKEnvironment.shared.groupsV2Ref
-    }
-
     var signalService: OWSSignalServiceProtocol {
         SSKEnvironment.shared.signalServiceRef
     }
@@ -878,19 +854,19 @@ public extension Dependencies {
 
 public extension NSObject {
 
-    final var groupsV2Swift: GroupsV2Swift {
+    final var groupsV2: GroupsV2 {
         SSKEnvironment.shared.groupsV2Ref
     }
 
-    static var groupsV2Swift: GroupsV2Swift {
+    static var groupsV2: GroupsV2 {
         SSKEnvironment.shared.groupsV2Ref
     }
 
-    final var groupV2Updates: GroupV2UpdatesSwift {
+    final var groupV2Updates: GroupV2Updates {
         SSKEnvironment.shared.groupV2UpdatesRef
     }
 
-    static var groupV2Updates: GroupV2UpdatesSwift {
+    static var groupV2Updates: GroupV2Updates {
         SSKEnvironment.shared.groupV2UpdatesRef
     }
 
@@ -931,19 +907,19 @@ public extension NSObject {
 
 public extension Dependencies {
 
-    var groupsV2Swift: GroupsV2Swift {
+    var groupsV2: GroupsV2 {
         SSKEnvironment.shared.groupsV2Ref
     }
 
-    static var groupsV2Swift: GroupsV2Swift {
+    static var groupsV2: GroupsV2 {
         SSKEnvironment.shared.groupsV2Ref
     }
 
-    var groupV2Updates: GroupV2UpdatesSwift {
+    var groupV2Updates: GroupV2Updates {
         SSKEnvironment.shared.groupV2UpdatesRef
     }
 
-    static var groupV2Updates: GroupV2UpdatesSwift {
+    static var groupV2Updates: GroupV2Updates {
         SSKEnvironment.shared.groupV2UpdatesRef
     }
 

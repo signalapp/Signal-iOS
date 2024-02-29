@@ -11,7 +11,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     public typealias TSAccountManager = SignalServiceKit.TSAccountManager & LocalIdentifiersSetter
 
     private let appContext: AppContext
-    private let groupsV2: GroupsV2Swift
+    private let groupsV2: GroupsV2
     private let identityManager: OWSIdentityManager
     private let notificationPresenter: NotificationsProtocolSwift
     private let paymentsEvents: Shims.PaymentsEvents
@@ -28,7 +28,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     public init(
         appContext: AppContext,
-        groupsV2: GroupsV2Swift,
+        groupsV2: GroupsV2,
         identityManager: OWSIdentityManager,
         notificationPresenter: NotificationsProtocolSwift,
         paymentsEvents: Shims.PaymentsEvents,
