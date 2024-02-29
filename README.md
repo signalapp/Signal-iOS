@@ -33,8 +33,8 @@ The form and manner of this distribution makes it eligible for export under the 
 
 ## License
 
-Licensed under [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html)
+Copyright 2013-2024 Signal Messenger, LLC
 
-Copyright 2014-2024 Open Whisper Systems
+Licensed under the GNU AGPLv3: https://www.gnu.org/licenses/agpl-3.0.html
 
 _Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc., registered in the U.S. and other countries._
