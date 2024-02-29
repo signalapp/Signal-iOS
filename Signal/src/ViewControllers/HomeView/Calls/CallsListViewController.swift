@@ -349,7 +349,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             Strings.filterPickerOptionMissed
         ])
         segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(tabChanged), for: .valueChanged)
+        segmentedControl.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
         return segmentedControl
     }()
 
@@ -366,7 +366,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     @objc
-    private func tabChanged() {
+    private func filterChanged() {
         loadCallRecordsAnew(animated: true)
         updateMultiselectToolbarButtons()
     }
@@ -670,8 +670,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     createCallViewModelBlock: self.createCallViewModel
                 )
 
-                // Load the initial page of records.
-                self.loadMoreCalls(direction: .older, animated: animated)
+                // Load the initial page of records. We've thrown away all our
+                // existing calls, so we want to always update the snapshot.
+                self.loadMoreCalls(
+                    direction: .older,
+                    animated: animated,
+                    forceUpdateSnapshot: true
+                )
             }
         )
     }
@@ -717,16 +722,21 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     /// Synchronously loads more calls, then asynchronously update the snapshot
-    /// if necessary.
+    /// if any new calls were actually loaded.
+    ///
+    /// - Parameter forceUpdateSnapshot
+    /// Whether we should always update the snapshot, regardless of if any new
+    /// calls were loaded.
     private func loadMoreCalls(
         direction loadDirection: LoadedCalls.LoadDirection,
-        animated: Bool
+        animated: Bool,
+        forceUpdateSnapshot: Bool = false
     ) {
         let shouldUpdateSnapshot = deps.db.read { tx in
             return calls.loadMore(direction: loadDirection, tx: tx)
         }
 
-        guard shouldUpdateSnapshot else { return }
+        guard forceUpdateSnapshot || shouldUpdateSnapshot else { return }
 
         DispatchQueue.main.async {
             self.updateSnapshot(animated: animated)
