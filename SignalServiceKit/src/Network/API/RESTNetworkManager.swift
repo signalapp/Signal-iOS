@@ -6,41 +6,103 @@
 import Foundation
 import SignalCoreKit
 
-public extension RESTNetworkManager {
+class RESTNetworkManager {
+    fileprivate typealias Success = (HTTPResponse) -> Void
+    fileprivate typealias Failure = (OWSHTTPErrorWrapper) -> Void
+
+    private let udSessionManagerPool = OWSSessionManagerPool()
+    private let nonUdSessionManagerPool = OWSSessionManagerPool()
+
+    init() {
+        SwiftSingletons.register(self)
+    }
+
+    private func makeRequest(
+        _ request: TSRequest,
+        completionQueue: DispatchQueue,
+        success: @escaping Success,
+        failure: @escaping Failure
+    ) {
+        let networkManagerQueue = NetworkManagerQueue()
+        networkManagerQueue.async {
+            self.makeRequestSync(request, completionQueue: completionQueue, success: success, failure: failure)
+        }
+    }
+
+    private func makeRequestSync(
+        _ request: TSRequest,
+        completionQueue: DispatchQueue,
+        success successParam: @escaping Success,
+        failure failureParam: @escaping Failure
+    ) {
+        let isUdRequest = request.isUDRequest
+        let label = isUdRequest ? "UD request" : "Non-UD request"
+        if (isUdRequest) {
+            owsAssert(!request.shouldHaveAuthorizationHeaders)
+        }
+        Logger.info("Making \(label): \(request)")
+
+        let sessionManagerPool = isUdRequest ? self.udSessionManagerPool : self.nonUdSessionManagerPool
+        let sessionManager = sessionManagerPool.get()
+
+        let success = { (response: HTTPResponse) in
+            #if TESTABLE_BUILD
+            if DebugFlags.logCurlOnSuccess {
+                HTTPUtils.logCurl(for: request as URLRequest)
+            }
+            #endif
+
+            let networkManagerQueue = NetworkManagerQueue()
+            networkManagerQueue.async {
+                sessionManagerPool.returnToPool(sessionManager)
+            }
+            completionQueue.async {
+                Logger.info("\(label) succeeded (\(response.responseStatusCode)) : \(request)")
+                successParam(response)
+                OutageDetection.shared.reportConnectionSuccess()
+            }
+        }
+        let failure = { (errorWrapper: OWSHTTPErrorWrapper) in
+            let networkManagerQueue = NetworkManagerQueue()
+            networkManagerQueue.async {
+                sessionManagerPool.returnToPool(sessionManager)
+            }
+            completionQueue.async {
+                failureParam(errorWrapper)
+            }
+        }
+        sessionManager.performRequest(request, success: success, failure: failure)
+    }
+
     func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
         let (promise, future) = Promise<HTTPResponse>.pending()
-        self.makeRequest(request,
-                         completionQueue: .global(),
-                         success: { (response: HTTPResponse) in
-                            future.resolve(response)
-                         },
-                         failure: { (error: OWSHTTPErrorWrapper) in
-                            future.reject(error.error)
-                         })
+        makeRequest(request,
+                    completionQueue: .global(),
+                    success: { (response: HTTPResponse) in
+                        future.resolve(response)
+                    },
+                    failure: { (error: OWSHTTPErrorWrapper) in
+                        future.reject(error.error)
+                    })
         return promise
     }
 }
 
 // MARK: -
 
-@objc
-public class RESTSessionManager: NSObject {
+private class RESTSessionManager {
 
     private let urlSession: OWSURLSessionProtocol
-    @objc
     public let createdDate = Date()
 
-    @objc
-    public override required init() {
+    init() {
         assertOnQueue(NetworkManagerQueue())
-
-        self.urlSession = Self.signalService.urlSessionForMainSignalService()
+        urlSession = SSKEnvironment.shared.signalService.urlSessionForMainSignalService()
     }
 
-    @objc
     public func performRequest(_ request: TSRequest,
-                               success: @escaping RESTNetworkManagerSuccess,
-                               failure: @escaping RESTNetworkManagerFailure) {
+                               success: @escaping RESTNetworkManager.Success,
+                               failure: @escaping RESTNetworkManager.Failure) {
         assertOnQueue(NetworkManagerQueue())
         owsAssertDebug(!FeatureFlags.deprecateREST)
 
@@ -83,7 +145,7 @@ public class RESTSessionManager: NSObject {
     }
 
     private func makeIsDeregisteredRequest(
-        originalRequestFailureHandler: @escaping RESTNetworkManagerFailure,
+        originalRequestFailureHandler: @escaping RESTNetworkManager.Failure,
         originalRequestFailure: OWSHTTPErrorWrapper
     ) {
         let isDeregisteredRequest = WhoAmIRequestFactory.amIDeregisteredRequest()
@@ -119,7 +181,74 @@ public class RESTSessionManager: NSObject {
 
 // MARK: -
 
-@objc
-public extension TSRequest {
-    var canUseAuth: Bool { !isUDRequest }
+// Session managers are stateful (e.g. the headers in the requestSerializer).
+// Concurrent requests can interfere with each other. Therefore we use a pool
+// do not re-use a session manager until its request succeeds or fails.
+private class OWSSessionManagerPool {
+    private let maxSessionManagerAge = 5 * kMinuteInterval
+
+    // must only be accessed from the NetworkManagerQueue for thread-safety
+    private var pool: [RESTSessionManager] = []
+
+    // accessed from both NetworkManagerQueue and the main thread so needs a lock
+    @Atomic private var lastDiscardDate: Date?
+
+    init() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(OWSSessionManagerPool.isCensorshipCircumventionActiveDidChange),
+            name: Notification.Name.isCensorshipCircumventionActiveDidChange,
+            object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(OWSSessionManagerPool.isSignalProxyReadyDidChange),
+            name: Notification.Name.isSignalProxyReadyDidChange,
+            object: nil)
+    }
+
+    @objc
+    private func isCensorshipCircumventionActiveDidChange() {
+        AssertIsOnMainThread()
+        lastDiscardDate = Date()
+    }
+
+    @objc
+    private func isSignalProxyReadyDidChange() {
+        AssertIsOnMainThread()
+        lastDiscardDate = Date()
+    }
+
+    func get() -> RESTSessionManager {
+        assertOnQueue(NetworkManagerQueue())
+
+        // Iterate over the pool, discarding expired session managers
+        // until we find an unexpired session manager in the pool or
+        // drain the pool and create a new session manager.
+        while true {
+            guard let sessionManager = pool.popLast() else {
+                return RESTSessionManager()
+            }
+            if shouldDiscardSessionManager(sessionManager) {
+                continue
+            }
+            return sessionManager
+        }
+    }
+
+    func returnToPool(_ sessionManager: RESTSessionManager) {
+        assertOnQueue(NetworkManagerQueue())
+
+        let maxPoolSize = CurrentAppContext().isNSE ? 5 : 32
+        guard pool.count < maxPoolSize && !shouldDiscardSessionManager(sessionManager) else {
+            return
+        }
+        pool.append(sessionManager)
+    }
+
+    private func shouldDiscardSessionManager(_ sessionManager: RESTSessionManager) -> Bool {
+        if lastDiscardDate?.isAfter(sessionManager.createdDate) ?? false {
+            return true
+        }
+        return fabs(sessionManager.createdDate.timeIntervalSinceNow) > maxSessionManagerAge
+    }
 }
