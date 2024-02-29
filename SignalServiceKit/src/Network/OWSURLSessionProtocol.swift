@@ -8,7 +8,6 @@ import SignalCoreKit
 
 // MARK: - HTTPMethod
 
-@objc
 public enum HTTPMethod: UInt {
     case get
     case post
@@ -76,13 +75,11 @@ public struct OWSUrlDownloadResponse {
 
 // MARK: - OWSUrlFrontingInfo
 
-@objc
-public class OWSUrlFrontingInfo: NSObject, Dependencies {
+public class OWSUrlFrontingInfo: Dependencies {
     public let frontingURLWithoutPathPrefix: URL
     public let frontingURLWithPathPrefix: URL
     public let unfrontedBaseUrl: URL
 
-    @objc
     public init(
         frontingURLWithoutPathPrefix: URL,
         frontingURLWithPathPrefix: URL,
