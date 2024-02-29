@@ -337,39 +337,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return _attachmentIds;
 }
 
-- (void)addBodyAttachment:(TSAttachment *)attachment transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setLegacyBodyAttachmentIds:(NSArray<NSString *> *)attachmentIds
 {
-    [self addBodyAttachments:@[ attachment ] transaction:transaction];
-}
-
-- (void)addBodyAttachments:(NSArray<TSAttachment *> *)attachments transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateMessageWithTransaction:transaction
-                                    block:^(TSMessage *message) {
-                                        NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
-                                        NSSet<NSString *> *attachmentIdSet =
-                                            [[NSSet alloc] initWithArray:attachmentIds];
-                                        for (TSAttachment *attachment in attachments) {
-                                            NSString *attachmentId = attachment.uniqueId;
-                                            if (![attachmentIdSet containsObject:attachmentId]) {
-                                                [attachmentIds addObject:attachmentId];
-                                            }
-                                        }
-                                        message.attachmentIds = [attachmentIds copy];
-                                    }];
-}
-
-- (void)removeAttachment:(TSAttachment *)attachment transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
-    [attachment anyRemoveWithTransaction:transaction];
-
-    [self anyUpdateMessageWithTransaction:transaction
-                                    block:^(TSMessage *message) {
-                                        NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
-                                        [attachmentIds removeObject:attachment.uniqueId];
-                                        message.attachmentIds = [attachmentIds copy];
-                                    }];
+    _attachmentIds = attachmentIds;
 }
 
 - (NSString *)debugDescription

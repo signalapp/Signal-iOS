@@ -72,12 +72,6 @@ public protocol InteractionStore {
         tx: DBWriteTransaction
     )
 
-    func addBodyAttachments(
-        _ attachments: [TSAttachment],
-        to outgoingMessage: TSOutgoingMessage,
-        tx: DBWriteTransaction
-    )
-
     // MARK: - TSOutgoingMessage state updates
 
     func updateRecipientsFromNonLocalDevice(
@@ -201,14 +195,6 @@ public class InteractionStoreImpl: InteractionStore {
         tx: DBWriteTransaction
     ) {
         interaction.insertOrReplacePlaceholder(from: sender, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func addBodyAttachments(
-        _ attachments: [TSAttachment],
-        to outgoingMessage: TSOutgoingMessage,
-        tx: DBWriteTransaction
-    ) {
-        outgoingMessage.addBodyAttachments(attachments, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     // MARK: - TSOutgoingMessage state updates

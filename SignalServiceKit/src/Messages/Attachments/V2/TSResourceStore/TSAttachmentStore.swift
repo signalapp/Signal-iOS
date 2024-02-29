@@ -54,6 +54,20 @@ public protocol TSAttachmentStore {
         ignoringContentType: String,
         tx: DBReadTransaction
     ) -> Bool
+
+    // MARK: - TSMessage Writes
+
+    func addBodyAttachments(
+        _ attachments: [TSAttachment],
+        to message: TSMessage,
+        tx: DBWriteTransaction
+    )
+
+    func removeBodyAttachment(
+        _ attachment: TSAttachment,
+        from message: TSMessage,
+        tx: DBWriteTransaction
+    )
 }
 
 public class TSAttachmentStoreImpl: TSAttachmentStore {
@@ -191,6 +205,42 @@ public class TSAttachmentStoreImpl: TSAttachmentStore {
         return exists
     }
 
+    // MARK: - TSMessage Writes
+
+    public func addBodyAttachments(
+        _ attachments: [TSAttachment],
+        to message: TSMessage,
+        tx: DBWriteTransaction
+    ) {
+        message.anyUpdateMessage(transaction: SDSDB.shimOnlyBridge(tx)) { message in
+            var attachmentIds = message.attachmentIds
+            var attachmentIdSet = Set(attachmentIds)
+            for attachment in attachments {
+                if attachmentIdSet.contains(attachment.uniqueId) {
+                    continue
+                }
+                attachmentIds.append(attachment.uniqueId)
+                attachmentIdSet.insert(attachment.uniqueId)
+            }
+            message.setLegacyBodyAttachmentIds(attachmentIds)
+        }
+    }
+
+    public func removeBodyAttachment(
+        _ attachment: TSAttachment,
+        from message: TSMessage,
+        tx: DBWriteTransaction
+    ) {
+        owsAssertDebug(message.attachmentIds.contains(attachment.uniqueId))
+        attachment.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+
+        message.anyUpdateMessage(transaction: SDSDB.shimOnlyBridge(tx)) { message in
+            var attachmentIds = message.attachmentIds
+            attachmentIds.removeAll(where: { $0 == attachment.uniqueId })
+            message.setLegacyBodyAttachmentIds(attachmentIds)
+        }
+    }
+
     // MARK: - Helpers
 
     private func attachments(
@@ -325,6 +375,20 @@ open class TSAttachmentStoreMock: TSAttachmentStore {
             return $0.contentType != ignoringContentType
         })
     }
+
+    // MARK: - TSMessage Writes
+
+    public func addBodyAttachments(
+        _ attachments: [TSAttachment],
+        to message: TSMessage,
+        tx: DBWriteTransaction
+    ) {}
+
+    public func removeBodyAttachment(
+        _ attachment: TSAttachment,
+        from message: TSMessage,
+        tx: DBWriteTransaction
+    ) {}
 }
 
 #endif

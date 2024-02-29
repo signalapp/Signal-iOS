@@ -72,4 +72,18 @@ public protocol TSResourceStore {
         on message: TSMessage,
         tx: DBReadTransaction
     ) -> Int?
+
+    // MARK: - Message attachment writes
+
+    func addBodyAttachments(
+        _ attachments: [TSResource],
+        to message: TSMessage,
+        tx: DBWriteTransaction
+    )
+
+    func removeBodyAttachment(
+        _ attachment: TSResource,
+        from message: TSMessage,
+        tx: DBWriteTransaction
+    )
 }

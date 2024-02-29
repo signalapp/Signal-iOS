@@ -176,12 +176,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 // --- CODE GENERATION MARKER
 
-- (void)addBodyAttachment:(TSAttachment *)attachment
-              transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(addBodyAttachment(_:transaction:));
-- (void)addBodyAttachments:(NSArray<TSAttachment *> *)attachments
-               transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(addBodyAttachments(_:transaction:));
-- (void)removeAttachment:(TSAttachment *)attachment
-             transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
+- (void)setLegacyBodyAttachmentIds:(NSArray<NSString *> *)attachmentIds;
 
 - (BOOL)shouldStartExpireTimer;
 

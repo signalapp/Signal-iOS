@@ -81,6 +81,31 @@ public class TSResourceStoreMock: TSResourceStore {
         let refs = messageResourceReferences[rowId] ?? []
         return refs.firstIndex(where: { $0.id == attachmentId })
     }
+
+    public func addBodyAttachments(_ attachments: [TSResource], to message: TSMessage, tx: DBWriteTransaction) {
+        guard let messageId = message.sqliteRowId else {
+            return
+        }
+        var refs = self.messageResourceReferences[messageId] ?? []
+        attachments.forEach { attachment in
+            if refs.contains(where: { $0.id == attachment.resourceId }).negated {
+                refs.append(.init(id: attachment.resourceId, fetcher: { _ in return attachment }))
+            }
+            if resources.contains(where: { $0.resourceId == attachment.resourceId }).negated {
+                resources.append(attachment)
+            }
+        }
+        self.messageResourceReferences[messageId] = refs
+    }
+
+    public func removeBodyAttachment(_ attachment: TSResource, from message: TSMessage, tx: DBWriteTransaction) {
+        guard let messageId = message.sqliteRowId else {
+            return
+        }
+        var refs = self.messageResourceReferences[messageId] ?? []
+        refs.removeAll(where: { $0.id == attachment.resourceId })
+        self.messageResourceReferences[messageId] = refs
+    }
 }
 
 #endif

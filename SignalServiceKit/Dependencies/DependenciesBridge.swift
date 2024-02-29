@@ -691,6 +691,7 @@ public class DependenciesBridge {
             paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
             signalProtocolStoreManager: signalProtocolStoreManager,
             tsAccountManager: tsAccountManager,
+            tsResourceStore: tsResourceStore,
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
         )
 

@@ -17,6 +17,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private let paymentsHelper: Shims.PaymentsHelper
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let tsAccountManager: TSAccountManager
+    private let tsResourceStore: TSResourceStore
     private let viewOnceMessages: Shims.ViewOnceMessages
 
     public init(
@@ -29,6 +30,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         paymentsHelper: Shims.PaymentsHelper,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         tsAccountManager: TSAccountManager,
+        tsResourceStore: TSResourceStore,
         viewOnceMessages: Shims.ViewOnceMessages
     ) {
         self.attachmentDownloads = attachmentDownloads
@@ -40,6 +42,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         self.paymentsHelper = paymentsHelper
         self.signalProtocolStoreManager = signalProtocolStoreManager
         self.tsAccountManager = tsAccountManager
+        self.tsResourceStore = tsResourceStore
         self.viewOnceMessages = viewOnceMessages
     }
 
@@ -215,7 +218,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             for pointer in attachmentPointers {
                 attachmentStore.anyInsert(pointer, tx: tx)
             }
-            interactionStore.addBodyAttachments(attachmentPointers, to: outgoingMessage, tx: tx)
+            tsResourceStore.addBodyAttachments(attachmentPointers, to: outgoingMessage, tx: tx)
         }
         owsAssertDebug(hasRenderableContent)
 

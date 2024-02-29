@@ -31,6 +31,8 @@ public class TSResourceStoreImpl: TSResourceStore {
         return tsAttachmentStore.attachments(withAttachmentIds: legacyIds, tx: tx)
     }
 
+    // MARK: - Message Attachment fetching
+
     public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReferences {
         var ids = Set<TSResourceId>()
 
@@ -114,6 +116,34 @@ public class TSResourceStoreImpl: TSResourceStore {
         switch attachmentId {
         case .legacy(let uniqueId):
             return message.attachmentIds.firstIndex(of: uniqueId)
+        }
+    }
+
+    // MARK: - Message attachment writes
+
+    public func addBodyAttachments(
+        _ attachments: [TSResource],
+        to message: TSMessage,
+        tx: DBWriteTransaction
+    ) {
+        var legacyAttachments = [TSAttachment]()
+        attachments.forEach {
+            switch $0.concreteType {
+            case let .legacy(attachment):
+                legacyAttachments.append(attachment)
+            }
+        }
+        tsAttachmentStore.addBodyAttachments(legacyAttachments, to: message, tx: tx)
+    }
+
+    public func removeBodyAttachment(
+        _ attachment: TSResource,
+        from message: TSMessage,
+        tx: DBWriteTransaction
+    ) {
+        switch attachment.concreteType {
+        case .legacy(let legacyAttachment):
+            tsAttachmentStore.removeBodyAttachment(legacyAttachment, from: message, tx: tx)
         }
     }
 
