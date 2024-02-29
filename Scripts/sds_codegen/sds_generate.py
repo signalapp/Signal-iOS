@@ -961,7 +961,7 @@ public struct %s: SDSRecord {
 '''
         swift_body += '''
     public static func columnName(_ column: %s.CodingKeys, fullyQualified: Bool = false) -> String {
-        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\\(databaseTableName).\\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -1185,7 +1185,7 @@ extension %s {
             #       that this deserialization code expects.
 
         swift_body += '''        default:
-            owsFailDebug("Unexpected record type: \(record.recordType)")
+            owsFailDebug("Unexpected record type: \\(record.recordType)")
             throw SDSError.invalidValue
 '''
         swift_body += '''        }
@@ -1559,7 +1559,7 @@ public extension %(class_name)s {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            owsFailDebug("Read failed: \(error)")
+            owsFailDebug("Read failed: \\(error)")
             return %(class_name)sCursor(transaction: transaction, cursor: nil)
         }
     }
@@ -1593,7 +1593,7 @@ public extension %(class_name)s {
         swift_body += '''
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(%(record_name)s.databaseTableName) WHERE \(%(record_identifier)sColumn: .uniqueId) = ?"
+            let sql = "SELECT * FROM \\(%(record_name)s.databaseTableName) WHERE \\(%(record_identifier)sColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
@@ -1641,7 +1641,7 @@ public extension %(class_name)s {
                                     }
                                     block(value, stop)
                                 } catch let error {
-                                    owsFailDebug("Couldn't fetch model: \(error)")
+                                    owsFailDebug("Couldn't fetch model: \\(error)")
                                 }
                               })
         }
@@ -1682,8 +1682,8 @@ public extension %(class_name)s {
         case .grdbRead(let grdbTransaction):
             grdbEnumerateUniqueIds(transaction: grdbTransaction,
                                    sql: """
-                    SELECT \(%sColumn: .uniqueId)
-                    FROM \(%s.databaseTableName)
+                    SELECT \\(%sColumn: .uniqueId)
+                    FROM \\(%s.databaseTableName)
                 """,
                 batchSize: batchSize,
                 block: block)
@@ -1758,7 +1758,7 @@ public extension %(class_name)s {
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT EXISTS ( SELECT 1 FROM \(%s.databaseTableName) WHERE \(%sColumn: .uniqueId) = ? )"
+            let sql = "SELECT EXISTS ( SELECT 1 FROM \\(%s.databaseTableName) WHERE \\(%sColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
             do {
                 return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
@@ -1792,8 +1792,8 @@ public extension %(class_name)s {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
-            owsFailDebug("Read failed: \(error)")
+            Logger.verbose("sql: \\(sql)")
+            owsFailDebug("Read failed: \\(error)")
             return %(class_name)sCursor(transaction: transaction, cursor: nil)
         }
     }
@@ -1826,7 +1826,7 @@ public extension %(class_name)s {
 
         swift_body += '''
         } catch {
-            owsFailDebug("error: \(error)")
+            owsFailDebug("error: \\(error)")
             return nil
         }
     }
@@ -1855,7 +1855,7 @@ public extension %s {
                                         return nil
         }
         guard let instance = object as? %s else {
-            owsFailDebug("Object has unexpected type: \(type(of: object))")
+            owsFailDebug("Object has unexpected type: \\(type(of: object))")
             return nil
         }
         return instance
@@ -1865,7 +1865,7 @@ public extension %s {
     func anyUpdate%s(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? %s else {
-                owsFailDebug("Object has unexpected type: \(type(of: object))")
+                owsFailDebug("Object has unexpected type: \\(type(of: object))")
                 return
             }
             block(instance)
