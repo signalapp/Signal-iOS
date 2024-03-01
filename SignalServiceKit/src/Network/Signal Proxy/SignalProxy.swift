@@ -22,11 +22,9 @@ public class SignalProxy: NSObject {
 
     public static var connectionProxyDictionary: [AnyHashable: Any]? { relayServer.connectionProxyDictionary }
 
-    @Atomic
-    public private(set) static var host: String?
+    @Atomic public private(set) static var host: String?
 
-    @Atomic
-    public private(set) static var useProxy = false
+    @Atomic public private(set) static var useProxy = false
 
     private static let relayServer = RelayServer()
 
