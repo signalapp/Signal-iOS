@@ -60,14 +60,4 @@ NS_ASSUME_NONNULL_BEGIN
         }                                                                                                              \
     } while (NO)
 
-#define OWSCFailDebugUnlessRunningTests(_messageFormat, ...)                                                           \
-    do {                                                                                                               \
-        if (!CurrentAppContext().isRunningTests) {                                                                     \
-            OWSCFailDebug(_messageFormat, ##__VA_ARGS__);                                                              \
-        } else {                                                                                                       \
-            OWSLogError(_messageFormat, ##__VA_ARGS__);                                                                \
-        }                                                                                                              \
-    } while (NO)
-
-
 NS_ASSUME_NONNULL_END
