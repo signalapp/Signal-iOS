@@ -7435,16 +7435,9 @@
 			isa = PBXGroup;
 			children = (
 				66E1AD7F2B8FDA5500C56B7B /* AttachmentReference */,
-				66E1AD512B8D016000C56B7B /* TSResourceStore */,
-				66E1AD772B8FD0D800C56B7B /* Attachment+TSResource.swift */,
+				66E1AD512B8D016000C56B7B /* AttachmentStore */,
+				66E1AD8C2B912A3000C56B7B /* TSResource */,
 				66E1AD752B8FD0B700C56B7B /* Attachment.swift */,
-				66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */,
-				66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */,
-				66C102F12B61E38100B47EC2 /* TSResource.swift */,
-				66E1AD4F2B80126200C56B7B /* TSResourceId.swift */,
-				66C102F52B61E3D700B47EC2 /* TSResourcePointer.swift */,
-				66C102F32B61E3CD00B47EC2 /* TSResourceStream.swift */,
-				66C102F72B6306B900B47EC2 /* TSResourceThumbnail.swift */,
 			);
 			path = V2;
 			sourceTree = "<group>";
@@ -7615,15 +7608,12 @@
 			path = Provisioning;
 			sourceTree = "<group>";
 		};
-		66E1AD512B8D016000C56B7B /* TSResourceStore */ = {
+		66E1AD512B8D016000C56B7B /* AttachmentStore */ = {
 			isa = PBXGroup;
 			children = (
-				6619A1C22B2B7199004B38FE /* TSAttachmentStore.swift */,
-				66E1AD522B8D017400C56B7B /* TSResourceStore.swift */,
-				66E1AD582B8D59D700C56B7B /* TSResourceStoreImpl.swift */,
-				66E1AD5A2B8D5A1900C56B7B /* TSResourceStoreMock.swift */,
+				66E1AD8A2B91298C00C56B7B /* TSResource */,
 			);
-			path = TSResourceStore;
+			path = AttachmentStore;
 			sourceTree = "<group>";
 		};
 		66E1AD7F2B8FDA5500C56B7B /* AttachmentReference */ = {
@@ -7644,6 +7634,33 @@
 				66E1AD562B8D59B000C56B7B /* TSResourceReference.swift */,
 			);
 			path = TSResource;
+			sourceTree = "<group>";
+		};
+		66E1AD8A2B91298C00C56B7B /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				6619A1C22B2B7199004B38FE /* TSAttachmentStore.swift */,
+				66E1AD522B8D017400C56B7B /* TSResourceStore.swift */,
+				66E1AD582B8D59D700C56B7B /* TSResourceStoreImpl.swift */,
+				66E1AD5A2B8D5A1900C56B7B /* TSResourceStoreMock.swift */,
+			);
+			path = TSResource;
+			sourceTree = "<group>";
+		};
+		66E1AD8C2B912A3000C56B7B /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				66E1AD772B8FD0D800C56B7B /* Attachment+TSResource.swift */,
+				66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */,
+				66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */,
+				66C102F12B61E38100B47EC2 /* TSResource.swift */,
+				66E1AD4F2B80126200C56B7B /* TSResourceId.swift */,
+				66C102F52B61E3D700B47EC2 /* TSResourcePointer.swift */,
+				66C102F32B61E3CD00B47EC2 /* TSResourceStream.swift */,
+				66C102F72B6306B900B47EC2 /* TSResourceThumbnail.swift */,
+			);
+			name = TSResource;
+			path = ../TSResource;
 			sourceTree = "<group>";
 		};
 		66FC636C29DF78FE00F00DAC /* BodyRanges */ = {
