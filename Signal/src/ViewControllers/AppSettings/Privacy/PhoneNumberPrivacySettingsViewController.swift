@@ -62,25 +62,8 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
             comment: "The title for the phone number discoverability setting section."
         )
         findByNumberSection.footerTitle = phoneNumberDiscoverability.descriptionForDiscoverability
-        findByNumberSection.add(discoverabilityItem(.everybody))
-
-        switch phoneNumberSharingMode! {
-        case .everybody:
-            // Create disabled "nobody" option
-            findByNumberSection.add(OWSTableItem(
-                text: PhoneNumberDiscoverability.nobody.nameForDiscoverability,
-                textColor: Theme.secondaryTextAndIconColor,
-                actionBlock: { [weak self] in
-                    self?.presentToast(text: OWSLocalizedString(
-                        "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST",
-                        comment: "A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed."
-                    ))
-                },
-                accessoryType: .none
-            ))
-        case .nobody:
-            findByNumberSection.add(discoverabilityItem(.nobody))
-        }
+        findByNumberSection.add(everybodyDiscoverabilityItem())
+        findByNumberSection.add(nobodyDiscoverabilityItem(sharingMode: phoneNumberSharingMode))
 
         sections.append(findByNumberSection)
 
@@ -90,13 +73,47 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
 
     // MARK: Update Setting Values
 
-    private func discoverabilityItem(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) -> OWSTableItem {
+    private func everybodyDiscoverabilityItem() -> OWSTableItem {
         return OWSTableItem(
-            text: phoneNumberDiscoverability.nameForDiscoverability,
+            text: PhoneNumberDiscoverability.everybody.nameForDiscoverability,
             actionBlock: { [weak self] in
-                self?.updateDiscoverability(phoneNumberDiscoverability)
+                self?.updateDiscoverability(.everybody)
             },
-            accessoryType: self.phoneNumberDiscoverability == phoneNumberDiscoverability ? .checkmark : .none
+            accessoryType: self.phoneNumberDiscoverability == .everybody ? .checkmark : .none
+        )
+    }
+
+    private func nobodyDiscoverabilityItem(sharingMode: PhoneNumberSharingMode) -> OWSTableItem {
+        let textColor: UIColor = {
+            switch sharingMode {
+            case .everybody:
+                return Theme.secondaryTextAndIconColor
+            case .nobody:
+                return Theme.primaryTextColor
+            }
+        }()
+
+        let accessory: UITableViewCell.AccessoryType = {
+            switch (sharingMode, self.phoneNumberDiscoverability) {
+            case (.everybody, _), (.nobody, .everybody), (.nobody, .none):
+                return .none
+            case (.nobody, .nobody):
+                return .checkmark
+            }
+        }()
+
+        return OWSTableItem(
+            text: PhoneNumberDiscoverability.nobody.nameForDiscoverability,
+            textColor: textColor,
+            actionBlock: { [weak self] in
+                switch sharingMode {
+                case .everybody:
+                    self?.presentPhoneNumberDiscoverabilityDisabledToast()
+                case .nobody:
+                    self?.promptToDisableDiscoverability()
+                }
+            },
+            accessoryType: accessory
         )
     }
 
@@ -108,6 +125,30 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
             },
             accessoryType: phoneNumberSharingMode == mode ? .checkmark : .none
         )
+    }
+
+    // MARK: Alerts
+
+    private func presentPhoneNumberDiscoverabilityDisabledToast() {
+        presentToast(text: OWSLocalizedString(
+            "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST",
+            comment: "A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed."
+        ))
+    }
+
+    private func promptToDisableDiscoverability() {
+        OWSActionSheets.showConfirmationAlert(
+            title: OWSLocalizedString(
+                "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE",
+                comment: "The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'."
+            ),
+            message: OWSLocalizedString(
+                "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION",
+                comment: "The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'."
+            )
+        ) { [weak self] _ in
+            self?.updateDiscoverability(.nobody)
+        }
     }
 
     // MARK: Update Table UI
