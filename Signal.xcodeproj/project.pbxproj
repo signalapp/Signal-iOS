@@ -2307,7 +2307,6 @@
 		F9C5CDA4289453B400548EEE /* LegacyMessageJobFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACE289453B200548EEE /* LegacyMessageJobFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CDAA289453B400548EEE /* HTTPUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAD5289453B200548EEE /* HTTPUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADA289453B200548EEE /* NetworkManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDB0289453B400548EEE /* GiphyDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADC289453B200548EEE /* GiphyDownloader.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDB1289453B400548EEE /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADD289453B200548EEE /* GiphyAPI.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2319,7 +2318,6 @@
 		F9C5CDB9289453B400548EEE /* OWSRequestFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE6289453B200548EEE /* OWSRequestFactory.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDBA289453B400548EEE /* OWSDevicesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDBC289453B400548EEE /* HTTPUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE9289453B200548EEE /* HTTPUtils.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEF289453B200548EEE /* HTTPEntities.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC3289453B400548EEE /* DeviceProvisioningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -5121,7 +5119,6 @@
 		F9C5CACE289453B200548EEE /* LegacyMessageJobFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyMessageJobFinder.swift; sourceTree = "<group>"; };
 		F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "IncomingGroupsV2MessageJob+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncomingGroupsV2MessageJob.h; sourceTree = "<group>"; };
-		F9C5CAD5289453B200548EEE /* HTTPUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPUtils.h; sourceTree = "<group>"; };
 		F9C5CADA289453B200548EEE /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		F9C5CADC289453B200548EEE /* GiphyDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyDownloader.swift; sourceTree = "<group>"; };
 		F9C5CADD289453B200548EEE /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
@@ -5133,7 +5130,6 @@
 		F9C5CAE6289453B200548EEE /* OWSRequestFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSRequestFactory.m; sourceTree = "<group>"; };
 		F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDevicesService.swift; sourceTree = "<group>"; };
 		F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceProfile.swift; sourceTree = "<group>"; };
-		F9C5CAE9289453B200548EEE /* HTTPUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPUtils.m; sourceTree = "<group>"; };
 		F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RESTNetworkManager.swift; sourceTree = "<group>"; };
 		F9C5CAEF289453B200548EEE /* HTTPEntities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPEntities.swift; sourceTree = "<group>"; };
 		F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningService.swift; sourceTree = "<group>"; };
@@ -10450,8 +10446,6 @@
 				505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */,
 				F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */,
 				F9C5CAEF289453B200548EEE /* HTTPEntities.swift */,
-				F9C5CAD5289453B200548EEE /* HTTPUtils.h */,
-				F9C5CAE9289453B200548EEE /* HTTPUtils.m */,
 				F9C5CAE0289453B200548EEE /* HTTPUtils.swift */,
 				F9C5CADA289453B200548EEE /* NetworkManager.swift */,
 				F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */,
@@ -10783,7 +10777,6 @@
 				F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */,
 				F9C5CE2E289453B400548EEE /* DataSource.h in Headers */,
 				F9C5CE3F289453B400548EEE /* FunctionalUtil.h in Headers */,
-				F9C5CDAA289453B400548EEE /* HTTPUtils.h in Headers */,
 				F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */,
 				F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */,
 				F9C5CC16289453B300548EEE /* KnownStickerPack.h in Headers */,
@@ -13232,7 +13225,6 @@
 				667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */,
 				F9C5CD94289453B300548EEE /* HTMLMetadata.swift in Sources */,
 				F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */,
-				F9C5CDBC289453B400548EEE /* HTTPUtils.m in Sources */,
 				F9C5CDB4289453B400548EEE /* HTTPUtils.swift in Sources */,
 				66FC637C29DF8FF200F00DAC /* HydratedMessageBody.swift in Sources */,
 				F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */,

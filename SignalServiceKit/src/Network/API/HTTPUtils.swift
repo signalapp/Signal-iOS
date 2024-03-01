@@ -7,7 +7,95 @@ import Foundation
 import SignalCoreKit
 import CFNetwork
 
-extension HTTPUtils {
+/// This extension sacrifices Dictionary performance in order to ignore http
+/// header case and should not be generally used. Since the number of http
+/// headers is generally small, this is an acceptable tradeoff for this use case
+/// but may not be for other use cases.
+private extension Dictionary where Key == String {
+    subscript(header header: String) -> Value? {
+        get {
+            if let key = keys.first(where: { $0.caseInsensitiveCompare(header) == .orderedSame }) {
+                return self[key]
+            }
+            return nil
+        }
+        set {
+            if let key = keys.first(where: { $0.caseInsensitiveCompare(header) == .orderedSame }) {
+                self[key] = newValue
+            } else {
+                self[header] = newValue
+            }
+        }
+    }
+}
+
+class HTTPUtils: Dependencies {
+    #if TESTABLE_BUILD
+    public static func logCurl(for task: URLSessionTask) {
+        guard let request = task.originalRequest else {
+            Logger.debug("attempted to log curl on a task with no original request")
+            return
+        }
+        logCurl(for: request)
+    }
+
+    public static func logCurl(for request: URLRequest) {
+        guard let httpMethod = request.httpMethod else {
+            Logger.debug("attempted to log curl on a request with no http method")
+            return
+        }
+        var curlComponents = ["curl", "-v", "-k", "-X", httpMethod]
+
+        for (header, headerValue) in request.allHTTPHeaderFields ?? [:] {
+            // We don't yet support escaping header values.
+            // If these asserts trip, we'll need to add that.
+            owsAssertDebug(!header.contains("'"))
+            owsAssertDebug(!headerValue.contains("'"))
+
+            curlComponents.append("-H")
+            curlComponents.append("'\(header): \(headerValue)'")
+        }
+
+        if let httpBody = request.httpBody,
+           !httpBody.isEmpty {
+            let contentType = request.allHTTPHeaderFields?[header: "Content-Type"]
+            switch contentType {
+            case OWSMimeTypeJson:
+                guard let jsonBody = String(data: httpBody, encoding: .utf8) else {
+                    Logger.debug("data attached to request as json was not utf8 encoded")
+                    return
+                }
+                // We don't yet support escaping JSON.
+                // If these asserts trip, we'll need to add that.
+                owsAssertDebug(!jsonBody.contains("'"))
+                curlComponents.append("--data-ascii")
+                curlComponents.append("'\(jsonBody)'")
+            case OWSMimeTypeProtobuf, "application/x-www-form-urlencoded", "application/vnd.signal-messenger.mrm":
+                let filename = "\(UUID().uuidString).tmp"
+                var echoBytes = ""
+                for byte in httpBody {
+                    echoBytes.append(String(format: "\\\\x%02X", byte))
+                }
+                let echoCommand = "echo -n -e \(echoBytes) > \(filename)"
+
+                Logger.verbose("curl for request: \(echoCommand)")
+                curlComponents.append("--data-binary")
+                curlComponents.append("@\(filename)")
+            default:
+                owsFailDebug("Unknown content type: \(contentType ?? "<nil>")")
+            }
+
+        }
+        // TODO: Add support for cookies.
+        guard let url = request.url else {
+            Logger.debug("attempted to log curl on a request with no url")
+            return
+        }
+        curlComponents.append("\"\(url.absoluteString)\"")
+        let curlCommand = curlComponents.joined(separator: " ")
+        Logger.verbose("curl for request: \(curlCommand)")
+    }
+    #endif
 
     // This DRYs up handling of main service errors
     // so that REST and websocket errors are handled

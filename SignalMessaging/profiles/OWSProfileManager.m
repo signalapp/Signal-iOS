@@ -11,7 +11,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/OWSFileSystem.h>
@@ -388,7 +387,13 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     [self reuploadLocalProfileWithSneakyTransactionWithAuthedAccount:authedAccount]
         .done(^(id value) { OWSLogInfo(@"Done."); })
-        .catch(^(NSError *error) { OWSFailDebugUnlessNetworkFailure(error); });
+        .catch(^(NSError *error) {
+            if (error.isNetworkFailureOrTimeout) {
+                OWSLogWarn(@"Error: %@", error);
+            } else {
+                OWSFailDebug(@"Error: %@", error);
+            }
+        });
 }
 
 #pragma mark - Profile Key Rotation

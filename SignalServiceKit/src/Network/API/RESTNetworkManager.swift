@@ -6,6 +6,10 @@
 import Foundation
 import SignalCoreKit
 
+private let networkManagerQueue = DispatchQueue(
+    label: "org.signal.network-manager",
+    autoreleaseFrequency: .workItem)
+
 class RESTNetworkManager {
     fileprivate typealias Success = (HTTPResponse) -> Void
     fileprivate typealias Failure = (OWSHTTPErrorWrapper) -> Void
@@ -23,7 +27,6 @@ class RESTNetworkManager {
         success: @escaping Success,
         failure: @escaping Failure
     ) {
-        let networkManagerQueue = NetworkManagerQueue()
         networkManagerQueue.async {
             self.makeRequestSync(request, completionQueue: completionQueue, success: success, failure: failure)
         }
@@ -52,7 +55,6 @@ class RESTNetworkManager {
             }
             #endif
 
-            let networkManagerQueue = NetworkManagerQueue()
             networkManagerQueue.async {
                 sessionManagerPool.returnToPool(sessionManager)
             }
@@ -63,7 +65,6 @@ class RESTNetworkManager {
             }
         }
         let failure = { (errorWrapper: OWSHTTPErrorWrapper) in
-            let networkManagerQueue = NetworkManagerQueue()
             networkManagerQueue.async {
                 sessionManagerPool.returnToPool(sessionManager)
             }
@@ -96,14 +97,14 @@ private class RESTSessionManager {
     public let createdDate = Date()
 
     init() {
-        assertOnQueue(NetworkManagerQueue())
+        assertOnQueue(networkManagerQueue)
         urlSession = SSKEnvironment.shared.signalService.urlSessionForMainSignalService()
     }
 
     public func performRequest(_ request: TSRequest,
                                success: @escaping RESTNetworkManager.Success,
                                failure: @escaping RESTNetworkManager.Failure) {
-        assertOnQueue(NetworkManagerQueue())
+        assertOnQueue(networkManagerQueue)
         owsAssertDebug(!FeatureFlags.deprecateREST)
 
         // We should only use the RESTSessionManager for requests to the Signal main service.
@@ -127,7 +128,7 @@ private class RESTSessionManager {
 
                 let wrappedError = OWSHTTPErrorWrapper(error: httpError)
                 if httpError.httpStatusCode == 401, request.shouldCheckDeregisteredOn401 {
-                    NetworkManagerQueue().async {
+                    networkManagerQueue.async {
                         self.makeIsDeregisteredRequest(
                             originalRequestFailureHandler: failure,
                             originalRequestFailure: wrappedError
@@ -187,10 +188,10 @@ private class RESTSessionManager {
 private class OWSSessionManagerPool {
     private let maxSessionManagerAge = 5 * kMinuteInterval
 
-    // must only be accessed from the NetworkManagerQueue for thread-safety
+    // must only be accessed from the networkManagerQueue for thread-safety
     private var pool: [RESTSessionManager] = []
 
-    // accessed from both NetworkManagerQueue and the main thread so needs a lock
+    // accessed from both networkManagerQueue and the main thread so needs a lock
     @Atomic private var lastDiscardDate: Date?
 
     init() {
@@ -219,7 +220,7 @@ private class OWSSessionManagerPool {
     }
 
     func get() -> RESTSessionManager {
-        assertOnQueue(NetworkManagerQueue())
+        assertOnQueue(networkManagerQueue)
 
         // Iterate over the pool, discarding expired session managers
         // until we find an unexpired session manager in the pool or
@@ -236,7 +237,7 @@ private class OWSSessionManagerPool {
     }
 
     func returnToPool(_ sessionManager: RESTSessionManager) {
-        assertOnQueue(NetworkManagerQueue())
+        assertOnQueue(networkManagerQueue)
 
         let maxPoolSize = CurrentAppContext().isNSE ? 5 : 32
         guard pool.count < maxPoolSize && !shouldDiscardSessionManager(sessionManager) else {
