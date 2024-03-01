@@ -678,8 +678,8 @@ extension DatabaseRecovery {
 
     public static func integrityCheck(databaseFileUrl: URL) -> SqliteUtil.IntegrityCheckResult {
         Logger.info("Running integrity check on database...")
-        let result = databaseStorage(at: databaseFileUrl).read { transaction in
-            let db = transaction.unwrapGrdbRead.database
+        let result = databaseStorage(at: databaseFileUrl).write { transaction in
+            let db = transaction.unwrapGrdbWrite.database
             return SqliteUtil.quickCheck(db: db)
         }
         switch result {
