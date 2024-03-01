@@ -5,6 +5,26 @@
 
 import SignalServiceKit
 
+private extension UserDefaults {
+    static var app: UserDefaults {
+        CurrentAppContext().appUserDefaults()
+    }
+
+    static func removeAll() {
+        UserDefaults.standard.removeAll()
+        app.removeAll()
+    }
+
+    private func removeAll() {
+        owsAssertDebug(CurrentAppContext().isMainApp)
+
+        for (key, _) in self.dictionaryRepresentation() {
+            self.removeObject(forKey: key)
+        }
+        self.synchronize()
+    }
+}
+
 public enum NotificationType: UInt {
     case noNameNoPreview = 0
     case nameNoPreview = 1
@@ -147,7 +167,7 @@ public class Preferences: NSObject {
 
     public static var isLoggingEnabled: Bool {
         // See: setIsLoggingEnabled.
-        if let preference = UserDefaults.app().object(forKey: UserDefaultsKeys.enableDebugLog) as? Bool {
+        if let preference = UserDefaults.app.object(forKey: UserDefaultsKeys.enableDebugLog) as? Bool {
             return preference
         }
         return true
@@ -159,16 +179,16 @@ public class Preferences: NSObject {
         // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
         // logging before the database is initialized. This is important because sometimes there are problems *with* the
         // database initialization, and without logging it would be hard to track down.
-        UserDefaults.app().set(value, forKey: UserDefaultsKeys.enableDebugLog)
+        UserDefaults.app.set(value, forKey: UserDefaultsKeys.enableDebugLog)
     }
 
     @objc
     public static var isAudibleErrorLoggingEnabled: Bool {
-        UserDefaults.app().bool(forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled) && FeatureFlags.choochoo
+        UserDefaults.app.bool(forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled) && FeatureFlags.choochoo
     }
 
     public static func setIsAudibleErrorLoggingEnabled(_ value: Bool) {
-        UserDefaults.app().set(value, forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled)
+        UserDefaults.app.set(value, forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled)
     }
 
     // MARK: Specific Preferences
