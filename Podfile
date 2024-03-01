@@ -20,8 +20,8 @@ pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git',
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'
 
-ENV['RINGRTC_PREBUILD_CHECKSUM'] = '7519941a8e15ffe99c2062095f72018c66c9ba774bd024d94b3c72d33d9300ee'
-pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.38.0', inhibit_warnings: true
+ENV['RINGRTC_PREBUILD_CHECKSUM'] = '53f405493587603df7974009978e70717f3880aa9a56cb5a06f59bf396b97931'
+pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.39.0', inhibit_warnings: true
 # pod 'SignalRingRTC', path: '../ringrtc', testspecs: ["Tests"]
 
 pod 'GRDB.swift/SQLCipher'
