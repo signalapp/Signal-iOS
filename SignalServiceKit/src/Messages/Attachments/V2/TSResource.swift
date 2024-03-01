@@ -10,20 +10,16 @@ public protocol TSResource {
 
     var resourceId: TSResourceId { get }
 
-    // TODO: this will become non-optional
-    var blurHash: String? { get }
-
-    /// Filename from the sender, used for rendering as a file attachment.
-    /// NOT the same as the file name on disk.
-    var sourceFilename: String? { get }
+    /// Optional for legacy attachments; for v2 attachments this is non-optional.
+    var resourceBlurHash: String? { get }
 
     var transitCdnNumber: UInt32? { get }
     var transitCdnKey: String? { get }
 
     var transitUploadTimestamp: UInt64? { get }
 
-    // TODO: this will become non-optional
-    var encryptionKey: Data? { get }
+    /// Optional for legacy attachments; for v2 attachments this is non-optional.
+    var resourceEncryptionKey: Data? { get }
 
     var unenecryptedByteCount: UInt32? { get }
     var encryptedByteCount: UInt32? { get }

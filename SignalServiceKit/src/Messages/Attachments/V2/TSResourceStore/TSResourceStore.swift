@@ -75,6 +75,8 @@ public protocol TSResourceStore {
 
     // MARK: - Message attachment writes
 
+    // TODO: this should take the other metadata like source file name
+    // which is needed at AttachmentReference insertion time.
     func addBodyAttachments(
         _ attachments: [TSResource],
         to message: TSMessage,

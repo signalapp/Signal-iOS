@@ -11,6 +11,10 @@ extension TSAttachment: TSResource {
         return .legacy(uniqueId: self.uniqueId)
     }
 
+    public var resourceBlurHash: String? {
+        return blurHash
+    }
+
     public var transitCdnNumber: UInt32? {
         return cdnNumber
     }
@@ -25,6 +29,10 @@ extension TSAttachment: TSResource {
 
     public var unenecryptedByteCount: UInt32? {
         return byteCount
+    }
+
+    public var resourceEncryptionKey: Data? {
+        return encryptionKey
     }
 
     public var encryptedByteCount: UInt32? {

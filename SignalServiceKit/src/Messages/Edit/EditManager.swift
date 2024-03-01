@@ -289,7 +289,7 @@ public class EditManager {
                 for: editTarget.message,
                 tx: tx
             )
-            messageBuilder.attachmentIds = attachments.ids.map(\.bridgeUniqueId)
+            messageBuilder.attachmentIds = attachments.references.map(\.id.bridgeUniqueId)
 
             messageBuilder.timestamp = NSDate.ows_millisecondTimeStamp()
         }
@@ -474,7 +474,7 @@ public class EditManager {
         let currentAttachments = context.tsResourceStore.bodyMediaAttachments(
             for: targetMessage,
             tx: tx
-        ).fetch(tx: tx).map(\.bridge)
+        ).fetchAll(tx: tx).map(\.bridge)
 
         // Voice memos only ever have one attachment; only need to check the first.
         if
@@ -535,12 +535,12 @@ public class EditManager {
 
         var newAttachmentIds = context.tsResourceStore
             .bodyAttachments(for: targetMessage, tx: tx)
-            .ids
-            .compactMap { id -> String? in
-                guard id.bridgeUniqueId != existingText?.uniqueId else {
+            .references
+            .compactMap { ref -> String? in
+                guard ref.id.bridgeUniqueId != existingText?.uniqueId else {
                     return nil
                 }
-                return id.bridgeUniqueId
+                return ref.id.bridgeUniqueId
             }
         if let oversizeText {
             // insert the new oversized text attachment

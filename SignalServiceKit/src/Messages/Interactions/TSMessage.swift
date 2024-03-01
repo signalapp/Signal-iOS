@@ -21,35 +21,35 @@ public extension TSMessage {
     func bodyAttachmentIds(transaction: SDSAnyReadTransaction) -> [String] {
         return DependenciesBridge.shared.tsResourceStore
             .bodyAttachments(for: self, tx: transaction.asV2Read)
-            .ids.map(\.bridgeUniqueId)
+            .references.map(\.id.bridgeUniqueId)
     }
 
     @objc
     func hasBodyAttachments(transaction: SDSAnyReadTransaction) -> Bool {
         return DependenciesBridge.shared.tsResourceStore
             .bodyAttachments(for: self, tx: transaction.asV2Read)
-            .ids.isEmpty.negated
+            .references.isEmpty.negated
     }
 
     @objc
     func bodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
         return DependenciesBridge.shared.tsResourceStore
             .bodyAttachments(for: self, tx: transaction.asV2Read)
-            .fetch(tx: transaction.asV2Read).map(\.bridge)
+            .fetchAll(tx: transaction.asV2Read).map(\.bridge)
     }
 
     @objc
     func hasMediaAttachments(transaction: SDSAnyReadTransaction) -> Bool {
         return DependenciesBridge.shared.tsResourceStore
             .bodyMediaAttachments(for: self, tx: transaction.asV2Read)
-            .ids.isEmpty.negated
+            .references.isEmpty.negated
     }
 
     @objc
     func mediaAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
         return DependenciesBridge.shared.tsResourceStore
             .bodyMediaAttachments(for: self, tx: transaction.asV2Read)
-            .fetch(tx: transaction.asV2Read).map(\.bridge)
+            .fetchAll(tx: transaction.asV2Read).map(\.bridge)
     }
 
     @objc
@@ -63,7 +63,7 @@ public extension TSMessage {
     func allAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
         return DependenciesBridge.shared.tsResourceStore
             .allAttachments(for: self, tx: transaction.asV2Read)
-            .fetch(tx: transaction.asV2Read).map(\.bridge)
+            .fetchAll(tx: transaction.asV2Read).map(\.bridge)
     }
 
     // Returns ids for all attachments, including message ("body") attachments,
@@ -72,7 +72,7 @@ public extension TSMessage {
     func allAttachmentIds(transaction: SDSAnyReadTransaction) -> [String] {
         return DependenciesBridge.shared.tsResourceStore
             .allAttachments(for: self, tx: transaction.asV2Read)
-            .ids.map(\.bridgeUniqueId)
+            .references.map(\.id.bridgeUniqueId)
     }
 
     /// The raw body contains placeholders for things like mentions and is not user friendly.

@@ -126,7 +126,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 timestamp: timestampBuilder(),
                                                 messageBody: messageBodyBuilder(),
                                                 bodyRanges: bodyRangesBuilder(),
-                                                attachmentIds: attachmentIdsBuilder(),
+                                                attachmentIds: attachmentIdsBuilder(transaction),
                                                 expiresInSeconds: expiresInSecondsBuilder(),
                                                 expireStartedAt: expireStartedAtBuilder(),
                                                 isVoiceMessage: isVoiceMessageBuilder(),
@@ -172,7 +172,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return MessageBodyRanges.empty
     }
 
-    public var attachmentIdsBuilder: () -> [String] = {
+    public var attachmentIdsBuilder: (SDSAnyWriteTransaction) -> [String] = { _ in
         return []
     }
 
@@ -280,7 +280,7 @@ public class IncomingMessageFactory: NSObject, Factory {
             authorE164: nil,
             messageBody: messageBodyBuilder(),
             bodyRanges: bodyRangesBuilder(),
-            attachmentIds: attachmentIdsBuilder(),
+            attachmentIds: attachmentIdsBuilder(transaction),
             editState: editStateBuilder(),
             expiresInSeconds: expiresInSecondsBuilder(),
             quotedMessage: quotedMessageBuilder(),
@@ -342,7 +342,7 @@ public class IncomingMessageFactory: NSObject, Factory {
         }().aci!
     }
 
-    public var attachmentIdsBuilder: () -> [String] = {
+    public var attachmentIdsBuilder: (SDSAnyWriteTransaction) -> [String] = { _ in
         return []
     }
 

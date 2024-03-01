@@ -1023,6 +1023,8 @@
 		66E1AD572B8D59B000C56B7B /* TSResourceReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD562B8D59B000C56B7B /* TSResourceReference.swift */; };
 		66E1AD592B8D59D700C56B7B /* TSResourceStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD582B8D59D700C56B7B /* TSResourceStoreImpl.swift */; };
 		66E1AD5B2B8D5A1900C56B7B /* TSResourceStoreMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD5A2B8D5A1900C56B7B /* TSResourceStoreMock.swift */; };
+		66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD752B8FD0B700C56B7B /* Attachment.swift */; };
+		66E1AD782B8FD0D800C56B7B /* Attachment+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD772B8FD0D800C56B7B /* Attachment+TSResource.swift */; };
 		66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */; };
 		66F0F1DD29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */; };
 		66F0F1DF29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */; };
@@ -3736,6 +3738,8 @@
 		66E1AD562B8D59B000C56B7B /* TSResourceReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceReference.swift; sourceTree = "<group>"; };
 		66E1AD582B8D59D700C56B7B /* TSResourceStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStoreImpl.swift; sourceTree = "<group>"; };
 		66E1AD5A2B8D5A1900C56B7B /* TSResourceStoreMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStoreMock.swift; sourceTree = "<group>"; };
+		66E1AD752B8FD0B700C56B7B /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
+		66E1AD772B8FD0D800C56B7B /* Attachment+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+TSResource.swift"; sourceTree = "<group>"; };
 		66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinator.swift; sourceTree = "<group>"; };
 		66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorLoader.swift; sourceTree = "<group>"; };
 		66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorDependencies.swift; sourceTree = "<group>"; };
@@ -7423,6 +7427,8 @@
 			isa = PBXGroup;
 			children = (
 				66E1AD512B8D016000C56B7B /* TSResourceStore */,
+				66E1AD772B8FD0D800C56B7B /* Attachment+TSResource.swift */,
+				66E1AD752B8FD0B700C56B7B /* Attachment.swift */,
 				66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */,
 				66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */,
 				66C102F12B61E38100B47EC2 /* TSResource.swift */,
@@ -13039,6 +13045,8 @@
 				F972180628DE37A200113D9F /* AppVersion.swift in Sources */,
 				F9C5CE0A289453B400548EEE /* Array+SSK.swift in Sources */,
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
+				66E1AD782B8FD0D800C56B7B /* Attachment+TSResource.swift in Sources */,
+				66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */,
 				C18B56B92B07BC12000A441F /* AttachmentUpload.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
 				66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */,

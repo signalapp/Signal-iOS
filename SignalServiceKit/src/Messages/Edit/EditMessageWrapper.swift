@@ -108,7 +108,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             authorAci: authorAci,
             messageBody: message.body,
             bodyRanges: message.bodyRanges,
-            attachmentIds: tsResourceStore.bodyAttachments(for: message, tx: tx).ids.map(\.bridgeUniqueId),
+            attachmentIds: tsResourceStore.bodyAttachments(for: message, tx: tx).references.map(\.id.bridgeUniqueId),
             editState: editState,
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
@@ -158,7 +158,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
     ) -> Self {
         return .init(
             message: message,
-            messageBodyAttachmentIds: tsResourceStore.bodyAttachments(for: message, tx: tx).ids.map(\.bridgeUniqueId)
+            messageBodyAttachmentIds: tsResourceStore.bodyAttachments(for: message, tx: tx).references.map(\.id.bridgeUniqueId)
         )
     }
 

@@ -28,7 +28,7 @@ public class TSResourceStoreMock: TSResourceStore {
             return .empty
         }
         let refs = messageResourceReferences[rowId] ?? []
-        return .init(ids: refs.map(\.id), fetcher: { innerTx in
+        return .init(references: refs, fetcher: { innerTx in
             return self.fetch(refs.map(\.id), tx: innerTx)
         })
     }
@@ -89,7 +89,11 @@ public class TSResourceStoreMock: TSResourceStore {
         var refs = self.messageResourceReferences[messageId] ?? []
         attachments.forEach { attachment in
             if refs.contains(where: { $0.id == attachment.resourceId }).negated {
-                refs.append(.init(id: attachment.resourceId, fetcher: { _ in return attachment }))
+                refs.append(.init(
+                    id: attachment.resourceId,
+                    sourceFilename: nil,
+                    fetcher: { _ in return attachment }
+                ))
             }
             if resources.contains(where: { $0.resourceId == attachment.resourceId }).negated {
                 resources.append(attachment)
