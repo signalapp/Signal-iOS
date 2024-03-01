@@ -513,10 +513,11 @@ private extension UsernameSelectionViewController {
             case .tooShort:
                 return String(
                     format: OWSLocalizedString(
-                        "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE",
-                        comment: "An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}."
+                        "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d",
+                        tableName: "PluralAware",
+                        comment: "An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %d the minimum character count }}."
                     ),
-                    OWSFormat.formatUInt32(Constants.minNicknameCodepointLength)
+                    Constants.minNicknameCodepointLength
                 )
             case .tooLong:
                 owsFail("This should be impossible from the UI, as we limit the text field length.")
