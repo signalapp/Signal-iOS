@@ -713,43 +713,6 @@ CREATE
 ;
 
 CREATE
-    TABLE
-        IF NOT EXISTS 'indexable_text_fts_data' (
-            id INTEGER PRIMARY KEY
-            ,block BLOB
-        )
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS 'indexable_text_fts_idx' (
-            segid
-            ,term
-            ,pgno
-            ,PRIMARY KEY (
-                segid
-                ,term
-            )
-        ) WITHOUT ROWID
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS 'indexable_text_fts_docsize' (
-            id INTEGER PRIMARY KEY
-            ,sz BLOB
-        )
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS 'indexable_text_fts_config' (
-            k PRIMARY KEY
-            ,v
-        ) WITHOUT ROWID
-;
-
-CREATE
     TRIGGER "__indexable_text_fts_ai" AFTER INSERT
             ON "indexable_text" BEGIN INSERT
             INTO
