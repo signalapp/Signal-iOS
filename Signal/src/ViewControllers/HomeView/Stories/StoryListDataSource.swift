@@ -97,7 +97,13 @@ class StoryListDataSource: NSObject, Dependencies {
         return syncingModels.exposedModel.shouldDisplayHiddenStories
     }
 
+    private var previousSearchText: String?
+
     public func setSearchText(_ text: String?) {
+        guard text != previousSearchText else {
+            return
+        }
+        previousSearchText = text
         updateStoriesForSearchText(text)
     }
 

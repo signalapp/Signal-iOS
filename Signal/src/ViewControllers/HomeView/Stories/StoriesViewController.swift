@@ -13,21 +13,7 @@ import UIKit
 class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, HomeTabViewController {
     let tableView = UITableView()
 
-    let searchBarBackdropView = UIView()
-
-    let searchBarContainer = UIView()
-    let searchBar = OWSSearchBar()
-
-    var searchBarScrollingConstraint: NSLayoutConstraint?
-    var searchBarPinnedConstraint: NSLayoutConstraint?
-
-    var isFocusingSearchBar = false {
-        didSet {
-            searchBarBackdropView.isHidden = !isFocusingSearchBar
-            searchBarScrollingConstraint?.isActive = !isFocusingSearchBar
-            searchBarPinnedConstraint?.isActive = isFocusingSearchBar
-        }
-    }
+    private lazy var searchController = UISearchController()
 
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
@@ -73,40 +59,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
         tableView.dataSource = self
 
         // Search
-        searchBarContainer.layoutMargins = .init(hMargin: 8, vMargin: 0)
-
-        // Comment is wrong but its the same string...
-        searchBar.placeholder = OWSLocalizedString(
-            "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
-            comment: "Placeholder text for search bar which filters conversations."
-        )
-        searchBar.delegate = self
-        searchBar.sizeToFit()
-        searchBar.layoutMargins = .zero
-
-        searchBarContainer.frame = searchBar.frame
-        searchBarContainer.addSubview(searchBar)
-        searchBar.autoPinEdgesToSuperviewMargins()
-
-        let searchBarSizingView = UIView()
-        searchBarSizingView.frame = searchBarContainer.frame
-        self.tableView.tableHeaderView = searchBarSizingView
-
-        searchBarSizingView.addSubview(searchBarContainer)
-        searchBarContainer.autoPinHorizontalEdges(toEdgesOf: view)
-        self.searchBarScrollingConstraint = searchBarContainer.autoPinEdge(
-            .bottom,
-            to: .bottom,
-            of: searchBarSizingView
-        )
-        self.searchBarPinnedConstraint = searchBarContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
-        searchBarPinnedConstraint?.priority = .defaultLow
-
-        view.insertSubview(searchBarBackdropView, aboveSubview: tableView)
-        searchBarBackdropView.isHidden = true
-        searchBarBackdropView.backgroundColor = Theme.backgroundColor
-        searchBarBackdropView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        searchBarBackdropView.autoPinEdge(.bottom, to: .top, of: searchBarContainer)
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
 
         title = OWSLocalizedString("STORIES_TITLE", comment: "Title for the stories view.")
 
@@ -120,8 +74,6 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
         updateNavigationBar()
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
-
-        observeTableViewContentSize()
     }
 
     private var timestampUpdateTimer: Timer?
@@ -145,11 +97,6 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
                     owsFailDebug("Unexpected story type")
                 }
             }
-        }
-
-        if isFocusingSearchBar {
-            navigationController?.setNavigationBarHidden(true, animated: false)
-            (tabBarController as? HomeTabBarController)?.setTabBarHidden(true, animated: false)
         }
     }
 
@@ -197,8 +144,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        if !searchBar.text.isEmptyOrNil {
-            searchBar.text = nil
+        if !searchController.searchBar.text.isEmptyOrNil {
+            searchController.isActive = false
             dataSource.setSearchText(nil)
         }
     }
@@ -240,44 +187,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
 
         view.backgroundColor = Theme.backgroundColor
         tableView.backgroundColor = Theme.backgroundColor
-        searchBarContainer.backgroundColor = Theme.backgroundColor
-        searchBarBackdropView.backgroundColor = Theme.backgroundColor
 
         updateNavigationBar()
-    }
-
-    private var hasSeenNonZeroContentSize = false
-    private var tableViewContentSizeObservation: NSKeyValueObservation?
-
-    private func stopObsersingTableViewContentSize() {
-        tableViewContentSizeObservation?.invalidate()
-        tableViewContentSizeObservation = nil
-    }
-
-    private func observeTableViewContentSize() {
-        stopObsersingTableViewContentSize()
-        guard !hasSeenNonZeroContentSize else { return }
-
-        tableViewContentSizeObservation = tableView.observe(\.contentSize, changeHandler: { [weak self] _, _ in
-            guard
-                let strongSelf = self,
-                !strongSelf.hasSeenNonZeroContentSize
-            else {
-                self?.stopObsersingTableViewContentSize()
-                return
-            }
-
-            if strongSelf.tableView.contentSize.height > 0 {
-                strongSelf.hasSeenNonZeroContentSize = true
-
-                if strongSelf.tableView.contentSize.height > strongSelf.tableView.frame.height {
-                    // Scroll up the search bar.
-                    strongSelf.tableView.contentOffset = strongSelf.tableView.contentOffset.offsetBy(dy: strongSelf.searchBarContainer.frame.height)
-                }
-
-                strongSelf.stopObsersingTableViewContentSize()
-            }
-        })
     }
 
     @objc
@@ -370,6 +281,10 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     public func tableViewDidUpdate() {
         emptyStateLabel.isHidden = !dataSource.isEmpty
         tableView.isScrollEnabled = !dataSource.isEmpty
+        // Because scrolling is disabled when data is empty, disable
+        // collapsing to ensure the search bar stays visible.
+        navigationItem.hidesSearchBarWhenScrolling = !dataSource.isEmpty
+
         guard let scrollTarget = scrollTarget else {
             return
         }
@@ -420,9 +335,12 @@ extension StoriesViewController: CameraFirstCaptureDelegate {
 extension StoriesViewController: UITableViewDelegate {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        if isFocusingSearchBar, searchBar.text?.isEmpty ?? true {
-            stopFocusingSearchBar(clearingSearchText: true)
-        }
+        guard
+            searchController.isActive,
+            searchController.searchBar.text.isEmptyOrNil
+        else { return }
+        tableView.contentOffset.y += 1
+        searchController.isActive = false
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -645,65 +563,9 @@ extension StoriesViewController: UITableViewDataSource {
     }
 }
 
-extension StoriesViewController: UISearchBarDelegate {
-
-    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        return viewIsAppeared
-    }
-
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        beginFocusingSearchBar()
-    }
-
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        dataSource.setSearchText(searchText.isEmpty ? nil : searchText)
-    }
-
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        stopFocusingSearchBar(clearingSearchText: false)
-    }
-
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        stopFocusingSearchBar(clearingSearchText: true)
-    }
-
-    private func beginFocusingSearchBar() {
-        self.navigationController?.setNavigationBarHidden(true, animated: true)
-        (tabBarController as? HomeTabBarController)?.setTabBarHidden(true, animated: true)
-        searchBar.setShowsCancelButton(true, animated: true)
-        // Do this as a transition animation so we get tighter timing
-        // with the navigation controller animation.
-        UIView.transition(
-            with: view,
-            duration: UINavigationController.hideShowBarDuration,
-            animations: {},
-            completion: { _ in
-                // Only change state when animations are done.
-                self.isFocusingSearchBar = true
-            }
-        )
-    }
-
-    private func stopFocusingSearchBar(clearingSearchText: Bool) {
-        self.navigationController?.setNavigationBarHidden(false, animated: true)
-        (tabBarController as? HomeTabBarController)?.setTabBarHidden(false, animated: true)
-        searchBar.setShowsCancelButton(false, animated: true)
-        // Do this as a transition animation so we get tighter timing
-        // with the navigation controller animation.
-        UIView.transition(
-            with: self.view,
-            duration: UINavigationController.hideShowBarDuration,
-            animations: {},
-            completion: { _ in
-                // Only change state when animations are done.
-                self.isFocusingSearchBar = false
-            }
-        )
-        searchBar.resignFirstResponder()
-        if clearingSearchText {
-            self.searchBar.text = nil
-            dataSource.setSearchText(nil)
-        }
+extension StoriesViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        dataSource.setSearchText(searchController.searchBar.text?.nilIfEmpty)
     }
 }
 
