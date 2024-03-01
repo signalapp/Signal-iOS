@@ -33,43 +33,46 @@ public class TSResourceStoreImpl: TSResourceStore {
 
     // MARK: - Message Attachment fetching
 
-    public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReferences {
+    public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
         var ids = Set<TSResourceId>()
 
-        self.bodyAttachments(for: message, tx: tx).references.forEach { ids.insert($0.id) }
-        [
+        return (self.bodyAttachments(for: message, tx: tx) + [
             self.quotedMessageThumbnailAttachment(for: message, tx: tx),
             self.contactShareAvatarAttachment(for: message, tx: tx),
             self.linkPreviewAttachment(for: message, tx: tx),
             self.stickerAttachment(for: message, tx: tx)
-        ].forEach {
-            guard let id = $0?.id else { return }
-            ids.insert(id)
-        }
-
-        return references(ids: Array(ids), tx: tx)
-    }
-
-    public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReferences {
-        if message.attachmentIds.isEmpty {
-            // TODO: fetch v2 attachments
-            return .empty
-        } else {
-            return legacyReferences(uniqueIds: message.attachmentIds, tx: tx)
+        ]).compactMap { reference in
+            guard
+                let reference,
+                !ids.contains(reference.resourceId)
+            else {
+                return nil
+            }
+            ids.insert(reference.resourceId)
+            return reference
         }
     }
 
-    public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReferences {
+    public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
         if message.attachmentIds.isEmpty {
             // TODO: fetch v2 attachments
-            return .empty
+            return []
         } else {
-            let attachments = tsAttachmentStore.attachments(
+            return tsAttachmentStore.attachments(withAttachmentIds: message.attachmentIds, tx: tx)
+                .map(TSAttachmentReference.init(_:))
+        }
+    }
+
+    public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
+        if message.attachmentIds.isEmpty {
+            // TODO: fetch v2 attachments
+            return []
+        } else {
+            return tsAttachmentStore.attachments(
                 withAttachmentIds: message.attachmentIds,
                 ignoringContentType: OWSMimeTypeOversizeTextMessage,
                 tx: tx
-            )
-            return references(resources: attachments)
+            ).map(TSAttachmentReference.init(_:))
         }
     }
 
@@ -78,12 +81,16 @@ public class TSResourceStoreImpl: TSResourceStore {
             // TODO: fetch v2 attachments
             return nil
         } else {
-            let attachment = tsAttachmentStore.attachments(
-                withAttachmentIds: message.attachmentIds,
-                matchingContentType: OWSMimeTypeOversizeTextMessage,
-                tx: tx
-            ).first
-            return reference(resource: attachment)
+            guard
+                let attachment = tsAttachmentStore.attachments(
+                    withAttachmentIds: message.attachmentIds,
+                    matchingContentType: OWSMimeTypeOversizeTextMessage,
+                    tx: tx
+                ).first
+            else {
+                return nil
+            }
+            return TSAttachmentReference(attachment)
         }
     }
 
@@ -156,89 +163,6 @@ public class TSResourceStoreImpl: TSResourceStore {
         else {
             return nil
         }
-        return TSResourceReference(
-            id: .legacy(uniqueId: uniqueId),
-            sourceFilename: attachment.sourceFilename,
-            fetcher: { innerTx in
-                // Re-fetch the attachment.
-                return self.fetch(.legacy(uniqueId: uniqueId), tx: innerTx)
-            }
-        )
-    }
-
-    private func reference(resource: TSResource?) -> TSResourceReference? {
-        guard let resourceId = resource?.resourceId else {
-            return nil
-        }
-        switch resource?.concreteType {
-        case nil:
-            return nil
-        case .legacy(let attachment):
-            return TSResourceReference(
-                id: resourceId,
-                sourceFilename: attachment.sourceFilename,
-                fetcher: { innerTx in
-                    // Re-fetch the attachment.
-                    return self.fetch(resourceId, tx: innerTx)
-                }
-            )
-        }
-    }
-
-    private func legacyReferences(uniqueIds: [String], tx: DBReadTransaction) -> TSResourceReferences {
-        let ids = uniqueIds.map { TSResourceId.legacy(uniqueId: $0) }
-        let attachments = tsAttachmentStore.attachments(withAttachmentIds: uniqueIds, tx: tx)
-        return TSResourceReferences(
-            references: attachments.map {
-                let id = TSResourceId.legacy(uniqueId: $0.uniqueId)
-                return .init(
-                    id: id,
-                    sourceFilename: $0.sourceFilename,
-                    fetcher: { innerTx in
-                        // Re-fetch the attachment.
-                        return self.fetch(id, tx: innerTx)
-                    })
-            },
-            fetcher: { innerTx in
-                return self.fetch(ids, tx: innerTx)
-            }
-        )
-    }
-
-    private func references(resources: [TSResource]) -> TSResourceReferences {
-        let ids = resources.map(\.resourceId)
-        return TSResourceReferences(
-            references: resources.compactMap { self.reference(resource: $0) },
-            fetcher: { innerTx in
-                // Re-fetch the attachments
-                return self.fetch(ids, tx: innerTx)
-            }
-        )
-    }
-
-    private func references(ids: [TSResourceId], tx: DBReadTransaction) -> TSResourceReferences {
-        var legacyIds = [String]()
-        ids.forEach {
-            switch $0 {
-            case .legacy(let uniqueId):
-                legacyIds.append(uniqueId)
-            }
-        }
-        let legacyAttachments = tsAttachmentStore.attachments(withAttachmentIds: legacyIds, tx: tx)
-        return TSResourceReferences(
-            references: legacyAttachments.map {
-                let id = TSResourceId.legacy(uniqueId: $0.uniqueId)
-                return .init(
-                    id: id,
-                    sourceFilename: $0.sourceFilename,
-                    fetcher: { innerTx in
-                        // Re-fetch the attachment.
-                        return self.fetch(id, tx: innerTx)
-                    })
-            },
-            fetcher: { innerTx in
-                return self.fetch(ids, tx: innerTx)
-            }
-        )
+        return TSAttachmentReference(attachment)
     }
 }

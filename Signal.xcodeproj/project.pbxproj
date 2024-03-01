@@ -1025,6 +1025,10 @@
 		66E1AD5B2B8D5A1900C56B7B /* TSResourceStoreMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD5A2B8D5A1900C56B7B /* TSResourceStoreMock.swift */; };
 		66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD752B8FD0B700C56B7B /* Attachment.swift */; };
 		66E1AD782B8FD0D800C56B7B /* Attachment+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD772B8FD0D800C56B7B /* Attachment+TSResource.swift */; };
+		66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */; };
+		66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */; };
+		66E1AD872B8FEE1300C56B7B /* TSAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD862B8FEE1300C56B7B /* TSAttachmentReference.swift */; };
+		66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD882B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift */; };
 		66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */; };
 		66F0F1DD29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */; };
 		66F0F1DF29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */; };
@@ -3740,6 +3744,10 @@
 		66E1AD5A2B8D5A1900C56B7B /* TSResourceStoreMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStoreMock.swift; sourceTree = "<group>"; };
 		66E1AD752B8FD0B700C56B7B /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
 		66E1AD772B8FD0D800C56B7B /* Attachment+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+TSResource.swift"; sourceTree = "<group>"; };
+		66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentReference.swift; sourceTree = "<group>"; };
+		66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+Owner.swift"; sourceTree = "<group>"; };
+		66E1AD862B8FEE1300C56B7B /* TSAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentReference.swift; sourceTree = "<group>"; };
+		66E1AD882B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+TSResourceReference.swift"; sourceTree = "<group>"; };
 		66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinator.swift; sourceTree = "<group>"; };
 		66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorLoader.swift; sourceTree = "<group>"; };
 		66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorDependencies.swift; sourceTree = "<group>"; };
@@ -7426,6 +7434,7 @@
 		66C102F02B61E36E00B47EC2 /* V2 */ = {
 			isa = PBXGroup;
 			children = (
+				66E1AD7F2B8FDA5500C56B7B /* AttachmentReference */,
 				66E1AD512B8D016000C56B7B /* TSResourceStore */,
 				66E1AD772B8FD0D800C56B7B /* Attachment+TSResource.swift */,
 				66E1AD752B8FD0B700C56B7B /* Attachment.swift */,
@@ -7610,12 +7619,31 @@
 			isa = PBXGroup;
 			children = (
 				6619A1C22B2B7199004B38FE /* TSAttachmentStore.swift */,
-				66E1AD562B8D59B000C56B7B /* TSResourceReference.swift */,
 				66E1AD522B8D017400C56B7B /* TSResourceStore.swift */,
 				66E1AD582B8D59D700C56B7B /* TSResourceStoreImpl.swift */,
 				66E1AD5A2B8D5A1900C56B7B /* TSResourceStoreMock.swift */,
 			);
 			path = TSResourceStore;
+			sourceTree = "<group>";
+		};
+		66E1AD7F2B8FDA5500C56B7B /* AttachmentReference */ = {
+			isa = PBXGroup;
+			children = (
+				66E1AD842B8FEDD000C56B7B /* TSResource */,
+				66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */,
+				66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */,
+			);
+			path = AttachmentReference;
+			sourceTree = "<group>";
+		};
+		66E1AD842B8FEDD000C56B7B /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				66E1AD882B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift */,
+				66E1AD862B8FEE1300C56B7B /* TSAttachmentReference.swift */,
+				66E1AD562B8D59B000C56B7B /* TSResourceReference.swift */,
+			);
+			path = TSResource;
 			sourceTree = "<group>";
 		};
 		66FC636C29DF78FE00F00DAC /* BodyRanges */ = {
@@ -13047,6 +13075,9 @@
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
 				66E1AD782B8FD0D800C56B7B /* Attachment+TSResource.swift in Sources */,
 				66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */,
+				66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */,
+				66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */,
+				66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */,
 				C18B56B92B07BC12000A441F /* AttachmentUpload.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
 				66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */,
@@ -13766,6 +13797,7 @@
 				F9C5CC7F289453B300548EEE /* TSAttachment.swift in Sources */,
 				F9C5CC79289453B300548EEE /* TSAttachmentPointer+SDS.swift in Sources */,
 				F9C5CC78289453B300548EEE /* TSAttachmentPointer.m in Sources */,
+				66E1AD872B8FEE1300C56B7B /* TSAttachmentReference.swift in Sources */,
 				6619A1C32B2B7199004B38FE /* TSAttachmentStore.swift in Sources */,
 				F9C5CC7B289453B300548EEE /* TSAttachmentStream+SDS.swift in Sources */,
 				F9C5CC76289453B300548EEE /* TSAttachmentStream.m in Sources */,

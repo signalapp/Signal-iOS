@@ -289,7 +289,7 @@ public class EditManager {
                 for: editTarget.message,
                 tx: tx
             )
-            messageBuilder.attachmentIds = attachments.references.map(\.id.bridgeUniqueId)
+            messageBuilder.attachmentIds = attachments.map(\.resourceId.bridgeUniqueId)
 
             messageBuilder.timestamp = NSDate.ows_millisecondTimeStamp()
         }
@@ -471,10 +471,13 @@ public class EditManager {
             return false
         }
 
-        let currentAttachments = context.tsResourceStore.bodyMediaAttachments(
+        let currentAttachmentRefs = context.tsResourceStore.bodyMediaAttachments(
             for: targetMessage,
             tx: tx
-        ).fetchAll(tx: tx).map(\.bridge)
+        )
+        let currentAttachments = context.tsResourceStore
+            .fetch(currentAttachmentRefs.map(\.resourceId), tx: tx)
+            .map(\.bridge)
 
         // Voice memos only ever have one attachment; only need to check the first.
         if
@@ -528,19 +531,20 @@ public class EditManager {
         let oversizeText = newAttachments.filter({ $0.isOversizeTextMimeType }).first
 
         // check for existing oversized text
-        let existingText = context.tsResourceStore.oversizeTextAttachment(
+        let existingText: TSAttachment? = context.tsResourceStore.oversizeTextAttachment(
             for: targetMessage,
             tx: tx
-        )?.fetch(tx: tx)?.bridge
+        ).map { attachmentRef in
+            return context.tsResourceStore.fetch(attachmentRef.resourceId, tx: tx)?.bridge
+        } ?? nil
 
         var newAttachmentIds = context.tsResourceStore
             .bodyAttachments(for: targetMessage, tx: tx)
-            .references
             .compactMap { ref -> String? in
-                guard ref.id.bridgeUniqueId != existingText?.uniqueId else {
+                guard ref.resourceId.bridgeUniqueId != existingText?.uniqueId else {
                     return nil
                 }
-                return ref.id.bridgeUniqueId
+                return ref.resourceId.bridgeUniqueId
             }
         if let oversizeText {
             // insert the new oversized text attachment

@@ -24,21 +24,21 @@ public protocol TSResourceStore {
     func allAttachments(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReferences
+    ) -> [TSResourceReference]
 
     /// Includes media, long text, and voice message attachments.
     /// Excludes stickers, quoted reply thumbnails, link preview images, contact avatars.
     func bodyAttachments(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReferences
+    ) -> [TSResourceReference]
 
     /// Includes media and voice message attachments.
     /// Excludes long text, stickers, quoted reply thumbnails, link preview images, contact avatars.
     func bodyMediaAttachments(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReferences
+    ) -> [TSResourceReference]
 
     func oversizeTextAttachment(
         for message: TSMessage,

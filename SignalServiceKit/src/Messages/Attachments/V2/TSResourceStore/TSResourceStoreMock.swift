@@ -23,22 +23,19 @@ public class TSResourceStoreMock: TSResourceStore {
         return resources.filter { ids.contains($0.resourceId) }
     }
 
-    public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReferences {
+    public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
         guard let rowId = message.sqliteRowId else {
-            return .empty
+            return []
         }
-        let refs = messageResourceReferences[rowId] ?? []
-        return .init(references: refs, fetcher: { innerTx in
-            return self.fetch(refs.map(\.id), tx: innerTx)
-        })
+        return messageResourceReferences[rowId] ?? []
     }
 
-    public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReferences {
+    public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
         // TODO: sub-filter based on reference info
         return allAttachments(for: message, tx: tx)
     }
 
-    public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReferences {
+    public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
         // TODO: sub-filter based on reference info
         return allAttachments(for: message, tx: tx)
     }
@@ -79,7 +76,7 @@ public class TSResourceStoreMock: TSResourceStore {
             return nil
         }
         let refs = messageResourceReferences[rowId] ?? []
-        return refs.firstIndex(where: { $0.id == attachmentId })
+        return refs.firstIndex(where: { $0.resourceId == attachmentId })
     }
 
     public func addBodyAttachments(_ attachments: [TSResource], to message: TSMessage, tx: DBWriteTransaction) {
@@ -88,12 +85,8 @@ public class TSResourceStoreMock: TSResourceStore {
         }
         var refs = self.messageResourceReferences[messageId] ?? []
         attachments.forEach { attachment in
-            if refs.contains(where: { $0.id == attachment.resourceId }).negated {
-                refs.append(.init(
-                    id: attachment.resourceId,
-                    sourceFilename: nil,
-                    fetcher: { _ in return attachment }
-                ))
+            if refs.contains(where: { $0.resourceId == attachment.resourceId }).negated {
+                refs.append(TSAttachmentReference(attachment as! TSAttachment))
             }
             if resources.contains(where: { $0.resourceId == attachment.resourceId }).negated {
                 resources.append(attachment)
@@ -107,7 +100,7 @@ public class TSResourceStoreMock: TSResourceStore {
             return
         }
         var refs = self.messageResourceReferences[messageId] ?? []
-        refs.removeAll(where: { $0.id == attachment.resourceId })
+        refs.removeAll(where: { $0.resourceId == attachment.resourceId })
         self.messageResourceReferences[messageId] = refs
     }
 }
