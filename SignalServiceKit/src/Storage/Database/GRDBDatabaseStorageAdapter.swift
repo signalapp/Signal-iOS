@@ -1082,6 +1082,9 @@ extension GRDBDatabaseStorageAdapter {
         func read<T>(block: (Database) -> T) -> T {
             return databaseStorage.read { block($0.unwrapGrdbRead.database) }
         }
+        func write<T>(block: (Database) -> T) -> T {
+            return databaseStorage.write { block($0.unwrapGrdbWrite.database) }
+        }
 
         read { db in
             Logger.info("PRAGMA cipher_provider")
@@ -1093,7 +1096,7 @@ extension GRDBDatabaseStorageAdapter {
             return SqliteUtil.cipherIntegrityCheck(db: db)
         }
 
-        let quickCheckResult = read { db in
+        let quickCheckResult = write { db in
             Logger.info("PRAGMA quick_check")
             return SqliteUtil.quickCheck(db: db)
         }
