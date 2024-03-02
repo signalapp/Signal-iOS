@@ -24,9 +24,9 @@ jobs:
   build_and_test:
     name: Build and Test
 
-    timeout-minutes: 40
+    timeout-minutes: 20
 
-    runs-on: macos-12
+    runs-on: macos-latest-xlarge
 
     env:
       FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 7
