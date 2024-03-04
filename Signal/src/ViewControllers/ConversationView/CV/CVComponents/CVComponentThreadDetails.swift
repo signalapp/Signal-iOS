@@ -602,6 +602,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             )
             groupDescriptionSize.width = maxContentWidth
             innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
+            innerSubviewInfos.append(groupDescriptionSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
         if let mutualGroupsText = self.mutualGroupsText {
