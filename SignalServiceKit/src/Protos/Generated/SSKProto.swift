@@ -14743,15 +14743,6 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var blocked: Bool {
-        return proto.blocked
-    }
-    @objc
-    public var hasBlocked: Bool {
-        return proto.hasBlocked
-    }
-
-    @objc
     public var expireTimer: UInt32 {
         return proto.expireTimer
     }
@@ -14862,9 +14853,6 @@ extension SSKProtoContactDetails {
         if let _value = avatar {
             builder.setAvatar(_value)
         }
-        if hasBlocked {
-            builder.setBlocked(blocked)
-        }
         if hasExpireTimer {
             builder.setExpireTimer(expireTimer)
         }
@@ -14936,11 +14924,6 @@ public class SSKProtoContactDetailsBuilder: NSObject {
 
     public func setAvatar(_ valueParam: SSKProtoContactDetailsAvatar) {
         proto.avatar = valueParam.proto
-    }
-
-    @objc
-    public func setBlocked(_ valueParam: Bool) {
-        proto.blocked = valueParam
     }
 
     @objc

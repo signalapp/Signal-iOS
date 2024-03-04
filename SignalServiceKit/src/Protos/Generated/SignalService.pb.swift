@@ -4031,15 +4031,6 @@ struct SignalServiceProtos_ContactDetails {
   /// Clears the value of `avatar`. Subsequent reads from it will return its default value.
   mutating func clearAvatar() {self._avatar = nil}
 
-  var blocked: Bool {
-    get {return _blocked ?? false}
-    set {_blocked = newValue}
-  }
-  /// Returns true if `blocked` has been explicitly set.
-  var hasBlocked: Bool {return self._blocked != nil}
-  /// Clears the value of `blocked`. Subsequent reads from it will return its default value.
-  mutating func clearBlocked() {self._blocked = nil}
-
   var expireTimer: UInt32 {
     get {return _expireTimer ?? 0}
     set {_expireTimer = newValue}
@@ -4097,7 +4088,6 @@ struct SignalServiceProtos_ContactDetails {
   fileprivate var _aci: String? = nil
   fileprivate var _name: String? = nil
   fileprivate var _avatar: SignalServiceProtos_ContactDetails.Avatar? = nil
-  fileprivate var _blocked: Bool? = nil
   fileprivate var _expireTimer: UInt32? = nil
   fileprivate var _inboxPosition: UInt32? = nil
 }
@@ -8496,7 +8486,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     9: .same(proto: "aci"),
     2: .same(proto: "name"),
     3: .same(proto: "avatar"),
-    7: .same(proto: "blocked"),
     8: .same(proto: "expireTimer"),
     10: .same(proto: "inboxPosition"),
   ]
@@ -8510,7 +8499,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       case 1: try { try decoder.decodeSingularStringField(value: &self._contactE164) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self._name) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._avatar) }()
-      case 7: try { try decoder.decodeSingularBoolField(value: &self._blocked) }()
       case 8: try { try decoder.decodeSingularUInt32Field(value: &self._expireTimer) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._aci) }()
       case 10: try { try decoder.decodeSingularUInt32Field(value: &self._inboxPosition) }()
@@ -8533,9 +8521,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     try { if let v = self._avatar {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     } }()
-    try { if let v = self._blocked {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
-    } }()
     try { if let v = self._expireTimer {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 8)
     } }()
@@ -8553,7 +8538,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     if lhs._aci != rhs._aci {return false}
     if lhs._name != rhs._name {return false}
     if lhs._avatar != rhs._avatar {return false}
-    if lhs._blocked != rhs._blocked {return false}
     if lhs._expireTimer != rhs._expireTimer {return false}
     if lhs._inboxPosition != rhs._inboxPosition {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

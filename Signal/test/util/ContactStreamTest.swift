@@ -106,8 +106,7 @@ class ContactStreamTest: SignalBaseTest {
                 phoneNumber: E164(signalAccount.recipientPhoneNumber),
                 signalAccount: signalAccount,
                 disappearingMessagesConfiguration: nil,
-                inboxPosition: nil,
-                isBlocked: false
+                inboxPosition: nil
             )
         }
 

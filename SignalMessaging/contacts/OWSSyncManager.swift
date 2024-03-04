@@ -436,7 +436,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         let message = OWSSyncContactsMessage(thread: thread, isFullSync: true, tx: tx)
         guard let syncFileUrl = ContactSyncAttachmentBuilder.buildAttachmentFile(
             for: message,
-            blockingManager: Self.blockingManager,
             contactsManager: Self.contactsManagerImpl,
             tx: tx
         ) else {
