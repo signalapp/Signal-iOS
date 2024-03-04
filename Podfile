@@ -13,8 +13,8 @@ pod 'SwiftProtobuf', ">= 1.14.0"
 pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
-ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = 'f0e4be2266f76aca9e98f22b0509cb0b56ea8aa5204b83479481fc78eeb4d885'
-pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.40.1', testspecs: ["Tests"]
+ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '86bf02a0d6140126c3525e7446ec3d5c641e8ce57f85213a9f8f15aecd58dce8'
+pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.41.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal-client', testspecs: ["Tests"]
 
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
@@ -81,16 +81,16 @@ end
 
 # These extensions inherit all of the common pods
 
-target 'SignalMessaging' do 
+target 'SignalMessaging' do
   pod 'MobileCoinMinimal', git: 'https://github.com/signalapp/MobileCoin-Swift.git', branch: 'charlesmchen/mobileCoinMinimal', testspecs: ["Tests"]
   # pod 'MobileCoinMinimal', path: '../MobileCoinMinimal', testspecs: ["Tests"]
 end
 
-target 'SignalShareExtension' do 
+target 'SignalShareExtension' do
   ui_pods
 end
 
-target 'SignalUI' do 
+target 'SignalUI' do
   ui_pods
 
   target 'SignalUITests' do
@@ -107,7 +107,7 @@ target 'SignalServiceKit' do
   end
 end
 
-target 'SignalNSE' do 
+target 'SignalNSE' do
 end
 
 post_install do |installer|
@@ -230,8 +230,8 @@ def strip_valid_archs(installer)
   end
 end
 
-#update_framework_scripts updates Pod-Signal-frameworks.sh to fix a bug in the .XCFramework->.framework 
-#conversation process, by ensuring symlinks are properly respected in the XCFramework. 
+#update_framework_scripts updates Pod-Signal-frameworks.sh to fix a bug in the .XCFramework->.framework
+#conversation process, by ensuring symlinks are properly respected in the XCFramework.
 #See https://github.com/CocoaPods/CocoaPods/issues/7587
 def update_frameworks_script(installer)
     fw_script = File.read('Pods/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh')
