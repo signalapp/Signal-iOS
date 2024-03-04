@@ -573,6 +573,16 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         shouldAnimateQRCode = true
     }
 
+    override func appWillResignActive() {
+        super.appWillResignActive()
+        restoreBrightness()
+    }
+
+    override func appDidBecomeActive() {
+        super.appDidBecomeActive()
+        setMaxBrightness()
+    }
+
     private var oldBrightness: CGFloat?
 
     /// Sets the screen brightness to 100% to make the QR code easier to scan.
