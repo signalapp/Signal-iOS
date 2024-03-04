@@ -1512,6 +1512,14 @@ extension RecipientPickerViewController: FindByUsernameDelegate {
         owsAssertDebug(address.isValid)
         tryToSelectRecipient(.for(address: address))
     }
+
+    var shouldShowQRCodeButton: Bool {
+        delegate?.shouldShowQRCodeButton ?? false
+    }
+
+    func openQRCodeScanner() {
+        delegate?.openUsernameQRCodeScanner()
+    }
 }
 
 // MARK: - Find by Username

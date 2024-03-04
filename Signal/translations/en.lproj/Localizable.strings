@@ -2638,6 +2638,9 @@
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "Username";
 
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "Find by Username";
 

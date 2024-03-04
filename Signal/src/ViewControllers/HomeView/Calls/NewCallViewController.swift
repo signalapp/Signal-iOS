@@ -134,7 +134,7 @@ extension NewCallViewController: RecipientContextMenuHelperDelegate {
 
 // MARK: - RecipientPickerDelegate
 
-extension NewCallViewController: RecipientPickerDelegate {
+extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
     func recipientPicker(_ recipientPickerViewController: SignalUI.RecipientPickerViewController, getRecipientState recipient: SignalUI.PickedRecipient) -> SignalUI.RecipientPickerRecipientState {
         .canBeSelected
     }

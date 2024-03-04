@@ -34,7 +34,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
 
         super.init()
 
-        title = NSLocalizedString("SCAN_QR_CODE_VIEW_TITLE", comment: "Title for the 'scan QR code' view.")
+        title = CommonStrings.scanQRCodeTitle
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle {

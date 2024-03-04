@@ -62,7 +62,7 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
 
 // MARK: -
 
-extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
+extension PaymentsSendRecipientViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,

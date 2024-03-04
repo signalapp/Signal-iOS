@@ -5,6 +5,14 @@
 
 import SignalServiceKit
 
+// I don't like how I implemented this, but passing a delegate all the way here
+// and to every BaseMemberViewController subclass with a method to open the QR
+// code scanner would be unreasonable, so instead there's this protocol, which
+// BaseMemberViewController is extended to conform to in the main Signal target.
+public protocol MemberViewUsernameQRCodeScannerPresenter {
+    func presentUsernameQRCodeScannerFromMemberView()
+}
+
 public protocol MemberViewDelegate: AnyObject {
     var memberViewRecipientSet: OrderedSet<PickedRecipient> { get }
 
@@ -423,6 +431,19 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
     public func recipientPickerCustomHeaderViews() -> [UIView] {
         return [memberBar, memberCountWrapper]
+    }
+
+    public var shouldShowQRCodeButton: Bool {
+        // The QR code scanner is in the main app target, which itself adds
+        // MemberViewUsernameQRCodeScannerPresenter conformance to
+        // BaseMemberViewController, but opening this view from the share
+        // extension does not show the QR code scanner button.
+        self is MemberViewUsernameQRCodeScannerPresenter
+    }
+
+    public func openUsernameQRCodeScanner() {
+        guard let presenter = self as? MemberViewUsernameQRCodeScannerPresenter else { return }
+        presenter.presentUsernameQRCodeScannerFromMemberView()
     }
 }
 

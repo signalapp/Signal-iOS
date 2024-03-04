@@ -1409,6 +1409,7 @@
 		B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */; };
 		B9F2155F2A940596002DCAE0 /* ImageEditorStickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */; };
 		B9F215612A94071F002DCAE0 /* ImageEditorTransformable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F215602A94071F002DCAE0 /* ImageEditorTransformable.swift */; };
+		B9FF37362B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */; };
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
 		C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */; };
@@ -4204,6 +4205,7 @@
 		B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerSheet.swift; sourceTree = "<group>"; };
 		B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorStickerItem.swift; sourceTree = "<group>"; };
 		B9F215602A94071F002DCAE0 /* ImageEditorTransformable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorTransformable.swift; sourceTree = "<group>"; };
+		B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkScanQRCodeSheet.swift; sourceTree = "<group>"; };
 		BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
 		C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsFindAccountInfoSheetViewController.swift; sourceTree = "<group>"; };
@@ -8848,6 +8850,7 @@
 				D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */,
 				D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */,
 				D9CAFAE52A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift */,
+				B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */,
 				D9CAFAE32A538BDF00B32BDE /* UsernameLinkScanQRCodeViewController.swift */,
 				D99840CD2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift */,
 				D9CAFAE92A53CB1F00B32BDE /* UsernameLinkTooltipView.swift */,
@@ -12968,6 +12971,7 @@
 				D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */,
 				D9CAFAE62A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift in Sources */,
 				D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */,
+				B9FF37362B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift in Sources */,
 				D9CAFAE42A538BDF00B32BDE /* UsernameLinkScanQRCodeViewController.swift in Sources */,
 				D99840CE2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift in Sources */,
 				D9CAFAEA2A53CB1F00B32BDE /* UsernameLinkTooltipView.swift in Sources */,

@@ -258,6 +258,13 @@ public class CommonStrings: NSObject {
             comment: "An error message generically indicating that something went wrong, and that the user should try again later."
         )
     }
+
+    static public var scanQRCodeTitle: String {
+        OWSLocalizedString(
+            "SCAN_QR_CODE_VIEW_TITLE",
+            comment: "Title for the 'scan QR code' view."
+        )
+    }
 }
 
 // MARK: -

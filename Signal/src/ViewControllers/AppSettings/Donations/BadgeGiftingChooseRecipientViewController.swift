@@ -56,7 +56,7 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
     }
 }
 
-extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
+extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
 
     private static func getRecipientAddress(_ recipient: PickedRecipient) -> SignalServiceAddress? {
         guard let address = recipient.address, address.isValid, !address.isLocalAddress else {
