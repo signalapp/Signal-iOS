@@ -230,9 +230,13 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     //
     // We first try using a read block to avoid opening a write block.
     __block OWSUserProfile *_Nullable localUserProfile;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        localUserProfile = [self getLocalUserProfileWithTransaction:transaction];
-    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+    [self.databaseStorage
+        readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            localUserProfile = [self getLocalUserProfileWithTransaction:transaction];
+        }
+                 file:__FILE__
+             function:__FUNCTION__
+                 line:__LINE__];
     if (localUserProfile != nil) {
         return [localUserProfile shallowCopy];
     }
@@ -417,7 +421,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         [self.whitelistedPhoneNumbersStore removeAllWithTransaction:transaction];
         [self.whitelistedServiceIdsStore removeAllWithTransaction:transaction];
         [self.whitelistedGroupsStore removeAllWithTransaction:transaction];
-        
+
         OWSAssertDebug(0 == [self.whitelistedPhoneNumbersStore numberOfKeysWithTransaction:transaction]);
         OWSAssertDebug(0 == [self.whitelistedServiceIdsStore numberOfKeysWithTransaction:transaction]);
         OWSAssertDebug(0 == [self.whitelistedGroupsStore numberOfKeysWithTransaction:transaction]);
@@ -489,9 +493,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
 
     OWSUserProfile *localUserProfile;
-    
-    @synchronized(self)
-    {
+
+    @synchronized(self) {
         // If it didn't exist, create it in a safe way as accessing the property
         // will do a sneaky transaction.
         if (!_localUserProfile) {
@@ -1289,7 +1292,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 }
 
-- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {
+- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size
+{
     return [self.modelReadCaches.userProfileReadCache leaseCacheSize:size];
 }
 
@@ -1350,7 +1354,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     [self updateProfileOnServiceIfNecessaryWithAuthedAccount:AuthedAccount.implicit];
 }
 
-- (void)blockListDidChange:(NSNotification *)notification {
+- (void)blockListDidChange:(NSNotification *)notification
+{
     OWSAssertIsOnMainThread();
 
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self rotateLocalProfileKeyIfNecessary]; });
