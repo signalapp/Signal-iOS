@@ -25,7 +25,12 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         static let outerMargins: UIEdgeInsets = .init(hMargin: 24.0, vMargin: 0.0)
 
         static let footerSpacing: CGFloat = 16.0
-        static let footerMargins: UIEdgeInsets = .init(hMargin: 24.0, vMargin: 24.0)
+        static let footerMargins: UIEdgeInsets = .init(
+            top: 0.0,
+            left: 24.0,
+            bottom: 42.0,
+            right: 24.0
+        )
 
         static let buttonInsets: UIEdgeInsets = .init(
             top: 16.0,
@@ -128,12 +133,12 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         contentScrollView.addSubview(stackView)
 
         stackView.axis = .vertical
-        stackView.layoutMargins = Constants.outerMargins
         stackView.spacing = Constants.outerSpacing
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.autoPinEdgesToSuperviewEdges()
         stackView.autoPinWidth(toWidthOf: contentScrollView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.autoPinEdge(.bottom, to: .bottom, of: contentView, withOffset: 0.0, relation: .greaterThanOrEqual)
 
         contentScrollView.translatesAutoresizingMaskIntoConstraints = false
         contentScrollView.autoPinEdgesToSuperviewEdges()
@@ -180,6 +185,8 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
             backgroundColor: .ows_accentBlue,
             target: self,
             selector: #selector(didTapPrevious))
+        previousButton.button.setBackgroundImage(UIImage(color: .clear), for: .disabled)
+        previousButton.button.setTitleColor(.ows_accentBlue, for: .disabled)
         previousButton.contentEdgeInsets = Constants.buttonEdgeInsets
         return previousButton
     }()
@@ -195,6 +202,8 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
             backgroundColor: .ows_accentBlue,
             target: self,
             selector: #selector(didTapNext))
+        nextButton.button.setBackgroundImage(UIImage(color: .clear), for: .disabled)
+        nextButton.button.setTitleColor(.ows_accentBlue, for: .disabled)
         nextButton.contentEdgeInsets = Constants.buttonEdgeInsets
         return nextButton
     }()
@@ -212,7 +221,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         stackView.axis = .horizontal
         stackView.spacing = Constants.footerSpacing
         stackView.distribution = .fillEqually
-        stackView.autoPinEdgesToSuperviewEdges()
+        stackView.autoPinEdgesToSuperviewMargins()
 
         return container
     }()
@@ -226,7 +235,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         stackView.addArrangedSubview(tipScrollView)
         stackView.setCustomSpacing(8.0, after: tipScrollView)
         stackView.addArrangedSubview(pageControl)
-        stackView.setCustomSpacing(24.0, after: pageControl)
+        stackView.setCustomSpacing(0.0, after: pageControl)
         stackView.addArrangedSubview(UIView.transparentSpacer())
         stackView.addArrangedSubview(footerView)
     }
@@ -309,6 +318,7 @@ extension SafetyTipsViewController {
         init(type: SafetyTipsType) {
             self.type = type
             super.init(frame: .zero)
+            layoutMargins = Constants.outerMargins
 
             let stackView = UIStackView()
             self.addSubview(stackView)
@@ -316,7 +326,7 @@ extension SafetyTipsViewController {
             stackView.axis = .vertical
             stackView.alignment = .center
             stackView.spacing = Constants.stackSpacing
-            stackView.autoPinEdgesToSuperviewEdges()
+            stackView.autoPinEdgesToSuperviewMargins()
             stackView.addArrangedSubviews([
                 titleLabel,
                 subtitleLabel
@@ -373,8 +383,8 @@ extension SafetyTipsViewController {
         // MARK: - Style views
 
         func updateFontsForCurrentPreferredContentSize() {
-            titleLabel.font = .dynamicTypeTitle1Clamped.bold()
-            subtitleLabel.font = .dynamicTypeBodyClamped
+            titleLabel.font = .dynamicTypeTitle2Clamped.bold()
+            subtitleLabel.font = .dynamicTypeBody2Clamped
         }
 
         func setColorsForCurrentTheme() {
@@ -400,13 +410,14 @@ extension SafetyTipsViewController {
 
         fileprivate init(safetyTip: SafetyTips) {
             super.init(frame: .zero)
+            layoutMargins = .init(hMargin: 24.0, vMargin: 0.0)
 
             let containerView = UIView()
             containerView.layer.cornerRadius = Constants.cornerRadius
             containerView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white
             self.addSubview(containerView)
             containerView.layoutMargins = Constants.containerMargins
-            containerView.autoPinEdgesToSuperviewEdges()
+            containerView.autoPinEdgesToSuperviewMargins()
 
             let stackView = UIStackView()
             stackView.axis = .vertical
@@ -432,7 +443,7 @@ extension SafetyTipsViewController {
             titleLabel.numberOfLines = 0
             titleLabel.textAlignment = .center
             titleLabel.lineBreakMode = .byWordWrapping
-            titleLabel.font = .dynamicTypeTitle3Clamped.bold()
+            titleLabel.font = .dynamicTypeBody.bold()
             titleLabel.textColor = Theme.primaryTextColor
             stackView.addArrangedSubview(titleLabel)
 

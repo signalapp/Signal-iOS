@@ -175,9 +175,10 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             let groupInfoWrapper = ManualLayoutViewWithLayer(name: "groupWrapper")
             var groupInfoSubviewInfos = [ManualStackSubviewInfo]()
 
+            innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
+
             if conversationStyle.hasWallpaper {
                 // Add divider before mutual groups
-                innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
                 let divider = UIView()
                 divider.autoSetDimension(.width, toSize: cellMeasurement.cellSize.width)
                 divider.autoSetDimension(.height, toSize: 1)
@@ -215,7 +216,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 let safetyButtonLabelConfig = safetyTipsConfig()
                 safetyButtonLabelConfig.applyForRendering(button: showTipsButton)
                 showTipsButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray05
-                showTipsButton.contentEdgeInsets = .init(hMargin: 12.0, vMargin: 4.0)
+                showTipsButton.contentEdgeInsets = .init(hMargin: 12.0, vMargin: 8.0)
                 showTipsButton.dimsWhenHighlighted = true
                 showTipsButton.block = { [weak self] in
                     self?.didShowTips()
@@ -369,7 +370,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 "SAFETY_TIPS_BUTTON_ACTION_TITLE",
                 comment: "Title for Safety Tips button in thread details."
             ),
-            font: UIFont.dynamicTypeSubheadlineClamped,
+            font: UIFont.dynamicTypeCaption1.medium(),
             textColor: Theme.isDarkThemeEnabled ? .ows_white : .ows_black
         )
     }
@@ -610,6 +611,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         }
 
         if let mutualGroupsText = self.mutualGroupsText {
+
+            innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
+
             let mutualGroupsSize: CGSize
             if conversationStyle.hasWallpaper {
                 innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
