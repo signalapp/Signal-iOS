@@ -25,6 +25,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private var bioText: String? { threadDetails.bioText }
     private var detailsText: String? { threadDetails.detailsText }
     private var mutualGroupsText: NSAttributedString? { threadDetails.mutualGroupsText }
+    private var shouldShowSafetyTip: Bool { threadDetails.mutualGroupsTapAction != nil }
     private var groupDescriptionText: String? { threadDetails.groupDescriptionText }
 
     private var canTapTitle: Bool {
@@ -210,21 +211,24 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             let mutualGroupsLabelSize = CVText.measureLabel(config: mutualGroupsLabelConfig, maxWidth: maxWidth)
             groupInfoSubviewInfos.append(mutualGroupsLabelSize.asManualSubviewInfo)
 
-            let safetyButtonLabelConfig = safetyTipsConfig()
-            safetyButtonLabelConfig.applyForRendering(button: showTipsButton)
-            showTipsButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray05
-            showTipsButton.contentEdgeInsets = .init(hMargin: 12.0, vMargin: 4.0)
-            showTipsButton.dimsWhenHighlighted = true
-            showTipsButton.block = { [weak self] in
-                self?.didShowTips()
+            if self.shouldShowSafetyTip {
+                let safetyButtonLabelConfig = safetyTipsConfig()
+                safetyButtonLabelConfig.applyForRendering(button: showTipsButton)
+                showTipsButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray05
+                showTipsButton.contentEdgeInsets = .init(hMargin: 12.0, vMargin: 4.0)
+                showTipsButton.dimsWhenHighlighted = true
+                showTipsButton.block = { [weak self] in
+                    self?.didShowTips()
+                }
+                groupInfoSubviewInfos.append(showTipsButton.sizeThatFitsMaxSize.asManualSubviewInfo)
             }
 
-            let groupInfoStack = ManualStackView(name: "groupInfoStack")
-            groupInfoSubviewInfos.append(showTipsButton.sizeThatFitsMaxSize.asManualSubviewInfo)
             let groupInfoStackMeasurement = ManualStackView.measure(
                 config: groupStackConfig,
                 subviewInfos: groupInfoSubviewInfos
             )
+
+            let groupInfoStack = ManualStackView(name: "groupInfoStack")
             groupInfoStack.configure(
                 config: groupStackConfig,
                 measurement: groupInfoStackMeasurement,
@@ -466,7 +470,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             )
         }()
 
-        let (mutualGroupsText, shouldShowLearnMore) = Self.buildMutualGroupsContactString(
+        let (mutualGroupsText, shouldShowSafetyTip) = Self.buildMutualGroupsContactString(
             for: displayName,
             in: contactThread,
             tx: transaction
@@ -480,7 +484,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             bioText: bioText,
             detailsText: detailsText,
             mutualGroupsText: mutualGroupsText,
-            mutualGroupsTapAction: shouldShowLearnMore ? .unknownThreadWarningContact : nil,
+            mutualGroupsTapAction: shouldShowSafetyTip ? .showContactSafetyTip : nil,
             groupDescriptionText: nil
         )
     }
@@ -532,7 +536,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             bioText: nil,
             detailsText: detailsText,
             mutualGroupsText: mutualGroupsText,
-            mutualGroupsTapAction: mutualGroupsText == nil ? nil : .unknownThreadWarningGroup,
+            mutualGroupsTapAction: mutualGroupsText == nil ? nil : .showGroupSafetyTip,
             groupDescriptionText: descriptionText
         )
     }
@@ -612,18 +616,22 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             }
 
             let maxGroupWidth = maxContentWidth - mutualGroupsPadding * 2
-            let safetyTipSize = CVText.measureLabel(
-                config: safetyTipsConfig(),
-                maxWidth: maxGroupWidth
-            )
+            var groupInfoSubviewInfos = [ManualStackSubviewInfo]()
+
             let groupLabelSize = CVText.measureLabel(
                 config: mutualGroupsLabelConfig(attributedText: mutualGroupsText),
                 maxWidth: maxGroupWidth
             )
-            let groupInfoSubviewInfos = [
-                safetyTipSize.asManualSubviewInfo,
-                groupLabelSize.asManualSubviewInfo
-            ]
+            groupInfoSubviewInfos.append(groupLabelSize.asManualSubviewInfo)
+
+            if self.shouldShowSafetyTip {
+                let safetyTipSize = CVText.measureLabel(
+                    config: safetyTipsConfig(),
+                    maxWidth: maxGroupWidth
+                )
+                groupInfoSubviewInfos.append(safetyTipSize.asManualSubviewInfo)
+            }
+
             mutualGroupsSize = ManualStackView.measure(
                 config: groupStackConfig,
                 subviewInfos: groupInfoSubviewInfos
@@ -748,9 +756,9 @@ extension CVComponentThreadDetails {
     private func didShowTips() {
         let type: SafetyTipsType = {
             switch threadDetails.mutualGroupsTapAction {
-            case .none, .unknownThreadWarningContact:
+            case .none, .showContactSafetyTip:
                 return .contact
-            case .unknownThreadWarningGroup:
+            case .showGroupSafetyTip:
                 return .group
             }
         }()
@@ -786,11 +794,11 @@ extension CVComponentThreadDetails {
         in contactThread: TSContactThread,
         tx: SDSAnyReadTransaction
     ) -> (NSAttributedString?, Bool) {
-        var shouldShowLearnMore = false
+        var shouldShowSafetyTip = false
 
         guard !contactThread.contactAddress.isLocalAddress else {
             // Don't show mutual groups for "Note to Self".
-            return (nil, shouldShowLearnMore)
+            return (nil, shouldShowSafetyTip)
         }
 
         let groupThreads = TSGroupThread.groupThreads(with: contactThread.contactAddress, transaction: tx)
@@ -807,13 +815,13 @@ extension CVComponentThreadDetails {
                 thread: contactThread,
                 transaction: tx
             ) else {
-                return (nil, shouldShowLearnMore)
+                return (nil, shouldShowSafetyTip)
             }
             formatString = OWSLocalizedString(
                 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
                 comment: "Indicator warning about an unknown contact thread."
             )
-            shouldShowLearnMore = true
+            shouldShowSafetyTip = true
         case 1:
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_ONE_MUTUAL_GROUP",
@@ -883,6 +891,6 @@ extension CVComponentThreadDetails {
                 fromFormat: formatString,
                 attributedFormatArgs: formatArgs
             )
-        ]), shouldShowLearnMore)
+        ]), shouldShowSafetyTip)
     }
 }
