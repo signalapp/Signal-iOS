@@ -275,6 +275,32 @@ extension AttachmentReference.Owner {
 
 // MARK: - Converters
 
+extension AttachmentReference.Owner {
+
+    internal var type: AttachmentReference.OwnerType {
+        switch self {
+        case .message(.bodyAttachment(let metadata)):
+            return .messageBodyAttachment(messageRowId: metadata._ownerRowId)
+        case .message(.oversizeText(let metadata)):
+            return .messageOversizeText(messageRowId: metadata._ownerRowId)
+        case .message(.linkPreview(let metadata)):
+            return .messageLinkPreview(messageRowId: metadata._ownerRowId)
+        case .message(.quotedReply(let metadata)):
+            return .quotedReplyAttachment(messageRowId: metadata._ownerRowId)
+        case .message(.sticker(let metadata)):
+            return .messageSticker(messageRowId: metadata._ownerRowId)
+        case .message(.contactAvatar(let metadata)):
+            return .messageContactAvatar(messageRowId: metadata._ownerRowId)
+        case .storyMessage(.media(let metadata)):
+            return .storyMessageMedia(storyMessageRowId: metadata._ownerRowId)
+        case .storyMessage(.textStoryLinkPreview(let metadata)):
+            return .storyMessageLinkPreview(storyMessageRowId: metadata._ownerRowId)
+        case .thread(let metadata):
+            return .threadWallpaperImage(threadRowId: metadata._ownerRowId)
+        }
+    }
+}
+
 extension AttachmentReference.OwnerType {
 
     internal var raw: AttachmentReference.OwnerTypeRaw {
