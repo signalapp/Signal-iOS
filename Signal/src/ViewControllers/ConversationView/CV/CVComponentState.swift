@@ -254,8 +254,8 @@ public class CVComponentState: Equatable, Dependencies {
 
     struct ThreadDetails: Equatable {
         enum MutualGroupsTapAction: Equatable {
-            case unknownThreadWarningContact
-            case unknownThreadWarningGroup
+            case showContactSafetyTip
+            case showGroupSafetyTip
         }
 
         let avatarDataSource: ConversationAvatarDataSource?
