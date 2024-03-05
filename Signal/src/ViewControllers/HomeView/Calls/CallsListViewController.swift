@@ -183,8 +183,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         multiselectToolbarContainer?.toolbar
     }
 
+    private lazy var toolbarDeleteButton = UIBarButtonItem(
+        title: CommonStrings.deleteButton,
+        style: .plain,
+        target: self,
+        action: #selector(deleteSelectedCalls)
+    )
+
     private func showToolbar() {
-        guard let tabController = tabBarController as? HomeTabBarController else { return }
+        guard
+            // Don't create a new toolbar if we already have one
+            multiselectToolbarContainer == nil,
+            let tabController = tabBarController as? HomeTabBarController
+        else { return }
 
         let toolbarContainer = BlurredToolbarContainer()
         toolbarContainer.alpha = 0
@@ -197,9 +208,15 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         self.tableView.contentInset.bottom = bottomInset
         self.tableView.verticalScrollIndicatorInsets.bottom = bottomInset
 
-        tabController.setTabBarHidden(true, animated: true, duration: 0.1) { _ in
+        tabController.setTabBarHidden(true, animated: true, duration: 0.1) { [weak self] _ in
+            guard let self else { return }
             // See ChatListViewController.showToolbar for why this is async
             DispatchQueue.main.async {
+                let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+                self.multiselectToolbar?.setItems(
+                    [spacer, self.toolbarDeleteButton],
+                    animated: false
+                )
                 self.updateMultiselectToolbarButtons()
             }
             UIView.animate(withDuration: 0.25) {
@@ -209,24 +226,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     private func updateMultiselectToolbarButtons() {
-        guard let multiselectToolbar else { return }
-
         let selectedRows = tableView.indexPathsForSelectedRows ?? []
         let hasSelectedEntries = !selectedRows.isEmpty
-
-        let deleteButton = UIBarButtonItem(
-            title: CommonStrings.deleteButton,
-            style: .plain,
-            target: self,
-            action: #selector(deleteSelectedCalls)
-        )
-        deleteButton.isEnabled = hasSelectedEntries
-
-        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        multiselectToolbar.setItems(
-            [spacer, deleteButton],
-            animated: false
-        )
+        toolbarDeleteButton.isEnabled = hasSelectedEntries
     }
 
     @objc
@@ -296,6 +298,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             multiselectToolbarContainer.alpha = 0
         } completion: { _ in
             multiselectToolbarContainer.removeFromSuperview()
+            self.multiselectToolbarContainer = nil
             guard let tabController = self.tabBarController as? HomeTabBarController else { return }
             tabController.setTabBarHidden(false, animated: true, duration: 0.1) { _ in
                 self.tableView.contentInset.bottom = 0
