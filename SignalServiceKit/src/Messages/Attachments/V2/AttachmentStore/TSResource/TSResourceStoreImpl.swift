@@ -7,10 +7,10 @@ import Foundation
 
 public class TSResourceStoreImpl: TSResourceStore {
 
-    private let tsAttachmentStore: TSAttachmentStoreImpl
+    private let tsAttachmentStore: TSAttachmentStore
 
     public init() {
-        self.tsAttachmentStore = TSAttachmentStoreImpl()
+        self.tsAttachmentStore = TSAttachmentStore()
     }
 
     public func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
@@ -21,7 +21,7 @@ public class TSResourceStoreImpl: TSResourceStore {
                 legacyIds.append(uniqueId)
             }
         }
-        return tsAttachmentStore.attachments(withAttachmentIds: legacyIds, tx: tx)
+        return tsAttachmentStore.attachments(withAttachmentIds: legacyIds, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     // MARK: - Message Attachment fetching
@@ -51,7 +51,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             // TODO: fetch v2 attachments
             return []
         } else {
-            return tsAttachmentStore.attachments(withAttachmentIds: message.attachmentIds, tx: tx)
+            return tsAttachmentStore.attachments(withAttachmentIds: message.attachmentIds, tx: SDSDB.shimOnlyBridge(tx))
                 .map(TSAttachmentReference.init(_:))
         }
     }
@@ -64,7 +64,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             return tsAttachmentStore.attachments(
                 withAttachmentIds: message.attachmentIds,
                 ignoringContentType: OWSMimeTypeOversizeTextMessage,
-                tx: tx
+                tx: SDSDB.shimOnlyBridge(tx)
             ).map(TSAttachmentReference.init(_:))
         }
     }
@@ -78,7 +78,7 @@ public class TSResourceStoreImpl: TSResourceStore {
                 let attachment = tsAttachmentStore.attachments(
                     withAttachmentIds: message.attachmentIds,
                     matchingContentType: OWSMimeTypeOversizeTextMessage,
-                    tx: tx
+                    tx: SDSDB.shimOnlyBridge(tx)
                 ).first
             else {
                 return nil
@@ -154,7 +154,7 @@ extension TSResourceStoreImpl {
     private func legacyReference(uniqueId: String?, tx: DBReadTransaction) -> TSResourceReference? {
         guard
             let uniqueId,
-            let attachment = tsAttachmentStore.attachments(withAttachmentIds: [uniqueId], tx: tx).first
+            let attachment = tsAttachmentStore.attachments(withAttachmentIds: [uniqueId], tx: SDSDB.shimOnlyBridge(tx)).first
         else {
             return nil
         }

@@ -6,77 +6,37 @@
 import Foundation
 import GRDB
 
-public protocol TSAttachmentStore {
-
-    func anyInsert(
-        _ attachment: TSAttachment,
-        tx: DBWriteTransaction
-    )
-
-    func attachments(
-        withAttachmentIds attachmentIds: [String],
-        tx: DBReadTransaction
-    ) -> [TSAttachment]
-
-    func fetchAttachmentStream(
-        uniqueId: String,
-        tx: DBReadTransaction
-    ) -> TSAttachmentStream?
-
-    func attachmentPointerIdsToMarkAsFailed(
-        tx: DBReadTransaction
-    ) -> [String]
-
-    func attachments(
-        withAttachmentIds attachmentIds: [String],
-        matchingContentType: String,
-        tx: DBReadTransaction
-    ) -> [TSAttachment]
-
-    func attachments(
-        withAttachmentIds attachmentIds: [String],
-        ignoringContentType: String,
-        tx: DBReadTransaction
-    ) -> [TSAttachment]
-
-    func existsAttachments(
-        withAttachmentIds attachmentIds: [String],
-        ignoringContentType: String,
-        tx: DBReadTransaction
-    ) -> Bool
-}
-
-public class TSAttachmentStoreImpl: TSAttachmentStore {
+public class TSAttachmentStore {
 
     public init() {}
 
-    public func anyInsert(_ attachment: TSAttachment, tx: DBWriteTransaction) {
-        attachment.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+    public func anyInsert(_ attachment: TSAttachment, tx: SDSAnyWriteTransaction) {
+        attachment.anyInsert(transaction: tx)
     }
 
     public func attachments(
         withAttachmentIds attachmentIds: [String],
-        tx: DBReadTransaction
+        tx: SDSAnyReadTransaction
     ) -> [TSAttachment] {
         return attachments(
             withAttachmentIds: attachmentIds,
             ignoringContentType: nil,
             matchingContentType: nil,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+            transaction: tx.unwrapGrdbRead
         )
     }
 
     public func fetchAttachmentStream(
         uniqueId: String,
-        tx: DBReadTransaction
+        tx: SDSAnyReadTransaction
     ) -> TSAttachmentStream? {
         TSAttachmentStream.anyFetchAttachmentStream(
             uniqueId: uniqueId,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
-    public func attachmentPointerIdsToMarkAsFailed(tx: DBReadTransaction) -> [String] {
+    public func attachmentPointerIdsToMarkAsFailed(tx: SDSAnyReadTransaction) -> [String] {
         // In DEBUG builds, confirm that we use the expected index.
         let indexedBy: String
         #if DEBUG
@@ -96,7 +56,7 @@ public class TSAttachmentStoreImpl: TSAttachmentStore {
         )
         """
         do {
-            return try String.fetchAll(SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, sql: sql)
+            return try String.fetchAll(tx.unwrapGrdbRead.database, sql: sql)
         } catch {
             owsFailDebug("error: \(error)")
             return []
@@ -106,33 +66,33 @@ public class TSAttachmentStoreImpl: TSAttachmentStore {
     public func attachments(
         withAttachmentIds attachmentIds: [String],
         matchingContentType: String,
-        tx: DBReadTransaction
+        tx: SDSAnyReadTransaction
     ) -> [TSAttachment] {
         return attachments(
             withAttachmentIds: attachmentIds,
             ignoringContentType: nil,
             matchingContentType: matchingContentType,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+            transaction: tx.unwrapGrdbRead
         )
     }
 
     public func attachments(
         withAttachmentIds attachmentIds: [String],
         ignoringContentType: String,
-        tx: DBReadTransaction
+        tx: SDSAnyReadTransaction
     ) -> [TSAttachment] {
         return attachments(
             withAttachmentIds: attachmentIds,
             ignoringContentType: ignoringContentType,
             matchingContentType: nil,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+            transaction: tx.unwrapGrdbRead
         )
     }
 
     public func existsAttachments(
         withAttachmentIds attachmentIds: [String],
         ignoringContentType: String,
-        tx: DBReadTransaction
+        tx: SDSAnyReadTransaction
     ) -> Bool {
         guard !attachmentIds.isEmpty else { return false }
 
@@ -149,7 +109,7 @@ public class TSAttachmentStoreImpl: TSAttachmentStore {
         let exists: Bool
         do {
             exists = try Bool.fetchOne(
-                SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+                tx.unwrapGrdbRead.database,
                 sql: sql,
                 arguments: [ignoringContentType]
             ) ?? false
@@ -213,102 +173,3 @@ public class TSAttachmentStoreImpl: TSAttachmentStore {
         }
     }
 }
-
-#if TESTABLE_BUILD
-
-open class TSAttachmentStoreMock: TSAttachmentStore {
-
-    public init() {}
-
-    public var attachments = [TSAttachment]()
-
-    public func anyInsert(_ attachment: TSAttachment, tx: DBWriteTransaction) {
-        self.attachments.append(attachment)
-    }
-
-    public func fetchAttachmentStream(uniqueId: String, tx: DBReadTransaction) -> TSAttachmentStream? {
-        return nil
-    }
-
-    public func updateAsUploaded(
-        attachmentStream: TSAttachmentStream,
-        encryptionKey: Data,
-        digest: Data,
-        cdnKey: String,
-        cdnNumber: UInt32,
-        uploadTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) { }
-
-    public func attachments(withAttachmentIds attachmentIds: [String], tx: DBReadTransaction) -> [TSAttachment] {
-        return attachments.filter { attachmentIds.contains($0.uniqueId) }
-    }
-
-    public func attachmentPointerIdsToMarkAsFailed(tx: DBReadTransaction) -> [String] {
-        return attachments.lazy
-            .filter {
-                switch ($0 as? TSAttachmentPointer)?.state {
-                case .none, .failed, .pendingManualDownload, .pendingMessageRequest:
-                    return false
-                case .downloading, .enqueued:
-                    return true
-                }
-            }
-            .map(\.uniqueId)
-    }
-
-    public func attachments(
-        withAttachmentIds attachmentIds: [String],
-        matchingContentType: String,
-        tx: DBReadTransaction
-    ) -> [TSAttachment] {
-        return attachments.filter {
-            guard attachmentIds.contains($0.uniqueId) else {
-                return false
-            }
-            return $0.contentType == matchingContentType
-        }
-    }
-
-    public func attachments(
-        withAttachmentIds attachmentIds: [String],
-        ignoringContentType: String,
-        tx: DBReadTransaction
-    ) -> [TSAttachment] {
-        return attachments.filter {
-            guard attachmentIds.contains($0.uniqueId) else {
-                return false
-            }
-            return $0.contentType != ignoringContentType
-        }
-    }
-
-    public func existsAttachments(
-        withAttachmentIds attachmentIds: [String],
-        ignoringContentType: String,
-        tx: DBReadTransaction
-    ) -> Bool {
-        return attachments.contains(where: {
-            guard attachmentIds.contains($0.uniqueId) else {
-                return false
-            }
-            return $0.contentType != ignoringContentType
-        })
-    }
-
-    // MARK: - TSMessage Writes
-
-    public func addBodyAttachments(
-        _ attachments: [TSAttachment],
-        to message: TSMessage,
-        tx: DBWriteTransaction
-    ) {}
-
-    public func removeBodyAttachment(
-        _ attachment: TSAttachment,
-        from message: TSMessage,
-        tx: DBWriteTransaction
-    ) {}
-}
-
-#endif

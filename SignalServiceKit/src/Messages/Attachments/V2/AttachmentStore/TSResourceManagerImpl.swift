@@ -24,7 +24,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             tsAttachmentManager.createBodyAttachmentPointers(
                 from: protos,
                 message: message,
-                tx: tx
+                tx: SDSDB.shimOnlyBridge(tx)
             )
         }
     }
@@ -43,7 +43,7 @@ public class TSResourceManagerImpl: TSResourceManager {
                 legacyAttachments.append(attachment)
             }
         }
-        tsAttachmentManager.addBodyAttachments(legacyAttachments, to: message, tx: tx)
+        tsAttachmentManager.addBodyAttachments(legacyAttachments, to: message, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func removeBodyAttachment(
@@ -53,7 +53,7 @@ public class TSResourceManagerImpl: TSResourceManager {
     ) {
         switch attachment.concreteType {
         case .legacy(let legacyAttachment):
-            tsAttachmentManager.removeBodyAttachment(legacyAttachment, from: message, tx: tx)
+            tsAttachmentManager.removeBodyAttachment(legacyAttachment, from: message, tx: SDSDB.shimOnlyBridge(tx))
         }
     }
 }

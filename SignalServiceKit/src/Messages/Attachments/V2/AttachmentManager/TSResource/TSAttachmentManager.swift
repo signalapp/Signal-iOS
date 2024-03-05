@@ -12,14 +12,14 @@ public class TSAttachmentManager {
     public func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
         message: TSMessage,
-        tx: DBWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
         let attachmentPointers = TSAttachmentPointer.attachmentPointers(
             fromProtos: protos,
             albumMessage: message
         )
         for pointer in attachmentPointers {
-            pointer.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+            pointer.anyInsert(transaction: tx)
         }
         self.addBodyAttachments(attachmentPointers, to: message, tx: tx)
     }
@@ -29,9 +29,9 @@ public class TSAttachmentManager {
     public func addBodyAttachments(
         _ attachments: [TSAttachment],
         to message: TSMessage,
-        tx: DBWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
-        message.anyUpdateMessage(transaction: SDSDB.shimOnlyBridge(tx)) { message in
+        message.anyUpdateMessage(transaction: tx) { message in
             var attachmentIds = message.attachmentIds
             var attachmentIdSet = Set(attachmentIds)
             for attachment in attachments {
@@ -48,12 +48,12 @@ public class TSAttachmentManager {
     public func removeBodyAttachment(
         _ attachment: TSAttachment,
         from message: TSMessage,
-        tx: DBWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
         owsAssertDebug(message.attachmentIds.contains(attachment.uniqueId))
-        attachment.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+        attachment.anyRemove(transaction: tx)
 
-        message.anyUpdateMessage(transaction: SDSDB.shimOnlyBridge(tx)) { message in
+        message.anyUpdateMessage(transaction: tx) { message in
             var attachmentIds = message.attachmentIds
             attachmentIds.removeAll(where: { $0 == attachment.uniqueId })
             message.setLegacyBodyAttachmentIds(attachmentIds)
