@@ -145,7 +145,6 @@ internal struct PreKeyTaskManager {
         force: Bool = false,
         auth: ChatServiceAuth
     ) async throws {
-        PreKey.logger.info("[\(identity)] Refresh [\(targets)]")
         try Task.checkCancellation()
         try await waitForMessageProcessing(identity: identity)
         try Task.checkCancellation()
@@ -171,7 +170,11 @@ internal struct PreKeyTaskManager {
             )
         }
 
-        PreKey.logger.info("[\(identity)] Refresh(filtered): [\(filteredTargets)]")
+        if filteredTargets.isEmpty {
+            return
+        }
+
+        PreKey.logger.info("[\(identity)] Refresh: [\(filteredTargets)]")
         let bundle = try await db.awaitableWrite { tx in
             let identityKeyPair = try self.requireIdentityKeyPair(for: identity, tx: tx)
             return try self.createAndPersistPartialBundle(
@@ -376,8 +379,6 @@ internal struct PreKeyTaskManager {
                 }
                 if ecPreKeyRecordCount < Constants.EphemeralPreKeysMinimumCount {
                     value.insert(target: target)
-                } else {
-                    Logger.info("Available \(identity) keys sufficient: \(ecPreKeyRecordCount)")
                 }
             case .oneTimePqPreKey:
                 guard let pqPreKeyRecordCount else {
@@ -386,15 +387,13 @@ internal struct PreKeyTaskManager {
                 }
                 if pqPreKeyRecordCount < Constants.PqPreKeysMinimumCount {
                     value.insert(target: target)
-                } else {
-                    Logger.info("Available \(identity) PQ keys sufficient: \(pqPreKeyRecordCount)")
                 }
             case .signedPreKey:
                 if
                     let lastSuccessfulRotation,
                     dateProvider().timeIntervalSince(lastSuccessfulRotation) < Constants.SignedPreKeyRotationTime
                 {
-                    Logger.info("Available \(identity) signed PreKey is recent enough")
+                    // it's recent enough
                 } else {
                     value.insert(target: target)
                 }
@@ -403,7 +402,7 @@ internal struct PreKeyTaskManager {
                     let lastKyberSuccessfulRotation,
                     dateProvider().timeIntervalSince(lastKyberSuccessfulRotation) < Constants.LastResortPqPreKeyRotationTime
                 {
-                    Logger.info("Available \(identity) last resort PreKey is recent enough")
+                    // it's recent enough
                 } else {
                     value.insert(target: target)
                 }
@@ -526,7 +525,7 @@ internal struct PreKeyTaskManager {
 
         switch uploadResult {
         case .skipped:
-            PreKey.logger.info("[\(identity)] No keys to upload")
+            break
         case .success:
             PreKey.logger.info("[\(identity)] Successfully uploaded prekeys")
             try await db.awaitableWrite { tx in

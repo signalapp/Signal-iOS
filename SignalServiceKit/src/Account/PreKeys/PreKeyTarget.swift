@@ -24,13 +24,13 @@ extension PreKey {
         }
     }
 
-    public struct Target: OptionSet {
+    public struct Target: OptionSet, CustomDebugStringConvertible {
         public let rawValue: Int
         public init(rawValue: Int) {
             self.rawValue = rawValue
         }
 
-        static let signedPreKey  = Target(rawValue: SingleTarget.signedPreKey.rawValue)
+        static let signedPreKey = Target(rawValue: SingleTarget.signedPreKey.rawValue)
         static let oneTimePreKey = Target(rawValue: SingleTarget.oneTimePreKey.rawValue)
         static let oneTimePqPreKey = Target(rawValue: SingleTarget.oneTimePqPreKey.rawValue)
         static let lastResortPqPreKey = Target(rawValue: SingleTarget.lastResortPqPreKey.rawValue)
@@ -51,6 +51,10 @@ extension PreKey {
 
         static var all: Target {
             SingleTarget.allCases.reduce(into: []) { $0.insert(target: $1) }
+        }
+
+        public var debugDescription: String {
+            return "[" + targets.map { "\($0)" }.joined(separator: ", ") + "]"
         }
     }
 }
