@@ -71,14 +71,6 @@ public extension Dependencies {
         SMEnvironment.shared.preferencesRef
     }
 
-    var profileManagerImpl: OWSProfileManager {
-        profileManager as! OWSProfileManager
-    }
-
-    static var profileManagerImpl: OWSProfileManager {
-        profileManager as! OWSProfileManager
-    }
-
     var contactsManagerImpl: OWSContactsManager {
         contactsManager as! OWSContactsManager
     }

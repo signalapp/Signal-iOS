@@ -4,10 +4,9 @@
 //
 
 import LibSignalClient
-import SignalServiceKit
 import XCTest
 
-@testable import SignalMessaging
+@testable import SignalServiceKit
 
 class ProfileManagerTest: XCTestCase {
     func testNormalizeRecipientInProfileWhitelist() {

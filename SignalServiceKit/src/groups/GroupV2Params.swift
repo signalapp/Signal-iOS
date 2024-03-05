@@ -4,14 +4,13 @@
 //
 
 import Foundation
-import SignalServiceKit
 import LibSignalClient
 
 public struct GroupV2Params {
-    let groupSecretParamsData: Data
-    let groupSecretParams: GroupSecretParams
-    let groupPublicParams: GroupPublicParams
-    let groupPublicParamsData: Data
+    public let groupSecretParamsData: Data
+    public let groupSecretParams: GroupSecretParams
+    public let groupPublicParams: GroupPublicParams
+    public let groupPublicParamsData: Data
 
     public init(groupSecretParamsData: Data) throws {
         self.groupSecretParamsData = groupSecretParamsData

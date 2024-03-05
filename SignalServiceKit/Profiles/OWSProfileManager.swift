@@ -6,14 +6,16 @@
 import Foundation
 import LibSignalClient
 import SignalCoreKit
-import SignalServiceKit
 
-class OWSProfileManagerSwiftValues {
+public class OWSProfileManagerSwiftValues {
     fileprivate let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: AtomicLock())
     fileprivate let avatarDownloadRequests = AtomicValue<[OWSProfileManager.AvatarDownloadKey: Promise<Data>]>([:], lock: AtomicLock())
+
+    public init() {
+    }
 }
 
-extension OWSProfileManager: ProfileManager {
+extension OWSProfileManager: ProfileManager, Dependencies {
     public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         do {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
@@ -482,7 +484,7 @@ extension OWSProfileManager: ProfileManager {
         )
     }
 
-    static func swift_normalizeRecipientInProfileWhitelist(
+    public static func swift_normalizeRecipientInProfileWhitelist(
         _ recipient: SignalRecipient,
         serviceIdStore: KeyValueStore,
         phoneNumberStore: KeyValueStore,

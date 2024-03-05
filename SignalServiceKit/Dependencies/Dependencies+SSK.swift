@@ -575,6 +575,14 @@ public extension Dependencies {
         SSKEnvironment.shared.profileManagerRef
     }
 
+    var profileManagerImpl: OWSProfileManager {
+        profileManager as! OWSProfileManager
+    }
+
+    static var profileManagerImpl: OWSProfileManager {
+        profileManager as! OWSProfileManager
+    }
+
     var reachabilityManager: SSKReachabilityManager {
         SSKEnvironment.shared.reachabilityManagerRef
     }

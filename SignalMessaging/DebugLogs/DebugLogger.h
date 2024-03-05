@@ -7,8 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MainAppContext;
-
 @interface DebugLogger : NSObject
 
 + (instancetype)shared;

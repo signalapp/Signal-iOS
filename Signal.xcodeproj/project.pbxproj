@@ -229,7 +229,6 @@
 		3452851B26DE890400824983 /* DateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851A26DE890300824983 /* DateUtil.swift */; };
 		3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851C26DFD12300824983 /* PaymentsFormatTest.swift */; };
 		34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34546F4F2649989C007C4958 /* ChatColorViewController.swift */; };
-		3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
 		345772B6257E4E01001D7D44 /* CVViewStateSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345772B5257E4E01001D7D44 /* CVViewStateSnapshot.swift */; };
 		3457794326828A9A00732869 /* ConversationCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457794226828A9A00732869 /* ConversationCollectionView.swift */; };
 		3457811B23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457811A23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift */; };
@@ -239,8 +238,6 @@
 		346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129A21FD1F09100532771 /* OWSContactsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129A31FD1F09100532771 /* OWSContactsManager.m */; };
 		346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */; };
-		346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129B11FD1F7E800532771 /* OWSProfileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129B21FD1F7E800532771 /* OWSProfileManager.m */; };
 		34612A061FD7238600532771 /* OWSSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 34612A041FD7238500532771 /* OWSSyncManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34612A071FD7238600532771 /* OWSSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34612A051FD7238500532771 /* OWSSyncManager.m */; };
 		34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463532E256EA525003C5428 /* ConversationViewTest.swift */; };
@@ -270,8 +267,6 @@
 		346EFC3D25FFDC6A00F493C7 /* update-pin-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3925FFDC6900F493C7 /* update-pin-dark.json */; };
 		346EFC3E25FFDC6A00F493C7 /* update-pin.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3A25FFDC6A00F493C7 /* update-pin.json */; };
 		346EFC40260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EFC3F260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift */; };
-		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
-		347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
 		347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */; };
 		3470518C254B320700A19468 /* CVRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470518B254B320700A19468 /* CVRenderState.swift */; };
 		3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470518D254B511B00A19468 /* ConversationViewController+CVC.swift */; };
@@ -419,10 +414,7 @@
 		34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* SplashViewController.swift */; };
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
 		34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
-		34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
 		34BB3C5E23C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */; };
-		34BB3C5F23C6644B001651FC /* GroupV2SnapshotImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */; };
-		34BB3C6023C6644B001651FC /* GroupV2Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5B23C6644B001651FC /* GroupV2Params.swift */; };
 		34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */; };
 		34BB78B5272C510900DA0D04 /* MobileCoinHelperMinimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */; };
 		34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */; };
@@ -715,7 +707,6 @@
 		5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
 		507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */; };
-		508347062AABBF9900DD2EC0 /* ProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */; };
 		508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */; };
 		5096BE652AF3514800668F9F /* ContactSyncAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */; };
 		5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE682AF37A9900668F9F /* ContactOutputStream.swift */; };
@@ -1063,6 +1054,15 @@
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
 		724D47B02B97BE13001BE973 /* ZkParamsMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */; };
 		724D47B22B97BE96001BE973 /* ZkParamsMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */; };
+		724D47B52B97C28F001BE973 /* ProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */; };
+		724D47B62B97C29F001BE973 /* OWSProfileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129B11FD1F7E800532771 /* OWSProfileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		724D47B72B97C301001BE973 /* OWSProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129B21FD1F7E800532771 /* OWSProfileManager.m */; };
+		724D47B82B97C301001BE973 /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
+		724D47B92B97C301001BE973 /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
+		724D47BA2B97C51D001BE973 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
+		724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5B23C6644B001651FC /* GroupV2Params.swift */; };
+		724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */; };
+		724D47BD2B97C5B9001BE973 /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -5881,10 +5881,6 @@
 		346129B01FD1F7E800532771 /* profiles */ = {
 			isa = PBXGroup;
 			children = (
-				346129B11FD1F7E800532771 /* OWSProfileManager.h */,
-				346129B21FD1F7E800532771 /* OWSProfileManager.m */,
-				3470249D2385B6360078D72C /* OWSProfileManager.swift */,
-				3470249F238C85850078D72C /* VersionedProfilesImpl.swift */,
 			);
 			path = profiles;
 			sourceTree = "<group>";
@@ -6516,10 +6512,6 @@
 				34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */,
 				34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */,
 				345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */,
-				3456A73123D63EBE00947219 /* GroupsV2Protos.swift */,
-				34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */,
-				34BB3C5B23C6644B001651FC /* GroupV2Params.swift */,
-				34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */,
 				340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */,
 				340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */,
 			);
@@ -7756,6 +7748,25 @@
 				501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */,
 			);
 			path = ZkParams;
+			sourceTree = "<group>";
+		};
+		724D47B32B97C226001BE973 /* Profiles */ = {
+			isa = PBXGroup;
+			children = (
+				346129B11FD1F7E800532771 /* OWSProfileManager.h */,
+				346129B21FD1F7E800532771 /* OWSProfileManager.m */,
+				3470249D2385B6360078D72C /* OWSProfileManager.swift */,
+				3470249F238C85850078D72C /* VersionedProfilesImpl.swift */,
+			);
+			path = Profiles;
+			sourceTree = "<group>";
+		};
+		724D47B42B97C250001BE973 /* Profiles */ = {
+			isa = PBXGroup;
+			children = (
+				508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */,
+			);
+			path = Profiles;
 			sourceTree = "<group>";
 		};
 		765283AC2A00D893004583A9 /* OWSTableView */ = {
@@ -9701,6 +9712,7 @@
 				F9C5CA9F289453B200548EEE /* Payments */,
 				6694BF662B3647F000B18764 /* PinnedThreadManager */,
 				50A76F542AF573C000FCF02D /* Preconditions */,
+				724D47B32B97C226001BE973 /* Profiles */,
 				F9C5CA00289453B100548EEE /* Protocols */,
 				F9C5C9A1289453B100548EEE /* Protos */,
 				6600F352298C8FBB00B1EDB7 /* Registration */,
@@ -9741,6 +9753,7 @@
 				F942621C289B1B5500460798 /* Messages */,
 				D9F399B72A9EA1EB001599EC /* Mocks */,
 				F94261CF289B1B5400460798 /* Network */,
+				724D47B42B97C250001BE973 /* Profiles */,
 				F97391A128EF0AFB002DDE5D /* Protos */,
 				6600F365298D9D0000B1EDB7 /* Registration */,
 				6600F381298F2A3200B1EDB7 /* Schedulers */,
@@ -10794,19 +10807,23 @@
 		F9C5CBA3289453B200548EEE /* groups */ = {
 			isa = PBXGroup;
 			children = (
-				F9C5CBA5289453B200548EEE /* GroupAccess.swift */,
-				D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */,
-				F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */,
-				F9C5CBA9289453B200548EEE /* GroupManager.swift */,
-				F9C5CBA4289453B200548EEE /* GroupMembership.swift */,
-				F9C5CBAA289453B200548EEE /* GroupsV2.swift */,
-				D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */,
-				D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */,
-				662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */,
-				F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */,
-				D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */,
 				F9C5CBA6289453B200548EEE /* TSGroupModel.h */,
 				F9C5CBA8289453B200548EEE /* TSGroupModel.m */,
+				F9C5CBA5289453B200548EEE /* GroupAccess.swift */,
+				F9C5CBA9289453B200548EEE /* GroupManager.swift */,
+				D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */,
+				F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */,
+				F9C5CBA4289453B200548EEE /* GroupMembership.swift */,
+				F9C5CBAA289453B200548EEE /* GroupsV2.swift */,
+				3456A73123D63EBE00947219 /* GroupsV2Protos.swift */,
+				34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */,
+				D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */,
+				D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */,
+				662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */,
+				34BB3C5B23C6644B001651FC /* GroupV2Params.swift */,
+				34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */,
+				F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */,
+				D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */,
 				F9C5CBAB289453B200548EEE /* TSGroupModel.swift */,
 				F9C5CBA7289453B200548EEE /* TSGroupModelBuilder.swift */,
 			);
@@ -10819,7 +10836,6 @@
 			children = (
 				F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */,
 				764981422A230F2C00EC1287 /* MockSMEnvironment.swift */,
-				508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */,
 				505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */,
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 				503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */,
@@ -10864,7 +10880,6 @@
 				179E8C33276A713300AF640F /* AFQueryString.h in Headers */,
 				34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */,
 				346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */,
-				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
 				34612A061FD7238600532771 /* OWSSyncManager.h in Headers */,
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
 				453518961FC63DBF00210559 /* SignalMessaging.h in Headers */,
@@ -10942,6 +10957,7 @@
 				6642A8742A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h in Headers */,
 				6605D4FD2A85AD17004DC345 /* OWSPaymentMessage.h in Headers */,
 				F9C5CC6F289453B300548EEE /* OWSProfileKeyMessage.h in Headers */,
+				724D47B62B97C29F001BE973 /* OWSProfileManager.h in Headers */,
 				F9C5CD00289453B300548EEE /* OWSReadReceiptsForLinkedDevicesMessage.h in Headers */,
 				F9C5CC4B289453B300548EEE /* OWSReadTracking.h in Headers */,
 				F9C5CC55289453B300548EEE /* OWSReceiptManager.h in Headers */,
@@ -12316,10 +12332,6 @@
 				34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */,
 				34BB3C5E23C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift in Sources */,
 				345DE96023ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift in Sources */,
-				3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */,
-				34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */,
-				34BB3C6023C6644B001651FC /* GroupV2Params.swift in Sources */,
-				34BB3C5F23C6644B001651FC /* GroupV2SnapshotImpl.swift in Sources */,
 				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
@@ -12335,8 +12347,6 @@
 				3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
 				501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */,
-				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
-				3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */,
 				34612A071FD7238600532771 /* OWSSyncManager.m in Sources */,
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,
 				3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */,
@@ -12379,7 +12389,6 @@
 				3402A9E3271D96570084CBAE /* UIView+OWS.swift in Sources */,
 				D9C2D77A299B0B9800D79715 /* Usernames+BetterIdentifierChecker.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
-				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,
 				503AECCD29B2B88600642F66 /* VoiceMessageConstants.swift in Sources */,
 				3402AABF271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift in Sources */,
 			);
@@ -13111,7 +13120,6 @@
 				3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */,
 				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
 				4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */,
-				508347062AABBF9900DD2EC0 /* ProfileManagerTest.swift in Sources */,
 				66CDB7602AFC45CF009A36EC /* ProvisioningCoordinator+Mocks.swift in Sources */,
 				66CDB75D2AFC42FC009A36EC /* ProvisioningCoordinatorTest.swift in Sources */,
 				349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */,
@@ -13141,6 +13149,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				724D47B72B97C301001BE973 /* OWSProfileManager.m in Sources */,
+				724D47B82B97C301001BE973 /* OWSProfileManager.swift in Sources */,
+				724D47B92B97C301001BE973 /* VersionedProfilesImpl.swift in Sources */,
 				724D47B02B97BE13001BE973 /* ZkParamsMigrator.swift in Sources */,
 				6645F30C29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift in Sources */,
 				6645F30829BF8D2000B58EBD /* AccountAttributes.swift in Sources */,
@@ -13692,6 +13703,8 @@
 				6605B9802B194A7900E8A68A /* ReactionStore.swift in Sources */,
 				F9C5CE14289453B400548EEE /* ReadyFlag.swift in Sources */,
 				D9AE0AD32918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift in Sources */,
+				724D47BA2B97C51D001BE973 /* GroupsV2Protos.swift in Sources */,
+				724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */,
 				D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */,
 				D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */,
 				D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */,
@@ -13771,6 +13784,7 @@
 				66C2B14D2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift in Sources */,
 				66C2B14B2A13E2AC008DDE72 /* SgxWebsocketConnection.swift in Sources */,
 				66C2B1492A13E2A0008DDE72 /* SgxWebsocketConnectionFactory.swift in Sources */,
+				724D47BD2B97C5B9001BE973 /* GroupsV2Utils.swift in Sources */,
 				66CD25722B07EE3A00139E17 /* SharedMap.swift in Sources */,
 				F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */,
 				F9C5CCDD289453B300548EEE /* SignalAccountFinder.swift in Sources */,
@@ -13895,6 +13909,7 @@
 				F9C5CC76289453B300548EEE /* TSAttachmentStream.m in Sources */,
 				F9C5CC5C289453B300548EEE /* TSCall+SDS.swift in Sources */,
 				F9C5CC5D289453B300548EEE /* TSCall.m in Sources */,
+				724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */,
 				D91AC93E2B6337B200814975 /* TSCall.swift in Sources */,
 				F9C5CE67289453B400548EEE /* TSConstants.swift in Sources */,
 				F9C5CCD0289453B300548EEE /* TSContactThread+SDS.swift in Sources */,
@@ -14025,6 +14040,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				724D47B52B97C28F001BE973 /* ProfileManagerTest.swift in Sources */,
 				724D47B22B97BE96001BE973 /* ZkParamsMigratorTest.swift in Sources */,
 				50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */,
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
