@@ -134,23 +134,10 @@ extension OWSContactsManager: ContactManager {
     }
 
     private func isLowTrustGroup(groupThread: TSGroupThread, lowTrustCache: LowTrustCache, tx: SDSAnyReadTransaction) -> Bool {
-        let groupId = groupThread.groupId
         if lowTrustCache.contains(groupThread: groupThread) {
             return false
         }
-        if nil == groupThread.groupModel.avatarHash {
-            // DO NOT add to the cache.
-            return false
-        }
         if !groupThread.hasPendingMessageRequest(transaction: tx) {
-            lowTrustCache.add(groupThread: groupThread)
-            return false
-        }
-        // We can skip avatar blurring if the user has explicitly waived the blurring.
-        if
-            lowTrustCache === swiftValues.avatarBlurringCache,
-            swiftValues.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString, defaultValue: false, transaction: tx)
-        {
             lowTrustCache.add(groupThread: groupThread)
             return false
         }
@@ -228,7 +215,30 @@ extension OWSContactsManager: ContactManager {
     }
 
     public func shouldBlurGroupAvatar(groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) -> Bool {
-        isLowTrustGroup(groupThread: groupThread, lowTrustCache: swiftValues.avatarBlurringCache, tx: transaction)
+        if nil == groupThread.groupModel.avatarHash {
+            // DO NOT add to the cache.
+            return false
+        }
+
+        if !isLowTrustGroup(
+            groupThread: groupThread,
+            lowTrustCache: swiftValues.avatarBlurringCache,
+            tx: transaction
+        ) {
+            return false
+        }
+
+        // We can skip avatar blurring if the user has explicitly waived the blurring.
+        if swiftValues.skipGroupAvatarBlurByGroupIdStore.getBool(
+            groupThread.groupId.hexadecimalString,
+            defaultValue: false,
+            transaction: transaction)
+        {
+            swiftValues.avatarBlurringCache.add(groupThread: groupThread)
+            return false
+        }
+
+        return true
     }
 
     public static let skipContactAvatarBlurDidChange = NSNotification.Name("skipContactAvatarBlurDidChange")
