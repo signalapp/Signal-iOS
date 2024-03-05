@@ -44,7 +44,5 @@ public enum PhoneNumberDiscoverabilityManagerConstants {
 
     // If PNP is enabled, users aren't discoverable during registration. If PNP
     // is disabled, users are always discoverable.
-    fileprivate static let discoverabilityDuringRegistration: PhoneNumberDiscoverability = (
-        FeatureFlags.phoneNumberPrivacy ? .nobody : .everybody
-    )
+    fileprivate static let discoverabilityDuringRegistration: PhoneNumberDiscoverability = .nobody
 }

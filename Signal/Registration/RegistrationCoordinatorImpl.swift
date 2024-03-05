@@ -2733,7 +2733,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )))
         }
 
-        if inMemoryState.phoneNumberDiscoverability == nil, FeatureFlags.phoneNumberPrivacy {
+        if inMemoryState.phoneNumberDiscoverability == nil {
             return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(
                 e164: accountIdentity.e164,
                 phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault

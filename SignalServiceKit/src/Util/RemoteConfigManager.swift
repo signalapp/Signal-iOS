@@ -244,10 +244,6 @@ public class RemoteConfig: BaseFlags {
         getUInt32Value(forFlag: .maxNicknameLength, defaultValue: 32)
     }
 
-    static var tryToReturnAcisWithoutUaks: Bool {
-        return !(isEnabled(.cdsDisableCompatibilityMode) || FeatureFlags.disableCdsCompatibilityMode)
-    }
-
     public static var maxAttachmentDownloadSizeBytes: UInt {
         return getUIntValue(forFlag: .maxAttachmentDownloadSizeBytes, defaultValue: 100 * 1024 * 1024)
     }
@@ -476,7 +472,6 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
-    case cdsDisableCompatibilityMode = "cds.disableCompatibilityMode"
     case canDonateWithSepa = "ios.canDonateWithSepa"
     case enableGifSearch = "global.gifSearch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
@@ -497,7 +492,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalMonthlyDonationKillSwitch: fallthrough
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
-        case .cdsDisableCompatibilityMode: fallthrough
         case .canDonateWithSepa: fallthrough
         case .enableGifSearch: fallthrough
         case .serviceExtensionFailureKillSwitch:
@@ -522,7 +516,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalMonthlyDonationKillSwitch: fallthrough
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
-        case .cdsDisableCompatibilityMode: fallthrough
         case .canDonateWithSepa: fallthrough
         case .enableGifSearch:
             return false

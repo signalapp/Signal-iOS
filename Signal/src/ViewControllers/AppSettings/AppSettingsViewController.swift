@@ -448,7 +448,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             owsFailDebug("Missing local number")
         }
 
-        if FeatureFlags.usernames, let localUsernameState {
+        if let localUsernameState {
             switch localUsernameState {
             case let .available(username, _):
                 addSubtitleLabel(

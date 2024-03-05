@@ -52,7 +52,6 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
 
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
-            tryToReturnAcisWithoutUaks: true,
             persistentState: nil,
             udManager: MockUDManager(),
             connectionFactory: connectionFactory
@@ -101,7 +100,6 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     func testNotDiscoverable() throws {
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
-            tryToReturnAcisWithoutUaks: true,
             persistentState: nil,
             udManager: MockUDManager(),
             connectionFactory: connectionFactory
@@ -140,7 +138,6 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     func testRateLimitError() throws {
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
-            tryToReturnAcisWithoutUaks: true,
             persistentState: persistentState,
             udManager: MockUDManager(),
             connectionFactory: connectionFactory
@@ -186,7 +183,6 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     func testInvalidTokenError() throws {
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
-            tryToReturnAcisWithoutUaks: true,
             persistentState: persistentState,
             udManager: MockUDManager(),
             connectionFactory: connectionFactory

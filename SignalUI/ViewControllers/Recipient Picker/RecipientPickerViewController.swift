@@ -242,17 +242,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
     private lazy var searchBar: OWSSearchBar = {
         let searchBar = OWSSearchBar()
         searchBar.delegate = self
-        if FeatureFlags.usernames {
-            searchBar.placeholder = OWSLocalizedString(
-                "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
-                comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number."
-            )
-        } else {
-            searchBar.placeholder = OWSLocalizedString(
-                "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
-                comment: "Placeholder text indicating the user can search for contacts by name or phone number."
-            )
-        }
+        searchBar.placeholder = OWSLocalizedString(
+            "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
+            comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number."
+        )
         searchBar.accessibilityIdentifier = "RecipientPickerViewController.searchBar"
         searchBar.textField?.accessibilityIdentifier = "RecipientPickerViewController.contact_search"
         searchBar.sizeToFit()
@@ -374,8 +367,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             ))
         }
 
-        // Can just combine this if block with the below when the feature flag is removed
-        if allowsAddByAddress && !isSearching && FeatureFlags.usernames {
+        if allowsAddByAddress && !isSearching {
             // Find by username
             staticSection.add(OWSTableItem.disclosureItem(
                 icon: .profileUsername,
@@ -391,9 +383,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                     self.navigationController?.pushViewController(viewController, animated: true)
                 }
             ))
-        }
 
-        if allowsAddByAddress && !isSearching {
             // Find by phone number
             staticSection.add(OWSTableItem.disclosureItem(
                 icon: .phoneNumber,
@@ -761,7 +751,7 @@ extension RecipientPickerViewController {
             )
         }
 
-        if allowsAddByAddress, FeatureFlags.usernames {
+        if allowsAddByAddress {
             addButton(
                 title: OWSLocalizedString(
                     "NO_CONTACTS_SEARCH_BY_USERNAME",
@@ -772,9 +762,7 @@ extension RecipientPickerViewController {
                 icon: .composeFindByUsernameLarge,
                 innerIconSize: 40
             )
-        }
 
-        if allowsAddByAddress {
             addButton(
                 title: OWSLocalizedString(
                     "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
@@ -1552,9 +1540,6 @@ extension RecipientPickerViewController {
     }
 
     private func findByUsernameSection(for searchResults: ComposeScreenSearchResultSet) -> OWSTableSection? {
-        guard FeatureFlags.usernames else {
-            return nil
-        }
         guard let username = parsePossibleSearchUsername(for: searchResults.searchText) else {
             return nil
         }

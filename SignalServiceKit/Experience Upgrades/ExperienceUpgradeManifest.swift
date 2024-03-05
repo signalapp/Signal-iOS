@@ -519,10 +519,6 @@ extension ExperienceUpgradeManifest {
     }
 
     private static func checkPreconditionsForCreateUsernameReminder(transaction: SDSAnyReadTransaction) -> Bool {
-        guard FeatureFlags.usernames else {
-            return false
-        }
-
         guard
             DependenciesBridge.shared.localUsernameManager.usernameState(
                 tx: transaction.asV2Read

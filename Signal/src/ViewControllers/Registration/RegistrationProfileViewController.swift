@@ -277,9 +277,7 @@ class RegistrationProfileViewController: OWSViewController {
         stackView.addArrangedSubview(explanationView)
         stackView.addArrangedSubview(avatarContainerView)
         stackView.addArrangedSubview(nameStackView)
-        if FeatureFlags.phoneNumberPrivacy {
-            stackView.addArrangedSubview(phoneNumberDisclosureView)
-        }
+        stackView.addArrangedSubview(phoneNumberDisclosureView)
         stackView.addArrangedSubview(UIView.vStretchingSpacer())
 
         scrollView.addSubview(cameraImageWrapperView)

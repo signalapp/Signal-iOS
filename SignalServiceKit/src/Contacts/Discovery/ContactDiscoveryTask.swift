@@ -58,7 +58,6 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             ContactDiscoveryV2Operation(
                 e164sToLookup: e164s,
                 mode: mode,
-                tryToReturnAcisWithoutUaks: RemoteConfig.tryToReturnAcisWithoutUaks,
                 udManager: ContactDiscoveryV2Operation.Wrappers.UDManager(db: db, udManager: udManager),
                 websocketFactory: websocketFactory
             ).perform(on: workQueue)

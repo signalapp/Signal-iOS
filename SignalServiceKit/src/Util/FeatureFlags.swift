@@ -58,13 +58,6 @@ public class FeatureFlags: BaseFlags {
 
     public static let choochoo = build.includes(.internal)
 
-    public static let phoneNumberPrivacy = true
-
-    static let disableCdsCompatibilityMode = build.includes(.internal)
-
-    @objc
-    public static let usernames = true
-
     @objc
     public static let linkedPhones = build.includes(.internal)
 

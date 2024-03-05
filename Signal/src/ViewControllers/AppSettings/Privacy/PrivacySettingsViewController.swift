@@ -34,20 +34,19 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
         let whoCanSection = OWSTableSection()
 
-        if FeatureFlags.phoneNumberPrivacy {
-            whoCanSection.add(.disclosureItem(
-                withText: OWSLocalizedString(
-                    "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE",
-                    comment: "The title for phone number privacy settings."),
-                actionBlock: { [weak self] in
-                    let vc = PhoneNumberPrivacySettingsViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
-            whoCanSection.footerTitle = OWSLocalizedString(
-                "SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL",
-                comment: "Description label for Phone Number Privacy")
-        }
+        whoCanSection.add(.disclosureItem(
+            withText: OWSLocalizedString(
+                "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE",
+                comment: "The title for phone number privacy settings."),
+            actionBlock: { [weak self] in
+                let vc = PhoneNumberPrivacySettingsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        whoCanSection.footerTitle = OWSLocalizedString(
+            "SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL",
+            comment: "Description label for Phone Number Privacy"
+        )
 
         if !whoCanSection.items.isEmpty {
             contents.add(whoCanSection)

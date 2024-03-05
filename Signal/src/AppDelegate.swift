@@ -454,9 +454,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // and simply treat the default as "nobody". The migration exists to ensure
         // old linked devices respect the setting before they upgrade.
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            guard FeatureFlags.phoneNumberPrivacy else {
-                return
-            }
             let db = DependenciesBridge.shared.db
             guard db.read(block: self.udManager.phoneNumberSharingMode(tx:)) == nil else {
                 return

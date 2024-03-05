@@ -547,9 +547,7 @@ public enum PhoneNumberSharingMode: Int {
     case everybody = 0
     case nobody = 2
 
-    public static var defaultValue: PhoneNumberSharingMode {
-        return FeatureFlags.phoneNumberPrivacy ? .nobody : .everybody
-    }
+    public static let defaultValue: PhoneNumberSharingMode = .nobody
 }
 
 extension Optional where Wrapped == PhoneNumberSharingMode {

@@ -45,8 +45,6 @@ final class ContactDiscoveryV2Operation {
 
     let e164sToLookup: Set<E164>
 
-    let tryToReturnAcisWithoutUaks: Bool
-
     /// If non-nil, requests will include prevE164s & a token, so we'll only
     /// consume quota for new E164s.
     ///
@@ -62,13 +60,11 @@ final class ContactDiscoveryV2Operation {
 
     init(
         e164sToLookup: Set<E164>,
-        tryToReturnAcisWithoutUaks: Bool,
         persistentState: ContactDiscoveryV2PersistentState?,
         udManager: Shims.UDManager,
         connectionFactory: SgxWebsocketConnectionFactory
     ) {
         self.e164sToLookup = e164sToLookup
-        self.tryToReturnAcisWithoutUaks = tryToReturnAcisWithoutUaks
         self.persistentState = persistentState
         self.udManager = udManager
         self.connectionFactory = connectionFactory
@@ -77,7 +73,6 @@ final class ContactDiscoveryV2Operation {
     convenience init(
         e164sToLookup: Set<E164>,
         mode: ContactDiscoveryMode,
-        tryToReturnAcisWithoutUaks: Bool,
         udManager: Shims.UDManager,
         websocketFactory: WebSocketFactory
     ) {
@@ -89,7 +84,6 @@ final class ContactDiscoveryV2Operation {
         }
         self.init(
             e164sToLookup: e164sToLookup,
-            tryToReturnAcisWithoutUaks: tryToReturnAcisWithoutUaks,
             persistentState: persistentState,
             udManager: udManager,
             connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: websocketFactory)
@@ -165,7 +159,6 @@ final class ContactDiscoveryV2Operation {
         request.token = prevToken
         request.prevE164S = prevE164s
         request.newE164S = ContactDiscoveryE164Collection(newE164s).encodedValues
-        request.returnAcisWithoutUaks = tryToReturnAcisWithoutUaks
         request.aciUakPairs = { () -> Data in
             var result = Data()
             for (aci, uak) in udManager.fetchAllAciUakPairsWithSneakyTransaction() {
