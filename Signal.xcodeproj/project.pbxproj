@@ -1021,6 +1021,9 @@
 		66D7B8FD2B9285EB0005C98B /* AttachmentStoreMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B8FC2B9285EB0005C98B /* AttachmentStoreMock.swift */; };
 		66D7B9072B928BD50005C98B /* AttachmentStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9062B928BD50005C98B /* AttachmentStream.swift */; };
 		66D7B9092B9291BD0005C98B /* AttachmentUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9082B9291BD0005C98B /* AttachmentUploadStore.swift */; };
+		66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */; };
+		66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9002B92889E0005C98B /* AttachmentManagerImpl.swift */; };
+		66D7B9032B928AE10005C98B /* AttachmentManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9022B928AE10005C98B /* AttachmentManagerMock.swift */; };
 		66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD4F2B80126200C56B7B /* TSResourceId.swift */; };
 		66E1AD532B8D017400C56B7B /* TSResourceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD522B8D017400C56B7B /* TSResourceStore.swift */; };
 		66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */; };
@@ -3751,6 +3754,9 @@
 		66D7B8FC2B9285EB0005C98B /* AttachmentStoreMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStoreMock.swift; sourceTree = "<group>"; };
 		66D7B9062B928BD50005C98B /* AttachmentStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStream.swift; sourceTree = "<group>"; };
 		66D7B9082B9291BD0005C98B /* AttachmentUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadStore.swift; sourceTree = "<group>"; };
+		66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManager.swift; sourceTree = "<group>"; };
+		66D7B9002B92889E0005C98B /* AttachmentManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManagerImpl.swift; sourceTree = "<group>"; };
+		66D7B9022B928AE10005C98B /* AttachmentManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManagerMock.swift; sourceTree = "<group>"; };
 		66E1AD4F2B80126200C56B7B /* TSResourceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceId.swift; sourceTree = "<group>"; };
 		66E1AD522B8D017400C56B7B /* TSResourceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStore.swift; sourceTree = "<group>"; };
 		66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteTSResource.swift; sourceTree = "<group>"; };
@@ -7696,6 +7702,9 @@
 			isa = PBXGroup;
 			children = (
 				66E1AD902B9133A000C56B7B /* TSResource */,
+				66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */,
+				66D7B9002B92889E0005C98B /* AttachmentManagerImpl.swift */,
+				66D7B9022B928AE10005C98B /* AttachmentManagerMock.swift */,
 			);
 			path = AttachmentManager;
 			sourceTree = "<group>";
@@ -13142,6 +13151,9 @@
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
 				66E1AD782B8FD0D800C56B7B /* Attachment+TSResource.swift in Sources */,
 				66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */,
+				66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */,
+				66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */,
+				66D7B9032B928AE10005C98B /* AttachmentManagerMock.swift in Sources */,
 				66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */,
 				66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */,
 				66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */,
