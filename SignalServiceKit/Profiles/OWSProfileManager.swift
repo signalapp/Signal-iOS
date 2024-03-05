@@ -1136,7 +1136,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
 // MARK: -
 
-class PendingProfileUpdate: NSObject, NSCoding {
+public class PendingProfileUpdate: NSObject, NSCoding {
     let id: UUID
 
     let profileGivenName: OptionalChange<OWSUserProfile.NameComponent>
