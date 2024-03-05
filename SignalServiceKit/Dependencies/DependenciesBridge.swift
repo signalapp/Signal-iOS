@@ -124,7 +124,7 @@ public class DependenciesBridge {
 
     public let tsAccountManager: TSAccountManager
 
-    public let tsAttachmentStore: TSAttachmentStore
+    public let tsResourceManager: TSResourceManager
     public let tsResourceStore: TSResourceStore
 
     public let uploadManager: UploadManager
@@ -265,9 +265,8 @@ public class DependenciesBridge {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
-        let tsAttachmentStore = TSAttachmentStoreImpl()
-        self.tsAttachmentStore = tsAttachmentStore
-        let tsResourceStore = TSResourceStoreImpl(tsAttachmentStore: tsAttachmentStore)
+        let tsResourceStore = TSResourceStoreImpl()
+        self.tsResourceManager = TSResourceManagerImpl()
         self.tsResourceStore = tsResourceStore
 
         let tsAccountManager = TSAccountManagerImpl(
@@ -683,7 +682,6 @@ public class DependenciesBridge {
 
         self.sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
             attachmentDownloads: SentMessageTranscriptReceiverImpl.Wrappers.AttachmentDownloads(attachmentDownloads),
-            attachmentStore: tsAttachmentStore,
             disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
             earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
             groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
@@ -691,7 +689,7 @@ public class DependenciesBridge {
             paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
             signalProtocolStoreManager: signalProtocolStoreManager,
             tsAccountManager: tsAccountManager,
-            tsResourceStore: tsResourceStore,
+            tsResourceManager: tsResourceManager,
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
         )
 
@@ -746,14 +744,14 @@ public class DependenciesBridge {
 
         self.uploadManager = UploadManagerImpl(
             db: db,
-            attachmentStore: tsAttachmentStore,
             interactionStore: InteractionStoreImpl(),
             networkManager: networkManager,
             socketManager: socketManager,
             signalService: signalService,
             attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
             blurHash: Upload.Wrappers.BlurHash(),
-            fileSystem: Upload.Wrappers.FileSystem()
+            fileSystem: Upload.Wrappers.FileSystem(),
+            tsResourceStore: tsResourceStore
         )
     }
 }

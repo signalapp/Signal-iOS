@@ -8,11 +8,6 @@ import Foundation
 public protocol TSResourceStore {
 
     func fetch(
-        _ id: TSResourceId,
-        tx: DBReadTransaction
-    ) -> TSResource?
-
-    func fetch(
         _ ids: [TSResourceId],
         tx: DBReadTransaction
     ) -> [TSResource]
@@ -72,20 +67,16 @@ public protocol TSResourceStore {
         on message: TSMessage,
         tx: DBReadTransaction
     ) -> Int?
+}
 
-    // MARK: - Message attachment writes
+// MARK: - Convenience
 
-    // TODO: this should take the other metadata like source file name
-    // which is needed at AttachmentReference insertion time.
-    func addBodyAttachments(
-        _ attachments: [TSResource],
-        to message: TSMessage,
-        tx: DBWriteTransaction
-    )
+extension TSResourceStore {
 
-    func removeBodyAttachment(
-        _ attachment: TSResource,
-        from message: TSMessage,
-        tx: DBWriteTransaction
-    )
+    func fetch(
+        _ id: TSResourceId,
+        tx: DBReadTransaction
+    ) -> TSResource? {
+        return fetch([id], tx: tx).first
+    }
 }

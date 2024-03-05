@@ -8,7 +8,6 @@ import Foundation
 
 extension Upload {
     enum Mocks {
-        typealias TSAttachmentStore = _UploadManager_TSAttachmentStoreMock
         typealias NetworkManager = _UploadManager_NetworkManagerMock
         typealias URLSession = _UploadManager_OWSURLSessionMock
         typealias SocketManager = _UploadManager_SocketManagerMock
@@ -16,38 +15,6 @@ extension Upload {
         typealias AttachmentEncrypter = _UploadManager_AttachmentEncrypterMock
         typealias BlurHash = _Upload_BlurHashMock
         typealias FileSystem = _Upload_FileSystemMock
-    }
-}
-
-class _UploadManager_TSAttachmentStoreMock: TSAttachmentStoreMock {
-    var filename: String!
-    var size: Int!
-    var uploadedAttachments = [TSAttachmentStream]()
-
-    override func fetchAttachmentStream(
-        uniqueId: String,
-        tx: DBReadTransaction
-    ) -> TSAttachmentStream? {
-        return TSAttachmentStream(
-            contentType: "image/jpeg",
-            byteCount: UInt32(size),
-            sourceFilename: filename,
-            caption: nil,
-            attachmentType: .default,
-            albumMessageId: nil
-        )
-    }
-
-    override func updateAsUploaded(
-        attachmentStream: TSAttachmentStream,
-        encryptionKey: Data,
-        digest: Data,
-        cdnKey: String,
-        cdnNumber: UInt32,
-        uploadTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        uploadedAttachments.append(attachmentStream)
     }
 }
 
@@ -118,4 +85,37 @@ class _UploadManager_SocketManagerMock: SocketManager {
     func canMakeRequests(webSocketType: OWSWebSocketType) -> Bool { true }
     func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> { fatalError() }
     func didReceivePush() { }
+}
+
+// MARK: - TSResourceStore
+
+class TSResourceUploadStoreMock: TSResourceStoreMock, TSResourceUploadStore {
+    var filename: String!
+    var size: Int!
+    var uploadedAttachments = [TSResourceStream]()
+
+    override func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
+        return ids.map { _ in
+            return TSAttachmentStream(
+                contentType: "image/jpeg",
+                byteCount: UInt32(size),
+                sourceFilename: filename,
+                caption: nil,
+                attachmentType: .default,
+                albumMessageId: nil
+            )
+        }
+    }
+
+    func updateAsUploaded(
+        attachmentStream: TSResourceStream,
+        encryptionKey: Data,
+        digest: Data,
+        cdnKey: String,
+        cdnNumber: UInt32,
+        uploadTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        uploadedAttachments.append(attachmentStream)
+    }
 }

@@ -31,10 +31,10 @@ class UploadManagerMockHelper {
     var mockServiceManager = OWSSignalServiceMock()
     var mockSocketManager = Upload.Mocks.SocketManager()
     var mockAttachmentEncrypter = Upload.Mocks.AttachmentEncrypter()
-    var mockAttachmentStore = Upload.Mocks.TSAttachmentStore()
     var mockBlurHash = Upload.Mocks.BlurHash()
     var mockFileSystem = Upload.Mocks.FileSystem()
     var mockInteractionStore = MockInteractionStore()
+    var mockResourceStore = TSResourceUploadStoreMock()
 
     var capturedRequests = [MockResultType]()
 
@@ -49,8 +49,8 @@ class UploadManagerMockHelper {
 
     func setup(filename: String, size: Int) {
 
-        self.mockAttachmentStore.filename = filename
-        self.mockAttachmentStore.size = size
+        self.mockResourceStore.filename = filename
+        self.mockResourceStore.size = size
         self.mockFileSystem.size = size
 
         mockServiceManager.mockUrlSessionBuilder = { (info: SignalServiceInfo, endpoint: OWSURLSessionEndpoint, config: URLSessionConfiguration? ) in

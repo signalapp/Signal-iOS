@@ -7,17 +7,10 @@ import Foundation
 
 public class TSResourceStoreImpl: TSResourceStore {
 
-    private let tsAttachmentStore: TSAttachmentStore
+    private let tsAttachmentStore: TSAttachmentStoreImpl
 
-    public init(tsAttachmentStore: TSAttachmentStore) {
-        self.tsAttachmentStore = tsAttachmentStore
-    }
-
-    public func fetch(_ id: TSResourceId, tx: DBReadTransaction) -> TSResource? {
-        switch id {
-        case .legacy(let uniqueId):
-            return tsAttachmentStore.attachments(withAttachmentIds: [uniqueId], tx: tx).first
-        }
+    public init() {
+        self.tsAttachmentStore = TSAttachmentStoreImpl()
     }
 
     public func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
@@ -125,36 +118,38 @@ public class TSResourceStoreImpl: TSResourceStore {
             return message.attachmentIds.firstIndex(of: uniqueId)
         }
     }
+}
 
-    // MARK: - Message attachment writes
+// MARK: - TSResourceUploadStore
 
-    public func addBodyAttachments(
-        _ attachments: [TSResource],
-        to message: TSMessage,
+extension TSResourceStoreImpl: TSResourceUploadStore {
+
+    public func updateAsUploaded(
+        attachmentStream: TSResourceStream,
+        encryptionKey: Data,
+        digest: Data,
+        cdnKey: String,
+        cdnNumber: UInt32,
+        uploadTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        var legacyAttachments = [TSAttachment]()
-        attachments.forEach {
-            switch $0.concreteType {
-            case let .legacy(attachment):
-                legacyAttachments.append(attachment)
-            }
-        }
-        tsAttachmentStore.addBodyAttachments(legacyAttachments, to: message, tx: tx)
-    }
-
-    public func removeBodyAttachment(
-        _ attachment: TSResource,
-        from message: TSMessage,
-        tx: DBWriteTransaction
-    ) {
-        switch attachment.concreteType {
-        case .legacy(let legacyAttachment):
-            tsAttachmentStore.removeBodyAttachment(legacyAttachment, from: message, tx: tx)
+        switch attachmentStream.concreteStreamType {
+        case .legacy(let tSAttachment):
+            tSAttachment.updateAsUploaded(
+                withEncryptionKey: encryptionKey,
+                digest: digest,
+                serverId: 0, // Only used in cdn0 uploads, which aren't supported here.
+                cdnKey: cdnKey,
+                cdnNumber: cdnNumber,
+                uploadTimestamp: uploadTimestamp,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
         }
     }
+}
 
-    // MARK: - Helpers
+// MARK: - Helpers
+extension TSResourceStoreImpl {
 
     private func legacyReference(uniqueId: String?, tx: DBReadTransaction) -> TSResourceReference? {
         guard

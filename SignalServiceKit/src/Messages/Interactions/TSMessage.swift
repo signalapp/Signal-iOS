@@ -87,12 +87,12 @@ public extension TSMessage {
 
     @objc(addBodyAttachments:transaction:)
     func addBodyAttachments(_ attachments: [TSAttachment], transaction: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.tsResourceStore.addBodyAttachments(attachments, to: self, tx: transaction.asV2Write)
+        DependenciesBridge.shared.tsResourceManager.addBodyAttachments(attachments, to: self, tx: transaction.asV2Write)
     }
 
     @objc(removeAttachment:transaction:)
     func removeAttachment(_ attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.tsResourceStore.removeBodyAttachment(attachment, from: self, tx: transaction.asV2Write)
+        DependenciesBridge.shared.tsResourceManager.removeBodyAttachment(attachment, from: self, tx: transaction.asV2Write)
     }
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {

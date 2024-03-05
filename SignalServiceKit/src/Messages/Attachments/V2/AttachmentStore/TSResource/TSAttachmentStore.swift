@@ -23,16 +23,6 @@ public protocol TSAttachmentStore {
         tx: DBReadTransaction
     ) -> TSAttachmentStream?
 
-    func updateAsUploaded(
-        attachmentStream: TSAttachmentStream,
-        encryptionKey: Data,
-        digest: Data,
-        cdnKey: String,
-        cdnNumber: UInt32,
-        uploadTimestamp: UInt64,
-        tx: DBWriteTransaction
-    )
-
     func attachmentPointerIdsToMarkAsFailed(
         tx: DBReadTransaction
     ) -> [String]
@@ -54,20 +44,6 @@ public protocol TSAttachmentStore {
         ignoringContentType: String,
         tx: DBReadTransaction
     ) -> Bool
-
-    // MARK: - TSMessage Writes
-
-    func addBodyAttachments(
-        _ attachments: [TSAttachment],
-        to message: TSMessage,
-        tx: DBWriteTransaction
-    )
-
-    func removeBodyAttachment(
-        _ attachment: TSAttachment,
-        from message: TSMessage,
-        tx: DBWriteTransaction
-    )
 }
 
 public class TSAttachmentStoreImpl: TSAttachmentStore {
@@ -96,26 +72,6 @@ public class TSAttachmentStoreImpl: TSAttachmentStore {
     ) -> TSAttachmentStream? {
         TSAttachmentStream.anyFetchAttachmentStream(
             uniqueId: uniqueId,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func updateAsUploaded(
-        attachmentStream: TSAttachmentStream,
-        encryptionKey: Data,
-        digest: Data,
-        cdnKey: String,
-        cdnNumber: UInt32,
-        uploadTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        attachmentStream.updateAsUploaded(
-            withEncryptionKey: encryptionKey,
-            digest: digest,
-            serverId: 0, // Only used in cdn0 uploads, which aren't supported here.
-            cdnKey: cdnKey,
-            cdnNumber: cdnNumber,
-            uploadTimestamp: uploadTimestamp,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
@@ -203,42 +159,6 @@ public class TSAttachmentStoreImpl: TSAttachmentStore {
         }
 
         return exists
-    }
-
-    // MARK: - TSMessage Writes
-
-    public func addBodyAttachments(
-        _ attachments: [TSAttachment],
-        to message: TSMessage,
-        tx: DBWriteTransaction
-    ) {
-        message.anyUpdateMessage(transaction: SDSDB.shimOnlyBridge(tx)) { message in
-            var attachmentIds = message.attachmentIds
-            var attachmentIdSet = Set(attachmentIds)
-            for attachment in attachments {
-                if attachmentIdSet.contains(attachment.uniqueId) {
-                    continue
-                }
-                attachmentIds.append(attachment.uniqueId)
-                attachmentIdSet.insert(attachment.uniqueId)
-            }
-            message.setLegacyBodyAttachmentIds(attachmentIds)
-        }
-    }
-
-    public func removeBodyAttachment(
-        _ attachment: TSAttachment,
-        from message: TSMessage,
-        tx: DBWriteTransaction
-    ) {
-        owsAssertDebug(message.attachmentIds.contains(attachment.uniqueId))
-        attachment.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
-
-        message.anyUpdateMessage(transaction: SDSDB.shimOnlyBridge(tx)) { message in
-            var attachmentIds = message.attachmentIds
-            attachmentIds.removeAll(where: { $0 == attachment.uniqueId })
-            message.setLegacyBodyAttachmentIds(attachmentIds)
-        }
     }
 
     // MARK: - Helpers

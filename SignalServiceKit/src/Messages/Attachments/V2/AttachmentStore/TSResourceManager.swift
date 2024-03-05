@@ -1,0 +1,31 @@
+//
+// Copyright 2024 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+
+import Foundation
+
+public protocol TSResourceManager {
+
+    // MARK: - Message attachment writes
+
+    func createBodyAttachmentPointers(
+        from protos: [SSKProtoAttachmentPointer],
+        message: TSMessage,
+        tx: DBWriteTransaction
+    )
+
+    // TODO: this should take the other metadata like source file name
+    // which is needed at AttachmentReference insertion time.
+    func addBodyAttachments(
+        _ attachments: [TSResource],
+        to message: TSMessage,
+        tx: DBWriteTransaction
+    )
+
+    func removeBodyAttachment(
+        _ attachment: TSResource,
+        from message: TSMessage,
+        tx: DBWriteTransaction
+    )
+}

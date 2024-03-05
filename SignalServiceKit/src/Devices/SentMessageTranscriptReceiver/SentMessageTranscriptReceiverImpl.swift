@@ -9,7 +9,6 @@ import LibSignalClient
 public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
     private let attachmentDownloads: Shims.AttachmentDownloads
-    private let attachmentStore: TSAttachmentStore
     private let disappearingMessagesJob: Shims.DisappearingMessagesJob
     private let earlyMessageManager: Shims.EarlyMessageManager
     private let groupManager: Shims.GroupManager
@@ -17,12 +16,11 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private let paymentsHelper: Shims.PaymentsHelper
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let tsAccountManager: TSAccountManager
-    private let tsResourceStore: TSResourceStore
+    private let tsResourceManager: TSResourceManager
     private let viewOnceMessages: Shims.ViewOnceMessages
 
     public init(
         attachmentDownloads: Shims.AttachmentDownloads,
-        attachmentStore: TSAttachmentStore,
         disappearingMessagesJob: Shims.DisappearingMessagesJob,
         earlyMessageManager: Shims.EarlyMessageManager,
         groupManager: Shims.GroupManager,
@@ -30,11 +28,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         paymentsHelper: Shims.PaymentsHelper,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         tsAccountManager: TSAccountManager,
-        tsResourceStore: TSResourceStore,
+        tsResourceManager: TSResourceManager,
         viewOnceMessages: Shims.ViewOnceMessages
     ) {
         self.attachmentDownloads = attachmentDownloads
-        self.attachmentStore = attachmentStore
         self.disappearingMessagesJob = disappearingMessagesJob
         self.earlyMessageManager = earlyMessageManager
         self.groupManager = groupManager
@@ -42,7 +39,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         self.paymentsHelper = paymentsHelper
         self.signalProtocolStoreManager = signalProtocolStoreManager
         self.tsAccountManager = tsAccountManager
-        self.tsResourceStore = tsResourceStore
+        self.tsResourceManager = tsResourceManager
         self.viewOnceMessages = viewOnceMessages
     }
 
@@ -211,14 +208,11 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // The sender may have resent the message. If so, we should swap it in place of the placeholder
             interactionStore.insertOrReplacePlaceholder(for: outgoingMessage, from: localIdentifiers.aciAddress, tx: tx)
 
-            let attachmentPointers = TSAttachmentPointer.attachmentPointers(
-                fromProtos: messageParams.attachmentPointerProtos,
-                albumMessage: outgoingMessage
+            tsResourceManager.createBodyAttachmentPointers(
+                from: messageParams.attachmentPointerProtos,
+                message: outgoingMessage,
+                tx: tx
             )
-            for pointer in attachmentPointers {
-                attachmentStore.anyInsert(pointer, tx: tx)
-            }
-            tsResourceStore.addBodyAttachments(attachmentPointers, to: outgoingMessage, tx: tx)
         }
         owsAssertDebug(hasRenderableContent)
 

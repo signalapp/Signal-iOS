@@ -18,7 +18,6 @@ public protocol UploadManager {
 public actor UploadManagerImpl: UploadManager {
 
     private let db: DB
-    private let attachmentStore: TSAttachmentStore
     private let interactionStore: InteractionStore
     private let networkManager: NetworkManager
     private let socketManager: SocketManager
@@ -26,20 +25,20 @@ public actor UploadManagerImpl: UploadManager {
     private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let blurHash: Upload.Shims.BlurHash
     private let fileSystem: Upload.Shims.FileSystem
+    private let tsResourceStore: TSResourceUploadStore
 
     public init(
         db: DB,
-        attachmentStore: TSAttachmentStore,
         interactionStore: InteractionStore,
         networkManager: NetworkManager,
         socketManager: SocketManager,
         signalService: OWSSignalServiceProtocol,
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         blurHash: Upload.Shims.BlurHash,
-        fileSystem: Upload.Shims.FileSystem
+        fileSystem: Upload.Shims.FileSystem,
+        tsResourceStore: TSResourceUploadStore
     ) {
         self.db = db
-        self.attachmentStore = attachmentStore
         self.interactionStore = interactionStore
         self.networkManager = networkManager
         self.socketManager = socketManager
@@ -47,6 +46,7 @@ public actor UploadManagerImpl: UploadManager {
         self.attachmentEncrypter = attachmentEncrypter
         self.blurHash = blurHash
         self.fileSystem = fileSystem
+        self.tsResourceStore = tsResourceStore
     }
 
     /// Entry point for uploading a `TSAttachmentStream`
@@ -123,7 +123,7 @@ public actor UploadManagerImpl: UploadManager {
         tx: DBReadTransaction
     ) throws -> TSAttachmentStream {
         guard
-            let attachmentStream = attachmentStore.fetchAttachmentStream(uniqueId: attachmentId, tx: tx)
+            let attachmentStream = tsResourceStore.fetch(.legacy(uniqueId: attachmentId), tx: tx)?.bridge as? TSAttachmentStream
         else {
             logger.warn("Missing attachment.")
             // Not finding a local attachment is a terminal failure.
@@ -148,7 +148,7 @@ public actor UploadManagerImpl: UploadManager {
                 tx: tx
             )
 
-            self.attachmentStore.updateAsUploaded(
+            self.tsResourceStore.updateAsUploaded(
                 attachmentStream: attachmentStream,
                 encryptionKey: result.localUploadMetadata.key,
                 digest: result.localUploadMetadata.digest,
