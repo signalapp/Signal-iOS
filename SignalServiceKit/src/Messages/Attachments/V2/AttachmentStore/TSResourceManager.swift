@@ -15,7 +15,7 @@ public protocol TSResourceManager {
         tx: DBWriteTransaction
     )
 
-    func createAttachmentStreams(
+    func createBodyAttachmentStreams(
         consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction

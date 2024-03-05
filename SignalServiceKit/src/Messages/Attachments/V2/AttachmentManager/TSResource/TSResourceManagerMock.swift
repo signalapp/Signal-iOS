@@ -15,7 +15,7 @@ public class TSResourceManagerMock: TSResourceManager {
         // Do nothing
     }
 
-    public func createAttachmentStreams(
+    public func createBodyAttachmentStreams(
         consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction

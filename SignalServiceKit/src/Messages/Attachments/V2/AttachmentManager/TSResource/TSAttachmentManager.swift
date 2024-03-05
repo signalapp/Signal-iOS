@@ -26,7 +26,7 @@ public class TSAttachmentManager {
         self.addBodyAttachments(attachmentPointers, to: message, tx: tx)
     }
 
-    public func createAttachmentStreams(
+    public func createBodyAttachmentStreams(
         consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction

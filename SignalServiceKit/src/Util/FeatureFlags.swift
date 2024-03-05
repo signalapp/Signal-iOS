@@ -128,6 +128,7 @@ public class FeatureFlags: BaseFlags {
 
     public static let messageBackupFileAlpha = build.includes(.internal)
 
+    public static let readV2Attachments = false
     public static let newAttachmentsUseV2 = false
 }
 

@@ -41,6 +41,10 @@ public class DependenciesBridge {
     public let accountAttributesUpdater: AccountAttributesUpdater
 
     public let appExpiry: AppExpiry
+
+    public let attachmentManager: AttachmentManager
+    public let attachmentStore: AttachmentStore
+
     public let authorMergeHelper: AuthorMergeHelper
 
     public let badgeCountFetcher: BadgeCountFetcher
@@ -265,8 +269,13 @@ public class DependenciesBridge {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
-        let tsResourceStore = TSResourceStoreImpl()
-        self.tsResourceManager = TSResourceManagerImpl()
+        let attachmentStore = AttachmentStoreImpl()
+        let attachmentManager = AttachmentManagerImpl(attachmentStore: attachmentStore)
+        self.attachmentStore = attachmentStore
+        self.attachmentManager = attachmentManager
+
+        let tsResourceStore = TSResourceStoreImpl(attachmentStore: attachmentStore)
+        self.tsResourceManager = TSResourceManagerImpl(attachmentManager: attachmentManager)
         self.tsResourceStore = tsResourceStore
 
         let tsAccountManager = TSAccountManagerImpl(

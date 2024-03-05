@@ -7,9 +7,11 @@ import Foundation
 
 public class TSResourceManagerImpl: TSResourceManager {
 
+    private let attachmentManager: AttachmentManagerImpl
     private let tsAttachmentManager: TSAttachmentManager
 
-    public init() {
+    public init(attachmentManager: AttachmentManagerImpl) {
+        self.attachmentManager = attachmentManager
         self.tsAttachmentManager = TSAttachmentManager()
     }
 
@@ -21,7 +23,15 @@ public class TSResourceManagerImpl: TSResourceManager {
         tx: DBWriteTransaction
     ) {
         if FeatureFlags.newAttachmentsUseV2 {
-            fatalError("Not ready to create v2 attachments!")
+            guard let messageRowId = message.sqliteRowId else {
+                owsFailDebug("Adding attachments to an uninserted message!")
+                return
+            }
+            attachmentManager.createAttachmentPointers(
+                from: protos,
+                owner: .messageBodyAttachment(messageRowId: messageRowId),
+                tx: tx
+            )
         } else {
             tsAttachmentManager.createBodyAttachmentPointers(
                 from: protos,
@@ -31,15 +41,23 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
-    public func createAttachmentStreams(
+    public func createBodyAttachmentStreams(
         consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) throws {
         if FeatureFlags.newAttachmentsUseV2 {
-            fatalError("Not ready to create v2 attachments!")
+            guard let messageRowId = message.sqliteRowId else {
+                owsFailDebug("Adding attachments to an uninserted message!")
+                return
+            }
+            try attachmentManager.createAttachmentStreams(
+                consumingDataSourcesOf: unsavedAttachmentInfos,
+                owner: .messageBodyAttachment(messageRowId: messageRowId),
+                tx: tx
+            )
         } else {
-            try tsAttachmentManager.createAttachmentStreams(
+            try tsAttachmentManager.createBodyAttachmentStreams(
                 consumingDataSourcesOf: unsavedAttachmentInfos,
                 message: message,
                 tx: SDSDB.shimOnlyBridge(tx)
@@ -55,6 +73,16 @@ public class TSResourceManagerImpl: TSResourceManager {
         switch attachment.concreteType {
         case .legacy(let legacyAttachment):
             tsAttachmentManager.removeBodyAttachment(legacyAttachment, from: message, tx: SDSDB.shimOnlyBridge(tx))
+        case .v2(let attachment):
+            guard let messageRowId = message.sqliteRowId else {
+                owsFailDebug("Removing attachment from uninserted message!")
+                return
+            }
+            attachmentManager.removeAttachment(
+                attachment,
+                from: .messageBodyAttachment(messageRowId: messageRowId),
+                tx: tx
+            )
         }
     }
 }

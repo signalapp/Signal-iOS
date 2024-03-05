@@ -81,7 +81,7 @@ public class OutgoingMessagePreparer: NSObject {
             // cannot be sent along with stickers.
             owsAssertDebug(unpreparedMessage.messageSticker == nil)
 
-            try DependenciesBridge.shared.tsResourceManager.createAttachmentStreams(
+            try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentStreams(
                 consumingDataSourcesOf: unsavedAttachmentInfos,
                 message: unpreparedMessage,
                 tx: transaction.asV2Write

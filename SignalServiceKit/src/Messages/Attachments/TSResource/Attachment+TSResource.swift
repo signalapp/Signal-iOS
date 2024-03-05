@@ -24,11 +24,11 @@ extension Attachment: TSResource {
     }
 
     public var resourceId: TSResourceId {
-        fatalError("Unimplemented!")
+        .v2(rowId: id)
     }
 
     public var concreteType: ConcreteTSResource {
-        fatalError("Unimplemented!")
+        return .v2(self)
     }
 
     public func asResourceStream() -> TSResourceStream? {
@@ -62,7 +62,7 @@ extension AttachmentStream: TSResourceStream {
     }
 
     public var concreteStreamType: ConcreteTSResourceStream {
-        fatalError("Unimplemented!")
+        return .v2(self)
     }
 
     public var cachedContentType: TSResourceContentType? {

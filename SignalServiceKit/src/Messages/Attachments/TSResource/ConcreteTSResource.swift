@@ -7,12 +7,10 @@ import Foundation
 
 public enum ConcreteTSResource {
     case legacy(TSAttachment)
-
-    // TODO: add `case v2(Attachment)`
+    case v2(Attachment)
 }
 
 public enum ConcreteTSResourceStream {
     case legacy(TSAttachmentStream)
-
-    // TODO: add `case v2(AttachmentStream)`
+    case v2(AttachmentStream)
 }
