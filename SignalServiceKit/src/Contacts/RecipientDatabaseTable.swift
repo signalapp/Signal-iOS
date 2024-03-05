@@ -44,7 +44,7 @@ extension RecipientDatabaseTable {
         return nil
     }
 
-    func fetchRecipient(address: SignalServiceAddress, tx: DBReadTransaction) -> SignalRecipient? {
+    public func fetchRecipient(address: SignalServiceAddress, tx: DBReadTransaction) -> SignalRecipient? {
         return (
             address.serviceId.flatMap({ fetchRecipient(serviceId: $0, transaction: tx) })
             ?? address.phoneNumber.flatMap({ fetchRecipient(phoneNumber: $0, transaction: tx) })
