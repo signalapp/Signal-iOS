@@ -4,9 +4,8 @@
 //
 
 import Foundation
-import SignalServiceKit
 
-class ZkParamsMigrator {
+public class ZkParamsMigrator {
     private let db: DB
     private let groupsV2: GroupsV2
     private let migrationStore: KeyValueStore
@@ -14,7 +13,7 @@ class ZkParamsMigrator {
     private let tsAccountManager: TSAccountManager
     private let versionedProfiles: VersionedProfilesSwift
 
-    init(
+    public init(
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         groupsV2: GroupsV2,
@@ -41,7 +40,7 @@ class ZkParamsMigrator {
         static let zkGroupMigrationCounter: Int = 5
     }
 
-    func migrateIfNeeded() {
+    public func migrateIfNeeded() {
         let oldMigrationCounter = db.read { tx -> Int in
             migrationStore.getInt(Constants.lastZkGroupVersionCounterKey, defaultValue: 0, transaction: tx)
         }
