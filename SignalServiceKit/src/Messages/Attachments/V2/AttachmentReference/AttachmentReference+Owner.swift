@@ -152,6 +152,10 @@ extension AttachmentReference {
         /// Caption on the attachment.
         /// Used for:
         /// * message body attachments
+        ///   * legacy only; the ability to set captions on message
+        ///     attachments was removed long ago. We maintain them
+        ///     for existing messages. New message attachments always
+        ///     inherit their "caption" from their parent message.
         /// * story media
         /// But even in those cases its optional.
         fileprivate let _caption: MessageBody?
