@@ -1066,16 +1066,11 @@ public final class MessageReceiver: Dependencies {
         // it. For example, we may have marked the thread as visible.
         thread.anyReload(transaction: tx)
 
-        let attachmentPointers = TSAttachmentPointer.attachmentPointers(
-            fromProtos: dataMessage.attachments,
-            albumMessage: message
+        DependenciesBridge.shared.tsResourceManager.createBodyAttachmentPointers(
+            from: dataMessage.attachments,
+            message: message,
+            tx: tx.asV2Write
         )
-        if !attachmentPointers.isEmpty {
-            for attachmentPointer in attachmentPointers {
-                attachmentPointer.anyInsert(transaction: tx)
-            }
-            message.addBodyAttachments(attachmentPointers, transaction: tx)
-        }
 
         owsAssertDebug(message.hasRenderableContent(tx: tx))
 

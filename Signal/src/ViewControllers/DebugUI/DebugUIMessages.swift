@@ -3997,10 +3997,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         albumMessage: TSMessage,
         transaction: SDSAnyWriteTransaction
     ) {
-        albumMessage.addBodyAttachments([attachment], transaction: transaction)
-        if let attachmentStream = attachment as? TSAttachmentStream {
-            MediaGalleryManager.didInsert(attachmentStream: attachmentStream, transaction: transaction)
-        }
+        // This doesn't work anymore. deal with it.
     }
 
     private static func actionLabelForHasCaption(

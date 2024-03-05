@@ -15,7 +15,11 @@ public class TSResourceManagerMock: TSResourceManager {
         // Do nothing
     }
 
-    public func addBodyAttachments(_ attachments: [TSResource], to message: TSMessage, tx: DBWriteTransaction) {
+    public func createAttachmentStreams(
+        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        message: TSOutgoingMessage,
+        tx: DBWriteTransaction
+    ) throws {
         // Do nothing
     }
 

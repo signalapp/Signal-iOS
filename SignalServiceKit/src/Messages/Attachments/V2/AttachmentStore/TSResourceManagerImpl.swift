@@ -13,6 +13,8 @@ public class TSResourceManagerImpl: TSResourceManager {
         self.tsAttachmentManager = TSAttachmentManager()
     }
 
+    // MARK: - Message attachment writes
+
     public func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
         message: TSMessage,
@@ -29,21 +31,20 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
-    // MARK: - Message attachment writes
-
-    public func addBodyAttachments(
-        _ attachments: [TSResource],
-        to message: TSMessage,
+    public func createAttachmentStreams(
+        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        message: TSOutgoingMessage,
         tx: DBWriteTransaction
-    ) {
-        var legacyAttachments = [TSAttachment]()
-        attachments.forEach {
-            switch $0.concreteType {
-            case let .legacy(attachment):
-                legacyAttachments.append(attachment)
-            }
+    ) throws {
+        if FeatureFlags.newAttachmentsUseV2 {
+            fatalError("Not ready to create v2 attachments!")
+        } else {
+            try tsAttachmentManager.createAttachmentStreams(
+                consumingDataSourcesOf: unsavedAttachmentInfos,
+                message: message,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
         }
-        tsAttachmentManager.addBodyAttachments(legacyAttachments, to: message, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func removeBodyAttachment(

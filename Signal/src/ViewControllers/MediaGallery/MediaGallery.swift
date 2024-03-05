@@ -748,7 +748,11 @@ class MediaGallery: Dependencies {
                 for item in items {
                     let message = item.message
                     let attachment = item.attachmentStream
-                    message.removeAttachment(attachment, transaction: tx)
+                    DependenciesBridge.shared.tsResourceManager.removeBodyAttachment(
+                        attachment,
+                        from: message,
+                        tx: tx.asV2Write
+                    )
                     // We always have to check the database in case we do more than one deletion (at a time or in a
                     // row) without reloading existing media items and their associated message models.
                     let shouldDeleteMessage: Bool = try {

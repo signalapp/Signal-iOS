@@ -328,14 +328,6 @@ open class MockInteractionStore: InteractionStore {
         // Do nothing
     }
 
-    public func addBodyAttachments(
-        _ attachments: [TSAttachment],
-        to outgoingMessage: TSOutgoingMessage,
-        tx: DBWriteTransaction
-    ) {
-        // Do nothing
-    }
-
     // MARK: - TSOutgoingMessage state updates
 
     open func updateRecipientsFromNonLocalDevice(

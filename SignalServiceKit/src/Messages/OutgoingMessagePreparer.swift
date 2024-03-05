@@ -81,14 +81,11 @@ public class OutgoingMessagePreparer: NSObject {
             // cannot be sent along with stickers.
             owsAssertDebug(unpreparedMessage.messageSticker == nil)
 
-            let isVoiceMessage = unpreparedMessage.isVoiceMessage
-            let attachmentStreams = try unsavedAttachmentInfos.map {
-                try $0.asStreamConsumingDataSource(isVoiceMessage: isVoiceMessage)
-            }
-
-            unpreparedMessage.addBodyAttachments(attachmentStreams, transaction: transaction)
-
-            attachmentStreams.forEach { $0.anyInsert(transaction: transaction) }
+            try DependenciesBridge.shared.tsResourceManager.createAttachmentStreams(
+                consumingDataSourcesOf: unsavedAttachmentInfos,
+                message: unpreparedMessage,
+                tx: transaction.asV2Write
+            )
         }
 
         self.savedAttachmentIds = Self.prepareAttachments(message: unpreparedMessage, tx: transaction)

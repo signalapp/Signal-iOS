@@ -9,6 +9,8 @@ public class TSAttachmentManager {
 
     public init() {}
 
+    // MARK: - TSMessage Writes
+
     public func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
         message: TSMessage,
@@ -24,9 +26,39 @@ public class TSAttachmentManager {
         self.addBodyAttachments(attachmentPointers, to: message, tx: tx)
     }
 
-    // MARK: - TSMessage Writes
+    public func createAttachmentStreams(
+        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        message: TSOutgoingMessage,
+        tx: SDSAnyWriteTransaction
+    ) throws {
+        let isVoiceMessage = message.isVoiceMessage
+        let attachmentStreams = try unsavedAttachmentInfos.map {
+            try $0.asStreamConsumingDataSource(isVoiceMessage: isVoiceMessage)
+        }
 
-    public func addBodyAttachments(
+        self.addBodyAttachments(attachmentStreams, to: message, tx: tx)
+
+        attachmentStreams.forEach { $0.anyInsert(transaction: tx) }
+    }
+
+    public func removeBodyAttachment(
+        _ attachment: TSAttachment,
+        from message: TSMessage,
+        tx: SDSAnyWriteTransaction
+    ) {
+        owsAssertDebug(message.attachmentIds.contains(attachment.uniqueId))
+        attachment.anyRemove(transaction: tx)
+
+        message.anyUpdateMessage(transaction: tx) { message in
+            var attachmentIds = message.attachmentIds
+            attachmentIds.removeAll(where: { $0 == attachment.uniqueId })
+            message.setLegacyBodyAttachmentIds(attachmentIds)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func addBodyAttachments(
         _ attachments: [TSAttachment],
         to message: TSMessage,
         tx: SDSAnyWriteTransaction
@@ -41,21 +73,6 @@ public class TSAttachmentManager {
                 attachmentIds.append(attachment.uniqueId)
                 attachmentIdSet.insert(attachment.uniqueId)
             }
-            message.setLegacyBodyAttachmentIds(attachmentIds)
-        }
-    }
-
-    public func removeBodyAttachment(
-        _ attachment: TSAttachment,
-        from message: TSMessage,
-        tx: SDSAnyWriteTransaction
-    ) {
-        owsAssertDebug(message.attachmentIds.contains(attachment.uniqueId))
-        attachment.anyRemove(transaction: tx)
-
-        message.anyUpdateMessage(transaction: tx) { message in
-            var attachmentIds = message.attachmentIds
-            attachmentIds.removeAll(where: { $0 == attachment.uniqueId })
             message.setLegacyBodyAttachmentIds(attachmentIds)
         }
     }

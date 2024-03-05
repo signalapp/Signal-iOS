@@ -15,13 +15,11 @@ public protocol TSResourceManager {
         tx: DBWriteTransaction
     )
 
-    // TODO: this should take the other metadata like source file name
-    // which is needed at AttachmentReference insertion time.
-    func addBodyAttachments(
-        _ attachments: [TSResource],
-        to message: TSMessage,
+    func createAttachmentStreams(
+        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        message: TSOutgoingMessage,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     func removeBodyAttachment(
         _ attachment: TSResource,
