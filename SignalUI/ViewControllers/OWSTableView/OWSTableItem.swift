@@ -556,16 +556,19 @@ public extension OWSTableItem {
         if let maxItemNameLines = maxItemNameLines {
             nameLabel.numberOfLines = maxItemNameLines
             nameLabel.lineBreakMode = .byTruncatingTail
+            nameLabel.setCompressionResistanceHorizontalHigh()
         } else if itemName.count >= (accessoryText ?? "").count {
             nameLabel.numberOfLines = 0
             nameLabel.lineBreakMode = .byWordWrapping
+            nameLabel.setCompressionResistanceHorizontalLow()
         } else {
             nameLabel.numberOfLines = 1
             nameLabel.lineBreakMode = .byTruncatingTail
+            nameLabel.setCompressionResistanceHorizontalHigh()
         }
 
         nameLabel.setContentHuggingLow()
-        nameLabel.setCompressionResistanceHigh()
+        nameLabel.setCompressionResistanceVerticalHigh()
 
         if subtitle == nil {
             subviews.append(nameLabel)
@@ -584,7 +587,7 @@ public extension OWSTableItem {
             nameLabel.textColor = customColor
         }
 
-        if let  accessoryContentView {
+        if let accessoryContentView {
             owsAssertDebug(accessoryText == nil)
 
             subviews.append(accessoryContentView)
@@ -598,12 +601,14 @@ public extension OWSTableItem {
             if itemName.count >= accessoryText.count {
                 accessoryLabel.numberOfLines = 1
                 accessoryLabel.lineBreakMode = .byTruncatingTail
+                accessoryLabel.setCompressionResistanceHorizontalHigh()
             } else {
                 accessoryLabel.numberOfLines = 0
                 accessoryLabel.lineBreakMode = .byWordWrapping
+                accessoryLabel.setCompressionResistanceHorizontalLow()
             }
 
-            accessoryLabel.setCompressionResistanceHigh()
+            accessoryLabel.setCompressionResistanceVerticalHigh()
             accessoryLabel.setContentHuggingHorizontalHigh()
             accessoryLabel.setContentHuggingVerticalLow()
             subviews.append(accessoryLabel)
