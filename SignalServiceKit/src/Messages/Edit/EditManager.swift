@@ -7,7 +7,6 @@ import Foundation
 import SignalCoreKit
 
 public enum EditSendValidationError: Error {
-    case editDisabled
     case messageTypeNotSupported
     case messageNotFound
     case editWindowClosed
@@ -194,7 +193,6 @@ public class EditManager {
     }
 
     private static func validateCanShowEditMenu(interaction: TSInteraction, thread: TSThread) -> EditSendValidationError? {
-        guard FeatureFlags.editMessageSend else { return .editDisabled }
         guard let message = interaction as? TSOutgoingMessage else { return .messageTypeNotSupported }
 
         if !Self.editMessageTypeSupported(message: message) {
@@ -215,8 +213,6 @@ public class EditManager {
         thread: TSThread,
         tx: DBReadTransaction
     ) -> EditSendValidationError? {
-        guard FeatureFlags.editMessageSend else { return .editDisabled }
-
         guard let editTarget = context.dataStore.findEditTarget(
             timestamp: targetMessageTimestamp,
             authorAci: nil,

@@ -122,8 +122,6 @@ public class FeatureFlags: BaseFlags {
         }
     }
 
-    public static let editMessageSend = true
-
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
 
     public static let messageBackupFileAlpha = build.includes(.internal)
