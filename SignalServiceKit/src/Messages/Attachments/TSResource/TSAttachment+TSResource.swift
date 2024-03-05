@@ -27,7 +27,7 @@ extension TSAttachment: TSResource {
         return uploadTimestamp
     }
 
-    public var unenecryptedByteCount: UInt32? {
+    public var unenecryptedResourceByteCount: UInt32? {
         return byteCount
     }
 
@@ -35,7 +35,7 @@ extension TSAttachment: TSResource {
         return encryptionKey
     }
 
-    public var encryptedByteCount: UInt32? {
+    public var encryptedResourceByteCount: UInt32? {
         // Unavailable for legacy attachments
         return nil
     }
@@ -52,7 +52,7 @@ extension TSAttachment: TSResource {
         return .legacy(self)
     }
 
-    public func asStream() -> TSResourceStream? {
+    public func asResourceStream() -> TSResourceStream? {
         let stream = self as? TSAttachmentStream
         guard stream?.originalFilePath != nil else {
             // Not _really_ a stream without a file.

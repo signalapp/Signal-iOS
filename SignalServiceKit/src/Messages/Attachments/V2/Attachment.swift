@@ -115,4 +115,8 @@ public class Attachment {
     ) {
         fatalError("No instances should exist yet!")
     }
+
+    func asStream() -> AttachmentStream? {
+        return AttachmentStream(attachment: self)
+    }
 }

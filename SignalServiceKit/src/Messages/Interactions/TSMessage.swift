@@ -79,7 +79,7 @@ public extension TSMessage {
     /// If you want a constant string representing the body of this message, this is it.
     @objc(rawBodyWithTransaction:)
     func rawBody(transaction: SDSAnyReadTransaction) -> String? {
-        if let oversizeText = self.oversizeTextAttachment(transaction: transaction)?.asStream()?.decryptedLongText() {
+        if let oversizeText = self.oversizeTextAttachment(transaction: transaction)?.asResourceStream()?.decryptedLongText() {
             return oversizeText
         }
         return self.body?.nilIfEmpty

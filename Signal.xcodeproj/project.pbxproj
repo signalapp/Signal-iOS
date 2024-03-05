@@ -1017,6 +1017,7 @@
 		66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */; };
 		66D13F0A2A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */; };
 		66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */; };
+		66D7B9072B928BD50005C98B /* AttachmentStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9062B928BD50005C98B /* AttachmentStream.swift */; };
 		66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD4F2B80126200C56B7B /* TSResourceId.swift */; };
 		66E1AD532B8D017400C56B7B /* TSResourceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD522B8D017400C56B7B /* TSResourceStore.swift */; };
 		66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */; };
@@ -3742,6 +3743,7 @@
 		66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentOnboarding.swift; sourceTree = "<group>"; };
 		66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecipientHidingManager+SignalServiceAddress.swift"; sourceTree = "<group>"; };
 		66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextAssociatedData.swift; sourceTree = "<group>"; };
+		66D7B9062B928BD50005C98B /* AttachmentStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStream.swift; sourceTree = "<group>"; };
 		66E1AD4F2B80126200C56B7B /* TSResourceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceId.swift; sourceTree = "<group>"; };
 		66E1AD522B8D017400C56B7B /* TSResourceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStore.swift; sourceTree = "<group>"; };
 		66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteTSResource.swift; sourceTree = "<group>"; };
@@ -7451,6 +7453,7 @@
 				66E1AD512B8D016000C56B7B /* AttachmentStore */,
 				66E1AD8C2B912A3000C56B7B /* TSResource */,
 				66E1AD752B8FD0B700C56B7B /* Attachment.swift */,
+				66D7B9062B928BD50005C98B /* AttachmentStream.swift */,
 			);
 			path = V2;
 			sourceTree = "<group>";
@@ -13130,6 +13133,7 @@
 				66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */,
 				66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */,
 				66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */,
+				66D7B9072B928BD50005C98B /* AttachmentStream.swift in Sources */,
 				C18B56B92B07BC12000A441F /* AttachmentUpload.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
 				66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */,

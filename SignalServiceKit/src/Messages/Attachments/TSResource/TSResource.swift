@@ -21,8 +21,8 @@ public protocol TSResource {
     /// Optional for legacy attachments; for v2 attachments this is non-optional.
     var resourceEncryptionKey: Data? { get }
 
-    var unenecryptedByteCount: UInt32? { get }
-    var encryptedByteCount: UInt32? { get }
+    var unenecryptedResourceByteCount: UInt32? { get }
+    var encryptedResourceByteCount: UInt32? { get }
 
     /// Digest info from the attachment sender; used for optional validation
     /// if available, but not neccessary in general.
@@ -35,7 +35,7 @@ public protocol TSResource {
 
     var concreteType: ConcreteTSResource { get }
 
-    func asStream() -> TSResourceStream?
+    func asResourceStream() -> TSResourceStream?
 
     // MARK: - Table Join Getters
 
