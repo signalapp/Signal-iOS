@@ -74,6 +74,20 @@ public class TSResourceStoreMock: TSResourceStore {
         let refs = messageResourceReferences[rowId] ?? []
         return refs.firstIndex(where: { $0.resourceId == attachmentId })
     }
+
+    public func quotedAttachmentReference(
+        from info: OWSAttachmentInfo,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSQuotedMessageResourceReference? {
+        guard let rowId = parentMessage.sqliteRowId else {
+            return nil
+        }
+        // TODO: sub-filter based on reference info
+        return messageResourceReferences[rowId]?
+            .first
+            .map { .thumbnail(.init(attachmentRef: $0, mimeType: nil, sourceFilename: nil)) }
+    }
 }
 
 #endif

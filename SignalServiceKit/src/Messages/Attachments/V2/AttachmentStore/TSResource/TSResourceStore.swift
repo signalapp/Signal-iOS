@@ -67,6 +67,14 @@ public protocol TSResourceStore {
         on message: TSMessage,
         tx: DBReadTransaction
     ) -> Int?
+
+    // MARK: - Quoted Messages
+
+    func quotedAttachmentReference(
+        from info: OWSAttachmentInfo,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSQuotedMessageResourceReference?
 }
 
 // MARK: - Convenience

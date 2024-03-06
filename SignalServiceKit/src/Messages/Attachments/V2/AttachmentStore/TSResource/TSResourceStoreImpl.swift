@@ -199,6 +199,37 @@ public class TSResourceStoreImpl: TSResourceStore {
                 .first
         }
     }
+
+    // MARK: - Quoted Messages
+
+    public func quotedAttachmentReference(
+        from info: OWSAttachmentInfo,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSQuotedMessageResourceReference? {
+        switch info.attachmentType {
+        case .V2:
+            return attachmentStore.quotedAttachmentReference(
+                from: info,
+                parentMessage: parentMessage,
+                tx: tx
+            )?.tsReference
+        case .unset, .original, .originalForSend, .thumbnail, .untrustedPointer:
+            fallthrough
+        @unknown default:
+            if let reference = self.legacyReference(uniqueId: info.attachmentId, tx: tx) {
+                return .thumbnail(TSQuotedMessageResourceReference.Thumbnail(
+                    attachmentRef: reference,
+                    mimeType: info.contentType,
+                    sourceFilename: info.sourceFilename
+                ))
+            } else if let stub = TSQuotedMessageResourceReference.Stub(info) {
+                return .stub(stub)
+            } else {
+                return nil
+            }
+        }
+    }
 }
 
 // MARK: - TSResourceUploadStore
