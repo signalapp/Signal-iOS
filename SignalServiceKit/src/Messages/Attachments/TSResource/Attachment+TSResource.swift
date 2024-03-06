@@ -5,6 +5,8 @@
 
 import Foundation
 
+// MARK: - Attachment
+
 extension Attachment: TSResource {
 
     public var resourceBlurHash: String? {
@@ -47,6 +49,8 @@ extension Attachment: TSResource {
         fatalError("Unimplemented!")
     }
 }
+
+// MARK: - Attachment Stream
 
 extension AttachmentStream: TSResourceStream {
     public func fileURLForDeletion() throws -> URL {
@@ -109,5 +113,14 @@ extension AttachmentStream: TSResource {
 
     public func caption(forContainingMessage: TSMessage, tx: DBReadTransaction) -> String? {
         return attachment.caption(forContainingMessage: forContainingMessage, tx: tx)
+    }
+}
+
+// MARK: - AttachmentTransitPointer
+
+extension AttachmentTransitPointer {
+
+    var asResourcePointer: TSResourcePointer {
+        return TSResourcePointer(resource: attachment, cdnNumber: cdnNumber, cdnKey: cdnKey)
     }
 }

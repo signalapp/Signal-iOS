@@ -178,3 +178,13 @@ extension TSAttachmentStream: TSResourceStream {
         }
     }
 }
+
+extension TSAttachment {
+
+    var asResourcePointer: TSResourcePointer? {
+        guard self.cdnKey.isEmpty.negated, self.cdnNumber > 0 else {
+            return nil
+        }
+        return TSResourcePointer(resource: self, cdnNumber: self.cdnNumber, cdnKey: self.cdnKey)
+    }
+}
