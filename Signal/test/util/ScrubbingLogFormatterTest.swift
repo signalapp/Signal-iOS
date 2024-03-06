@@ -5,10 +5,9 @@
 
 import CocoaLumberjack
 import SignalCoreKit
-import SignalServiceKit
 import XCTest
 
-@testable import SignalMessaging
+@testable import SignalServiceKit
 
 final class ScrubbingLogFormatterTest: XCTestCase {
     private let formatter = ScrubbingLogFormatter()
