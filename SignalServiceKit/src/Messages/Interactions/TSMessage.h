@@ -176,6 +176,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 // --- CODE GENERATION MARKER
 
+// TODO: can be deleted when legacy attachment support is dropped
 - (void)setLegacyBodyAttachmentIds:(NSArray<NSString *> *)attachmentIds;
 
 - (BOOL)shouldStartExpireTimer;

@@ -56,6 +56,83 @@ public class TSAttachmentManager {
         }
     }
 
+    // MARK: - Remove Message Attachments
+
+    public func removeBodyAttachments(
+        from message: TSMessage,
+        removeMedia: Bool,
+        removeOversizeText: Bool,
+        tx: SDSAnyWriteTransaction
+    ) {
+        // We remove attachments before
+        // anyUpdateWithTransaction, because anyUpdateWithTransaction's
+        // block can be called twice, once on this instance and once
+        // on the copy from the database.  We only want to remove
+        // attachments once.
+
+        var removedIds = Set<String>()
+        for attachmentId in message.attachmentIds {
+            self.removeAttachment(
+                attachmentId: attachmentId,
+                filterBlock: { attachment in
+                    // We can only discriminate oversize text attachments at the
+                    // last minute by consulting the attachment model.
+                    if attachment.isOversizeTextMimeType {
+                        if removeOversizeText {
+                            Logger.verbose("Removing oversize text attachment.")
+                            removedIds.insert(attachmentId)
+                            return true
+                        } else {
+                            return false
+                        }
+                    } else {
+                        if removeMedia {
+                            Logger.verbose("Removing body attachment.")
+                            removedIds.insert(attachmentId)
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+                },
+                tx: tx
+            )
+        }
+
+        message.anyUpdateMessage(transaction: tx) { message in
+            message.setLegacyBodyAttachmentIds(message.attachmentIds.filter { !removedIds.contains($0) })
+        }
+    }
+
+    public func removeAttachment(
+        attachmentId: String,
+        tx: SDSAnyWriteTransaction
+    ) {
+        removeAttachment(attachmentId: attachmentId, filterBlock: { _ in true }, tx: tx)
+    }
+
+    private func removeAttachment(
+        attachmentId: String,
+        filterBlock: (TSAttachment) -> Bool,
+        tx: SDSAnyWriteTransaction
+    ) {
+        if attachmentId.isEmpty {
+            owsFailDebug("Invalid attachmentId")
+            return
+        }
+
+        // We need to fetch each attachment, since [TSAttachment removeWithTransaction:] does important work.
+        let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: tx)
+        guard let attachment else  {
+            Logger.warn("couldn't load interaction's attachment for deletion.")
+            return
+        }
+        if filterBlock(attachment).negated {
+            return
+        }
+        attachment.anyRemove(transaction: tx)
+    }
+
     // MARK: - Helpers
 
     private func addBodyAttachments(

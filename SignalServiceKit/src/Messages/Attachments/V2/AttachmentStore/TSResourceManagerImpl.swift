@@ -65,6 +65,8 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
+    // MARK: - Removes and Deletes
+
     public func removeBodyAttachment(
         _ attachment: TSResource,
         from message: TSMessage,
@@ -81,6 +83,79 @@ public class TSResourceManagerImpl: TSResourceManager {
             attachmentManager.removeAttachment(
                 attachment,
                 from: .messageBodyAttachment(messageRowId: messageRowId),
+                tx: tx
+            )
+        }
+    }
+
+    public func removeAttachments(
+        from message: TSMessage,
+        with types: TSMessageAttachmentReferenceType,
+        tx: DBWriteTransaction
+    ) {
+        message.anyReload(transaction: SDSDB.shimOnlyBridge(tx), ignoreMissing: true)
+
+        var v2Owners = [AttachmentReference.OwnerTypeRaw]()
+
+        if types.contains(.bodyAttachment) || types.contains(.oversizeText) {
+            if message.attachmentIds.count > 0 {
+                tsAttachmentManager.removeBodyAttachments(
+                    from: message,
+                    removeMedia: types.contains(.bodyAttachment),
+                    removeOversizeText: types.contains(.oversizeText),
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )
+            } else {
+                if types.contains(.bodyAttachment) {
+                    v2Owners.append(.messageBodyAttachment)
+                }
+                if types.contains(.oversizeText) {
+                    v2Owners.append(.messageOversizeText)
+                }
+            }
+        }
+
+        if types.contains(.linkPreview), let linkPreview = message.linkPreview {
+            Logger.verbose("Removing link preview attachment.")
+            // TODO: move this into this class
+            linkPreview.removeAttachment(tx: SDSDB.shimOnlyBridge(tx))
+        }
+
+        if types.contains(.sticker), let messageSticker = message.messageSticker {
+            Logger.verbose("Removing sticker attachment.")
+            // TODO: differentiate legacy and v2
+            tsAttachmentManager.removeAttachment(attachmentId: messageSticker.attachmentId, tx: SDSDB.shimOnlyBridge(tx))
+        }
+
+        if
+            types.contains(.quotedReply),
+            // TODO: move this into this class
+            let thumbnailAttachmentId = message.quotedMessage?.fetchThumbnailAttachmentId(
+                forParentMessage: message,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
+        {
+            Logger.verbose("Removing quoted reply attachment.")
+            tsAttachmentManager.removeAttachment(attachmentId: thumbnailAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
+        }
+
+        if
+            types.contains(.contactAvatar),
+            let contactShare = message.contactShare,
+            let contactShareAttachmentId = contactShare.avatarAttachmentId
+        {
+            Logger.verbose("Removing contact share attachment.")
+            // TODO: differentiate legacy and v2
+            tsAttachmentManager.removeAttachment(attachmentId: contactShareAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
+        }
+
+        if FeatureFlags.readV2Attachments {
+            guard let messageRowId = message.sqliteRowId else {
+                owsFailDebug("Removing attachments from un-inserted message.")
+                return
+            }
+            attachmentManager.removeAllAttachments(
+                from: v2Owners.map { $0.with(ownerId: messageRowId) },
                 tx: tx
             )
         }

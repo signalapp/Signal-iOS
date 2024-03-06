@@ -122,6 +122,62 @@ public extension TSMessage {
         }
     }
 
+    // MARK: Attachment Deletes
+
+    @objc
+    func removeBodyMediaAttachments(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .bodyAttachment,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeOversizeTextAttachment(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .oversizeText,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeLinkPreviewAttachment(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .linkPreview,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeStickerAttachment(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .sticker,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeContactShareAvatarAttachment(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .contactAvatar,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeAllAttachments(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .allTypes,
+            tx: tx.asV2Write
+        )
+    }
+
     // MARK: - Mentions
 
     @objc
