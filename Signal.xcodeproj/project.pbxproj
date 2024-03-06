@@ -6665,7 +6665,6 @@
 				88D23D0823CEBF4400B0E74B /* Notifications */,
 				3474C56526111605006723D2 /* Payments */,
 				88E34F2522F269B600966CC2 /* Storage Service */,
-				66C336CF2A994B61000F4F50 /* Stories */,
 				F00385FB273F6388000B5ABD /* Subscriptions */,
 				F9C612B5284E46A300B2199A /* test */,
 				34480B471FD0A60200BC14EF /* utils */,
@@ -7483,14 +7482,6 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
-		66C336CF2A994B61000F4F50 /* Stories */ = {
-			isa = PBXGroup;
-			children = (
-				66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */,
-			);
-			path = Stories;
-			sourceTree = "<group>";
-		};
 		66CD25572B0685CF00139E17 /* Archivers */ = {
 			isa = PBXGroup;
 			children = (
@@ -7757,6 +7748,14 @@
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
 			);
 			path = Attachments;
+			sourceTree = "<group>";
+		};
+		7255A4C52B98DA2200E95368 /* Stories */ = {
+			isa = PBXGroup;
+			children = (
+				66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */,
+			);
+			path = Stories;
 			sourceTree = "<group>";
 		};
 		765283AC2A00D893004583A9 /* OWSTableView */ = {
@@ -9706,6 +9705,7 @@
 				6673FF6A2978B5B900F96CFD /* SecureValueRecovery */,
 				F9C5CB98289453B200548EEE /* Security */,
 				F9C5CA2F289453B100548EEE /* Storage */,
+				7255A4C52B98DA2200E95368 /* Stories */,
 				D91A39E62AE2F42000F57A61 /* Subscriptions */,
 				F9C5CB82289453B200548EEE /* TestUtils */,
 				500AEE032A4B68D200371F05 /* UISupport */,
