@@ -66,11 +66,11 @@ extension AttachmentStream: TSResourceStream {
     }
 
     public var cachedContentType: TSResourceContentType? {
-        return contentType
+        return contentType.resourceType
     }
 
     public func computeContentType() -> TSResourceContentType {
-        return contentType
+        return contentType.resourceType
     }
 }
 

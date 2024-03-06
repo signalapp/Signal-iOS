@@ -5,53 +5,6 @@
 
 import Foundation
 
-public enum TSResourceContentType {
-    /// Some arbitrary file. Used when no other case applies.
-    case file
-
-    // TODO: all these associated values will be non-optional after the transition to v2.
-    case image(pixelSize: CGSize?)
-    case video(duration: TimeInterval?)
-    case animatedImage(pixelSize: CGSize?)
-    case audio(duration: TimeInterval?)
-
-    public var isImage: Bool {
-        switch self {
-        case .image:
-            return true
-        default:
-            return false
-        }
-    }
-
-    public var isVideo: Bool {
-        switch self {
-        case .video:
-            return true
-        default:
-            return false
-        }
-    }
-
-    public var isAnimatedImage: Bool {
-        switch self {
-        case .animatedImage:
-            return true
-        default:
-            return false
-        }
-    }
-
-    public var isAudio: Bool {
-        switch self {
-        case .audio:
-            return true
-        default:
-            return false
-        }
-    }
-}
-
 /// A TSResource for which we have the fullsize data on local disk.
 public protocol TSResourceStream: TSResource {
 

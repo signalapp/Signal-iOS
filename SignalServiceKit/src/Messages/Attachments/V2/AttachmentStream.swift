@@ -20,7 +20,7 @@ public class AttachmentStream {
 
     /// For downloaded attachments, the type of content in the actual file.
     /// If a case is set it means the file contents have been validated.
-    public let contentType: TSResourceContentType
+    public let contentType: Attachment.ContentType
 
     /// Filepath to the encrypted fullsize media file on local disk.
     public let localRelativeFilePath: String
@@ -30,7 +30,7 @@ public class AttachmentStream {
         contentHash: String,
         encryptedByteCount: UInt32,
         unenecryptedByteCount: UInt32,
-        contentType: TSResourceContentType,
+        contentType: Attachment.ContentType,
         localRelativeFilePath: String
     ) {
         self.attachment = attachment

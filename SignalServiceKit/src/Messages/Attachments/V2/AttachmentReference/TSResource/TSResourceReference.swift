@@ -17,6 +17,11 @@ public protocol TSResourceReference {
     /// Filename from the sender, used for rendering as a file attachment.
     /// NOT the same as the file name on disk.
     var sourceFilename: String? { get }
+
+    // NOTE: mimeType and contentType are deliberately excluded from
+    // this protocol; they have wildly different meanings in v1 and v2
+    // and are safe to use in entirely different circumstances.
+    // To check these values, fetch the full resource.
 }
 
 // MARK: - Convenience fetchers

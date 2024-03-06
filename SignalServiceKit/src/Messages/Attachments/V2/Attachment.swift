@@ -31,7 +31,7 @@ public class Attachment {
 
     /// For downloaded attachments, the type of content in the actual file.
     /// If a case is set it means the file contents have been validated.
-    public let contentType: TSResourceContentType?
+    public let contentType: ContentType?
 
     /// Encryption key used for transit tier AND media tier.
     /// If from an incoming message, we get this from the proto, and can reuse it for local and media backup encryption.
@@ -96,7 +96,7 @@ public class Attachment {
         encryptedByteCount: UInt32?,
         unenecryptedByteCount: UInt32?,
         mimeType: String,
-        contentType: TSResourceContentType?,
+        contentType: ContentType?,
         encryptionKey: Data,
         transitCdnNumber: UInt32?,
         transitCdnKey: String?,

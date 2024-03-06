@@ -69,7 +69,7 @@ extension AttachmentReference {
             }
 
             public class BodyAttachmentMetadata: Metadata {
-                public var contentType: TSResourceContentType? { _contentType }
+                public var contentType: ContentType? { _contentType }
                 public var caption: MessageBody? { _caption }
                 public var flags: TSAttachmentType? { _flags }
                 public var sourceFilename: String? { _sourceFilename }
@@ -79,7 +79,7 @@ extension AttachmentReference {
             }
 
             public class QuotedReplyMetadata: Metadata {
-                public var contentType: TSResourceContentType? { _contentType }
+                public var contentType: ContentType? { _contentType }
                 public var flags: TSAttachmentType? { _flags }
                 public var sourceFilename: String? { _sourceFilename }
             }
@@ -105,7 +105,7 @@ extension AttachmentReference {
             }
 
             public class MediaMetadata: Metadata {
-                public var contentType: TSResourceContentType? { _contentType }
+                public var contentType: ContentType? { _contentType }
                 public var caption: MessageBody? { _caption }
                 public var isLoopingVideo: Bool { _flags == .GIF }
             }
@@ -182,7 +182,11 @@ extension AttachmentReference {
         /// * quoted reply attachment (note some types are disallowed)
         /// * story media (note some types are disallowed)
         /// Null if the attachment is undownloaded.
-        fileprivate let _contentType: TSResourceContentType?
+        /// 
+        /// Note: if you want to know if an attachment is, say, a video,
+        /// even if you are ok using the mimeType for that if undownloaded,
+        /// you must fetch the full attachment object and use its mimeType.
+        fileprivate let _contentType: ContentType?
 
         fileprivate class var requiredFields: [AnyKeyPath] { [] }
 
@@ -197,7 +201,7 @@ extension AttachmentReference {
             sourceFilename: String?,
             stickerPackId: Data?,
             stickerId: UInt64?,
-            contentType: TSResourceContentType?
+            contentType: AttachmentReference.ContentType?
         ) throws {
             self._ownerRowId = ownerRowId
             self._orderInOwner = orderInOwner
@@ -232,7 +236,7 @@ extension AttachmentReference.Owner {
         sourceFilename: String?,
         stickerPackId: Data?,
         stickerId: UInt64?,
-        contentType: TSResourceContentType?
+        contentType: AttachmentReference.ContentType?
     ) -> AttachmentReference.Owner? {
 
         func buildAndValidateMetadata<MetadataType: AttachmentReference.Metadata>() throws -> MetadataType {
