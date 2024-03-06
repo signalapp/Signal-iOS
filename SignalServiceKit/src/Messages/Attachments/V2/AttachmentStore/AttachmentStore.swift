@@ -10,7 +10,7 @@ public protocol AttachmentStore {
     /// Fetch all references for the provided owners.
     /// Results are unordered.
     func fetchReferences(
-        owners: [AttachmentReference.OwnerType],
+        owners: [AttachmentReference.OwnerId],
         tx: DBReadTransaction
     ) -> [AttachmentReference]
 
@@ -28,7 +28,7 @@ extension AttachmentStore {
     /// Fetch all references for the provided owner.
     /// Results are unordered.
     func fetchReferences(
-        owner: AttachmentReference.OwnerType,
+        owner: AttachmentReference.OwnerId,
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
         return fetchReferences(owners: [owner], tx: tx)
@@ -40,7 +40,7 @@ extension AttachmentStore {
     /// so in general this method is for when the owner type
     /// allows only one (or no) reference.
     func fetchFirstReference(
-        owner: AttachmentReference.OwnerType,
+        owner: AttachmentReference.OwnerId,
         tx: DBReadTransaction
     ) -> AttachmentReference? {
         return fetchReferences(owner: owner, tx: tx).first
@@ -57,7 +57,7 @@ extension AttachmentStore {
     /// Convenience method to perform the two-step fetch
     /// owner -> AttachmentReference(s) -> Attachment(s).
     func fetch(
-        owner: AttachmentReference.OwnerType,
+        owner: AttachmentReference.OwnerId,
         tx: DBReadTransaction
     ) -> [Attachment] {
         let refs = fetchReferences(owner: owner, tx: tx)
@@ -71,7 +71,7 @@ extension AttachmentStore {
     /// so in general this method is for when the owner type
     /// allows only one (or no) attachment.
     func fetchFirst(
-        owner: AttachmentReference.OwnerType,
+        owner: AttachmentReference.OwnerId,
         tx: DBReadTransaction
     ) -> Attachment? {
         guard let ref = fetchFirstReference(owner: owner, tx: tx) else {

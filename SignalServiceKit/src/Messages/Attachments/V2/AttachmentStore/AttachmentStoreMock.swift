@@ -12,9 +12,9 @@ open class AttachmentStoreMock: AttachmentStore {
     public var attachmentReferences = [AttachmentReference]()
     public var attachments = [Attachment]()
 
-    open func fetchReferences(owners: [AttachmentReference.OwnerType], tx: DBReadTransaction) -> [AttachmentReference] {
+    open func fetchReferences(owners: [AttachmentReference.OwnerId], tx: DBReadTransaction) -> [AttachmentReference] {
         return attachmentReferences.filter { ref in
-            return owners.contains(ref.owner.type)
+            return owners.contains(ref.owner.id)
         }
     }
 

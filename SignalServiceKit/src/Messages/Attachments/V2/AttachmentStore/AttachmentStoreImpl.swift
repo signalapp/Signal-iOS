@@ -10,7 +10,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     public init() {}
 
     public func fetchReferences(
-        owners: [AttachmentReference.OwnerType],
+        owners: [AttachmentReference.OwnerId],
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
         fatalError("Unimplemented")

@@ -21,7 +21,7 @@ extension AttachmentReference {
     }
 
     /// What "owns" this attachment, as stored in the sql table column.
-    public enum OwnerType: Hashable, Equatable {
+    public enum OwnerId: Hashable, Equatable {
         case messageBodyAttachment(messageRowId: Int64)
         case messageOversizeText(messageRowId: Int64)
         case messageLinkPreview(messageRowId: Int64)
@@ -223,7 +223,7 @@ extension AttachmentReference {
 extension AttachmentReference.Owner {
 
     internal static func validateAndBuild(
-        ownerType: AttachmentReference.OwnerType,
+        ownerId: AttachmentReference.OwnerId,
         orderInOwner: UInt32?,
         flags: TSAttachmentType,
         threadRowId: UInt64?,
@@ -238,7 +238,7 @@ extension AttachmentReference.Owner {
         func buildAndValidateMetadata<MetadataType: AttachmentReference.Metadata>() throws -> MetadataType {
             let captionBody = caption.map { MessageBody(text: $0, ranges: captionBodyRanges) }
             return try MetadataType.init(
-                ownerRowId: ownerType.rowId,
+                ownerRowId: ownerId.rowId,
                 orderInOwner: orderInOwner,
                 flags: flags,
                 threadRowId: threadRowId,
@@ -251,7 +251,7 @@ extension AttachmentReference.Owner {
         }
 
         do {
-            switch ownerType {
+            switch ownerId {
             case .messageBodyAttachment:
                 return .message(.bodyAttachment(try buildAndValidateMetadata()))
             case .messageOversizeText:
@@ -281,7 +281,7 @@ extension AttachmentReference.Owner {
 
 extension AttachmentReference.Owner {
 
-    internal var type: AttachmentReference.OwnerType {
+    internal var id: AttachmentReference.OwnerId {
         switch self {
         case .message(.bodyAttachment(let metadata)):
             return .messageBodyAttachment(messageRowId: metadata._ownerRowId)
@@ -305,7 +305,7 @@ extension AttachmentReference.Owner {
     }
 }
 
-extension AttachmentReference.OwnerType {
+extension AttachmentReference.OwnerId {
 
     internal var raw: AttachmentReference.OwnerTypeRaw {
         switch self {
@@ -349,7 +349,7 @@ extension AttachmentReference.OwnerType {
 
 extension AttachmentReference.OwnerTypeRaw {
 
-    internal func with(ownerId: Int64) -> AttachmentReference.OwnerType {
+    internal func with(ownerId: Int64) -> AttachmentReference.OwnerId {
         switch self {
         case .messageBodyAttachment:
             return .messageBodyAttachment(messageRowId: ownerId)

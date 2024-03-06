@@ -34,12 +34,12 @@ public class AttachmentReference {
         stickerId: UInt64?,
         contentType: TSResourceContentType?
     ) {
-        let ownerType = ownerTypeRaw.with(ownerId: ownerRowId)
+        let ownerId = ownerTypeRaw.with(ownerId: ownerRowId)
 
         // Do source validation
         guard
             let owner = Owner.validateAndBuild(
-                ownerType: ownerType,
+                ownerId: ownerId,
                 orderInOwner: orderInOwner,
                 flags: flags,
                 threadRowId: threadRowId,

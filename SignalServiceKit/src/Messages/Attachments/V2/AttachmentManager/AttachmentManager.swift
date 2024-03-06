@@ -13,7 +13,7 @@ public protocol AttachmentManager {
     /// Creates a reference from the owner to the attachment.
     func createAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
-        owner: AttachmentReference.OwnerType,
+        owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
     )
 
@@ -24,7 +24,7 @@ public protocol AttachmentManager {
     /// Creates a reference from the owner to the attachment.
     func createAttachmentStreams(
         consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
-        owner: AttachmentReference.OwnerType,
+        owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
     ) throws
 
@@ -33,14 +33,14 @@ public protocol AttachmentManager {
     /// Typically because the owner has been deleted.
     func removeAttachment(
         _ attachment: TSResource,
-        from owner: AttachmentReference.OwnerType,
+        from owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
     )
 
     /// Removed all attachments of the provided types from the provided owners.
     /// Will only delete attachments if they are left without any owners.
     func removeAllAttachments(
-        from owners: [AttachmentReference.OwnerType],
+        from owners: [AttachmentReference.OwnerId],
         tx: DBWriteTransaction
     )
 }
