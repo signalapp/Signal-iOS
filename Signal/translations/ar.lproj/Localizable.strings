@@ -815,76 +815,76 @@
 "CALLS_LIST_TITLE" = "المُكالمات";
 
 /* Label for an entry in the Calls Tab describing a call as incoming. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Incoming";
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "واردة";
 
 /* Label for an entry in the Calls Tab describing a call as missed. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Missed";
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "فائتة";
 
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Outgoing";
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "صادرة";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "محو";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "This will permanently delete all call history.";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "سَيؤدي هذا إلى حذف جميع سِّجِلّ الاتصالات.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Clear call history?";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "مسح سِّجِلّ الاتصالات؟";
 
 /* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Delete";
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "حذف";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "All";
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "الجميع";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Missed";
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "فائتة";
 
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
-"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Go to Chat";
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "الذهاب إلى الدردشة";
 
 /* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Join Audio Call";
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "الانضمام إلى المكالمة الصوتية";
 
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
-"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Join";
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "انضم";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Join Video Call";
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "الانضمام إلى مكالمة الفيديو";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "No missed calls";
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "لا توجد مكالمات فائتة";
 
 /* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "No recent calls";
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "لا توجد مكالمات حديثة";
 
 /* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Get started by calling a friend";
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "ابدأ بالاتصال بصديق";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Return to Call";
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "العودة للمكالمة";
 
 /* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Return";
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "العودة";
 
 /* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
-"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "No results found for '%1$@'";
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "لا توجد نتيجة لـ'%1$@'";
 
 /* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "حَدِّد";
 
 /* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
-"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "حَدِّد";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "مكالمة صوتية";
 
 /* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "الاتصال بالفيديو";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "معلومات";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "اِلتَقِط صُّورَةً ثُمَّ أرسِلها";
@@ -1388,22 +1388,22 @@
 "CONVERSATION_SETTINGS_BLOCK_USER" = "حَظر المُستخدم";
 
 /* A label indicating that a call was an incoming audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Incoming audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "مكالمة صوتية واردة";
 
 /* A label indicating that a call was an incoming video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Incoming video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "مكالمة فيديو واردة";
 
 /* A label indicating that a call was an missed audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Missed audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "مكالمة صوتية فائتة";
 
 /* A label indicating that a call was an missed video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Missed video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "مكالمة فيديو فائتة";
 
 /* A label indicating that a call was an outgoing audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Outgoing audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "مكالمة صوتية صادرة";
 
 /* A label indicating that a call was an outgoing video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Outgoing video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "مكالمة فيديو صادرة";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "تحرير";
@@ -1511,7 +1511,7 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "إزالة %1$@ من المجموعة؟";
 
 /* Label for 'report spam' action in conversation settings view. */
-"CONVERSATION_SETTINGS_REPORT_SPAM" = "Report Spam";
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "الإبلاغ عن رسائل غير مرغوب فيها";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "إزالة مِنَ الإشراف";
@@ -3611,13 +3611,13 @@
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "أرسلت لـ %1$@ طلبًا لتفعيل عمليات الدفع";
 
 /* Shown when a user reports a conversation as spam. */
-"INFO_MESSAGE_REPORTED_SPAM" = "Reported as spam";
+"INFO_MESSAGE_REPORTED_SPAM" = "تم الإبلاغ عنها كرسالة غير مرغوب فيها";
 
 /* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal has been notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "تم إشعار سيجنال بأن هذا الشخص قد يكون أرسل رسائل غير مرغوب فيها. لا يُمكن لسيجنال رؤية محتوى أي دردشات.";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Reported Spam";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "تم الإبلاغ عن رسائل غير مرغوب فيها";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -4112,16 +4112,16 @@
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "تحديث جهة الاتصال";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal will be notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "سَيتم إشعار سيجنال أن هذا الشخص قد يكون أرسل رسائل غير مرغوب فيها. لا يُمكن لسيجنال رؤية محتوى أي دردشات.";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Report Spam?";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "الإبلاغ عن رسائل غير مرغوب فيها؟";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Report Spam";
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "الإبلاغ عن رسائل غير مرغوب فيها";
 
 /* String indicating that spam has been reported. */
-"MESSAGE_REQUEST_SPAM_REPORTED" = "MESSAGE_REQUEST_SPAM_REPORTED";
+"MESSAGE_REQUEST_SPAM_REPORTED" = "تم الإبلاغ عنها كرسالة غير مرغوب فيها.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "تم الإبلاغ عنه كبريد مزعج وتم حظره.";
@@ -4166,7 +4166,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "هل تسمح لـ %1$@ بمراسلتك ومشاركة اسمك وصورتك معهم؟ لقد حذفت هذا الشخص في الماضي.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "الإبلاغ…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "رفع الحظر";
@@ -4340,22 +4340,22 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "الـWi-Fi والخلوية";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "مكالمة صوتية";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
-"NEW_CALL_HINT" = "Select a contact or group to start a new call with.";
+"NEW_CALL_HINT" = "اختر جهة اتصال أو مجموعة لبدء مُكالمة جديدة مَعها.";
 
 /* Accessibility label for the new call button on the Calls Tab */
-"NEW_CALL_LABEL" = "New Call";
+"NEW_CALL_LABEL" = "مكالمة جديدة";
 
 /* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_MESSAGE_ACTION_TITLE" = "Message";
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "رسالة";
 
 /* Title for the contact picker that allows new calls to be started */
-"NEW_CALL_TITLE" = "New Call";
+"NEW_CALL_TITLE" = "مكالمة جديدة";
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "الاتصال بالفيديو";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "العثور برقم الهاتف";
@@ -5864,46 +5864,46 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "تغير رقم أمانك مع %1$@. قد ترغب بالتحقق منه.";
 
 /* Title for Safety Tips button in thread details. */
-"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Safety Tips";
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "نصائح السلامة";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "If someone you don’t know messages about cryptocurrency (like Bitcoin) or a financial opportunity, be careful—it’s likely spam.";
+"SAFETY_TIPS_CRYPTO_BODY" = "إذا راسلك شخص لا تعرفُه بخصوص العملات المشفرة (مثل بيتكوين) أو فرصة مالية، احذر—إنها حتمًا رسالة غير مرغوب فيها.";
 
 /* Message title describing the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_TITLE" = "Crypto or money scams";
+"SAFETY_TIPS_CRYPTO_TITLE" = "عمليات الاحتيال المالية أو من خلال العملات المشفرة";
 
 /* Message contents for the safety tip concerning fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Be careful of businesses or government agencies contacting you. Messages involving tax agencies, couriers, and more can be spam.";
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "احذر من الشركات أو الوكالات الحكومية التي تتواصل معك. قد تكون الرسائل التي تتعلق بوكالات الضرائب وشركات التوصيل والمزيد رسائل غير مرغوب فيها.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fake businesses and institutions";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "الشركات والمُؤسسات الوهمية";
 
 /* Message describing safety tips for group conversations. */
-"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Review this request carefully. None of your contacts or people you chat with are in this group. Here are a few things to watch out for:";
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "مراجعة هذا الطلب بعناية. لا توجد أية جهات اتصال أو أشخاص تُدردش معهم في هذه المجموعة. إليك بعض الأمور التي عليك الانتباه إليها:";
 
 /* Title for Safety Tips education screen. */
-"SAFETY_TIPS_HEADER_TITLE" = "Safety Tips";
+"SAFETY_TIPS_HEADER_TITLE" = "نصائح السلامة";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Be careful when accepting message requests from people you don’t know. Watch out for:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "احذر عند قبول طلب مراسلة من أشخاص لا تعرفهم. احذر من:";
 
 /* Message contents for the unknown links in messages safety tip. */
-"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Be careful of messages from people you don’t know that have links to websites. Never visit links from people you don’t trust.";
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "احذر من الرسائل الواردة من الأشخاص الذين لا تعرفهم والتي تتضمّن روابط تقودك إلى مواقع. لا تزر أبدًا روابط من الأشخاص الذين لا تثق بهم.";
 
 /* Message title describing the safety tip about unknown links in messages. */
-"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages with links";
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "الرسائل التي تتضمّن روابط";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next Tip";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "النصيحة القادمة";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous Tip";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "النصيحة السابقة";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammers often start with a simple message like “Hi” to draw you in. If you respond they may engage you further.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "يبدأ مُرسلو الرسائل غير المرغوب فيها برسالة بسيطة مثل \"مرحبًا\" لجذبك. إذا قُمت بالرد، فسيُواصلون التفاعل معك.";
 
 /* Message title describing the safety tip about vague messages. */
-"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Vague or irrelevant messages";
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "الرسائل الغامضة أو غير ذات الصلة";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "امسح رمز الاستجابة السريعة المعروض على جهاز جهة اتصالك.";
@@ -7922,7 +7922,7 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "تمت إعادة تعيين رمز ورابط الاستجابة السريعة واسم المُستخدم الخاص بك هو %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Username cannot begin with a number";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "اسم المُستخدم لا يمكن أن يبدأ برقم";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "سيُؤدي تغيير اسم المُستخدم الخاص بك إلى إعادة تعيين رمز الاستجابة السريع والرابط الحاليين الخاصين بك. هل أنت متأكد؟";
@@ -7934,7 +7934,7 @@
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "يُرجى اختيار اسم المُستخدم";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "يُمكن أن تحتوي اسماء المُستخدمين على حروف a-z، أرقام 0-9 والشرطة السُفلية _ فقط";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "اسم مُستخدم غير صحيح، أدخل رمزيْن على الأقل";
@@ -7946,10 +7946,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "ماذا يعني هذا الرقم؟";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "اسم المُستخدم هذا غير متاح";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "قمت بمحاولات كثيرة. يُرجى المحاولة لاحقاً";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "اسم المُستخدم";
@@ -7957,11 +7957,8 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "اسم المُستخدم";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "This number can’t be 00. Enter a digit between 1–9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "لا يمكن لهذا الرقم أن يكون 00. أدخل رقمًا بين 1 –9";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "يُمكن تحديث أسماء المُستخدمين فقط عند وجود اتصال بالإنترنت.";

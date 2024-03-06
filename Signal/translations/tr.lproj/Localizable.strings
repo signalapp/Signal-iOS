@@ -815,76 +815,76 @@
 "CALLS_LIST_TITLE" = "Aramalar";
 
 /* Label for an entry in the Calls Tab describing a call as incoming. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Incoming";
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Gelen";
 
 /* Label for an entry in the Calls Tab describing a call as missed. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Missed";
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Cevapsız";
 
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Outgoing";
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Giden";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Kaldır";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "This will permanently delete all call history.";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Bu, tüm arama geçmişini kalıcı olarak silecektir.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Clear call history?";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Arama geçmişi temizlensin mi?";
 
 /* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Delete";
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Sil";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "All";
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Tümü";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Missed";
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Cevapsız";
 
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
-"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Go to Chat";
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Sohbete Git";
 
 /* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Join Audio Call";
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Sesli Aramaya Katıl";
 
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
-"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Join";
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Katıl";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Join Video Call";
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Görüntülü Aramaya Katıl";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "No missed calls";
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Cevapsız arama yok";
 
 /* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "No recent calls";
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Güncel arama yok";
 
 /* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Get started by calling a friend";
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Bir arkadaşını arayarak başla";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Return to Call";
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Aramaya Dön";
 
 /* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Return";
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Geri Dön";
 
 /* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
-"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "No results found for '%1$@'";
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "'%1$@' ile eşleşen sonuç bulunamadı";
 
 /* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Seç";
 
 /* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
-"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Seç";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Sesli Arama";
 
 /* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Görüntülü Arama";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Bilgi";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Bir fotoğraf çekin ve gönderin";
@@ -1388,22 +1388,22 @@
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Kullanıcıyı Engelle";
 
 /* A label indicating that a call was an incoming audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Incoming audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Gelen sesli arama";
 
 /* A label indicating that a call was an incoming video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Incoming video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Gelen görüntülü arama";
 
 /* A label indicating that a call was an missed audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Missed audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Cevapsız sesli arama";
 
 /* A label indicating that a call was an missed video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Missed video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Cevapsız görüntülü arama";
 
 /* A label indicating that a call was an outgoing audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Outgoing audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Giden sesli arama";
 
 /* A label indicating that a call was an outgoing video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Outgoing video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Giden görüntülü arama";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Düzenle";
@@ -1511,7 +1511,7 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ gruptan çıkarılsın mı?";
 
 /* Label for 'report spam' action in conversation settings view. */
-"CONVERSATION_SETTINGS_REPORT_SPAM" = "Report Spam";
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Spam bildir";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Yöneticilikten Çıkart";
@@ -3611,13 +3611,13 @@
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Ödemeleri etkinleştirmek için %1$@ adlı kişiye bir istek gönderdin";
 
 /* Shown when a user reports a conversation as spam. */
-"INFO_MESSAGE_REPORTED_SPAM" = "Reported as spam";
+"INFO_MESSAGE_REPORTED_SPAM" = "Spam olarak bildirildi";
 
 /* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal has been notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal, bu kişinin spam gönderiyor olabileceği konusunda bilgilendirildi. Signal hiçbir sohbetin içeriğini göremez.";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Reported Spam";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Spam bildirildi";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -4112,16 +4112,16 @@
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Kişiyi güncelle";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal will be notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal, bu kişinin spam gönderiyor olabileceği konusunda bilgilendirilecektir. Signal hiçbir sohbetin içeriğini göremiyor.";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Report Spam?";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Spam bildirilsin mi?";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Report Spam";
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Spam bildir";
 
 /* String indicating that spam has been reported. */
-"MESSAGE_REQUEST_SPAM_REPORTED" = "MESSAGE_REQUEST_SPAM_REPORTED";
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Spam olarak bildirildi.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Gereksiz olarak bildirildi ve engellendi.";
@@ -4166,7 +4166,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@ adlı kişinin sana mesaj atmasına ve adını ve fotoğrafını görmesine izin veriyor musun? Bu kişiyi geçmişte kaldırmıştın.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Bildir…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Engeli kaldır";
@@ -4340,22 +4340,22 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Kablosuz Ağ ve Hücresel";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Sesli Arama";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
-"NEW_CALL_HINT" = "Select a contact or group to start a new call with.";
+"NEW_CALL_HINT" = "Yeni bir arama başlatmak için bir kişi veya grup seç.";
 
 /* Accessibility label for the new call button on the Calls Tab */
-"NEW_CALL_LABEL" = "New Call";
+"NEW_CALL_LABEL" = "Yeni arama";
 
 /* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_MESSAGE_ACTION_TITLE" = "Message";
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "İleti";
 
 /* Title for the contact picker that allows new calls to be started */
-"NEW_CALL_TITLE" = "New Call";
+"NEW_CALL_TITLE" = "Yeni arama";
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Görüntülü Arama";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Telefon Numarası ile Bul";
@@ -5864,46 +5864,46 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%1$@ ile olan güvenlik numaranız değişti. Doğrulamak isteyebilirsiniz.";
 
 /* Title for Safety Tips button in thread details. */
-"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Safety Tips";
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Güvenlik İpuçları";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "If someone you don’t know messages about cryptocurrency (like Bitcoin) or a financial opportunity, be careful—it’s likely spam.";
+"SAFETY_TIPS_CRYPTO_BODY" = "Tanımadığın biri kripto para (Bitcoin gibi) veya finansal bir fırsat hakkında mesaj gönderirse dikkatli ol; spam olması olasıdır.";
 
 /* Message title describing the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_TITLE" = "Crypto or money scams";
+"SAFETY_TIPS_CRYPTO_TITLE" = "Kripto veya para dolandırıcılıkları";
 
 /* Message contents for the safety tip concerning fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Be careful of businesses or government agencies contacting you. Messages involving tax agencies, couriers, and more can be spam.";
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Seninle iletişime geçen işletmelere veya devlet kurumlarına karşı dikkatli ol. Vergi daireleri, kuryeler ve daha fazlasını içeren mesajlar spam olabilir.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fake businesses and institutions";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Sahte işletmeler ve kurumlar";
 
 /* Message describing safety tips for group conversations. */
-"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Review this request carefully. None of your contacts or people you chat with are in this group. Here are a few things to watch out for:";
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Bu isteği dikkatlice incele. Kişilerinden veya sohbet ettiğin kişilerden hiçbiri bu grupta değil. İşte dikkat etmen gereken birkaç şey:";
 
 /* Title for Safety Tips education screen. */
-"SAFETY_TIPS_HEADER_TITLE" = "Safety Tips";
+"SAFETY_TIPS_HEADER_TITLE" = "Güvenlik İpuçları";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Be careful when accepting message requests from people you don’t know. Watch out for:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Tanımadığın kişilerden gelen mesaj isteklerini kabul ederken dikkatli ol. Şunlara dikkat et:";
 
 /* Message contents for the unknown links in messages safety tip. */
-"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Be careful of messages from people you don’t know that have links to websites. Never visit links from people you don’t trust.";
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Tanımadığın kişilerden gelen ve web sitelerine bağlantılar içeren mesajlara dikkat et. Güvenmediğin kişilerin bağlantılarını asla ziyaret etme.";
 
 /* Message title describing the safety tip about unknown links in messages. */
-"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages with links";
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Bağlantı içeren mesajlar";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next Tip";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Sonraki ipucu";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous Tip";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Önceki ipucu";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammers often start with a simple message like “Hi” to draw you in. If you respond they may engage you further.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spam gönderenler genelde seni cezbetmek için \"Merhaba\" gibi basit bir mesajla başlar. Yanıt verirsen, seninle daha fazla etkileşime geçebilirler.";
 
 /* Message title describing the safety tip about vague messages. */
-"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Vague or irrelevant messages";
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Belirsiz veya ilgisiz mesajlar";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Kişinizin cihazındaki karekodu tarayın.";
@@ -7922,7 +7922,7 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Kare kodun ve bağlantın sıfırlandı ve kullanıcı adın %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Username cannot begin with a number";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Kullanıcı adı bir sayı ile başlayamaz";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Kullanıcı adını değiştirmek, mevcut kare kodunu ve bağlantını sıfırlar. Emin misin?";
@@ -7934,7 +7934,7 @@
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Kullanıcı adını seç";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Kullanıcı adları yalnızca a-z, 0-9, ve _ içerebilir";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Geçersiz kullanıcı adı, en az 2 hane gir";
@@ -7946,10 +7946,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Bu numara kimin?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Bu kullanıcı adı kullanılamıyor";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Çok fazla deneme yapıldı, lütfen daha sonra tekrar dene";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Kullanıcı adı";
@@ -7957,11 +7957,8 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Kullanıcı adı";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "This number can’t be 00. Enter a digit between 1–9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Bu sayı 00 olamaz. 1-9 arasında bir rakam gir";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Kullanıcı adları yalnızca internete bağlıyken güncellenebilir.";

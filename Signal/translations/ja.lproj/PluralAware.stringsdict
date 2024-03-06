@@ -1089,5 +1089,19 @@
 			<string>閲覧数 &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 		</dict>
 	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>ユーザーネームは%1$d字以上にしてください</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

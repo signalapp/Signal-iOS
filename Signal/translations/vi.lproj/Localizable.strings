@@ -815,76 +815,76 @@
 "CALLS_LIST_TITLE" = "Cuộc gọi";
 
 /* Label for an entry in the Calls Tab describing a call as incoming. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Incoming";
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Cuộc gọi đến";
 
 /* Label for an entry in the Calls Tab describing a call as missed. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Missed";
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Cuộc gọi nhỡ";
 
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Outgoing";
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Cuộc gọi đi";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Xoá";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "This will permanently delete all call history.";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Thao tác này sẽ xóa vĩnh viễn tất cả lịch sử cuộc gọi.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Clear call history?";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Xóa lịch sử cuộc gọi?";
 
 /* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Delete";
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Xóa";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "All";
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Tất cả";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Missed";
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Cuộc gọi nhỡ";
 
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
-"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Go to Chat";
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Đến Cuộc trò chuyện";
 
 /* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Join Audio Call";
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Tham gia Cuộc gọi Âm thanh";
 
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
-"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Join";
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Tham gia";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Join Video Call";
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Tham gia Cuộc gọi Video";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "No missed calls";
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Không có cuộc gọi nhỡ";
 
 /* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "No recent calls";
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Không cuộc gọi gần đây";
 
 /* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Get started by calling a friend";
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Bắt đầu với việc gọi cho một người bạn";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Return to Call";
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Quay về Cuộc gọi";
 
 /* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Return";
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Quay về";
 
 /* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
-"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "No results found for '%1$@'";
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "Không tìm thấy kết quả cho '%1$@'";
 
 /* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Chọn";
 
 /* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
-"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Chọn";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Cuộc gọi Âm thanh";
 
 /* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Gọi video";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Thông tin";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Chụp một bức ảnh và gửi đi";
@@ -1388,22 +1388,22 @@
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Chặn Người Dùng";
 
 /* A label indicating that a call was an incoming audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Incoming audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Cuộc gọi âm thanh đang đến";
 
 /* A label indicating that a call was an incoming video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Incoming video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Cuộc gọi video đến";
 
 /* A label indicating that a call was an missed audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Missed audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Cuộc gọi âm thanh bị nhỡ";
 
 /* A label indicating that a call was an missed video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Missed video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Cuộc gọi video bị nhỡ";
 
 /* A label indicating that a call was an outgoing audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Outgoing audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Cuộc gọi âm thanh đang gọi đi";
 
 /* A label indicating that a call was an outgoing video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Outgoing video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Cuộc gọi video đi";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Sửa";
@@ -1511,7 +1511,7 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Xóa %1$@ khỏi nhóm?";
 
 /* Label for 'report spam' action in conversation settings view. */
-"CONVERSATION_SETTINGS_REPORT_SPAM" = "Report Spam";
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Báo cáo spam";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Gỡ vai trò Quản trị viên";
@@ -3611,13 +3611,13 @@
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Bạn đã gửi cho %1$@ một yêu cầu bật tính năng Thanh toán.";
 
 /* Shown when a user reports a conversation as spam. */
-"INFO_MESSAGE_REPORTED_SPAM" = "Reported as spam";
+"INFO_MESSAGE_REPORTED_SPAM" = "Đã báo cáo là spam";
 
 /* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal has been notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal đã được thông báo rằng người này có thể đang gửi spam. Signal không thể xem nội dung của bất kỳ cuộc trò chuyện nào.";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Reported Spam";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Đã báo cáo spam";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -4112,16 +4112,16 @@
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Cập nhật liên hệ";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal will be notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal sẽ nhận được thông báo rằng người này có thể đang gửi spam. Signal không thể xem nội dung của bất kỳ cuộc trò chuyện nào.";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Report Spam?";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Báo cáo spam?";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Report Spam";
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Báo cáo spam";
 
 /* String indicating that spam has been reported. */
-"MESSAGE_REQUEST_SPAM_REPORTED" = "MESSAGE_REQUEST_SPAM_REPORTED";
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Đã báo cáo là spam.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Đã báo cáo spam và chặn.";
@@ -4166,7 +4166,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Cho phép %1$@ nhắn tin cho bạn và chia sẻ tên và ảnh của bạn với họ? Bạn đã xóa người này trước đây.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Báo cáo…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Bỏ chặn";
@@ -4340,22 +4340,22 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi và Di động";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Cuộc gọi Âm thanh";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
-"NEW_CALL_HINT" = "Select a contact or group to start a new call with.";
+"NEW_CALL_HINT" = "Chọn một liên hệ hoặc nhóm để bắt đầu cuộc gọi.";
 
 /* Accessibility label for the new call button on the Calls Tab */
-"NEW_CALL_LABEL" = "New Call";
+"NEW_CALL_LABEL" = "Cuộc gọi mới";
 
 /* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_MESSAGE_ACTION_TITLE" = "Message";
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Tin nhắn";
 
 /* Title for the contact picker that allows new calls to be started */
-"NEW_CALL_TITLE" = "New Call";
+"NEW_CALL_TITLE" = "Cuộc gọi mới";
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Gọi video";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Tìm bằng Số điện thoại";
@@ -5864,46 +5864,46 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Số an toàn của bạn với %1$@ đã thay đổi. Bạn nên xác minh lại.";
 
 /* Title for Safety Tips button in thread details. */
-"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Safety Tips";
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Lời khuyên để giữ an toàn";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "If someone you don’t know messages about cryptocurrency (like Bitcoin) or a financial opportunity, be careful—it’s likely spam.";
+"SAFETY_TIPS_CRYPTO_BODY" = "Nếu một người bạn không biết gửi tin nhắn về tiền điện tử (như Bitcoin) hay một cơ hội kiếm tiền, hãy cẩn trọng—đó có thể là nội dung spam.";
 
 /* Message title describing the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_TITLE" = "Crypto or money scams";
+"SAFETY_TIPS_CRYPTO_TITLE" = "Lừa đảo tiền điện tử hoặc tiền";
 
 /* Message contents for the safety tip concerning fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Be careful of businesses or government agencies contacting you. Messages involving tax agencies, couriers, and more can be spam.";
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Hãy cẩn trọng khi có các doanh nghiệp hoặc cơ quan của chính phủ liên hệ với bạn. Tin nhắn có nội dung liên quan đến cơ quan thuế, giao hàng, v.v. có thể là spam.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fake businesses and institutions";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Doanh nghiệp và tổ chức giả mạo";
 
 /* Message describing safety tips for group conversations. */
-"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Review this request carefully. None of your contacts or people you chat with are in this group. Here are a few things to watch out for:";
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Xem xét thật cẩn thận yêu cầu này. Không có ai trong số các liên hệ của bạn hoặc người bạn có trò chuyện cùng ở trong nhóm này. Đây là một số điều bạn cần chú ý:";
 
 /* Title for Safety Tips education screen. */
-"SAFETY_TIPS_HEADER_TITLE" = "Safety Tips";
+"SAFETY_TIPS_HEADER_TITLE" = "Lời khuyên để giữ an toàn";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Be careful when accepting message requests from people you don’t know. Watch out for:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Hãy cẩn trọng khi chấp nhận yêu cầu gửi tin nhắn từ những người bạn không biết. Chú ý:";
 
 /* Message contents for the unknown links in messages safety tip. */
-"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Be careful of messages from people you don’t know that have links to websites. Never visit links from people you don’t trust.";
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Hãy cẩn trọng với tin nhắn từ những người bạn không biết và có chứa đường dẫn đến các trang web. Đừng bao giờ bấm vào các đường dẫn từ những người bạn không tin tưởng.";
 
 /* Message title describing the safety tip about unknown links in messages. */
-"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages with links";
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Tin nhắn có chứa đường dẫn";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next Tip";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Lời khuyên tiếp theo";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous Tip";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Lời khuyên trước";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammers often start with a simple message like “Hi” to draw you in. If you respond they may engage you further.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Người gửi spam thường gửi cho bạn một tin nhắn đơn giản như “Xin chào” để khiến bạn tò mò. Nếu bạn trả lời, họ có thể sẽ tiếp tục tương tác với bạn.";
 
 /* Message title describing the safety tip about vague messages. */
-"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Vague or irrelevant messages";
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Tin nhắn không liên quan";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Quét Mã QR trên thiết bị của người liên hệ của bạn.";
@@ -7922,7 +7922,7 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Mã QR và đường dẫn của bạn đã được đặt lại và tên người dùng của bạn là %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Username cannot begin with a number";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Tên người dùng không thể bắt đầu bằng một số";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Thay đổi tên người dùng sẽ đặt lại mã QR và đường dẫn hiện tại của bạn. Bạn có chắc không?";
@@ -7934,7 +7934,7 @@
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Chọn tên người dùng của bạn";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Tên người dùng chỉ được chứa các ký tự a-z, 0-9, và _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Tên người dùng không hợp lệ, nhập tối thiểu 2 ký tự";
@@ -7946,10 +7946,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Số này là gì?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Tên người dùng này không khả dụng";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Vượt quá số lần thử, vui lòng thử lại sau";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Tên người dùng";
@@ -7957,11 +7957,8 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Tên người dùng";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "This number can’t be 00. Enter a digit between 1–9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Số này không thể là 00. Nhập một ký tự trong khoảng 1–9";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Tên người dùng chỉ có thể được cập nhật khi có kết nối internet.";

@@ -1401,5 +1401,23 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; de vizualizări</string>
 		</dict>
 	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Numele de utilizator trebuie să înceapă cu cel puțin %1$d caracter</string>
+			<key>few</key>
+			<string>Numele de utilizator trebuie să înceapă cu cel puțin %1$d caractere</string>
+			<key>other</key>
+			<string>Numele de utilizator trebuie să înceapă cu cel puțin %1$d de caractere</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

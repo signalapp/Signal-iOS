@@ -1713,5 +1713,27 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; amharc</string>
 		</dict>
 	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ní mór go dtosaítear ainmneacha úsáideora le %1$d charachtar amháin ar a laghad</string>
+			<key>two</key>
+			<string>Ní mór go dtosaítear ainmneacha úsáideora le %1$d charachtar ar a laghad</string>
+			<key>few</key>
+			<string>Ní mór go dtosaítear ainmneacha úsáideora le %1$d charachtar ar a laghad</string>
+			<key>many</key>
+			<string>Ní mór go dtosaítear ainmneacha úsáideora le %1$d gcarachtar ar a laghad</string>
+			<key>other</key>
+			<string>Ní mór go dtosaítear ainmneacha úsáideora le %1$d carachtar ar a laghad</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

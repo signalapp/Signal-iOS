@@ -815,76 +815,76 @@
 "CALLS_LIST_TITLE" = "Panggilan";
 
 /* Label for an entry in the Calls Tab describing a call as incoming. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Incoming";
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Panggilan masuk";
 
 /* Label for an entry in the Calls Tab describing a call as missed. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Missed";
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Panggilan terlepas";
 
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Outgoing";
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Panggilan keluar";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Kosongkan";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "This will permanently delete all call history.";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Ini akan memadamkan semua sejarah panggilan secara kekal.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Clear call history?";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Kosongkan sejarah panggilan?";
 
 /* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Delete";
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Padam";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "All";
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Semua";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Missed";
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Panggilan terlepas";
 
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
-"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Go to Chat";
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Pergi ke Sembang";
 
 /* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Join Audio Call";
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Sertai Panggilan Audio";
 
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
-"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Join";
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Sertai";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Join Video Call";
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Sertai Panggilan Video";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "No missed calls";
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Tiada panggilan terlepas";
 
 /* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "No recent calls";
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Tiada panggilan terbaru";
 
 /* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Get started by calling a friend";
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Mulakan dengan menghubungi rakan";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Return to Call";
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Kembali kepada Panggilan";
 
 /* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Return";
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Kembali";
 
 /* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
-"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "No results found for '%1$@'";
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "Tiada keputusan dijumpai untuk '%1$@'";
 
 /* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Pilih";
 
 /* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
-"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Pilih";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Panggilan Audio";
 
 /* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Panggilan Video";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Maklumat";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Ambil gambar dan kemudian hantar";
@@ -1388,22 +1388,22 @@
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Sekat Pengguna";
 
 /* A label indicating that a call was an incoming audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Incoming audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Panggilan audio masuk";
 
 /* A label indicating that a call was an incoming video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Incoming video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Panggilan video masuk";
 
 /* A label indicating that a call was an missed audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Missed audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Panggilan audio tidak dijawab";
 
 /* A label indicating that a call was an missed video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Missed video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Panggilan video terlepas";
 
 /* A label indicating that a call was an outgoing audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Outgoing audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Panggilan audio keluar";
 
 /* A label indicating that a call was an outgoing video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Outgoing video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Panggilan video keluar";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Edit";
@@ -1511,7 +1511,7 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Keluarkan %1$@ daripada kumpulan?";
 
 /* Label for 'report spam' action in conversation settings view. */
-"CONVERSATION_SETTINGS_REPORT_SPAM" = "Report Spam";
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Laporkan spam";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Keluarkan sebagai Pentadbir";
@@ -3611,13 +3611,13 @@
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Anda telah menghantar permintaan kepada %1$@ untuk mengaktifkan Pembayaran.";
 
 /* Shown when a user reports a conversation as spam. */
-"INFO_MESSAGE_REPORTED_SPAM" = "Reported as spam";
+"INFO_MESSAGE_REPORTED_SPAM" = "Dilaporkan sebagai spam";
 
 /* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal has been notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal telah dimaklumkan bahawa orang ini mungkin menghantar spam. Signal tidak dapat melihat kandungan dalam mana-mana sembang.";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Reported Spam";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Spam yang dilaporkan";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -4112,16 +4112,16 @@
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Kemas kini kenalan";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal will be notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal akan dimaklumkan bahawa orang ini mungkin menghantar spam. Signal tidak dapat melihat kandungan dalam mana-mana sembang.";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Report Spam?";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Laporkan spam?";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Report Spam";
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Laporkan spam";
 
 /* String indicating that spam has been reported. */
-"MESSAGE_REQUEST_SPAM_REPORTED" = "MESSAGE_REQUEST_SPAM_REPORTED";
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Dilaporkan sebagai spam.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Dilaporkan sebagai spam dan disekat.";
@@ -4166,7 +4166,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Benarkan %1$@ mesej anda dan kongsi nama serta foto anda dengan mereka? Anda telah mengalih keluar orang ini pada masa lalu.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Laporkan…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Nyahsekat";
@@ -4340,22 +4340,22 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi dan Selular";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Panggilan Audio";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
-"NEW_CALL_HINT" = "Select a contact or group to start a new call with.";
+"NEW_CALL_HINT" = "Pilih kenalan atau kumpulan untuk mulakan panggilan baharu.";
 
 /* Accessibility label for the new call button on the Calls Tab */
-"NEW_CALL_LABEL" = "New Call";
+"NEW_CALL_LABEL" = "Panggilan baharu";
 
 /* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_MESSAGE_ACTION_TITLE" = "Message";
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Mesej";
 
 /* Title for the contact picker that allows new calls to be started */
-"NEW_CALL_TITLE" = "New Call";
+"NEW_CALL_TITLE" = "Panggilan baharu";
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Panggilan Video";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Cari dengan Nombor Telefon";
@@ -5864,46 +5864,46 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Nombor keselamatan anda dengan %1$@ telah ditukar. Anda mungkin ingin mengesahkannya.";
 
 /* Title for Safety Tips button in thread details. */
-"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Safety Tips";
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Tip Keselamatan";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "If someone you don’t know messages about cryptocurrency (like Bitcoin) or a financial opportunity, be careful—it’s likely spam.";
+"SAFETY_TIPS_CRYPTO_BODY" = "Jika seseorang yang tidak dikenali menghantar mesej tentang mata wang kripto (seperti Bitcoin) atau peluang menjana duit, berhati-hati—ia mungkin spam.";
 
 /* Message title describing the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_TITLE" = "Crypto or money scams";
+"SAFETY_TIPS_CRYPTO_TITLE" = "Kripto atau penipuan wang";
 
 /* Message contents for the safety tip concerning fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Be careful of businesses or government agencies contacting you. Messages involving tax agencies, couriers, and more can be spam.";
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Berhati-hati dengan perniagaan atau agensi kerajaan yang menghubungi anda. Mesej yang melibatkan agensi cukai, kurier dan banyak lagi boleh menjadi spam.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fake businesses and institutions";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Perniagaan dan institusi palsu";
 
 /* Message describing safety tips for group conversations. */
-"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Review this request carefully. None of your contacts or people you chat with are in this group. Here are a few things to watch out for:";
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Semak permintaan dengan berhati-hati. Tiada kenalan atau orang yang anda sembang berada dalam kumpulan ini. Ini adalah beberapa perkara yang perlu diperhatikan:";
 
 /* Title for Safety Tips education screen. */
-"SAFETY_TIPS_HEADER_TITLE" = "Safety Tips";
+"SAFETY_TIPS_HEADER_TITLE" = "Tip Keselamatan";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Be careful when accepting message requests from people you don’t know. Watch out for:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Berhati-hati apabila menerima permintaan mesej daripada orang yang tidak dikenali. Berhati-hati dengan:";
 
 /* Message contents for the unknown links in messages safety tip. */
-"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Be careful of messages from people you don’t know that have links to websites. Never visit links from people you don’t trust.";
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Berhati-hati apabila menerima mesej daripada orang yang tidak dikenali, yang mengandungi pautan ke laman web. Jangan sekali-kali melayari pautan daripada orang yang tidak dipercayai.";
 
 /* Message title describing the safety tip about unknown links in messages. */
-"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages with links";
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Mesej yang ada pautan";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next Tip";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Tip seterusnya";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous Tip";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Tip sebelumnya";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammers often start with a simple message like “Hi” to draw you in. If you respond they may engage you further.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Penipu selalunya memulakan sembang dengan mesej ringkas seperti \"Hai\" untuk menarik perhatian anda. Jika anda membalas, mereka mungkin pergi lebih jauh.";
 
 /* Message title describing the safety tip about vague messages. */
-"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Vague or irrelevant messages";
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Mesej yang tidak jelas atau tidak berkaitan";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Imbas Kod QR pada peranti kenalan anda.";
@@ -7922,7 +7922,7 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Kod QR dan pautan telah ditetapkan semula dan nama pengguna ialah %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Username cannot begin with a number";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Nama pengguna tidak boleh bermula dengan nombor";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Menukar nama pengguna anda akan menetapkan semula kod dan pautan QR anda yang sedia ada. Adakah anda pasti?";
@@ -7934,7 +7934,7 @@
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Pilih nama pengguna anda";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Nama pengguna hanya boleh mengandungi a-z, 0-9, dan _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Nama pengguna tidak sah, masukkan sekurang-kurangnya 2 digit";
@@ -7946,10 +7946,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Apakah nombor ini?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Nama pengguna ini tidak tersedia";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Terlalu banyak percubaan, sila cuba lagi nanti";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Nama Pengguna";
@@ -7957,11 +7957,8 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Nama Pengguna";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "This number can’t be 00. Enter a digit between 1–9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Nombor ini tidak boleh 00. Masukkan digit antara 1–9";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Nama pengguna hanya boleh dikemas kini apabila disambungkan ke internet.";

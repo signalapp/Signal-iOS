@@ -815,76 +815,76 @@
 "CALLS_LIST_TITLE" = "通话";
 
 /* Label for an entry in the Calls Tab describing a call as incoming. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Incoming";
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "来电";
 
 /* Label for an entry in the Calls Tab describing a call as missed. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Missed";
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "未接";
 
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
-"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Outgoing";
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "去电";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "清除";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "This will permanently delete all call history.";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "此操作将永久删除所有通话记录。";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Clear call history?";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "要清除通话记录吗？";
 
 /* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Delete";
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "删除";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "All";
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "全部";
 
 /* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
-"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Missed";
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "未接";
 
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
-"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Go to Chat";
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "前往聊天";
 
 /* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Join Audio Call";
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "加入音频通话";
 
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
-"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Join";
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "加入";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Join Video Call";
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "加入视频通话";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "No missed calls";
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "无未接来电";
 
 /* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "No recent calls";
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "无最近呼叫";
 
 /* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Get started by calling a friend";
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "呼叫朋友开始互动吧";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Return to Call";
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "回拨";
 
 /* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Return";
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "返回";
 
 /* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
-"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "No results found for '%1$@'";
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "没有找到“%1$@”的相关结果。";
 
 /* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "选择";
 
 /* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
-"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Select";
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "选择";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "音频通话";
 
 /* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "视频通话";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "信息";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "拍照并发送";
@@ -1388,22 +1388,22 @@
 "CONVERSATION_SETTINGS_BLOCK_USER" = "屏蔽用户";
 
 /* A label indicating that a call was an incoming audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Incoming audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "语音来电";
 
 /* A label indicating that a call was an incoming video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Incoming video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "视频来电";
 
 /* A label indicating that a call was an missed audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Missed audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "未接音频来电";
 
 /* A label indicating that a call was an missed video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Missed video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "未接视频来电";
 
 /* A label indicating that a call was an outgoing audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Outgoing audio call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "拨出语音通话";
 
 /* A label indicating that a call was an outgoing video call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Outgoing video call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "拨出视频通话";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "编辑";
@@ -1511,7 +1511,7 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "将 %1$@ 从群组移除？";
 
 /* Label for 'report spam' action in conversation settings view. */
-"CONVERSATION_SETTINGS_REPORT_SPAM" = "Report Spam";
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "举报垃圾消息";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "移除管理员";
@@ -3611,13 +3611,13 @@
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "您给%1$@发送了激活付款请求。";
 
 /* Shown when a user reports a conversation as spam. */
-"INFO_MESSAGE_REPORTED_SPAM" = "Reported as spam";
+"INFO_MESSAGE_REPORTED_SPAM" = "已举报为垃圾消息";
 
 /* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal has been notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal 已通知此用户，其可能发送了垃圾消息。Signal 无法看到任何聊天的内容。";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Reported Spam";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "已举报垃圾消息";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -4112,16 +4112,16 @@
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "更新联系人";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal will be notified that this person may be sending spam. Signal can’t see the content of any chats.";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal 将会通知此用户，其可能发送了垃圾消息。Signal 无法看到任何聊天的内容。";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Report Spam?";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "要举报垃圾消息吗？";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Report Spam";
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "举报垃圾消息";
 
 /* String indicating that spam has been reported. */
-"MESSAGE_REQUEST_SPAM_REPORTED" = "MESSAGE_REQUEST_SPAM_REPORTED";
+"MESSAGE_REQUEST_SPAM_REPORTED" = "已举报为垃圾消息。";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "已举报为垃圾消息并屏蔽。";
@@ -4166,7 +4166,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "是否允许%1$@给您发送消息并与其分享您的名字和照片？您此前已移除该用户。";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "举报…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "取消屏蔽";
@@ -4340,22 +4340,22 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi 和手机网络";
 
 /* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Audio Call";
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "音频通话";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
-"NEW_CALL_HINT" = "Select a contact or group to start a new call with.";
+"NEW_CALL_HINT" = "选择一个联系人或群组来开始新通话。";
 
 /* Accessibility label for the new call button on the Calls Tab */
-"NEW_CALL_LABEL" = "New Call";
+"NEW_CALL_LABEL" = "新通话";
 
 /* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_MESSAGE_ACTION_TITLE" = "Message";
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "发消息";
 
 /* Title for the contact picker that allows new calls to be started */
-"NEW_CALL_TITLE" = "New Call";
+"NEW_CALL_TITLE" = "新通话";
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Video Call";
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "视频通话";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "通过手机号码寻找";
@@ -5864,46 +5864,46 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "你的安全码 %1$@ 被改变了. 你可以想要验证它.";
 
 /* Title for Safety Tips button in thread details. */
-"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Safety Tips";
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "安全提示";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "If someone you don’t know messages about cryptocurrency (like Bitcoin) or a financial opportunity, be careful—it’s likely spam.";
+"SAFETY_TIPS_CRYPTO_BODY" = "如有陌生人给您发送有关加密货币（如比特币）或金融投资机会的消息，请当心，这很可能是垃圾消息。";
 
 /* Message title describing the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_TITLE" = "Crypto or money scams";
+"SAFETY_TIPS_CRYPTO_TITLE" = "加密货币或金钱骗局";
 
 /* Message contents for the safety tip concerning fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Be careful of businesses or government agencies contacting you. Messages involving tax agencies, couriers, and more can be spam.";
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "请谨慎对待与您联系的企业或政府机构。涉及税务机构、快递公司等的消息有可能是垃圾消息。";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fake businesses and institutions";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "假冒企业和机构";
 
 /* Message describing safety tips for group conversations. */
-"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Review this request carefully. None of your contacts or people you chat with are in this group. Here are a few things to watch out for:";
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "请仔细审核此请求。您的联系人或与您聊天的用户均不在此群组中。以下是一些需要注意的事项：";
 
 /* Title for Safety Tips education screen. */
-"SAFETY_TIPS_HEADER_TITLE" = "Safety Tips";
+"SAFETY_TIPS_HEADER_TITLE" = "安全提示";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Be careful when accepting message requests from people you don’t know. Watch out for:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "接受陌生人发来的消息请求时须谨慎。需要当心的是：";
 
 /* Message contents for the unknown links in messages safety tip. */
-"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Be careful of messages from people you don’t know that have links to websites. Never visit links from people you don’t trust.";
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "当心陌生人发来的含网站链接的消息。千万不要访问不信任的人发来的链接。";
 
 /* Message title describing the safety tip about unknown links in messages. */
-"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages with links";
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "含链接的消息";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next Tip";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "下一个提示";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous Tip";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "上一个提示";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammers often start with a simple message like “Hi” to draw you in. If you respond they may engage you further.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "垃圾消息发送者通常会以“您好”这样的简单问候吸引您的注意。当您回应后，他们可能会进一步引诱您。";
 
 /* Message title describing the safety tip about vague messages. */
-"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Vague or irrelevant messages";
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "模糊或无关消息";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "在你联系人设备上扫描QR码";
@@ -7922,7 +7922,7 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "您的二维码和链接已重置，您的用户名是%1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Username cannot begin with a number";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "用户名不能以数字开头";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "更改用户名将会重置您现有的二维码和链接。确定要更改吗？";
@@ -7934,7 +7934,7 @@
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "选择您的用户名";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "用户名只可包含a-z, 0-9, 以及 _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "用户名无效，请至少输入 2 位数";
@@ -7946,10 +7946,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "这个号码是什么？";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "该用户名不可用";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Too many attempts made, please try again later";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "尝试次数过多，请稍候再试";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "用户名";
@@ -7957,11 +7957,8 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "用户名";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "This number can’t be 00. Enter a digit between 1–9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "该数字不能为 00。请输入 1 – 9 之间的数字";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "只有在连接网络时才能更新用户名。";
