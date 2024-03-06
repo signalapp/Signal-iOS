@@ -1063,6 +1063,7 @@
 		724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5B23C6644B001651FC /* GroupV2Params.swift */; };
 		724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */; };
 		724D47BD2B97C5B9001BE973 /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
+		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -1627,7 +1628,6 @@
 		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
 		D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */; };
 		D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */; };
-		D9C2D77A299B0B9800D79715 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
@@ -6668,7 +6668,6 @@
 				66C336CF2A994B61000F4F50 /* Stories */,
 				F00385FB273F6388000B5ABD /* Subscriptions */,
 				F9C612B5284E46A300B2199A /* test */,
-				D9C2D779299B0B8700D79715 /* Usernames */,
 				34480B471FD0A60200BC14EF /* utils */,
 				503AECCC29B2B86200642F66 /* VoiceMessage */,
 				453518951FC63DBF00210559 /* Info.plist */,
@@ -8844,6 +8843,7 @@
 				D938307F2A705D64006CDCDE /* UsernameLogger.swift */,
 				D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */,
 				D925F557298B39D800158EE4 /* UsernameLookupRecord.swift */,
+				D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */,
 				D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */,
 				D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */,
 				D938307D2A70441D006CDCDE /* Usernames+QRCodeColor.swift */,
@@ -9100,14 +9100,6 @@
 				D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */,
 			);
 			path = JobRecords;
-			sourceTree = "<group>";
-		};
-		D9C2D779299B0B8700D79715 /* Usernames */ = {
-			isa = PBXGroup;
-			children = (
-				D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */,
-			);
-			path = Usernames;
 			sourceTree = "<group>";
 		};
 		D9C2D78529A80BE700D79715 /* ChangePhoneNumber */ = {
@@ -12379,7 +12371,6 @@
 				34A955B6271B54BD00B05242 /* UIColor+OWS.swift in Sources */,
 				450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */,
 				3402A9E3271D96570084CBAE /* UIView+OWS.swift in Sources */,
-				D9C2D77A299B0B9800D79715 /* Usernames+BetterIdentifierChecker.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
 				503AECCD29B2B88600642F66 /* VoiceMessageConstants.swift in Sources */,
 				3402AABF271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift in Sources */,
@@ -14001,6 +13992,7 @@
 				D93830802A705D64006CDCDE /* UsernameLogger.swift in Sources */,
 				D925F55F298C743E00158EE4 /* UsernameLookupManager.swift in Sources */,
 				D925F55D298C6A7D00158EE4 /* UsernameLookupRecord.swift in Sources */,
+				7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */,
 				D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */,
 				D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */,
 				D938307E2A70441D006CDCDE /* Usernames+QRCodeColor.swift in Sources */,

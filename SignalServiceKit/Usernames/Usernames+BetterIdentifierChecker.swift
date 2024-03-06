@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 
 extension Usernames {
     /// Helps determine if a username is the best identifier we have for a
