@@ -49,7 +49,6 @@
 		32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32FAB9292727A57100FB76A6 /* PrimaryImageView.swift */; };
 		3402A9DA271D953B0084CBAE /* SUIEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9D9271D953A0084CBAE /* SUIEnvironment.swift */; };
 		3402A9DC271D95C10084CBAE /* Dependencies+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9DB271D95C10084CBAE /* Dependencies+SignalUI.swift */; };
-		3402A9E3271D96570084CBAE /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E0271D96570084CBAE /* UIView+OWS.swift */; };
 		3402A9E8271D97090084CBAE /* UIView+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E5271D97090084CBAE /* UIView+SignalUI.swift */; };
 		3402A9EC271D98440084CBAE /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9EB271D98440084CBAE /* AttachmentMultisend.swift */; };
 		3402AA02271D9DAF0084CBAE /* GroupViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95507271B510400B05242 /* GroupViewUtils.swift */; };
@@ -145,7 +144,6 @@
 		3402AAB3271D9E180084CBAE /* CVTextLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95522271B510400B05242 /* CVTextLabel.swift */; };
 		3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95519271B510400B05242 /* VideoPlayerView.swift */; };
 		3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95556271B510400B05242 /* ImageEditorCropViewController.swift */; };
-		3402AABF271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402AABE271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift */; };
 		3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */; };
 		34067EAB2710D61A000407C3 /* DebugLogs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34067EAA2710D61A000407C3 /* DebugLogs.swift */; };
 		3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
@@ -398,7 +396,6 @@
 		34A955AC271B521500B05242 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AD271B532F00B05242 /* FullTextSearcher.swift */; };
 		34A955B2271B53F600B05242 /* GroupManager+GroupInvites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */; };
-		34A955B6271B54BD00B05242 /* UIColor+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B5271B54BC00B05242 /* UIColor+OWS.swift */; };
 		34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B8271B553D00B05242 /* PaymentsFormat.swift */; };
 		34A955BD271B560000B05242 /* NameCollisionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955BC271B560000B05242 /* NameCollisionFinder.swift */; };
 		34ACA7D52733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BC2733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift */; };
@@ -487,7 +484,6 @@
 		4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4539B5851F79348F007141FF /* PushRegistrationManager.swift */; };
 		4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542DF53208D40AC007B4E76 /* LoadingViewController.swift */; };
 		454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454A84032059C787008B8C75 /* MediaTileViewController.swift */; };
-		454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
 		4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */; };
 		455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DB1F1FEA0000F86704 /* Metal.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DC1F1FEA0000F86704 /* MetalKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -667,7 +663,6 @@
 		503AECC529B2A4D300642F66 /* VoiceMessageInProgressDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC429B2A4D300642F66 /* VoiceMessageInProgressDraft.swift */; };
 		503AECC629B2AD6700642F66 /* VoiceMessageInterruptedDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A1271B510500B05242 /* VoiceMessageInterruptedDraft.swift */; };
 		503AECC829B2AEFA00642F66 /* VoiceMessageSendableDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC729B2AEFA00642F66 /* VoiceMessageSendableDraft.swift */; };
-		503AECCD29B2B88600642F66 /* VoiceMessageConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC929B2B22E00642F66 /* VoiceMessageConstants.swift */; };
 		503B47222AF0569B00978266 /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503B471E2AF0569A00978266 /* PublicKey.swift */; };
 		503B47232AF0569B00978266 /* ECKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503B471F2AF0569A00978266 /* ECKeyPair.swift */; };
 		503BD2892B44D666009624FC /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BD2882B44D666009624FC /* ProfileManager.swift */; };
@@ -949,7 +944,6 @@
 		66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */; };
 		66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE577E2984AB8700E40CFA /* ToyExample.swift */; };
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
-		66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		66B9437E2A6EFCD900DCF2FF /* SpoilerParticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */; };
 		66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */; };
@@ -970,7 +964,6 @@
 		66C2B1502A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */; };
 		66C2B1542A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1532A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift */; };
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
-		66C336D12A994B97000F4F50 /* FailedStorySendDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
 		66CD25592B0685E000139E17 /* MessageBackupProtoArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25582B0685E000139E17 /* MessageBackupProtoArchiver.swift */; };
 		66CD25622B06948900139E17 /* MessageBackupRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25612B06948900139E17 /* MessageBackupRecipientArchiver.swift */; };
@@ -1064,6 +1057,13 @@
 		724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */; };
 		724D47BD2B97C5B9001BE973 /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
+		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
+		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
+		7255A4C82B98DF3E00E95368 /* FailedStorySendDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */; };
+		7255A4C92B98DF5500E95368 /* VoiceMessageConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC929B2B22E00642F66 /* VoiceMessageConstants.swift */; };
+		7255A4CA2B98DF5500E95368 /* VoiceMessageInterruptedDraftStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402AABE271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift */; };
+		7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E0271D96570084CBAE /* UIView+OWS.swift */; };
+		7255A4CC2B98E05200E95368 /* UIColor+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B5271B54BC00B05242 /* UIColor+OWS.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -5780,9 +5780,7 @@
 		34480B5C1FD0A98800BC14EF /* categories */ = {
 			isa = PBXGroup;
 			children = (
-				34A955B5271B54BC00B05242 /* UIColor+OWS.swift */,
 				45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */,
-				3402A9E0271D96570084CBAE /* UIView+OWS.swift */,
 			);
 			path = categories;
 			sourceTree = "<group>";
@@ -6668,7 +6666,6 @@
 				F00385FB273F6388000B5ABD /* Subscriptions */,
 				F9C612B5284E46A300B2199A /* test */,
 				34480B471FD0A60200BC14EF /* utils */,
-				503AECCC29B2B86200642F66 /* VoiceMessage */,
 				453518951FC63DBF00210559 /* Info.plist */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
@@ -9712,6 +9709,7 @@
 				C1DF3F3B2B0283C5004B6986 /* Upload */,
 				D925F55C298C6A6000158EE4 /* Usernames */,
 				F9C5CAF8289453B200548EEE /* Util */,
+				503AECCC29B2B86200642F66 /* VoiceMessage */,
 				5013365D2B2BC2CD004119F1 /* ZkParams */,
 				F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */,
 				F9C5C899289451B900548EEE /* SignalServiceKit.h */,
@@ -10717,10 +10715,12 @@
 				F9C5CB10289453B200548EEE /* ThreadBacked.swift */,
 				D91A39E22AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift */,
 				F9C5CB08289453B200548EEE /* TypingIndicators.swift */,
+				34A955B5271B54BC00B05242 /* UIColor+OWS.swift */,
 				F9C5CB13289453B200548EEE /* UIColor+SSK.swift */,
 				F9C5CB3E289453B200548EEE /* UIImage+OWS.h */,
 				F9C5CB04289453B200548EEE /* UIImage+OWS.m */,
 				F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */,
+				3402A9E0271D96570084CBAE /* UIView+OWS.swift */,
 				6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */,
 				F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */,
 				F9C5CB54289453B200548EEE /* UserProfileFinder.swift */,
@@ -12308,7 +12308,6 @@
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
 				D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */,
 				F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */,
-				66C336D12A994B97000F4F50 /* FailedStorySendDisplayController.swift in Sources */,
 				D95777BC2B46452100CFE3AE /* GroupCallPeekClient.swift in Sources */,
 				347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */,
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
@@ -12348,8 +12347,6 @@
 				F962FF4929AD0C7C00AFA397 /* ScrubbingLogFormatter.swift in Sources */,
 				F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */,
 				D9668B33291B03C200665298 /* SessionResetJob.swift in Sources */,
-				66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */,
-				454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */,
 				D9668B35291B088200665298 /* SignalMessagingJobQueues.swift in Sources */,
 				7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */,
 				7634F08D2A21963600BB93D5 /* Sounds.swift in Sources */,
@@ -12368,12 +12365,8 @@
 				50CB431C298860C700841A34 /* SystemContactsDataProvider.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				348C686D246B0B110039705A /* ThreadUtil.swift in Sources */,
-				34A955B6271B54BD00B05242 /* UIColor+OWS.swift in Sources */,
 				450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */,
-				3402A9E3271D96570084CBAE /* UIView+OWS.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
-				503AECCD29B2B88600642F66 /* VoiceMessageConstants.swift in Sources */,
-				3402AABF271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13294,6 +13287,7 @@
 				D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */,
 				F9C5CC86289453B300548EEE /* FailedAttachmentDownloadsJob.swift in Sources */,
 				F9C5CC1D289453B300548EEE /* FailedMessagesJob.swift in Sources */,
+				7255A4C82B98DF3E00E95368 /* FailedStorySendDisplayController.swift in Sources */,
 				F9C5CE61289453B400548EEE /* FakeAccountServiceClient.swift in Sources */,
 				F97D10FB291C7FF900F0FFAA /* FakeCallMessageHandler.swift in Sources */,
 				F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */,
@@ -13771,6 +13765,8 @@
 				F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */,
 				F9C5CCDD289453B300548EEE /* SignalAccountFinder.swift in Sources */,
 				50EF8DD52A1FE55D00A00935 /* SignalAccountMergeObserver.swift in Sources */,
+				7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */,
+				7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */,
 				F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */,
 				F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */,
 				C1CD0E362A6B0BC900307F1A /* SignalPreKeyStore.swift in Sources */,
@@ -13972,9 +13968,11 @@
 				F9C5CD5A289453B300548EEE /* TSYapDatabaseObject.m in Sources */,
 				F9C5CC38289453B300548EEE /* TypingIndicatorMessage.swift in Sources */,
 				F9C5CDDA289453B400548EEE /* TypingIndicators.swift in Sources */,
+				7255A4CC2B98E05200E95368 /* UIColor+OWS.swift in Sources */,
 				F9C5CDE5289453B400548EEE /* UIColor+SSK.swift in Sources */,
 				F9C5CDD6289453B400548EEE /* UIImage+OWS.m in Sources */,
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
+				7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */,
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,
 				6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */,
 				C1DF3F462B0283C5004B6986 /* Upload.swift in Sources */,
@@ -14008,6 +14006,8 @@
 				724D47B92B97C301001BE973 /* VersionedProfilesImpl.swift in Sources */,
 				45A66116299EDF3000632EE2 /* VideoAttachmentDetection.swift in Sources */,
 				F9C5CDD5289453B400548EEE /* ViewOnceMessages.swift in Sources */,
+				7255A4C92B98DF5500E95368 /* VoiceMessageConstants.swift in Sources */,
+				7255A4CA2B98DF5500E95368 /* VoiceMessageInterruptedDraftStore.swift in Sources */,
 				500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */,
 				F9C5CE50289453B400548EEE /* Weak.swift in Sources */,
 				F9C5CDFB289453B400548EEE /* WeakTimer.swift in Sources */,

@@ -5,7 +5,7 @@
 
 import CoreServices
 import Foundation
-import SignalMessaging
+import SignalServiceKit
 
 protocol VoiceMessageSendableDraft {
     func prepareForSending() throws -> URL
