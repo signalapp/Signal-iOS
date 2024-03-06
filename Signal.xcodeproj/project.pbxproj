@@ -5878,13 +5878,6 @@
 			path = contacts;
 			sourceTree = "<group>";
 		};
-		346129B01FD1F7E800532771 /* profiles */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = profiles;
-			sourceTree = "<group>";
-		};
 		3471210D25ED5F850037CD1F /* Payments */ = {
 			isa = PBXGroup;
 			children = (
@@ -6662,7 +6655,6 @@
 		453518931FC63DBF00210559 /* SignalMessaging */ = {
 			isa = PBXGroup;
 			children = (
-				454A96571FD600B4008D2A0E /* attachments */,
 				32525F9327C74AC50099E801 /* calls */,
 				34480B5C1FD0A98800BC14EF /* categories */,
 				346129A11FD1F09100532771 /* contacts */,
@@ -6672,7 +6664,6 @@
 				D9668B32291B038D00665298 /* Jobs */,
 				88D23D0823CEBF4400B0E74B /* Notifications */,
 				3474C56526111605006723D2 /* Payments */,
-				346129B01FD1F7E800532771 /* profiles */,
 				88E34F2522F269B600966CC2 /* Storage Service */,
 				66C336CF2A994B61000F4F50 /* Stories */,
 				F00385FB273F6388000B5ABD /* Subscriptions */,
@@ -6685,15 +6676,6 @@
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
 			);
 			path = SignalMessaging;
-			sourceTree = "<group>";
-		};
-		454A96571FD600B4008D2A0E /* attachments */ = {
-			isa = PBXGroup;
-			children = (
-				66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */,
-				34D913491F62D4A500722898 /* SignalAttachment.swift */,
-			);
-			path = attachments;
 			sourceTree = "<group>";
 		};
 		457F3AC01D14A0F700C51351 /* Models */ = {
@@ -7767,6 +7749,15 @@
 				508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */,
 			);
 			path = Profiles;
+			sourceTree = "<group>";
+		};
+		7255A4C32B98D5A800E95368 /* Attachments */ = {
+			isa = PBXGroup;
+			children = (
+				66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */,
+				34D913491F62D4A500722898 /* SignalAttachment.swift */,
+			);
+			path = Attachments;
 			sourceTree = "<group>";
 		};
 		765283AC2A00D893004583A9 /* OWSTableView */ = {
@@ -9693,6 +9684,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5C9BA289453B100548EEE /* Account */,
+				7255A4C32B98D5A800E95368 /* Attachments */,
 				D979DA142B8D1FCF000EEAB8 /* Badge */,
 				F945FE482984795A00C835C7 /* Calls */,
 				D9C2D78529A80BE700D79715 /* ChangePhoneNumber */,
