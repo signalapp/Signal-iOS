@@ -13,7 +13,7 @@ public enum TSResourceContentType {
     case file
 
     case image(pixelSize: CGSize?)
-    case video(duration: TimeInterval?)
+    case video(duration: TimeInterval?, pixelSize: CGSize?)
     case animatedImage(pixelSize: CGSize?)
     case audio(duration: TimeInterval?)
 }

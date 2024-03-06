@@ -72,7 +72,6 @@ extension AttachmentReference {
                 public var contentType: ContentType? { _contentType }
                 public var caption: MessageBody? { _caption }
                 public var flags: TSAttachmentType? { _flags }
-                public var sourceFilename: String? { _sourceFilename }
                 public var index: UInt32 { _orderInOwner! }
 
                 override class var requiredFields: [AnyKeyPath] { [\Self._orderInOwner] }
@@ -81,7 +80,6 @@ extension AttachmentReference {
             public class QuotedReplyMetadata: Metadata {
                 public var contentType: ContentType? { _contentType }
                 public var flags: TSAttachmentType? { _flags }
-                public var sourceFilename: String? { _sourceFilename }
             }
 
             public class StickerMetadata: Metadata {
@@ -160,15 +158,6 @@ extension AttachmentReference {
         /// But even in those cases its optional.
         fileprivate let _caption: MessageBody?
 
-        /// Filename from the sender, used for rendering as a file attachment.
-        /// NOT the same as the file name on disk.
-        /// We _write_ and keep this value if provided for all attachments,
-        /// but only _read_ it for:
-        /// * message body attachments
-        /// * quoted reply attachments.
-        /// Optional even for those types that use it.
-        fileprivate let _sourceFilename: String?
-
         /// Sticker pack info, only used (and required) for sticker messages.
         fileprivate let _stickerPackId: Data?
         fileprivate let _stickerId: UInt64?
@@ -198,7 +187,6 @@ extension AttachmentReference {
             flags: TSAttachmentType,
             threadRowId: UInt64?,
             caption: MessageBody?,
-            sourceFilename: String?,
             stickerPackId: Data?,
             stickerId: UInt64?,
             contentType: AttachmentReference.ContentType?
@@ -208,7 +196,6 @@ extension AttachmentReference {
             self._flags = flags
             self._threadRowId = threadRowId
             self._caption = caption
-            self._sourceFilename = sourceFilename
             self._stickerPackId = stickerPackId
             self._stickerId = stickerId
             self._contentType = contentType
@@ -233,7 +220,6 @@ extension AttachmentReference.Owner {
         threadRowId: UInt64?,
         caption: String?,
         captionBodyRanges: MessageBodyRanges,
-        sourceFilename: String?,
         stickerPackId: Data?,
         stickerId: UInt64?,
         contentType: AttachmentReference.ContentType?
@@ -247,7 +233,6 @@ extension AttachmentReference.Owner {
                 flags: flags,
                 threadRowId: threadRowId,
                 caption: captionBody,
-                sourceFilename: sourceFilename,
                 stickerPackId: stickerPackId,
                 stickerId: stickerId,
                 contentType: contentType

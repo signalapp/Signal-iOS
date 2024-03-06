@@ -118,9 +118,11 @@ extension TSAttachmentStream: TSResourceStream {
         }
 
         let cachedValueTypes: [(NSNumber?, () -> TSResourceContentType)] = [
-            (self.isValidVideoCached, { .video(duration: self.videoDuration?.doubleValue) }),
-            (self.isAnimatedCached, { .animatedImage(pixelSize: self.cachedImagePixelSize()) }),
-            (self.isValidImageCached, { .image(pixelSize: self.cachedImagePixelSize()) })
+            (self.isValidVideoCached, {
+                .video(duration: self.videoDuration?.doubleValue, pixelSize: self.cachedMediaPixelSize())
+            }),
+            (self.isAnimatedCached, { .animatedImage(pixelSize: self.cachedMediaPixelSize()) }),
+            (self.isValidImageCached, { .image(pixelSize: self.cachedMediaPixelSize()) })
         ]
 
         for (numberValue, typeFn) in cachedValueTypes {
@@ -147,13 +149,13 @@ extension TSAttachmentStream: TSResourceStream {
 
         // If the cache lookup fails, switch to the hard fetches.
         if isVideoMimeType && isValidVideo {
-            return .video(duration: self.videoDuration?.doubleValue)
+            return .video(duration: self.videoDuration?.doubleValue, pixelSize: cachedMediaPixelSize())
         } else if getAnimatedMimeType() == .animated && isAnimatedContent {
-            return .animatedImage(pixelSize: cachedImagePixelSize())
+            return .animatedImage(pixelSize: cachedMediaPixelSize())
         } else if isImageMimeType && isValidImage {
-            return .image(pixelSize: cachedImagePixelSize())
+            return .image(pixelSize: cachedMediaPixelSize())
         } else if getAnimatedMimeType() == .maybeAnimated && isAnimatedContent {
-            return .image(pixelSize: cachedImagePixelSize())
+            return .image(pixelSize: cachedMediaPixelSize())
         }
         // We did not previously have utilities for determining
         // "valid" audio content. Rely on the cached value's
@@ -162,7 +164,7 @@ extension TSAttachmentStream: TSResourceStream {
         return .file
     }
 
-    private func cachedImagePixelSize() -> CGSize? {
+    private func cachedMediaPixelSize() -> CGSize? {
         if
             let cachedImageWidth,
             let cachedImageHeight,

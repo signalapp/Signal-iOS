@@ -21,6 +21,19 @@ public class AttachmentReference {
     /// We compute/validate this once, when we read from disk (or instantate an instance in memory).
     public let owner: Owner
 
+    /// Filename from the sender, used for rendering as a file attachment.
+    /// NOT the same as the file name on disk.
+    /// Comes from ``SSKProtoAttachmentPointer.fileName``.
+    public let sourceFilename: String?
+
+    /// Byte count from the sender of this attachment (can therefore be spoofed).
+    /// Comes from ``SSKProtoAttachmentPointer.size``.
+    public let sourceUnencryptedByteCount: UInt32?
+
+    /// Width/height from the sender of this attachment (can therefore be spoofed).
+    /// Comes from ``SSKProtoAttachmentPointer.width`` and ``SSKProtoAttachmentPointer.height``.
+    public let sourceMediaSizePixels: CGSize?
+
     // MARK: - Init
 
     private init?(
@@ -33,6 +46,9 @@ public class AttachmentReference {
         caption: String?,
         captionBodyRanges: MessageBodyRanges,
         sourceFileName: String?,
+        sourceUnencryptedByteCount: UInt32,
+        sourceMediaHeightPixels: UInt32,
+        sourceMediaWidthPixels: UInt32,
         stickerPackId: Data?,
         stickerId: UInt64?,
         contentType: ContentType?
@@ -48,7 +64,6 @@ public class AttachmentReference {
                 threadRowId: threadRowId,
                 caption: caption,
                 captionBodyRanges: captionBodyRanges,
-                sourceFilename: sourceFileName,
                 stickerPackId: stickerPackId,
                 stickerId: stickerId,
                 contentType: contentType

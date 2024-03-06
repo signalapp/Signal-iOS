@@ -14,7 +14,12 @@ public class Attachment {
     /// SQLite row id.
     public private(set) var id: IDType!
 
-    public let blurHash: String
+    /// Nil for:
+    /// * non-visual-media attachments
+    /// * undownloaded attachments where the sender didn't include the value.
+    /// Otherwise this contains the value from the sender for undownloaded attachments,
+    /// and our locally computed blurhash value for downloading attachments.
+    public let blurHash: String?
 
     /// Sha256 hash of the plaintext of the media content. Used to deduplicate incoming media.
     public let contentHash: String?

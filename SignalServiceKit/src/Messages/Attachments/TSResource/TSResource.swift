@@ -10,7 +10,6 @@ public protocol TSResource {
 
     var resourceId: TSResourceId { get }
 
-    /// Optional for legacy attachments; for v2 attachments this is non-optional.
     var resourceBlurHash: String? { get }
 
     var transitCdnNumber: UInt32? { get }

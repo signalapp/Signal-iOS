@@ -13,8 +13,8 @@ extension Attachment.ContentType {
             return .file
         case .image(let pixelSize):
             return .image(pixelSize: pixelSize)
-        case .video(let duration):
-            return .video(duration: duration)
+        case .video(let duration, let pixelSize):
+            return .video(duration: duration, pixelSize: pixelSize)
         case .animatedImage(let pixelSize):
             return .animatedImage(pixelSize: pixelSize)
         case .audio(let duration):
