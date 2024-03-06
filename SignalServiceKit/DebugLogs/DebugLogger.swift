@@ -4,7 +4,6 @@
 //
 
 import CocoaLumberjack
-import SignalServiceKit
 
 extension DebugLogger {
     // MARK: Enable/Disable

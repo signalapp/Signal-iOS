@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-
 private extension UserDefaults {
     static var app: UserDefaults {
         CurrentAppContext().appUserDefaults()
@@ -78,7 +76,7 @@ public class Preferences: NSObject {
     private static let preferencesCollection = "SignalPreferences"
     private let keyValueStore = SDSKeyValueStore(collection: Preferences.preferencesCollection)
 
-    override init() {
+    public override init() {
         super.init()
         if CurrentAppContext().hasUI {
             CurrentAppContext().appUserDefaults().set(UIScreen.main.scale, forKey: UserDefaultsKeys.deviceScale)
