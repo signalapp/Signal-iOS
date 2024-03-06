@@ -468,7 +468,6 @@
 		45069FCE29D64CB300D0DD14 /* SelectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FCD29D64CB300D0DD14 /* SelectionButton.swift */; };
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		450B0FC929FB301700B9A458 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450B0FC829FB301700B9A458 /* AudioMessageView.swift */; };
-		450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */; };
 		45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
 		452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */; };
@@ -1064,6 +1063,7 @@
 		7255A4CA2B98DF5500E95368 /* VoiceMessageInterruptedDraftStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402AABE271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift */; };
 		7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E0271D96570084CBAE /* UIView+OWS.swift */; };
 		7255A4CC2B98E05200E95368 /* UIColor+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B5271B54BC00B05242 /* UIColor+OWS.swift */; };
+		7255A4CD2B98E0DF00E95368 /* UIDevice+FeatureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -5777,14 +5777,6 @@
 			path = utils;
 			sourceTree = "<group>";
 		};
-		34480B5C1FD0A98800BC14EF /* categories */ = {
-			isa = PBXGroup;
-			children = (
-				45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */,
-			);
-			path = categories;
-			sourceTree = "<group>";
-		};
 		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
@@ -6654,7 +6646,6 @@
 			isa = PBXGroup;
 			children = (
 				32525F9327C74AC50099E801 /* calls */,
-				34480B5C1FD0A98800BC14EF /* categories */,
 				346129A11FD1F09100532771 /* contacts */,
 				5023BFD52AFD502500AFCCBF /* DebugLogs */,
 				3461293F1FD1D74B00532771 /* environment */,
@@ -10717,6 +10708,7 @@
 				F9C5CB08289453B200548EEE /* TypingIndicators.swift */,
 				34A955B5271B54BC00B05242 /* UIColor+OWS.swift */,
 				F9C5CB13289453B200548EEE /* UIColor+SSK.swift */,
+				45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */,
 				F9C5CB3E289453B200548EEE /* UIImage+OWS.h */,
 				F9C5CB04289453B200548EEE /* UIImage+OWS.m */,
 				F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */,
@@ -12365,7 +12357,6 @@
 				50CB431C298860C700841A34 /* SystemContactsDataProvider.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				348C686D246B0B110039705A /* ThreadUtil.swift in Sources */,
-				450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -13970,6 +13961,7 @@
 				F9C5CDDA289453B400548EEE /* TypingIndicators.swift in Sources */,
 				7255A4CC2B98E05200E95368 /* UIColor+OWS.swift in Sources */,
 				F9C5CDE5289453B400548EEE /* UIColor+SSK.swift in Sources */,
+				7255A4CD2B98E0DF00E95368 /* UIDevice+FeatureSupport.swift in Sources */,
 				F9C5CDD6289453B400548EEE /* UIImage+OWS.m in Sources */,
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
 				7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */,
