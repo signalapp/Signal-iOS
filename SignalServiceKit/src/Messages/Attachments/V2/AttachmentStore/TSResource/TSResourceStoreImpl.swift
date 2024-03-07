@@ -76,8 +76,11 @@ public class TSResourceStoreImpl: TSResourceStore {
                 tx: tx
             )
         } else {
-            return tsAttachmentStore.attachments(withAttachmentIds: message.attachmentIds, tx: SDSDB.shimOnlyBridge(tx))
-                .map(TSAttachmentReference.init(_:))
+            let attachments = tsAttachmentStore.attachments(withAttachmentIds: message.attachmentIds, tx: SDSDB.shimOnlyBridge(tx))
+            let attachmentMap = Dictionary(uniqueKeysWithValues: attachments.map { ($0.uniqueId, $0) })
+            return message.attachmentIds.map { uniqueId in
+                TSAttachmentReference(uniqueId: uniqueId, attachment: attachmentMap[uniqueId])
+            }
         }
     }
 
@@ -89,11 +92,16 @@ public class TSResourceStoreImpl: TSResourceStore {
             }
             return attachmentStore.fetchReferences(owner: .messageBodyAttachment(messageRowId: messageRowId), tx: tx)
         } else {
-            return tsAttachmentStore.attachments(
+            let attachments = tsAttachmentStore.attachments(
                 withAttachmentIds: message.attachmentIds,
                 ignoringContentType: OWSMimeTypeOversizeTextMessage,
                 tx: SDSDB.shimOnlyBridge(tx)
-            ).map(TSAttachmentReference.init(_:))
+            )
+            // If we fail to fetch any attachments, we don't know if theyre media or
+            // oversize text, so we can't return them even as a reference.
+            return attachments.map {
+                TSAttachmentReference(uniqueId: $0.uniqueId, attachment: $0)
+            }
         }
     }
 
@@ -112,9 +120,11 @@ public class TSResourceStoreImpl: TSResourceStore {
                     tx: SDSDB.shimOnlyBridge(tx)
                 ).first
             else {
+                /// We can't tell from the unique id if its an oversized text attachment, so if the attachment
+                /// lookup fails for any reason, we return nil.
                 return nil
             }
-            return TSAttachmentReference(attachment)
+            return TSAttachmentReference(uniqueId: attachment.uniqueId, attachment: attachment)
         }
     }
 
@@ -272,12 +282,10 @@ extension TSResourceStoreImpl: TSResourceUploadStore {
 extension TSResourceStoreImpl {
 
     private func legacyReference(uniqueId: String?, tx: DBReadTransaction) -> TSResourceReference? {
-        guard
-            let uniqueId,
-            let attachment = tsAttachmentStore.attachments(withAttachmentIds: [uniqueId], tx: SDSDB.shimOnlyBridge(tx)).first
-        else {
+        guard let uniqueId else {
             return nil
         }
-        return TSAttachmentReference(attachment)
+        let attachment = tsAttachmentStore.attachments(withAttachmentIds: [uniqueId], tx: SDSDB.shimOnlyBridge(tx)).first
+        return TSAttachmentReference(uniqueId: uniqueId, attachment: attachment)
     }
 }
