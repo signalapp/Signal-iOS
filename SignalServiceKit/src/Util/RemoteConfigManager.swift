@@ -256,6 +256,13 @@ public class RemoteConfig: BaseFlags {
         return !isEnabled(.serviceExtensionFailureKillSwitch)
     }
 
+    public static var backgroundRefreshInterval: TimeInterval {
+        return TimeInterval(getUIntValue(
+            forFlag: .backgroundRefreshInterval,
+            defaultValue: UInt(kDayInterval)
+        ))
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -543,13 +550,13 @@ private enum ValueFlag: String, FlagType {
     case minNicknameLength = "global.nicknames.min"
     case maxNicknameLength = "global.nicknames.max"
     case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
+    case backgroundRefreshInterval = "ios.backgroundRefreshInterval"
 
     var isSticky: Bool {
         switch self {
         case .groupsV2MaxGroupSizeRecommended: fallthrough
         case .groupsV2MaxGroupSizeHardLimit:
             return true
-
         case .clientExpiration: fallthrough
         case .cdsSyncInterval: fallthrough
         case .automaticSessionResetAttemptInterval: fallthrough
@@ -566,7 +573,8 @@ private enum ValueFlag: String, FlagType {
         case .maxGroupCallRingSize: fallthrough
         case .minNicknameLength: fallthrough
         case .maxNicknameLength: fallthrough
-        case .maxAttachmentDownloadSizeBytes:
+        case .maxAttachmentDownloadSizeBytes: fallthrough
+        case .backgroundRefreshInterval:
             return false
         }
     }
@@ -583,9 +591,9 @@ private enum ValueFlag: String, FlagType {
         case .paypalDisabledRegions: fallthrough
         case .sepaEnabledRegions: fallthrough
         case .idealEnabledRegions: fallthrough
-        case .maxGroupCallRingSize:
+        case .maxGroupCallRingSize: fallthrough
+        case .backgroundRefreshInterval:
             return true
-
         case .clientExpiration: fallthrough
         case .cdsSyncInterval: fallthrough
         case .standardMediaQualityLevel: fallthrough

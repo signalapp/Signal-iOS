@@ -519,12 +519,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             name: .registrationStateDidChange,
             object: nil
         )
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(registrationLockDidChange),
-            name: Notification.Name(NSNotificationName_2FAStateDidChange),
-            object: nil
-        )
 
         if !preferences.hasGeneratedThumbnails {
             databaseStorage.asyncRead(
@@ -1326,11 +1320,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         Self.updateApplicationShortcutItems(isRegistered: isRegistered)
-    }
-
-    @objc
-    private func registrationLockDidChange() {
-        scheduleBgAppRefresh()
     }
 
     // MARK: - Shortcut Items

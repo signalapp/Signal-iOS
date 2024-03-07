@@ -58,7 +58,7 @@ public class MessageFetchBGRefreshTask {
             using: nil,
             launchHandler: { task in
                 AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-                    Self.shared?.performTask(task)
+                    Self.shared!.performTask(task)
                 }
             }
         )
@@ -69,22 +69,16 @@ public class MessageFetchBGRefreshTask {
         // don't check for that. But if this ever moves, it should check
         // appContext.isMainApp.
 
-        guard ows2FAManager.isRegistrationLockEnabled else {
-            // No need to do the keepalive for reglock.
-            return
-        }
-
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
 
-        // Ping server once a day to keep-alive reglock clients.
-        // Ideally, we would schedule this for 24 hours _since we last talked to the chat server_.
+        // Ideally, we would schedule this for N hours _since we last talked to the chat server_.
         // Without knowing that, we risk scheduling this 24 hours out over and over every time you
         // launch the app without internet. That scenario is unlikely, so is left unhandled.
-        let interval: TimeInterval = 24 * 60 * 60
+        let refreshInterval: TimeInterval = RemoteConfig.backgroundRefreshInterval
         let request = BGAppRefreshTaskRequest(identifier: Self.taskIdentifier)
-        request.earliestBeginDate = dateProvider().addingTimeInterval(interval)
+        request.earliestBeginDate = dateProvider().addingTimeInterval(refreshInterval)
 
         do {
             try BGTaskScheduler.shared.submit(request)
