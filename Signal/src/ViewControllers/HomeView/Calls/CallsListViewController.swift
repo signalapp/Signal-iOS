@@ -1538,6 +1538,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             callViewModel: viewModel
         )
 
+        callDetailsView.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(callDetailsView, animated: true)
     }
 
