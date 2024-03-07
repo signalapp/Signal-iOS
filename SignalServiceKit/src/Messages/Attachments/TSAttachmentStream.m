@@ -1055,69 +1055,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 // MARK: Protobuf serialization
 
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
-                                                containingMessage:(TSMessage *)message
-                                                      transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(attachmentId.length > 0);
-    TSAttachmentStream *_Nullable attachmentStream =
-        [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
-    if (attachmentStream == nil) {
-        return nil;
-    }
-    return [attachmentStream buildProtoForContainingMessage:message transaction:transaction];
-}
-
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
-                                           containingStoryMessage:(StoryMessage *)storyMessage
-                                                      transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(attachmentId.length > 0);
-    TSAttachmentStream *_Nullable attachmentStream =
-        [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
-    if (attachmentStream == nil) {
-        return nil;
-    }
-    return [attachmentStream buildProtoForContainingStoryMessage:storyMessage transaction:transaction];
-}
-
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
-                                                          caption:(nullable NSString *)caption
-                                                   attachmentType:(TSAttachmentType)attachmentType
-                                                      transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(attachmentId.length > 0);
-    TSAttachmentStream *_Nullable attachmentStream =
-        [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
-    if (attachmentStream == nil) {
-        return nil;
-    }
-    return [attachmentStream buildProtoWithCaption:caption attachmentType:attachmentType];
-}
-
-- (nullable SSKProtoAttachmentPointer *)buildProtoForContainingMessage:(TSMessage *)message
-                                                           transaction:(SDSAnyReadTransaction *)transaction
-{
-    NSString *caption = [self captionForContainingMessage:message transaction:transaction];
-    TSAttachmentType attachmentType = [self attachmentTypeForContainingMessage:message transaction:transaction];
-    return [self buildProtoWithCaption:caption attachmentType:attachmentType];
-}
-
-- (nullable SSKProtoAttachmentPointer *)buildProtoForContainingStoryMessage:(StoryMessage *)storyMessage
-                                                                transaction:(SDSAnyReadTransaction *)transaction
-{
-    NSString *caption = [self captionForContainingStoryMessage:storyMessage transaction:transaction];
-    TSAttachmentType attachmentType;
-    if ([self isLoopingVideoInContainingStoryMessage:storyMessage transaction:transaction]) {
-        attachmentType = TSAttachmentTypeGIF;
-    } else {
-        attachmentType = TSAttachmentTypeDefault;
-    }
-    return [self buildProtoWithCaption:caption attachmentType:attachmentType];
-}
-
-- (nullable SSKProtoAttachmentPointer *)buildProtoWithCaption:(nullable NSString *)caption
-                                               attachmentType:(TSAttachmentType)attachmentType
+- (nullable SSKProtoAttachmentPointer *)buildProto
 {
     BOOL isValidV1orV2 = self.serverId > 0;
     BOOL isValidV3 = (self.cdnKey.length > 0 && self.cdnNumber > 0);
@@ -1137,19 +1075,19 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     if (self.sourceFilename.length > 0) {
         builder.fileName = self.sourceFilename;
     }
-    if (caption && caption.length > 0) {
-        builder.caption = caption;
+    if (self.caption && self.caption.length > 0) {
+        builder.caption = self.caption;
     }
 
     builder.size = self.byteCount;
     builder.key = self.encryptionKey;
     builder.digest = self.digest;
 
-    if (attachmentType == TSAttachmentTypeVoiceMessage) {
+    if (self.attachmentType == TSAttachmentTypeVoiceMessage) {
         builder.flags = SSKProtoAttachmentPointerFlagsVoiceMessage;
-    } else if (attachmentType == TSAttachmentTypeBorderless) {
+    } else if (self.attachmentType == TSAttachmentTypeBorderless) {
         builder.flags = SSKProtoAttachmentPointerFlagsBorderless;
-    } else if (attachmentType == TSAttachmentTypeGIF || self.isAnimatedContent) {
+    } else if (self.attachmentType == TSAttachmentTypeGIF || self.isAnimatedContent) {
         builder.flags = SSKProtoAttachmentPointerFlagsGif;
     } else {
         builder.flags = 0;

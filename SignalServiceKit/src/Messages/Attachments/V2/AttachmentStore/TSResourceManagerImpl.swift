@@ -15,7 +15,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         self.tsAttachmentManager = TSAttachmentManager()
     }
 
-    // MARK: - Message attachment writes
+    // MARK: - Protos
 
     public func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
@@ -62,6 +62,34 @@ public class TSResourceManagerImpl: TSResourceManager {
                 message: message,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
+        }
+    }
+
+    public func buildProtoForSending(
+        from reference: TSResourceReference,
+        pointer: TSResourcePointer
+    ) -> SSKProtoAttachmentPointer? {
+        switch pointer.resource.concreteType {
+        case .legacy(let tsAttachment):
+            guard let stream = tsAttachment as? TSAttachmentStream else {
+                return nil
+            }
+            return stream.buildProto()
+        case .v2(let attachment):
+            switch reference.concreteType {
+            case .legacy:
+                owsFailDebug("Invalid attachment type combination!")
+                return nil
+            case .v2(let attachmentReference):
+                guard let attachmentPointer = AttachmentTransitPointer(attachment: attachment) else {
+                    owsFailDebug("Invalid attachment type combination!")
+                    return nil
+                }
+                return attachmentManager.buildProtoForSending(
+                    from: attachmentReference,
+                    pointer: attachmentPointer
+                )
+            }
         }
     }
 

@@ -31,7 +31,7 @@ public struct TSMessageAttachmentReferenceType: OptionSet {
 
 public protocol TSResourceManager {
 
-    // MARK: - Message attachment writes
+    // MARK: - Protos
 
     func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
@@ -44,6 +44,11 @@ public protocol TSResourceManager {
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) throws
+
+    func buildProtoForSending(
+        from reference: TSResourceReference,
+        pointer: TSResourcePointer
+    ) -> SSKProtoAttachmentPointer?
 
     // MARK: - Removes and deletes
 

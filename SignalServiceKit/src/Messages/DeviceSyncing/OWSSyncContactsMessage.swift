@@ -37,11 +37,21 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
             owsFailDebug("couldn't build protobuf")
             return nil
         }
-        guard let attachmentProto = TSAttachmentStream.buildProto(
-            attachmentId: attachmentId,
-            caption: nil,
-            attachmentType: .default,
-            transaction: tx
+        // TODO: this object will never exist as a v2 Attachment, because
+        // the parent message is never saved to the database.
+        // Need to figure out how to represent it; it should just live in memory.
+        guard
+            let stream = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: attachmentId, transaction: tx),
+            stream.cdnKey.isEmpty.negated,
+            stream.cdnNumber > 0
+        else {
+            return nil
+        }
+        let resourceReference = TSAttachmentReference(uniqueId: attachmentId, attachment: stream)
+        let pointer = TSResourcePointer(resource: stream, cdnNumber: stream.cdnNumber, cdnKey: stream.cdnKey)
+        guard let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+            from: resourceReference,
+            pointer: pointer
         ) else {
             owsFailDebug("couldn't build protobuf")
             return nil

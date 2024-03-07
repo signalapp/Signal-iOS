@@ -14,6 +14,8 @@ public protocol TSResourceReference {
 
     var resourceId: TSResourceId { get }
 
+    var concreteType: ConcreteTSResourceReference { get }
+
     /// Filename from the sender, used for rendering as a file attachment.
     /// NOT the same as the file name on disk.
     var sourceFilename: String? { get }

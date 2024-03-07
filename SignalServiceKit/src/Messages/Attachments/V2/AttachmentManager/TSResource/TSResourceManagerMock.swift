@@ -23,6 +23,13 @@ public class TSResourceManagerMock: TSResourceManager {
         // Do nothing
     }
 
+    public func buildProtoForSending(
+        from reference: TSResourceReference,
+        pointer: TSResourcePointer
+    ) -> SSKProtoAttachmentPointer? {
+        return nil
+    }
+
     public func removeBodyAttachment(_ attachment: TSResource, from message: TSMessage, tx: DBWriteTransaction) {
         // Do nothing
     }

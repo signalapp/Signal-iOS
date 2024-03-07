@@ -1049,8 +1049,10 @@ extension OWSContactAddress {
 @objc
 extension OWSContact {
 
-    @objc(protoWithTransaction:)
-    public func proto(withTransaction tx: SDSAnyReadTransaction) -> SSKProtoDataMessageContact? {
+    public func buildProto(
+        parentMessage: TSMessage,
+        tx: SDSAnyReadTransaction
+    ) -> SSKProtoDataMessageContact? {
 
         let contactBuilder = SSKProtoDataMessageContact.builder()
 
@@ -1087,24 +1089,29 @@ extension OWSContact {
         contactBuilder.setEmail(emails.compactMap({ $0.proto() }))
         contactBuilder.setAddress(addresses.compactMap({ $0.proto() }))
 
-        if let avatarAttachmentId {
-            if let attachmentProto = TSAttachmentStream.buildProto(
-                attachmentId: avatarAttachmentId,
-                caption: nil,
-                attachmentType: .default,
-                transaction: tx
-            ) {
-                let avatarBuilder = SSKProtoDataMessageContactAvatar.builder()
-                avatarBuilder.setAvatar(attachmentProto)
+        if
+            let avatarResourceRef = DependenciesBridge.shared.tsResourceStore.contactShareAvatarAttachment(
+                for: parentMessage,
+                tx: tx.asV2Read
+            ),
+            let avatarResource = DependenciesBridge.shared.tsResourceStore.fetch(
+                [avatarResourceRef.resourceId],
+                tx: tx.asV2Read
+            ).first,
+            let avatarPointer = avatarResource.asTransitTierPointer(),
+            let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+                from: avatarResourceRef,
+                pointer: avatarPointer
+            )
+        {
+            let avatarBuilder = SSKProtoDataMessageContactAvatar.builder()
+            avatarBuilder.setAvatar(attachmentProto)
 
-                do {
-                    let avatarProto = try avatarBuilder.build()
-                    contactBuilder.setAvatar(avatarProto)
-                } catch {
-                    Logger.error("could not build proto: \(error)")
-                }
-            } else {
-                Logger.error("could not build protobuf")
+            do {
+                let avatarProto = try avatarBuilder.build()
+                contactBuilder.setAvatar(avatarProto)
+            } catch {
+                Logger.error("could not build proto: \(error)")
             }
         }
 

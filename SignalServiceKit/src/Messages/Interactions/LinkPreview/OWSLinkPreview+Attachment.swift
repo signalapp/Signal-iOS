@@ -137,16 +137,22 @@ extension OWSLinkPreview {
     // MARK: - To Proto
 
     internal func buildProtoAttachmentPointer(tx: SDSAnyReadTransaction) -> SSKProtoAttachmentPointer? {
+        // TODO: move this whole method into TSResourceManager
         switch attachmentReference {
         case .legacy(let uniqueId):
-            guard let uniqueId else {
+            guard
+                let uniqueId,
+                let stream = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: uniqueId, transaction: tx),
+                stream.cdnKey.isEmpty.negated,
+                stream.cdnNumber > 0
+            else {
                 return nil
             }
-            return TSAttachmentStream.buildProto(
-                attachmentId: uniqueId,
-                caption: nil,
-                attachmentType: .default,
-                transaction: tx
+            let resourceReference = TSAttachmentReference(uniqueId: uniqueId, attachment: stream)
+            let pointer = TSResourcePointer(resource: stream, cdnNumber: stream.cdnNumber, cdnKey: stream.cdnKey)
+            return DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+                from: resourceReference,
+                pointer: pointer
             )
         case .v2:
             // TODO: do a lookup on the AttachmentReferences table to build the proto.

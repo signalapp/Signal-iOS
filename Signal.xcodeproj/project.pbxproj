@@ -1010,6 +1010,7 @@
 		66D7B9212B97C65E0005C98B /* AttachmentContentType+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9202B97C65E0005C98B /* AttachmentContentType+TSResource.swift */; };
 		66D7B92B2B97E5990005C98B /* AttachmentTransitPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92A2B97E5990005C98B /* AttachmentTransitPointer.swift */; };
 		66D7B92D2B98DAAD0005C98B /* AttachmentManager+Proto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92C2B98DAAD0005C98B /* AttachmentManager+Proto.swift */; };
+		66D7B92F2B98ECB00005C98B /* ConcreteTSResourceReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92E2B98ECB00005C98B /* ConcreteTSResourceReference.swift */; };
 		66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD4F2B80126200C56B7B /* TSResourceId.swift */; };
 		66E1AD532B8D017400C56B7B /* TSResourceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD522B8D017400C56B7B /* TSResourceStore.swift */; };
 		66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */; };
@@ -3775,6 +3776,7 @@
 		66D7B9202B97C65E0005C98B /* AttachmentContentType+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentContentType+TSResource.swift"; sourceTree = "<group>"; };
 		66D7B92A2B97E5990005C98B /* AttachmentTransitPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTransitPointer.swift; sourceTree = "<group>"; };
 		66D7B92C2B98DAAD0005C98B /* AttachmentManager+Proto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentManager+Proto.swift"; sourceTree = "<group>"; };
+		66D7B92E2B98ECB00005C98B /* ConcreteTSResourceReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteTSResourceReference.swift; sourceTree = "<group>"; };
 		66E1AD4F2B80126200C56B7B /* TSResourceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceId.swift; sourceTree = "<group>"; };
 		66E1AD522B8D017400C56B7B /* TSResourceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStore.swift; sourceTree = "<group>"; };
 		66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteTSResource.swift; sourceTree = "<group>"; };
@@ -7641,6 +7643,7 @@
 			isa = PBXGroup;
 			children = (
 				66E1AD882B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift */,
+				66D7B92E2B98ECB00005C98B /* ConcreteTSResourceReference.swift */,
 				66E1AD862B8FEE1300C56B7B /* TSAttachmentReference.swift */,
 				66E1AD562B8D59B000C56B7B /* TSResourceReference.swift */,
 			);
@@ -13239,6 +13242,7 @@
 				66CD256A2B06963200139E17 /* CloudBackupStickerPackArchiver.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
 				66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */,
+				66D7B92F2B98ECB00005C98B /* ConcreteTSResourceReference.swift in Sources */,
 				D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */,
 				D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */,
 				F9C5CCE5289453B300548EEE /* Contact+Swift.swift in Sources */,

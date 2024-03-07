@@ -40,5 +40,7 @@ public struct TSAttachmentReference: TSResourceReference {
 
     public var resourceId: TSResourceId { .legacy(uniqueId: uniqueId) }
 
+    public var concreteType: ConcreteTSResourceReference { .legacy(self) }
+
     public var sourceFilename: String? { attachment?.sourceFilename }
 }
