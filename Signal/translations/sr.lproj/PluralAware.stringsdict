@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Позивају се %2$@, %3$@ и још %1$d особа…</string>
+			<string>Позивамо: %2$@, %3$@ и још %1$d особа…</string>
 			<key>other</key>
-			<string>Позивају се %2$@, %3$@ и још њих %1$d…</string>
+			<string>Позивамо: %2$@, %3$@ и још њих %1$d…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -456,9 +456,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Биће позвани %2$@, %3$@ и још %1$d особа</string>
+			<string>Signal ће позвати: %2$@, %3$@ и још %1$d особа</string>
 			<key>other</key>
-			<string>Биће позвани %2$@, %3$@ и још њих %1$d</string>
+			<string>Signal ће позвати: %2$@, %3$@ и још њих %1$d</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Број пронађених конфликата имена у овој групи је %1$d. Прегледајте чланове у наставку или предузмите кораке.</string>
+			<string>Број пронађених конфликата имена у овој групи је %1$d. Прегледајте чланове у наставку или предузмите мере.</string>
 			<key>other</key>
-			<string>Број пронађених конфликата имена у овој групи је %1$d. Прегледајте чланове у наставку или предузмите кораке.</string>
+			<string>Број пронађених конфликата имена у овој групи је %1$d. Прегледајте чланове у наставку или предузмите мере.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Групна прича · Гледалаца: %1$d</string>
+			<string>Прича у групи · Гледалаца: %1$d</string>
 			<key>other</key>
-			<string>Групна прича · Гледалаца: %1$d</string>
+			<string>Прича у групи · Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -728,7 +728,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Максималан број ставки које можете да поделите је 1.</string>
+			<string>Максималан број ставки које можете да поделите је %1$d.</string>
 			<key>other</key>
 			<string>Максималан број ставки које можете да поделите је %1$d.</string>
 		</dict>
@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Фотографија: %1$d</string>
+			<string>Слика: %1$d</string>
 			<key>other</key>
-			<string>Фотографија: %1$d</string>
+			<string>Слика: %1$d</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -1243,6 +1243,22 @@
 			<string>Прегледа: &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 			<key>other</key>
 			<string>Прегледа: &lt;bold&gt;%1$d&lt;/bold&gt;</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Минималан број знакова који мора бити на почетку корисничког имена је %1$d</string>
+			<key>other</key>
+			<string>Минималан број знакова који мора бити на почетку корисничког имена је %1$d</string>
 		</dict>
 	</dict>
 </dict>

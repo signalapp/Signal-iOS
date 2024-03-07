@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en %1$d ander nemen deel aan het gesprek</string>
+			<string>%2$@, %3$@ en %1$d ander nemen deel aan de oproep</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %1$d anderen nemen deel aan het gesprek</string>
+			<string>%2$@, %3$@ en %1$d anderen nemen deel aan de oproep</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en %1$d ander hebben het gesprek verlaten</string>
+			<string>%2$@, %3$@ en %1$d ander hebben de oproep verlaten</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %1$d anderen hebben het gesprek verlaten</string>
+			<string>%2$@, %3$@ en %1$d anderen hebben de oproep verlaten</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -1243,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; weergave</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; weergaven</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Gebruikersnamen moet beginnen met minimaal %1$d karakter</string>
+			<key>other</key>
+			<string>Gebruikersnamen moeten beginnen met minimaal %1$d karakters</string>
 		</dict>
 	</dict>
 </dict>

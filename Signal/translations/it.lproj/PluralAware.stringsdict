@@ -1245,5 +1245,21 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; visualizzazioni</string>
 		</dict>
 	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>I nomi utente devono iniziare con almeno %1$d carattere</string>
+			<key>other</key>
+			<string>I nomi utente devono iniziare con almeno %1$d caratteri</string>
+		</dict>
+	</dict>
 </dict>
 </plist>
