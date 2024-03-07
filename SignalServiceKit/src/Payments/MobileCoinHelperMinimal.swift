@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 import MobileCoinMinimal
 
 public class MobileCoinHelperMinimal: MobileCoinHelper {

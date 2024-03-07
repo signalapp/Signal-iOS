@@ -82,8 +82,6 @@ end
 # These extensions inherit all of the common pods
 
 target 'SignalMessaging' do
-  pod 'MobileCoinMinimal', git: 'https://github.com/signalapp/MobileCoin-Swift.git', branch: 'charlesmchen/mobileCoinMinimal', testspecs: ["Tests"]
-  # pod 'MobileCoinMinimal', path: '../MobileCoinMinimal', testspecs: ["Tests"]
 end
 
 target 'SignalShareExtension' do
@@ -100,6 +98,8 @@ end
 
 target 'SignalServiceKit' do
   pod 'CocoaLumberjack'
+  pod 'MobileCoinMinimal', git: 'https://github.com/signalapp/MobileCoin-Swift.git', branch: 'charlesmchen/mobileCoinMinimal', testspecs: ["Tests"]
+  # pod 'MobileCoinMinimal', path: '../MobileCoinMinimal', testspecs: ["Tests"]
   pod 'SAMKeychain'
 
   target 'SignalServiceKitTests' do

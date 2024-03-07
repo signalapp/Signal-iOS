@@ -409,7 +409,6 @@
 		34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
 		34BB3C5E23C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */; };
 		34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */; };
-		34BB78B5272C510900DA0D04 /* MobileCoinHelperMinimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */; };
 		34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */; };
 		34BB78B9272C51E800DA0D04 /* MobileCoinHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B8272C51E800DA0D04 /* MobileCoinHelperTests.swift */; };
 		34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85F220E883200857249 /* ImageEditorModelTest.swift */; };
@@ -1051,6 +1050,7 @@
 		72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		72345D1F2B9A1FCF000237B3 /* DateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851A26DE890300824983 /* DateUtil.swift */; };
+		72345D202B9A2035000237B3 /* MobileCoinHelperMinimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */; };
 		724D47B02B97BE13001BE973 /* ZkParamsMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */; };
 		724D47B22B97BE96001BE973 /* ZkParamsMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */; };
 		724D47B52B97C28F001BE973 /* ProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */; };
@@ -5782,7 +5782,6 @@
 				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
-				34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */,
 				501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
@@ -10485,6 +10484,7 @@
 				F9C5CAA5289453B200548EEE /* DonationReceipt.swift */,
 				F9C5CAAD289453B200548EEE /* DonationReceiptFinder.swift */,
 				F9C5CAA1289453B200548EEE /* MobileCoinHelper.swift */,
+				34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */,
 				F9C5CAAF289453B200548EEE /* PaymentFinder.swift */,
 				F9C5CAAC289453B200548EEE /* Payments+SSK.swift */,
 				F9C5CAA3289453B200548EEE /* PaymentsCurrencies.swift */,
@@ -11853,8 +11853,6 @@
 				"${BUILT_PRODUCTS_DIR}/blurhash/blurhash.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
-				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
-				"${BUILT_PRODUCTS_DIR}/MobileCoinMinimal/MobileCoinMinimal.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -11872,8 +11870,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/blurhash.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoinMinimal.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -11945,8 +11941,6 @@
 				"${BUILT_PRODUCTS_DIR}/blurhash/blurhash.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
-				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
-				"${BUILT_PRODUCTS_DIR}/MobileCoinMinimal/MobileCoinMinimal.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -11964,8 +11958,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/blurhash.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoinMinimal.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -12352,7 +12344,6 @@
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
 				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
 				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
-				34BB78B5272C510900DA0D04 /* MobileCoinHelperMinimal.swift in Sources */,
 				764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */,
 				50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */,
 				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
@@ -13478,6 +13469,7 @@
 				F9C5CC19289453B300548EEE /* MessageSticker.swift in Sources */,
 				F9C5CE30289453B400548EEE /* MIMETypeUtil.m in Sources */,
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,
+				72345D202B9A2035000237B3 /* MobileCoinHelperMinimal.swift in Sources */,
 				664657352AC370670099DE1C /* MockAccountAttributesUpdater.swift in Sources */,
 				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				D9C42C332B6C66320086B142 /* MockCallRecordDeleteManager.swift in Sources */,
