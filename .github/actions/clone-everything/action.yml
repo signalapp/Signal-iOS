@@ -24,7 +24,7 @@ runs:
       name: Compute Private Pods Ref
       if: ${{ steps.checkout_repo.outcome == 'failure' }}
       shell: bash
-      run: echo "ref=$(git submodule status --cached Pods | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+      run: echo "ref=$(git submodule status --cached Pods | awk '{print $1}' | sed -e 's/^[-+]//')" >> "$GITHUB_OUTPUT"
 
     # Checkout private pods repo iff we have an access token to read private repos
     - name: Checkout Private Pods
