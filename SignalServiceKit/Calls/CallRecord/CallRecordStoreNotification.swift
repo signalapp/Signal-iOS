@@ -8,20 +8,10 @@ public struct CallRecordStoreNotification {
         static let updateType: String = "updateType"
     }
 
-    public struct CallRecordIdentifier {
-        public let callId: UInt64
-        public let threadRowId: Int64
-
-        init(_ callRecord: CallRecord) {
-            self.callId = callRecord.callId
-            self.threadRowId = callRecord.threadRowId
-        }
-    }
-
     public enum UpdateType {
         case inserted
-        case deleted(records: [CallRecordIdentifier])
-        case statusUpdated(record: CallRecordIdentifier)
+        case deleted(records: [CallRecord.ID])
+        case statusUpdated(record: CallRecord.ID)
     }
 
     public static let name: NSNotification.Name = .init("CallRecordStoreNotification")

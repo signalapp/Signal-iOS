@@ -508,7 +508,7 @@ private extension CallRecord {
             groupCallRingerAci: groupCallRingerAci,
             callBeganTimestamp: callBeganTimestamp
         )
-        record.id = id
+        record.sqliteRowId = id
 
         return record
     }

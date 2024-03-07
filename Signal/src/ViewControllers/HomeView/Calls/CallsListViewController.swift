@@ -18,8 +18,8 @@ private protocol CallCellDelegate: AnyObject {
 // MARK: - CallsListViewController
 
 class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceObserver {
-    private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallViewModel.ID>
-    private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallViewModel.ID>
+    private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallRecord.ID>
+    private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallRecord.ID>
 
     private enum Constants {
         /// The maximum number of search results to match.
@@ -241,7 +241,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             return
         }
 
-        let selectedViewModelIds: [CallViewModel.ID] = selectedRows.compactMap { idxPath in
+        let selectedViewModelIds: [CallRecord.ID] = selectedRows.compactMap { idxPath in
             return calls.allLoadedViewModelIds[safe: idxPath.row]
         }
         owsAssertBeta(selectedRows.count == selectedViewModelIds.count)
@@ -448,7 +448,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             owsFail("Unexpectedly failed to instantiate group call interaction updated notification!")
         }
 
-        let viewModelIdForGroupCall = CallViewModel.ID(
+        let viewModelIdForGroupCall = CallRecord.ID(
             callId: notification.callId,
             threadRowId: notification.groupThreadRowId
         )
@@ -508,17 +508,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
     }
 
-    private func existingCallRecordsWereDeleted(
-        recordIds: [CallRecordStoreNotification.CallRecordIdentifier]
-    ) {
-        let deletedViewModelIds: [CallViewModel.ID] = recordIds.map { recordId in
-            CallViewModel.ID(
-                callId: recordId.callId,
-                threadRowId: recordId.threadRowId
-            )
-        }
-
-        calls.dropViewModels(ids: deletedViewModelIds)
+    private func existingCallRecordsWereDeleted(recordIds: [CallRecord.ID]) {
+        calls.dropViewModels(ids: recordIds)
         updateSnapshot(animated: true)
     }
 
@@ -534,7 +525,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         callId: UInt64,
         threadRowId: Int64
     ) {
-        let viewModelIdForUpdatedRecord = CallViewModel.ID(
+        let viewModelIdForUpdatedRecord = CallRecord.ID(
             callId: callId,
             threadRowId: threadRowId
         )
@@ -551,7 +542,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// Recall that any 1:1 call we are not actively joined to has ended, and
     /// that that is not the case for group calls.
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
-        let callViewModelIdsToReload = [oldValue, newValue].compactMap { call -> CallViewModel.ID? in
+        let callViewModelIdsToReload = [oldValue, newValue].compactMap { call -> CallRecord.ID? in
             return call?.callViewModelId
         }
 
@@ -906,8 +897,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case primary = 0
     }
 
-    struct CallViewModel: Hashable, Identifiable {
-        enum Direction: Hashable {
+    struct CallViewModel {
+        enum Direction {
             case outgoing
             case incoming
             case missed
@@ -924,7 +915,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }
         }
 
-        enum State: Hashable {
+        enum State {
             /// This call is active, but the user is not in it.
             case active
             /// The user is currently in this call.
@@ -933,7 +924,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             case ended
         }
 
-        enum RecipientType: Hashable {
+        enum RecipientType {
             case individual(type: CallType, contactThread: TSContactThread)
             case group(groupThread: TSGroupThread)
 
@@ -944,6 +935,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
 
         let backingCallRecord: CallRecord
+
+        var id: CallRecord.ID { backingCallRecord.id }
 
         let title: String
         let recipientType: RecipientType
@@ -998,34 +991,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 return true
             }
         }
-
-        // MARK: Hashable: Equatable
-
-        static func == (lhs: CallViewModel, rhs: CallViewModel) -> Bool {
-            return lhs.id == rhs.id
-        }
-
-        func hash(into hasher: inout Hasher) {
-            id.hash(into: &hasher)
-        }
-
-        // MARK: Identifiable
-
-        struct ID: Hashable {
-            let callId: UInt64
-            let threadRowId: Int64
-        }
-
-        var id: ID {
-            ID(callId: callId, threadRowId: threadRowId)
-        }
     }
 
     let tableView = UITableView(frame: .zero, style: .plain)
 
     private static var callCellReuseIdentifier = "callCell"
 
-    private lazy var dataSource = UITableViewDiffableDataSource<Section, CallViewModel.ID>(
+    private lazy var dataSource = DiffableDataSource(
         tableView: tableView
     ) { [weak self] tableView, indexPath, modelID -> UITableViewCell? in
         guard
@@ -1067,13 +1039,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     /// Reload the rows for the given view model IDs that are currently loaded.
-    private func reloadRows(forIdentifiers identifiersToReload: [CallViewModel.ID]) {
+    private func reloadRows(forIdentifiers identifiersToReload: [CallRecord.ID]) {
         // Recreate the view models, so when the data source reloads the rows
         // it'll reflect the new underlying state for that row.
         //
         // This step will also drop any IDs for models that are not currently
         // loaded, which should not be included in the snapshot.
-        let identifiersToReload = deps.db.read { tx -> [CallViewModel.ID] in
+        let identifiersToReload = deps.db.read { tx -> [CallRecord.ID] in
             return calls.recreateViewModels(
                 ids: identifiersToReload, tx: tx
             ) { viewModelId -> CallRecord? in
@@ -1165,7 +1137,7 @@ private extension SignalCall {
         }
     }
 
-    var callViewModelId: CallsListViewController.CallViewModel.ID? {
+    var callViewModelId: CallRecord.ID? {
         guard let callId else { return nil }
         return .init(callId: callId, threadRowId: threadRowId)
     }
@@ -1181,7 +1153,7 @@ private extension SignalCall {
 
 private extension CallRecordStore {
     func fetch(
-        viewModelId: CallsListViewController.CallViewModel.ID,
+        viewModelId: CallRecord.ID,
         tx: SDSAnyReadTransaction
     ) -> CallRecordStoreMaybeDeletedFetchResult {
         return fetch(
@@ -1480,7 +1452,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         goToChat(for: viewModel.thread)
     }
 
-    private func deleteCalls(viewModelIds: [CallViewModel.ID]) {
+    private func deleteCalls(viewModelIds: [CallRecord.ID]) {
         deps.db.asyncWrite { tx in
             let callRecords = viewModelIds.compactMap { viewModelId -> CallRecord? in
                 switch self.deps.callRecordStore.fetch(
@@ -1605,15 +1577,15 @@ private extension CallsListViewController {
         }
 
         private struct LoadedViewModelIds {
-            private(set) var ids: [CallViewModel.ID] = []
-            private var indicesByIds: [CallViewModel.ID: Int] = [:]
+            private(set) var ids: [CallRecord.ID] = []
+            private var indicesByIds: [CallRecord.ID: Int] = [:]
 
-            func index(id: CallViewModel.ID) -> Int? {
+            func index(id: CallRecord.ID) -> Int? {
                 return indicesByIds[id]
             }
 
             /// Append the new loaded IDs.
-            mutating func append(ids newIds: [CallViewModel.ID]) {
+            mutating func append(ids newIds: [CallRecord.ID]) {
                 for newId in newIds {
                     indicesByIds[newId] = ids.count
                     ids.append(newId)
@@ -1621,13 +1593,13 @@ private extension CallsListViewController {
             }
 
             /// Prepend new loaded IDs.
-            mutating func prepend(ids newIds: [CallViewModel.ID]) {
+            mutating func prepend(ids newIds: [CallRecord.ID]) {
                 ids = newIds + ids
                 indicesByIds = LoadedCalls.indicesByIds(ids)
             }
 
             /// Drop the given loaded IDs.
-            mutating func drop(ids idsToDrop: Set<CallViewModel.ID>) {
+            mutating func drop(ids idsToDrop: Set<CallRecord.ID>) {
                 ids.removeAll { idsToDrop.contains($0) }
                 indicesByIds = LoadedCalls.indicesByIds(ids)
             }
@@ -1642,18 +1614,18 @@ private extension CallsListViewController {
         private let createCallViewModelBlock: CreateCallViewModelBlock
 
         private var loadedViewModelIds: LoadedViewModelIds
-        var allLoadedViewModelIds: [CallViewModel.ID] { loadedViewModelIds.ids }
+        var allLoadedViewModelIds: [CallRecord.ID] { loadedViewModelIds.ids }
 
         private var cachedViewModels: [CallViewModel] {
             didSet {
                 cachedViewModelIndicesByIds = Self.indicesByIds(cachedViewModels.map { $0.id })
             }
         }
-        private var cachedViewModelIndicesByIds: [CallViewModel.ID: Int]
+        private var cachedViewModelIndicesByIds: [CallRecord.ID: Int]
 
-        private static func indicesByIds(_ viewModelIds: [CallViewModel.ID]) -> [CallViewModel.ID: Int] {
+        private static func indicesByIds(_ viewModelIds: [CallRecord.ID]) -> [CallRecord.ID: Int] {
             return Dictionary(
-                viewModelIds.enumerated().map { (idx, viewModelId) -> (CallViewModel.ID, Int) in
+                viewModelIds.enumerated().map { (idx, viewModelId) -> (CallRecord.ID, Int) in
                     return (viewModelId, idx)
                 },
                 uniquingKeysWith: { _, new in new }
@@ -1675,7 +1647,7 @@ private extension CallsListViewController {
 
         // MARK: Accessors
 
-        func getCachedViewModel(id viewModelId: CallViewModel.ID) -> CallViewModel? {
+        func getCachedViewModel(id viewModelId: CallRecord.ID) -> CallViewModel? {
             guard let index = cachedViewModelIndicesByIds[viewModelId] else {
                 return nil
             }
@@ -1818,7 +1790,7 @@ private extension CallsListViewController {
             return !firstTimeLoadedViewModelIds.isEmpty
         }
 
-        mutating func dropViewModels(ids viewModelIdsToDrop: [CallViewModel.ID]) {
+        mutating func dropViewModels(ids viewModelIdsToDrop: [CallRecord.ID]) {
             let viewModelIdsToDrop = Set(viewModelIdsToDrop)
 
             loadedViewModelIds.drop(ids: viewModelIdsToDrop)
@@ -1832,14 +1804,14 @@ private extension CallsListViewController {
         /// The IDs for the view models that were recreated. Note that this will
         /// not include any IDs that were ignored.
         mutating func recreateViewModels(
-            ids idsToReload: [CallViewModel.ID],
+            ids idsToReload: [CallRecord.ID],
             tx: SDSAnyReadTransaction,
-            fetchCallRecordBlock: (CallViewModel.ID) -> CallRecord?
-        ) -> [CallViewModel.ID] {
+            fetchCallRecordBlock: (CallRecord.ID) -> CallRecord?
+        ) -> [CallRecord.ID] {
             let indicesToReload: [(
                 Int,
                 CallRecord,
-                CallViewModel.ID
+                CallRecord.ID
             )] = idsToReload.compactMap { viewModelId in
                 guard
                     let cachedViewModelIndex = cachedViewModelIndicesByIds[viewModelId],

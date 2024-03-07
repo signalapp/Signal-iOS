@@ -155,9 +155,7 @@ class CallRecordStoreImpl: CallRecordStore {
         delete(callRecords: callRecords, db: SDSDB.shimOnlyBridge(tx).database)
 
         postNotification(
-            updateType: .deleted(
-                records: callRecords.map { CallRecordStoreNotification.CallRecordIdentifier($0) }
-            ),
+            updateType: .deleted(records: callRecords.map { $0.id }),
             tx: tx
         )
     }
@@ -174,9 +172,7 @@ class CallRecordStoreImpl: CallRecordStore {
         )
 
         postNotification(
-            updateType: .statusUpdated(
-                record: CallRecordStoreNotification.CallRecordIdentifier(callRecord)
-            ),
+            updateType: .statusUpdated(record: callRecord.id),
             tx: tx
         )
     }
