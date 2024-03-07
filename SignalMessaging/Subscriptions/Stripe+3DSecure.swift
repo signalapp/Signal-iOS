@@ -29,7 +29,8 @@ extension Stripe {
             nextActionType == "redirect_to_url",
             let redirectToUrlDict = nextAction["redirect_to_url"] as? [String: Any?],
             let redirectToUrlString = redirectToUrlDict["url"] as? String,
-            let redirectToUrl = URL(string: redirectToUrlString)
+            let redirectToUrl = URL(string: redirectToUrlString),
+            redirectToUrl.scheme != nil
         {
             return redirectToUrl
         } else {
