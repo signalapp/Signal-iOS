@@ -512,10 +512,10 @@ class UserNotificationPresenter: Dependencies {
             return false
         }
 
-        Logger.info("Removing delivered/pending notifications with identifiers: \(identifiersToCancel)")
+        Logger.info("Removing pending/delivered notifications with identifiers: \(identifiersToCancel)")
 
-        Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
         Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
+        Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
 
         return true
     }
@@ -524,8 +524,8 @@ class UserNotificationPresenter: Dependencies {
     private func cancelNotificationSync(identifier: String) {
         Logger.warn("Canceling notification for identifier: \(identifier)")
 
-        Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
         Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
+        Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
     }
 }
 
