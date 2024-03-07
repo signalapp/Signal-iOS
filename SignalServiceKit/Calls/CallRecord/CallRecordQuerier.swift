@@ -12,31 +12,6 @@ public enum CallRecordQuerierFetchOrdering {
     case ascendingAfter(timestamp: UInt64)
 }
 
-/// A cursor over call records.
-///
-/// - Important
-/// These cursors must not be retained beyond the scope of the transaction in
-/// which they were created, as they represent an active connection to the
-/// query's data souce (e.g., the database on disk).
-public protocol CallRecordCursor {
-    func next() throws -> CallRecord?
-}
-
-public extension CallRecordCursor {
-    func drain(maxResults: UInt? = nil) throws -> [CallRecord] {
-        var records = [CallRecord]()
-
-        while
-            let record = try next(),
-            maxResults.map({ records.count < $0 }) ?? true
-        {
-            records.append(record)
-        }
-
-        return records
-    }
-}
-
 /// Performs queries over the ``CallRecord`` table.
 ///
 /// - Important
@@ -138,9 +113,6 @@ public protocol CallRecordQuerier {
 }
 
 // MARK: -
-
-/// This impl will use ``GRDB/RecordCursor`` as its ``CallRecordCursor``.
-extension RecordCursor<CallRecord>: CallRecordCursor {}
 
 class CallRecordQuerierImpl: CallRecordQuerier {
     fileprivate struct ColumnArg {
@@ -303,14 +275,19 @@ class CallRecordQuerierImpl: CallRecordQuerier {
         columnArgs: [ColumnArg],
         ordering: FetchOrdering,
         db: Database
-    ) -> RecordCursor<CallRecord>? {
+    ) -> GRDBCallRecordCursor? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs, ordering: ordering)
 
         do {
-            return try CallRecord.fetchCursor(db, SQLRequest(
+            let grdbRecordCursor = try CallRecord.fetchCursor(db, SQLRequest(
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs)
             ))
+
+            return GRDBCallRecordCursor(
+                grdbRecordCursor: grdbRecordCursor,
+                ordering: ordering.callRecordCursorOrdering
+            )
         } catch let error {
             let columns = columnArgs.map { $0.column }
             owsFailBeta("Error fetching CallRecord by \(columns): \(error.grdbErrorForLogging)")
@@ -368,6 +345,15 @@ class CallRecordQuerierImpl: CallRecordQuerier {
     }
 }
 
+public extension CallRecordQuerier.FetchOrdering {
+    var callRecordCursorOrdering: CallRecordCursor.Ordering {
+        switch self {
+        case .descending, .descendingBefore: return .descending
+        case .ascendingAfter: return .ascending
+        }
+    }
+}
+
 private extension SDSAnyReadTransaction {
     var database: Database {
         return unwrapGrdbRead.database
@@ -383,7 +369,7 @@ final class ExplainingCallRecordQuerierImpl: CallRecordQuerierImpl {
         columnArgs: [ColumnArg],
         ordering: FetchOrdering,
         db: Database
-    ) -> RecordCursor<CallRecord>? {
+    ) -> GRDBCallRecordCursor? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs, ordering: ordering)
 
         guard

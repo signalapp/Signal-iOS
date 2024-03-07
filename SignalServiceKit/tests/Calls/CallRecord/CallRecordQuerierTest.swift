@@ -94,13 +94,11 @@ final class CallRecordQuerierTest: XCTestCase {
         func testCase(
             _ callRecords: [CallRecord],
             expectedStatuses: [CallRecord.CallStatus],
-            expectedThreadRowIds: [Int64],
-            sortDirection: SortDirection
+            expectedThreadRowIds: [Int64]
         ) {
             assertExplanation(contains: "index_call_record_on_timestamp")
             XCTAssertEqual(callRecords.map { $0.callStatus }, expectedStatuses)
             XCTAssertEqual(callRecords.map { $0.threadRowId }, expectedThreadRowIds)
-            XCTAssertTrue(callRecords.isSortedByTimestamp(sortDirection))
         }
 
         let threadRowId1 = insertCallRecordsForThread(callStatuses: [.group(.ringingDeclined), .group(.ringingMissed), .group(.ringingAccepted)])
@@ -112,7 +110,7 @@ final class CallRecordQuerierTest: XCTestCase {
                 try! callRecordQuerier.fetchCursor(
                     ordering: .descending,
                     db: tx.database
-                )!.drain(),
+                )!.drain(expectingSort: .descending),
                 expectedStatuses: [
                     .individual(.notAccepted), .individual(.accepted),
                     .group(.ringingMissed), .group(.joined), .group(.generic),
@@ -122,28 +120,25 @@ final class CallRecordQuerierTest: XCTestCase {
                     threadRowId3, threadRowId3,
                     threadRowId2, threadRowId2, threadRowId2,
                     threadRowId1, threadRowId1, threadRowId1,
-                ],
-                sortDirection: .descending
+                ]
             )
 
             testCase(
                 try! callRecordQuerier.fetchCursor(
                     ordering: .descendingBefore(timestamp: 4),
                     db: tx.database
-                )!.drain(),
+                )!.drain(expectingSort: .descending),
                 expectedStatuses: [.group(.generic), .group(.ringingAccepted), .group(.ringingMissed), .group(.ringingDeclined)],
-                expectedThreadRowIds: [threadRowId2, threadRowId1, threadRowId1, threadRowId1],
-                sortDirection: .descending
+                expectedThreadRowIds: [threadRowId2, threadRowId1, threadRowId1, threadRowId1]
             )
 
             testCase(
                 try! callRecordQuerier.fetchCursor(
                     ordering: .ascendingAfter(timestamp: 4),
                     db: tx.database
-                )!.drain(),
+                )!.drain(expectingSort: .ascending),
                 expectedStatuses: [.group(.ringingMissed), .individual(.accepted), .individual(.notAccepted)],
-                expectedThreadRowIds: [threadRowId2, threadRowId3, threadRowId3],
-                sortDirection: .ascending
+                expectedThreadRowIds: [threadRowId2, threadRowId3, threadRowId3]
             )
         }
     }
@@ -151,13 +146,11 @@ final class CallRecordQuerierTest: XCTestCase {
     func testFetchByCallStatus() {
         func testCase(
             _ callRecords: [CallRecord],
-            expectedThreadRowIds: [Int64],
-            sortDirection: SortDirection
+            expectedThreadRowIds: [Int64]
         ) {
             assertExplanation(contains: "index_call_record_on_status_and_timestamp")
             XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })
             XCTAssertEqual(callRecords.map { $0.threadRowId }, expectedThreadRowIds)
-            XCTAssertTrue(callRecords.isSortedByTimestamp(sortDirection))
         }
 
         let threadRowId1 = insertCallRecordsForThread(callStatuses: [.group(.generic), .group(.ringingMissed), .group(.ringingAccepted), .group(.ringingMissed)])
@@ -169,9 +162,8 @@ final class CallRecordQuerierTest: XCTestCase {
                     callStatus: .group(.ringingMissed),
                     ordering: .descending,
                     db: tx.database
-                )!.drain(),
-                expectedThreadRowIds: [threadRowId2, threadRowId2, threadRowId2, threadRowId1, threadRowId1],
-                sortDirection: .descending
+                )!.drain(expectingSort: .descending),
+                expectedThreadRowIds: [threadRowId2, threadRowId2, threadRowId2, threadRowId1, threadRowId1]
             )
 
             testCase(
@@ -179,9 +171,8 @@ final class CallRecordQuerierTest: XCTestCase {
                     callStatus: .group(.ringingMissed),
                     ordering: .descendingBefore(timestamp: 6),
                     db: tx.database
-                )!.drain(),
-                expectedThreadRowIds: [threadRowId2, threadRowId1, threadRowId1],
-                sortDirection: .descending
+                )!.drain(expectingSort: .descending),
+                expectedThreadRowIds: [threadRowId2, threadRowId1, threadRowId1]
             )
 
             testCase(
@@ -189,9 +180,8 @@ final class CallRecordQuerierTest: XCTestCase {
                     callStatus: .group(.ringingMissed),
                     ordering: .ascendingAfter(timestamp: 6),
                     db: tx.database
-                )!.drain(),
-                expectedThreadRowIds: [threadRowId2],
-                sortDirection: .ascending
+                )!.drain(expectingSort: .ascending),
+                expectedThreadRowIds: [threadRowId2]
             )
         }
     }
@@ -203,13 +193,11 @@ final class CallRecordQuerierTest: XCTestCase {
 
         func testCase(
             _ callRecords: [CallRecord],
-            expectedStatuses: [CallRecord.CallStatus],
-            sortDirection: SortDirection
+            expectedStatuses: [CallRecord.CallStatus]
         ) {
             assertExplanation(contains: "index_call_record_on_threadRowId_and_timestamp")
             XCTAssertEqual(callRecords.map { $0.callStatus }, expectedStatuses)
             XCTAssertTrue(callRecords.allSatisfy { $0.threadRowId == threadRowId })
-            XCTAssertTrue(callRecords.isSortedByTimestamp(sortDirection))
         }
 
         inMemoryDB.read { tx in
@@ -218,12 +206,11 @@ final class CallRecordQuerierTest: XCTestCase {
                     threadRowId: threadRowId,
                     ordering: .descending,
                     db: tx.database
-                )!.drain(),
+                )!.drain(expectingSort: .descending),
                 expectedStatuses: [
                     .group(.ringingDeclined), .group(.ringingAccepted),
                     .group(.joined), .group(.generic)
-                ],
-                sortDirection: .descending
+                ]
             )
 
             testCase(
@@ -231,9 +218,8 @@ final class CallRecordQuerierTest: XCTestCase {
                     threadRowId: threadRowId,
                     ordering: .descendingBefore(timestamp: 5),
                     db: tx.database
-                )!.drain(),
-                expectedStatuses: [.group(.ringingAccepted), .group(.joined), .group(.generic)],
-                sortDirection: .descending
+                )!.drain(expectingSort: .descending),
+                expectedStatuses: [.group(.ringingAccepted), .group(.joined), .group(.generic)]
             )
 
             testCase(
@@ -241,9 +227,8 @@ final class CallRecordQuerierTest: XCTestCase {
                     threadRowId: threadRowId,
                     ordering: .ascendingAfter(timestamp: 0),
                     db: tx.database
-                )!.drain(),
-                expectedStatuses: [.group(.joined), .group(.ringingAccepted), .group(.ringingDeclined)],
-                sortDirection: .ascending
+                )!.drain(expectingSort: .ascending),
+                expectedStatuses: [.group(.joined), .group(.ringingAccepted), .group(.ringingDeclined)]
             )
         }
     }
@@ -255,14 +240,12 @@ final class CallRecordQuerierTest: XCTestCase {
 
         func testCase(
             _ callRecords: [CallRecord],
-            count: Int,
-            sortDirection: SortDirection
+            count: Int
         ) {
             assertExplanation(contains: "index_call_record_on_threadRowId_and_status_and_timestamp")
             XCTAssertEqual(callRecords.count, count)
             XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })
             XCTAssertTrue(callRecords.allSatisfy { $0.threadRowId == threadRowId })
-            XCTAssertTrue(callRecords.isSortedByTimestamp(sortDirection))
         }
 
         inMemoryDB.read { tx in
@@ -272,9 +255,8 @@ final class CallRecordQuerierTest: XCTestCase {
                     callStatus: .group(.ringingMissed),
                     ordering: .descending,
                     db: tx.database
-                )!.drain(),
-                count: 4,
-                sortDirection: .descending
+                )!.drain(expectingSort: .descending),
+                count: 4
             )
 
             testCase(
@@ -283,9 +265,8 @@ final class CallRecordQuerierTest: XCTestCase {
                     callStatus: .group(.ringingMissed),
                     ordering: .descendingBefore(timestamp: 5),
                     db: tx.database
-                )!.drain(),
-                count: 2,
-                sortDirection: .descending
+                )!.drain(expectingSort: .descending),
+                count: 2
             )
 
             testCase(
@@ -294,9 +275,8 @@ final class CallRecordQuerierTest: XCTestCase {
                     callStatus: .group(.ringingMissed),
                     ordering: .ascendingAfter(timestamp: 5),
                     db: tx.database
-                )!.drain(),
-                count: 1,
-                sortDirection: .ascending
+                )!.drain(expectingSort: .ascending),
+                count: 1
             )
         }
     }
@@ -311,14 +291,12 @@ final class CallRecordQuerierTest: XCTestCase {
 
         func testCase(
             _ callRecords: [CallRecord],
-            count: Int,
-            sortDirection: SortDirection
+            count: Int
         ) {
             assertExplanation(contains: "index_call_record_on_callStatus_and_unreadStatus_and_timestamp")
             XCTAssertEqual(callRecords.count, count)
             XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })
             XCTAssertTrue(callRecords.allSatisfy { $0.unreadStatus == .unread })
-            XCTAssertTrue(callRecords.isSortedByTimestamp(sortDirection))
         }
 
         inMemoryDB.read { tx in
@@ -327,9 +305,8 @@ final class CallRecordQuerierTest: XCTestCase {
                     callStatus: .group(.ringingMissed),
                     ordering: .descending,
                     db: tx.database
-                )!.drain(),
-                count: 2,
-                sortDirection: .descending
+                )!.drain(expectingSort: .descending),
+                count: 2
             )
         }
     }
@@ -359,28 +336,24 @@ private extension DBReadTransaction {
     }
 }
 
-private enum SortDirection {
-    case ascending
-    case descending
+// MARK: -
 
-    func compareForSort(lhs: CallRecord, rhs: CallRecord) -> Bool {
+private extension CallRecord.SortDirection {
+    var callRecordCursorOrdering: CallRecordCursor.Ordering {
         switch self {
-        case .ascending:
-            return lhs.callBeganTimestamp < rhs.callBeganTimestamp
-        case .descending:
-            return lhs.callBeganTimestamp > rhs.callBeganTimestamp
+        case .ascending: return .ascending
+        case .descending: return .descending
         }
-
     }
 }
 
-private extension Array<CallRecord> {
-    func isSortedByTimestamp(_ direction: SortDirection) -> Bool {
-        return sorted(by: direction.compareForSort(lhs:rhs:)).enumerated().allSatisfy { (idx, callRecord) in
-            /// When sorted by timestamp descending the order should not have
-            /// changed; i.e., each enumerated sorted call record is exactly the
-            /// same as the unsorted call record in the same index.
-            callRecord === self[idx]
-        }
+private extension CallRecordCursor {
+    func drain(expectingSort sortDirection: CallRecord.SortDirection) throws -> [CallRecord] {
+        let records = try drain()
+
+        XCTAssertEqual(ordering, sortDirection.callRecordCursorOrdering)
+        XCTAssertTrue(records.isSortedByTimestamp(sortDirection))
+
+        return records
     }
 }

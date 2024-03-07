@@ -235,7 +235,12 @@ private extension CallRecord {
 private class MockCallRecordQuerier: CallRecordQuerier {
     private class Cursor: CallRecordCursor {
         private var callRecords: [CallRecord] = []
-        init(_ callRecords: [CallRecord]) { self.callRecords = callRecords }
+        init(_ callRecords: [CallRecord], ordering: FetchOrdering) {
+            self.callRecords = callRecords
+            self.ordering = ordering.callRecordCursorOrdering
+        }
+
+        let ordering: Ordering
         func next() throws -> CallRecord? { return callRecords.popFirst() }
     }
 
@@ -253,23 +258,23 @@ private class MockCallRecordQuerier: CallRecordQuerier {
     }
 
     func fetchCursor(ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords, ordering: ordering))
+        return Cursor(applyOrdering(mockCallRecords, ordering: ordering), ordering: ordering)
     }
 
     func fetchCursor(callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus }, ordering: ordering))
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus }, ordering: ordering), ordering: ordering)
     }
 
     func fetchCursor(threadRowId: Int64, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.threadRowId == threadRowId }, ordering: ordering))
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.threadRowId == threadRowId }, ordering: ordering), ordering: ordering)
     }
 
     func fetchCursor(threadRowId: Int64, callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.threadRowId == threadRowId }, ordering: ordering))
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.threadRowId == threadRowId }, ordering: ordering), ordering: ordering)
     }
 
     func fetchCursorForUnread(callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.unreadStatus == .unread }, ordering: ordering))
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.unreadStatus == .unread }, ordering: ordering), ordering: ordering)
     }
 }
 

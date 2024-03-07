@@ -1682,6 +1682,8 @@
 		D9DCFDB42A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */; };
 		D9E335A42993269100825677 /* MockDBV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDBV2.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
+		D9E7C8752B9A3FD1005BD3B9 /* CallRecordCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E7C8742B9A3FD1005BD3B9 /* CallRecordCursor.swift */; };
+		D9E7C8772B9A4A9C005BD3B9 /* CallRecord+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E7C8762B9A4A9C005BD3B9 /* CallRecord+Sorting.swift */; };
 		D9EB221E2A4B636C00C73E1D /* Bitmaps+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */; };
 		D9EB221F2A4B636C00C73E1D /* Bitmaps+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */; };
 		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
@@ -4513,6 +4515,8 @@
 		D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportableQRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicDisplayQRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
+		D9E7C8742B9A3FD1005BD3B9 /* CallRecordCursor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordCursor.swift; sourceTree = "<group>"; };
+		D9E7C8762B9A4A9C005BD3B9 /* CallRecord+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallRecord+Sorting.swift"; sourceTree = "<group>"; };
 		D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Shapes.swift"; sourceTree = "<group>"; };
 		D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Image.swift"; sourceTree = "<group>"; };
@@ -8908,8 +8912,10 @@
 			isa = PBXGroup;
 			children = (
 				D9C544282B8578B50036F274 /* CallRecord+CallStatus.swift */,
+				D9E7C8762B9A4A9C005BD3B9 /* CallRecord+Sorting.swift */,
 				D99A2A842AAB9AB9003388D1 /* CallRecord.swift */,
 				D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */,
+				D9E7C8742B9A3FD1005BD3B9 /* CallRecordCursor.swift */,
 				D9CA8AB62B6AE77200787167 /* CallRecordDeleteManager.swift */,
 				D979CC202AD3933B006AAC49 /* CallRecordIncomingSyncMessageManager.swift */,
 				D979CC252AD3933B006AAC49 /* CallRecordIncomingSyncMessageParams.swift */,
@@ -13224,8 +13230,10 @@
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
 				D9C544292B8578B50036F274 /* CallRecord+CallStatus.swift in Sources */,
+				D9E7C8772B9A4A9C005BD3B9 /* CallRecord+Sorting.swift in Sources */,
 				D99A2A852AAB9AB9003388D1 /* CallRecord.swift in Sources */,
 				D9DB37EF2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift in Sources */,
+				D9E7C8752B9A3FD1005BD3B9 /* CallRecordCursor.swift in Sources */,
 				D9DB37F92B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift in Sources */,
 				D9DB37FB2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift in Sources */,
 				D9CA8AB72B6AE77200787167 /* CallRecordDeleteManager.swift in Sources */,
