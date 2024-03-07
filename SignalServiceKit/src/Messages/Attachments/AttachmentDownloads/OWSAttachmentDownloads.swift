@@ -106,7 +106,6 @@ public class OWSAttachmentDownloads: NSObject {
                 self.enqueueDownloadOfAttachmentsForNewMessageId(
                     pendingNewMessageId,
                     downloadBehavior: downloadBehavior,
-                    touchMessageImmediately: true,
                     transaction: transaction
                 )
             }
@@ -119,7 +118,6 @@ public class OWSAttachmentDownloads: NSObject {
                 self.enqueueDownloadOfAttachmentsForNewStoryMessageId(
                     pendingNewStoryMessageId,
                     downloadBehavior: downloadBehavior,
-                    touchMessageImmediately: true,
                     transaction: transaction
                 )
             }
@@ -824,7 +822,6 @@ public extension OWSAttachmentDownloads {
         enqueueDownloadOfAttachmentsForNewMessageId(
             message.uniqueId,
             downloadBehavior: message is TSOutgoingMessage ? .bypassAll : .default,
-            touchMessageImmediately: false,
             transaction: transaction
         )
     }
@@ -832,7 +829,6 @@ public extension OWSAttachmentDownloads {
     private func enqueueDownloadOfAttachmentsForNewMessageId(
         _ messageId: String,
         downloadBehavior: AttachmentDownloadBehavior,
-        touchMessageImmediately: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
         // If we're not the main app, queue up the download for the next time
@@ -855,8 +851,7 @@ public extension OWSAttachmentDownloads {
             self.enqueueDownloadOfAttachments(
                 forMessageId: messageId,
                 attachmentGroup: .allAttachments,
-                downloadBehavior: downloadBehavior,
-                touchMessageImmediately: touchMessageImmediately
+                downloadBehavior: downloadBehavior
             )
         }
     }
@@ -864,8 +859,7 @@ public extension OWSAttachmentDownloads {
     func enqueueDownloadOfAttachments(
         forMessageId messageId: String,
         attachmentGroup: AttachmentGroup,
-        downloadBehavior: AttachmentDownloadBehavior,
-        touchMessageImmediately: Bool
+        downloadBehavior: AttachmentDownloadBehavior
     ) {
         guard !CurrentAppContext().isRunningTests else {
             return
@@ -886,17 +880,15 @@ public extension OWSAttachmentDownloads {
 
         enqueueMessageJobRequest(jobRequest, messageId: messageId)
 
-        if touchMessageImmediately {
-            Self.databaseStorage.asyncWrite { tx in
-                guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: tx) else {
-                    return
-                }
-                Self.databaseStorage.touch(
-                    interaction: message,
-                    shouldReindex: false,
-                    transaction: tx
-                )
+        Self.databaseStorage.asyncWrite { tx in
+            guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: tx) else {
+                return
             }
+            Self.databaseStorage.touch(
+                interaction: message,
+                shouldReindex: false,
+                transaction: tx
+            )
         }
     }
 
@@ -951,7 +943,6 @@ public extension OWSAttachmentDownloads {
         enqueueDownloadOfAttachmentsForNewStoryMessageId(
             message.uniqueId,
             downloadBehavior: message.direction == .outgoing ? .bypassAll : .default,
-            touchMessageImmediately: false,
             transaction: transaction
         )
     }
@@ -959,7 +950,6 @@ public extension OWSAttachmentDownloads {
     private func enqueueDownloadOfAttachmentsForNewStoryMessageId(
         _ storyMessageId: String,
         downloadBehavior: AttachmentDownloadBehavior,
-        touchMessageImmediately: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
         // If we're not the main app, queue up the download for the next time
@@ -981,8 +971,7 @@ public extension OWSAttachmentDownloads {
         transaction.addAsyncCompletionOffMain {
             self.enqueueDownloadOfAttachments(
                 forStoryMessageId: storyMessageId,
-                downloadBehavior: downloadBehavior,
-                touchMessageImmediately: touchMessageImmediately
+                downloadBehavior: downloadBehavior
             )
         }
     }
@@ -990,8 +979,7 @@ public extension OWSAttachmentDownloads {
     @discardableResult
     func enqueueDownloadOfAttachments(
         forStoryMessageId storyMessageId: String,
-        downloadBehavior: AttachmentDownloadBehavior,
-        touchMessageImmediately: Bool
+        downloadBehavior: AttachmentDownloadBehavior
     ) -> Promise<Void> {
         guard !CurrentAppContext().isRunningTests else {
             return .value(())
@@ -1019,10 +1007,8 @@ public extension OWSAttachmentDownloads {
 
         self.enqueueJobs(jobRequest: jobRequest)
 
-        if touchMessageImmediately {
-            Self.databaseStorage.asyncWrite { transaction in
-                Self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
-            }
+        Self.databaseStorage.asyncWrite { transaction in
+            Self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
         }
 
         return Promise.when(

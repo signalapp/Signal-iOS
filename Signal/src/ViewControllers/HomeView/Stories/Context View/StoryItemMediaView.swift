@@ -1074,8 +1074,7 @@ extension StoryItem {
 
         return attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: message.uniqueId,
-            downloadBehavior: .bypassAll,
-            touchMessageImmediately: true
+            downloadBehavior: .bypassAll
         )
     }
 

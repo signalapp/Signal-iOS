@@ -213,8 +213,7 @@ extension ConversationViewController: CVComponentDelegate {
         attachmentDownloads.enqueueDownloadOfAttachments(
             forMessageId: message.uniqueId,
             attachmentGroup: .allAttachments,
-            downloadBehavior: .bypassAll,
-            touchMessageImmediately: true
+            downloadBehavior: .bypassAll
         )
     }
 

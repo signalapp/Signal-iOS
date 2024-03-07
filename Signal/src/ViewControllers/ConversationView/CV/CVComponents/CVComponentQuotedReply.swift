@@ -123,8 +123,7 @@ private class QuotedMessageViewAdapter: QuotedMessageViewDelegate, Dependencies 
         Self.attachmentDownloads.enqueueDownloadOfAttachments(
             forMessageId: interactionUniqueId,
             attachmentGroup: .allAttachments,
-            downloadBehavior: .default,
-            touchMessageImmediately: true
+            downloadBehavior: .default
         )
     }
 
