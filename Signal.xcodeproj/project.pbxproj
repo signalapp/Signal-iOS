@@ -391,7 +391,6 @@
 		34A954E2271B4F3E00B05242 /* ColorOrGradientSwatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */; };
 		34A954E8271B4F6A00B05242 /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E5271B4F6A00B05242 /* VideoPlayer.swift */; };
 		34A95501271B503E00B05242 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95500271B503E00B05242 /* DisplayableText.swift */; };
-		34A955AC271B521500B05242 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AD271B532F00B05242 /* FullTextSearcher.swift */; };
 		34A955B2271B53F600B05242 /* GroupManager+GroupInvites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */; };
 		34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B8271B553D00B05242 /* PaymentsFormat.swift */; };
@@ -1050,6 +1049,7 @@
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
 		72345D192B9A17CF000237B3 /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
+		72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		724D47B02B97BE13001BE973 /* ZkParamsMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */; };
 		724D47B22B97BE96001BE973 /* ZkParamsMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */; };
 		724D47B52B97C28F001BE973 /* ProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */; };
@@ -5780,7 +5780,6 @@
 				179E8C30276A711100AF640F /* AFQueryString.m */,
 				6675F64C2925C012007A311E /* APNSRotationStore.swift */,
 				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
-				34A955AB271B521500B05242 /* CommonStrings.swift */,
 				3452851A26DE890300824983 /* DateUtil.swift */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
@@ -10651,6 +10650,7 @@
 				E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */,
 				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
 				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
+				34A955AB271B521500B05242 /* CommonStrings.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
 				F962B389293F9F1F00765BD8 /* CRC32.swift */,
 				F9C5CB22289453B200548EEE /* Currency.swift */,
@@ -12334,7 +12334,6 @@
 				88F15F9A25AD4AE0008ABD47 /* BroadcastMediaMessageJob.swift in Sources */,
 				500FE490288615BA00FA090C /* CachedBadge.swift in Sources */,
 				88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */,
-				34A955AC271B521500B05242 /* CommonStrings.swift in Sources */,
 				5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */,
 				342FFE832721D4B6000AC89F /* ContactsMaps.swift in Sources */,
 				5096BE652AF3514800668F9F /* ContactSyncAttachmentBuilder.swift in Sources */,
@@ -13348,6 +13347,7 @@
 				F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */,
 				F9C5CE73289453B400548EEE /* GroupAccess.swift in Sources */,
 				D979CC592AD61641006AAC49 /* GroupCallInteractionFinder.swift in Sources */,
+				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
 				D979CC5B2AD61699006AAC49 /* GroupCallRecordManager.swift in Sources */,
 				D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */,
 				D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */,
