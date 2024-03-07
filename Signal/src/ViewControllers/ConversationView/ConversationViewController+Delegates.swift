@@ -256,22 +256,22 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
                                              didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?) {
         AssertIsOnMainThread()
 
-        Logger.verbose("conversationScreenSearchResultSet: \(resultSet.debugDescription)")
-
         self.lastSearchedText = resultSet?.searchText
         loadCoordinator.enqueueReload()
     }
 
-    public func conversationSearchController(_ conversationSearchController: ConversationSearchController,
-                                             didSelectMessageId messageId: String) {
+    public func conversationSearchController(
+        _ conversationSearchController: ConversationSearchController,
+        didSelectMessageId messageId: String
+    ) {
         AssertIsOnMainThread()
 
-        Logger.verbose("messageId: \(messageId)")
-
-        ensureInteractionLoadedThenScrollToInteraction(messageId,
-                                                       onScreenPercentage: 1,
-                                                       alignment: .centerIfNotEntirelyOnScreen,
-                                                       isAnimated: true)
+        ensureInteractionLoadedThenScrollToInteraction(
+            messageId,
+            onScreenPercentage: 1,
+            alignment: .centerIfNotEntirelyOnScreen,
+            isAnimated: true
+        )
     }
 }
 

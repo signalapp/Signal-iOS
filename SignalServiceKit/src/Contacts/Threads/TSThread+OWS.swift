@@ -111,6 +111,13 @@ public extension TSThread {
             transaction: tx
         ) != nil
     }
+
+    // MARK: - Database Hooks
+
+    internal func _anyDidInsert(tx: SDSAnyWriteTransaction) {
+        let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+        searchableNameIndexer.insert(self, tx: tx.asV2Write)
+    }
 }
 
 // MARK: -

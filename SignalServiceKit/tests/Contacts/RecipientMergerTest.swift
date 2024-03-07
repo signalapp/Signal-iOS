@@ -92,8 +92,8 @@ class RecipientMergerTest: XCTestCase {
         let testCases: [(
             trustLevel: TrustLevel,
             mergeRequest: (aci: Aci?, phoneNumber: E164?),
-            initialState: [(rowId: Int, aci: Aci?, phoneNumber: E164?)],
-            finalState: [(rowId: Int, aci: Aci?, phoneNumber: E164?)]
+            initialState: [(rowId: Int64, aci: Aci?, phoneNumber: E164?)],
+            finalState: [(rowId: Int64, aci: Aci?, phoneNumber: E164?)]
         )] = [
             (.high, (aci_A, nil), [], [(1, aci_A, nil)]),
             (.low, (aci_A, nil), [], [(1, aci_A, nil)]),
@@ -316,7 +316,7 @@ class RecipientMergerTest: XCTestCase {
 
             // Make sure all the recipients have been updated properly.
             for (idx, finalState) in testCase.finalState.enumerated() {
-                let recipient = try XCTUnwrap(d.recipientDatabaseTable.recipientTable.removeValue(forKey: idx + 1))
+                let recipient = try XCTUnwrap(d.recipientDatabaseTable.recipientTable.removeValue(forKey: Int64(idx + 1)))
                 XCTAssertEqual(recipient.phoneNumber?.stringValue, finalState?.phoneNumber?.stringValue)
                 XCTAssertEqual(recipient.pni, finalState?.pni)
                 XCTAssertEqual(recipient.aci, finalState?.aci)
@@ -563,7 +563,7 @@ class RecipientMergerTest: XCTestCase {
 
             // Make sure all the recipients have been updated properly.
             for (idx, finalState) in testCase.finalState.enumerated() {
-                let recipient = try XCTUnwrap(d.recipientDatabaseTable.recipientTable.removeValue(forKey: idx + 1))
+                let recipient = try XCTUnwrap(d.recipientDatabaseTable.recipientTable.removeValue(forKey: Int64(idx + 1)))
                 XCTAssertEqual(recipient.phoneNumber?.stringValue, finalState.phoneNumber?.stringValue)
                 XCTAssertEqual(recipient.pni, finalState.pni)
                 XCTAssertEqual(recipient.aci, finalState.aci)

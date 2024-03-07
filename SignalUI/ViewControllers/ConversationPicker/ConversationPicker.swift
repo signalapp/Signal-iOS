@@ -264,14 +264,19 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         updateUIForCurrentSelection(animated: false)
     }
 
-    func buildSearchResults(searchText: String) -> Promise<ConversationPickerScreenSearchResultSet?> {
+    private func buildSearchResults(searchText: String) -> Guarantee<RecipientSearchResultSet?> {
         guard searchText.count > 1 else {
-            return Promise.value(nil)
+            return .value(nil)
         }
 
         return firstly(on: DispatchQueue.global()) {
-            Self.databaseStorage.read { transaction in
-                self.fullTextSearcher.searchForConversationPickerScreen(searchText: searchText, transaction: transaction)
+            Self.databaseStorage.read { tx in
+                self.fullTextSearcher.searchForRecipients(
+                    searchText: searchText,
+                    includeLocalUser: true,
+                    includeStories: true,
+                    tx: tx
+                )
             }
         }
     }
@@ -462,7 +467,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    fileprivate func buildConversationCollection(searchResults: ConversationPickerScreenSearchResultSet?) -> Promise<ConversationCollection> {
+    fileprivate func buildConversationCollection(searchResults: RecipientSearchResultSet?) -> Promise<ConversationCollection> {
         guard let searchResults = searchResults else {
             return Promise.value(buildConversationCollection())
         }
@@ -493,27 +498,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     )
                 }
 
-                let contactItems = searchResults.signalContacts.compactMap { contactResult -> ContactConversationItem? in
-                    let isAddressBlocked = self.blockingManager.isAddressBlocked(
-                        contactResult.recipientAddress,
-                        transaction: transaction
-                    )
-
-                    if isAddressBlocked {
-                        return nil
-                    }
-
-                    let isRecipientHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
-                        contactResult.recipientAddress,
-                        tx: transaction.asV2Read
-                    )
-                    if isRecipientHidden {
-                        return nil
-                    }
-
+                let contactItems = searchResults.contactResults.map { contactResult -> ContactConversationItem in
                     return self.buildContactItem(
                         contactResult.recipientAddress,
-                        isBlocked: isAddressBlocked,
+                        isBlocked: false,
                         transaction: transaction
                     )
                 }

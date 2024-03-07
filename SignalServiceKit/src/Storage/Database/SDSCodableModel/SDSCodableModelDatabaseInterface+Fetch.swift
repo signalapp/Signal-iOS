@@ -7,6 +7,21 @@ import GRDB
 import SignalCoreKit
 
 extension SDSCodableModelDatabaseInterfaceImpl {
+    /// Fetch a persisted model with the given rowid if it exists.
+    func fetchModel<Model: SDSCodableModel>(
+        modelType: Model.Type,
+        rowId: Model.RowId,
+        tx: DBReadTransaction
+    ) -> Model? {
+        return fetchModel(
+            modelType: modelType,
+            sql: """
+            SELECT * FROM \(modelType.databaseTableName) WHERE "id" = ?
+            """,
+            arguments: [rowId],
+            transaction: tx
+        )
+    }
 
     /// Fetch a persisted model with the given unique ID, if one exists.
     func fetchModel<Model: SDSCodableModel>(
@@ -47,7 +62,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            owsFailDebug("Failed to fetch model \(modelType): \(error)")
+            owsFailDebug("Failed to fetch model \(modelType): \(error.grdbErrorForLogging)")
             return nil
         }
     }
@@ -73,7 +88,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            owsFailDebug("Failed to fetch \(modelType) models: \(error)")
+            owsFailDebug("Failed to fetch \(modelType) models: \(error.grdbErrorForLogging)")
             return []
         }
     }

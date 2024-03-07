@@ -54,7 +54,7 @@ class ThreadPerformanceTest: PerformanceBaseTest {
                 _ = threadFactory.create(transaction: transaction)
             }
 
-            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
+            TSInteraction.anyRemoveAllWithInstantiation(transaction: transaction)
             TSThread.anyFetchAll(transaction: transaction).forEach { $0.softDelete(with: transaction) }
 
             self.stopMeasuring()
@@ -93,7 +93,7 @@ class ThreadPerformanceTest: PerformanceBaseTest {
                 message.update(withMessageBody: "hiya", transaction: transaction)
             }
 
-            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
+            TSInteraction.anyRemoveAllWithInstantiation(transaction: transaction)
             TSThread.anyFetchAll(transaction: transaction).forEach { $0.softDelete(with: transaction) }
 
             self.stopMeasuring()

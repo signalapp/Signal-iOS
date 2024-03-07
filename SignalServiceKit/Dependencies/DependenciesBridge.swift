@@ -109,8 +109,8 @@ public class DependenciesBridge {
 
     public let registrationStateChangeManager: RegistrationStateChangeManager
 
+    public let searchableNameIndexer: SearchableNameIndexer
     public let signalProtocolStoreManager: SignalProtocolStoreManager
-
     public let socketManager: SocketManager
 
     public let externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore
@@ -169,14 +169,17 @@ public class DependenciesBridge {
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
+        searchableNameIndexer: any SearchableNameIndexer,
         senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
+        threadStore: any ThreadStore,
         udManager: OWSUDManager,
         usernameLookupManager: UsernameLookupManager,
+        userProfileStore: any UserProfileStore,
         versionedProfiles: VersionedProfilesSwift,
         websocketFactory: WebSocketFactory
     ) -> DependenciesBridge {
@@ -207,15 +210,18 @@ public class DependenciesBridge {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
+            searchableNameIndexer: searchableNameIndexer,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
+            threadStore: threadStore,
             tsConstants: TSConstants.shared, // This is safe to hard-code.
             udManager: udManager,
             usernameLookupManager: usernameLookupManager,
+            userProfileStore: userProfileStore,
             versionedProfiles: versionedProfiles,
             websocketFactory: websocketFactory
         )
@@ -250,15 +256,18 @@ public class DependenciesBridge {
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
+        searchableNameIndexer: any SearchableNameIndexer,
         senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
+        threadStore: any ThreadStore,
         tsConstants: TSConstantsProtocol,
         udManager: OWSUDManager,
         usernameLookupManager: UsernameLookupManager,
+        userProfileStore: any UserProfileStore,
         versionedProfiles: VersionedProfilesSwift,
         websocketFactory: WebSocketFactory
     ) {
@@ -287,7 +296,6 @@ public class DependenciesBridge {
         )
         self.tsAccountManager = tsAccountManager
 
-        let userProfileStore = UserProfileStoreImpl()
         let phoneNumberVisibilityFetcher = PhoneNumberVisibilityFetcherImpl(
             contactsManager: contactManager,
             tsAccountManager: tsAccountManager,
@@ -421,7 +429,7 @@ public class DependenciesBridge {
         self.groupMemberStore = groupMemberStore
         self.threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
         self.threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: self.keyValueStoreFactory)
-        self.threadStore = ThreadStoreImpl()
+        self.threadStore = threadStore
         self.wallpaperStore = WallpaperStore(
             keyValueStoreFactory: self.keyValueStoreFactory,
             notificationScheduler: self.schedulers.main
@@ -433,7 +441,6 @@ public class DependenciesBridge {
             chatColorSettingStore: self.chatColorSettingStore,
             databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            fullTextSearchFinder: ThreadRemoverImpl.Wrappers.FullTextSearchFinder(),
             interactionRemover: ThreadRemoverImpl.Wrappers.InteractionRemover(),
             sdsThreadRemover: ThreadRemoverImpl.Wrappers.SDSThreadRemover(),
             threadAssociatedDataStore: self.threadAssociatedDataStore,
@@ -762,5 +769,7 @@ public class DependenciesBridge {
             fileSystem: Upload.Wrappers.FileSystem(),
             tsResourceStore: tsResourceStore
         )
+
+        self.searchableNameIndexer = searchableNameIndexer
     }
 }

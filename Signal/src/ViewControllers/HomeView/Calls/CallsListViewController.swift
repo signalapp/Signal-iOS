@@ -23,7 +23,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private enum Constants {
         /// The maximum number of search results to match.
-        static let maxSearchResults: UInt = 100
+        static let maxSearchResults: Int = 100
 
         /// An interval to wait after the search term changes before actually
         /// issuing a search.
@@ -43,8 +43,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let callService: CallService
         let contactsManager: any ContactManager
         let db: SDSDatabaseStorage
-        let fullTextSearchFinder: FullTextSearchFinder.Type
         let interactionStore: InteractionStore
+        let searchableNameFinder: SearchableNameFinder
         let threadStore: ThreadStore
     }
 
@@ -59,8 +59,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         callService: NSObject.callService,
         contactsManager: NSObject.contactsManager,
         db: NSObject.databaseStorage,
-        fullTextSearchFinder: FullTextSearchFinder.self,
         interactionStore: DependenciesBridge.shared.interactionStore,
+        searchableNameFinder: SearchableNameFinder(
+            contactManager: NSObject.contactsManager,
+            searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
+            phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher
+        ),
         threadStore: DependenciesBridge.shared.threadStore
     )
 
@@ -627,23 +631,37 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         deps.db.asyncRead(
             block: { tx -> CallRecordLoader.Configuration in
                 if let searchTerm {
-                    let threadRowIdsMatchingSearchTerm: [Int64] = self.deps.fullTextSearchFinder
-                        .findThreadsMatching(
-                            searchTerm: searchTerm,
-                            maxSearchResults: Constants.maxSearchResults,
-                            tx: tx
-                        )
-                        .map { thread in
-                            guard let sqliteRowId = thread.sqliteRowId else {
+                    var threadRowIdsMatchingSearchTerm = Set<Int64>()
+                    let addresses = self.deps.searchableNameFinder.searchNames(
+                        for: searchTerm,
+                        maxResults: Constants.maxSearchResults,
+                        tx: tx.asV2Read,
+                        checkCancellation: {},
+                        addGroupThread: { groupThread in
+                            guard let sqliteRowId = groupThread.sqliteRowId else {
                                 owsFail("How did we match a thread in the FTS index that hasn't been inserted?")
                             }
+                            threadRowIdsMatchingSearchTerm.insert(sqliteRowId)
+                        },
+                        addStoryThread: { _ in }
+                    )
 
-                            return sqliteRowId
+                    for address in addresses {
+                        guard
+                            let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx),
+                            contactThread.shouldThreadBeVisible
+                        else {
+                            continue
                         }
+                        guard let sqliteRowId = contactThread.sqliteRowId else {
+                            owsFail("How did we match a thread in the FTS index that hasn't been inserted?")
+                        }
+                        threadRowIdsMatchingSearchTerm.insert(sqliteRowId)
+                    }
 
                     return CallRecordLoader.Configuration(
                         onlyLoadMissedCalls: onlyLoadMissedCalls,
-                        onlyMatchThreadRowIds: threadRowIdsMatchingSearchTerm
+                        onlyMatchThreadRowIds: Array(threadRowIdsMatchingSearchTerm)
                     )
                 } else {
                     return CallRecordLoader.Configuration(
@@ -2142,27 +2160,5 @@ private extension CallsListViewController {
                 delegate.showCallInfo(from: viewModel)
             }
         }
-    }
-}
-
-// MARK: - FullTextSearchFinder
-
-private extension FullTextSearchFinder {
-    static func findThreadsMatching(
-        searchTerm: String,
-        maxSearchResults: UInt,
-        tx: SDSAnyReadTransaction
-    ) -> [TSThread] {
-        var threads = [TSThread]()
-
-        FullTextSearchFinder.enumerateObjects(
-            searchText: searchTerm,
-            maxResults: maxSearchResults,
-            transaction: tx
-        ) { (thread: TSThread, _, _) in
-            threads.append(thread)
-        }
-
-        return threads
     }
 }

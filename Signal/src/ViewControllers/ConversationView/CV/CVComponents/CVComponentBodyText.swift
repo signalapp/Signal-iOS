@@ -509,15 +509,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         var matchedSearchRanges = [NSRange]()
         if let searchText = searchText,
            searchText.count >= ConversationSearchController.kMinimumSearchTextLength {
-            let searchableText = FullTextSearchFinder.normalize(text: searchText)
+            let searchableText = FullTextSearchIndexer.normalizeText(searchText)
             let pattern = NSRegularExpression.escapedPattern(for: searchableText)
             do {
                 let regex = try NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
 
                 func runRegex(_ string: String) {
-                    for match in regex.matches(in: string,
-                                               options: [.withoutAnchoringBounds],
-                                               range: string.entireRange) {
+                    for match in regex.matches(in: string, options: [.withoutAnchoringBounds], range: string.entireRange) {
                         owsAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength)
                         matchedSearchRanges.append(match.range)
                     }

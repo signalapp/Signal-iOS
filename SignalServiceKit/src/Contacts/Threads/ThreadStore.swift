@@ -17,7 +17,7 @@ public protocol ThreadStore {
         tx: DBReadTransaction,
         block: @escaping (TSGroupThread, _ stop: inout Bool) -> Void
     ) throws
-    func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread?
+    func fetchThread(rowId: Int64, tx: DBReadTransaction) -> TSThread?
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
     func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread]
     func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread]
@@ -128,8 +128,8 @@ public class ThreadStoreImpl: ThreadStore {
         return try ThreadFinder().enumerateGroupThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
     }
 
-    public func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
-        return ThreadFinder().fetch(rowId: threadRowId, tx: SDSDB.shimOnlyBridge(tx))
+    public func fetchThread(rowId: Int64, tx: DBReadTransaction) -> TSThread? {
+        return ThreadFinder().fetch(rowId: rowId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {

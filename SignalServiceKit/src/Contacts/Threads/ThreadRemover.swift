@@ -14,7 +14,6 @@ class ThreadRemoverImpl: ThreadRemover {
     private let chatColorSettingStore: ChatColorSettingStore
     private let databaseStorage: Shims.DatabaseStorage
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
-    private let fullTextSearchFinder: Shims.FullTextSearchFinder
     private let interactionRemover: Shims.InteractionRemover
     private let sdsThreadRemover: Shims.SDSThreadRemover
     private let threadAssociatedDataStore: ThreadAssociatedDataStore
@@ -27,7 +26,6 @@ class ThreadRemoverImpl: ThreadRemover {
         chatColorSettingStore: ChatColorSettingStore,
         databaseStorage: Shims.DatabaseStorage,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
-        fullTextSearchFinder: Shims.FullTextSearchFinder,
         interactionRemover: Shims.InteractionRemover,
         sdsThreadRemover: Shims.SDSThreadRemover,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
@@ -39,7 +37,6 @@ class ThreadRemoverImpl: ThreadRemover {
         self.chatColorSettingStore = chatColorSettingStore
         self.databaseStorage = databaseStorage
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
-        self.fullTextSearchFinder = fullTextSearchFinder
         self.interactionRemover = interactionRemover
         self.sdsThreadRemover = sdsThreadRemover
         self.threadAssociatedDataStore = threadAssociatedDataStore
@@ -64,10 +61,6 @@ class ThreadRemoverImpl: ThreadRemover {
         threadReadCache.didRemove(thread: thread, tx: tx)
         try? wallpaperStore.reset(for: thread, tx: tx)
         sdsThreadRemover.didRemove(thread: thread, tx: tx)
-
-        if type(of: thread).ftsIndexMode != .never {
-            fullTextSearchFinder.modelWasRemoved(model: thread, tx: tx)
-        }
     }
 }
 
@@ -76,7 +69,6 @@ class ThreadRemoverImpl: ThreadRemover {
 extension ThreadRemoverImpl {
     enum Shims {
         typealias InteractionRemover = _ThreadRemoverImpl_InteractionRemoverShim
-        typealias FullTextSearchFinder = _ThreadRemoverImpl_FullTextSearchFinderShim
         typealias ThreadReadCache = _ThreadRemoverImpl_ThreadReadCacheShim
         typealias DatabaseStorage = _ThreadRemoverImpl_DatabaseStorageShim
         typealias SDSThreadRemover = _ThreadRemoverImpl_SDSThreadRemoverShim
@@ -84,7 +76,6 @@ extension ThreadRemoverImpl {
 
     enum Wrappers {
         typealias InteractionRemover = _ThreadRemoverImpl_InteractionRemoverWrapper
-        typealias FullTextSearchFinder = _ThreadRemoverImpl_FullTextSearchFinderWrapper
         typealias ThreadReadCache = _ThreadRemoverImpl_ThreadReadCacheWrapper
         typealias DatabaseStorage = _ThreadRemoverImpl_DatabaseStorageWrapper
         typealias SDSThreadRemover = _ThreadRemoverImpl_SDSThreadRemoverWrapper
@@ -98,16 +89,6 @@ protocol _ThreadRemoverImpl_InteractionRemoverShim {
 class _ThreadRemoverImpl_InteractionRemoverWrapper: _ThreadRemoverImpl_InteractionRemoverShim {
     func removeAllInteractions(in thread: TSThread, tx: DBWriteTransaction) {
         thread.removeAllThreadInteractions(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
-protocol _ThreadRemoverImpl_FullTextSearchFinderShim {
-    func modelWasRemoved(model: SDSIndexableModel, tx: DBWriteTransaction)
-}
-
-class _ThreadRemoverImpl_FullTextSearchFinderWrapper: _ThreadRemoverImpl_FullTextSearchFinderShim {
-    func modelWasRemoved(model: SDSIndexableModel, tx: DBWriteTransaction) {
-        FullTextSearchFinder.modelWasRemoved(model: model, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 
@@ -155,10 +136,6 @@ class _ThreadRemoverImpl_SDSThreadRemoverWrapper: _ThreadRemoverImpl_SDSThreadRe
 
 class ThreadRemover_MockInteractionRemover: ThreadRemoverImpl.Shims.InteractionRemover {
     func removeAllInteractions(in thread: TSThread, tx: DBWriteTransaction) {}
-}
-
-class ThreadRemover_MockFullTextSearchFinder: ThreadRemoverImpl.Shims.FullTextSearchFinder {
-    func modelWasRemoved(model: SDSIndexableModel, tx: DBWriteTransaction) {}
 }
 
 class ThreadRemover_MockThreadReadCache: ThreadRemoverImpl.Shims.ThreadReadCache {

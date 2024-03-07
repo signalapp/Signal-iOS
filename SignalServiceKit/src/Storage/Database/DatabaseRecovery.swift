@@ -622,21 +622,17 @@ public extension DatabaseRecovery {
         private func attemptToRecreateFullTextSearch() {
             Logger.info("Starting to re-index full text search...")
 
-            databaseStorage.write { transaction in
-                let grdbTransaction = transaction.unwrapGrdbWrite
+            databaseStorage.write { tx in
+                let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+                searchableNameIndexer.indexEverything(tx: tx.asV2Write)
+            }
 
-                func index(_ model: SDSIndexableModel) {
-                    GRDBFullTextSearchFinder.modelWasInserted(
-                        model: model,
-                        transaction: grdbTransaction
-                    )
-                }
-
-                for indexableModelType in GRDBFullTextSearchFinder.indexableModelTypes {
-                    Logger.info("Starting to index \(indexableModelType.collection())")
-                    indexableModelType.anyEnumerateIndexable(transaction: transaction) { model in
-                        index(model)
+            databaseStorage.write { tx in
+                TSInteraction.anyEnumerate(transaction: tx) { interaction, _ in
+                    guard let message = interaction as? TSMessage else {
+                        return
                     }
+                    FullTextSearchIndexer.insert(message, tx: tx)
                 }
             }
 

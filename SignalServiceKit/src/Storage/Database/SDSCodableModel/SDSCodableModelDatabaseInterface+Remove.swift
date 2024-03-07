@@ -22,10 +22,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         removeModelFromDatabase(model, transaction: transaction.unwrapGrdbWrite)
 
         model.anyDidRemove(transaction: transaction)
-
-        if Model.ftsIndexMode != .never {
-            FullTextSearchFinder.modelWasRemoved(model: model, transaction: transaction)
-        }
     }
 
     func removeAllModelsWithInstantiation<Model: SDSCodableModel>(
@@ -60,13 +56,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             }
 
             removeModel(instanceToRemove, transaction: transaction.asV2Write)
-        }
-
-        if modelType.ftsIndexMode != .never {
-            FullTextSearchFinder.allModelsWereRemoved(
-                collection: modelType.collection(),
-                transaction: transaction
-            )
         }
     }
 

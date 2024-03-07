@@ -144,26 +144,12 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     private var lastSearchText: String?
 
-    private var _searchResults = Atomic<ComposeScreenSearchResultSet?>(wrappedValue: nil)
+    private var _searchResults = Atomic<RecipientSearchResultSet?>(wrappedValue: nil)
 
-    private var searchResults: ComposeScreenSearchResultSet? {
+    private var searchResults: RecipientSearchResultSet? {
         get { _searchResults.wrappedValue }
         set {
-            if let newValue {
-                if searchText != newValue.searchText {
-                    Logger.verbose("user has changed text since search started. Skipping stale results.")
-                    return
-                }
-            } else {
-                if searchText.count >= Self.minimumSearchLength {
-                    Logger.verbose("user has entered text since clearing results. Skipping stale results.")
-                    return
-                }
-            }
-            guard _searchResults.wrappedValue != newValue else { return }
-
             _searchResults.wrappedValue = newValue
-            Logger.verbose("showing search results for term: \(String(describing: newValue?.searchText))")
             updateTableContents()
         }
     }
@@ -178,16 +164,16 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         }
 
         guard lastSearchText != searchText else { return }
-
         lastSearchText = searchText
 
-        var searchResults: ComposeScreenSearchResultSet?
+        var searchResults: RecipientSearchResultSet?
         databaseStorage.asyncRead(
-            block: { transaction in
-                searchResults = self.fullTextSearcher.searchForComposeScreen(
+            block: { tx in
+                searchResults = self.fullTextSearcher.searchForRecipients(
                     searchText: searchText,
-                    omitLocalUser: self.shouldHideLocalRecipient,
-                    transaction: transaction
+                    includeLocalUser: !self.shouldHideLocalRecipient,
+                    includeStories: false,
+                    tx: tx
                 )
             },
             completion: { [weak self] in
@@ -548,7 +534,7 @@ extension RecipientPickerViewController: ContactsViewHelperObserver {
 
 extension RecipientPickerViewController {
 
-    public func groupSection(for searchResults: ComposeScreenSearchResultSet) -> OWSTableSection? {
+    public func groupSection(for searchResults: RecipientSearchResultSet) -> OWSTableSection? {
         let groupThreads: [TSGroupThread]
         switch groupsToShow {
         case .noGroups:
@@ -1019,7 +1005,7 @@ extension RecipientPickerViewController {
         return contactSections
     }
 
-    private func contactsSections(for searchResults: ComposeScreenSearchResultSet) -> [OWSTableSection] {
+    private func contactsSections(for searchResults: RecipientSearchResultSet) -> [OWSTableSection] {
         AssertIsOnMainThread()
 
         var sections = [OWSTableSection]()
@@ -1028,12 +1014,7 @@ extension RecipientPickerViewController {
         var matchedAccountPhoneNumbers = Set<String>()
         var contactsSectionItems = [OWSTableItem]()
         databaseStorage.read { tx in
-            let blockedAddresses = self.blockingManager.blockedAddresses(transaction: tx)
-            let hiddenAddresses = DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx.asV2Read)
-            let addressesToSkip = blockedAddresses.union(hiddenAddresses)
-            for recipientAddress in searchResults.signalContacts.map({ $0.recipientAddress }) {
-                guard !addressesToSkip.contains(recipientAddress) else { continue }
-
+            for recipientAddress in searchResults.contactResults.map({ $0.recipientAddress }) {
                 if let phoneNumber = recipientAddress.phoneNumber {
                     matchedAccountPhoneNumbers.insert(phoneNumber)
                 }
@@ -1336,7 +1317,7 @@ extension RecipientPickerViewController {
     }
 
     public func findByNumberSection(
-        for searchResults: ComposeScreenSearchResultSet,
+        for searchResults: RecipientSearchResultSet,
         skipping alreadyMatchedPhoneNumbers: Set<String>
     ) -> OWSTableSection? {
         let phoneNumberFinder = PhoneNumberFinder(
@@ -1539,7 +1520,7 @@ extension RecipientPickerViewController {
         return cell
     }
 
-    private func findByUsernameSection(for searchResults: ComposeScreenSearchResultSet) -> OWSTableSection? {
+    private func findByUsernameSection(for searchResults: RecipientSearchResultSet) -> OWSTableSection? {
         guard let username = parsePossibleSearchUsername(for: searchResults.searchText) else {
             return nil
         }

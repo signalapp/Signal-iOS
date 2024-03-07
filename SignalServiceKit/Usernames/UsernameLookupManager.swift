@@ -56,9 +56,16 @@ public class UsernameLookupManagerImpl: UsernameLookupManager {
     // MARK: - Init
 
     private let cachedLookups: AtomicDictionary<Aci, CachedLookupResult>
+    private let searchableNameIndexer: any SearchableNameIndexer
+    private let usernameLookupRecordStore: any UsernameLookupRecordStore
 
-    public init() {
-        cachedLookups = .init(lock: .init())
+    public init(
+        searchableNameIndexer: any SearchableNameIndexer,
+        usernameLookupRecordStore: any UsernameLookupRecordStore
+    ) {
+        self.cachedLookups = .init(lock: .init())
+        self.searchableNameIndexer = searchableNameIndexer
+        self.usernameLookupRecordStore = usernameLookupRecordStore
     }
 
     // MARK: - UsernameLookupManager
@@ -71,10 +78,8 @@ public class UsernameLookupManagerImpl: UsernameLookupManager {
             return cachedLookup.usernameValue
         }
 
-        if let persistedUsername = UsernameLookupRecord.fetchOne(
-            forAci: aci,
-            transaction: SDSDB.shimOnlyBridge(transaction)
-        )?.username {
+        let persistedUsername = usernameLookupRecordStore.fetchOne(forAci: aci, tx: transaction)?.username
+        if let persistedUsername {
             cachedLookups[aci] = .found(username: persistedUsername)
             return persistedUsername
         }
@@ -97,20 +102,18 @@ public class UsernameLookupManagerImpl: UsernameLookupManager {
     public func saveUsername(
         _ username: Username?,
         forAci aci: Aci,
-        transaction: DBWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
+        // Delete first to ensure we can index the new value in FTS.
+        usernameLookupRecordStore.deleteOne(forAci: aci, tx: tx)
+
         if let username {
             cachedLookups[aci] = .found(username: username)
-
-            UsernameLookupRecord(aci: aci, username: username)
-                .upsert(transaction: SDSDB.shimOnlyBridge(transaction))
+            let usernameLookupRecord = UsernameLookupRecord(aci: aci, username: username)
+            usernameLookupRecordStore.insertOne(usernameLookupRecord, tx: tx)
+            searchableNameIndexer.insert(usernameLookupRecord, tx: tx)
         } else {
             cachedLookups[aci] = .notFound
-
-            UsernameLookupRecord.deleteOne(
-                forAci: aci,
-                transaction: SDSDB.shimOnlyBridge(transaction)
-            )
         }
     }
 }

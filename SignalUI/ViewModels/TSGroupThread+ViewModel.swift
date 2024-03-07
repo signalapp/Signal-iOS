@@ -82,7 +82,7 @@ public extension TSGroupThread {
         }
         return displayName.replacingCharacters(
             in: matchRange,
-            with: "<\(FullTextSearchFinder.matchTag)>\(displayName[matchRange])</\(FullTextSearchFinder.matchTag)>"
+            with: "<\(FullTextSearchIndexer.matchTag)>\(displayName[matchRange])</\(FullTextSearchIndexer.matchTag)>"
         )
     }
 }

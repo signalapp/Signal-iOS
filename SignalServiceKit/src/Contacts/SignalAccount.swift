@@ -20,10 +20,8 @@ private let kSignalPreferNicknamesPreference = "NSPersonNameDefaultShouldPreferN
 
 @objc(SignalAccount)
 public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding {
-
     public static let databaseTableName = "model_SignalAccount"
     public static var recordType: UInt { SDSRecordType.signalAccount.rawValue }
-    public static var ftsIndexMode: TSFTSIndexMode { .always }
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -186,6 +184,10 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         encodeObject(recipientPhoneNumber, forKey: .recipientPhoneNumber)
         encodeObject(recipientServiceId?.serviceIdUppercaseString, forKey: .recipientServiceId)
     }
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        self.id = rowID
+    }
 }
 
 // MARK: - Update in place
@@ -215,16 +217,20 @@ extension SignalAccount {
     }
 }
 
-// MARK: DB Operation Hooks
+// MARK: - DB Operation Hooks
 
 extension SignalAccount {
 
     public func anyDidInsert(transaction: SDSAnyWriteTransaction) {
         Self.modelReadCaches.signalAccountReadCache.didInsertOrUpdate(signalAccount: self, transaction: transaction)
+        let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+        searchableNameIndexer.insert(self, tx: transaction.asV2Write)
     }
 
     public func anyDidUpdate(transaction: SDSAnyWriteTransaction) {
         Self.modelReadCaches.signalAccountReadCache.didInsertOrUpdate(signalAccount: self, transaction: transaction)
+        let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+        searchableNameIndexer.update(self, tx: transaction.asV2Write)
     }
 
     public func anyDidRemove(transaction: SDSAnyWriteTransaction) {

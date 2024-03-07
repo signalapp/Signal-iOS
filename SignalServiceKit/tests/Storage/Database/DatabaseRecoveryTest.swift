@@ -315,13 +315,11 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         finishedDatabaseStorage.read { transaction in
             func searchMessages(for searchText: String) -> [TSMessage] {
                 var result = [TSMessage]()
-                    FullTextSearchFinder.enumerateObjects(
-                    searchText: searchText,
-                    collections: [TSMessage.collection()],
+                FullTextSearchIndexer.search(
+                    for: searchText,
                     maxResults: 99,
-                    transaction: transaction
+                    tx: transaction
                 ) { match, _, _ in
-                    guard let match = match as? TSMessage else { return }
                     result.append(match)
                 }
                 return result
@@ -353,7 +351,11 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
 
         let tableNamesToSkip: Set<String> = ["grdb_migrations", "sqlite_sequence"]
         return allTableNames.filter { tableName in
-            !tableNamesToSkip.contains(tableName) && !tableName.starts(with: "indexable_text")
+            return (
+                !tableNamesToSkip.contains(tableName)
+                && !tableName.starts(with: "indexable_text")
+                && !tableName.starts(with: SearchableNameIndexerImpl.Constants.databaseTableName)
+            )
         }
     }
 

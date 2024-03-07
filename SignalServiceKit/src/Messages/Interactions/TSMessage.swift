@@ -701,4 +701,21 @@ public extension TSMessage {
             }
         }
     }
+
+    // MARK: - Indexing
+
+    @objc
+    internal func _anyDidInsert(tx: SDSAnyWriteTransaction) {
+        FullTextSearchIndexer.insert(self, tx: tx)
+    }
+
+    @objc
+    internal func _anyDidUpdate(tx: SDSAnyWriteTransaction) {
+        FullTextSearchIndexer.update(self, tx: tx)
+    }
+
+    @objc
+    internal func _anyDidRemove(tx: SDSAnyWriteTransaction) {
+        FullTextSearchIndexer.delete(self, tx: tx)
+    }
 }

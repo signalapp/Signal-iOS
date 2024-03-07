@@ -382,15 +382,6 @@ extension TSThread: SDSModel {
     public static var table: SDSTableMetadata {
         TSThreadSerializer.table
     }
-
-    public class func anyEnumerateIndexable(
-        transaction: SDSAnyReadTransaction,
-        block: (SDSIndexableModel) -> Void
-    ) {
-        anyEnumerate(transaction: transaction, batched: false) { model, _ in
-            block(model)
-        }
-    }
 }
 
 // MARK: - DeepCopyable

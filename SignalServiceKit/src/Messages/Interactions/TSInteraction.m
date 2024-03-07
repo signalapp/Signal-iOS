@@ -54,11 +54,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @implementation TSInteraction
 
-+ (TSFTSIndexMode)FTSIndexMode
-{
-    return TSFTSIndexModeAlways;
-}
-
 + (NSString *)collection {
     return @"TSInteraction";
 }

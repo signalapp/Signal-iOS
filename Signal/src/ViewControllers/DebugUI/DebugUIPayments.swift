@@ -219,7 +219,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
 
     private func deleteAllPaymentModels() {
         databaseStorage.write { transaction in
-            TSPaymentModel.anyRemoveAllWithInstantation(transaction: transaction)
+            TSPaymentModel.anyRemoveAllWithInstantiation(transaction: transaction)
         }
     }
 }

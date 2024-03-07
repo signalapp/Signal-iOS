@@ -16,17 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-/// Controls whether the full text search index is updated when the model object is updated.
-typedef NS_ENUM(NSUInteger, TSFTSIndexMode) {
-    /// This object is not part of the full text search index.
-    TSFTSIndexModeNever,
-    /// This object is automatically indexed when inserted or removed,
-    /// but updates must be indexed manually (usually by `SDSDatabase.touch(...)`).
-    TSFTSIndexModeManualUpdates,
-    /// This object is automatically (re)indexed when inserted, updated, or removed.
-    TSFTSIndexModeAlways
-};
-
 #pragma mark -
 
 // TODO: Rename and/or merge with BaseModel.
@@ -76,8 +65,6 @@ typedef NS_ENUM(NSUInteger, TSFTSIndexMode) {
 //            methods for certain kinds of models which we could
 //            detect at compile time.
 @property (nonatomic, readonly) BOOL shouldBeSaved;
-
-@property (class, nonatomic, readonly) TSFTSIndexMode FTSIndexMode;
 
 #pragma mark - Data Store Write Hooks
 

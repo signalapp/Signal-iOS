@@ -21,7 +21,6 @@ import SignalCoreKit
 public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_SignalRecipient"
     public static var recordType: UInt { SDSRecordType.signalRecipient.rawValue }
-    public static var ftsIndexMode: TSFTSIndexMode { .always }
 
     public enum Constants {
         public static let distantPastUnregisteredTimestamp: UInt64 = 1
@@ -310,6 +309,22 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     /// they don't perform CDS syncs at regular intervals.
     public var isPhoneNumberDiscoverable: Bool {
         return isRegistered && phoneNumber?.isDiscoverable == true
+    }
+
+    // MARK: - Database Hooks
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        self.id = rowID
+    }
+
+    public func anyDidInsert(transaction: SDSAnyWriteTransaction) {
+        let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+        searchableNameIndexer.insert(self, tx: transaction.asV2Write)
+    }
+
+    public func anyDidUpdate(transaction: SDSAnyWriteTransaction) {
+        let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+        searchableNameIndexer.update(self, tx: transaction.asV2Write)
     }
 }
 

@@ -156,16 +156,8 @@ private extension SDSCodableModelDatabaseInterface {
         switch saveMode {
         case .insert:
             model.anyDidInsert(transaction: transaction)
-
-            if Model.ftsIndexMode != .never {
-                FullTextSearchFinder.modelWasInserted(model: model, transaction: transaction)
-            }
         case .update:
             model.anyDidUpdate(transaction: transaction)
-
-            if Model.ftsIndexMode == .always {
-                FullTextSearchFinder.modelWasUpdated(model: model, transaction: transaction)
-            }
         }
     }
 

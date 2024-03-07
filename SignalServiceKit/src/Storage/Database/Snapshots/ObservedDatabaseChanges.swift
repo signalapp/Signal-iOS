@@ -592,13 +592,6 @@ extension ObservedDatabaseChanges {
         // If necessary, convert GRDB table names to "collections".
         let tableNameToCollectionMap = Self.tableNameToCollectionMap
         for tableName in tableNames {
-            guard !tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
-                owsFailDebug("should not have been notified for changes to FTS tables")
-                continue
-            }
-            guard tableName != "grdb_migrations" else {
-                continue
-            }
             guard let collection = tableNameToCollectionMap[tableName] else {
                 owsFailDebug("Unknown table: \(tableName)")
                 continue

@@ -14,6 +14,10 @@ TABLES_TO_IGNORE = [
     "indexable_text_fts_idx",
     "indexable_text_fts_docsize",
     "indexable_text_fts_config",
+    "SearchableNameFTS_data",
+    "SearchableNameFTS_idx",
+    "SearchableNameFTS_docsize",
+    "SearchableNameFTS_config",
 ]
 
 

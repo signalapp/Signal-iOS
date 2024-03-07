@@ -244,9 +244,9 @@ extension ThreadUtil {
                 thread.softDelete(with: transaction)
             }
 
-            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
+            TSInteraction.anyRemoveAllWithInstantiation(transaction: transaction)
             StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
-            TSAttachment.anyRemoveAllWithInstantation(transaction: transaction)
+            TSAttachment.anyRemoveAllWithInstantiation(transaction: transaction)
 
             // Deleting attachments above should be enough to remove any gallery items, but
             // we redunantly clean up *all* gallery items to be safe.

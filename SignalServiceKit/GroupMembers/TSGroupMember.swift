@@ -30,7 +30,6 @@ import LibSignalClient
 public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_TSGroupMember"
     public static var recordType: UInt { SDSRecordType.groupMember.rawValue }
-    public static var ftsIndexMode: TSFTSIndexMode { .manualUpdates }
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id

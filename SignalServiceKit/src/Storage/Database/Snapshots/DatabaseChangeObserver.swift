@@ -266,14 +266,19 @@ public class DatabaseChangeObserver: NSObject {
 extension DatabaseChangeObserver: TransactionObserver {
 
     private func observes(eventWithTableName tableName: String) -> Bool {
-        guard !tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
+        if tableName.hasPrefix(FullTextSearchIndexer.contentTableName) {
             return false
         }
-        guard !nonModelTables.contains(tableName) else {
+        if tableName.hasPrefix(SearchableNameIndexerImpl.Constants.databaseTableName) {
+            return false
+        }
+        if nonModelTables.contains(tableName) {
             // Ignore updates to non-model tables
             return false
         }
-
+        if tableName == "grdb_migrations" {
+            return false
+        }
         return true
     }
 

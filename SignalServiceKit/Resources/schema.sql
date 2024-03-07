@@ -1526,3 +1526,120 @@ CREATE
     ,"timestamp"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "SearchableName" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"threadId" INTEGER UNIQUE
+            ,"signalAccountId" INTEGER UNIQUE
+            ,"userProfileId" INTEGER UNIQUE
+            ,"signalRecipientId" INTEGER UNIQUE
+            ,"usernameLookupRecordId" BLOB UNIQUE
+            ,"value" TEXT NOT NULL
+            ,FOREIGN KEY ("threadId") REFERENCES "model_TSThread"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,FOREIGN KEY ("signalAccountId") REFERENCES "model_SignalAccount"("id"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+                ,FOREIGN KEY ("userProfileId") REFERENCES "model_OWSUserProfile"("id"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+                ,FOREIGN KEY ("signalRecipientId") REFERENCES "model_SignalRecipient"("id"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+                ,FOREIGN KEY ("usernameLookupRecordId") REFERENCES "UsernameLookupRecord"("aci"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+)
+;
+
+CREATE
+    VIRTUAL TABLE
+        "SearchableNameFTS"
+            USING fts5 (
+            VALUE
+            ,tokenize = 'unicode61'
+            ,content = 'SearchableName'
+            ,content_rowid = 'id'
+        ) /* SearchableNameFTS(value) */
+;
+
+CREATE
+    TRIGGER "__SearchableNameFTS_ai" AFTER INSERT
+            ON "SearchableName" BEGIN INSERT
+            INTO
+                "SearchableNameFTS"("rowid"
+                ,"value"
+)
+VALUES (
+new. "id"
+,new. "value"
+)
+;
+
+END
+;
+
+CREATE
+    TRIGGER "__SearchableNameFTS_ad" AFTER DELETE
+                ON "SearchableName" BEGIN INSERT
+                INTO
+                    "SearchableNameFTS"("SearchableNameFTS"
+                    ,"rowid"
+                    ,"value"
+)
+VALUES (
+'delete'
+,old. "id"
+,old. "value"
+)
+;
+
+END
+;
+
+CREATE
+    TRIGGER "__SearchableNameFTS_au" AFTER UPDATE
+                ON "SearchableName" BEGIN INSERT
+                INTO
+                    "SearchableNameFTS"("SearchableNameFTS"
+                    ,"rowid"
+                    ,"value"
+)
+VALUES (
+'delete'
+,old. "id"
+,old. "value"
+)
+;
+
+INSERT
+    INTO
+        "SearchableNameFTS"("rowid"
+        ,"value"
+)
+VALUES (
+new. "id"
+,new. "value"
+)
+;
+
+END
+;

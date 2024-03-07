@@ -13,6 +13,7 @@ final class UsernameLookupRecordTest: XCTestCase {
     private var inMemoryDB: InMemoryDB!
 
     override func setUp() {
+        super.setUp()
         inMemoryDB = InMemoryDB()
     }
 
@@ -21,7 +22,7 @@ final class UsernameLookupRecordTest: XCTestCase {
             inMemoryDB.insert(record: constant)
 
             let deserialized = inMemoryDB.read { tx in
-                return UsernameLookupRecord.fetchOne(
+                return UsernameLookupRecordStoreImpl._fetchOne(
                     forAci: Aci(fromUUID: constant.aci),
                     database: InMemoryDB.shimOnlyBridge(tx).db
                 )
@@ -41,50 +42,19 @@ final class UsernameLookupRecordTest: XCTestCase {
             }
 
             inMemoryDB.write { tx in
-                UsernameLookupRecord.deleteOne(forAci: Aci(fromUUID: constant.aci), database: InMemoryDB.shimOnlyBridge(tx).db)
+                UsernameLookupRecordStoreImpl._deleteOne(
+                    forAci: Aci(fromUUID: constant.aci),
+                    database: InMemoryDB.shimOnlyBridge(tx).db
+                )
             }
 
             XCTAssertNil(inMemoryDB.read { tx in
-                return UsernameLookupRecord.fetchOne(forAci: Aci(fromUUID: constant.aci), database: InMemoryDB.shimOnlyBridge(tx).db)
+                return UsernameLookupRecordStoreImpl._fetchOne(
+                    forAci: Aci(fromUUID: constant.aci),
+                    database: InMemoryDB.shimOnlyBridge(tx).db
+                )
             })
         }
-    }
-
-    func testUpsert() throws {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
-        let username1 = "jango_fett.42"
-        let username2 = "boba_fett.42"
-
-        inMemoryDB.write { tx in
-            let recordsToUpsert: [UsernameLookupRecord] = [
-                .init(aci: aci1, username: username1),
-                .init(aci: aci2, username: username2),
-                .init(aci: aci1, username: username2)
-            ]
-
-            for record in recordsToUpsert {
-                record.upsert(database: InMemoryDB.shimOnlyBridge(tx).db)
-            }
-        }
-
-        let (record1, record2) = inMemoryDB.read { tx in
-            (
-                UsernameLookupRecord.fetchOne(forAci: aci1, database: InMemoryDB.shimOnlyBridge(tx).db),
-                UsernameLookupRecord.fetchOne(forAci: aci2, database: InMemoryDB.shimOnlyBridge(tx).db)
-            )
-        }
-
-        guard let record1, let record2 else {
-            XCTFail("Missing records!")
-            return
-        }
-
-        XCTAssertEqual(record1.aci, aci1.rawUUID)
-        XCTAssertEqual(record1.username, username2)
-
-        XCTAssertEqual(record2.aci, aci2.rawUUID)
-        XCTAssertEqual(record2.username, username2)
     }
 
     // MARK: - Hardcoded constant data

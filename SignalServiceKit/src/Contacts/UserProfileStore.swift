@@ -5,7 +5,8 @@
 
 import LibSignalClient
 
-protocol UserProfileStore {
+public protocol UserProfileStore {
+    func fetchUserProfile(for rowId: OWSUserProfile.RowId, tx: DBReadTransaction) -> OWSUserProfile?
     func fetchUserProfiles(for serviceId: ServiceId, tx: DBReadTransaction) -> [OWSUserProfile]
     func fetchUserProfiles(for phoneNumber: E164, tx: DBReadTransaction) -> [OWSUserProfile]
 
@@ -13,19 +14,26 @@ protocol UserProfileStore {
     func removeUserProfile(_ userProfile: OWSUserProfile, tx: DBWriteTransaction)
 }
 
-class UserProfileStoreImpl: UserProfileStore {
-    func fetchUserProfiles(for serviceId: ServiceId, tx: DBReadTransaction) -> [OWSUserProfile] {
+public class UserProfileStoreImpl: UserProfileStore {
+    public init() {}
+
+    public func fetchUserProfile(for rowId: OWSUserProfile.RowId, tx: DBReadTransaction) -> OWSUserProfile? {
+        return SDSCodableModelDatabaseInterfaceImpl().fetchModel(modelType: OWSUserProfile.self, rowId: rowId, tx: tx)
+    }
+
+    public func fetchUserProfiles(for serviceId: ServiceId, tx: DBReadTransaction) -> [OWSUserProfile] {
         return UserProfileFinder().fetchUserProfiles(serviceId: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
-    func fetchUserProfiles(for phoneNumber: E164, tx: DBReadTransaction) -> [OWSUserProfile] {
+
+    public func fetchUserProfiles(for phoneNumber: E164, tx: DBReadTransaction) -> [OWSUserProfile] {
         return UserProfileFinder().fetchUserProfiles(phoneNumber: phoneNumber.stringValue, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    func updateUserProfile(_ userProfile: OWSUserProfile, tx: DBWriteTransaction) {
+    public func updateUserProfile(_ userProfile: OWSUserProfile, tx: DBWriteTransaction) {
         userProfile.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func removeUserProfile(_ userProfile: OWSUserProfile, tx: DBWriteTransaction) {
+    public func removeUserProfile(_ userProfile: OWSUserProfile, tx: DBWriteTransaction) {
         userProfile.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
@@ -34,6 +42,10 @@ class UserProfileStoreImpl: UserProfileStore {
 
 class MockUserProfileStore: UserProfileStore {
     var userProfiles = [OWSUserProfile]()
+
+    func fetchUserProfile(for rowId: OWSUserProfile.RowId, tx: DBReadTransaction) -> OWSUserProfile? {
+        return userProfiles.first(where: { $0.id == rowId })
+    }
 
     func fetchUserProfiles(for serviceId: ServiceId, tx: DBReadTransaction) -> [OWSUserProfile] {
         return userProfiles.filter { $0.serviceIdString == serviceId.serviceIdUppercaseString }.map { $0.shallowCopy() }

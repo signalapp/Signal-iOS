@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 import SignalCoreKit
 
-public protocol SDSModel: TSYapDatabaseObject, SDSIndexableModel, SDSIdentifiableModel {
+public protocol SDSModel: TSYapDatabaseObject, SDSIdentifiableModel {
     var sdsTableName: String { get }
 
     func asRecord() throws -> SDSRecord
@@ -48,16 +48,8 @@ public extension SDSModel {
         switch saveMode {
         case .insert:
             anyDidInsert(with: transaction)
-
-            if type(of: self).ftsIndexMode != .never {
-                FullTextSearchFinder.modelWasInserted(model: self, transaction: transaction)
-            }
         case .update:
             anyDidUpdate(with: transaction)
-
-            if type(of: self).ftsIndexMode == .always {
-                FullTextSearchFinder.modelWasUpdated(model: self, transaction: transaction)
-            }
         }
     }
 
@@ -82,10 +74,6 @@ public extension SDSModel {
         }
 
         anyDidRemove(with: transaction)
-
-        if type(of: self).ftsIndexMode != .never {
-            FullTextSearchFinder.modelWasRemoved(model: self, transaction: transaction)
-        }
     }
 }
 

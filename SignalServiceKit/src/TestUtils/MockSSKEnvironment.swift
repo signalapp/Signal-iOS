@@ -95,7 +95,23 @@ public class MockSSKEnvironment: SSKEnvironment {
         let storageServiceManager = FakeStorageServiceManager()
         let syncManager = OWSMockSyncManager()
         let udManager = OWSUDManagerImpl()
-        let usernameLookupManager = UsernameLookupManagerImpl()
+        let threadStore = ThreadStoreImpl()
+        let userProfileStore = UserProfileStoreImpl()
+        let signalAccountStore = SignalAccountStoreImpl()
+        let usernameLookupRecordStore = UsernameLookupRecordStoreImpl()
+        let searchableNameIndexer = SearchableNameIndexerImpl(
+            threadStore: threadStore,
+            signalAccountStore: signalAccountStore,
+            userProfileStore: userProfileStore,
+            signalRecipientStore: recipientDatabaseTable,
+            usernameLookupRecordStore: usernameLookupRecordStore,
+            dbForReadTx: { SDSDB.shimOnlyBridge($0).unwrapGrdbRead.database },
+            dbForWriteTx: { SDSDB.shimOnlyBridge($0).unwrapGrdbWrite.database }
+        )
+        let usernameLookupManager = UsernameLookupManagerImpl(
+            searchableNameIndexer: searchableNameIndexer,
+            usernameLookupRecordStore: usernameLookupRecordStore
+        )
         let versionedProfiles = MockVersionedProfiles()
         let webSocketFactory = WebSocketFactoryMock()
 
@@ -126,14 +142,17 @@ public class MockSSKEnvironment: SSKEnvironment {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
+            searchableNameIndexer: searchableNameIndexer,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
+            threadStore: threadStore,
             udManager: udManager,
             usernameLookupManager: usernameLookupManager,
+            userProfileStore: userProfileStore,
             versionedProfiles: versionedProfiles,
             websocketFactory: webSocketFactory
         )

@@ -250,6 +250,7 @@ public class GRDBSchemaMigrator: NSObject {
         case removeRedundantPhoneNumbers2
         case scheduleFullIntersection
         case addUnreadToCallRecord
+        case addSearchableName
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -306,10 +307,11 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_removeLinkedDeviceSystemContacts
         case dataMigration_reindexSignalAccounts
         case dataMigration_ensureLocalDeviceId
+        case dataMigration_indexSearchableNames
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 67
+    public static let grdbSchemaVersionLatest: UInt = 68
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -333,7 +335,8 @@ public class GRDBSchemaMigrator: NSObject {
 
             // This isn't enabled by schema.sql, so we need to explicitly turn it on
             // for new databases.
-            try enableFts5SecureDelete(db: db)
+            try enableFts5SecureDelete(for: "indexable_text_fts", db: db)
+            try enableFts5SecureDelete(for: "SearchableNameFTS", db: db)
 
             // After importing the initial schema, we want to skip the remaining
             // incremental migrations, so we manually mark them as complete.
@@ -2468,7 +2471,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.enableFts5SecureDelete) { tx in
-            try enableFts5SecureDelete(db: tx.database)
+            try enableFts5SecureDelete(for: "indexable_text_fts", db: tx.database)
             return .success(())
         }
 
@@ -2659,6 +2662,50 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.addSearchableName) { tx in
+            try tx.database.execute(
+                sql: """
+                DELETE FROM "indexable_text" WHERE "collection" IN (
+                    'SignalAccount',
+                    'SignalRecipient',
+                    'TSGroupMember',
+                    'TSThread'
+                )
+                """
+            )
+
+            // If you change the constant, you need to add a new migration. Simply
+            // changing this one won't work for existing users.
+            assert(SearchableNameIndexerImpl.Constants.databaseTableName == "SearchableName")
+
+            try tx.database.create(table: "SearchableName") { table in
+                table.autoIncrementedPrimaryKey("id").notNull()
+                table.column("threadId", .integer).unique()
+                table.column("signalAccountId", .integer).unique()
+                table.column("userProfileId", .integer).unique()
+                table.column("signalRecipientId", .integer).unique()
+                table.column("usernameLookupRecordId", .blob).unique()
+                table.column("value", .text).notNull()
+
+                // Create foreign keys.
+                table.foreignKey(["threadId"], references: "model_TSThread", columns: ["id"], onDelete: .cascade, onUpdate: .cascade)
+                table.foreignKey(["signalAccountId"], references: "model_SignalAccount", columns: ["id"], onDelete: .cascade, onUpdate: .cascade)
+                table.foreignKey(["userProfileId"], references: "model_OWSUserProfile", columns: ["id"], onDelete: .cascade, onUpdate: .cascade)
+                table.foreignKey(["signalRecipientId"], references: "model_SignalRecipient", columns: ["id"], onDelete: .cascade, onUpdate: .cascade)
+                table.foreignKey(["usernameLookupRecordId"], references: "UsernameLookupRecord", columns: ["aci"], onDelete: .cascade, onUpdate: .cascade)
+            }
+
+            try tx.database.create(virtualTable: "SearchableNameFTS", using: FTS5()) { table in
+                table.tokenizer = FTS5TokenizerDescriptor.unicode61()
+                table.synchronize(withTable: "SearchableName")
+                table.column("value")
+            }
+
+            try enableFts5SecureDelete(for: "SearchableNameFTS", db: tx.database)
+
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -2714,16 +2761,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_indexSignalRecipients) { transaction in
-            // This migration was initially created as a schema migration instead of a data migration.
-            // If we already ran it there, we need to skip it here since we're doing inserts below that
-            // cannot be repeated.
-            guard !hasRunMigration("indexSignalRecipients", transaction: transaction) else {
-                return .success(())
-            }
-
-            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient, _: UnsafeMutablePointer<ObjCBool>) in
-                GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
-            }
+            // Obsoleted by dataMigration_indexSearchableNames.
             return .success(())
         }
 
@@ -2912,24 +2950,12 @@ public class GRDBSchemaMigrator: NSObject {
                 try autoreleasepool {
                     try thread.groupModel.attemptToMigrateLegacyAvatarDataToDisk()
                     thread.anyUpsert(transaction: transaction.asAnyWrite)
-                    GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: transaction)
                 }
             }
 
-            // There was a broken version of this migration that did not persist the avatar migration. It's now fixed, but for
-            // users who ran it we need to skip the re-index of the group members because we can't perform a second "insert"
-            // query. This is superfluous anyways, so it's safe to skip.
-            guard !hasRunMigration("dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData", transaction: transaction) else {
-                return .success(())
-            }
+            // We previously re-indexed threads and group members here, but those
+            // migrations are obsoleted by dataMigration_indexSearchableNames.
 
-            let memberCursor = try TSGroupMember.fetchCursor(transaction.database)
-
-            while let member = try memberCursor.next() {
-                autoreleasepool {
-                    GRDBFullTextSearchFinder.modelWasInsertedOrUpdated(model: member, transaction: transaction)
-                }
-            }
             return .success(())
         }
 
@@ -2961,13 +2987,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_indexMultipleNameComponentsForReceipients) { transaction in
-            // We updated how we generate text for the search index for a
-            // recipient, and consequently should touch all recipients so that
-            // we regenerate the index text.
-
-            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient, _: UnsafeMutablePointer<ObjCBool>) in
-                GRDBFullTextSearchFinder.modelWasUpdated(model: signalRecipient, transaction: transaction)
-            }
+            // Obsoleted by dataMigration_indexSearchableNames.
             return .success(())
         }
 
@@ -3007,9 +3027,9 @@ public class GRDBSchemaMigrator: NSObject {
             }
 
             let indexUpdateSql = """
-                DELETE FROM \(GRDBFullTextSearchFinder.contentTableName)
-                WHERE \(GRDBFullTextSearchFinder.uniqueIdColumn) IN (\(uniqueIds.map { "\"\($0)\"" }.joined(separator: ", ")))
-                AND \(GRDBFullTextSearchFinder.collectionColumn) = "\(TSInteraction.collection())"
+                DELETE FROM \(FullTextSearchIndexer.contentTableName)
+                WHERE \(FullTextSearchIndexer.uniqueIdColumn) IN (\(uniqueIds.map { "\"\($0)\"" }.joined(separator: ", ")))
+                AND \(FullTextSearchIndexer.collectionColumn) = "\(TSInteraction.collection())"
             """
             try transaction.database.execute(sql: indexUpdateSql)
             return .success(())
@@ -3025,28 +3045,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_indexPrivateStoryThreadNames) { transaction in
-            let sql = "SELECT * FROM model_TSThread WHERE recordType IS \(SDSRecordType.privateStoryThread.rawValue)"
-            let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
-            while let thread = try cursor.next() {
-                guard let storyThread = thread as? TSPrivateStoryThread else {
-                    continue
-                }
-                let uniqueId = thread.uniqueId
-                let collection = TSPrivateStoryThread.collection()
-                let ftsContent = FullTextSearchFinder.normalize(text: storyThread.name)
-
-                let sql = """
-                INSERT OR REPLACE INTO indexable_text
-                (collection, uniqueId, ftsIndexableContent)
-                VALUES
-                (?, ?, ?)
-                """
-
-                try transaction.database.execute(
-                    sql: sql,
-                    arguments: [collection, uniqueId, ftsContent]
-                )
-            }
+            // Obsoleted by dataMigration_indexSearchableNames.
             return .success(())
         }
 
@@ -3100,36 +3099,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_reindexSignalAccounts) { transaction in
-            // Clear the FTS Index for SignalAccounts
-            let indexDeletionSql = """
-                DELETE FROM \(GRDBFullTextSearchFinder.contentTableName)
-                WHERE \(GRDBFullTextSearchFinder.collectionColumn) = ?
-            """
-            try transaction.database.execute(
-                sql: indexDeletionSql,
-                arguments: [SignalAccount.collection()]
-            )
-
-            // Rebuild the FTS Index for SignalAccounts
-            let collection = SignalAccount.collection()
-            SignalAccount.anyEnumerate(transaction: transaction.asAnyWrite) { account, _ in
-                let uniqueId = account.uniqueId
-                let ftsIndexableContent = AnySearchIndexer.indexContent(object: account, transaction: transaction.asAnyRead) ?? ""
-                do {
-                    let indexInsertionSql = """
-                    INSERT INTO indexable_text
-                    (collection, uniqueId, ftsIndexableContent)
-                    VALUES
-                    (?, ?, ?)
-                    """
-                    try transaction.database.execute(
-                        sql: indexInsertionSql,
-                        arguments: [collection, uniqueId, ftsIndexableContent]
-                    )
-                } catch {
-                    owsFail("Error: \(error)")
-                }
-            }
+            // Obsoleted by dataMigration_indexSearchableNames.
             return .success(())
         }
 
@@ -3168,6 +3138,17 @@ public class GRDBSchemaMigrator: NSObject {
                     )
                 }
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.dataMigration_indexSearchableNames) { tx in
+            // Drop everything in case somebody adds an unrelated migration that
+            // populates this table. (This has happened in the past.)
+            try tx.database.execute(sql: """
+            DELETE FROM "\(SearchableNameIndexerImpl.Constants.databaseTableName)"
+            """)
+            let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+            searchableNameIndexer.indexEverything(tx: tx.asAnyWrite.asV2Write)
             return .success(())
         }
 
@@ -3336,9 +3317,9 @@ public class GRDBSchemaMigrator: NSObject {
         )
     }
 
-    private static func enableFts5SecureDelete(db: Database) throws {
+    private static func enableFts5SecureDelete(for tableName: StaticString, db: Database) throws {
         try db.execute(sql: """
-            INSERT INTO "indexable_text_fts" ("indexable_text_fts", "rank") VALUES ('secure-delete', 1)
+            INSERT INTO "\(tableName)" ("\(tableName)", "rank") VALUES ('secure-delete', 1)
         """)
     }
 

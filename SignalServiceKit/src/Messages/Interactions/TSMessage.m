@@ -391,6 +391,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self ensurePerConversationExpirationWithTransaction:transaction];
 
     [self touchStoryMessageIfNecessaryWithReplyCountIncrement:ReplyCountIncrementNewReplyAdded transaction:transaction];
+
+    [self _anyDidInsertWithTx:transaction];
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -411,6 +413,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self ensurePerConversationExpirationWithTransaction:transaction];
 
     [self touchStoryMessageIfNecessaryWithReplyCountIncrement:ReplyCountIncrementNoIncrement transaction:transaction];
+
+    [self _anyDidUpdateWithTx:transaction];
 }
 
 - (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -467,6 +471,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self removeAllMentionsWithTransaction:transaction];
 
     [self touchStoryMessageIfNecessaryWithReplyCountIncrement:ReplyCountIncrementReplyDeleted transaction:transaction];
+
+    [self _anyDidRemoveWithTx:transaction];
 }
 
 - (void)removeAllMentionsWithTransaction:(SDSAnyWriteTransaction *)transaction

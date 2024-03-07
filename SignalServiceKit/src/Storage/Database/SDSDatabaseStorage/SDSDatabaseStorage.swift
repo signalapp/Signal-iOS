@@ -295,9 +295,9 @@ public class SDSDatabaseStorage: NSObject {
                     owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
             }
-            if shouldReindex {
-                GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
-            }
+        }
+        if shouldReindex, let message = interaction as? TSMessage {
+            FullTextSearchIndexer.update(message, tx: transaction)
         }
     }
 
@@ -314,9 +314,10 @@ public class SDSDatabaseStorage: NSObject {
                     Logger.warn("databaseChangeObserver was unexpectedly nil")
                 }
             }
-            if shouldReindex {
-                GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
-            }
+        }
+        if shouldReindex {
+            let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+            searchableNameIndexer.update(thread, tx: transaction.asV2Write)
         }
     }
 

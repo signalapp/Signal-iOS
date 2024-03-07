@@ -92,7 +92,23 @@ public class AppSetup {
         let udManager = OWSUDManagerImpl()
         let versionedProfiles = VersionedProfilesImpl()
 
-        let usernameLookupManager = UsernameLookupManagerImpl()
+        let signalAccountStore = SignalAccountStoreImpl()
+        let threadStore = ThreadStoreImpl()
+        let userProfileStore = UserProfileStoreImpl()
+        let usernameLookupRecordStore = UsernameLookupRecordStoreImpl()
+        let searchableNameIndexer = SearchableNameIndexerImpl(
+            threadStore: threadStore,
+            signalAccountStore: signalAccountStore,
+            userProfileStore: userProfileStore,
+            signalRecipientStore: recipientDatabaseTable,
+            usernameLookupRecordStore: usernameLookupRecordStore,
+            dbForReadTx: { SDSDB.shimOnlyBridge($0).unwrapGrdbRead.database },
+            dbForWriteTx: { SDSDB.shimOnlyBridge($0).unwrapGrdbWrite.database }
+        )
+        let usernameLookupManager = UsernameLookupManagerImpl(
+            searchableNameIndexer: searchableNameIndexer,
+            usernameLookupRecordStore: usernameLookupRecordStore
+        )
         let contactManager = OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
             usernameLookupManager: usernameLookupManager
         ))
@@ -124,14 +140,17 @@ public class AppSetup {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
+            searchableNameIndexer: searchableNameIndexer,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
+            threadStore: threadStore,
             udManager: udManager,
             usernameLookupManager: usernameLookupManager,
+            userProfileStore: userProfileStore,
             versionedProfiles: versionedProfiles,
             websocketFactory: webSocketFactory
         )

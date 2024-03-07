@@ -70,7 +70,7 @@ import GRDB
 /// work around these issues and ensure subclasses are correctly initialized.
 ///
 /// [0]: https://github.com/apple/swift/issues/61946
-public protocol SDSCodableModel: Encodable, FetchableRecord, PersistableRecord, SDSIndexableModel, SDSIdentifiableModel {
+public protocol SDSCodableModel: Encodable, FetchableRecord, PersistableRecord, SDSIdentifiableModel {
     associatedtype CodingKeys: RawRepresentable<String>, CodingKey, ColumnExpression, CaseIterable
     typealias Columns = CodingKeys
     typealias RowId = Int64
@@ -93,7 +93,6 @@ public protocol SDSCodableModel: Encodable, FetchableRecord, PersistableRecord, 
     var uniqueId: String { get }
 
     var shouldBeSaved: Bool { get }
-    static var ftsIndexMode: TSFTSIndexMode { get }
 
     func anyWillInsert(transaction: SDSAnyWriteTransaction)
     func anyDidInsert(transaction: SDSAnyWriteTransaction)
@@ -112,7 +111,6 @@ public extension SDSCodableModel {
     static func collection() -> String { String(describing: self) }
 
     var shouldBeSaved: Bool { true }
-    static var ftsIndexMode: TSFTSIndexMode { .never }
 
     var transactionFinalizationKey: String { "\(Self.collection()).\(uniqueId)" }
 
@@ -228,16 +226,6 @@ public extension SDSCodableModel where Self: AnyObject {
 }
 
 public extension SDSCodableModel {
-    /// Traverse all records as ``SDSIndexableModel``s, in no particular order.
-    static func anyEnumerateIndexable(
-        transaction: SDSAnyReadTransaction,
-        block: (SDSIndexableModel) -> Void
-    ) {
-        anyEnumerate(transaction: transaction, batchingPreference: .unbatched) { model, _ in
-            block(model)
-        }
-    }
-
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
     static func anyEnumerate(

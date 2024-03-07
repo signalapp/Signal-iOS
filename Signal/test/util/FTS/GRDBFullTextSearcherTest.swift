@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import Contacts
+import LibSignalClient
+import XCTest
+
 @testable import Signal
 @testable import SignalMessaging
 @testable import SignalServiceKit
@@ -22,40 +24,19 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
     // MARK: - Test Life Cycle
 
-    private var bobRecipient: SignalServiceAddress!
-    private var aliceRecipient: SignalServiceAddress!
+    private var bobRecipient: SignalRecipient!
+    private var aliceRecipient: SignalRecipient!
 
     override func setUp() {
         super.setUp()
 
         let localIdentifiers: LocalIdentifiers = .forUnitTests
 
-        // We need to create new instances of SignalServiceAddress
-        // for each test because we're using a new
-        // SignalServiceAddressCache for each test and we need
-        // consistent backingHashValue.
-        let alicePhoneNumber = "+12345678900"
-        aliceRecipient = SignalServiceAddress(phoneNumber: alicePhoneNumber)
-        let bobPhoneNumber = "+49030183000"
-        bobRecipient = SignalServiceAddress(phoneNumber: bobPhoneNumber)
-
-        // Replace this singleton.
-        let fakeContactManager = FakeContactsManager()
-        fakeContactManager.mockSignalAccounts = [
-            alicePhoneNumber: SignalAccount(
-                contact: Contact(phoneNumber: alicePhoneNumber, phoneNumberLabel: "", givenName: "Alice", familyName: nil, nickname: nil, fullName: "Alice"),
-                address: aliceRecipient
-            ),
-            bobPhoneNumber: SignalAccount(
-                contact: Contact(phoneNumber: bobPhoneNumber, phoneNumberLabel: "", givenName: "Bob", familyName: "Barker", nickname: nil, fullName: "Bob Barker"),
-                address: bobRecipient
-            ),
-        ]
-        SSKEnvironment.shared.setContactManagerForUnitTests(fakeContactManager)
+        SSKEnvironment.shared.setContactManagerForUnitTests(OWSContactsManager(
+            swiftValues: OWSContactsManagerSwiftValues(usernameLookupManager: DependenciesBridge.shared.usernameLookupManager)
+        ))
 
         // ensure local client has necessary "registered" state
-        let localE164Identifier = "+13235551234"
-        let localUUID = UUID()
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: localIdentifiers,
@@ -63,30 +44,87 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             )
         }
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager
+
         self.write { transaction in
-            let bookClubGroupThread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
-                                                                            name: "Book Club",
-                                                                            transaction: transaction)
-            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread,
-                                                  forChatList: true,
-                                                  transaction: transaction)
+            let recipientManager = DependenciesBridge.shared.recipientManager
 
-            let snackClubGroupThread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient],
-                                                                             name: "Snack Club",
-                                                                             transaction: transaction)
-            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread,
-                                                   forChatList: true,
-                                                   transaction: transaction)
+            let aliceAci = Aci.randomForTesting()
+            let aliceProfile = makeUserProfile(for: aliceAci, givenName: "Alice", familyName: "Aliceson")
+            aliceProfile.anyInsert(transaction: transaction)
+            let alicePni = Pni.randomForTesting()
+            let alicePhoneNumber = "+12345550100"
+            self.aliceRecipient = DependenciesBridge.shared.recipientMerger.applyMergeFromContactDiscovery(
+                localIdentifiers: localIdentifiers,
+                phoneNumber: E164(alicePhoneNumber)!,
+                pni: alicePni,
+                aci: aliceAci,
+                tx: transaction.asV2Write
+            )
+            recipientManager.markAsRegisteredAndSave(
+                self.aliceRecipient!,
+                shouldUpdateStorageService: false,
+                tx: transaction.asV2Write
+            )
 
-            let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.aliceRecipient, transaction: transaction)
-            self.aliceThread = ThreadViewModel(thread: aliceContactThread,
-                                               forChatList: true,
-                                               transaction: transaction)
+            let bobAci = Aci.randomForTesting()
+            let bobProfile = makeUserProfile(for: bobAci, givenName: "Bob", familyName: "Barker")
+            bobProfile.anyInsert(transaction: transaction)
+            let bobPni = Pni.randomForTesting()
+            let bobPhoneNumber = "+4915123456789"
+            self.bobRecipient = DependenciesBridge.shared.recipientMerger.applyMergeFromContactDiscovery(
+                localIdentifiers: localIdentifiers,
+                phoneNumber: E164(bobPhoneNumber)!,
+                pni: bobPni,
+                aci: bobAci,
+                tx: transaction.asV2Write
+            )
+            recipientManager.markAsRegisteredAndSave(
+                self.bobRecipient!,
+                shouldUpdateStorageService: false,
+                tx: transaction.asV2Write
+            )
 
-            let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.bobRecipient, transaction: transaction)
-            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread,
-                                                  forChatList: true,
-                                                  transaction: transaction)
+            profileManager.fakeUserProfiles = [
+                self.aliceRecipient!.address: aliceProfile,
+                self.bobRecipient!.address: bobProfile,
+            ]
+
+            let bookClubGroupThread = try! GroupManager.createGroupForTests(
+                members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                name: "Book Club",
+                transaction: transaction
+            )
+            self.bookClubThreadViewModel = ThreadViewModel(
+                thread: bookClubGroupThread,
+                forChatList: true,
+                transaction: transaction
+            )
+
+            let snackClubGroupThread = try! GroupManager.createGroupForTests(
+                members: [self.aliceRecipient.address],
+                name: "Snack Club",
+                transaction: transaction
+            )
+            self.snackClubThreadViewModel = ThreadViewModel(
+                thread: snackClubGroupThread,
+                forChatList: true,
+                transaction: transaction
+            )
+
+            let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.aliceRecipient.address, transaction: transaction)
+            self.aliceThreadViewModel = ThreadViewModel(
+                thread: aliceContactThread,
+                forChatList: true,
+                transaction: transaction
+            )
+
+            let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.bobRecipient.address, transaction: transaction)
+            self.bobEmptyThreadViewModel = ThreadViewModel(
+                thread: bobContactThread,
+                forChatList: true,
+                transaction: transaction
+            )
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
             helloAlice.anyInsert(transaction: transaction)
@@ -100,21 +138,41 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             let goodbyeBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Goodbye Book Club", attachmentId: nil)
             goodbyeBookClub.anyInsert(transaction: transaction)
 
-            let bobsPhoneNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My phone number is: 321-321-4321", attachmentId: nil)
+            let bobsPhoneNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My phone number is: 234-555-0100", attachmentId: nil)
             bobsPhoneNumber.anyInsert(transaction: transaction)
 
-            let bobsFaxNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My fax is: 222-333-4444", attachmentId: nil)
+            let bobsFaxNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My fax is: 234-555-0101", attachmentId: nil)
             bobsFaxNumber.anyInsert(transaction: transaction)
         }
     }
 
+    private func makeUserProfile(for aci: Aci, givenName: String, familyName: String) -> OWSUserProfile {
+        return OWSUserProfile(
+            id: nil,
+            uniqueId: UUID().uuidString,
+            serviceIdString: aci.serviceIdUppercaseString,
+            phoneNumber: nil,
+            avatarFileName: nil,
+            avatarUrlPath: nil,
+            profileKey: nil,
+            givenName: givenName,
+            familyName: familyName,
+            bio: nil,
+            bioEmoji: nil,
+            badges: [],
+            lastFetchDate: nil,
+            lastMessagingDate: nil,
+            isPhoneNumberShared: true
+        )
+    }
+
     // MARK: - Fixtures
 
-    var bookClubThread: ThreadViewModel!
-    var snackClubThread: ThreadViewModel!
+    var bookClubThreadViewModel: ThreadViewModel!
+    var snackClubThreadViewModel: ThreadViewModel!
 
-    var aliceThread: ThreadViewModel!
-    var bobEmptyThread: ThreadViewModel!
+    var aliceThreadViewModel: ThreadViewModel!
+    var bobEmptyThreadViewModel: ThreadViewModel!
 
     // MARK: Tests
 
@@ -130,169 +188,166 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     }
 
     func testSearchByGroupName() {
-        var threads: [ThreadViewModel] = []
+        var threadViewModels: [ThreadViewModel] = []
 
         // No Match
-        threads = searchConversations(searchText: "asdasdasd")
-        XCTAssert(threads.isEmpty)
+        threadViewModels = searchConversations(searchText: "asdasdasd")
+        XCTAssert(threadViewModels.isEmpty)
 
         // Partial Match
-        threads = searchConversations(searchText: "Book")
-        XCTAssertEqual(1, threads.count)
-        AssertEqualThreadLists([bookClubThread], threads)
+        threadViewModels = searchConversations(searchText: "Book")
+        XCTAssertEqual(1, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "Snack")
-        XCTAssertEqual(1, threads.count)
-        AssertEqualThreadLists([snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "Snack")
+        XCTAssertEqual(1, threadViewModels.count)
+        AssertEqualThreadLists([snackClubThreadViewModel], threadViewModels)
 
         // Multiple Partial Matches
-        threads = searchConversations(searchText: "Club")
-        XCTAssertEqual(2, threads.count)
-        AssertEqualThreadLists([bookClubThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "Club")
+        XCTAssertEqual(2, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
         // Match Name Exactly
-        threads = searchConversations(searchText: "Book Club")
-        XCTAssertEqual(1, threads.count)
-        AssertEqualThreadLists([bookClubThread], threads)
+        threadViewModels = searchConversations(searchText: "Book Club")
+        XCTAssertEqual(1, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel], threadViewModels)
     }
 
     func testSearchContactByNumber() {
-        var threads: [ThreadViewModel] = []
+        var threadViewModels: [ThreadViewModel] = []
 
         // No match
-        threads = searchConversations(searchText: "+5551239999")
-        XCTAssertEqual(0, threads.count)
+        threadViewModels = searchConversations(searchText: "+16505550150")
+        XCTAssertEqual(0, threadViewModels.count)
 
         // Exact match
-        threads = searchConversations(searchText: aliceRecipient.phoneNumber!)
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: aliceRecipient.address.phoneNumber!)
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
         // Partial match
-        threads = searchConversations(searchText: "+123456")
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "+123455")
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
         // Prefixes
-        threads = searchConversations(searchText: "12345678900")
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "12345550100")
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "49")
-        XCTAssertEqual(1, threads.count)
-        AssertEqualThreadLists([bookClubThread], threads)
+        threadViewModels = searchConversations(searchText: "49")
+        XCTAssertEqual(1, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "1-234-56")
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "1-234-55")
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "123456")
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "123455")
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "1.234.56")
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "1.234.55")
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "1 234 56")
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
-    }
+        threadViewModels = searchConversations(searchText: "1 234 55")
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
-    func testSearchContactByNumberWithoutCountryCode() {
-        var threads: [ThreadViewModel] = []
         // Phone Number formatting should be forgiving
-        threads = searchConversations(searchText: "234.56")
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "234.55")
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "234 56")
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "234 55")
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
     }
 
     func testSearchConversationByContactByName() {
-        var threads: [ThreadViewModel] = []
+        var threadViewModels: [ThreadViewModel] = []
 
-        threads = searchConversations(searchText: "Alice")
-        XCTAssertEqual(3, threads.count)
-        AssertEqualThreadLists([bookClubThread, aliceThread, snackClubThread], threads)
+        threadViewModels = searchConversations(searchText: "Alice")
+        XCTAssertEqual(3, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel, aliceThreadViewModel, snackClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "Bob")
-        XCTAssertEqual(1, threads.count)
-        AssertEqualThreadLists([bookClubThread], threads)
+        threadViewModels = searchConversations(searchText: "Bob")
+        XCTAssertEqual(1, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "Barker")
-        XCTAssertEqual(1, threads.count)
-        AssertEqualThreadLists([bookClubThread], threads)
+        threadViewModels = searchConversations(searchText: "Barker")
+        XCTAssertEqual(1, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel], threadViewModels)
 
-        threads = searchConversations(searchText: "Bob B")
-        XCTAssertEqual(1, threads.count)
-        AssertEqualThreadLists([bookClubThread], threads)
+        threadViewModels = searchConversations(searchText: "Bob B")
+        XCTAssertEqual(1, threadViewModels.count)
+        AssertEqualThreadLists([bookClubThreadViewModel], threadViewModels)
     }
 
     func testSearchMessageByBodyContent() {
         var resultSet: HomeScreenSearchResultSet = .empty
 
         resultSet = getResultSet(searchText: "Hello Alice")
-        XCTAssertEqual(1, resultSet.messages.count)
-        AssertEqualThreadLists([aliceThread], resultSet.messages.map { $0.thread })
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        AssertEqualThreadLists([aliceThreadViewModel], resultSet.messageResults.map { $0.threadViewModel })
 
         resultSet = getResultSet(searchText: "Hello")
-        XCTAssertEqual(2, resultSet.messages.count)
-        AssertEqualThreadLists([aliceThread, bookClubThread], resultSet.messages.map { $0.thread })
+        XCTAssertEqual(2, resultSet.messageResults.count)
+        AssertEqualThreadLists([aliceThreadViewModel, bookClubThreadViewModel], resultSet.messageResults.map { $0.threadViewModel })
     }
 
     func testSearchEdgeCases() {
         var resultSet: HomeScreenSearchResultSet = .empty
 
         resultSet = getResultSet(searchText: "Hello Alice")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messageResults))
 
         resultSet = getResultSet(searchText: "hello alice")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messageResults))
 
         resultSet = getResultSet(searchText: "Hel")
-        XCTAssertEqual(2, resultSet.messages.count)
-        XCTAssertEqual(["Hello Alice", "Hello Book Club"], bodies(forMessageResults: resultSet.messages))
+        XCTAssertEqual(2, resultSet.messageResults.count)
+        XCTAssertEqual(["Hello Alice", "Hello Book Club"], bodies(forMessageResults: resultSet.messageResults))
 
         resultSet = getResultSet(searchText: "Hel Ali")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messageResults))
 
         resultSet = getResultSet(searchText: "Hel Ali Alic")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messageResults))
 
         resultSet = getResultSet(searchText: "Ali Hel")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messageResults))
 
         resultSet = getResultSet(searchText: "CLU")
-        XCTAssertEqual(2, resultSet.messages.count)
-        XCTAssertEqual(["Goodbye Book Club", "Hello Book Club"], bodies(forMessageResults: resultSet.messages))
+        XCTAssertEqual(2, resultSet.messageResults.count)
+        XCTAssertEqual(["Goodbye Book Club", "Hello Book Club"], bodies(forMessageResults: resultSet.messageResults))
 
         resultSet = getResultSet(searchText: "hello !@##!@#!$^@!@#! alice")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messageResults))
 
-        resultSet = getResultSet(searchText: "3213 phone")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["My phone number is: 321-321-4321"], bodies(forMessageResults: resultSet.messages))
+        resultSet = getResultSet(searchText: "2345 phone")
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["My phone number is: 234-555-0100"], bodies(forMessageResults: resultSet.messageResults))
 
-        resultSet = getResultSet(searchText: "PHO 3213")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["My phone number is: 321-321-4321"], bodies(forMessageResults: resultSet.messages))
+        resultSet = getResultSet(searchText: "PHO 2345")
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["My phone number is: 234-555-0100"], bodies(forMessageResults: resultSet.messageResults))
 
         resultSet = getResultSet(searchText: "fax")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["My fax is: 222-333-4444"], bodies(forMessageResults: resultSet.messages))
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["My fax is: 234-555-0101"], bodies(forMessageResults: resultSet.messageResults))
 
-        resultSet = getResultSet(searchText: "fax 2223")
-        XCTAssertEqual(1, resultSet.messages.count)
-        XCTAssertEqual(["My fax is: 222-333-4444"], bodies(forMessageResults: resultSet.messages))
+        resultSet = getResultSet(searchText: "fax 2345")
+        XCTAssertEqual(1, resultSet.messageResults.count)
+        XCTAssertEqual(["My fax is: 234-555-0101"], bodies(forMessageResults: resultSet.messageResults))
     }
 
     // MARK: - More Tests
@@ -301,63 +356,67 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         var thread: TSGroupThread! = nil
         self.write { transaction in
-            thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
-                                                           name: "Lifecycle",
-                                                           transaction: transaction)
+            thread = try! GroupManager.createGroupForTests(
+                members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                name: "Lifecycle",
+                transaction: transaction
+            )
         }
 
         let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
         let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.", attachmentId: nil)
 
-        XCTAssertEqual(0, getResultSet(searchText: "GLORY").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "HOPE").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DESPAIR").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messages.count)
+        XCTAssertEqual(0, getResultSet(searchText: "GLORY").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "HOPE").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "DESPAIR").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messageResults.count)
 
         self.write { transaction in
             message1.anyInsert(transaction: transaction)
             message2.anyInsert(transaction: transaction)
         }
 
-        XCTAssertEqual(1, getResultSet(searchText: "GLORY").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "HOPE").messages.count)
-        XCTAssertEqual(2, getResultSet(searchText: "DESPAIR").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messages.count)
+        XCTAssertEqual(1, getResultSet(searchText: "GLORY").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "HOPE").messageResults.count)
+        XCTAssertEqual(2, getResultSet(searchText: "DESPAIR").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messageResults.count)
 
         self.write { transaction in
             message1.update(withMessageBody: "This world contains glory and defeat.", transaction: transaction)
         }
 
-        XCTAssertEqual(1, getResultSet(searchText: "GLORY").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "HOPE").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "DESPAIR").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "DEFEAT").messages.count)
+        XCTAssertEqual(1, getResultSet(searchText: "GLORY").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "HOPE").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "DESPAIR").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "DEFEAT").messageResults.count)
 
         self.write { transaction in
             message1.anyRemove(transaction: transaction)
         }
 
-        XCTAssertEqual(0, getResultSet(searchText: "GLORY").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "HOPE").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "DESPAIR").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messages.count)
+        XCTAssertEqual(0, getResultSet(searchText: "GLORY").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "HOPE").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "DESPAIR").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messageResults.count)
 
         self.write { transaction in
             message2.anyRemove(transaction: transaction)
         }
 
-        XCTAssertEqual(0, getResultSet(searchText: "GLORY").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "HOPE").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DESPAIR").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messages.count)
+        XCTAssertEqual(0, getResultSet(searchText: "GLORY").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "HOPE").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "DESPAIR").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messageResults.count)
     }
 
     func testModelLifecycle2() {
 
         self.write { transaction in
-            let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
-                                                               name: "Lifecycle",
-                                                               transaction: transaction)
+            let thread = try! GroupManager.createGroupForTests(
+                members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                name: "Lifecycle",
+                transaction: transaction
+            )
 
             let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
             let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.", attachmentId: nil)
@@ -366,44 +425,46 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             message2.anyInsert(transaction: transaction)
         }
 
-        XCTAssertEqual(1, getResultSet(searchText: "GLORY").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "HOPE").messages.count)
-        XCTAssertEqual(2, getResultSet(searchText: "DESPAIR").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messages.count)
+        XCTAssertEqual(1, getResultSet(searchText: "GLORY").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "HOPE").messageResults.count)
+        XCTAssertEqual(2, getResultSet(searchText: "DESPAIR").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messageResults.count)
 
         self.write { transaction in
-            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
+            TSInteraction.anyRemoveAllWithInstantiation(transaction: transaction)
         }
 
-        XCTAssertEqual(0, getResultSet(searchText: "GLORY").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "HOPE").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DESPAIR").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messages.count)
+        XCTAssertEqual(0, getResultSet(searchText: "GLORY").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "HOPE").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "DESPAIR").messageResults.count)
+        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messageResults.count)
     }
 
     func testDiacritics() {
 
         self.write { transaction in
-            let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
-                                                               name: "Lifecycle",
-                                                               transaction: transaction)
+            let thread = try! GroupManager.createGroupForTests(
+                members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                name: "Lifecycle",
+                transaction: transaction
+            )
 
             TSOutgoingMessage(in: thread, messageBody: "NOËL and SØRINA and ADRIÁN and FRANÇOIS and NUÑEZ and Björk.", attachmentId: nil).anyInsert(transaction: transaction)
         }
 
-        XCTAssertEqual(1, getResultSet(searchText: "NOËL").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "noel").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "SØRINA").messages.count)
+        XCTAssertEqual(1, getResultSet(searchText: "NOËL").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "noel").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "SØRINA").messageResults.count)
         // I guess Ø isn't a diacritical mark but a separate letter.
-        XCTAssertEqual(0, getResultSet(searchText: "sorina").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "ADRIÁN").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "adrian").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "FRANÇOIS").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "francois").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "NUÑEZ").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "nunez").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "Björk").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "Bjork").messages.count)
+        XCTAssertEqual(0, getResultSet(searchText: "sorina").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "ADRIÁN").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "adrian").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "FRANÇOIS").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "francois").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "NUÑEZ").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "nunez").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "Björk").messageResults.count)
+        XCTAssertEqual(1, getResultSet(searchText: "Bjork").messageResults.count)
     }
 
     private func AssertValidResultSet(query: String, expectedResultCount: Int, file: StaticString = #file, line: UInt = #line) {
@@ -411,8 +472,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         let expectedSnippetContent: String = query
 
         let resultSet = getResultSet(searchText: query)
-        XCTAssertEqual(expectedResultCount, resultSet.messages.count, file: file, line: line)
-        for result in resultSet.messages {
+        XCTAssertEqual(expectedResultCount, resultSet.messageResults.count, file: file, line: line)
+        for result in resultSet.messageResults {
             guard let snippet = result.snippet else {
                 XCTFail("Missing snippet.", file: file, line: line)
                 continue
@@ -434,9 +495,11 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         var thread: TSGroupThread! = nil
         self.write { transaction in
-            thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
-                                                           name: "Lifecycle",
-                                                           transaction: transaction)
+            thread = try! GroupManager.createGroupForTests(
+                members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                name: "Lifecycle",
+                transaction: transaction
+            )
         }
 
         let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
@@ -474,9 +537,11 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
             self.write { transaction in
-                let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
-                                                                   name: "Perf",
-                                                                   transaction: transaction)
+                let thread = try! GroupManager.createGroupForTests(
+                    members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                    name: "Perf",
+                    transaction: transaction
+                )
 
                 TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction)
 
@@ -494,11 +559,10 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             self.read { transaction in
                 let getMatchCount = { (searchText: String) -> UInt in
                     var count: UInt = 0
-                    FullTextSearchFinder.enumerateObjects(
-                        searchText: searchText,
-                        collections: [TSMessage.collection()],
+                    FullTextSearchIndexer.search(
+                        for: searchText,
                         maxResults: 500,
-                        transaction: transaction
+                        tx: transaction
                     ) { (match, snippet, _) in
                         Logger.verbose("searchText: \(searchText), match: \(match), snippet: \(snippet)")
                         count += 1
@@ -544,9 +608,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
     private func searchConversations(searchText: String) -> [ThreadViewModel] {
         let results = getResultSet(searchText: searchText)
-        let contactThreads = results.contactThreads.map { $0.thread }
-        let groupThreads = results.groupThreads.map { $0.thread }
-        return contactThreads + groupThreads
+        let contactThreadViewModels = results.contactThreadResults.map { $0.threadViewModel }
+        let groupThreadViewModels = results.groupThreadResults.map { $0.threadViewModel }
+        return contactThreadViewModels + groupThreadViewModels
     }
 
     private func getResultSet(searchText: String) -> HomeScreenSearchResultSet {

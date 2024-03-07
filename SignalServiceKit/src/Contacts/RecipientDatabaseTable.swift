@@ -7,6 +7,7 @@ import Foundation
 import LibSignalClient
 
 public protocol RecipientDatabaseTable {
+    func fetchRecipient(rowId: Int64, tx: DBReadTransaction) -> SignalRecipient?
     func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient?
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient?
 
@@ -55,6 +56,10 @@ extension RecipientDatabaseTable {
 public class RecipientDatabaseTableImpl: RecipientDatabaseTable {
     public init() {}
 
+    public func fetchRecipient(rowId: Int64, tx: DBReadTransaction) -> SignalRecipient? {
+        return SDSCodableModelDatabaseInterfaceImpl().fetchModel(modelType: SignalRecipient.self, rowId: rowId, tx: tx)
+    }
+
     public func fetchRecipient(serviceId: ServiceId, transaction tx: DBReadTransaction) -> SignalRecipient? {
         SignalRecipientFinder().signalRecipientForServiceId(serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
@@ -83,8 +88,12 @@ public class RecipientDatabaseTableImpl: RecipientDatabaseTable {
 #if TESTABLE_BUILD
 
 class MockRecipientDatabaseTable: RecipientDatabaseTable {
-    var nextRowId = 1
-    var recipientTable: [Int: SignalRecipient] = [:]
+    var nextRowId: Int64 = 1
+    var recipientTable: [Int64: SignalRecipient] = [:]
+
+    func fetchRecipient(rowId: Int64, tx: DBReadTransaction) -> SignalRecipient? {
+        return recipientTable[rowId]
+    }
 
     func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
         return recipientTable.values.first(where: { $0.aci == serviceId || $0.pni == serviceId })?.copyRecipient() ?? nil
@@ -114,7 +123,7 @@ class MockRecipientDatabaseTable: RecipientDatabaseTable {
         recipientTable[rowId] = nil
     }
 
-    private func rowId(for signalRecipient: SignalRecipient) -> Int? {
+    private func rowId(for signalRecipient: SignalRecipient) -> Int64? {
         for (rowId, value) in recipientTable {
             if value.uniqueId == signalRecipient.uniqueId {
                 return rowId

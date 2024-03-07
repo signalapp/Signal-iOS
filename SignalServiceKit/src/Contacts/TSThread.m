@@ -52,11 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
     return @"TSThread";
 }
 
-+ (TSFTSIndexMode)FTSIndexMode
-{
-    return TSFTSIndexModeManualUpdates;
-}
-
 - (instancetype)init
 {
     self = [super init];
@@ -179,6 +174,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     if (self.shouldThreadBeVisible && ![SSKPreferences hasSavedThreadWithTransaction:transaction]) {
         [SSKPreferences setHasSavedThread:YES transaction:transaction];
     }
+
+    [self _anyDidInsertWithTx:transaction];
 
     [self.modelReadCaches.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
 }

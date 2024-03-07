@@ -1244,15 +1244,6 @@ extension %s: SDSModel {
     public static var table: SDSTableMetadata {
         %sSerializer.table
     }
-
-    public class func anyEnumerateIndexable(
-        transaction: SDSAnyReadTransaction,
-        block: (SDSIndexableModel) -> Void
-    ) {
-        anyEnumerate(transaction: transaction, batched: false) { model, _ in
-            block(model)
-        }
-    }
 }
 ''' % ( str(clazz.name), record_name, str(clazz.name), )
 
@@ -1726,7 +1717,7 @@ public extension %(class_name)s {
 
         if has_remove_methods:
             swift_body += '''
-    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+    class func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction) {
         // To avoid mutationDuringEnumerationException, we need to remove the
         // instances outside the enumeration.
         let uniqueIds = anyAllUniqueIds(transaction: transaction)
@@ -1739,10 +1730,6 @@ public extension %(class_name)s {
                 }
                 instance.anyRemove(transaction: transaction)
             }
-        }
-
-        if ftsIndexMode != .never {
-            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }
 '''

@@ -199,15 +199,6 @@ extension TSPaymentModel: SDSModel {
     public static var table: SDSTableMetadata {
         TSPaymentModelSerializer.table
     }
-
-    public class func anyEnumerateIndexable(
-        transaction: SDSAnyReadTransaction,
-        block: (SDSIndexableModel) -> Void
-    ) {
-        anyEnumerate(transaction: transaction, batched: false) { model, _ in
-            block(model)
-        }
-    }
 }
 
 // MARK: - DeepCopyable
@@ -616,7 +607,7 @@ public extension TSPaymentModel {
         }
     }
 
-    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+    class func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction) {
         // To avoid mutationDuringEnumerationException, we need to remove the
         // instances outside the enumeration.
         let uniqueIds = anyAllUniqueIds(transaction: transaction)
@@ -629,10 +620,6 @@ public extension TSPaymentModel {
                 }
                 instance.anyRemove(transaction: transaction)
             }
-        }
-
-        if ftsIndexMode != .never {
-            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }
 

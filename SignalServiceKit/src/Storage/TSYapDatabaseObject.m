@@ -87,11 +87,6 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-+ (TSFTSIndexMode)FTSIndexMode
-{
-    return TSFTSIndexModeNever;
-}
-
 #pragma mark - Write Hooks
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction

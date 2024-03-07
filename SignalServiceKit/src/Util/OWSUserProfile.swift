@@ -716,31 +716,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return ProfileValue(encryptedData: try encrypt(profileData: paddedData, profileKey: profileKey))
     }
 
-    // MARK: - Indexing
-
-    /// Reindex associated models.
-    ///
-    /// The profile can affect how accounts, recipients, contact threads, and
-    /// group threads are indexed, so we need to re-index them whenever the
-    /// profile changes.
-    private func reindexAssociatedModels(transaction tx: SDSAnyWriteTransaction) {
-        if let signalAccount = SignalAccountFinder().signalAccount(for: internalAddress, tx: tx) {
-            FullTextSearchFinder.modelWasUpdated(model: signalAccount, transaction: tx)
-        }
-
-        if let signalRecipient = SignalRecipientFinder().signalRecipient(for: internalAddress, tx: tx) {
-            FullTextSearchFinder.modelWasUpdated(model: signalRecipient, transaction: tx)
-        }
-
-        if let contactThread = TSContactThread.getWithContactAddress(internalAddress, transaction: tx) {
-            FullTextSearchFinder.modelWasUpdated(model: contactThread, transaction: tx)
-        }
-
-        TSGroupMember.enumerateGroupMembers(for: internalAddress, transaction: tx) { groupMember, _ in
-            FullTextSearchFinder.modelWasUpdated(model: groupMember, transaction: tx)
-        }
-    }
-
     // MARK: - Fetching & Creating
 
     @objc
@@ -855,13 +830,20 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // MARK: - Database Hooks
 
+    public func didInsert(with rowID: Int64, for column: String?) {
+        self.id = rowID
+    }
+
     public func anyDidInsert(transaction: SDSAnyWriteTransaction) {
-        reindexAssociatedModels(transaction: transaction)
         modelReadCaches.userProfileReadCache.didInsertOrUpdate(userProfile: self, transaction: transaction)
+        let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+        searchableNameIndexer.insert(self, tx: transaction.asV2Write)
     }
 
     public func anyDidUpdate(transaction: SDSAnyWriteTransaction) {
         modelReadCaches.userProfileReadCache.didInsertOrUpdate(userProfile: self, transaction: transaction)
+        let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
+        searchableNameIndexer.update(self, tx: transaction.asV2Write)
     }
 
     public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
@@ -1155,15 +1137,6 @@ extension OWSUserProfile {
         }
 
         if let oldInstance {
-            // Note: We always re-index just-inserted models elsewhere.
-            let profileNameMatches = (
-                oldInstance.givenName == newInstance.givenName
-                && oldInstance.familyName == newInstance.familyName
-            )
-            if !profileNameMatches {
-                reindexAssociatedModels(transaction: tx)
-            }
-
             // Insert a profile change update in conversations, if necessary
             TSInfoMessage.insertProfileChangeMessagesIfNecessary(
                 oldProfile: oldInstance,
