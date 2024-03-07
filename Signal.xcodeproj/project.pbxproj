@@ -277,7 +277,6 @@
 		3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */; };
 		3478504C1FD7496D007B8332 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850561FD86544007B8332 /* SAEFailedViewController.swift */; };
-		3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
 		34798A8725AF965300EC89B4 /* ProfileBioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34798A8625AF965300EC89B4 /* ProfileBioViewController.swift */; };
 		3479D6B226A762E200811069 /* ChatListViewController+Reminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3479D6B126A762E200811069 /* ChatListViewController+Reminders.swift */; };
 		347B83F724367EC10019A52C /* GroupViewHelper+MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */; };
@@ -568,7 +567,6 @@
 		4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */; };
 		4C30E224234F9F34009558B7 /* ProvisioningPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E223234F9F34009558B7 /* ProvisioningPrepViewController.swift */; };
 		4C30E226234FB033009558B7 /* ProvisioningQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E225234FB033009558B7 /* ProvisioningQRCodeViewController.swift */; };
-		4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */; };
 		4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3A2BC62356620E004B3986 /* ProvisioningController.swift */; };
 		4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */; };
 		4C46361122EB98EC00185951 /* CameraFirstCaptureSendFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C46361022EB98EC00185951 /* CameraFirstCaptureSendFlow.swift */; };
@@ -1077,6 +1075,9 @@
 		7255A4D22B98E2B700E95368 /* ScrubbingLogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962FF4829AD0C7C00AFA397 /* ScrubbingLogFormatter.swift */; };
 		7255A4D32B98E2C600E95368 /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4D1FD0A7A300BC14EF /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7255A4D42B98E36900E95368 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768F720C2A22CEAC002C4E7D /* Preferences.swift */; };
+		72C905892B9A28BF00E586B8 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7634F08C2A21963600BB93D5 /* Sounds.swift */; };
+		72C9058A2B9A293300E586B8 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
+		72C9058B2B9A298100E586B8 /* MessageRequestPendingReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -1094,7 +1095,6 @@
 		762A416D2A383ABF00057955 /* UIKit+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762A416C2A383ABF00057955 /* UIKit+Image.swift */; };
 		762EBBD02A2FB759002FD28F /* AttachmentSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */; };
 		762EBBD22A2FE370002FD28F /* BlockListUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EBBD12A2FE370002FD28F /* BlockListUIUtils.swift */; };
-		7634F08D2A21963600BB93D5 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7634F08C2A21963600BB93D5 /* Sounds.swift */; };
 		76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */; };
 		763A16002AEC3A490081D7E5 /* OWSContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763A15FF2AEC3A490081D7E5 /* OWSContact.swift */; };
 		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
@@ -5854,10 +5854,7 @@
 			isa = PBXGroup;
 			children = (
 				5033D46A29DB9F17007FEADA /* AppSetup.swift */,
-				4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */,
-				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
 				7649813E2A2306DA00EC1287 /* SMEnvironment.swift */,
-				7634F08C2A21963600BB93D5 /* Sounds.swift */,
 			);
 			path = environment;
 			sourceTree = "<group>";
@@ -7783,6 +7780,16 @@
 				F962FF4829AD0C7C00AFA397 /* ScrubbingLogFormatter.swift */,
 			);
 			path = DebugLogs;
+			sourceTree = "<group>";
+		};
+		72C905882B9A275C00E586B8 /* Environment */ = {
+			isa = PBXGroup;
+			children = (
+				4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */,
+				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
+				7634F08C2A21963600BB93D5 /* Sounds.swift */,
+			);
+			path = Environment;
 			sourceTree = "<group>";
 		};
 		765283AC2A00D893004583A9 /* OWSTableView */ = {
@@ -9712,6 +9719,7 @@
 				7255A4CE2B98E23800E95368 /* DebugLogs */,
 				666BAB0E2980B76B00867196 /* Dependencies */,
 				F9C5CA09289453B100548EEE /* Devices */,
+				72C905882B9A275C00E586B8 /* Environment */,
 				D920487D28EB8201003F5371 /* Experience Upgrades */,
 				506695ED29C5337700B6D8D0 /* GroupMembers */,
 				F9C5CBA3289453B200548EEE /* groups */,
@@ -12343,11 +12351,9 @@
 				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
 				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
-				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
 				764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */,
 				50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */,
 				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
-				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
@@ -12369,7 +12375,6 @@
 				D9668B33291B03C200665298 /* SessionResetJob.swift in Sources */,
 				D9668B35291B088200665298 /* SignalMessagingJobQueues.swift in Sources */,
 				7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */,
-				7634F08D2A21963600BB93D5 /* Sounds.swift in Sources */,
 				340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */,
 				88E34F2722F269E900966CC2 /* StorageServiceManagerImpl.swift in Sources */,
 				88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */,
@@ -13460,6 +13465,7 @@
 				F9C5CC4E289453B300548EEE /* MessagePipelineSupervisor.swift in Sources */,
 				F9C5CC63289453B300548EEE /* MessageProcessor.swift in Sources */,
 				F9C5CC3F289453B300548EEE /* MessageReceiver.swift in Sources */,
+				72C9058B2B9A298100E586B8 /* MessageRequestPendingReceipts.swift in Sources */,
 				F9C5CC88289453B300548EEE /* MessageSender+Errors.swift in Sources */,
 				F9C5CC44289453B300548EEE /* MessageSender+SenderKey.swift in Sources */,
 				F9C5CBCA289453B300548EEE /* MessageSender.swift in Sources */,
@@ -13495,6 +13501,7 @@
 				F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */,
 				F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */,
 				F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */,
+				72C9058A2B9A293300E586B8 /* NoopCallMessageHandler.swift in Sources */,
 				F9C5CE62289453B400548EEE /* NoopNotificationsManager.swift in Sources */,
 				F9C5CE58289453B400548EEE /* NoopPendingReadReceiptRecorder.swift in Sources */,
 				664657412AC4FB720099DE1C /* NotificationsProtocolSwift.swift in Sources */,
@@ -13827,6 +13834,7 @@
 				F9C5CC53289453B300548EEE /* SMKSecretSessionCipher.swift in Sources */,
 				F9C5CC50289453B300548EEE /* SMKUDAccessKey.swift in Sources */,
 				F9C5CD9B289453B400548EEE /* SocketManager.swift in Sources */,
+				72C905892B9A28BF00E586B8 /* Sounds.swift in Sources */,
 				F9C5CD8F289453B300548EEE /* SpamChallenge.swift in Sources */,
 				F9C5CD8E289453B300548EEE /* SpamChallengeResolver.swift in Sources */,
 				F9427EAB297F1E88008EF0AC /* SpamReportingToken.swift in Sources */,

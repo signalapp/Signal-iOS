@@ -5,7 +5,6 @@
 
 import AudioToolbox
 import SignalCoreKit
-import SignalServiceKit
 
 public enum Sound: Equatable {
     case standard(StandardSound)

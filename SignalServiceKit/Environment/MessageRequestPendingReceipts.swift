@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalServiceKit
 
 public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder {
 
