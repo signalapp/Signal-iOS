@@ -1050,6 +1050,7 @@
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
 		72345D192B9A17CF000237B3 /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
 		72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
+		72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		724D47B02B97BE13001BE973 /* ZkParamsMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */; };
 		724D47B22B97BE96001BE973 /* ZkParamsMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */; };
 		724D47B52B97C28F001BE973 /* ProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */; };
@@ -1395,7 +1396,6 @@
 		88F5D78A2880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */; };
 		88F5D78C2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */; };
 		88F5FA9428EBD4CF007AA1BF /* StorySharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9228EBD484007AA1BF /* StorySharing.swift */; };
-		88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -5783,7 +5783,6 @@
 				3452851A26DE890300824983 /* DateUtil.swift */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
-				4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */,
 				34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */,
 				501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
@@ -10650,8 +10649,8 @@
 				E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */,
 				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
 				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
-				34A955AB271B521500B05242 /* CommonStrings.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
+				34A955AB271B521500B05242 /* CommonStrings.swift */,
 				F962B389293F9F1F00765BD8 /* CRC32.swift */,
 				F9C5CB22289453B200548EEE /* Currency.swift */,
 				F9C5CB55289453B200548EEE /* DarwinNotificationCenter.h */,
@@ -10677,6 +10676,7 @@
 				F97121E92903244700C0F5F2 /* FiatMoney.swift */,
 				F9C5CB6E289453B200548EEE /* FunctionalUtil.h */,
 				F9C5CB1A289453B200548EEE /* FunctionalUtil.m */,
+				4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */,
 				F9C5CB0D289453B200548EEE /* ImageQuality.swift */,
 				F9C5CB3D289453B200548EEE /* Int+SSK.swift */,
 				50D5E2402980AD6F00899660 /* LinkValidator.swift */,
@@ -12350,7 +12350,6 @@
 				34BB3C5E23C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift in Sources */,
 				345DE96023ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift in Sources */,
 				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
-				88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
 				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
 				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
@@ -13240,6 +13239,7 @@
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
 				66CD256A2B06963200139E17 /* CloudBackupStickerPackArchiver.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
+				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
 				66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */,
 				66D7B92F2B98ECB00005C98B /* ConcreteTSResourceReference.swift in Sources */,
 				D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */,
@@ -13347,7 +13347,6 @@
 				F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */,
 				F9C5CE73289453B400548EEE /* GroupAccess.swift in Sources */,
 				D979CC592AD61641006AAC49 /* GroupCallInteractionFinder.swift in Sources */,
-				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
 				D979CC5B2AD61699006AAC49 /* GroupCallRecordManager.swift in Sources */,
 				D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */,
 				D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */,
@@ -13370,6 +13369,7 @@
 				667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */,
 				724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */,
 				724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */,
+				72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */,
 				F9C5CD94289453B300548EEE /* HTMLMetadata.swift in Sources */,
 				F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */,
 				F9C5CDB4289453B400548EEE /* HTTPUtils.swift in Sources */,
