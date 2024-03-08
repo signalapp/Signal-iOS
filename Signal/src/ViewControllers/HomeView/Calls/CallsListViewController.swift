@@ -805,10 +805,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             "Coalesced call records were of a different missed status than the primary!"
         )
         owsAssert(
-            coalescedCallRecords.allSatisfy { $0.callType == primaryCallRecord.callType },
-            "Coalesced call records were of a different call type than the primary!"
-        )
-        owsAssert(
             ([primaryCallRecord] + coalescedCallRecords).isSortedByTimestamp(.descending),
             "Primary and coalesced call records were not ordered descending by timestamp!"
         )
