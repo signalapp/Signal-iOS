@@ -1464,8 +1464,8 @@ public class MessageSender: Dependencies {
             }
         }
 
-        do {
-            return try await databaseStorage.awaitableWrite { tx in
+        return try await databaseStorage.awaitableWrite { tx in
+            do {
                 switch messageEncryptionStyle {
                 case .whisper:
                     return try self.encryptMessage(
@@ -1487,10 +1487,16 @@ public class MessageSender: Dependencies {
                 @unknown default:
                     throw OWSAssertionError("Unrecognized encryption style")
                 }
+            } catch IdentityManagerError.identityKeyMismatchForOutgoingMessage {
+                Logger.warn("Found identity key mismatch on outgoing message to \(serviceId).\(deviceId). Archiving session before retrying...")
+                let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
+                let aciSessionStore = signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+                aciSessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Write)
+                throw OWSRetryableMessageSenderError()
+            } catch {
+                Logger.warn("Failed to encrypt message \(error)")
+                throw error
             }
-        } catch {
-            Logger.warn("Failed to encrypt message \(error)")
-            throw error
         }
     }
 

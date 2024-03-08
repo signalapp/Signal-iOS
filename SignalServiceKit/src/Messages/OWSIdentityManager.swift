@@ -6,6 +6,12 @@
 import LibSignalClient
 import SignalCoreKit
 
+public enum IdentityManagerError: Error, IsRetryableProvider {
+    case identityKeyMismatchForOutgoingMessage
+
+    public var isRetryableProvider: Bool { false }
+}
+
 public protocol OWSIdentityManager {
     func libSignalStore(for identity: OWSIdentity, tx: DBReadTransaction) throws -> IdentityStore
     func groupContainsUnverifiedMember(_ groupUniqueID: String, tx: DBReadTransaction) -> Bool
@@ -33,13 +39,6 @@ public protocol OWSIdentityManager {
         untrustedThreshold: Date?,
         tx: DBReadTransaction
     ) -> OWSRecipientIdentity?
-
-    func isTrustedIdentityKey(
-        _ identityKey: IdentityKey,
-        serviceId: ServiceId,
-        direction: TSMessageDirection,
-        tx: DBReadTransaction
-    ) -> Result<Bool, RecipientIdError>
 
     func tryToSyncQueuedVerificationStates()
 
@@ -103,12 +102,12 @@ extension OWSIdentity: CustomStringConvertible {
 }
 
 public class IdentityStore: IdentityKeyStore {
-    private let identityManager: OWSIdentityManager
+    private let identityManager: OWSIdentityManagerImpl
     private let identityKeyPair: IdentityKeyPair
     private let fetchLocalRegistrationId: (DBWriteTransaction) -> UInt32
 
     fileprivate init(
-        identityManager: OWSIdentityManager,
+        identityManager: OWSIdentityManagerImpl,
         identityKeyPair: IdentityKeyPair,
         fetchLocalRegistrationId: @escaping (DBWriteTransaction) -> UInt32
     ) {
@@ -148,7 +147,7 @@ public class IdentityStore: IdentityKeyStore {
             serviceId: address.serviceId,
             direction: TSMessageDirection(direction),
             tx: context.asTransaction.asV2Read
-        ).get()
+        )
     }
 
     public func identity(for address: ProtocolAddress, context: StoreContext) throws -> LibSignalClient.IdentityKey? {
@@ -494,36 +493,34 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         return canSend(to: recipientIdentity, untrustedThreshold: untrustedThreshold)
     }
 
-    public func isTrustedIdentityKey(
+    func isTrustedIdentityKey(
         _ identityKey: IdentityKey,
         serviceId: ServiceId,
         direction: TSMessageDirection,
         tx: DBReadTransaction
-    ) -> Result<Bool, RecipientIdError> {
+    ) throws -> Bool {
         let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
         if localIdentifiers?.aci == serviceId {
-            return .success(isTrustedLocalKey(identityKey.publicKey.keyBytes.asData, tx: tx))
+            return isTrustedLocalKey(identityKey.publicKey.keyBytes.asData, tx: tx)
         }
 
         switch direction {
         case .incoming:
-            return .success(true)
+            return true
         case .outgoing:
-            guard let recipientIdResult = recipientIdFinder.recipientId(for: serviceId, tx: tx) else {
+            guard let recipientId = try recipientIdFinder.recipientId(for: serviceId, tx: tx)?.get() else {
                 owsFailDebug("Couldn't find recipientId for outgoing message.")
-                return .success(false)
+                return false
             }
-            return recipientIdResult.map { recipientId in
-                let recipientIdentity = OWSRecipientIdentity.anyFetch(
-                    uniqueId: recipientId,
-                    transaction: SDSDB.shimOnlyBridge(tx)
-                )
-                if let recipientIdentity, recipientIdentity.identityKey != identityKey.publicKey.keyBytes.asData {
-                    Logger.warn("Key mismatch for \(recipientIdentity.uniqueId)")
-                    return false
-                }
-                return canSend(to: recipientIdentity, untrustedThreshold: nil)
+            let recipientIdentity = OWSRecipientIdentity.anyFetch(
+                uniqueId: recipientId,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
+            if let recipientIdentity, recipientIdentity.identityKey != identityKey.publicKey.keyBytes.asData {
+                Logger.warn("Key mismatch for \(serviceId)")
+                throw IdentityManagerError.identityKeyMismatchForOutgoingMessage
             }
+            return canSend(to: recipientIdentity, untrustedThreshold: nil)
         }
     }
 
