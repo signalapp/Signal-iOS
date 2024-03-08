@@ -12,13 +12,17 @@ public struct NameCollision {
     public struct Element {
         public let address: SignalServiceAddress
         public let comparableName: ComparableDisplayName
-        public let oldName: String?
+        public let profileNameChange: (oldestProfileName: String, newestProfileName: String)?
         public let latestUpdateTimestamp: UInt64?
 
-        fileprivate init(comparableName: ComparableDisplayName, oldName: String? = nil, latestUpdateTimestamp: UInt64? = nil) {
+        fileprivate init(
+            comparableName: ComparableDisplayName,
+            profileNameChange: (oldestProfileName: String, newestProfileName: String)? = nil,
+            latestUpdateTimestamp: UInt64? = nil
+        ) {
             self.address = comparableName.address
             self.comparableName = comparableName
-            self.oldName = oldName
+            self.profileNameChange = profileNameChange
             self.latestUpdateTimestamp = latestUpdateTimestamp
         }
     }
@@ -184,12 +188,10 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
             .map { collidingNames in
                 NameCollision(collidingNames.map {
                     let profileUpdateMessages = profileUpdates[$0.address]
-                    let oldestUpdateMessage = profileUpdateMessages?.min(by: { $0.sortId < $1.sortId })
                     let newestUpdateMessage = profileUpdateMessages?.max(by: { $0.sortId < $1.sortId })
-
                     return NameCollision.Element(
                         comparableName: $0,
-                        oldName: oldestUpdateMessage?.profileChangesOldFullName,
+                        profileNameChange: profileNameChange(profileUpdateMessages: profileUpdateMessages),
                         latestUpdateTimestamp: newestUpdateMessage?.timestamp
                     )
                 })!
@@ -204,6 +206,20 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         }
 
         return filteredCollisions.standardSort(readTx: transaction)
+    }
+
+    private func profileNameChange(
+        profileUpdateMessages: [TSInfoMessage]?
+    ) -> (oldestProfileName: String, newestProfileName: String)? {
+        let oldestUpdateMessage = profileUpdateMessages?.min(by: { $0.sortId < $1.sortId })
+        let newestUpdateMessage = profileUpdateMessages?.max(by: { $0.sortId < $1.sortId })
+        guard
+            let oldProfileName = oldestUpdateMessage?.profileChangesOldFullName,
+            let newProfileName = newestUpdateMessage?.profileChangesNewFullName
+        else {
+            return nil
+        }
+        return (oldProfileName, newProfileName)
     }
 
     private func fetchRecentProfileUpdates(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress: [TSInfoMessage]] {

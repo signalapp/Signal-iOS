@@ -11,7 +11,7 @@ struct NameCollisionCellModel {
     let name: String
     let shortName: String
 
-    let oldName: String?
+    let profileNameChange: (oldestProfileName: String, newestProfileName: String)?
     let updateTimestamp: UInt64?
 
     /// The thread the collision appears in.
@@ -42,7 +42,7 @@ extension NameCollision {
                 address: $0.address,
                 name: $0.comparableName.resolvedValue(),
                 shortName: $0.comparableName.resolvedValue(useShortNameIfAvailable: true),
-                oldName: $0.oldName,
+                profileNameChange: $0.profileNameChange,
                 updateTimestamp: $0.latestUpdateTimestamp,
                 thread: thread,
                 mutualGroups: TSGroupThread.groupThreads(with: $0.address, transaction: tx),
@@ -145,12 +145,17 @@ class NameCollisionCell: UITableViewCell {
         }
 
         // Name change
-        if let oldName = model.oldName {
+        if let profileNameChange = model.profileNameChange {
             let formatString = OWSLocalizedString(
                 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING",
-                comment: "Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }}"
+                comment: "Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }}"
             )
-            let string = String(format: formatString, model.shortName, oldName, model.name)
+            let string = String(
+                format: formatString,
+                model.shortName,
+                profileNameChange.oldestProfileName,
+                profileNameChange.newestProfileName
+            )
             verticalStack.addArrangedSubview(ProfileDetailLabel.profile(
                 title: string,
                 font: detailFont

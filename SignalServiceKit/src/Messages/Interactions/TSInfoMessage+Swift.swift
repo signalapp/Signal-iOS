@@ -287,6 +287,10 @@ public extension TSInfoMessage {
         profileChanges?.oldFullName
     }
 
+    var profileChangesNewFullName: String? {
+        profileChanges?.newFullName
+    }
+
     var profileChangeNewNameComponents: PersonNameComponents? {
         return profileChanges?.newNameComponents
     }
