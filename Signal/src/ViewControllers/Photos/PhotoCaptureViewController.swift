@@ -11,6 +11,7 @@ import UIKit
 import SignalMessaging
 import SignalServiceKit
 import SignalUI
+import LibSignalClient
 
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController)
@@ -38,7 +39,26 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     weak var dataSource: PhotoCaptureViewControllerDataSource?
     private var interactiveDismiss: PhotoCaptureInteractiveDismiss?
 
-    public lazy var cameraCaptureSession = CameraCaptureSession(delegate: self)
+    private lazy var qrCodeSampleBufferScanner = QRCodeSampleBufferScanner(delegate: self)
+    lazy var cameraCaptureSession = CameraCaptureSession(
+        delegate: self,
+        qrCodeSampleBufferScanner: qrCodeSampleBufferScanner
+    )
+
+    private var qrCodeScanned = false {
+        didSet {
+            updateShouldProcessQRCodes()
+        }
+    }
+
+    /// The underlying stored atomic for `shouldProcessQRCodes`.
+    /// Update its value by calling `updateShouldProcessQRCodes`.
+    private let _shouldProcessQRCodes = AtomicBool(false, lock: .init())
+
+    private func updateShouldProcessQRCodes() {
+        _shouldProcessQRCodes.set(!qrCodeScanned && !isRecordingVideo && isViewVisible)
+    }
+
     private var isCameraReady = false {
         didSet {
             guard isCameraReady != oldValue else { return }
@@ -60,6 +80,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private var isViewVisible = false {
         didSet {
             isCameraReady = isViewVisible && hasCameraStarted
+            updateShouldProcessQRCodes()
         }
     }
 
@@ -252,6 +273,8 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private func setIsRecordingVideo(_ isRecordingVideo: Bool, animated: Bool) {
         guard _internalIsRecordingVideo != isRecordingVideo else { return }
         _internalIsRecordingVideo = isRecordingVideo
+
+        updateShouldProcessQRCodes()
 
         updateTopBarAppearance(animated: animated)
         topBar.recordingTimerView.isRecordingInProgress = isRecordingVideo
@@ -1266,6 +1289,93 @@ extension PhotoCaptureViewController: CameraZoomSelectionControlDelegate {
         cameraCaptureSession.changeVisibleZoomFactor(to: zoomFactor, animated: true)
     }
 }
+
+// MARK: - QRCodeSampleBufferScannerDelegate
+
+extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
+    var shouldProcessQRCodes: Bool {
+        _shouldProcessQRCodes.get()
+    }
+
+    func qrCodeFound(string qrCodeString: String?, data qrCodeData: Data?) {
+        guard
+            let qrCodeString,
+            let url = URL(string: qrCodeString),
+            let usernameLink = Usernames.UsernameLink(usernameLinkUrl: url)
+        else {
+            // Not a username link QR code
+            return
+        }
+
+        Logger.verbose("")
+        qrCodeScanned = true
+
+        databaseStorage.read { tx in
+            UsernameQuerier().queryForUsernameLink(
+                link: usernameLink,
+                fromViewController: self,
+                tx: tx,
+                failureSheetDismissalDelegate: self,
+                onSuccess: self.showUsernameLinkSheet(username:aci:)
+            )
+        }
+    }
+
+    func scanFailed(error: Error) {
+        self.showFailureUI(error: error)
+    }
+
+    private func showUsernameLinkSheet(
+        username: String,
+        aci: Aci
+    ) {
+        // `shouldProcessQRCodes` should prevent QR codes being scanned after a
+        // recording is done, but a race condition between the recording ending
+        // and this view hiding can allow a scan to slip through, so do an extra
+        // check after the username is queried before showing the sheet.
+        guard isViewVisible else { return }
+        OWSActionSheets.showConfirmationAlert(
+            title: String(
+                format: OWSLocalizedString(
+                    "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT",
+                    comment: "Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}."
+                ),
+                username
+            ),
+            message: String(
+                format: OWSLocalizedString(
+                    "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT",
+                    comment: "Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}."
+                ),
+                username
+            ),
+            proceedTitle: OWSLocalizedString(
+                "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA",
+                comment: "Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found."
+            ),
+            proceedAction: { [weak self] _ in
+                SignalApp.shared.presentConversationForAddress(
+                    SignalServiceAddress(aci),
+                    animated: false
+                )
+                self?.dismiss(animated: true)
+            },
+            fromViewController: self,
+            dismissalDelegate: self
+        )
+    }
+}
+
+// MARK: - SheetDismissalDelegate
+
+extension PhotoCaptureViewController: SheetDismissalDelegate {
+    func didDismissPresentedSheet() {
+        // Allow another QR code to be scanned
+        qrCodeScanned = false
+    }
+}
+
+// MARK: - CameraCaptureSessionDelegate
 
 extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
 

@@ -48,7 +48,9 @@ public enum OWSActionSheets {
         message: String? = nil,
         proceedTitle: String? = nil,
         proceedStyle: ActionSheetAction.Style = .default,
-        proceedAction: @escaping ActionSheetAction.Handler
+        proceedAction: @escaping ActionSheetAction.Handler,
+        fromViewController: UIViewController? = nil,
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil
     ) {
         assert(!title.isEmptyOrNil || !message.isEmptyOrNil)
 
@@ -63,8 +65,9 @@ public enum OWSActionSheets {
             handler: proceedAction
         )
         actionSheet.addAction(okAction)
+        actionSheet.dismissalDelegate = dismissalDelegate
 
-        CurrentAppContext().frontmostViewController()?.present(actionSheet, animated: true)
+        showActionSheet(actionSheet, fromViewController: fromViewController)
     }
 
     public static func showConfirmationWithNotNowAlert(

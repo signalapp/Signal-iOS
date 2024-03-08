@@ -57,7 +57,7 @@ extension UsernameLinkScanDelegate where Self: RecipientPickerDelegate & Recipie
                     link: usernameLink,
                     fromViewController: self,
                     tx: tx
-                ) { aci in
+                ) { _, aci in
                     self.recipientPicker(
                         self.recipientPicker,
                         didSelectRecipient: .for(address: SignalServiceAddress(aci))

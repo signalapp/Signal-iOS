@@ -147,7 +147,7 @@ class UrlOpener {
                     link: link,
                     fromViewController: rootViewController,
                     tx: tx
-                ) { aci in
+                ) { _, aci in
                     SignalApp.shared.presentConversationForAddress(
                         SignalServiceAddress(aci),
                         animated: true

@@ -549,7 +549,7 @@ extension AppSettingsViewController: UsernameLinkScanDelegate {
                     link: usernameLink,
                     fromViewController: presentingViewController,
                     tx: tx
-                ) { aci in
+                ) { _, aci in
                     SignalApp.shared.presentConversationForAddress(
                         SignalServiceAddress(aci),
                         animated: true

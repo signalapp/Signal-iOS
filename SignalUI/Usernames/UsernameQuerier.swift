@@ -77,14 +77,21 @@ public struct UsernameQuerier {
         link: Usernames.UsernameLink,
         fromViewController: UIViewController,
         tx: SDSAnyReadTransaction,
-        onSuccess: @escaping (Aci) -> Void
+        failureSheetDismissalDelegate: (any SheetDismissalDelegate)? = nil,
+        onSuccess: @escaping (_ username: String, _ aci: Aci) -> Void
     ) {
+        let usernameState = localUsernameManager.usernameState(tx: tx.asV2Read)
         if
             let localAci = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci,
-            let localLink = localUsernameManager.usernameState(tx: tx.asV2Read).usernameLink,
+            let localLink = usernameState.usernameLink,
+            let localUsername = usernameState.username,
             localLink == link
         {
-            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci, tx: tx)
+            queryMatchedLocalUser(
+                onSuccess: { onSuccess(localUsername, $0) },
+                localAci: localAci,
+                tx: tx
+            )
             return
         }
 
@@ -97,7 +104,7 @@ public struct UsernameQuerier {
             }.done(on: schedulers.main) { username in
                 guard let username else {
                     modal.dismissIfNotCanceled {
-                        showUsernameLinkOutdatedError()
+                        showUsernameLinkOutdatedError(dismissalDelegate: failureSheetDismissalDelegate)
                     }
 
                     return
@@ -115,8 +122,8 @@ public struct UsernameQuerier {
                 queryServiceForUsernameBehindSpinner(
                     presentedModalActivityIndicator: modal,
                     hashedUsername: hashedUsername,
-                    failureSheetDismissalDelegate: nil,
-                    onSuccess: onSuccess
+                    failureSheetDismissalDelegate: failureSheetDismissalDelegate,
+                    onSuccess: { onSuccess(username, $0) }
                 )
             }.catch(on: schedulers.main) { _ in
                 showGenericError(presentedModal: modal, dismissalDelegate: nil)
@@ -312,13 +319,16 @@ public struct UsernameQuerier {
         )
     }
 
-    private func showUsernameLinkOutdatedError() {
+    private func showUsernameLinkOutdatedError(
+        dismissalDelegate: (any SheetDismissalDelegate)?
+    ) {
         OWSActionSheets.showActionSheet(
             title: CommonStrings.errorAlertTitle,
             message: OWSLocalizedString(
                 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE",
                 comment: "A message indicating that a username link the user attempted to query is no longer valid."
-            )
+            ),
+            dismissalDelegate: dismissalDelegate
         )
     }
 

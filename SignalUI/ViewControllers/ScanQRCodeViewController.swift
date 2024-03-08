@@ -9,6 +9,107 @@ import SignalMessaging
 import SignalServiceKit
 import Vision
 
+public protocol QRCodeSampleBufferScannerDelegate: AnyObject {
+    /// A boolean indicating if the scanner should attempt to process QR codes.
+    /// This property will be accessed off the main thread.
+    var shouldProcessQRCodes: Bool { get }
+    /// Informs the delegate that a QR code has been found.
+    /// This function will be called on the main thread.
+    func qrCodeFound(string qrCodeString: String?, data qrCodeData: Data?)
+    /// Informs the delegate that there was an error in the
+    /// `VNDetectBarcodesRequest`.
+    /// This function will be called on the main thread.
+    func scanFailed(error: any Error)
+}
+
+public class QRCodeSampleBufferScanner: NSObject {
+    private weak var delegate: QRCodeSampleBufferScannerDelegate?
+
+    public init(delegate: QRCodeSampleBufferScannerDelegate?) {
+        self.delegate = delegate
+    }
+
+    private lazy var detectQRCodeRequest: VNDetectBarcodesRequest = {
+        let request = VNDetectBarcodesRequest { [weak self] request, error in
+            guard let self = self else { return }
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.delegate?.scanFailed(error: error)
+                }
+                return
+            }
+            self.processClassification(request: request)
+        }
+
+        request.symbologies = [ .qr ]
+
+        return request
+    }()
+
+    private func processClassification(request: VNRequest) {
+        guard let delegate, delegate.shouldProcessQRCodes else { return }
+
+        typealias QRCode = (string: String?, data: Data?)
+        let qrCode: QRCode? = (request.results ?? [])
+            .lazy
+            .compactMap { $0 as? VNBarcodeObservation }
+            .filter { (barcode: VNBarcodeObservation) -> Bool in
+                barcode.symbology == .qr
+                && barcode.barcodeDescriptor is CIQRCodeDescriptor
+                && barcode.confidence > 0.9
+            }
+            .sorted { $0.confidence > $1.confidence }
+            .compactMap { (barcode: VNBarcodeObservation) -> QRCode? in
+                guard let qrCodeDescriptor = barcode.barcodeDescriptor as? CIQRCodeDescriptor else {
+                    return nil
+                }
+                let qrCodeCodewords = qrCodeDescriptor.errorCorrectedPayload
+                let qrCodeVersion = qrCodeDescriptor.symbolVersion
+                let qrCodeString: String? = barcode.payloadStringValue
+                let qrCodeData: Data? = QRCodePayload.parse(
+                    codewords: qrCodeCodewords,
+                    qrCodeVersion: qrCodeVersion
+                )?.data
+
+                guard qrCodeString != nil || qrCodeData != nil else {
+                    return nil
+                }
+
+                return (qrCodeString, qrCodeData)
+            }
+            .first
+
+        guard let qrCode else { return }
+
+        Logger.info("Scanned QR Code.")
+
+        DispatchQueue.main.async {
+            delegate.qrCodeFound(string: qrCode.string, data: qrCode.data)
+        }
+    }
+}
+
+extension QRCodeSampleBufferScanner: AVCaptureVideoDataOutputSampleBufferDelegate {
+    public func captureOutput(
+        _ output: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from connection: AVCaptureConnection
+    ) {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
+        let imageRequestHandler = VNImageRequestHandler(
+            cvPixelBuffer: pixelBuffer,
+            orientation: .right
+        )
+        do {
+            try imageRequestHandler.perform([detectQRCodeRequest])
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+}
+
 public enum QRCodeScanOutcome: UInt {
     case stopScanning
     case continueScanning
@@ -73,9 +174,11 @@ public class QRCodeScanViewController: OWSViewController {
 
     public weak var delegate: QRCodeScanDelegate?
 
-    private let delegateHasAcceptedScanResults = AtomicBool(false)
+    private let delegateHasAcceptedScanResults = AtomicBool(false, lock: .init())
 
     private var scanner: QRCodeScanner?
+
+    private lazy var sampleBufferScanner = QRCodeSampleBufferScanner(delegate: self)
 
     public var prefersFrontFacingCamera = false {
         didSet {
@@ -230,7 +333,7 @@ public class QRCodeScanViewController: OWSViewController {
 
         let scanner = QRCodeScanner(
             prefersFrontFacingCamera: self.prefersFrontFacingCamera,
-            sampleBufferDelegate: self
+            sampleBufferDelegate: self.sampleBufferScanner
         )
         self.scanner = scanner
 
@@ -297,121 +400,6 @@ public class QRCodeScanViewController: OWSViewController {
                                             guard let self = self else { return }
                                             self.delegate?.qrCodeScanViewDismiss(self)
                                         })
-    }
-
-    private lazy var detectQRCodeRequest: VNDetectBarcodesRequest = {
-        let request = VNDetectBarcodesRequest { [weak self] request, error in
-            guard let self = self else { return }
-            if let error = error {
-                DispatchQueue.main.async {
-                    self.showFailureUI(error: error)
-                }
-                return
-            }
-            self.processClassification(request)
-        }
-
-        request.symbologies = [ .qr ]
-
-        return request
-    }()
-
-    private func processClassification(_ request: VNRequest) {
-        guard !delegateHasAcceptedScanResults.get() else {
-            return
-        }
-
-        func filterBarcodes() -> [VNBarcodeObservation] {
-            guard let results = request.results else {
-                return []
-            }
-            return results.compactMap {
-                $0 as? VNBarcodeObservation
-            }.filter { (barcode: VNBarcodeObservation) in
-                guard barcode.symbology == .qr else {
-                    owsFailDebug("Invalid symbology.")
-                    return false
-                }
-                guard nil != barcode.barcodeDescriptor as? CIQRCodeDescriptor else {
-                    owsFailDebug("Invalid barcodeDescriptor.")
-                    return false
-                }
-                guard barcode.confidence > 0.9 else {
-                    // Require high confidence.
-                    return false
-                }
-                return true
-            }
-        }
-        let barcodes: [VNBarcodeObservation] = filterBarcodes().sorted {
-            // If multiple bardcodes found, prefer barcode with higher confidence.
-            // In practice, all QR codes have confidence of 1.0.
-            $0.confidence > $1.confidence
-        }
-
-        struct QRCode {
-            let qrCodeCodewords: Data
-            let qrCodeVersion: Int
-            // One or both will be non-nil.
-            let qrCodeString: String?
-            let qrCodeData: Data?
-        }
-        let qrCodes: [QRCode] = barcodes.compactMap { barcode in
-            guard let barcodeDescriptor = barcode.barcodeDescriptor as? CIQRCodeDescriptor else {
-                return nil
-            }
-
-            let qrCodeCodewords = barcodeDescriptor.errorCorrectedPayload
-            let qrCodeVersion = barcodeDescriptor.symbolVersion
-            let qrCodeString: String? = barcode.payloadStringValue
-            let qrCodeData: Data? = QRCodePayload.parse(
-                codewords: qrCodeCodewords,
-                qrCodeVersion: qrCodeVersion
-            )?.data
-
-            guard qrCodeString != nil || qrCodeData != nil else {
-                return nil
-            }
-
-            return QRCode(
-                qrCodeCodewords: qrCodeCodewords,
-                qrCodeVersion: qrCodeVersion,
-                qrCodeString: qrCodeString,
-                qrCodeData: qrCodeData
-            )
-        }
-
-        guard let qrCode = qrCodes.first else {
-            return
-        }
-
-        Logger.info("Scanned QR Code.")
-
-        DispatchQueue.main.async { [weak self] in
-            guard
-                let self = self,
-                let delegate = self.delegate,
-                !self.delegateHasAcceptedScanResults.get()
-            else {
-                return
-            }
-
-            let outcome = delegate.qrCodeScanViewScanned(
-                self,
-                qrCodeData: qrCode.qrCodeData,
-                qrCodeString: qrCode.qrCodeString
-            )
-
-            switch outcome {
-            case .stopScanning:
-                self.delegateHasAcceptedScanResults.set(true)
-                self.stopScanning()
-
-                ImpactHapticFeedback.impactOccurred(style: .medium)
-            case .continueScanning:
-                break
-            }
-        }
     }
 }
 
@@ -609,21 +597,38 @@ private class QRCodeBitStream {
 
 // MARK: -
 
-extension QRCodeScanViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
-    public func captureOutput(_ output: AVCaptureOutput,
-                              didOutput sampleBuffer: CMSampleBuffer,
-                              from connection: AVCaptureConnection) {
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            owsFailDebug("Missing pixelBuffer.")
+extension QRCodeScanViewController: QRCodeSampleBufferScannerDelegate {
+    public var shouldProcessQRCodes: Bool {
+        !delegateHasAcceptedScanResults.get()
+    }
+
+    public func qrCodeFound(string qrCodeString: String?, data qrCodeData: Data?) {
+        guard
+            let delegate = self.delegate,
+            !delegateHasAcceptedScanResults.get()
+        else {
             return
         }
-        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
-                                                        orientation: .right)
-        do {
-            try imageRequestHandler.perform([detectQRCodeRequest])
-        } catch {
-            owsFailDebug("Error: \(error)")
+
+        let outcome = delegate.qrCodeScanViewScanned(
+            self,
+            qrCodeData: qrCodeData,
+            qrCodeString: qrCodeString
+        )
+
+        switch outcome {
+        case .stopScanning:
+            self.delegateHasAcceptedScanResults.set(true)
+            self.stopScanning()
+
+            ImpactHapticFeedback.impactOccurred(style: .medium)
+        case .continueScanning:
+            break
         }
+    }
+
+    public func scanFailed(error: Error) {
+        showFailureUI(error: error)
     }
 }
 

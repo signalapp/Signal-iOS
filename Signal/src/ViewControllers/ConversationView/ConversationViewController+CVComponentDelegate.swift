@@ -409,7 +409,7 @@ extension ConversationViewController: CVComponentDelegate {
                 link: usernameLink,
                 fromViewController: self,
                 tx: tx,
-                onSuccess: { aci in
+                onSuccess: { _, aci in
                     SignalApp.shared.presentConversationForAddress(
                         SignalServiceAddress(aci),
                         animated: true

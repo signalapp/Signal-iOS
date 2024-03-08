@@ -90,10 +90,14 @@ class CameraCaptureSession: NSObject {
     }
 
     private let photoCapture = PhotoCapture()
-    private let videoCapture = VideoCapture()
+    private let videoCapture: VideoCapture
 
-    init(delegate: CameraCaptureSessionDelegate) {
+    init(
+        delegate: CameraCaptureSessionDelegate,
+        qrCodeSampleBufferScanner: QRCodeSampleBufferScanner
+    ) {
         self.delegate = delegate
+        self.videoCapture = VideoCapture(qrCodeSampleBufferScanner: qrCodeSampleBufferScanner)
 
         super.init()
 
@@ -1136,6 +1140,8 @@ private protocol VideoCaptureDelegate: AnyObject {
 
 private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
 
+    private var qrCodeSampleBufferScanner: QRCodeSampleBufferScanner
+
     let videoDataOutput = AVCaptureVideoDataOutput()
     let audioDataOutput = AVCaptureAudioDataOutput()
 
@@ -1161,7 +1167,8 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     private var timeOfFirstAppendedVideoSampleBuffer = CMTime.invalid
     private var timeOfLastAppendedVideoSampleBuffer = CMTime.invalid
 
-    override init() {
+    init(qrCodeSampleBufferScanner: QRCodeSampleBufferScanner) {
+        self.qrCodeSampleBufferScanner = qrCodeSampleBufferScanner
         super.init()
 
         videoDataOutput.alwaysDiscardsLateVideoFrames = false
@@ -1378,6 +1385,8 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard isAssetWriterAcceptingSampleBuffers.get() else {
+            // Scan for QR codes when _not_ recording.
+            qrCodeSampleBufferScanner.captureOutput(output, didOutput: sampleBuffer, from: connection)
             return
         }
 
