@@ -8,9 +8,9 @@ import SignalUI
 
 class MediaDownloadSettingsViewController: OWSTableViewController2 {
 
-    private let mediaDownloadType: MediaDownloadType
+    private let mediaDownloadType: MediaBandwidthPreferences.MediaType
 
-    public required init(mediaDownloadType: MediaDownloadType) {
+    public required init(mediaDownloadType: MediaBandwidthPreferences.MediaType) {
         self.mediaDownloadType = mediaDownloadType
 
         super.init()
@@ -31,10 +31,12 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
 
         let mediaDownloadType = self.mediaDownloadType
         let currentPreference = databaseStorage.read { transaction in
-            OWSAttachmentDownloads.mediaBandwidthPreference(forMediaDownloadType: mediaDownloadType,
-                                                          transaction: transaction)
+            DependenciesBridge.shared.mediaBandwidthPreferenceStore.preference(
+                for: mediaDownloadType,
+                tx: transaction.asV2Read
+            )
         }
-        let mediaBandwidthPreferences = MediaBandwidthPreference.allCases.sorted {
+        let mediaBandwidthPreferences = MediaBandwidthPreferences.Preference.allCases.sorted {
             $0.sortKey < $1.sortKey
         }
         for preference in mediaBandwidthPreferences {
@@ -42,9 +44,11 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
             section.add(OWSTableItem(text: preferenceName,
                         actionBlock: { [weak self] in
                             Self.databaseStorage.write { transaction in
-                                OWSAttachmentDownloads.set(mediaBandwidthPreference: preference,
-                                                           forMediaDownloadType: mediaDownloadType,
-                                                           transaction: transaction)
+                                DependenciesBridge.shared.mediaBandwidthPreferenceStore.set(
+                                    preference,
+                                    for: mediaDownloadType,
+                                    tx: transaction.asV2Write
+                                )
                             }
                             self?.navigationController?.popViewController(animated: true)
                         },
@@ -56,7 +60,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    public static func name(forMediaDownloadType value: MediaDownloadType) -> String {
+    public static func name(forMediaDownloadType value: MediaBandwidthPreferences.MediaType) -> String {
         switch value {
         case .photo:
             return OWSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO",
@@ -73,7 +77,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    public static func name(forMediaBandwidthPreference value: MediaBandwidthPreference) -> String {
+    public static func name(forMediaBandwidthPreference value: MediaBandwidthPreferences.Preference) -> String {
         switch value {
         case .never:
             return OWSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER",

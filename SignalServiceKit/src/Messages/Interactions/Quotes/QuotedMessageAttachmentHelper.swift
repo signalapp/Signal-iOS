@@ -82,7 +82,7 @@ internal protocol QuotedMessageAttachmentHelper: AnyObject {
     func attachmentPointerIdForDownloading(
         parentMessage: TSMessage,
         tx: SDSAnyReadTransaction
-    ) -> OWSAttachmentDownloads.AttachmentId?
+    ) -> String?
 
     func setDownloadedAttachmentStream(
         attachmentStream: TSAttachmentStream,

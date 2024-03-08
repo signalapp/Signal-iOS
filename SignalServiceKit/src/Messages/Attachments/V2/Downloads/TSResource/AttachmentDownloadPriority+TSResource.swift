@@ -8,7 +8,7 @@ import Foundation
 extension AttachmentDownloadPriority {
 
     /// V2 priority corresponds to old "behavior" in terms of which checks it bypasses.
-    var owsDownloadBehavior: AttachmentDownloadBehavior {
+    var tsDownloadBehavior: TSAttachmentDownloadBehavior {
         switch self {
         case .default:
             return .default

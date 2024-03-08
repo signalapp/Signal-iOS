@@ -8,7 +8,7 @@ import Foundation
 public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
 
     private let attachmentDownloadManager: AttachmentDownloadManager
-    private let owsDownloads = OWSAttachmentDownloads()
+    private let tsAttachmentDownloadManager = TSAttachmentDownloadManager()
     private let tsResourceStore: TSResourceStore
 
     public init(
@@ -75,9 +75,9 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
         if hasV2Ref && FeatureFlags.readV2Attachments {
             return attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, priority: priority, tx: tx)
         } else if hasLegacyRef {
-            return owsDownloads.enqueueDownloadOfAttachmentsForMessage(
+            return tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
-                downloadBehavior: priority.owsDownloadBehavior,
+                downloadBehavior: priority.tsDownloadBehavior,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         } else {
@@ -94,18 +94,18 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
     ) -> Promise<Void> {
         switch message.attachment {
         case .file:
-            return owsDownloads.enqueueDownloadOfAttachmentsForStoryMessage(
+            return tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
                 message,
-                downloadBehavior: priority.owsDownloadBehavior,
+                downloadBehavior: priority.tsDownloadBehavior,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         case .text(let attachment):
             if attachment.preview?.usesV2AttachmentReference == true {
                 return attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
             } else if attachment.preview?.legacyImageAttachmentId != nil {
-                return owsDownloads.enqueueDownloadOfAttachmentsForStoryMessage(
+                return tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
                     message,
-                    downloadBehavior: priority.owsDownloadBehavior,
+                    downloadBehavior: priority.tsDownloadBehavior,
                     transaction: SDSDB.shimOnlyBridge(tx)
                 )
             } else {
@@ -125,10 +125,10 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
         // Dispatch to a background queue because the legacy code uses non-awaitable
         // db writes, and therefore cannot be on a Task queue.
         let (downloadPromise, downloadFuture) = Promise<TSAttachmentStream>.pending()
-        DispatchQueue.sharedBackground.async { [owsDownloads] in
+        DispatchQueue.sharedBackground.async { [tsAttachmentDownloadManager] in
             downloadFuture.resolve(
                 on: SyncScheduler(),
-                with: owsDownloads.enqueueContactSyncDownload(attachmentPointer: attachmentPointer)
+                with: tsAttachmentDownloadManager.enqueueContactSyncDownload(attachmentPointer: attachmentPointer)
             )
         }
         return try await downloadPromise.awaitable()
@@ -137,7 +137,7 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
     public func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction) {
         switch attachmentId {
         case .legacy(let uniqueId):
-            owsDownloads.cancelDownload(attachmentId: uniqueId)
+            tsAttachmentDownloadManager.cancelDownload(attachmentId: uniqueId)
         case .v2(let rowId):
             attachmentDownloadManager.cancelDownload(for: rowId, tx: tx)
         }
@@ -146,7 +146,7 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
     public func downloadProgress(for attachmentId: TSResourceId, tx: DBReadTransaction) -> CGFloat? {
         switch attachmentId {
         case .legacy(let uniqueId):
-            return owsDownloads.downloadProgress(forAttachmentId: uniqueId)
+            return tsAttachmentDownloadManager.downloadProgress(forAttachmentId: uniqueId)
         case .v2(let rowId):
             return attachmentDownloadManager.downloadProgress(for: rowId, tx: tx)
         }

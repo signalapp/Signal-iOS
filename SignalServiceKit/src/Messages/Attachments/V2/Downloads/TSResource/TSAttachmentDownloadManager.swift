@@ -7,7 +7,7 @@ import Foundation
 import SignalCoreKit
 
 @objc
-public class OWSAttachmentDownloads: NSObject {
+public class TSAttachmentDownloadManager: NSObject {
 
     public typealias AttachmentId = String
 
@@ -128,10 +128,10 @@ public class OWSAttachmentDownloads: NSObject {
         _ pendingMessages: [String: UInt],
         store: SDSKeyValueStore,
         transaction: SDSAnyWriteTransaction,
-        enqueue: (String, AttachmentDownloadBehavior) -> Void
+        enqueue: (String, TSAttachmentDownloadBehavior) -> Void
     ) {
         for (uniqueId, rawDownloadBehavior) in pendingMessages {
-            guard let downloadBehavior = AttachmentDownloadBehavior(rawValue: rawDownloadBehavior) else {
+            guard let downloadBehavior = TSAttachmentDownloadBehavior(rawValue: rawDownloadBehavior) else {
                 owsFailDebug("Unexpected download behavior \(rawDownloadBehavior)")
                 store.removeValue(forKey: uniqueId, transaction: transaction)
                 continue
@@ -481,7 +481,8 @@ public class OWSAttachmentDownloads: NSObject {
             return true
         }
 
-        let autoDownloadableMediaTypes = Self.autoDownloadableMediaTypes(transaction: transaction)
+        let autoDownloadableMediaTypes = DependenciesBridge.shared.mediaBandwidthPreferenceStore
+            .autoDownloadableMediaTypes(tx: transaction.asV2Read)
 
         switch job.category {
         case .bodyMediaImage:
@@ -614,13 +615,13 @@ public class OWSAttachmentDownloads: NSObject {
 // MARK: - Settings
 
 @objc
-public enum AttachmentDownloadBehavior: UInt, Equatable {
+public enum TSAttachmentDownloadBehavior: UInt, Equatable {
     case `default`
     case bypassPendingMessageRequest
     case bypassPendingManualDownload
     case bypassAll
 
-    public static var defaultValue: MediaBandwidthPreference { .wifiAndCellular }
+    public static var defaultValue: MediaBandwidthPreferences.Preference { .wifiAndCellular }
 
     public var bypassPendingMessageRequest: Bool {
         switch self {
@@ -641,134 +642,9 @@ public enum AttachmentDownloadBehavior: UInt, Equatable {
     }
 }
 
-// MARK: -
-
-public enum MediaBandwidthPreference: UInt, Equatable, CaseIterable {
-    case never
-    case wifiOnly
-    case wifiAndCellular
-
-    public var sortKey: UInt {
-        switch self {
-        case .never:
-            return 1
-        case .wifiOnly:
-            return 2
-        case .wifiAndCellular:
-            return 3
-        }
-    }
-}
-
-// MARK: -
-
-public enum MediaDownloadType: String, Equatable, CaseIterable {
-    case photo
-    case video
-    case audio
-    case document
-
-    public var defaultPreference: MediaBandwidthPreference {
-        switch self {
-        case .photo:
-            return .wifiAndCellular
-        case .video:
-            return .wifiOnly
-        case .audio:
-            return .wifiAndCellular
-        case .document:
-            return .wifiOnly
-        }
-    }
-
-    public var sortKey: UInt {
-        switch self {
-        case .photo:
-            return 1
-        case .video:
-            return 2
-        case .audio:
-            return 3
-        case .document:
-            return 4
-        }
-    }
-}
-
-// MARK: -
-
-public extension OWSAttachmentDownloads {
-
-    private static let keyValueStore = SDSKeyValueStore(collection: "MediaBandwidthPreferences")
-
-    static let mediaBandwidthPreferencesDidChange = Notification.Name("MediaBandwidthPreferencesDidChange")
-
-    static func set(mediaBandwidthPreference: MediaBandwidthPreference,
-                    forMediaDownloadType mediaDownloadType: MediaDownloadType,
-                    transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setUInt(mediaBandwidthPreference.rawValue,
-                              key: mediaDownloadType.rawValue,
-                              transaction: transaction)
-
-        transaction.addAsyncCompletionOffMain {
-            NotificationCenter.default.postNotificationNameAsync(mediaBandwidthPreferencesDidChange, object: nil)
-        }
-    }
-
-    static func mediaBandwidthPreference(forMediaDownloadType mediaDownloadType: MediaDownloadType,
-                                         transaction: SDSAnyReadTransaction) -> MediaBandwidthPreference {
-        guard let rawValue = keyValueStore.getUInt(mediaDownloadType.rawValue,
-                                                   transaction: transaction) else {
-            return mediaDownloadType.defaultPreference
-        }
-        guard let value = MediaBandwidthPreference(rawValue: rawValue) else {
-            owsFailDebug("Invalid value: \(rawValue)")
-            return mediaDownloadType.defaultPreference
-        }
-        return value
-    }
-
-    static func resetMediaBandwidthPreferences(transaction: SDSAnyWriteTransaction) {
-        for mediaDownloadType in MediaDownloadType.allCases {
-            keyValueStore.removeValue(forKey: mediaDownloadType.rawValue, transaction: transaction)
-        }
-        transaction.addAsyncCompletionOffMain {
-            NotificationCenter.default.postNotificationNameAsync(mediaBandwidthPreferencesDidChange, object: nil)
-        }
-    }
-
-    static func loadMediaBandwidthPreferences(transaction: SDSAnyReadTransaction) -> [MediaDownloadType: MediaBandwidthPreference] {
-        var result = [MediaDownloadType: MediaBandwidthPreference]()
-        for mediaDownloadType in MediaDownloadType.allCases {
-            result[mediaDownloadType] = mediaBandwidthPreference(forMediaDownloadType: mediaDownloadType,
-                                                                 transaction: transaction)
-        }
-        return result
-    }
-
-    private static func autoDownloadableMediaTypes(transaction: SDSAnyReadTransaction) -> Set<MediaDownloadType> {
-        let preferenceMap = loadMediaBandwidthPreferences(transaction: transaction)
-        let hasWifiConnection = reachabilityManager.isReachable(via: .wifi)
-        var result = Set<MediaDownloadType>()
-        for (mediaDownloadType, preference) in preferenceMap {
-            switch preference {
-            case .never:
-                continue
-            case .wifiOnly:
-                if hasWifiConnection {
-                    result.insert(mediaDownloadType)
-                }
-            case .wifiAndCellular:
-                result.insert(mediaDownloadType)
-            }
-        }
-        return result
-    }
-}
-
 // MARK: - Enqueue
 
-public extension OWSAttachmentDownloads {
+public extension TSAttachmentDownloadManager {
 
     func enqueueContactSyncDownload(attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
         let jobRequest = ContactSyncJobRequest(attachmentPointer: attachmentPointer)
@@ -779,7 +655,7 @@ public extension OWSAttachmentDownloads {
     private func enqueueDownload(jobRequest: JobRequest) {
         guard !CurrentAppContext().isRunningTests else {
             jobRequest.jobs.forEach {
-                $0.future.reject(OWSAttachmentDownloads.buildError())
+                $0.future.reject(TSAttachmentDownloadManager.buildError())
             }
             return
         }
@@ -816,7 +692,7 @@ public extension OWSAttachmentDownloads {
 
     func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
-        downloadBehavior: AttachmentDownloadBehavior,
+        downloadBehavior: TSAttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
         // No attachments, nothing to do.
@@ -831,7 +707,7 @@ public extension OWSAttachmentDownloads {
 
     private func enqueueDownloadOfAttachmentsForMessageId(
         _ messageId: String,
-        downloadBehavior: AttachmentDownloadBehavior,
+        downloadBehavior: TSAttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
         // If we're not the main app, queue up the download for the next time
@@ -870,7 +746,7 @@ public extension OWSAttachmentDownloads {
     func enqueueDownloadOfAttachments(
         forMessageId messageId: String,
         attachmentGroup: AttachmentGroup,
-        downloadBehavior: AttachmentDownloadBehavior,
+        downloadBehavior: TSAttachmentDownloadBehavior,
         future: Future<Void>
     ) {
         guard !CurrentAppContext().isRunningTests else {
@@ -917,7 +793,7 @@ public extension OWSAttachmentDownloads {
     private func buildMessageJobRequest(
         for messageId: String,
         attachmentGroup: AttachmentGroup,
-        downloadBehavior: AttachmentDownloadBehavior,
+        downloadBehavior: TSAttachmentDownloadBehavior,
         tx: SDSAnyReadTransaction
     ) -> MessageJobRequest? {
         guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: tx) else {
@@ -960,7 +836,7 @@ public extension OWSAttachmentDownloads {
 
     func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
-        downloadBehavior: AttachmentDownloadBehavior,
+        downloadBehavior: TSAttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
         // No attachment, nothing to do.
@@ -975,7 +851,7 @@ public extension OWSAttachmentDownloads {
 
     private func enqueueDownloadOfAttachmentsForStoryMessageId(
         _ storyMessageId: String,
-        downloadBehavior: AttachmentDownloadBehavior,
+        downloadBehavior: TSAttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
         // If we're not the main app, queue up the download for the next time
@@ -1014,7 +890,7 @@ public extension OWSAttachmentDownloads {
     @discardableResult
     func enqueueDownloadOfAttachments(
         forStoryMessageId storyMessageId: String,
-        downloadBehavior: AttachmentDownloadBehavior
+        downloadBehavior: TSAttachmentDownloadBehavior
     ) -> Promise<Void> {
         guard !CurrentAppContext().isRunningTests else {
             return .value(())

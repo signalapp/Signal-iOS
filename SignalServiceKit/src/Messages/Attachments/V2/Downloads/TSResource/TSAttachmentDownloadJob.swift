@@ -6,17 +6,17 @@
 import Foundation
 
 /// Represents a collection of download requests (usually all spawned from one source).
-internal protocol OWSAttachmentDownloadJobRequest {
+internal protocol TSAttachmentDownloadJobRequest {
 
-    var jobs: [OWSAttachmentDownloads.Job] { get }
+    var jobs: [TSAttachmentDownloadManager.Job] { get }
 }
 
-extension OWSAttachmentDownloadJobRequest {
+extension TSAttachmentDownloadJobRequest {
 
     var isEmpty: Bool { jobs.isEmpty }
 }
 
-extension OWSAttachmentDownloads {
+extension TSAttachmentDownloadManager {
 
     internal enum JobType {
         case messageAttachment(attachmentId: AttachmentId, messageUniqueId: String)
@@ -37,9 +37,9 @@ extension OWSAttachmentDownloads {
 
     // MARK: - JobRequests
 
-    internal typealias JobRequest = OWSAttachmentDownloadJobRequest
+    internal typealias JobRequest = TSAttachmentDownloadJobRequest
 
-    internal struct ContactSyncJobRequest: OWSAttachmentDownloadJobRequest {
+    internal struct ContactSyncJobRequest: TSAttachmentDownloadJobRequest {
 
         let job: Job
 
@@ -55,7 +55,7 @@ extension OWSAttachmentDownloads {
         }
     }
 
-    internal struct StoryMessageJobRequest: OWSAttachmentDownloadJobRequest {
+    internal struct StoryMessageJobRequest: TSAttachmentDownloadJobRequest {
 
         // Stories only ever have one attachment.
         let job: Job
@@ -64,7 +64,7 @@ extension OWSAttachmentDownloads {
 
         init?(
             storyMessage: StoryMessage,
-            downloadBehavior: AttachmentDownloadBehavior,
+            downloadBehavior: TSAttachmentDownloadBehavior,
             tx: SDSAnyReadTransaction
         ) {
             let attachmentPointer: TSAttachmentPointer? = {
@@ -116,7 +116,7 @@ extension OWSAttachmentDownloads {
         }
     }
 
-    internal struct MessageJobRequest: OWSAttachmentDownloadJobRequest {
+    internal struct MessageJobRequest: TSAttachmentDownloadJobRequest {
         // Not every attachment may get a job, if some are downloaded or are duplicates.
         private let bodyAttachmentJobs: [Job]
         // But every body attachment that can be downloaded gets a promise, including
@@ -135,7 +135,7 @@ extension OWSAttachmentDownloads {
         private let stickerJob: Job?
         let stickerPromise: Promise<TSAttachmentStream>?
 
-        var jobs: [OWSAttachmentDownloads.Job] {
+        var jobs: [TSAttachmentDownloadManager.Job] {
             return (
                 bodyAttachmentJobs
                 + [linkPreviewJob]
@@ -148,7 +148,7 @@ extension OWSAttachmentDownloads {
         init(
             message: TSMessage,
             attachmentGroup: AttachmentGroup,
-            downloadBehavior: AttachmentDownloadBehavior,
+            downloadBehavior: TSAttachmentDownloadBehavior,
             tx: SDSAnyReadTransaction
         ) {
             // From attachment unique id to the promise on the job created for it.
@@ -299,7 +299,7 @@ extension OWSAttachmentDownloads {
     internal class Job {
         let jobType: JobType
         let category: AttachmentCategory
-        let downloadBehavior: AttachmentDownloadBehavior
+        let downloadBehavior: TSAttachmentDownloadBehavior
 
         let promise: Promise<TSAttachmentStream>
         let future: Future<TSAttachmentStream>
@@ -310,7 +310,7 @@ extension OWSAttachmentDownloads {
         init(
             jobType: JobType,
             category: AttachmentCategory,
-            downloadBehavior: AttachmentDownloadBehavior
+            downloadBehavior: TSAttachmentDownloadBehavior
         ) {
 
             self.jobType = jobType
@@ -330,7 +330,7 @@ extension OWSAttachmentDownloads {
 
 private extension TSAttachmentPointer {
 
-    var downloadCategoryForMimeType: OWSAttachmentDownloads.AttachmentCategory {
+    var downloadCategoryForMimeType: TSAttachmentDownloadManager.AttachmentCategory {
         // Story messages cant be voice message, so no `bodyAudioVoiceMemo`
         if isImageMimeType {
             return .bodyMediaImage

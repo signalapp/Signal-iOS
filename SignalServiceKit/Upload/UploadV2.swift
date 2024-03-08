@@ -58,7 +58,7 @@ extension Upload.CDN0 {
         let dataFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         try data.write(to: dataFileUrl)
 
-        let cdn0UrlSession = OWSAttachmentDownloads.signalService.urlSessionForCdn(cdnNumber: 0)
+        let cdn0UrlSession = NSObject.signalService.urlSessionForCdn(cdnNumber: 0)
         // urlPath is "" for all endpoints that still use CDN0
         let request = try cdn0UrlSession.endpoint.buildRequest("", method: .post)
 

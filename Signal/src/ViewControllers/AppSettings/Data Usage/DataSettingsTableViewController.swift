@@ -17,7 +17,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(preferencesDidChange),
-            name: OWSAttachmentDownloads.mediaBandwidthPreferencesDidChange,
+            name: MediaBandwidthPreferences.mediaBandwidthPreferencesDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -42,16 +42,16 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             comment: "Footer for the 'media auto-download' section in the data settings."
         )
 
-        let mediaDownloadTypes = MediaDownloadType.allCases.sorted {
+        let mediaDownloadTypes = MediaBandwidthPreferences.MediaType.allCases.sorted {
             $0.sortKey < $1.sortKey
         }
         var hasNonDefaultValue = false
         for mediaDownloadType in mediaDownloadTypes {
             let name = MediaDownloadSettingsViewController.name(forMediaDownloadType: mediaDownloadType)
             let bandwidthPreference = databaseStorage.read { transaction in
-                OWSAttachmentDownloads.mediaBandwidthPreference(
-                    forMediaDownloadType: mediaDownloadType,
-                    transaction: transaction
+                DependenciesBridge.shared.mediaBandwidthPreferenceStore.preference(
+                    for: mediaDownloadType,
+                    tx: transaction.asV2Read
                 )
             }
             let preferenceName = MediaDownloadSettingsViewController.name(forMediaBandwidthPreference: bandwidthPreference)
@@ -81,7 +81,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 accessibilityIdentifier: resetAccessibilityIdentifier
             ) {
                 Self.databaseStorage.asyncWrite { transaction in
-                    OWSAttachmentDownloads.resetMediaBandwidthPreferences(transaction: transaction)
+                    DependenciesBridge.shared.mediaBandwidthPreferenceStore.resetPreferences(tx: transaction.asV2Write)
                 }
             })
         } else {
@@ -178,7 +178,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func showMediaDownloadView(forMediaDownloadType value: MediaDownloadType) {
+    private func showMediaDownloadView(forMediaDownloadType value: MediaBandwidthPreferences.MediaType) {
         let view = MediaDownloadSettingsViewController(mediaDownloadType: value)
         navigationController?.pushViewController(view, animated: true)
     }

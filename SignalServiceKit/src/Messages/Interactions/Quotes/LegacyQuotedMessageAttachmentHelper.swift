@@ -84,7 +84,7 @@ internal class LegacyQuotedMessageAttachmentHelper: QuotedMessageAttachmentHelpe
     func attachmentPointerIdForDownloading(
         parentMessage: TSMessage,
         tx: SDSAnyReadTransaction
-    ) -> OWSAttachmentDownloads.AttachmentId? {
+    ) -> String? {
 
         guard let info else {
             return nil

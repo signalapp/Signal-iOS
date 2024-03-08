@@ -70,7 +70,7 @@ internal class QuotedMessageAttachmentHelperImpl: QuotedMessageAttachmentHelper 
     func attachmentPointerIdForDownloading(
         parentMessage: TSMessage,
         tx: SDSAnyReadTransaction
-    ) -> OWSAttachmentDownloads.AttachmentId? {
+    ) -> String? {
         // TODO: fetch from the AttachmentReferences table, and check that the
         // contentType column is nil (undownloaded), if so return the id,
         // otherwise return nil
