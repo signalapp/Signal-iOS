@@ -237,7 +237,6 @@
 		34612A071FD7238600532771 /* OWSSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34612A051FD7238500532771 /* OWSSyncManager.m */; };
 		34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463532E256EA525003C5428 /* ConversationViewTest.swift */; };
 		34635332257549F2003C5428 /* CVReactionCountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34635331257549F1003C5428 /* CVReactionCountsView.swift */; };
-		34641E182088D7E900E2EDE5 /* ScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641E172088D7E900E2EDE5 /* ScreenLock.swift */; };
 		3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947D2434CCC100E5C510 /* NewGroupConfirmViewController.swift */; };
 		346594802434D49F00E5C510 /* NewGroupState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947F2434D49F00E5C510 /* NewGroupState.swift */; };
 		346594822434D5E000E5C510 /* GroupAttributesEditorHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346594812434D5E000E5C510 /* GroupAttributesEditorHelper.swift */; };
@@ -875,7 +874,6 @@
 		6673FF87297B694C00F96CFD /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF86297B694C00F96CFD /* DB.swift */; };
 		6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF88297B6AF800F96CFD /* DBTransaction.swift */; };
 		6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF8A297B6FA800F96CFD /* SDSDB.swift */; };
-		6675F64D2925C012007A311E /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		6675F64F29261C39007A311E /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64E29261C39007A311E /* SyncPushTokensJob.swift */; };
 		6675F65129261E0C007A311E /* APNSRotationStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */; };
 		667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664352A43BBCD00716B84 /* OWSFingerprint.swift */; };
@@ -1083,6 +1081,8 @@
 		72C9058D2B9AC81B00E586B8 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */; };
 		72C905902B9AC9F300E586B8 /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
+		72C905912B9ACA3D00E586B8 /* ScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641E172088D7E900E2EDE5 /* ScreenLock.swift */; };
+		72C905932B9ACAC500E586B8 /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -5792,7 +5792,6 @@
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
-				34641E172088D7E900E2EDE5 /* ScreenLock.swift */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
 			);
 			path = utils;
@@ -10765,6 +10764,7 @@
 				F9C5CB45289453B200548EEE /* RemoteConfigManager.swift */,
 				502C69732B06F0A400012867 /* Result.swift */,
 				F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */,
+				34641E172088D7E900E2EDE5 /* ScreenLock.swift */,
 				F9C5CB1C289453B200548EEE /* SDS+SSK.swift */,
 				F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */,
 				6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */,
@@ -12350,7 +12350,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				179E8C31276A711100AF640F /* AFQueryString.m in Sources */,
-				6675F64D2925C012007A311E /* APNSRotationStore.swift in Sources */,
+				72C905932B9ACAC500E586B8 /* APNSRotationStore.swift in Sources */,
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
 				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
@@ -12391,7 +12391,6 @@
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				886A58CB276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift in Sources */,
 				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
-				34641E182088D7E900E2EDE5 /* ScreenLock.swift in Sources */,
 				F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */,
 				D9668B33291B03C200665298 /* SessionResetJob.swift in Sources */,
 				D9668B35291B088200665298 /* SignalMessagingJobQueues.swift in Sources */,
@@ -13783,6 +13782,7 @@
 				F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */,
 				F945FE4A2984796D00C835C7 /* RingrtcFieldTrials.swift in Sources */,
 				6600F37E298F27C600B1EDB7 /* Schedulers.swift in Sources */,
+				72C905912B9ACA3D00E586B8 /* ScreenLock.swift in Sources */,
 				7255A4D22B98E2B700E95368 /* ScrubbingLogFormatter.swift in Sources */,
 				F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */,
 				D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */,
