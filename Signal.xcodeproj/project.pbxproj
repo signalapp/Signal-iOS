@@ -20,8 +20,6 @@
 		1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */; };
 		1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */; };
 		173878BE256341BB00AD39C7 /* SessionMigrationPerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */; };
-		179E8C31276A711100AF640F /* AFQueryString.m in Sources */ = {isa = PBXBuildFile; fileRef = 179E8C30276A711100AF640F /* AFQueryString.m */; };
-		179E8C33276A713300AF640F /* AFQueryString.h in Headers */ = {isa = PBXBuildFile; fileRef = 179E8C32276A713300AF640F /* AFQueryString.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		17ACF11E267D71E0009BE867 /* AudioSession+WebRTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ACF11D267D71E0009BE867 /* AudioSession+WebRTC.swift */; };
 		17B78E0E260529E900E24A9E /* newlyInitializedSessionState in Resources */ = {isa = PBXBuildFile; fileRef = 17B78E0C2605299E00E24A9E /* newlyInitializedSessionState */; };
 		17E6049028A17BD300127680 /* ZkGroupIntegrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E6048F28A17BD200127680 /* ZkGroupIntegrationTest.swift */; };
@@ -2739,8 +2737,6 @@
 		1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentTest.swift; sourceTree = "<group>"; };
 		1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg-rotated.jpg"; sourceTree = "<group>"; };
 		173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionMigrationPerfTest.swift; sourceTree = "<group>"; };
-		179E8C30276A711100AF640F /* AFQueryString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AFQueryString.m; sourceTree = "<group>"; };
-		179E8C32276A713300AF640F /* AFQueryString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFQueryString.h; sourceTree = "<group>"; };
 		17ACF11D267D71E0009BE867 /* AudioSession+WebRTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioSession+WebRTC.swift"; sourceTree = "<group>"; };
 		17B78E0C2605299E00E24A9E /* newlyInitializedSessionState */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = newlyInitializedSessionState; sourceTree = "<group>"; };
 		17E6048F28A17BD200127680 /* ZkGroupIntegrationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkGroupIntegrationTest.swift; sourceTree = "<group>"; };
@@ -5814,8 +5810,6 @@
 			isa = PBXGroup;
 			children = (
 				883A7FD0269F640D00841DF9 /* Avatars */,
-				179E8C32276A713300AF640F /* AFQueryString.h */,
-				179E8C30276A711100AF640F /* AFQueryString.m */,
 				6675F64C2925C012007A311E /* APNSRotationStore.swift */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
@@ -10980,7 +10974,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				179E8C33276A713300AF640F /* AFQueryString.h in Headers */,
 				346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */,
 				34612A061FD7238600532771 /* OWSSyncManager.h in Headers */,
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
@@ -12399,7 +12392,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				179E8C31276A711100AF640F /* AFQueryString.m in Sources */,
 				72C905932B9ACAC500E586B8 /* APNSRotationStore.swift in Sources */,
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,

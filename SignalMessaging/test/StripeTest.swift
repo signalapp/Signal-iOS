@@ -91,18 +91,26 @@ final class StripeTest: XCTestCase {
     }
 
     func testParameterEncoding() {
-        var params: [String: Any] = ["foo": "bar", "abc": "123"]
-        XCTAssertEqual("abc=123&foo=bar", Stripe.queryStringFromParameters(params))
+        XCTAssertNoThrow(try {
+            let params: [String: any StripeQueryParamValue] = ["foo": "bar", "abc": "123"]
+            XCTAssertEqual("abc=123&foo=bar", try params.encodeStripeQueryParamValueToString())
+        }())
 
-        params = ["foo": ["b": "de&f", "a": "12=3"], "and": "more"]
-        XCTAssertEqual("and=more&foo%5Ba%5D=12%3D3&foo%5Bb%5D=de%26f", Stripe.queryStringFromParameters(params))
+        XCTAssertNoThrow(try {
+            let params: [String: any StripeQueryParamValue] = ["foo": ["b": "de&f", "a": "12=3"], "and": "more"]
+            XCTAssertEqual("and=more&foo%5Ba%5D=12%3D3&foo%5Bb%5D=de%26f", try params.encodeStripeQueryParamValueToString())
+        }())
 
-        params = ["fo=o": ["a": nil, "b": "def"], "t#e/s?t": "123"]
-        XCTAssertEqual("fo%3Do%5Ba%5D&fo%3Do%5Bb%5D=def&t%23e/s?t=123", Stripe.queryStringFromParameters(params))
+        XCTAssertNoThrow(try {
+            let params: [String: any StripeQueryParamValue] = ["fo=o": ["a": NSNull(), "b": "def"], "t#e/s?t": "123"]
+            XCTAssertEqual("fo%3Do%5Ba%5D&fo%3Do%5Bb%5D=def&t%23e/s?t=123", try params.encodeStripeQueryParamValueToString())
+        }())
 
-        params = ["te:#[]@!$&'()*+,;=st": "valid:#[]@!$&'()*+,;=value"]
-        XCTAssertEqual("te%3A%23%5B%5D%40%21%24%26%27%28%29%2A%2B%2C%3B%3Dst=valid%3A%23%5B%5D%40%21%24%26%27%28%29%2A%2B%2C%3B%3Dvalue",
-                       Stripe.queryStringFromParameters(params))
+        XCTAssertNoThrow(try {
+            let params: [String: any StripeQueryParamValue] = ["te:#[]@!$&'()*+,;=st": "valid:#[]@!$&'()*+,;=value"]
+            XCTAssertEqual("te%3A%23%5B%5D%40%21%24%26%27%28%29%2A%2B%2C%3B%3Dst=valid%3A%23%5B%5D%40%21%24%26%27%28%29%2A%2B%2C%3B%3Dvalue",
+                           try params.encodeStripeQueryParamValueToString())
+        }())
     }
 }
 

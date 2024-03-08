@@ -145,14 +145,14 @@ public struct Stripe: Dependencies {
     }
 
     private static func requestPaymentMethod(
-        with tokenizationParameters: [String: any Encodable]
+        with tokenizationParameters: [String: any StripeQueryParamValue]
     ) -> Promise<HTTPResponse> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<API.Token> in
             // Step 3: Payment source tokenization
             API.createToken(with: tokenizationParameters)
         }.then(on: DispatchQueue.sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
             // Step 4: Payment method creation
-            let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
+            let parameters: [String: any StripeQueryParamValue] = ["card": ["token": tokenId], "type": "card"]
             return try API.postForm(endpoint: "payment_methods", parameters: parameters)
         }
     }
@@ -290,8 +290,8 @@ fileprivate extension Stripe {
 
         // MARK: Common Stripe integrations
 
-        static func parameters(for payment: PKPayment) -> [String: any Encodable] {
-            var parameters = [String: any Encodable]()
+        static func parameters(for payment: PKPayment) -> [String: any StripeQueryParamValue] {
+            var parameters = [String: any StripeQueryParamValue]()
             parameters["pk_token"] = String(data: payment.token.paymentData, encoding: .utf8)
 
             if let billingContact = payment.billingContact {
@@ -312,7 +312,7 @@ fileprivate extension Stripe {
             return parameters
         }
 
-        static func parameters(for contact: PKContact) -> [String: String] {
+        static func parameters(for contact: PKContact) -> [String: any StripeQueryParamValue] {
             var parameters = [String: String]()
 
             if let name = contact.name {
@@ -358,7 +358,7 @@ fileprivate extension Stripe {
         typealias Token = String
 
         /// Step 3 of the process. Payment source tokenization
-        static func createToken(with tokenizationParameters: [String: any Encodable]) -> Promise<Token> {
+        static func createToken(with tokenizationParameters: [String: any StripeQueryParamValue]) -> Promise<Token> {
             firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
                 return try postForm(endpoint: "tokens", parameters: tokenizationParameters)
             }.map(on: DispatchQueue.sharedUserInitiated) { response in
@@ -374,9 +374,9 @@ fileprivate extension Stripe {
 
         /// Make a `POST` request to the Stripe API.
         static func postForm(endpoint: String,
-                             parameters: [String: Any],
+                             parameters: [String: any StripeQueryParamValue],
                              idempotencyKey: String? = nil) throws -> Promise<HTTPResponse> {
-            guard let formData = queryStringFromParameters(parameters).data(using: .utf8) else {
+            guard let formData = try parameters.encodeStripeQueryParamValueToString().data(using: .utf8) else {
                 throw OWSAssertionError("Failed to generate post body data")
             }
 
@@ -395,21 +395,55 @@ fileprivate extension Stripe {
                 body: formData
             )
         }
+    }
+}
 
-        static func queryStringFromParameters(_ parameters: [String: Any]) -> String {
-            AFQueryStringFromParameters(parameters)
+// MARK: - Encoding URL query parameters
+private func percentEncodeStringForQueryParam(_ string: String) throws -> String {
+    // characters not allowed taken from RFC 3986 Section 2.1 with exceptions for ? and / from RFC 3986 Section 3.4
+    var charactersAllowed = CharacterSet.urlQueryAllowed
+    charactersAllowed.remove(charactersIn: ":#[]@!$&'()*+,;=")
+    guard let result = string.addingPercentEncoding(withAllowedCharacters: charactersAllowed) else {
+        throw OWSAssertionError("string percent encoding for query param failed")
+    }
+    return result
+}
+
+/// This protocol is only exposed internal to the module for testing. Do not use.
+protocol StripeQueryParamValue {
+    func encodeStripeQueryParamValueToString(key: String) throws -> String
+}
+
+extension String: StripeQueryParamValue {
+    func encodeStripeQueryParamValueToString(key: String) throws -> String {
+        let keyEncoded = try percentEncodeStringForQueryParam(key)
+        let valueEncoded = try percentEncodeStringForQueryParam(self)
+        return "\(keyEncoded)=\(valueEncoded)"
+    }
+}
+
+extension NSNull: StripeQueryParamValue {
+    func encodeStripeQueryParamValueToString(key: String) throws -> String {
+        return try percentEncodeStringForQueryParam(key)
+    }
+}
+
+extension Dictionary<String, any StripeQueryParamValue>: StripeQueryParamValue {
+    func encodeStripeQueryParamValueToString(key: String = "") throws -> String {
+        var pairs: [String] = []
+        for subKey in keys.sorted() {
+            let value = self[subKey]!
+            let keyName: String
+            if key.isEmpty {
+                keyName = subKey
+            } else {
+                keyName = "\(key)[\(subKey)]"
+            }
+            pairs.append(try value.encodeStripeQueryParamValueToString(key: keyName))
         }
+        return pairs.joined(separator: "&")
     }
 }
-
-// MARK: - Expose API function for testing in DEBUG
-#if DEBUG
-extension Stripe {
-    static func queryStringFromParameters(_ parameters: [String: Any]) -> String {
-        API.queryStringFromParameters(parameters)
-    }
-}
-#endif
 
 // MARK: - Converting to StripeError
 

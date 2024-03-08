@@ -68,7 +68,7 @@ public extension Stripe {
                 self.mode = mode
             }
 
-            var parameters: [String: any Encodable] {
+            var parameters: [String: String] {
                 switch mode {
                 case .online(let userAgent, let ipAddress):
                     return [
