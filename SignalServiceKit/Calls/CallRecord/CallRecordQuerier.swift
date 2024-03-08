@@ -284,10 +284,7 @@ class CallRecordQuerierImpl: CallRecordQuerier {
                 arguments: StatementArguments(sqlArgs)
             ))
 
-            return GRDBCallRecordCursor(
-                grdbRecordCursor: grdbRecordCursor,
-                ordering: ordering.callRecordCursorOrdering
-            )
+            return GRDBCallRecordCursor(grdbRecordCursor: grdbRecordCursor)
         } catch let error {
             let columns = columnArgs.map { $0.column }
             owsFailBeta("Error fetching CallRecord by \(columns): \(error.grdbErrorForLogging)")
@@ -342,15 +339,6 @@ class CallRecordQuerierImpl: CallRecordQuerier {
             """,
             sqlArgs: columnArgs.map { $0.arg }
         )
-    }
-}
-
-public extension CallRecordQuerier.FetchOrdering {
-    var callRecordCursorOrdering: CallRecordCursor.Ordering {
-        switch self {
-        case .descending, .descendingBefore: return .descending
-        case .ascendingAfter: return .ascending
-        }
     }
 }
 

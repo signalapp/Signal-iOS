@@ -18,8 +18,8 @@ private protocol CallCellDelegate: AnyObject {
 // MARK: - CallsListViewController
 
 class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceObserver {
-    private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallRecord.ID>
-    private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallRecord.ID>
+    private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallViewModel.Reference>
+    private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallViewModel.Reference>
 
     private enum Constants {
         /// The maximum number of search results to match.
@@ -241,12 +241,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             return
         }
 
-        let selectedViewModelIds: [CallRecord.ID] = selectedRows.compactMap { idxPath in
-            return calls.allLoadedViewModelIds[safe: idxPath.row]
+        let selectedViewModelReferences: [CallViewModel.Reference] = selectedRows.map { idxPath in
+            viewModelLoader.loadedViewModelReferences[index: idxPath.row]
         }
-        owsAssertBeta(selectedRows.count == selectedViewModelIds.count)
 
-        deleteCalls(viewModelIds: selectedViewModelIds)
+        deleteCalls(viewModelReferences: selectedViewModelReferences)
     }
 
     // MARK: New call button
@@ -448,12 +447,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             owsFail("Unexpectedly failed to instantiate group call interaction updated notification!")
         }
 
-        let viewModelIdForGroupCall = CallRecord.ID(
+        let callRecordIdForGroupCall = CallRecord.ID(
             callId: notification.callId,
             threadRowId: notification.groupThreadRowId
         )
 
-        reloadRows(forIdentifiers: [viewModelIdForGroupCall])
+        reloadRows(callRecordIds: [callRecordIdForGroupCall])
     }
 
     @objc
@@ -466,14 +465,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case .inserted:
             newCallRecordWasInserted()
         case .deleted(let callRecordIds):
-            existingCallRecordsWereDeleted(
-                recordIds: callRecordIds
-            )
-        case .statusUpdated(let record):
-            callRecordStatusWasUpdated(
-                callId: record.callId,
-                threadRowId: record.threadRowId
-            )
+            existingCallRecordsWereDeleted(callRecordIds: callRecordIds)
+        case .statusUpdated(let callRecordId):
+            callRecordStatusWasUpdated(callRecordId: callRecordId)
         }
     }
 
@@ -508,8 +502,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
     }
 
-    private func existingCallRecordsWereDeleted(recordIds: [CallRecord.ID]) {
-        calls.dropViewModels(ids: recordIds)
+    private func existingCallRecordsWereDeleted(callRecordIds: [CallRecord.ID]) {
+        deps.db.read { tx in
+            viewModelLoader.dropCalls(
+                matching: callRecordIds, tx: tx.asV2Read
+            )
+        }
+
         updateSnapshot(animated: true)
     }
 
@@ -521,16 +520,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// accepted on another device. The other device will tell us it accepted
     /// via a sync message, and we should update this view to reflect the
     /// accepted call.
-    private func callRecordStatusWasUpdated(
-        callId: UInt64,
-        threadRowId: Int64
-    ) {
-        let viewModelIdForUpdatedRecord = CallRecord.ID(
-            callId: callId,
-            threadRowId: threadRowId
-        )
-
-        reloadRows(forIdentifiers: [viewModelIdForUpdatedRecord])
+    private func callRecordStatusWasUpdated(callRecordId: CallRecord.ID) {
+        reloadRows(callRecordIds: [callRecordId])
     }
 
     // MARK: CallServiceObserver
@@ -542,11 +533,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// Recall that any 1:1 call we are not actively joined to has ended, and
     /// that that is not the case for group calls.
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
-        let callViewModelIdsToReload = [oldValue, newValue].compactMap { call -> CallRecord.ID? in
-            return call?.callViewModelId
+        let callRecordIdsToReload = [oldValue, newValue].compactMap { call -> CallRecord.ID? in
+            return call?.callRecordId
         }
 
-        reloadRows(forIdentifiers: callViewModelIdsToReload)
+        reloadRows(callRecordIds: callRecordIdsToReload)
     }
 
     // MARK: - Clear missed calls
@@ -585,15 +576,15 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     // MARK: - Call loading
 
-    private var _calls: LoadedCalls!
-    private var calls: LoadedCalls! {
+    private var _viewModelLoader: ViewModelLoader!
+    private var viewModelLoader: ViewModelLoader! {
         get {
             AssertIsOnMainThread()
-            return _calls
+            return _viewModelLoader
         }
         set(newValue) {
             AssertIsOnMainThread()
-            _calls = newValue
+            _viewModelLoader = newValue
         }
     }
 
@@ -620,7 +611,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let loadIdentifier = loadCallRecordsAnewToken.rotate()
 
         deps.db.asyncRead(
-            block: { tx -> CallRecordLoader.Configuration in
+            block: { tx -> CallRecordLoaderImpl.Configuration in
                 if let searchTerm {
                     var threadRowIdsMatchingSearchTerm = Set<Int64>()
                     let addresses = self.deps.searchableNameFinder.searchNames(
@@ -650,12 +641,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                         threadRowIdsMatchingSearchTerm.insert(sqliteRowId)
                     }
 
-                    return CallRecordLoader.Configuration(
+                    return CallRecordLoaderImpl.Configuration(
                         onlyLoadMissedCalls: onlyLoadMissedCalls,
                         onlyMatchThreadRowIds: Array(threadRowIdsMatchingSearchTerm)
                     )
                 } else {
-                    return CallRecordLoader.Configuration(
+                    return CallRecordLoaderImpl.Configuration(
                         onlyLoadMissedCalls: onlyLoadMissedCalls,
                         onlyMatchThreadRowIds: nil
                     )
@@ -671,15 +662,39 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 }
 
                 // Build a loader for this view's current state.
-                let callRecordLoader = CallRecordLoader(
+                let callRecordLoader = CallRecordLoaderImpl(
                     callRecordQuerier: self.deps.callRecordQuerier,
                     configuration: configuration
                 )
 
+                /// We don't want to capture self in the blocks we pass to the
+                /// view model loader (and thereby create a retain cycle), so
+                /// instead we'll early-capture just the dependencies those
+                /// blocks actually need and give them a copy.
+                let capturedDeps = self.deps
+
                 // Reset our loaded calls.
-                self.calls = LoadedCalls(
+                self.viewModelLoader = ViewModelLoader(
                     callRecordLoader: callRecordLoader,
-                    createCallViewModelBlock: self.createCallViewModel
+                    createCallViewModelBlock: { primaryCallRecord, coalescedCallRecords, tx in
+                        return Self.createCallViewModel(
+                            primaryCallRecord: primaryCallRecord,
+                            coalescedCallRecords: coalescedCallRecords,
+                            deps: capturedDeps,
+                            tx: SDSDB.shimOnlyBridge(tx)
+                        )
+                    },
+                    fetchCallRecordBlock: { callRecordId, tx -> CallRecord? in
+                        switch capturedDeps.callRecordStore.fetch(
+                            callRecordId: callRecordId,
+                            tx: SDSDB.shimOnlyBridge(tx)
+                        ) {
+                        case .matchFound(let freshCallRecord):
+                            return freshCallRecord
+                        case .matchNotFound, .matchDeleted:
+                            return nil
+                        }
+                    }
                 )
 
                 // Load the initial page of records. We've thrown away all our
@@ -702,11 +717,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func loadMoreCallsIfNecessary(
         indexPathToBeDisplayed indexPath: IndexPath
     ) -> CallViewModel? {
-        if indexPath.row == calls.allLoadedViewModelIds.count - 1 {
+        if indexPath.row == viewModelLoader.loadedViewModelReferences.count - 1 {
             /// If this index path represents the oldest loaded call, try and
             /// load another page of even-older calls.
             loadMoreCalls(direction: .older, animated: false)
-        } else if !calls.hasCachedViewModel(rowIndex: indexPath.row) {
+        } else if !viewModelLoader.hasCachedViewModel(
+            loadedViewModelReferenceIndex: indexPath.row
+        ) {
             /// If we don't have a view model ready to go for this row, load
             /// until we do.
             ///
@@ -726,11 +743,15 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             /// All of that to say: we need support for "page in view models for
             /// an arbitrary index path", which is what this does.
             deps.db.read { tx in
-                calls.loadUntilCached(rowIndex: indexPath.row, tx: tx)
+                viewModelLoader.loadUntilCached(
+                    loadedViewModelReferenceIndex: indexPath.row, tx: tx.asV2Read
+                )
             }
         }
 
-        return calls.getCachedViewModel(rowIndex: indexPath.row)
+        return viewModelLoader.getCachedViewModel(
+            loadedViewModelReferenceIndex: indexPath.row
+        )
     }
 
     /// Synchronously loads more calls, then asynchronously update the snapshot
@@ -740,12 +761,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// Whether we should always update the snapshot, regardless of if any new
     /// calls were loaded.
     private func loadMoreCalls(
-        direction loadDirection: LoadedCalls.LoadDirection,
+        direction loadDirection: ViewModelLoader.LoadDirection,
         animated: Bool,
         forceUpdateSnapshot: Bool = false
     ) {
         let shouldUpdateSnapshot = deps.db.read { tx in
-            return calls.loadMore(direction: loadDirection, tx: tx)
+            return viewModelLoader.loadMore(
+                direction: loadDirection, tx: tx.asV2Read
+            )
         }
 
         guard forceUpdateSnapshot || shouldUpdateSnapshot else { return }
@@ -758,40 +781,64 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
     }
 
-    /// Converts a ``CallRecord`` to a ``CallViewModel``.
+    /// Converts ``CallRecord``s into a ``CallViewModel``.
     ///
-    /// - Note
-    /// This method involves calls to external dependencies, as the view model
-    /// state relies on state elsewhere in the app (such as any
-    /// currently-ongoing calls).
-    private func createCallViewModel(
-        callRecord: CallRecord,
+    /// - Important
+    /// The primary and and coalesced call records *must* all have the same
+    /// thread, direction, missed status, and call type.
+    private static func createCallViewModel(
+        primaryCallRecord: CallRecord,
+        coalescedCallRecords: [CallRecord],
+        deps: Dependencies,
         tx: SDSAnyReadTransaction
     ) -> CallViewModel {
+        owsAssert(
+            coalescedCallRecords.allSatisfy { $0.threadRowId == primaryCallRecord.threadRowId },
+            "Coalesced call records were for a different thread than the primary!"
+        )
+        owsAssert(
+            coalescedCallRecords.allSatisfy { $0.callDirection == primaryCallRecord.callDirection },
+            "Coalesced call records were of a different direction than the primary!"
+        )
+        owsAssert(
+            coalescedCallRecords.allSatisfy { $0.callStatus.isMissedCall == primaryCallRecord.callStatus.isMissedCall },
+            "Coalesced call records were of a different missed status than the primary!"
+        )
+        owsAssert(
+            coalescedCallRecords.allSatisfy { $0.callType == primaryCallRecord.callType },
+            "Coalesced call records were of a different call type than the primary!"
+        )
+        owsAssert(
+            ([primaryCallRecord] + coalescedCallRecords).isSortedByTimestamp(.descending),
+            "Primary and coalesced call records were not ordered descending by timestamp!"
+        )
+
         guard let callThread = deps.threadStore.fetchThread(
-            rowId: callRecord.threadRowId,
+            rowId: primaryCallRecord.threadRowId,
             tx: tx.asV2Read
         ) else {
             owsFail("Missing thread for call record! This should be impossible, per the DB schema.")
         }
 
         let callDirection: CallViewModel.Direction = {
-            if callRecord.callStatus.isMissedCall {
+            if primaryCallRecord.callStatus.isMissedCall {
                 return .missed
             }
 
-            switch callRecord.callDirection {
+            switch primaryCallRecord.callDirection {
             case .incoming: return .incoming
             case .outgoing: return .outgoing
             }
         }()
 
+        /// The call state may be different between the primary and the
+        /// coalesced calls. For the view model's state, we use the primary.
         let callState: CallViewModel.State = {
             let currentCallId: UInt64? = deps.callService.currentCall?.callId
 
-            switch callRecord.callStatus {
+            switch primaryCallRecord.callStatus {
             case .individual:
-                if callRecord.callId == currentCallId {
+                if primaryCallRecord.callId == currentCallId {
                     // We can have at most one 1:1 call active at a time, and if
                     // we have an active 1:1 call we must be in it. All other
                     // 1:1 calls must have ended.
@@ -800,7 +847,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             case .group:
                 guard let groupCallInteraction: OWSGroupCallMessage = deps.interactionStore
                     .fetchAssociatedInteraction(
-                        callRecord: callRecord, tx: tx.asV2Read
+                        callRecord: primaryCallRecord, tx: tx.asV2Read
                     )
                 else {
                     owsFail("Missing interaction for group call. This should be impossible per the DB schema!")
@@ -811,7 +858,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 // leetle wonky that we use the interaction to store that info,
                 // but such is life.
                 if !groupCallInteraction.hasEnded {
-                    if callRecord.callId == currentCallId {
+                    if primaryCallRecord.callId == currentCallId {
                         return .participating
                     }
 
@@ -824,7 +871,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         if let contactThread = callThread as? TSContactThread {
             let callType: CallViewModel.RecipientType.CallType = {
-                switch callRecord.callType {
+                switch primaryCallRecord.callType {
                 case .audioCall:
                     return .audio
                 case .groupCall:
@@ -836,15 +883,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }()
 
             return CallViewModel(
-                backingCallRecord: callRecord,
-                title: deps.contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue(),
+                primaryCallRecord: primaryCallRecord,
+                coalescedCallRecords: coalescedCallRecords,
+                title: deps.contactsManager.displayName(
+                    for: contactThread.contactAddress, tx: tx
+                ).resolvedValue(),
                 recipientType: .individual(type: callType, contactThread: contactThread),
                 direction: callDirection,
                 state: callState
             )
         } else if let groupThread = callThread as? TSGroupThread {
             return CallViewModel(
-                backingCallRecord: callRecord,
+                primaryCallRecord: primaryCallRecord,
+                coalescedCallRecords: coalescedCallRecords,
                 title: groupThread.groupModel.groupNameOrDefault,
                 recipientType: .group(groupThread: groupThread),
                 direction: callDirection,
@@ -898,6 +949,21 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     struct CallViewModel {
+        enum Reference: Hashable {
+            case singleCall(CallRecord.ID)
+            case coalescedCalls(
+                primary: CallRecord.ID,
+                coalesced: [CallRecord.ID]
+            )
+
+            var primaryId: CallRecord.ID {
+                switch self {
+                case .singleCall(let callRecordId): return callRecordId
+                case .coalescedCalls(let primary, _): return primary
+                }
+            }
+        }
+
         enum Direction {
             case outgoing
             case incoming
@@ -934,28 +1000,55 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }
         }
 
-        let backingCallRecord: CallRecord
+        let primaryCallRecord: CallRecord
+        let coalescedCallRecords: [CallRecord]
 
-        var id: CallRecord.ID { backingCallRecord.id }
+        var allCallRecords: [CallRecord] { [primaryCallRecord] + coalescedCallRecords }
+
+        var reference: Reference {
+            if coalescedCallRecords.isEmpty {
+                return .singleCall(primaryCallRecord.id)
+            }
+
+            return .coalescedCalls(
+                primary: primaryCallRecord.id,
+                coalesced: coalescedCallRecords.map { $0.id }
+            )
+        }
 
         let title: String
         let recipientType: RecipientType
         let direction: Direction
         let state: State
 
-        var callId: UInt64 { backingCallRecord.callId }
-        var threadRowId: Int64 { backingCallRecord.threadRowId }
-        var callBeganTimestamp: UInt64 { backingCallRecord.callBeganTimestamp }
-        var callBeganDate: Date { Date(millisecondsSince1970: callBeganTimestamp) }
+        var callId: UInt64 { primaryCallRecord.callId }
+        var threadRowId: Int64 { primaryCallRecord.threadRowId }
+        var callBeganDate: Date { primaryCallRecord.callBeganDate }
+
+        /// The `callBeganTimestamp` of the oldest call contained herein.
+        var oldestContainedTimestamp: UInt64 {
+            if let lastCoalescedTimestamp = coalescedCallRecords.last?.callBeganTimestamp {
+                return lastCoalescedTimestamp
+            }
+
+            return primaryCallRecord.callBeganTimestamp
+        }
+
+        /// The `callBeganTimestamp` of the newest call contained herein.
+        var newestContainedTimestamp: UInt64 {
+            return primaryCallRecord.callBeganTimestamp
+        }
 
         init(
-            backingCallRecord: CallRecord,
+            primaryCallRecord: CallRecord,
+            coalescedCallRecords: [CallRecord],
             title: String,
             recipientType: RecipientType,
             direction: Direction,
             state: State
         ) {
-            self.backingCallRecord = backingCallRecord
+            self.primaryCallRecord = primaryCallRecord
+            self.coalescedCallRecords = coalescedCallRecords
             self.title = title
             self.recipientType = recipientType
             self.direction = direction
@@ -999,7 +1092,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private lazy var dataSource = DiffableDataSource(
         tableView: tableView
-    ) { [weak self] tableView, indexPath, modelID -> UITableViewCell? in
+    ) { [weak self] tableView, indexPath, _viewModelReference -> UITableViewCell? in
         guard
             let self,
             let callCell = tableView.dequeueReusableCell(
@@ -1017,7 +1110,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
             return callCell
         } else {
-            owsFailBeta("Missing cached view model – how did this happen?")
+            owsFailDebug("Missing cached view model – how did this happen?")
 
             /// Return an empty table cell, rather than a ``CallCell`` that's
             /// gonna be incorrectly configured.
@@ -1028,7 +1121,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func getSnapshot() -> Snapshot {
         var snapshot = Snapshot()
         snapshot.appendSections([.primary])
-        snapshot.appendItems(calls.allLoadedViewModelIds)
+        snapshot.appendItems(viewModelLoader.loadedViewModelReferences.allElements)
         return snapshot
     }
 
@@ -1038,30 +1131,21 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         cancelMultiselectIfEmpty()
     }
 
-    /// Reload the rows for the given view model IDs that are currently loaded.
-    private func reloadRows(forIdentifiers identifiersToReload: [CallRecord.ID]) {
-        // Recreate the view models, so when the data source reloads the rows
-        // it'll reflect the new underlying state for that row.
-        //
-        // This step will also drop any IDs for models that are not currently
-        // loaded, which should not be included in the snapshot.
-        let identifiersToReload = deps.db.read { tx -> [CallRecord.ID] in
-            return calls.recreateViewModels(
-                ids: identifiersToReload, tx: tx
-            ) { viewModelId -> CallRecord? in
-                switch deps.callRecordStore.fetch(
-                    viewModelId: viewModelId, tx: tx
-                ) {
-                case .matchFound(let freshCallRecord):
-                    return freshCallRecord
-                case .matchNotFound, .matchDeleted:
-                    return nil
-                }
-            }
+    /// Reload any rows containing one of the given call record IDs.
+    private func reloadRows(callRecordIds callRecordIdsToReload: [CallRecord.ID]) {
+        /// Recreate the view models, so when the data source reloads the rows
+        /// it'll reflect the new underlying state for that row.
+        ///
+        /// This step will also drop any IDs for models that are not currently
+        /// loaded, which should not be included in the snapshot.
+        let referencesToReload = deps.db.read { tx -> [CallViewModel.Reference] in
+            return viewModelLoader.refreshViewModels(
+                callRecordIds: callRecordIdsToReload, tx: tx.asV2Read
+            )
         }
 
         var snapshot = getSnapshot()
-        snapshot.reloadItems(identifiersToReload)
+        snapshot.reloadItems(referencesToReload)
         dataSource.apply(snapshot)
     }
 
@@ -1074,14 +1158,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func cancelMultiselectIfEmpty() {
         if
             tableView.isEditing,
-            calls.allLoadedViewModelIds.isEmpty
+            viewModelLoader.loadedViewModelReferences.isEmpty
         {
             cancelMultiselect()
         }
     }
 
     private func updateEmptyStateMessage() {
-        switch (calls.allLoadedViewModelIds.count, searchTerm) {
+        switch (viewModelLoader.loadedViewModelReferences.count, searchTerm) {
         case (0, .some(let searchTerm)) where !searchTerm.isEmpty:
             noSearchResultsView.text = String(
                 format: Strings.searchNoResultsFoundLabelFormat,
@@ -1137,9 +1221,9 @@ private extension SignalCall {
         }
     }
 
-    var callViewModelId: CallRecord.ID? {
+    var callRecordId: CallRecord.ID? {
         guard let callId else { return nil }
-        return .init(callId: callId, threadRowId: threadRowId)
+        return CallRecord.ID(callId: callId, threadRowId: threadRowId)
     }
 
     private var threadRowId: Int64 {
@@ -1153,12 +1237,12 @@ private extension SignalCall {
 
 private extension CallRecordStore {
     func fetch(
-        viewModelId: CallRecord.ID,
+        callRecordId: CallRecord.ID,
         tx: SDSAnyReadTransaction
     ) -> CallRecordStoreMaybeDeletedFetchResult {
         return fetch(
-            callId: viewModelId.callId,
-            threadRowId: viewModelId.threadRowId,
+            callId: callRecordId.callId,
+            threadRowId: callRecordId.threadRowId,
             tx: tx.asV2Read
         )
     }
@@ -1176,7 +1260,9 @@ extension CallsListViewController: UITableViewDelegate {
             "Unexpected section for index path: \(indexPath.section)"
         )
 
-        guard let viewModel = calls.getCachedViewModel(rowIndex: indexPath.row) else {
+        guard let viewModel = viewModelLoader.getCachedViewModel(
+            loadedViewModelReferenceIndex: indexPath.row
+        ) else {
             owsFailBeta("Missing view model for index path. How did this happen?")
             return nil
         }
@@ -1251,7 +1337,7 @@ extension CallsListViewController: UITableViewDelegate {
             image: "trash-fill",
             title: CommonStrings.deleteButton
         ) { [weak self] in
-            self?.deleteCalls(viewModelIds: [viewModel.id])
+            self?.deleteCalls(viewModelReferences: [viewModel.reference])
         }
 
         return .init(actions: [deleteAction])
@@ -1387,7 +1473,7 @@ extension CallsListViewController: UITableViewDelegate {
                 image: Theme.iconImage(.contextMenuDelete),
                 attributes: .destructive
             ) { [weak self] _ in
-                self?.deleteCalls(viewModelIds: [viewModel.id])
+                self?.deleteCalls(viewModelReferences: [viewModel.reference])
             }
             actions.append(deleteAction)
         case .participating:
@@ -1452,11 +1538,15 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         goToChat(for: viewModel.thread)
     }
 
-    private func deleteCalls(viewModelIds: [CallRecord.ID]) {
+    private func deleteCalls(viewModelReferences: [CallViewModel.Reference]) {
         deps.db.asyncWrite { tx in
-            let callRecords = viewModelIds.compactMap { viewModelId -> CallRecord? in
+            let callRecordIdsToDelete: [CallRecord.ID] = viewModelReferences.flatMap { reference in
+                return reference.containedIds
+            }
+
+            let callRecordsToDelete = callRecordIdsToDelete.compactMap { callRecordId -> CallRecord? in
                 switch self.deps.callRecordStore.fetch(
-                    viewModelId: viewModelId,
+                    callRecordId: callRecordId,
                     tx: tx
                 ) {
                 case .matchFound(let callRecord):
@@ -1473,7 +1563,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             /// We also want to send a sync message since this is a delete
             /// originating from this device.
             self.deps.callRecordDeleteManager.deleteCallRecordsAndAssociatedInteractions(
-                callRecords: callRecords,
+                callRecords: callRecordsToDelete,
                 sendSyncMessageOnDelete: true,
                 tx: tx.asV2Write
             )
@@ -1563,275 +1653,6 @@ extension CallsListViewController: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {}
     func databaseChangesDidReset() {}
-}
-
-// MARK: - LoadedCalls
-
-private extension CallsListViewController {
-    struct LoadedCalls {
-        typealias CreateCallViewModelBlock = (CallRecord, SDSAnyReadTransaction) -> CallViewModel
-
-        enum LoadDirection {
-            case older
-            case newer
-        }
-
-        private struct LoadedViewModelIds {
-            private(set) var ids: [CallRecord.ID] = []
-            private var indicesByIds: [CallRecord.ID: Int] = [:]
-
-            func index(id: CallRecord.ID) -> Int? {
-                return indicesByIds[id]
-            }
-
-            /// Append the new loaded IDs.
-            mutating func append(ids newIds: [CallRecord.ID]) {
-                for newId in newIds {
-                    indicesByIds[newId] = ids.count
-                    ids.append(newId)
-                }
-            }
-
-            /// Prepend new loaded IDs.
-            mutating func prepend(ids newIds: [CallRecord.ID]) {
-                ids = newIds + ids
-                indicesByIds = LoadedCalls.indicesByIds(ids)
-            }
-
-            /// Drop the given loaded IDs.
-            mutating func drop(ids idsToDrop: Set<CallRecord.ID>) {
-                ids.removeAll { idsToDrop.contains($0) }
-                indicesByIds = LoadedCalls.indicesByIds(ids)
-            }
-        }
-
-        private enum Constants {
-            static let pageSizeToLoad: UInt = 50
-            static let maxCachedViewModelCount: Int = 150
-        }
-
-        private var callRecordLoader: CallRecordLoader
-        private let createCallViewModelBlock: CreateCallViewModelBlock
-
-        private var loadedViewModelIds: LoadedViewModelIds
-        var allLoadedViewModelIds: [CallRecord.ID] { loadedViewModelIds.ids }
-
-        private var cachedViewModels: [CallViewModel] {
-            didSet {
-                cachedViewModelIndicesByIds = Self.indicesByIds(cachedViewModels.map { $0.id })
-            }
-        }
-        private var cachedViewModelIndicesByIds: [CallRecord.ID: Int]
-
-        private static func indicesByIds(_ viewModelIds: [CallRecord.ID]) -> [CallRecord.ID: Int] {
-            return Dictionary(
-                viewModelIds.enumerated().map { (idx, viewModelId) -> (CallRecord.ID, Int) in
-                    return (viewModelId, idx)
-                },
-                uniquingKeysWith: { _, new in new }
-            )
-        }
-
-        init(
-            callRecordLoader: CallRecordLoader,
-            createCallViewModelBlock: @escaping CreateCallViewModelBlock
-        ) {
-            self.callRecordLoader = callRecordLoader
-            self.createCallViewModelBlock = createCallViewModelBlock
-
-            self.loadedViewModelIds = LoadedViewModelIds()
-
-            self.cachedViewModels = []
-            self.cachedViewModelIndicesByIds = [:]
-        }
-
-        // MARK: Accessors
-
-        func getCachedViewModel(id viewModelId: CallRecord.ID) -> CallViewModel? {
-            guard let index = cachedViewModelIndicesByIds[viewModelId] else {
-                return nil
-            }
-
-            return cachedViewModels[index]
-        }
-
-        func getCachedViewModel(rowIndex: Int) -> CallViewModel? {
-            guard let viewModelId = loadedViewModelIds.ids[safe: rowIndex] else {
-                return nil
-            }
-
-            return getCachedViewModel(id: viewModelId)
-        }
-
-        func hasCachedViewModel(rowIndex: Int) -> Bool {
-            return getCachedViewModel(rowIndex: rowIndex) != nil
-        }
-
-        // MARK: Mutators
-
-        /// Repeatedly loads pages of view models until a cached view model is
-        /// available for the given row index.
-        ///
-        /// This method is safe to call for any valid row index; i.e., for any
-        /// index covered by ``loadedViewModelIds``.
-        ///
-        /// - Note
-        /// This may result in multiple synchronous page loads if necessary. For
-        /// example, if view models are cached for rows in range `(500, 600)`
-        /// and this method is called for row 10, all the rows between row 500
-        /// and row 10 will be loaded.
-        ///
-        /// This behavior should be fine in practice, since loading a page is an
-        /// extremely fast operation.
-        mutating func loadUntilCached(
-            rowIndex: Int,
-            tx: SDSAnyReadTransaction
-        ) {
-            guard
-                let firstCachedViewModel = cachedViewModels.first,
-                let firstCachedViewModelRowIndex = loadedViewModelIds.index(id: firstCachedViewModel.id),
-                let lastCachedViewModel = cachedViewModels.last,
-                let lastCachedViewModelRowIndex = loadedViewModelIds.index(id: lastCachedViewModel.id)
-            else {
-                owsFail("How did we attempt to load until a specific row index, without *any* cached models?")
-            }
-
-            let loadDirection: LoadDirection = {
-                if rowIndex > lastCachedViewModelRowIndex {
-                    return .older
-                } else if rowIndex < firstCachedViewModelRowIndex {
-                    return .newer
-                }
-
-                owsFail("Row index is in the cached range, but somehow we didn't have a cached model. How did that happen?")
-            }()
-
-            while true {
-                if hasCachedViewModel(rowIndex: rowIndex) {
-                    break
-                }
-
-                _ = loadMore(direction: loadDirection, tx: tx)
-            }
-        }
-
-        /// Load a page of calls in the requested direction.
-        ///
-        /// - Returns
-        /// Whether any new calls were loaded as part of this operation.
-        mutating func loadMore(
-            direction loadDirection: LoadDirection,
-            tx: SDSAnyReadTransaction
-        ) -> Bool {
-            let loadDirection: CallRecordLoader.LoadDirection = {
-                switch loadDirection {
-                case .older:
-                    return .older(oldestCallTimestamp: cachedViewModels.last?.callBeganTimestamp)
-                case .newer:
-                    guard let newestCachedViewModel = cachedViewModels.first else {
-                        // A little weird, but if we have no cached calls these
-                        // are equivalent anyway.
-                        return .older(oldestCallTimestamp: nil)
-                    }
-
-                    return .newer(newestCallTimestamp: newestCachedViewModel.callBeganTimestamp)
-                }
-            }()
-
-            let newCallRecords: [CallRecord] = callRecordLoader.loadCallRecords(
-                loadDirection: loadDirection,
-                pageSize: Constants.pageSizeToLoad,
-                tx: tx.asV2Read
-            )
-
-            let newViewModels: [CallViewModel] = newCallRecords.map { callRecord in
-                return createCallViewModelBlock(callRecord, tx)
-            }
-
-            let firstTimeLoadedViewModelIds = newViewModels
-                .map { $0.id }
-                .filter { loadedViewModelIds.index(id: $0) == nil }
-
-            if !firstTimeLoadedViewModelIds.isEmpty {
-                switch loadDirection {
-                case .older:
-                    /// This is a hot codepath; we get here every time we load a
-                    /// new page of records because we scrolled to the last
-                    /// loaded one.
-                    loadedViewModelIds.append(ids: firstTimeLoadedViewModelIds)
-                case .newer:
-                    /// We should only get here if a new call was started;
-                    /// otherwise, a `.newer` load should never produce a
-                    /// brand-new view model.
-                    loadedViewModelIds.prepend(ids: firstTimeLoadedViewModelIds)
-                }
-            }
-
-            cachedViewModels = {
-                let combinedViewModels: [CallViewModel] = {
-                    switch loadDirection {
-                    case .older: return cachedViewModels + newViewModels
-                    case .newer: return newViewModels + cachedViewModels
-                    }
-                }()
-
-                if combinedViewModels.count <= Constants.maxCachedViewModelCount {
-                    return combinedViewModels
-                } else {
-                    switch loadDirection {
-                    case .older:
-                        return Array(combinedViewModels.suffix(Constants.maxCachedViewModelCount))
-                    case .newer:
-                        return Array(combinedViewModels.prefix(Constants.maxCachedViewModelCount))
-                    }
-                }
-            }()
-
-            return !firstTimeLoadedViewModelIds.isEmpty
-        }
-
-        mutating func dropViewModels(ids viewModelIdsToDrop: [CallRecord.ID]) {
-            let viewModelIdsToDrop = Set(viewModelIdsToDrop)
-
-            loadedViewModelIds.drop(ids: viewModelIdsToDrop)
-            cachedViewModels.removeAll { viewModelIdsToDrop.contains($0.id) }
-        }
-
-        /// Recreates the view model for the given ID by calling the given
-        /// block. If a given ID is not currently loaded, it is ignored.
-        ///
-        /// - Returns
-        /// The IDs for the view models that were recreated. Note that this will
-        /// not include any IDs that were ignored.
-        mutating func recreateViewModels(
-            ids idsToReload: [CallRecord.ID],
-            tx: SDSAnyReadTransaction,
-            fetchCallRecordBlock: (CallRecord.ID) -> CallRecord?
-        ) -> [CallRecord.ID] {
-            let indicesToReload: [(
-                Int,
-                CallRecord,
-                CallRecord.ID
-            )] = idsToReload.compactMap { viewModelId in
-                guard
-                    let cachedViewModelIndex = cachedViewModelIndicesByIds[viewModelId],
-                    let freshCallRecord = fetchCallRecordBlock(viewModelId)
-                else { return nil }
-
-                return (
-                    cachedViewModelIndex,
-                    freshCallRecord,
-                    viewModelId
-                )
-            }
-
-            for (index, freshCallRecord, _) in indicesToReload {
-                cachedViewModels[index] = createCallViewModelBlock(freshCallRecord, tx)
-            }
-
-            return indicesToReload.map { $0.2 }
-        }
-    }
 }
 
 // MARK: - Call cell
@@ -2049,7 +1870,18 @@ private extension CallsListViewController {
                 configuration.dataSource = .thread(viewModel.thread)
             }
 
-            self.titleLabel.text = viewModel.title
+            let titleText: String = {
+                if viewModel.coalescedCallRecords.isEmpty {
+                    return viewModel.title
+                }
+
+                return String(
+                    format: Strings.coalescedCallsTitleFormat,
+                    viewModel.title,
+                    "\(viewModel.allCallRecords.count)"
+                )
+            }()
+            self.titleLabel.text = titleText
 
             switch viewModel.direction {
             case .incoming, .outgoing:

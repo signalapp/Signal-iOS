@@ -118,7 +118,7 @@ extension TSGroupThread {
 
 extension TSGroupThread {
 
-    static func forUnitTest(
+    public static func forUnitTest(
         groupId: UInt8 = 0,
         groupMembers: [SignalServiceAddress] = []
     ) -> TSGroupThread {

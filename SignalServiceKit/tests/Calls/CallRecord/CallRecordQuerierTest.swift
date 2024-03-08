@@ -9,6 +9,8 @@ import XCTest
 @testable import SignalServiceKit
 
 final class CallRecordQuerierTest: XCTestCase {
+    private typealias SortDirection = CallRecord.SortDirection
+
     private var inMemoryDB: InMemoryDB!
     private var callRecordQuerier: ExplainingCallRecordQuerierImpl!
 
@@ -338,22 +340,10 @@ private extension DBReadTransaction {
 
 // MARK: -
 
-private extension CallRecord.SortDirection {
-    var callRecordCursorOrdering: CallRecordCursor.Ordering {
-        switch self {
-        case .ascending: return .ascending
-        case .descending: return .descending
-        }
-    }
-}
-
 private extension CallRecordCursor {
     func drain(expectingSort sortDirection: CallRecord.SortDirection) throws -> [CallRecord] {
         let records = try drain()
-
-        XCTAssertEqual(ordering, sortDirection.callRecordCursorOrdering)
         XCTAssertTrue(records.isSortedByTimestamp(sortDirection))
-
         return records
     }
 }

@@ -37,17 +37,31 @@ class DebugUICallsTab: DebugUIPage {
                 }),
                 OWSTableItem(title: "Create incoming, missed call", actionBlock: {
                     self.databaseStorage.write { tx in
-                        self.createIncomingAcceptedCall(contactThread: contactThread, tx: tx)
+                        self.createIncomingMissedCall(contactThread: contactThread, tx: tx)
                     }
                 }),
                 OWSTableItem(title: "Create outgoing, accepted call", actionBlock: {
                     self.databaseStorage.write { tx in
-                        self.createIncomingAcceptedCall(contactThread: contactThread, tx: tx)
+                        self.createOutgoingAcceptedCall(contactThread: contactThread, tx: tx)
                     }
                 }),
                 OWSTableItem(title: "Create outgoing, missed call", actionBlock: {
                     self.databaseStorage.write { tx in
-                        self.createIncomingAcceptedCall(contactThread: contactThread, tx: tx)
+                        self.createOutgoingMissedCall(contactThread: contactThread, tx: tx)
+                    }
+                }),
+                OWSTableItem(title: "Create coalesced incoming missed calls", actionBlock: {
+                    self.databaseStorage.write { tx in
+                        self.createIncomingMissedCall(contactThread: contactThread, tx: tx)
+                        self.createIncomingMissedCall(contactThread: contactThread, tx: tx)
+                        self.createIncomingMissedCall(contactThread: contactThread, tx: tx)
+                    }
+                }),
+                OWSTableItem(title: "Create coalesced outgoing accepted calls", actionBlock: {
+                    self.databaseStorage.write { tx in
+                        self.createOutgoingAcceptedCall(contactThread: contactThread, tx: tx)
+                        self.createOutgoingAcceptedCall(contactThread: contactThread, tx: tx)
+                        self.createOutgoingAcceptedCall(contactThread: contactThread, tx: tx)
                     }
                 }),
             ]
@@ -75,6 +89,27 @@ class DebugUICallsTab: DebugUIPage {
                 }),
                 OWSTableItem(title: "Create outgoing ringing call", actionBlock: {
                     self.databaseStorage.write { tx in
+                        self.createOutgoingRingingCall(groupThread: groupThread, tx: tx)
+                    }
+                }),
+                OWSTableItem(title: "Create coalesced joined calls", actionBlock: {
+                    self.databaseStorage.write { tx in
+                        self.createJoinedCall(groupThread: groupThread, tx: tx)
+                        self.createJoinedCall(groupThread: groupThread, tx: tx)
+                        self.createJoinedCall(groupThread: groupThread, tx: tx)
+                    }
+                }),
+                OWSTableItem(title: "Create coalesced missed calls", actionBlock: {
+                    self.databaseStorage.write { tx in
+                        self.createRingingDeclinedCall(groupThread: groupThread, tx: tx)
+                        self.createRingingDeclinedCall(groupThread: groupThread, tx: tx)
+                        self.createRingingDeclinedCall(groupThread: groupThread, tx: tx)
+                    }
+                }),
+                OWSTableItem(title: "Create coalesced outgoing calls", actionBlock: {
+                    self.databaseStorage.write { tx in
+                        self.createOutgoingRingingCall(groupThread: groupThread, tx: tx)
+                        self.createOutgoingRingingCall(groupThread: groupThread, tx: tx)
                         self.createOutgoingRingingCall(groupThread: groupThread, tx: tx)
                     }
                 }),
@@ -111,6 +146,34 @@ class DebugUICallsTab: DebugUIPage {
                         },
                         groupThreadBlock: { groupThread, tx in
                             self.createOutgoingRingingCall(groupThread: groupThread, tx: tx)
+                        }
+                    )
+                }),
+                OWSTableItem(title: "Create coalesced calls for all threads", actionBlock: {
+                    self.enumerateThreads(
+                        contactThreadBlock: { contactThread, tx in
+                            self.createIncomingAcceptedCall(contactThread: contactThread, tx: tx)
+                            self.createIncomingAcceptedCall(contactThread: contactThread, tx: tx)
+                            self.createIncomingAcceptedCall(contactThread: contactThread, tx: tx)
+                        },
+                        groupThreadBlock: { groupThread, tx in
+                            self.createJoinedCall(groupThread: groupThread, tx: tx)
+                            self.createJoinedCall(groupThread: groupThread, tx: tx)
+                            self.createJoinedCall(groupThread: groupThread, tx: tx)
+                        }
+                    )
+                }),
+                OWSTableItem(title: "Create coalesced missed calls for all threads", actionBlock: {
+                    self.enumerateThreads(
+                        contactThreadBlock: { contactThread, tx in
+                            self.createIncomingMissedCall(contactThread: contactThread, tx: tx)
+                            self.createIncomingMissedCall(contactThread: contactThread, tx: tx)
+                            self.createIncomingMissedCall(contactThread: contactThread, tx: tx)
+                        },
+                        groupThreadBlock: { groupThread, tx in
+                            self.createRingingDeclinedCall(groupThread: groupThread, tx: tx)
+                            self.createRingingDeclinedCall(groupThread: groupThread, tx: tx)
+                            self.createRingingDeclinedCall(groupThread: groupThread, tx: tx)
                         }
                     )
                 }),

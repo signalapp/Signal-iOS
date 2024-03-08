@@ -126,5 +126,10 @@ extension CallsListViewController {
             "CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE",
             comment: "Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab."
         ) }
+
+        static var coalescedCallsTitleFormat: String { OWSLocalizedString(
+            "CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT",
+            comment: "Title for a row in the Calls Tab that represents multiple calls that have been coalesced together. Embeds {{ a title describing the coalesced calls }}, {{ the number of coalesced calls }}."
+        ) }
     }
 }

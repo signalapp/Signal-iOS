@@ -160,30 +160,33 @@ extension ConversationSettingsViewController {
             icon = .video16
         }
 
-        let timestamp = DateUtil.formatDateAsTime(callViewModel.callBeganDate)
+        let callDatesToDisplay: [Date] = callViewModel.allCallRecords.map { $0.callBeganDate }
+        let timestampsToDisplay: [String] = callDatesToDisplay.map { DateUtil.formatDateAsTime($0) }
 
-        stackView.addArrangedSubview({
-            let hStack = UIStackView()
-            hStack.axis = .horizontal
-            hStack.spacing = 6
-            hStack.addArrangedSubview(UIImageView.withTemplateIcon(
-                icon,
-                tintColor: Theme.primaryTextColor,
-                constrainedTo: .square(16)
-            ))
-            hStack.tintColor = Theme.primaryTextColor
-            let descriptionLabel = UILabel()
-            descriptionLabel.font = .dynamicTypeSubheadline
-            descriptionLabel.textColor = Theme.primaryTextColor
-            descriptionLabel.text = description
-            hStack.addArrangedSubview(descriptionLabel)
-            let timestampLabel = UILabel()
-            timestampLabel.font = .dynamicTypeSubheadline
-            timestampLabel.textColor = Theme.secondaryTextAndIconColor
-            timestampLabel.text = timestamp
-            hStack.addArrangedSubview(timestampLabel)
-            return hStack
-        }())
+        for timestamp in timestampsToDisplay {
+            stackView.addArrangedSubview({
+                let hStack = UIStackView()
+                hStack.axis = .horizontal
+                hStack.spacing = 6
+                hStack.addArrangedSubview(UIImageView.withTemplateIcon(
+                    icon,
+                    tintColor: Theme.primaryTextColor,
+                    constrainedTo: .square(16)
+                ))
+                hStack.tintColor = Theme.primaryTextColor
+                let descriptionLabel = UILabel()
+                descriptionLabel.font = .dynamicTypeSubheadline
+                descriptionLabel.textColor = Theme.primaryTextColor
+                descriptionLabel.text = description
+                hStack.addArrangedSubview(descriptionLabel)
+                let timestampLabel = UILabel()
+                timestampLabel.font = .dynamicTypeSubheadline
+                timestampLabel.textColor = Theme.secondaryTextAndIconColor
+                timestampLabel.text = timestamp
+                hStack.addArrangedSubview(timestampLabel)
+                return hStack
+            }())
+        }
 
         section.add(.init(customCellBlock: {
             let cell = OWSTableItem.newCell()

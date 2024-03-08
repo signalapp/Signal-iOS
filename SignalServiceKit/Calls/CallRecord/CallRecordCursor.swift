@@ -5,13 +5,6 @@
 
 import GRDB
 
-/// Describes the ordering with which call records are returned from a
-/// ``CallRecordCursor``.
-public enum CallRecordCursorOrdering {
-    case ascending
-    case descending
-}
-
 /// A cursor over call records.
 ///
 /// - Important
@@ -19,16 +12,19 @@ public enum CallRecordCursorOrdering {
 /// which they were created, as they represent an active connection to the
 /// query's data souce (e.g., the database on disk).
 public protocol CallRecordCursor {
-    typealias Ordering = CallRecordCursorOrdering
-
-    /// The ordering with which call records are returned from this cursor.
-    var ordering: Ordering { get }
-
     /// Returns the next call record, if any.
     func next() throws -> CallRecord?
 }
 
 public extension CallRecordCursor {
+    /// Collect an array composed of the call records this cursor covers.
+    ///
+    /// - Returns
+    /// An array of call records corresponding to the first `maxResults` records
+    /// this cursor covers, or all of them if `maxResults` is `nil`.
+    ///
+    /// Note that the returned array will be ordered according to this cursor's
+    /// ``ordering``.
     func drain(maxResults: UInt? = nil) throws -> [CallRecord] {
         var records = [CallRecord]()
 
@@ -49,14 +45,8 @@ public extension CallRecordCursor {
 struct GRDBCallRecordCursor: CallRecordCursor {
     private let grdbRecordCursor: GRDB.RecordCursor<CallRecord>
 
-    let ordering: Ordering
-
-    init(
-        grdbRecordCursor: GRDB.RecordCursor<CallRecord>,
-        ordering: Ordering
-    ) {
+    init(grdbRecordCursor: GRDB.RecordCursor<CallRecord>) {
         self.grdbRecordCursor = grdbRecordCursor
-        self.ordering = ordering
     }
 
     func next() throws -> CallRecord? {

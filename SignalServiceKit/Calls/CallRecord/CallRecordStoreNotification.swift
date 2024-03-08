@@ -10,8 +10,8 @@ public struct CallRecordStoreNotification {
 
     public enum UpdateType {
         case inserted
-        case deleted(records: [CallRecord.ID])
-        case statusUpdated(record: CallRecord.ID)
+        case deleted(recordIds: [CallRecord.ID])
+        case statusUpdated(recordId: CallRecord.ID)
     }
 
     public static let name: NSNotification.Name = .init("CallRecordStoreNotification")

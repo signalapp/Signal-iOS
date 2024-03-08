@@ -11,7 +11,7 @@ import XCTest
 final class CallRecordLoaderTest: XCTestCase {
     private var mockCallRecordQuerier: MockCallRecordQuerier!
 
-    private var callRecordLoader: CallRecordLoader!
+    private var callRecordLoader: CallRecordLoaderImpl!
 
     override func setUp() {
         mockCallRecordQuerier = MockCallRecordQuerier()
@@ -21,9 +21,9 @@ final class CallRecordLoaderTest: XCTestCase {
         onlyLoadMissedCalls: Bool = false,
         onlyMatchThreadRowIds: [Int64]? = nil
     ) {
-        callRecordLoader = CallRecordLoader(
+        callRecordLoader = CallRecordLoaderImpl(
             callRecordQuerier: mockCallRecordQuerier,
-            configuration: CallRecordLoader.Configuration(
+            configuration: CallRecordLoaderImpl.Configuration(
                 onlyLoadMissedCalls: onlyLoadMissedCalls,
                 onlyMatchThreadRowIds: onlyMatchThreadRowIds
             )
@@ -32,8 +32,9 @@ final class CallRecordLoaderTest: XCTestCase {
 
     private func loadRecords(loadDirection: CallRecordLoader.LoadDirection) -> [UInt64] {
         return MockDB().read { tx in
-            callRecordLoader
-                .loadCallRecords(loadDirection: loadDirection, pageSize: 3, tx: tx)
+            try! callRecordLoader
+                .loadCallRecords(loadDirection: loadDirection, tx: tx)
+                .drain(maxResults: 3)
                 .map { $0.callId }
         }
     }
@@ -44,13 +45,13 @@ final class CallRecordLoaderTest: XCTestCase {
         ]
 
         setupCallRecordLoader(onlyMatchThreadRowIds: [1])
-        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
+        XCTAssertEqual([], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: nil)))
 
         setupCallRecordLoader(onlyLoadMissedCalls: true)
-        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
+        XCTAssertEqual([], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: nil)))
 
         setupCallRecordLoader()
-        XCTAssertEqual([2, 1], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
+        XCTAssertEqual([2, 1], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: nil)))
     }
 
     // MARK: Older
@@ -64,10 +65,10 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 7)
         ]
 
-        XCTAssertEqual([7, 6, 5], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
-        XCTAssertEqual([4, 3, 2], loadRecords(loadDirection: .older(oldestCallTimestamp: 5)))
-        XCTAssertEqual([1], loadRecords(loadDirection: .older(oldestCallTimestamp: 2)))
-        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: 1)))
+        XCTAssertEqual([7, 6, 5], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: nil)))
+        XCTAssertEqual([4, 3, 2], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 5)))
+        XCTAssertEqual([1], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 2)))
+        XCTAssertEqual([], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 1)))
     }
 
     func testGetOlderPageSearching() {
@@ -81,9 +82,9 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 7),
         ]
 
-        XCTAssertEqual([6, 5, 3], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
-        XCTAssertEqual([2], loadRecords(loadDirection: .older(oldestCallTimestamp: 3)))
-        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: 2)))
+        XCTAssertEqual([6, 5, 3], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: nil)))
+        XCTAssertEqual([2], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 3)))
+        XCTAssertEqual([], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 2)))
     }
 
     func testGetOlderPageForMissed() {
@@ -101,9 +102,9 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 9),
         ]
 
-        XCTAssertEqual([8, 7, 6], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
-        XCTAssertEqual([4, 2], loadRecords(loadDirection: .older(oldestCallTimestamp: 6)))
-        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: 2)))
+        XCTAssertEqual([8, 7, 6], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: nil)))
+        XCTAssertEqual([4, 2], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 6)))
+        XCTAssertEqual([], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 2)))
     }
 
     func testGetOlderPageForMissedSearching() {
@@ -125,10 +126,10 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 13, callStatus: .group(.ringingMissed)),
         ]
 
-        XCTAssertEqual([11, 10, 9], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
-        XCTAssertEqual([6, 5, 4], loadRecords(loadDirection: .older(oldestCallTimestamp: 9)))
-        XCTAssertEqual([2], loadRecords(loadDirection: .older(oldestCallTimestamp: 4)))
-        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: 2)))
+        XCTAssertEqual([11, 10, 9], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: nil)))
+        XCTAssertEqual([6, 5, 4], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 9)))
+        XCTAssertEqual([2], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 4)))
+        XCTAssertEqual([], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: 2)))
     }
 
     // MARK: Newer
@@ -142,10 +143,10 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 7)
         ]
 
-        XCTAssertEqual([3, 2, 1], loadRecords(loadDirection: .newer(newestCallTimestamp: 0)))
-        XCTAssertEqual([6, 5, 4], loadRecords(loadDirection: .newer(newestCallTimestamp: 3)))
-        XCTAssertEqual([7], loadRecords(loadDirection: .newer(newestCallTimestamp: 6)))
-        XCTAssertEqual([], loadRecords(loadDirection: .newer(newestCallTimestamp: 7)))
+        XCTAssertEqual([1, 2, 3], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 0)))
+        XCTAssertEqual([4, 5, 6], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 3)))
+        XCTAssertEqual([7], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 6)))
+        XCTAssertEqual([], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 7)))
     }
 
     func testGetNewerPageSearching() {
@@ -159,9 +160,9 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 7),
         ]
 
-        XCTAssertEqual([5, 3, 2], loadRecords(loadDirection: .newer(newestCallTimestamp: 0)))
-        XCTAssertEqual([6], loadRecords(loadDirection: .newer(newestCallTimestamp: 5)))
-        XCTAssertEqual([], loadRecords(loadDirection: .newer(newestCallTimestamp: 6)))
+        XCTAssertEqual([2, 3, 5], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 0)))
+        XCTAssertEqual([6], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 5)))
+        XCTAssertEqual([], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 6)))
     }
 
     func testGetNewerPageForMissed() {
@@ -179,9 +180,9 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 9),
         ]
 
-        XCTAssertEqual([6, 4, 2], loadRecords(loadDirection: .newer(newestCallTimestamp: 0)))
-        XCTAssertEqual([8, 7], loadRecords(loadDirection: .newer(newestCallTimestamp: 6)))
-        XCTAssertEqual([], loadRecords(loadDirection: .newer(newestCallTimestamp: 8)))
+        XCTAssertEqual([2, 4, 6], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 0)))
+        XCTAssertEqual([7, 8], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 6)))
+        XCTAssertEqual([], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 8)))
     }
 
     func testGetNewerPageForMissedSearching() {
@@ -203,10 +204,10 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 13, callStatus: .group(.ringingMissed)),
         ]
 
-        XCTAssertEqual([5, 4, 2], loadRecords(loadDirection: .newer(newestCallTimestamp: 0)))
-        XCTAssertEqual([10, 9, 6], loadRecords(loadDirection: .newer(newestCallTimestamp: 5)))
-        XCTAssertEqual([11], loadRecords(loadDirection: .newer(newestCallTimestamp: 10)))
-        XCTAssertEqual([], loadRecords(loadDirection: .newer(newestCallTimestamp: 11)))
+        XCTAssertEqual([2, 4, 5], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 0)))
+        XCTAssertEqual([6, 9, 10], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 5)))
+        XCTAssertEqual([11], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 10)))
+        XCTAssertEqual([], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 11)))
     }
 }
 
@@ -235,12 +236,7 @@ private extension CallRecord {
 private class MockCallRecordQuerier: CallRecordQuerier {
     private class Cursor: CallRecordCursor {
         private var callRecords: [CallRecord] = []
-        init(_ callRecords: [CallRecord], ordering: FetchOrdering) {
-            self.callRecords = callRecords
-            self.ordering = ordering.callRecordCursorOrdering
-        }
-
-        let ordering: Ordering
+        init(_ callRecords: [CallRecord]) { self.callRecords = callRecords }
         func next() throws -> CallRecord? { return callRecords.popFirst() }
     }
 
@@ -258,23 +254,23 @@ private class MockCallRecordQuerier: CallRecordQuerier {
     }
 
     func fetchCursor(ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords, ordering: ordering), ordering: ordering)
+        return Cursor(applyOrdering(mockCallRecords, ordering: ordering))
     }
 
     func fetchCursor(callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus }, ordering: ordering), ordering: ordering)
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus }, ordering: ordering))
     }
 
     func fetchCursor(threadRowId: Int64, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.threadRowId == threadRowId }, ordering: ordering), ordering: ordering)
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.threadRowId == threadRowId }, ordering: ordering))
     }
 
     func fetchCursor(threadRowId: Int64, callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.threadRowId == threadRowId }, ordering: ordering), ordering: ordering)
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.threadRowId == threadRowId }, ordering: ordering))
     }
 
     func fetchCursorForUnread(callStatus: CallRecord.CallStatus, ordering: FetchOrdering, tx: DBReadTransaction) -> CallRecordCursor? {
-        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.unreadStatus == .unread }, ordering: ordering), ordering: ordering)
+        return Cursor(applyOrdering(mockCallRecords.filter { $0.callStatus == callStatus && $0.unreadStatus == .unread }, ordering: ordering))
     }
 }
 

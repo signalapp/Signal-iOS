@@ -1684,11 +1684,14 @@
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		D9E7C8752B9A3FD1005BD3B9 /* CallRecordCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E7C8742B9A3FD1005BD3B9 /* CallRecordCursor.swift */; };
 		D9E7C8772B9A4A9C005BD3B9 /* CallRecord+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E7C8762B9A4A9C005BD3B9 /* CallRecord+Sorting.swift */; };
+		D9E7C8792B9B9072005BD3B9 /* IdentifierIndexedArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E7C8782B9B9072005BD3B9 /* IdentifierIndexedArray.swift */; };
 		D9EB221E2A4B636C00C73E1D /* Bitmaps+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */; };
 		D9EB221F2A4B636C00C73E1D /* Bitmaps+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */; };
 		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
 		D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */; };
 		D9EB22222A4B636C00C73E1D /* Bitmaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */; };
+		D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */; };
+		D9F122542B7EDF4C0008164A /* CallsListViewController+ViewModelLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F122532B7EDF4C0008164A /* CallsListViewController+ViewModelLoader.swift */; };
 		D9F399AD2A95798A001599EC /* PniIdentityKeyChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AC2A95798A001599EC /* PniIdentityKeyChecker.swift */; };
 		D9F399B02A967664001599EC /* PniIdentityKeyCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AE2A96764A001599EC /* PniIdentityKeyCheckerTest.swift */; };
 		D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */; };
@@ -4517,11 +4520,14 @@
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
 		D9E7C8742B9A3FD1005BD3B9 /* CallRecordCursor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordCursor.swift; sourceTree = "<group>"; };
 		D9E7C8762B9A4A9C005BD3B9 /* CallRecord+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallRecord+Sorting.swift"; sourceTree = "<group>"; };
+		D9E7C8782B9B9072005BD3B9 /* IdentifierIndexedArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifierIndexedArray.swift; sourceTree = "<group>"; };
 		D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Shapes.swift"; sourceTree = "<group>"; };
 		D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Image.swift"; sourceTree = "<group>"; };
 		D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGContext+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bitmaps.swift; sourceTree = "<group>"; };
+		D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallsListViewController+ViewModelLoaderTest.swift"; sourceTree = "<group>"; };
+		D9F122532B7EDF4C0008164A /* CallsListViewController+ViewModelLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallsListViewController+ViewModelLoader.swift"; sourceTree = "<group>"; };
 		D9F399AC2A95798A001599EC /* PniIdentityKeyChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniIdentityKeyChecker.swift; sourceTree = "<group>"; };
 		D9F399AE2A96764A001599EC /* PniIdentityKeyCheckerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniIdentityKeyCheckerTest.swift; sourceTree = "<group>"; };
 		D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicePniKeyManager.swift; sourceTree = "<group>"; };
@@ -8648,8 +8654,12 @@
 		B93955E12B06D46400F35940 /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				D93108082B337A23006A034E /* CallRecordLoader.swift */,
 				D9C5442C2B865B060036F274 /* CallsListViewController+Strings.swift */,
+				D9F122532B7EDF4C0008164A /* CallsListViewController+ViewModelLoader.swift */,
 				B93955E22B06D47000F35940 /* CallsListViewController.swift */,
+				D9E7C8782B9B9072005BD3B9 /* IdentifierIndexedArray.swift */,
+				D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */,
 				B935268F2B0E63C300421E6A /* NewCallViewController.swift */,
 			);
 			path = Calls;
@@ -8805,7 +8815,6 @@
 		D221A093169C9E5E00537ABF /* Signal */ = {
 			isa = PBXGroup;
 			children = (
-				D93108072B337A02006A034E /* CallsTab */,
 				50B6BCAF2AEC4F3B0010FB3B /* Contacts */,
 				88BFD4712335C2A4001797D7 /* Lottie */,
 				5011D9712A0471E8000FE8E5 /* OrphanData */,
@@ -8930,19 +8939,11 @@
 			path = CallRecord;
 			sourceTree = "<group>";
 		};
-		D93108072B337A02006A034E /* CallsTab */ = {
-			isa = PBXGroup;
-			children = (
-				D93108082B337A23006A034E /* CallRecordLoader.swift */,
-				D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */,
-			);
-			path = CallsTab;
-			sourceTree = "<group>";
-		};
 		D931080C2B338D00006A034E /* CallsTab */ = {
 			isa = PBXGroup;
 			children = (
 				D93108132B34B69E006A034E /* CallRecordLoaderTest.swift */,
+				D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */,
 				D931080D2B338D15006A034E /* InterleavingCompositeCursorTest.swift */,
 			);
 			path = CallsTab;
@@ -12515,6 +12516,7 @@
 				D93108092B337A23006A034E /* CallRecordLoader.swift in Sources */,
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
 				D9C5442D2B865B060036F274 /* CallsListViewController+Strings.swift in Sources */,
+				D9F122542B7EDF4C0008164A /* CallsListViewController+ViewModelLoader.swift in Sources */,
 				B93955E32B06D47000F35940 /* CallsListViewController.swift in Sources */,
 				B98D246A2B8D2A2A00B1A8CC /* CallStarter.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
@@ -12792,6 +12794,7 @@
 				661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */,
 				8852572C27DD40870032073C /* HomeTabBarController.swift in Sources */,
 				B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */,
+				D9E7C8792B9B9072005BD3B9 /* IdentifierIndexedArray.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				1700E33F28B856FC0073D949 /* IncomingCallControls.swift in Sources */,
 				4CD4E7D523E8CCFE00834B1B /* IndividualCall.swift in Sources */,
@@ -13107,6 +13110,7 @@
 				D9317FD32A4BAC8300075A92 /* BitmapsImagePixelMergingTest.swift in Sources */,
 				D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */,
 				D93108152B34B6BE006A034E /* CallRecordLoaderTest.swift in Sources */,
+				D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */,
 				F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
 				4C9D347B23679C25006A4307 /* ContactStreamTest.swift in Sources */,

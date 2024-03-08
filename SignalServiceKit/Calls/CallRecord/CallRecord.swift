@@ -174,6 +174,11 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     /// as for display.
     public internal(set) var callBeganTimestamp: UInt64
 
+    /// The date at which we believe the call began.
+    ///
+    /// - SeeAlso ``callBeganTimestamp``
+    public var callBeganDate: Date { Date(millisecondsSince1970: callBeganTimestamp) }
+
     /// Creates a ``CallRecord`` with the given parameters.
     ///
     /// - Note
