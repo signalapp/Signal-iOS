@@ -613,13 +613,11 @@ public class MessageSender: Dependencies {
     private func unsentRecipients(
         of message: TSOutgoingMessage,
         in thread: TSThread,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyReadTransaction
     ) throws -> [SignalServiceAddress] {
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
-            throw OWSAssertionError("Missing localAddress.")
-        }
         if message.isSyncMessage {
-            return [localAddress]
+            return [localIdentifiers.aciAddress]
         }
 
         if let groupThread = thread as? TSGroupThread {
@@ -651,15 +649,12 @@ public class MessageSender: Dependencies {
             if GroupManager.shouldMessageHaveAdditionalRecipients(message, groupThread: groupThread) {
                 currentValidRecipients.formUnion(groupMembership.invitedMembers)
             }
-            currentValidRecipients.remove(localAddress)
+            currentValidRecipients.remove(localIdentifiers.aciAddress)
             recipientAddresses.formIntersection(currentValidRecipients)
 
             let blockedAddresses = blockingManager.blockedAddresses(transaction: tx)
             recipientAddresses.subtract(blockedAddresses)
 
-            if recipientAddresses.contains(localAddress) {
-                owsFailDebug("Message send recipients should not include self.")
-            }
             return Array(recipientAddresses)
         } else if let contactAddress = (thread as? TSContactThread)?.contactAddress {
             // Treat 1:1 sends to blocked contacts as failures.
@@ -695,7 +690,7 @@ public class MessageSender: Dependencies {
             let blockedAddresses = blockingManager.blockedAddresses(transaction: tx)
             recipientAddresses.subtract(blockedAddresses)
 
-            if recipientAddresses.contains(localAddress) {
+            if recipientAddresses.contains(localIdentifiers.aciAddress) {
                 owsFailDebug("Message send recipients should not include self.")
             }
 
@@ -805,20 +800,6 @@ public class MessageSender: Dependencies {
                 throw MessageSenderError.threadMissing
             }
 
-            let proposedAddresses = try self.unsentRecipients(of: message, in: thread, tx: tx)
-            let (serviceIds, phoneNumbersToFetch) = Self.partitionAddresses(proposedAddresses)
-
-            // If we haven't yet tried to look up phone numbers, send an asynchronous
-            // request to look up phone numbers, and then try to go through this logic
-            // *again* in a new transaction. Things may change for that subsequent
-            // attempt, and if there's still missing phone numbers at that point, we'll
-            // skip them for this message.
-            if canLookUpPhoneNumbers, !phoneNumbersToFetch.isEmpty {
-                return .lookUpPhoneNumbersAndTryAgain(phoneNumbersToFetch)
-            }
-
-            self.markSkippedRecipients(of: message, sendingRecipients: serviceIds, tx: tx)
-
             let canSendToThread: Bool = {
                 if message is OWSOutgoingReactionMessage {
                     return thread.canSendReactionToThread
@@ -837,6 +818,25 @@ public class MessageSender: Dependencies {
                 // Pretend to succeed for non-visible messages like read receipts, etc.
                 return nil
             }
+
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                throw OWSAssertionError("Not registered.")
+            }
+
+            let proposedAddresses = try self.unsentRecipients(of: message, in: thread, localIdentifiers: localIdentifiers, tx: tx)
+            let (serviceIds, phoneNumbersToFetch) = Self.partitionAddresses(proposedAddresses)
+
+            // If we haven't yet tried to look up phone numbers, send an asynchronous
+            // request to look up phone numbers, and then try to go through this logic
+            // *again* in a new transaction. Things may change for that subsequent
+            // attempt, and if there's still missing phone numbers at that point, we'll
+            // skip them for this message.
+            if canLookUpPhoneNumbers, !phoneNumbersToFetch.isEmpty {
+                return .lookUpPhoneNumbersAndTryAgain(phoneNumbersToFetch)
+            }
+
+            self.markSkippedRecipients(of: message, sendingRecipients: serviceIds, tx: tx)
 
             if let contactThread = thread as? TSContactThread {
                 // In the "self-send" aka "Note to Self" special case, we only need to send
@@ -858,10 +858,6 @@ public class MessageSender: Dependencies {
 
             guard let serializedMessage = self.buildAndRecordMessage(message, in: thread, tx: tx) else {
                 throw OWSAssertionError("Couldn't build message.")
-            }
-
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
-                throw OWSAssertionError("Not registered.")
             }
 
             let senderCertificate: SenderCertificate = {
