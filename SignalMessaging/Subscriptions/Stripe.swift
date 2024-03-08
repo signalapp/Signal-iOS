@@ -376,7 +376,7 @@ fileprivate extension Stripe {
         static func postForm(endpoint: String,
                              parameters: [String: Any],
                              idempotencyKey: String? = nil) throws -> Promise<HTTPResponse> {
-            guard let formData = AFQueryStringFromParameters(parameters).data(using: .utf8) else {
+            guard let formData = queryStringFromParameters(parameters).data(using: .utf8) else {
                 throw OWSAssertionError("Failed to generate post body data")
             }
 
@@ -396,8 +396,20 @@ fileprivate extension Stripe {
             )
         }
 
+        static func queryStringFromParameters(_ parameters: [String: Any]) -> String {
+            AFQueryStringFromParameters(parameters)
+        }
     }
 }
+
+// MARK: - Expose API function for testing in DEBUG
+#if DEBUG
+extension Stripe {
+    static func queryStringFromParameters(_ parameters: [String: Any]) -> String {
+        API.queryStringFromParameters(parameters)
+    }
+}
+#endif
 
 // MARK: - Converting to StripeError
 
