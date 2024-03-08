@@ -465,11 +465,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         untrustedThreshold: Date?,
         tx: DBReadTransaction
     ) -> OWSRecipientIdentity? {
-        guard let recipientIdentity = recipientIdentity(for: address, tx: tx) else {
-            // trust on first use
-            return nil
-        }
-
+        let recipientIdentity = recipientIdentity(for: address, tx: tx)
         let isTrusted = isIdentityKeyTrustedForSending(
             address: address,
             recipientIdentity: recipientIdentity,
@@ -481,19 +477,21 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     private func isIdentityKeyTrustedForSending(
         address: SignalServiceAddress,
-        recipientIdentity: OWSRecipientIdentity,
+        recipientIdentity: OWSRecipientIdentity?,
         untrustedThreshold: Date?,
         tx: DBReadTransaction
     ) -> Bool {
         owsAssertDebug(address.isValid)
-        let identityKey = recipientIdentity.identityKey
-        owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
         if address.isLocalAddress {
-            return isTrustedLocalKey(identityKey, tx: tx)
+            guard let recipientIdentity else {
+                // Trust on first use.
+                return true
+            }
+            return isTrustedLocalKey(recipientIdentity.identityKey, tx: tx)
         }
 
-        return isTrustedKey(identityKey, forSendingTo: recipientIdentity, untrustedThreshold: untrustedThreshold)
+        return canSend(to: recipientIdentity, untrustedThreshold: untrustedThreshold)
     }
 
     public func isTrustedIdentityKey(
@@ -515,12 +513,16 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 owsFailDebug("Couldn't find recipientId for outgoing message.")
                 return .success(false)
             }
-            return recipientIdResult.map {
-                return isTrustedKey(
-                    identityKey.publicKey.keyBytes.asData,
-                    forSendingTo: OWSRecipientIdentity.anyFetch(uniqueId: $0, transaction: SDSDB.shimOnlyBridge(tx)),
-                    untrustedThreshold: nil
+            return recipientIdResult.map { recipientId in
+                let recipientIdentity = OWSRecipientIdentity.anyFetch(
+                    uniqueId: recipientId,
+                    transaction: SDSDB.shimOnlyBridge(tx)
                 )
+                if let recipientIdentity, recipientIdentity.identityKey != identityKey.publicKey.keyBytes.asData {
+                    Logger.warn("Key mismatch for \(recipientIdentity.uniqueId)")
+                    return false
+                }
+                return canSend(to: recipientIdentity, untrustedThreshold: nil)
             }
         }
     }
@@ -534,22 +536,10 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         return true
     }
 
-    private func isTrustedKey(
-        _ identityKey: Data,
-        forSendingTo recipientIdentity: OWSRecipientIdentity?,
-        untrustedThreshold: Date?
-    ) -> Bool {
-        owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
-
+    private func canSend(to recipientIdentity: OWSRecipientIdentity?, untrustedThreshold: Date?) -> Bool {
         guard let recipientIdentity else {
+            // Trust on first use.
             return true
-        }
-
-        owsAssertDebug(recipientIdentity.identityKey.count == Constants.storedIdentityKeyLength)
-
-        guard recipientIdentity.identityKey == identityKey else {
-            Logger.warn("Key mismatch for \(recipientIdentity.uniqueId)")
-            return false
         }
 
         if recipientIdentity.isFirstKnownKey {
@@ -1080,18 +1070,6 @@ class OWSIdentityManagerObjCBridge: NSObject {
     @objc
     static func saveIdentityKey(_ identityKey: Data, forServiceId serviceId: ServiceIdObjC, transaction tx: SDSAnyWriteTransaction) {
         DependenciesBridge.shared.identityManager.saveIdentityKey(identityKey, for: serviceId.wrappedValue, tx: tx.asV2Write)
-    }
-
-    @objc
-    static func untrustedIdentityForSending(toAddress address: SignalServiceAddress) -> OWSRecipientIdentity? {
-        return databaseStorage.read { tx in
-            let identityManager = DependenciesBridge.shared.identityManager
-            return identityManager.untrustedIdentityForSending(
-                to: address,
-                untrustedThreshold: nil,
-                tx: tx.asV2Read
-            )
-        }
     }
 }
 
