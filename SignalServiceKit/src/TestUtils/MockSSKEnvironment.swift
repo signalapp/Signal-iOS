@@ -62,7 +62,6 @@ public class MockSSKEnvironment: SSKEnvironment {
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
-        let attachmentDownloads = OWSAttachmentDownloads()
         let blockingManager = BlockingManager()
         let contactManager = FakeContactsManager()
         let dateProvider = Date.provider
@@ -119,7 +118,6 @@ public class MockSSKEnvironment: SSKEnvironment {
             accountServiceClient: accountServiceClient,
             appContext: TestAppContext(),
             appVersion: AppVersionImpl.shared,
-            attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
             contactManager: contactManager,
             databaseStorage: databaseStorage,
@@ -233,7 +231,6 @@ public class MockSSKEnvironment: SSKEnvironment {
             reachabilityManager: reachabilityManager,
             syncManager: syncManager,
             typingIndicators: typingIndicators,
-            attachmentDownloads: attachmentDownloads,
             stickerManager: stickerManager,
             databaseStorage: databaseStorage,
             signalServiceAddressCache: signalServiceAddressCache,

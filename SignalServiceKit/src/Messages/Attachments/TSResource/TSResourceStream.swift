@@ -40,5 +40,5 @@ extension TSResourceStream {
     // TODO: this is just to help with bridging while all TSResources are actually TSAttachments,
     // and we are migrating code to TSResource that hands an instance to unmigrated code.
     // Remove once all references to TSAttachment are replaced with TSResource.
-    var bridgeStream: TSAttachmentStream { self as! TSAttachmentStream }
+    public var bridgeStream: TSAttachmentStream { self as! TSAttachmentStream }
 }

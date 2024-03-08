@@ -310,7 +310,12 @@ public class CVAttachmentProgressView: ManualLayoutView {
     private func updateDownloadProgress() {
         AssertIsOnMainThread()
 
-        guard let progress = attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
+        let progress = databaseStorage.read { tx in
+            return DependenciesBridge.shared.tsResourceDownloadManager
+                .downloadProgress(for: .legacy(uniqueId: attachmentId), tx: tx.asV2Read)
+        }
+
+        guard let progress else {
             Logger.warn("No progress for attachment.")
             stateView.state = .downloadUnknownProgress
             return

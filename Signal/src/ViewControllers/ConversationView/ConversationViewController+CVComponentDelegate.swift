@@ -210,11 +210,13 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapFailedOrPendingDownloads(_ message: TSMessage) {
         AssertIsOnMainThread()
 
-        attachmentDownloads.enqueueDownloadOfAttachments(
-            forMessageId: message.uniqueId,
-            attachmentGroup: .allAttachments,
-            downloadBehavior: .bypassAll
-        )
+        databaseStorage.write { tx in
+            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+                message,
+                priority: .userInitiated,
+                tx: tx.asV2Write
+            )
+        }
     }
 
     public func didTapBrokenVideo() {

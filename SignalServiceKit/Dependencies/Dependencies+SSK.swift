@@ -15,14 +15,6 @@ public protocol Dependencies {}
 
 @objc
 public extension NSObject {
-    final var attachmentDownloads: OWSAttachmentDownloads {
-        SSKEnvironment.shared.attachmentDownloadsRef
-    }
-
-    static var attachmentDownloads: OWSAttachmentDownloads {
-        SSKEnvironment.shared.attachmentDownloadsRef
-    }
-
     final var blockingManager: BlockingManager {
         .shared
     }
@@ -442,14 +434,6 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-
-    var attachmentDownloads: OWSAttachmentDownloads {
-        SSKEnvironment.shared.attachmentDownloadsRef
-    }
-
-    static var attachmentDownloads: OWSAttachmentDownloads {
-        SSKEnvironment.shared.attachmentDownloadsRef
-    }
 
     var blockingManager: BlockingManager {
         .shared

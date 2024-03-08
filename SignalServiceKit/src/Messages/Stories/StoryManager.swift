@@ -145,7 +145,7 @@ public class StoryManager: NSObject {
         } else if existingStory == nil {
             let message = try StoryMessage.create(withSentTranscript: proto, transaction: transaction)
 
-            attachmentDownloads.enqueueDownloadOfAttachmentsForStoryMessage(message, transaction: transaction)
+            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
 
             OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetimeMillis)
 
@@ -233,7 +233,7 @@ public class StoryManager: NSObject {
         guard case .file(let file) = message.attachment else {
             // We always auto-download non-file story attachments, this will generally only be link preview thumbnails.
             Logger.info("Automatically enqueueing download of non-file based story with timestamp \(message.timestamp)")
-            attachmentDownloads.enqueueDownloadOfAttachmentsForStoryMessage(message, transaction: transaction)
+            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
             return
         }
 
@@ -284,7 +284,7 @@ public class StoryManager: NSObject {
         if autoDownloadContexts.contains(message.context) || autoDownloadContexts.contains(.authorAci(message.authorAci)) {
             Logger.info("Automatically downloading attachments for story with timestamp \(message.timestamp) and context \(message.context)")
 
-            attachmentDownloads.enqueueDownloadOfAttachmentsForStoryMessage(message, transaction: transaction)
+            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
         } else {
             Logger.info("Skipping automatic download of attachments for story with timestamp \(message.timestamp), context \(message.context) not recently active")
             attachmentPointer.updateAttachmentPointerState(.pendingManualDownload, transaction: transaction)

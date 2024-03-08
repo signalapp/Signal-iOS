@@ -351,7 +351,9 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 return true
             case .enqueued, .downloading:
                 Logger.warn("Media attachment not yet downloaded.")
-                Self.attachmentDownloads.cancelDownload(attachmentId: attachmentPointer.uniqueId)
+                self.databaseStorage.write { tx in
+                    DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(for: attachmentPointer.resourceId, tx: tx.asV2Write)
+                }
                 return true
             }
         }

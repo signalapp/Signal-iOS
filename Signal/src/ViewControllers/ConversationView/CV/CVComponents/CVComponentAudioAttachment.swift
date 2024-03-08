@@ -173,9 +173,14 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
             return true
 
-        } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.uniqueId {
+        } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.resourceId {
             Logger.debug("Cancelling in-progress download because of user action: \(interaction.uniqueId):\(pointerId)")
-            Self.attachmentDownloads.cancelDownload(attachmentId: pointerId)
+            self.databaseStorage.write { tx in
+                DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(
+                    for: pointerId,
+                    tx: tx.asV2Write
+                )
+            }
             return true
 
         } else if let message = interaction as? TSMessage {

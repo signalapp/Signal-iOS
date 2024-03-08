@@ -8,7 +8,7 @@ import LibSignalClient
 
 public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
-    private let attachmentDownloads: Shims.AttachmentDownloads
+    private let attachmentDownloads: TSResourceDownloadManager
     private let disappearingMessagesJob: Shims.DisappearingMessagesJob
     private let earlyMessageManager: Shims.EarlyMessageManager
     private let groupManager: Shims.GroupManager
@@ -20,7 +20,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private let viewOnceMessages: Shims.ViewOnceMessages
 
     public init(
-        attachmentDownloads: Shims.AttachmentDownloads,
+        attachmentDownloads: TSResourceDownloadManager,
         disappearingMessagesJob: Shims.DisappearingMessagesJob,
         earlyMessageManager: Shims.EarlyMessageManager,
         groupManager: Shims.GroupManager,

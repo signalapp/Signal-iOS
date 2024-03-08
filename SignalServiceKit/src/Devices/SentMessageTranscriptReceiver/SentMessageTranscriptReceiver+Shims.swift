@@ -8,7 +8,6 @@ import LibSignalClient
 
 extension SentMessageTranscriptReceiverImpl {
     public enum Shims {
-        public typealias AttachmentDownloads = _SentMessageTranscriptReceiver_AttachmentDownloadsShim
         public typealias DisappearingMessagesJob = _SentMessageTranscriptReceiver_DisappearingMessagesJobShim
         public typealias EarlyMessageManager = _SentMessageTranscriptReceiver_EarlyMessageManagerShim
         public typealias GroupManager = _SentMessageTranscriptReceiver_GroupManagerShim
@@ -16,32 +15,11 @@ extension SentMessageTranscriptReceiverImpl {
         public typealias ViewOnceMessages = _SentMessageTranscriptReceiver_ViewOnceMessagesShim
     }
     public enum Wrappers {
-        public typealias AttachmentDownloads = _SentMessageTranscriptReceiver_AttachmentDownloadsWrapper
         public typealias DisappearingMessagesJob = _SentMessageTranscriptReceiver_DisappearingMessagesJobWrapper
         public typealias EarlyMessageManager = _SentMessageTranscriptReceiver_EarlyMessageManagerWrapper
         public typealias GroupManager = _SentMessageTranscriptReceiver_GroupManagerWrapper
         public typealias PaymentsHelper = _SentMessageTranscriptReceiver_PaymentsHelperWrapper
         public typealias ViewOnceMessages = _SentMessageTranscriptReceiver_ViewOnceMessagesWrapper
-    }
-}
-
-// MARK: - AttachmentDownloads
-
-public protocol _SentMessageTranscriptReceiver_AttachmentDownloadsShim {
-
-    func enqueueDownloadOfAttachmentsForMessage(_ message: TSMessage, tx: DBWriteTransaction)
-}
-
-public class _SentMessageTranscriptReceiver_AttachmentDownloadsWrapper: _SentMessageTranscriptReceiver_AttachmentDownloadsShim {
-
-    private let attachmentDownloads: OWSAttachmentDownloads
-
-    public init(_ attachmentDownloads: OWSAttachmentDownloads) {
-        self.attachmentDownloads = attachmentDownloads
-    }
-
-    public func enqueueDownloadOfAttachmentsForMessage(_ message: TSMessage, tx: DBWriteTransaction) {
-        attachmentDownloads.enqueueDownloadOfAttachmentsForMessage(message, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

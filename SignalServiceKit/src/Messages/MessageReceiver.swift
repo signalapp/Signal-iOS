@@ -1092,7 +1092,7 @@ public final class MessageReceiver: Dependencies {
             )
         }
 
-        attachmentDownloads.enqueueDownloadOfAttachmentsForMessage(message, transaction: tx)
+        DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, tx: tx.asV2Write)
         notificationsManager.notifyUser(forIncomingMessage: message, thread: thread, transaction: tx)
 
         if CurrentAppContext().isMainApp {
@@ -1679,9 +1679,9 @@ public final class MessageReceiver: Dependencies {
         }
 
         // Start downloading any new attachments
-        self.attachmentDownloads.enqueueDownloadOfAttachmentsForMessage(
+        DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(
             message,
-            transaction: tx
+            tx: tx.asV2Write
         )
 
         DispatchQueue.main.async {

@@ -815,13 +815,17 @@ public extension OWSAttachmentDownloads {
     }
 
     @objc
-    func enqueueDownloadOfAttachmentsForMessage(_ message: TSMessage, transaction: SDSAnyWriteTransaction) {
+    func enqueueDownloadOfAttachmentsForMessage(
+        _ message: TSMessage,
+        downloadBehavior: AttachmentDownloadBehavior,
+        transaction: SDSAnyWriteTransaction
+    ) {
         // No attachments, nothing to do.
         guard !message.allAttachmentIds(transaction: transaction).isEmpty else { return }
 
         enqueueDownloadOfAttachmentsForMessageId(
             message.uniqueId,
-            downloadBehavior: message is TSOutgoingMessage ? .bypassAll : .default,
+            downloadBehavior: message is TSOutgoingMessage ? .bypassAll : downloadBehavior,
             transaction: transaction
         )
     }
@@ -936,13 +940,17 @@ public extension OWSAttachmentDownloads {
         }.cauterize()
     }
 
-    func enqueueDownloadOfAttachmentsForStoryMessage(_ message: StoryMessage, transaction: SDSAnyWriteTransaction) {
+    func enqueueDownloadOfAttachmentsForStoryMessage(
+        _ message: StoryMessage,
+        downloadBehavior: AttachmentDownloadBehavior,
+        transaction: SDSAnyWriteTransaction
+    ) {
         // No attachment, nothing to do.
         guard message.attachmentUniqueId(tx: transaction) != nil else { return }
 
         enqueueDownloadOfAttachmentsForStoryMessageId(
             message.uniqueId,
-            downloadBehavior: message.direction == .outgoing ? .bypassAll : .default,
+            downloadBehavior: message.direction == .outgoing ? .bypassAll : downloadBehavior,
             transaction: transaction
         )
     }

@@ -120,11 +120,16 @@ private class QuotedMessageViewAdapter: QuotedMessageViewDelegate, Dependencies 
 
     func didTapQuotedReply(_ quotedReply: QuotedReplyModel,
                            failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
-        Self.attachmentDownloads.enqueueDownloadOfAttachments(
-            forMessageId: interactionUniqueId,
-            attachmentGroup: .allAttachments,
-            downloadBehavior: .default
-        )
+        databaseStorage.write { tx in
+            guard let message = TSMessage.anyFetchMessage(uniqueId: interactionUniqueId, transaction: tx) else {
+                return
+            }
+            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+                message,
+                priority: .userInitiated,
+                tx: tx.asV2Write
+            )
+        }
     }
 
     func didCancelQuotedReply() {

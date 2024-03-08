@@ -1072,7 +1072,7 @@ extension StoryItem {
             return nil
         }
 
-        return attachmentDownloads.enqueueDownloadOfAttachments(
+        return DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachments(
             forStoryMessageId: message.uniqueId,
             downloadBehavior: .bypassAll
         )

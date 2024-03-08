@@ -1005,6 +1005,12 @@
 		66D7B92B2B97E5990005C98B /* AttachmentTransitPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92A2B97E5990005C98B /* AttachmentTransitPointer.swift */; };
 		66D7B92D2B98DAAD0005C98B /* AttachmentManager+Proto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92C2B98DAAD0005C98B /* AttachmentManager+Proto.swift */; };
 		66D7B92F2B98ECB00005C98B /* ConcreteTSResourceReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92E2B98ECB00005C98B /* ConcreteTSResourceReference.swift */; };
+		66D7B9322B9943DB0005C98B /* AttachmentDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9312B9943DB0005C98B /* AttachmentDownloadManager.swift */; };
+		66D7B9342B9945E60005C98B /* AttachmentDownloadManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9332B9945E60005C98B /* AttachmentDownloadManagerImpl.swift */; };
+		66D7B9372B99463C0005C98B /* TSResourceDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9362B99463C0005C98B /* TSResourceDownloadManager.swift */; };
+		66D7B9392B99466F0005C98B /* TSResourceDownloadManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9382B99466F0005C98B /* TSResourceDownloadManagerImpl.swift */; };
+		66D7B9402B9A67B00005C98B /* AttachmentDownloadPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */; };
+		66D7B9432B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9422B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift */; };
 		66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD4F2B80126200C56B7B /* TSResourceId.swift */; };
 		66E1AD532B8D017400C56B7B /* TSResourceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD522B8D017400C56B7B /* TSResourceStore.swift */; };
 		66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */; };
@@ -3788,6 +3794,12 @@
 		66D7B92A2B97E5990005C98B /* AttachmentTransitPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTransitPointer.swift; sourceTree = "<group>"; };
 		66D7B92C2B98DAAD0005C98B /* AttachmentManager+Proto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentManager+Proto.swift"; sourceTree = "<group>"; };
 		66D7B92E2B98ECB00005C98B /* ConcreteTSResourceReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteTSResourceReference.swift; sourceTree = "<group>"; };
+		66D7B9312B9943DB0005C98B /* AttachmentDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadManager.swift; sourceTree = "<group>"; };
+		66D7B9332B9945E60005C98B /* AttachmentDownloadManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadManagerImpl.swift; sourceTree = "<group>"; };
+		66D7B9362B99463C0005C98B /* TSResourceDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceDownloadManager.swift; sourceTree = "<group>"; };
+		66D7B9382B99466F0005C98B /* TSResourceDownloadManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceDownloadManagerImpl.swift; sourceTree = "<group>"; };
+		66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadPriority.swift; sourceTree = "<group>"; };
+		66D7B9422B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentDownloadPriority+TSResource.swift"; sourceTree = "<group>"; };
 		66E1AD4F2B80126200C56B7B /* TSResourceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceId.swift; sourceTree = "<group>"; };
 		66E1AD522B8D017400C56B7B /* TSResourceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStore.swift; sourceTree = "<group>"; };
 		66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteTSResource.swift; sourceTree = "<group>"; };
@@ -7377,15 +7389,6 @@
 			path = Quotes;
 			sourceTree = "<group>";
 		};
-		669FAE132B7595FE009EE2FE /* AttachmentDownloads */ = {
-			isa = PBXGroup;
-			children = (
-				669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */,
-				F9C5C985289453B100548EEE /* OWSAttachmentDownloads.swift */,
-			);
-			path = AttachmentDownloads;
-			sourceTree = "<group>";
-		};
 		669FAE162B7A8DA4009EE2FE /* LinkPreview */ = {
 			isa = PBXGroup;
 			children = (
@@ -7441,6 +7444,7 @@
 				66E1AD8F2B91336800C56B7B /* AttachmentManager */,
 				66E1AD7F2B8FDA5500C56B7B /* AttachmentReference */,
 				66E1AD512B8D016000C56B7B /* AttachmentStore */,
+				66D7B93E2B9A67A20005C98B /* Downloads */,
 				66D7B90C2B9798770005C98B /* QuotedMessageAttachment */,
 				66E1AD8C2B912A3000C56B7B /* TSResource */,
 				66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */,
@@ -7623,6 +7627,29 @@
 			children = (
 				66D7B9122B979C3A0005C98B /* QuotedMessageAttachmentReference+TSResource.swift */,
 				66D7B9102B9799EF0005C98B /* TSQuotedMessageResourceReference.swift */,
+			);
+			path = TSResource;
+			sourceTree = "<group>";
+		};
+		66D7B93E2B9A67A20005C98B /* Downloads */ = {
+			isa = PBXGroup;
+			children = (
+				66D7B9412B9A67C30005C98B /* TSResource */,
+				66D7B9312B9943DB0005C98B /* AttachmentDownloadManager.swift */,
+				66D7B9332B9945E60005C98B /* AttachmentDownloadManagerImpl.swift */,
+				66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */,
+			);
+			path = Downloads;
+			sourceTree = "<group>";
+		};
+		66D7B9412B9A67C30005C98B /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				66D7B9422B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift */,
+				669FAE142B75968D009EE2FE /* OWSAttachmentDownloadJob.swift */,
+				F9C5C985289453B100548EEE /* OWSAttachmentDownloads.swift */,
+				66D7B9362B99463C0005C98B /* TSResourceDownloadManager.swift */,
+				66D7B9382B99466F0005C98B /* TSResourceDownloadManagerImpl.swift */,
 			);
 			path = TSResource;
 			sourceTree = "<group>";
@@ -10111,7 +10138,6 @@
 		F9C5C984289453B100548EEE /* Attachments */ = {
 			isa = PBXGroup;
 			children = (
-				669FAE132B7595FE009EE2FE /* AttachmentDownloads */,
 				66C102F02B61E36E00B47EC2 /* V2 */,
 				F9C5C987289453B100548EEE /* BlurHash.swift */,
 				F9C5C988289453B100548EEE /* OWSMediaUtils.swift */,
@@ -13188,6 +13214,10 @@
 				66E1AD782B8FD0D800C56B7B /* Attachment+TSResource.swift in Sources */,
 				66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */,
 				66D7B9212B97C65E0005C98B /* AttachmentContentType+TSResource.swift in Sources */,
+				66D7B9322B9943DB0005C98B /* AttachmentDownloadManager.swift in Sources */,
+				66D7B9342B9945E60005C98B /* AttachmentDownloadManagerImpl.swift in Sources */,
+				66D7B9432B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift in Sources */,
+				66D7B9402B9A67B00005C98B /* AttachmentDownloadPriority.swift in Sources */,
 				66D7B92D2B98DAAD0005C98B /* AttachmentManager+Proto.swift in Sources */,
 				66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */,
 				66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */,
@@ -14022,6 +14052,8 @@
 				6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */,
 				66C102F22B61E38100B47EC2 /* TSResource.swift in Sources */,
 				66D7B91F2B97C5E90005C98B /* TSResourceContentType.swift in Sources */,
+				66D7B9372B99463C0005C98B /* TSResourceDownloadManager.swift in Sources */,
+				66D7B9392B99466F0005C98B /* TSResourceDownloadManagerImpl.swift in Sources */,
 				66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */,
 				66E1AD922B9133AD00C56B7B /* TSResourceManager.swift in Sources */,
 				66E1AD942B91344E00C56B7B /* TSResourceManagerImpl.swift in Sources */,

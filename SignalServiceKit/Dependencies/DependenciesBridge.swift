@@ -42,6 +42,7 @@ public class DependenciesBridge {
 
     public let appExpiry: AppExpiry
 
+    public let attachmentDownloadManager: AttachmentDownloadManager
     public let attachmentManager: AttachmentManager
     public let attachmentStore: AttachmentStore
 
@@ -128,6 +129,7 @@ public class DependenciesBridge {
 
     public let tsAccountManager: TSAccountManager
 
+    public let tsResourceDownloadManager: TSResourceDownloadManager
     public let tsResourceManager: TSResourceManager
     public let tsResourceStore: TSResourceStore
 
@@ -146,7 +148,6 @@ public class DependenciesBridge {
         accountServiceClient: AccountServiceClient,
         appContext: AppContext,
         appVersion: AppVersion,
-        attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
         contactManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
@@ -187,7 +188,6 @@ public class DependenciesBridge {
             accountServiceClient: accountServiceClient,
             appContext: appContext,
             appVersion: appVersion,
-            attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
             contactManager: contactManager,
             databaseStorage: databaseStorage,
@@ -233,7 +233,6 @@ public class DependenciesBridge {
         accountServiceClient: AccountServiceClient,
         appContext: AppContext,
         appVersion: AppVersion,
-        attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
         contactManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
@@ -286,6 +285,12 @@ public class DependenciesBridge {
         let tsResourceStore = TSResourceStoreImpl(attachmentStore: attachmentStore)
         self.tsResourceManager = TSResourceManagerImpl(attachmentManager: attachmentManager)
         self.tsResourceStore = tsResourceStore
+        let attachmentDownloadManager = AttachmentDownloadManagerImpl()
+        self.attachmentDownloadManager = attachmentDownloadManager
+        self.tsResourceDownloadManager = TSResourceDownloadManagerImpl(
+            attachmentDownloadManager: attachmentDownloadManager,
+            tsResourceStore: tsResourceStore
+        )
 
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
@@ -697,7 +702,7 @@ public class DependenciesBridge {
         )
 
         self.sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
-            attachmentDownloads: SentMessageTranscriptReceiverImpl.Wrappers.AttachmentDownloads(attachmentDownloads),
+            attachmentDownloads: tsResourceDownloadManager,
             disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
             earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
             groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),

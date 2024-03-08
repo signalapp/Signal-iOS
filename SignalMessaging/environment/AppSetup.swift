@@ -57,7 +57,6 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
-        let attachmentDownloads = OWSAttachmentDownloads()
         let blockingManager = BlockingManager()
         let dateProvider = Date.provider
         let earlyMessageManager = EarlyMessageManager()
@@ -117,7 +116,6 @@ public class AppSetup {
             accountServiceClient: accountServiceClient,
             appContext: appContext,
             appVersion: appVersion,
-            attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
             contactManager: contactManager,
             databaseStorage: databaseStorage,
@@ -258,7 +256,6 @@ public class AppSetup {
             reachabilityManager: reachabilityManager,
             syncManager: syncManager,
             typingIndicators: typingIndicators,
-            attachmentDownloads: attachmentDownloads,
             stickerManager: stickerManager,
             databaseStorage: databaseStorage,
             signalServiceAddressCache: signalServiceAddressCache,
