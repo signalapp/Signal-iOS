@@ -8,7 +8,7 @@ import LibSignalClient
 import SignalCoreKit
 
 @objc
-public class RemoteConfig: BaseFlags {
+public class RemoteConfig: NSObject {
 
     /// Difference between the last time the server says it is and the time our
     /// local device says it is. Add this to the local device time to get the
@@ -432,32 +432,26 @@ public class RemoteConfig: BaseFlags {
         return remoteConfig.valueFlags[flag.rawValue]
     }
 
-    @objc
-    public static func logFlags() {
+    public static func debugDescriptions() -> [String: String] {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else {
-            Logger.info("No cached config.")
-            return
+            return [:]
         }
-
-        let logFlag = { (prefix: String, key: String, value: Any?) in
-            if let value = value {
-                Logger.info("\(prefix): \(key) = \(value)", function: "")
-            }
+        var result = [String: String]()
+        for (key, value) in remoteConfig.isEnabledFlags {
+            result[key] = "\(value)"
         }
-
-        for flag in IsEnabledFlag.allCases {
-            let value = remoteConfig.isEnabledFlags[flag.rawValue]
-            logFlag("Config.IsEnabled", flag.rawValue, value)
+        for (key, value) in remoteConfig.valueFlags {
+            result[key] = "\(value)"
         }
-
-        for flag in ValueFlag.allCases {
-            let value = remoteConfig.valueFlags[flag.rawValue]
-            logFlag("Config.Value", flag.rawValue, value)
+        for (key, value) in remoteConfig.timeGatedFlags {
+            result[key] = "\(value)"
         }
+        return result
+    }
 
-        for flag in TimeGatedFlag.allCases {
-            let value = remoteConfig.timeGatedFlags[flag.rawValue]
-            logFlag("Config.TimeGated", flag.rawValue, value)
+    public static func logFlags() {
+        for (key, value) in debugDescriptions() {
+            Logger.info("RemoteConfig: \(key) = \(value)")
         }
     }
 }

@@ -17,24 +17,18 @@ class FlagsViewController: OWSTableViewController2 {
 
     func updateTableContents() {
         let contents = OWSTableContents()
-
-        contents.add(buildSection(title: "Remote Config", flagMap: RemoteConfig.allFlags()))
-        contents.add(buildSection(title: "Feature Flags", flagMap: FeatureFlags.allFlags()))
-        contents.add(buildSection(title: "Debug Flags", flagMap: DebugFlags.allFlags()))
-
+        contents.add(buildSection(title: "Remote Config", flagMap: RemoteConfig.debugDescriptions()))
         self.contents = contents
     }
 
-    func buildSection(title: String, flagMap: [String: Any]) -> OWSTableSection {
+    func buildSection(title: String, flagMap: [String: String]) -> OWSTableSection {
         let section = OWSTableSection()
         section.headerTitle = title
 
-        for key in flagMap.keys.sorted() {
-            if let value = flagMap[key] {
-                section.add(OWSTableItem.label(withText: key, accessoryText: String(describing: value)))
-            } else {
-                section.add(OWSTableItem.label(withText: key, accessoryText: "nil"))
-            }
+        for (key, value) in flagMap.sorted(by: { $0.key < $1.key }) {
+            section.add(OWSTableItem(customCellBlock: {
+                return OWSTableItem.buildCell(itemName: value, subtitle: key)
+            }))
         }
 
         return section

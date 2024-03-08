@@ -43,7 +43,7 @@ class TestingViewController: OWSTableViewController2 {
                                 selector: testableFlag.switchSelector)
         }
 
-        var testableFlags = FeatureFlags.allTestableFlags() + DebugFlags.allTestableFlags()
+        var testableFlags = DebugFlags.allTestableFlags()
         testableFlags.sort { (lhs, rhs) -> Bool in
             lhs.title < rhs.title
         }

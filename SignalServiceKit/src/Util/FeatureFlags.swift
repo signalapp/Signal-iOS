@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 private enum FeatureBuild: Int {
     case dev
@@ -54,29 +55,19 @@ extension StorageMode: CustomStringConvertible {
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
 @objc(SSKFeatureFlags)
-public class FeatureFlags: BaseFlags {
+public class FeatureFlags: NSObject {
 
     public static let choochoo = build.includes(.internal)
 
-    @objc
     public static let linkedPhones = build.includes(.internal)
 
     public static let preRegDeviceTransfer = build.includes(.dev)
 
-    // We keep this feature flag around as we may want to
-    // ship a build that disables the dependency on KBS
-    // during registration. Features cannot be toggled
-    // remotely during registration.
-    @objc
-    public static let pinsForNewUsers = true
-
     @objc
     public static let supportAnimatedStickers_Lottie = false
 
-    @objc
     public static let paymentsScrubDetails = false
 
-    @objc
     public static let deprecateREST = false
 
     public static let isPrerelease = build.includes(.beta)
@@ -97,23 +88,6 @@ public class FeatureFlags: BaseFlags {
     }
 
     public static let periodicallyCheckDatabaseIntegrity: Bool = build.includes(.dev)
-
-    @objc
-    public static func logFlags() {
-        let logFlag = { (prefix: String, key: String, value: Any?) in
-            if let value = value {
-                Logger.info("\(prefix): \(key) = \(value)", function: "")
-            } else {
-                Logger.info("\(prefix): \(key) = nil", function: "")
-            }
-        }
-
-        let flagMap = allFlags()
-        for key in flagMap.keys.sorted() {
-            let value = flagMap[key]
-            logFlag("FeatureFlag", key, value)
-        }
-    }
 
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
 
@@ -189,20 +163,16 @@ extension FeatureFlags {
 /// Flags that we'll leave in the code base indefinitely that are helpful for
 /// development should go here, rather than cluttering up FeatureFlags.
 @objc(SSKDebugFlags)
-public class DebugFlags: BaseFlags {
+public class DebugFlags: NSObject {
     @objc
     public static let internalLogging = build.includes(.openPreview)
 
-    @objc
     public static let betaLogging = build.includes(.beta)
 
-    @objc
     public static let testPopulationErrorAlerts = build.includes(.beta)
 
-    @objc
     public static let audibleErrorLogging = build.includes(.internal)
 
-    @objc
     public static let internalSettings = build.includes(.internal)
 
     public static let internalMegaphoneEligible = build.includes(.internal)
@@ -216,141 +186,152 @@ public class DebugFlags: BaseFlags {
         return false
     }()
 
-    @objc
-    public static let aggressiveProfileFetching = TestableFlag(false,
-                                                               title: LocalizationNotNeeded("Aggressive profile fetching"),
-                                                               details: LocalizationNotNeeded("Client will update profiles aggressively."))
+    public static let aggressiveProfileFetching = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Aggressive profile fetching"),
+        details: LocalizationNotNeeded("Client will update profiles aggressively.")
+    )
 
     // Currently this flag is only honored by NetworkManager,
     // but we could eventually honor in other places as well:
     //
     // * The socket manager.
     // * Places we make requests using tasks.
-    @objc
     public static let logCurlOnSuccess = false
 
-    @objc
     public static let verboseNotificationLogging = build.includes(.internal)
 
-    @objc
     public static let deviceTransferVerboseProgressLogging = build.includes(.internal)
 
-    @objc
     public static let messageDetailsExtraInfo = build.includes(.internal)
 
-    @objc
     public static let exposeCensorshipCircumvention = build.includes(.internal)
 
-    @objc
-    public static let disableMessageProcessing = TestableFlag(false,
-                                                              title: LocalizationNotNeeded("Disable message processing"),
-                                                              details: LocalizationNotNeeded("Client will store but not process incoming messages."))
+    public static let dontSendContactOrGroupSyncMessages = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Don't send contact or group sync messages"),
+        details: LocalizationNotNeeded("Client will not send contact or group info to linked devices.")
+    )
 
-    @objc
-    public static let dontSendContactOrGroupSyncMessages = TestableFlag(false,
-                                                                        title: LocalizationNotNeeded("Don't send contact or group sync messages"),
-                                                                        details: LocalizationNotNeeded("Client will not send contact or group info to linked devices."))
+    public static let forceAttachmentDownloadFailures = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Force attachment download failures."),
+        details: LocalizationNotNeeded("All attachment downloads will fail.")
+    )
 
-    @objc
-    public static let forceAttachmentDownloadFailures = TestableFlag(false,
-                                                                     title: LocalizationNotNeeded("Force attachment download failures."),
-                                                                     details: LocalizationNotNeeded("All attachment downloads will fail."))
+    public static let forceAttachmentDownloadPendingMessageRequest = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Attachment download vs. message request."),
+        details: LocalizationNotNeeded("Attachment downloads will be blocked by pending message request.")
+    )
 
-    @objc
-    public static let forceAttachmentDownloadPendingMessageRequest = TestableFlag(false,
-                                                                                  title: LocalizationNotNeeded("Attachment download vs. message request."),
-                                                                                  details: LocalizationNotNeeded("Attachment downloads will be blocked by pending message request."))
+    public static let forceAttachmentDownloadPendingManualDownload = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Attachment download vs. manual download."),
+        details: LocalizationNotNeeded("Attachment downloads will be blocked by manual download.")
+    )
 
-    @objc
-    public static let forceAttachmentDownloadPendingManualDownload = TestableFlag(false,
-                                                                                  title: LocalizationNotNeeded("Attachment download vs. manual download."),
-                                                                                  details: LocalizationNotNeeded("Attachment downloads will be blocked by manual download."))
-
-    @objc
     public static let fastPerfTests = false
 
-    @objc
     public static let extraDebugLogs = build.includes(.openPreview)
 
     @objc
-    public static let paymentsIgnoreBlockTimestamps = TestableFlag(false,
-                                                                   title: LocalizationNotNeeded("Payments: Ignore ledger block timestamps"),
-                                                                   details: LocalizationNotNeeded("Payments will not fill in missing ledger block timestamps"))
+    public static let paymentsIgnoreBlockTimestamps = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Ignore ledger block timestamps"),
+        details: LocalizationNotNeeded("Payments will not fill in missing ledger block timestamps")
+    )
+
+    public static let paymentsIgnoreCurrencyConversions = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Ignore currency conversions"),
+        details: LocalizationNotNeeded("App will behave as though currency conversions are unavailable")
+    )
+
+    public static let paymentsHaltProcessing = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Halt Processing"),
+        details: LocalizationNotNeeded("Processing of payments will pause")
+    )
+
+    public static let paymentsIgnoreBadData = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Ignore bad data"),
+        details: LocalizationNotNeeded("App will skip asserts for invalid data")
+    )
+
+    public static let paymentsFailOutgoingSubmission = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Fail outgoing submission"),
+        details: LocalizationNotNeeded("Submission of outgoing transactions will always fail")
+    )
+
+    public static let paymentsFailOutgoingVerification = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Fail outgoing verification"),
+        details: LocalizationNotNeeded("Verification of outgoing transactions will always fail")
+    )
+
+    public static let paymentsFailIncomingVerification = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Fail incoming verification"),
+        details: LocalizationNotNeeded("Verification of incoming receipts will always fail")
+    )
+
+    public static let paymentsDoubleNotify = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Double notify"),
+        details: LocalizationNotNeeded("App will send two payment notifications and sync messages for each outgoing payment")
+    )
+
+    public static let paymentsNoRequestsComplete = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: No requests complete"),
+        details: LocalizationNotNeeded("MC SDK network activity never completes")
+    )
+
+    public static let paymentsMalformedMessages = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Malformed messages"),
+        details: LocalizationNotNeeded("Payment notifications and sync messages are malformed.")
+    )
+
+    public static let paymentsSkipSubmissionAndOutgoingVerification = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Payments: Skip Submission And Verification"),
+        details: LocalizationNotNeeded("Outgoing payments won't be submitted or verified.")
+    )
+
+    public static let messageSendsFail = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Message Sends Fail"),
+        details: LocalizationNotNeeded("All outgoing message sends will fail.")
+    )
+
+    public static let disableUD = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Disable sealed sender"),
+        details: LocalizationNotNeeded("Sealed sender will be disabled for all messages.")
+    )
+
+    public static let callingUseTestSFU = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Calling: Use Test SFU"),
+        details: LocalizationNotNeeded("Group calls will connect to sfu.test.voip.signal.org.")
+    )
+
+    public static let delayedMessageResend = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Sender Key: Delayed message resend"),
+        details: LocalizationNotNeeded("Waits 10s before responding to a resend request.")
+    )
 
     @objc
-    public static let paymentsIgnoreCurrencyConversions = TestableFlag(false,
-                                                                       title: LocalizationNotNeeded("Payments: Ignore currency conversions"),
-                                                                       details: LocalizationNotNeeded("App will behave as though currency conversions are unavailable"))
-
-    @objc
-    public static let paymentsHaltProcessing = TestableFlag(false,
-                                                            title: LocalizationNotNeeded("Payments: Halt Processing"),
-                                                            details: LocalizationNotNeeded("Processing of payments will pause"))
-
-    @objc
-    public static let paymentsIgnoreBadData = TestableFlag(false,
-                                                           title: LocalizationNotNeeded("Payments: Ignore bad data"),
-                                                           details: LocalizationNotNeeded("App will skip asserts for invalid data"))
-
-    @objc
-    public static let paymentsFailOutgoingSubmission = TestableFlag(false,
-                                                                    title: LocalizationNotNeeded("Payments: Fail outgoing submission"),
-                                                                    details: LocalizationNotNeeded("Submission of outgoing transactions will always fail"))
-
-    @objc
-    public static let paymentsFailOutgoingVerification = TestableFlag(false,
-                                                                      title: LocalizationNotNeeded("Payments: Fail outgoing verification"),
-                                                                      details: LocalizationNotNeeded("Verification of outgoing transactions will always fail"))
-
-    @objc
-    public static let paymentsFailIncomingVerification = TestableFlag(false,
-                                                                      title: LocalizationNotNeeded("Payments: Fail incoming verification"),
-                                                                      details: LocalizationNotNeeded("Verification of incoming receipts will always fail"))
-
-    @objc
-    public static let paymentsDoubleNotify = TestableFlag(false,
-                                                          title: LocalizationNotNeeded("Payments: Double notify"),
-                                                          details: LocalizationNotNeeded("App will send two payment notifications and sync messages for each outgoing payment"))
-
-    @objc
-    public static let paymentsNoRequestsComplete = TestableFlag(false,
-                                                                title: LocalizationNotNeeded("Payments: No requests complete"),
-                                                                details: LocalizationNotNeeded("MC SDK network activity never completes"))
-
-    @objc
-    public static let paymentsMalformedMessages = TestableFlag(false,
-                                                               title: LocalizationNotNeeded("Payments: Malformed messages"),
-                                                               details: LocalizationNotNeeded("Payment notifications and sync messages are malformed."))
-
-    @objc
-    public static let paymentsSkipSubmissionAndOutgoingVerification = TestableFlag(false,
-                                                                                   title: LocalizationNotNeeded("Payments: Skip Submission And Verification"),
-                                                                                   details: LocalizationNotNeeded("Outgoing payments won't be submitted or verified."))
-
-    @objc
-    public static let messageSendsFail = TestableFlag(false,
-                                                      title: LocalizationNotNeeded("Message Sends Fail"),
-                                                      details: LocalizationNotNeeded("All outgoing message sends will fail."))
-
-    @objc
-    public static let disableUD = TestableFlag(false,
-                                               title: LocalizationNotNeeded("Disable sealed sender"),
-                                               details: LocalizationNotNeeded("Sealed sender will be disabled for all messages."))
-
-    @objc
-    public static let callingUseTestSFU = TestableFlag(false,
-                                                       title: LocalizationNotNeeded("Calling: Use Test SFU"),
-                                                       details: LocalizationNotNeeded("Group calls will connect to sfu.test.voip.signal.org."))
-
-    @objc
-    public static let delayedMessageResend = TestableFlag(false,
-                                                          title: LocalizationNotNeeded("Sender Key: Delayed message resend"),
-                                                          details: LocalizationNotNeeded("Waits 10s before responding to a resend request."))
-
-    @objc
-    public static let showFailedDecryptionPlaceholders = TestableFlag(false,
-                                                                      title: LocalizationNotNeeded("Sender Key: Show failed decryption placeholders"),
-                                                                      details: LocalizationNotNeeded("Shows placeholder interactions in the conversation list."))
+    public static let showFailedDecryptionPlaceholders = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Sender Key: Show failed decryption placeholders"),
+        details: LocalizationNotNeeded("Shows placeholder interactions in the conversation list.")
+    )
 
     @objc
     public static let fastPlaceholderExpiration = TestableFlag(
@@ -358,58 +339,35 @@ public class DebugFlags: BaseFlags {
         title: LocalizationNotNeeded("Sender Key: Early placeholder expiration"),
         details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
         toggleHandler: { _ in
-            messageDecrypter.cleanUpExpiredPlaceholders()
+            NSObject.messageDecrypter.cleanUpExpiredPlaceholders()
         }
     )
 
-    @objc
-    public static func logFlags() {
-        let logFlag = { (prefix: String, key: String, value: Any?) in
-            if let flag = value as? TestableFlag {
-                Logger.info("\(prefix): \(key) = \(flag.get())", function: "")
-            } else if let value = value {
-                Logger.info("\(prefix): \(key) = \(value)", function: "")
-            } else {
-                Logger.info("\(prefix): \(key) = nil", function: "")
-            }
-        }
-
-        let flagMap = allFlags()
-        for key in Array(flagMap.keys).sorted() {
-            let value = flagMap[key]
-            logFlag("DebugFlag", key, value)
-        }
-    }
-}
-
-// MARK: -
-
-@objc
-public class BaseFlags: NSObject {
-    private static func allPropertyNames() -> [String] {
-        var propertyCount: CUnsignedInt = 0
-        let firstProperty = class_copyPropertyList(object_getClass(self), &propertyCount)
-        defer { free(firstProperty) }
-        let properties = UnsafeMutableBufferPointer(start: firstProperty, count: Int(propertyCount))
-        return properties.map { String(cString: property_getName($0)) }
-    }
-
-    public static func allFlags() -> [String: Any] {
-        var result = [String: Any]()
-        for propertyName in self.allPropertyNames() {
-            guard !propertyName.hasPrefix("_") else {
-                continue
-            }
-            guard let value = self.value(forKey: propertyName) else {
-                continue
-            }
-            result[propertyName] = value
-        }
-        return result
-    }
-
     public static func allTestableFlags() -> [TestableFlag] {
-        return self.allFlags().values.compactMap { $0 as? TestableFlag }
+        return [
+            aggressiveProfileFetching,
+            callingUseTestSFU,
+            delayedMessageResend,
+            disableUD,
+            dontSendContactOrGroupSyncMessages,
+            fastPlaceholderExpiration,
+            forceAttachmentDownloadFailures,
+            forceAttachmentDownloadPendingManualDownload,
+            forceAttachmentDownloadPendingMessageRequest,
+            messageSendsFail,
+            paymentsDoubleNotify,
+            paymentsFailIncomingVerification,
+            paymentsFailOutgoingSubmission,
+            paymentsFailOutgoingVerification,
+            paymentsHaltProcessing,
+            paymentsIgnoreBadData,
+            paymentsIgnoreBlockTimestamps,
+            paymentsIgnoreCurrencyConversions,
+            paymentsMalformedMessages,
+            paymentsNoRequestsComplete,
+            paymentsSkipSubmissionAndOutgoingVerification,
+            showFailedDecryptionPlaceholders,
+        ]
     }
 }
 
