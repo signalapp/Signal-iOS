@@ -14,12 +14,12 @@ public class CVAttachmentProgressView: ManualLayoutView {
         case upload(attachmentStream: TSAttachmentStream)
         case download(attachmentPointer: TSAttachmentPointer)
 
-        var attachmentId: String {
+        var attachmentId: TSResourceId {
             switch self {
             case .upload(let attachmentStream):
-                return attachmentStream.uniqueId
+                return attachmentStream.resourceId
             case .download(let attachmentPointer):
-                return attachmentPointer.uniqueId
+                return attachmentPointer.resourceId
             }
         }
     }
@@ -30,7 +30,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     private let stateView: StateView
 
-    private var attachmentId: String { direction.attachmentId }
+    private var attachmentId: TSResourceId { direction.attachmentId }
 
     public required init(direction: Direction,
                          diameter: CGFloat = 44,
@@ -287,17 +287,21 @@ public class CVAttachmentProgressView: ManualLayoutView {
             case .enqueued, .downloading:
                 updateDownloadProgress()
 
-                NotificationCenter.default.addObserver(self,
-                                                       selector: #selector(processDownloadNotification(notification:)),
-                                                       name: OWSAttachmentDownloads.attachmentDownloadProgressNotification,
-                                                       object: nil)
+                NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(processDownloadNotification(notification:)),
+                    name: TSResourceDownloads.attachmentDownloadProgressNotification,
+                    object: nil
+                )
             }
         }
     }
 
     @objc
     private func processDownloadNotification(notification: Notification) {
-        guard let attachmentId = notification.userInfo?[OWSAttachmentDownloads.attachmentDownloadAttachmentIDKey] as? String else {
+        guard
+            let attachmentId = notification.userInfo?[TSResourceDownloads.attachmentDownloadAttachmentIDKey] as? TSResourceId
+        else {
             owsFailDebug("Missing notificationAttachmentId.")
             return
         }
@@ -312,7 +316,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
         let progress = databaseStorage.read { tx in
             return DependenciesBridge.shared.tsResourceDownloadManager
-                .downloadProgress(for: .legacy(uniqueId: attachmentId), tx: tx.asV2Read)
+                .downloadProgress(for: attachmentId, tx: tx.asV2Read)
         }
 
         guard let progress else {
@@ -345,7 +349,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
             owsFailDebug("Missing notificationAttachmentId.")
             return
         }
-        guard notificationAttachmentId == attachmentId else {
+        guard .legacy(uniqueId: notificationAttachmentId) == attachmentId else {
             return
         }
         guard let progress = notification.userInfo?[Upload.Constants.uploadProgressKey] as? NSNumber else {

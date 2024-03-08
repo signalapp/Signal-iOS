@@ -17,13 +17,48 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
     ) {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.tsResourceStore = tsResourceStore
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(v2AttachmentProgressNotification(_:)),
+            name: AttachmentDownloads.attachmentDownloadProgressNotification,
+            object: nil
+        )
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: AttachmentDownloads.attachmentDownloadProgressNotification,
+            object: nil
+        )
+    }
+
+    @objc
+    private func v2AttachmentProgressNotification(_ notification: Notification) {
+        /// Forward all v2 notifications as v1 notifications.
+        guard
+            let rowId = notification.userInfo?[AttachmentDownloads.attachmentDownloadAttachmentIDKey] as? Attachment.IDType,
+            let progress = notification.userInfo?[AttachmentDownloads.attachmentDownloadProgressKey] as? CGFloat
+        else {
+            return
+        }
+        NotificationCenter.default.post(
+            name: TSResourceDownloads.attachmentDownloadProgressNotification,
+            object: nil,
+            userInfo: [
+                TSResourceDownloads.attachmentDownloadAttachmentIDKey: TSResourceId.v2(rowId: rowId),
+                TSResourceDownloads.attachmentDownloadProgressKey: progress
+            ]
+        )
+    }
+
+    @discardableResult
     public func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) {
+    ) -> Promise<Void> {
         let resources = tsResourceStore.allAttachments(for: message, tx: tx)
         var hasLegacyRef = false
         var hasV2Ref = false
@@ -38,44 +73,47 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
         // They should all be one type or the other. No mixing allowed.
         owsAssertDebug(!(hasLegacyRef && hasV2Ref))
         if hasV2Ref && FeatureFlags.readV2Attachments {
-            attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, priority: priority, tx: tx)
+            return attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, priority: priority, tx: tx)
         } else if hasLegacyRef {
-            owsDownloads.enqueueDownloadOfAttachmentsForMessage(
+            return owsDownloads.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 downloadBehavior: priority.owsDownloadBehavior,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         } else {
             Logger.info("Nothing to download!")
+            return .value(())
         }
     }
 
+    @discardableResult
     public func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) {
+    ) -> Promise<Void> {
         switch message.attachment {
         case .file:
-            owsDownloads.enqueueDownloadOfAttachmentsForStoryMessage(
+            return owsDownloads.enqueueDownloadOfAttachmentsForStoryMessage(
                 message,
                 downloadBehavior: priority.owsDownloadBehavior,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         case .text(let attachment):
             if attachment.preview?.usesV2AttachmentReference == true {
-                attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
+                return attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
             } else if attachment.preview?.legacyImageAttachmentId != nil {
-                owsDownloads.enqueueDownloadOfAttachmentsForStoryMessage(
+                return owsDownloads.enqueueDownloadOfAttachmentsForStoryMessage(
                     message,
                     downloadBehavior: priority.owsDownloadBehavior,
                     transaction: SDSDB.shimOnlyBridge(tx)
                 )
             } else {
                 Logger.info("Nothing to download!")
+                return .value(())
             }
         case .foreignReferenceAttachment:
-            attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
+            return attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
         }
     }
 
@@ -94,17 +132,6 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
             )
         }
         return try await downloadPromise.awaitable()
-    }
-
-    public func enqueueDownloadOfAttachments(
-        forStoryMessageId storyMessageId: String,
-        downloadBehavior: AttachmentDownloadBehavior
-    ) -> Promise<Void> {
-        // TODO: remove this method
-        return owsDownloads.enqueueDownloadOfAttachments(
-            forStoryMessageId: storyMessageId,
-            downloadBehavior: downloadBehavior
-        )
     }
 
     public func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction) {

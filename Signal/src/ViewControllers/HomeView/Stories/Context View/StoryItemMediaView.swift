@@ -1072,10 +1072,12 @@ extension StoryItem {
             return nil
         }
 
-        return DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachments(
-            forStoryMessageId: message.uniqueId,
-            downloadBehavior: .bypassAll
-        )
+        return databaseStorage.write { tx in
+            return DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
+                message,
+                tx: tx.asV2Write
+            )
+        }
     }
 
     var isPendingDownload: Bool {

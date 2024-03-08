@@ -814,16 +814,15 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    @objc
     func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         downloadBehavior: AttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
-    ) {
+    ) -> Promise<Void> {
         // No attachments, nothing to do.
-        guard !message.allAttachmentIds(transaction: transaction).isEmpty else { return }
+        guard !message.allAttachmentIds(transaction: transaction).isEmpty else { return .value(()) }
 
-        enqueueDownloadOfAttachmentsForMessageId(
+        return enqueueDownloadOfAttachmentsForMessageId(
             message.uniqueId,
             downloadBehavior: message is TSOutgoingMessage ? .bypassAll : downloadBehavior,
             transaction: transaction
@@ -834,7 +833,7 @@ public extension OWSAttachmentDownloads {
         _ messageId: String,
         downloadBehavior: AttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
-    ) {
+    ) -> Promise<Void> {
         // If we're not the main app, queue up the download for the next time
         // the main app launches.
         guard CurrentAppContext().isMainApp else {
@@ -843,10 +842,16 @@ public extension OWSAttachmentDownloads {
                 key: messageId,
                 transaction: transaction
             )
-            return
+            // Warning: kind of dangerous to return a fulfilled promise here,
+            // but without a mayor overhaul its unavoidable.
+            // We are moving to v2 attachments, so an overhaul of this legacy
+            // class is overkill.
+            return .value(())
         }
 
         Self.pendingMessageDownloads.removeValue(forKey: messageId, transaction: transaction)
+
+        let (promise, future) = Promise<Void>.pending()
 
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race
@@ -855,15 +860,18 @@ public extension OWSAttachmentDownloads {
             self.enqueueDownloadOfAttachments(
                 forMessageId: messageId,
                 attachmentGroup: .allAttachments,
-                downloadBehavior: downloadBehavior
+                downloadBehavior: downloadBehavior,
+                future: future
             )
         }
+        return promise
     }
 
     func enqueueDownloadOfAttachments(
         forMessageId messageId: String,
         attachmentGroup: AttachmentGroup,
-        downloadBehavior: AttachmentDownloadBehavior
+        downloadBehavior: AttachmentDownloadBehavior,
+        future: Future<Void>
     ) {
         guard !CurrentAppContext().isRunningTests else {
             return
@@ -894,6 +902,16 @@ public extension OWSAttachmentDownloads {
                 transaction: tx
             )
         }
+
+        let allPromise = Promise.when(resolved:
+            jobRequest.bodyAttachmentPromises + [
+                jobRequest.quotedReplyThumbnailPromise,
+                jobRequest.contactShareAvatarPromise,
+                jobRequest.stickerPromise,
+                jobRequest.linkPreviewPromise
+            ].compacted()
+        ).asVoid(on: SyncScheduler())
+        future.resolve(on: SyncScheduler(), with: allPromise)
     }
 
     private func buildMessageJobRequest(
@@ -944,11 +962,11 @@ public extension OWSAttachmentDownloads {
         _ message: StoryMessage,
         downloadBehavior: AttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
-    ) {
+    ) -> Promise<Void> {
         // No attachment, nothing to do.
-        guard message.attachmentUniqueId(tx: transaction) != nil else { return }
+        guard message.attachmentUniqueId(tx: transaction) != nil else { return .value(()) }
 
-        enqueueDownloadOfAttachmentsForStoryMessageId(
+        return enqueueDownloadOfAttachmentsForStoryMessageId(
             message.uniqueId,
             downloadBehavior: message.direction == .outgoing ? .bypassAll : downloadBehavior,
             transaction: transaction
@@ -959,7 +977,7 @@ public extension OWSAttachmentDownloads {
         _ storyMessageId: String,
         downloadBehavior: AttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
-    ) {
+    ) -> Promise<Void> {
         // If we're not the main app, queue up the download for the next time
         // the main app launches.
         guard CurrentAppContext().isMainApp else {
@@ -968,20 +986,29 @@ public extension OWSAttachmentDownloads {
                 key: storyMessageId,
                 transaction: transaction
             )
-            return
+            // Warning: kind of dangerous to return a fulfilled promise here,
+            // but without a mayor overhaul its unavoidable.
+            // We are moving to v2 attachments, so an overhaul of this legacy
+            // class is overkill.
+            return .value(())
         }
 
         Self.pendingStoryMessageDownloads.removeValue(forKey: storyMessageId, transaction: transaction)
+
+        let (promise, future) = Promise<Void>.pending()
 
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race
         // and not be able to find the attachment(s)/message/thread.
         transaction.addAsyncCompletionOffMain {
-            self.enqueueDownloadOfAttachments(
+            let downloadPromise = self.enqueueDownloadOfAttachments(
                 forStoryMessageId: storyMessageId,
                 downloadBehavior: downloadBehavior
             )
+            future.resolve(on: SyncScheduler(), with: downloadPromise)
         }
+
+        return promise
     }
 
     @discardableResult
@@ -1391,19 +1418,13 @@ public extension OWSAttachmentDownloads {
 
     // MARK: -
 
-    @objc
-    static let attachmentDownloadProgressNotification = Notification.Name("AttachmentDownloadProgressNotification")
-    @objc
-    static var attachmentDownloadProgressKey: String { "attachmentDownloadProgressKey" }
-    @objc
-    static var attachmentDownloadAttachmentIDKey: String { "attachmentDownloadAttachmentIDKey" }
-
     private class func fireProgressNotification(progress: Double, attachmentId: AttachmentId) {
-        NotificationCenter.default.postNotificationNameAsync(attachmentDownloadProgressNotification,
-                                                             object: nil,
-                                                             userInfo: [
-                                                                attachmentDownloadProgressKey: NSNumber(value: progress),
-                                                                attachmentDownloadAttachmentIDKey: attachmentId
-                                                             ])
+        NotificationCenter.default.postNotificationNameAsync(
+            TSResourceDownloads.attachmentDownloadProgressNotification,
+            object: nil,
+            userInfo: [
+                TSResourceDownloads.attachmentDownloadProgressKey: NSNumber(value: progress),
+                TSResourceDownloads.attachmentDownloadAttachmentIDKey: TSResourceId.legacy(uniqueId: attachmentId)
+            ])
     }
 }
