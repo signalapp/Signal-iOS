@@ -325,7 +325,6 @@
 		3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488F9352191CC4000E524CC /* CVMediaView.swift */; };
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
-		348C686D246B0B110039705A /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
 		348EE28E25B897BF00814FC2 /* CVMediaCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348EE28C25B897BF00814FC2 /* CVMediaCache.swift */; };
 		348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348EE28D25B897BF00814FC2 /* ReusableMediaView.swift */; };
 		3490D57D25ADDC2A00F5F96C /* GroupLinkPromotionActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */; };
@@ -460,7 +459,6 @@
 		45069FC829D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FC729D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift */; };
 		45069FCA29D4FFBB00D0DD14 /* MediaTileDateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */; };
 		45069FCE29D64CB300D0DD14 /* SelectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FCD29D64CB300D0DD14 /* SelectionButton.swift */; };
-		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		450B0FC929FB301700B9A458 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450B0FC829FB301700B9A458 /* AudioMessageView.swift */; };
 		45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
@@ -631,7 +629,6 @@
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
-		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		502C69702B06CE9C00012867 /* OutgoingAttachmentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */; };
 		502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C69712B06F07900012867 /* AwaitableAsyncBlockOperation.swift */; };
@@ -1082,6 +1079,10 @@
 		72C905892B9A28BF00E586B8 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7634F08C2A21963600BB93D5 /* Sounds.swift */; };
 		72C9058A2B9A293300E586B8 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
 		72C9058B2B9A298100E586B8 /* MessageRequestPendingReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */; };
+		72C9058C2B9AC7BD00E586B8 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
+		72C9058D2B9AC81B00E586B8 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
+		72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */; };
+		72C905902B9AC9F300E586B8 /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -1379,7 +1380,6 @@
 		88D6E93F254CF712003142D9 /* group_call_leave.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93D254CF712003142D9 /* group_call_leave.aiff */; };
 		88D6E940254CF712003142D9 /* group_call_join.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93E254CF712003142D9 /* group_call_join.aiff */; };
 		88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D6E94125535482003142D9 /* CVTextTest.swift */; };
-		88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */; };
 		88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */; };
 		88DBDFBB2638FFBD00C2101C /* audio-played-dot.json in Resources */ = {isa = PBXBuildFile; fileRef = 88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */; };
 		88DF819528E1130900F8BA80 /* SignalProxy+RelayServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819428E1130900F8BA80 /* SignalProxy+RelayServer.swift */; };
@@ -5789,10 +5789,7 @@
 				179E8C32276A713300AF640F /* AFQueryString.h */,
 				179E8C30276A711100AF640F /* AFQueryString.m */,
 				6675F64C2925C012007A311E /* APNSRotationStore.swift */,
-				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
-				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
-				501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
 				34641E172088D7E900E2EDE5 /* ScreenLock.swift */,
@@ -10677,6 +10674,7 @@
 				66FA2B1E28CBA4A5006845CD /* BiometryType.swift */,
 				668FE09A28B923A4008B9071 /* Bool+SSK.swift */,
 				E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */,
+				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
 				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
 				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
@@ -10697,6 +10695,7 @@
 				F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */,
 				F9C5CB79289453B200548EEE /* DecodableDefaults.swift */,
 				F9C5CB3A289453B200548EEE /* DeviceNames.swift */,
+				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */,
 				F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */,
 				D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */,
@@ -10751,6 +10750,7 @@
 				F9C5CB01289453B200548EEE /* OWSOperation.h */,
 				F9C5CB3F289453B200548EEE /* OWSOperation.m */,
 				F9C5CB0A289453B200548EEE /* OWSOperation.swift */,
+				501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */,
 				F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */,
 				F9C5CAFB289453B200548EEE /* ParamParser.swift */,
 				F9C5CB4E289453B200548EEE /* PendingTasks.swift */,
@@ -12357,12 +12357,10 @@
 				883A7FD2269F642F00841DF9 /* AvatarModel.swift in Sources */,
 				88F15F9A25AD4AE0008ABD47 /* BroadcastMediaMessageJob.swift in Sources */,
 				500FE490288615BA00FA090C /* CachedBadge.swift in Sources */,
-				88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */,
 				5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */,
 				342FFE832721D4B6000AC89F /* ContactsMaps.swift in Sources */,
 				5096BE652AF3514800668F9F /* ContactSyncAttachmentBuilder.swift in Sources */,
 				3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */,
-				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
 				D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */,
 				F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */,
 				D95777BC2B46452100CFE3AE /* GroupCallPeekClient.swift in Sources */,
@@ -12381,7 +12379,6 @@
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
-				501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */,
 				34612A071FD7238600532771 /* OWSSyncManager.m in Sources */,
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,
 				3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */,
@@ -12413,7 +12410,7 @@
 				886A58CA276A760600A1099B /* SubscriptionManagerImpl.swift in Sources */,
 				50CB431C298860C700841A34 /* SystemContactsDataProvider.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
-				348C686D246B0B110039705A /* ThreadUtil.swift in Sources */,
+				72C905902B9AC9F300E586B8 /* ThreadUtil.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -13229,6 +13226,7 @@
 				F9C5CE39289453B400548EEE /* BulkProfileFetch.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
+				72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */,
 				D9C544292B8578B50036F274 /* CallRecord+CallStatus.swift in Sources */,
 				D9E7C8772B9A4A9C005BD3B9 /* CallRecord+Sorting.swift in Sources */,
 				D99A2A852AAB9AB9003388D1 /* CallRecord.swift in Sources */,
@@ -13313,6 +13311,7 @@
 				50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */,
 				F9C5CE0C289453B400548EEE /* DeviceNames.swift in Sources */,
 				F9C5CDC3289453B400548EEE /* DeviceProvisioningService.swift in Sources */,
+				72C9058C2B9AC7BD00E586B8 /* DeviceSleepManager.swift in Sources */,
 				F9C5CC94289453B300548EEE /* DeviceTransfer.pb.swift in Sources */,
 				F9C5CCA0289453B300548EEE /* DeviceTransferProto.swift in Sources */,
 				502D69322A7AC07C0085B656 /* Dictionary+SSK.swift in Sources */,
@@ -13635,6 +13634,7 @@
 				6642A8722A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m in Sources */,
 				6642A8792A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift in Sources */,
 				6642A8762A8D80F400E591C2 /* OWSPaymentActivationRequestMessage.m in Sources */,
+				72C9058D2B9AC81B00E586B8 /* OWSPaymentsLock.swift in Sources */,
 				F9C5CC32289453B300548EEE /* OWSProfileKeyMessage.m in Sources */,
 				724D47B72B97C301001BE973 /* OWSProfileManager.m in Sources */,
 				724D47B82B97C301001BE973 /* OWSProfileManager.swift in Sources */,
