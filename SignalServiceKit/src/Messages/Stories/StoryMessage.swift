@@ -756,7 +756,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             else {
                 return
             }
-            attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)
+            attachmentDownloads.enqueueDownloadOfAttachmentsForStoryMessage(self, transaction: transaction)
         case .foreignReferenceAttachment:
             guard
                 let resource = StoryMessageResource.fetch(storyMessage: self, tx: transaction),
@@ -766,7 +766,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 owsFailDebug("Missing attachment for story message \(timestamp)")
                 return
             }
-            attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)
+            attachmentDownloads.enqueueDownloadOfAttachmentsForStoryMessage(self, transaction: transaction)
         case .text:
             return
         }

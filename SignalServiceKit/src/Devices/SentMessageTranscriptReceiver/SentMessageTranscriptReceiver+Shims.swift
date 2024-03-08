@@ -29,7 +29,7 @@ extension SentMessageTranscriptReceiverImpl {
 
 public protocol _SentMessageTranscriptReceiver_AttachmentDownloadsShim {
 
-    func enqueueDownloadOfAttachmentsForNewMessage(_ message: TSMessage, tx: DBWriteTransaction)
+    func enqueueDownloadOfAttachmentsForMessage(_ message: TSMessage, tx: DBWriteTransaction)
 }
 
 public class _SentMessageTranscriptReceiver_AttachmentDownloadsWrapper: _SentMessageTranscriptReceiver_AttachmentDownloadsShim {
@@ -40,8 +40,8 @@ public class _SentMessageTranscriptReceiver_AttachmentDownloadsWrapper: _SentMes
         self.attachmentDownloads = attachmentDownloads
     }
 
-    public func enqueueDownloadOfAttachmentsForNewMessage(_ message: TSMessage, tx: DBWriteTransaction) {
-        attachmentDownloads.enqueueDownloadOfAttachmentsForNewMessage(message, transaction: SDSDB.shimOnlyBridge(tx))
+    public func enqueueDownloadOfAttachmentsForMessage(_ message: TSMessage, tx: DBWriteTransaction) {
+        attachmentDownloads.enqueueDownloadOfAttachmentsForMessage(message, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

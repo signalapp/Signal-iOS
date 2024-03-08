@@ -239,7 +239,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // To be extra-conservative, always mark as complete immediately.
             viewOnceMessages.markAsComplete(message: outgoingMessage, sendSyncMessages: false, tx: tx)
         } else {
-            attachmentDownloads.enqueueDownloadOfAttachmentsForNewMessage(outgoingMessage, tx: tx)
+            attachmentDownloads.enqueueDownloadOfAttachmentsForMessage(outgoingMessage, tx: tx)
         }
 
         return .success(outgoingMessage)

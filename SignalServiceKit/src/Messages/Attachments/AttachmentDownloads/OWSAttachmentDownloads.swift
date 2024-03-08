@@ -44,7 +44,7 @@ public class OWSAttachmentDownloads: NSObject {
             object: nil
         )
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingNewMessageDownloads() }
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
     }
 
     @objc
@@ -77,46 +77,46 @@ public class OWSAttachmentDownloads: NSObject {
 
     @objc
     func applicationDidBecomeActive() {
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingNewMessageDownloads() }
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingMessageDownloads() }
     }
 
     // MARK: -
 
-    private static let pendingNewMessageDownloads = SDSKeyValueStore(collection: "PendingNewMessageDownloads")
-    private static let pendingNewStoryMessageDownloads = SDSKeyValueStore(collection: "PendingNewStoryMessageDownloads")
+    private static let pendingMessageDownloads = SDSKeyValueStore(collection: "PendingNewMessageDownloads")
+    private static let pendingStoryMessageDownloads = SDSKeyValueStore(collection: "PendingNewStoryMessageDownloads")
 
-    private func startPendingNewMessageDownloads() {
+    private func startPendingMessageDownloads() {
         owsAssertDebug(CurrentAppContext().isMainApp)
 
-        let (pendingNewMessageDownloads, pendingNewStoryMessageDownloads) = databaseStorage.read { transaction in
+        let (pendingMessageDownloads, pendingStoryMessageDownloads) = databaseStorage.read { transaction in
             (
-                Self.pendingNewMessageDownloads.allUIntValuesMap(transaction: transaction),
-                Self.pendingNewStoryMessageDownloads.allUIntValuesMap(transaction: transaction)
+                Self.pendingMessageDownloads.allUIntValuesMap(transaction: transaction),
+                Self.pendingStoryMessageDownloads.allUIntValuesMap(transaction: transaction)
             )
         }
 
-        guard !pendingNewMessageDownloads.isEmpty || !pendingNewStoryMessageDownloads.isEmpty else { return }
+        guard !pendingMessageDownloads.isEmpty || !pendingStoryMessageDownloads.isEmpty else { return }
 
         databaseStorage.asyncWrite { transaction in
             self.processPendingMessages(
-                pendingNewMessageDownloads,
-                store: Self.pendingNewMessageDownloads,
+                pendingMessageDownloads,
+                store: Self.pendingMessageDownloads,
                 transaction: transaction
-            ) { pendingNewMessageId, downloadBehavior in
-                self.enqueueDownloadOfAttachmentsForNewMessageId(
-                    pendingNewMessageId,
+            ) { pendingMessageId, downloadBehavior in
+                self.enqueueDownloadOfAttachmentsForMessageId(
+                    pendingMessageId,
                     downloadBehavior: downloadBehavior,
                     transaction: transaction
                 )
             }
 
             self.processPendingMessages(
-                pendingNewStoryMessageDownloads,
-                store: Self.pendingNewStoryMessageDownloads,
+                pendingStoryMessageDownloads,
+                store: Self.pendingStoryMessageDownloads,
                 transaction: transaction
-            ) { pendingNewStoryMessageId, downloadBehavior in
-                self.enqueueDownloadOfAttachmentsForNewStoryMessageId(
-                    pendingNewStoryMessageId,
+            ) { pendingStoryMessageId, downloadBehavior in
+                self.enqueueDownloadOfAttachmentsForStoryMessageId(
+                    pendingStoryMessageId,
                     downloadBehavior: downloadBehavior,
                     transaction: transaction
                 )
@@ -815,18 +815,18 @@ public extension OWSAttachmentDownloads {
     }
 
     @objc
-    func enqueueDownloadOfAttachmentsForNewMessage(_ message: TSMessage, transaction: SDSAnyWriteTransaction) {
+    func enqueueDownloadOfAttachmentsForMessage(_ message: TSMessage, transaction: SDSAnyWriteTransaction) {
         // No attachments, nothing to do.
         guard !message.allAttachmentIds(transaction: transaction).isEmpty else { return }
 
-        enqueueDownloadOfAttachmentsForNewMessageId(
+        enqueueDownloadOfAttachmentsForMessageId(
             message.uniqueId,
             downloadBehavior: message is TSOutgoingMessage ? .bypassAll : .default,
             transaction: transaction
         )
     }
 
-    private func enqueueDownloadOfAttachmentsForNewMessageId(
+    private func enqueueDownloadOfAttachmentsForMessageId(
         _ messageId: String,
         downloadBehavior: AttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
@@ -834,7 +834,7 @@ public extension OWSAttachmentDownloads {
         // If we're not the main app, queue up the download for the next time
         // the main app launches.
         guard CurrentAppContext().isMainApp else {
-            Self.pendingNewMessageDownloads.setUInt(
+            Self.pendingMessageDownloads.setUInt(
                 downloadBehavior.rawValue,
                 key: messageId,
                 transaction: transaction
@@ -842,7 +842,7 @@ public extension OWSAttachmentDownloads {
             return
         }
 
-        Self.pendingNewMessageDownloads.removeValue(forKey: messageId, transaction: transaction)
+        Self.pendingMessageDownloads.removeValue(forKey: messageId, transaction: transaction)
 
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race
@@ -936,18 +936,18 @@ public extension OWSAttachmentDownloads {
         }.cauterize()
     }
 
-    func enqueueDownloadOfAttachmentsForNewStoryMessage(_ message: StoryMessage, transaction: SDSAnyWriteTransaction) {
+    func enqueueDownloadOfAttachmentsForStoryMessage(_ message: StoryMessage, transaction: SDSAnyWriteTransaction) {
         // No attachment, nothing to do.
         guard message.attachmentUniqueId(tx: transaction) != nil else { return }
 
-        enqueueDownloadOfAttachmentsForNewStoryMessageId(
+        enqueueDownloadOfAttachmentsForStoryMessageId(
             message.uniqueId,
             downloadBehavior: message.direction == .outgoing ? .bypassAll : .default,
             transaction: transaction
         )
     }
 
-    private func enqueueDownloadOfAttachmentsForNewStoryMessageId(
+    private func enqueueDownloadOfAttachmentsForStoryMessageId(
         _ storyMessageId: String,
         downloadBehavior: AttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
@@ -955,7 +955,7 @@ public extension OWSAttachmentDownloads {
         // If we're not the main app, queue up the download for the next time
         // the main app launches.
         guard CurrentAppContext().isMainApp else {
-            Self.pendingNewStoryMessageDownloads.setUInt(
+            Self.pendingStoryMessageDownloads.setUInt(
                 downloadBehavior.rawValue,
                 key: storyMessageId,
                 transaction: transaction
@@ -963,7 +963,7 @@ public extension OWSAttachmentDownloads {
             return
         }
 
-        Self.pendingNewStoryMessageDownloads.removeValue(forKey: storyMessageId, transaction: transaction)
+        Self.pendingStoryMessageDownloads.removeValue(forKey: storyMessageId, transaction: transaction)
 
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race

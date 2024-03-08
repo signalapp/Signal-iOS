@@ -1092,7 +1092,7 @@ public final class MessageReceiver: Dependencies {
             )
         }
 
-        attachmentDownloads.enqueueDownloadOfAttachmentsForNewMessage(message, transaction: tx)
+        attachmentDownloads.enqueueDownloadOfAttachmentsForMessage(message, transaction: tx)
         notificationsManager.notifyUser(forIncomingMessage: message, thread: thread, transaction: tx)
 
         if CurrentAppContext().isMainApp {
@@ -1679,7 +1679,7 @@ public final class MessageReceiver: Dependencies {
         }
 
         // Start downloading any new attachments
-        self.attachmentDownloads.enqueueDownloadOfAttachmentsForNewMessage(
+        self.attachmentDownloads.enqueueDownloadOfAttachmentsForMessage(
             message,
             transaction: tx
         )
