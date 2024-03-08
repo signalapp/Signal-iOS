@@ -212,7 +212,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             let mutualGroupsLabelSize = CVText.measureLabel(config: mutualGroupsLabelConfig, maxWidth: maxWidth)
             groupInfoSubviewInfos.append(mutualGroupsLabelSize.asManualSubviewInfo)
 
+            var groupInfoSubviews: [UIView] = [ mutualGroupsLabel ]
             if self.shouldShowSafetyTip {
+                groupInfoSubviews.append(showTipsButton)
                 let safetyButtonLabelConfig = safetyTipsConfig()
                 safetyButtonLabelConfig.applyForRendering(button: showTipsButton)
                 showTipsButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray05
@@ -233,10 +235,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             groupInfoStack.configure(
                 config: groupStackConfig,
                 measurement: groupInfoStackMeasurement,
-                subviews: [
-                    mutualGroupsLabel,
-                    showTipsButton
-                ]
+                subviews: groupInfoSubviews
             )
             groupInfoWrapper.addSubviewToCenterOnSuperview(
                 groupInfoStack,
@@ -616,7 +615,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
             let mutualGroupsSize: CGSize
             if conversationStyle.hasWallpaper {
-                innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
                 innerSubviewInfos.append(CGSize(width: maxContentWidth - 16, height: 1).asManualSubviewInfo)
             }
 
