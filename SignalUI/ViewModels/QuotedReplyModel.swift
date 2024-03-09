@@ -13,7 +13,7 @@ public class QuotedReplyModel: NSObject {
     public let authorAddress: SignalServiceAddress
     public let attachmentStream: TSAttachmentStream?
     public let attachmentType: TSAttachmentType?
-    public let failedThumbnailAttachmentPointer: TSAttachmentPointer?
+    public let canTapToDownload: Bool
 
     // This property should be set IFF we are quoting a text message
     // or attachment with caption.
@@ -32,10 +32,16 @@ public class QuotedReplyModel: NSObject {
 
     // MARK: Attachments
 
-    // This is a MIME type.
+    // This mime type comes from the sender and is not validated.
     //
     // This property should be set IFF we are quoting an attachment message.
-    public let contentType: String?
+    public let mimeType: String?
+
+    // This content type comes from our local device and is validated.
+    // Should be preferred to the mimeType if available.
+    //
+    // This property should be set IFF we are quoting an attachment message.
+    public let contentType: TSResourceContentType?
 
     public let sourceFilename: String?
 
@@ -71,17 +77,17 @@ public class QuotedReplyModel: NSObject {
         }
 
         let attachmentStream: TSAttachmentStream?
-        let failedAttachmentPointer: TSAttachmentPointer?
+        let canTapToDownload: Bool
         let quotedAttachment = storyMessage.fileAttachment(tx: transaction)
         if let quotedAttachmentStream = quotedAttachment as? TSAttachmentStream {
             attachmentStream = quotedAttachmentStream
-            failedAttachmentPointer = nil
+            canTapToDownload = false
         } else if let attachmentPointer = quotedAttachment as? TSAttachmentPointer {
             attachmentStream = nil
-            failedAttachmentPointer = attachmentPointer
+            canTapToDownload = true
         } else {
             attachmentStream = nil
-            failedAttachmentPointer = nil
+            canTapToDownload = false
         }
 
         let attachmentType: TSAttachmentType? = quotedAttachment?
@@ -98,10 +104,11 @@ public class QuotedReplyModel: NSObject {
             bodyRanges: body?.ranges,
             thumbnailImage: thumbnailImage,
             thumbnailViewFactory: thumbnailViewFactory,
-            contentType: attachmentStream?.contentType,
+            mimeType: attachmentStream?.mimeType,
+            contentType: attachmentStream?.cachedContentType,
             attachmentStream: attachmentStream,
             attachmentType: attachmentType,
-            failedThumbnailAttachmentPointer: failedAttachmentPointer,
+            canTapToDownload: canTapToDownload,
             reactionEmoji: reactionEmoji
         )
      }
@@ -182,10 +189,11 @@ public class QuotedReplyModel: NSObject {
             body: body,
             bodyRanges: bodyRanges,
             thumbnailImage: displayableThumbnail?.thumbnailImage,
-            contentType: attachmentMetadata?.mimeType,
+            mimeType: attachmentMetadata?.mimeType,
+            contentType: nil,
             sourceFilename: attachmentMetadata?.sourceFilename,
             attachmentType: displayableThumbnail?.attachmentType,
-            failedThumbnailAttachmentPointer: displayableThumbnail?.failedAttachmentPointer,
+            canTapToDownload: displayableThumbnail?.failedAttachmentPointer != nil,
             isGiftBadge: quotedMessage.isGiftBadge,
             isPayment: isPayment
         )
@@ -270,10 +278,10 @@ public class QuotedReplyModel: NSObject {
 
             // Sticker type metadata isn't reliable, so determine the sticker type by examining the actual sticker data.
             let stickerType: StickerType
-            let contentType: String?
+            let mimeType: String?
             if stickerMetadata.stickerType == .webp {
                 let imageMetadata = (stickerData as NSData).imageMetadata(withPath: nil, mimeType: nil)
-                contentType = imageMetadata.mimeType
+                mimeType = imageMetadata.mimeType
 
                 switch imageMetadata.imageFormat {
                 case .png:
@@ -298,7 +306,7 @@ public class QuotedReplyModel: NSObject {
                 }
             } else {
                 stickerType = stickerMetadata.stickerType
-                contentType = stickerMetadata.contentType
+                mimeType = stickerMetadata.contentType
             }
 
             let maxThumbnailSizePixels: CGFloat = 512
@@ -340,7 +348,8 @@ public class QuotedReplyModel: NSObject {
                 authorAddress: authorAddress,
                 bodySource: .local,
                 thumbnailImage: resizedThumbnailImage,
-                contentType: contentType,
+                mimeType: mimeType,
+                contentType: nil,
                 sourceFilename: stickerAttachment.sourceFilename,
                 attachmentStream: stickerAttachment,
                 attachmentType: attachmentType
@@ -446,7 +455,7 @@ public class QuotedReplyModel: NSObject {
             body: quotedText,
             bodyRanges: message.bodyRanges,
             thumbnailImage: thumbnailImage,
-            contentType: quotedAttachment?.contentType,
+            mimeType: quotedAttachment?.mimeType,
             sourceFilename: quotedAttachment?.sourceFilename,
             attachmentStream: quotedAttachment,
             attachmentType: attachmentType
@@ -473,11 +482,12 @@ public class QuotedReplyModel: NSObject {
         bodyRanges: MessageBodyRanges? = nil,
         thumbnailImage: UIImage? = nil,
         thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)? = nil,
-        contentType: String? = nil,
+        mimeType: String? = nil,
+        contentType: TSResourceContentType? = nil,
         sourceFilename: String? = nil,
         attachmentStream: TSAttachmentStream? = nil,
         attachmentType: TSAttachmentType? = nil,
-        failedThumbnailAttachmentPointer: TSAttachmentPointer? = nil,
+        canTapToDownload: Bool = false,
         reactionEmoji: String? = nil,
         isGiftBadge: Bool = false,
         isPayment: Bool = false
@@ -489,11 +499,12 @@ public class QuotedReplyModel: NSObject {
         self.bodyRanges = bodyRanges
         self.thumbnailImage = thumbnailImage
         self.thumbnailViewFactory = thumbnailViewFactory
+        self.mimeType = mimeType
         self.contentType = contentType
         self.sourceFilename = sourceFilename
         self.attachmentStream = attachmentStream
         self.attachmentType = attachmentType
-        self.failedThumbnailAttachmentPointer = failedThumbnailAttachmentPointer
+        self.canTapToDownload = canTapToDownload
         self.reactionEmoji = reactionEmoji
         self.isGiftBadge = isGiftBadge
         self.isPayment = isPayment

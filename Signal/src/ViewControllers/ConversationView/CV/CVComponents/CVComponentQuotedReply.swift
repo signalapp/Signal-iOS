@@ -118,8 +118,7 @@ private class QuotedMessageViewAdapter: QuotedMessageViewDelegate, Dependencies 
         self.interactionUniqueId = interactionUniqueId
     }
 
-    func didTapQuotedReply(_ quotedReply: QuotedReplyModel,
-                           failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
+    func didTapDownloadQuotedReplyAttachment(_ quotedReply: QuotedReplyModel) {
         databaseStorage.write { tx in
             guard let message = TSMessage.anyFetchMessage(uniqueId: interactionUniqueId, transaction: tx) else {
                 return

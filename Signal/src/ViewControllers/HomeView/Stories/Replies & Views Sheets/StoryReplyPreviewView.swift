@@ -73,7 +73,7 @@ class StoryReplyPreviewView: UIView {
             descriptionLabel.text = body
         } else {
             descriptionLabel.font = UIFont.dynamicTypeSubheadline.italic()
-            descriptionLabel.text = description(forContentType: quotedReplyModel.contentType)
+            descriptionLabel.text = description(forMimeType: quotedReplyModel.mimeType)
         }
 
         vStack.addArrangedSubview(descriptionLabel)
@@ -111,13 +111,13 @@ class StoryReplyPreviewView: UIView {
         layer.mask = maskLayer
     }
 
-    func description(forContentType contentType: String?) -> String {
-        if let contentType = contentType, MIMETypeUtil.isVideo(contentType) {
+    func description(forMimeType mimeType: String?) -> String {
+        if let mimeType = mimeType, MIMETypeUtil.isVideo(mimeType) {
             return OWSLocalizedString(
                 "QUOTED_REPLY_TYPE_VIDEO",
                 comment: "Indicates this message is a quoted reply to a video file.")
-        } else if let contentType = contentType, MIMETypeUtil.isDefinitelyAnimated(contentType) {
-            if contentType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
+        } else if let mimeType = mimeType, MIMETypeUtil.isDefinitelyAnimated(mimeType) {
+            if mimeType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
                 return OWSLocalizedString(
                     "QUOTED_REPLY_TYPE_GIF",
                     comment: "Indicates this message is a quoted reply to animated GIF file.")
@@ -126,7 +126,7 @@ class StoryReplyPreviewView: UIView {
                     "QUOTED_REPLY_TYPE_IMAGE",
                     comment: "Indicates this message is a quoted reply to an image file.")
             }
-        } else if let contentType = contentType, MIMETypeUtil.isImage(contentType) {
+        } else if let mimeType = mimeType, MIMETypeUtil.isImage(mimeType) {
             return OWSLocalizedString(
                 "QUOTED_REPLY_TYPE_PHOTO",
                 comment: "Indicates this message is a quoted reply to a photo file.")

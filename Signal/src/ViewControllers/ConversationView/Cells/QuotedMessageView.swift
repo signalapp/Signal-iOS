@@ -8,8 +8,7 @@ import SignalUI
 
 public protocol QuotedMessageViewDelegate: AnyObject {
 
-    func didTapQuotedReply(_ quotedReply: QuotedReplyModel,
-                           failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer)
+    func didTapDownloadQuotedReplyAttachment(_ quotedReply: QuotedReplyModel)
 
     func didCancelQuotedReply()
 }
@@ -180,45 +179,59 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var hasQuotedThumbnail: Bool {
-            contentTypeWithThumbnail != nil || quotedReplyModel.thumbnailViewFactory != nil || quotedReplyModel.isGiftBadge
+            mimeTypeWithThumbnail != nil || quotedReplyModel.thumbnailViewFactory != nil || quotedReplyModel.isGiftBadge
         }
 
         var hasReaction: Bool {
             quotedReplyModel.reactionEmoji != nil
         }
 
-        var contentType: String? {
-            guard let contentType = quotedReplyModel.contentType,
-                  !contentType.isEmpty else {
+        var mimeType: String? {
+            guard let mimeType = quotedReplyModel.mimeType,
+                  !mimeType.isEmpty else {
                 return nil
             }
-            return contentType
+            return mimeType
         }
 
-        var contentTypeWithThumbnail: String? {
-            guard let contentType = self.contentType else {
+        var mimeTypeWithThumbnail: String? {
+            guard let mimeType = self.mimeType else {
                 return nil
             }
-            guard contentType != OWSMimeTypeOversizeTextMessage else {
+            guard mimeType != OWSMimeTypeOversizeTextMessage else {
                 return nil
             }
-            return contentType
+            return mimeType
         }
 
         var isAudioAttachment: Bool {
-            // TODO: Are we going to use the filename?  For all mimetypes?
-            guard let contentType = self.contentType else {
+            switch quotedReplyModel.contentType {
+            case .file, .image, .video, .animatedImage:
+                return false
+            case .audio:
+                return true
+            case nil:
+                break
+            }
+            guard let mimeType = self.mimeType else {
                 return false
             }
-            return MIMETypeUtil.isAudio(contentType)
+            return MIMETypeUtil.isAudio(mimeType)
         }
 
         var isVideoAttachment: Bool {
-            // TODO: Are we going to use the filename?  For all mimetypes?
-            guard let contentType = self.contentType else {
+            switch quotedReplyModel.contentType {
+            case .file, .image, .audio, .animatedImage:
+                return false
+            case .video:
+                return true
+            case nil:
+                break
+            }
+            guard let mimeType = self.mimeType else {
                 return false
             }
-            return MIMETypeUtil.isVideo(contentType)
+            return MIMETypeUtil.isVideo(mimeType)
         }
 
         var highlightColor: UIColor {
@@ -377,25 +390,25 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         var fileTypeForSnippet: String? {
             // TODO: Are we going to use the filename?  For all mimetypes?
-            guard let contentType = self.contentType else {
+            guard let mimeType = self.mimeType else {
                 return nil
             }
 
-            if MIMETypeUtil.isAudio(contentType) {
+            if MIMETypeUtil.isAudio(mimeType) {
                 return OWSLocalizedString("QUOTED_REPLY_TYPE_AUDIO",
                                          comment: "Indicates this message is a quoted reply to an audio file.")
-            } else if MIMETypeUtil.isVideo(contentType) {
+            } else if MIMETypeUtil.isVideo(mimeType) {
                 return OWSLocalizedString("QUOTED_REPLY_TYPE_VIDEO",
                                          comment: "Indicates this message is a quoted reply to a video file.")
-            } else if MIMETypeUtil.isDefinitelyAnimated(contentType) {
-                if contentType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
+            } else if MIMETypeUtil.isDefinitelyAnimated(mimeType) {
+                if mimeType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
                     return OWSLocalizedString("QUOTED_REPLY_TYPE_GIF",
                                              comment: "Indicates this message is a quoted reply to animated GIF file.")
                 } else {
                     return OWSLocalizedString("QUOTED_REPLY_TYPE_IMAGE",
                                              comment: "Indicates this message is a quoted reply to an image file.")
                 }
-            } else if MIMETypeUtil.isImage(contentType) {
+            } else if MIMETypeUtil.isImage(mimeType) {
                 return OWSLocalizedString("QUOTED_REPLY_TYPE_PHOTO",
                                          comment: "Indicates this message is a quoted reply to a photo file.")
             }
@@ -507,17 +520,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             quotedImageView.layer.magnificationFilter = .trilinear
             quotedImageView.layer.mask = nil
 
-            func tryToLoadThumbnailImage() -> UIImage? {
-                guard let contentType = configurator.contentTypeWithThumbnail,
-                        TSAttachmentStream.hasThumbnail(forMimeType: contentType) else { return nil }
-
-                // TODO: Possibly ignore data that is too large.
-                let image = quotedReplyModel.thumbnailImage
-                // TODO: Possibly ignore images that are too large.
-                return image
-            }
-
-            if let thumbnailImage = tryToLoadThumbnailImage() {
+            // TODO: should be able to show a blurhash _and_ tap to download.
+            if let thumbnailImage = quotedReplyModel.thumbnailImage {
                 quotedImageView.image = thumbnailImage
                 // We need to specify a contentMode since the size of the image
                 // might not match the aspect ratio of the view.
@@ -538,7 +542,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
                 }
                 return wrapper
-            } else if quotedReplyModel.failedThumbnailAttachmentPointer != nil {
+            } else if quotedReplyModel.canTapToDownload {
                 let wrapper = ManualLayoutViewWithLayer(name: "thumbnailDownloadFailedWrapper")
                 wrapper.backgroundColor = configurator.highlightColor
 
@@ -880,13 +884,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
         let quotedReplyModel = state.quotedReplyModel
 
-        guard let thumbnailAttachmentPointer = quotedReplyModel.failedThumbnailAttachmentPointer else {
-            owsFailDebug("thumbnailAttachmentPointer was unexpectedly nil")
-            return
-        }
-
-        delegate?.didTapQuotedReply(quotedReplyModel,
-                                    failedThumbnailDownloadAttachmentPointer: thumbnailAttachmentPointer)
+        delegate?.didTapDownloadQuotedReplyAttachment(quotedReplyModel)
     }
 
     public func updateAppearance() {

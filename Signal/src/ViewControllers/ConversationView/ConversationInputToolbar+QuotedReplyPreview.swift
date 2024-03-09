@@ -376,7 +376,7 @@ private class QuotedMessageSnippetView: UIView {
         vStackView.addArrangedSubview(quotedTextLabel)
 
         let hasQuotedAttachment: Bool = {
-            if let contentType = quotedMessage.contentType, contentType != OWSMimeTypeOversizeTextMessage {
+            if let mimeType = quotedMessage.mimeType, mimeType != OWSMimeTypeOversizeTextMessage {
                 return true
             }
             if quotedMessage.isGiftBadge {
@@ -387,20 +387,11 @@ private class QuotedMessageSnippetView: UIView {
         if hasQuotedAttachment {
             let quotedAttachmentView: UIView
 
-            let tryToLoadThumbnailImage: (() -> UIImage?) = {
-                guard let contentType = self.quotedMessage.contentType, TSAttachmentStream.hasThumbnail(forMimeType: contentType) else {
-                    return nil
-                }
-                // TODO: Possibly ignore data that is too large.
-                return self.quotedMessage.thumbnailImage
-                // TODO: Possibly ignore images that are too large.
-           }
-
-            if let thumbnailImage = tryToLoadThumbnailImage() {
+            if let thumbnailImage = quotedMessage.thumbnailImage {
                 let contentImageView = buildImageView(image: thumbnailImage)
                 contentImageView.clipsToBounds = true
 
-                if let contentType = quotedMessage.contentType, MIMETypeUtil.isVideo(contentType) {
+                if let mimeType = quotedMessage.mimeType, MIMETypeUtil.isVideo(mimeType) {
                     let playIconImageView = buildImageView(image: UIImage(imageLiteralResourceName: "play-fill"))
                     playIconImageView.tintColor = .white
                     contentImageView.addSubview(playIconImageView)
@@ -408,7 +399,7 @@ private class QuotedMessageSnippetView: UIView {
                 }
 
                 quotedAttachmentView = contentImageView
-            } else if quotedMessage.failedThumbnailAttachmentPointer != nil {
+            } else if quotedMessage.canTapToDownload {
                 let contentImageView = buildImageView(image: UIImage(imageLiteralResourceName: "refresh"))
                 contentImageView.contentMode = .scaleAspectFit
                 contentImageView.tintColor = .white
@@ -492,17 +483,17 @@ private class QuotedMessageSnippetView: UIView {
 
     private var fileTypeForSnippet: String? {
         // TODO: Are we going to use the filename?  For all mimetypes?
-        guard let contentType = quotedMessage.contentType, !contentType.isEmpty else {
+        guard let mimeType = quotedMessage.mimeType, !mimeType.isEmpty else {
             return nil
         }
 
-        if MIMETypeUtil.isAudio(contentType) {
+        if MIMETypeUtil.isAudio(mimeType) {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_AUDIO",
                 comment: "Indicates this message is a quoted reply to an audio file."
             )
-        } else if MIMETypeUtil.isDefinitelyAnimated(contentType) {
-            if contentType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
+        } else if MIMETypeUtil.isDefinitelyAnimated(mimeType) {
+            if mimeType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
                 return NSLocalizedString(
                     "QUOTED_REPLY_TYPE_GIF",
                     comment: "Indicates this message is a quoted reply to animated GIF file."
@@ -522,12 +513,12 @@ private class QuotedMessageSnippetView: UIView {
                 "QUOTED_REPLY_TYPE_GIF",
                 comment: "Indicates this message is a quoted reply to animated GIF file."
             )
-        } else if MIMETypeUtil.isVideo(contentType) {
+        } else if MIMETypeUtil.isVideo(mimeType) {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_VIDEO",
                 comment: "Indicates this message is a quoted reply to a video file."
             )
-        } else if MIMETypeUtil.isImage(contentType) {
+        } else if MIMETypeUtil.isImage(mimeType) {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_PHOTO",
                 comment: "Indicates this message is a quoted reply to a photo file."
