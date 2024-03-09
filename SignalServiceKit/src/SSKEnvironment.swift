@@ -81,7 +81,6 @@ public class SSKEnvironment: NSObject {
     public let callMessageHandlerRef: OWSCallMessageHandler
     public let notificationsManagerRef: NotificationsProtocol
     public let messageSendLogRef: MessageSendLog
-    @objc
     public let messageSenderJobQueueRef: MessageSenderJobQueue
     public let localUserLeaveGroupJobQueueRef: LocalUserLeaveGroupJobQueue
     public let callRecordDeleteAllJobQueueRef: CallRecordDeleteAllJobQueue
