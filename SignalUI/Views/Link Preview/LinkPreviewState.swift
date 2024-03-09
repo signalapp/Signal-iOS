@@ -21,9 +21,9 @@ public protocol LinkPreviewState: AnyObject {
     var displayDomain: String? { get }
     var title: String? { get }
     var imageState: LinkPreviewImageState { get }
-    func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
+    func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
                     completion: @escaping (UIImage) -> Void)
-    func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> String?
+    func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String?
     var imagePixelSize: CGSize { get }
     var previewDescription: String? { get }
     var date: Date? { get }
@@ -70,12 +70,12 @@ public class LinkPreviewLoading: LinkPreviewState {
 
     public var imageState: LinkPreviewImageState { .none }
 
-    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
+    public func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
         owsFailDebug("Should not be called.")
     }
 
-    public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> String? {
+    public func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String? {
         owsFailDebug("Should not be called.")
         return nil
     }
@@ -136,7 +136,7 @@ public class LinkPreviewDraft: LinkPreviewState {
 
     public var imageState: LinkPreviewImageState { linkPreviewDraft.imageData != nil ? .loaded : .none }
 
-    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
+    public func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
         guard let imageData = linkPreviewDraft.imageData else {
@@ -152,7 +152,7 @@ public class LinkPreviewDraft: LinkPreviewState {
         }
     }
 
-    public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> String? {
+    public func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String? {
         guard let urlString = urlString else {
             owsFailDebug("Missing urlString.")
             return nil
@@ -253,7 +253,7 @@ public class LinkPreviewSent: LinkPreviewState {
         return .loaded
     }
 
-    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
+    public func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
@@ -291,7 +291,7 @@ public class LinkPreviewSent: LinkPreviewState {
         }
     }
 
-    public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> String? {
+    public func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String? {
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             return nil
         }

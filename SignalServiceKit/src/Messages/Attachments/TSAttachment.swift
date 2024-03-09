@@ -52,7 +52,7 @@ public extension TSAttachmentStream {
     }
 
     // This size is large enough to render full screen.
-    static func thumbnailDimensionPoints(forThumbnailQuality thumbnailQuality: AttachmentThumbnailQuality) -> CGFloat {
+    static func thumbnailDimensionPoints(forThumbnailQuality thumbnailQuality: TSAttachmentThumbnailQuality) -> CGFloat {
         switch thumbnailQuality {
         case .small:
             return thumbnailDimensionPointsSmall
@@ -82,18 +82,18 @@ public extension TSAttachmentStream {
     }
 
     func thumbnailImageSmallSync() -> UIImage? {
-        thumbnailImageSync(quality: .small)
+        thumbnailImageSync(quality: TSAttachmentThumbnailQuality.small)
     }
 
     func thumbnailImageMediumSync() -> UIImage? {
-        thumbnailImageSync(quality: .medium)
+        thumbnailImageSync(quality: TSAttachmentThumbnailQuality.medium)
     }
 
     func thumbnailImageMediumLargeSync() -> UIImage? {
-        thumbnailImageSync(quality: .mediumLarge)
+        thumbnailImageSync(quality: TSAttachmentThumbnailQuality.mediumLarge)
     }
 
     func thumbnailImageLargeSync() -> UIImage? {
-        thumbnailImageSync(quality: .large)
+        thumbnailImageSync(quality: TSAttachmentThumbnailQuality.large)
     }
 }

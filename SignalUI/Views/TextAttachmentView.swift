@@ -604,7 +604,7 @@ open class TextAttachmentView: UIView {
                 if layout == .regular && (imageSize.width < 300 || imageSize.height < 300) {
                     layout = .compact
                 }
-                let thumbnailQuality: AttachmentThumbnailQuality = layout == .regular ? .mediumLarge : .small
+                let thumbnailQuality: TSAttachmentThumbnailQuality = layout == .regular ? .mediumLarge : .small
                 if let cacheKey = linkPreview.imageCacheKey(thumbnailQuality: thumbnailQuality),
                    let image = Self.mediaCache.get(key: cacheKey) as? UIImage {
                     thumbnailImageView.image = image

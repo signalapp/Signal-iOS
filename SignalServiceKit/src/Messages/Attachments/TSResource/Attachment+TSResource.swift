@@ -124,3 +124,21 @@ extension AttachmentTransitPointer {
         return TSResourcePointer(resource: attachment, cdnNumber: cdnNumber, cdnKey: cdnKey)
     }
 }
+
+// MARK: - AttachmentThumbnailQuality
+
+extension AttachmentThumbnailQuality {
+
+    var tsQuality: TSAttachmentThumbnailQuality {
+        switch self {
+        case .small:
+            return .small
+        case .medium:
+            return .medium
+        case .mediumLarge:
+            return .mediumLarge
+        case .large:
+            return .large
+        }
+    }
+}

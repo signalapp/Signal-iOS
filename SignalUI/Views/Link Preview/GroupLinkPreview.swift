@@ -68,7 +68,7 @@ public class LinkPreviewGroupLink: LinkPreviewState {
         return .loading
     }
 
-    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
+    public func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
 
@@ -86,7 +86,7 @@ public class LinkPreviewGroupLink: LinkPreviewState {
         }
     }
 
-    public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> String? {
+    public func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String? {
         let urlString = groupInviteLinkViewModel.url.absoluteString
         return "\(urlString).\(NSStringForAttachmentThumbnailQuality(thumbnailQuality))"
     }

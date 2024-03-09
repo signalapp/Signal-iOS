@@ -60,4 +60,36 @@ public class AttachmentStream {
             localRelativeFilePath: localRelativeFilePath
         )
     }
+
+    public func thumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage? {
+        fatalError("Unimplemented!")
+    }
+
+    public func thumbnailImageSync(quality: AttachmentThumbnailQuality) -> UIImage? {
+        fatalError("Unimplemented!")
+    }
+
+    private static let thumbnailDimensionPointsSmall: CGFloat = 200
+    private static let thumbnailDimensionPointsMedium: CGFloat = 450
+    private static let thumbnailDimensionPointsMediumLarge: CGFloat = 600
+
+    // This size is large enough to render full screen.
+    private static func thumbnailDimensionPointsLarge() -> CGFloat {
+        let screenSizePoints = UIScreen.main.bounds.size
+        return max(screenSizePoints.width, screenSizePoints.height)
+    }
+
+    // This size is large enough to render full screen.
+    private static func thumbnailDimensionPoints(forThumbnailQuality thumbnailQuality: TSAttachmentThumbnailQuality) -> CGFloat {
+        switch thumbnailQuality {
+        case .small:
+            return thumbnailDimensionPointsSmall
+        case .medium:
+            return thumbnailDimensionPointsMedium
+        case .mediumLarge:
+            return thumbnailDimensionPointsMediumLarge
+        case .large:
+            return thumbnailDimensionPointsLarge()
+        }
+    }
 }

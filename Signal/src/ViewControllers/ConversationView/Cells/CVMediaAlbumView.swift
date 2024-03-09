@@ -517,7 +517,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
     }
 
     private static func thumbnailQuality(mediaSizePoints: CGSize,
-                                         viewSizePoints: CGSize) -> AttachmentThumbnailQuality {
+                                         viewSizePoints: CGSize) -> TSAttachmentThumbnailQuality {
         guard mediaSizePoints.isNonEmpty,
               viewSizePoints.isNonEmpty else {
             owsFailDebug("Invalid sizes. mediaSizePoints: \(mediaSizePoints), viewSizePoints: \(viewSizePoints).")
@@ -532,9 +532,9 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                                     ? renderSizeByWidth
                                     : renderSizeByHeight)
         let renderDimensionPoints = renderSizePoints.largerAxis
-        let quality: AttachmentThumbnailQuality = {
+        let quality: TSAttachmentThumbnailQuality = {
             // Find the smallest quality of acceptable size.
-            let qualities: [AttachmentThumbnailQuality] = [
+            let qualities: [TSAttachmentThumbnailQuality] = [
                 .small,
                 .medium,
                 .mediumLarge

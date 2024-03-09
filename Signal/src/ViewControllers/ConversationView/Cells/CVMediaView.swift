@@ -22,7 +22,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     private let maxMessageWidth: CGFloat
     private let isBorderless: Bool
     private let isLoopingVideo: Bool
-    private let thumbnailQuality: AttachmentThumbnailQuality
+    private let thumbnailQuality: TSAttachmentThumbnailQuality
     private let isBroken: Bool
     private var reusableMediaView: ReusableMediaView?
 
@@ -35,7 +35,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
                          isBorderless: Bool,
                          isLoopingVideo: Bool,
                          isBroken: Bool,
-                         thumbnailQuality: AttachmentThumbnailQuality,
+                         thumbnailQuality: TSAttachmentThumbnailQuality,
                          conversationStyle: ConversationStyle) {
         self.mediaCache = mediaCache
         self.attachment = attachment

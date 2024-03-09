@@ -19,16 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
-NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value)
+NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality value)
 {
     switch (value) {
-        case AttachmentThumbnailQuality_Small:
+        case TSAttachmentThumbnailQuality_Small:
             return @"Small";
-        case AttachmentThumbnailQuality_Medium:
+        case TSAttachmentThumbnailQuality_Medium:
             return @"Medium";
-        case AttachmentThumbnailQuality_MediumLarge:
+        case TSAttachmentThumbnailQuality_MediumLarge:
             return @"MediumLarge";
-        case AttachmentThumbnailQuality_Large:
+        case TSAttachmentThumbnailQuality_Large:
             return @"Large";
     }
 }
@@ -826,7 +826,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints success:success failure:failure];
 }
 
-- (void)thumbnailImageWithQuality:(AttachmentThumbnailQuality)quality
+- (void)thumbnailImageWithQuality:(TSAttachmentThumbnailQuality)quality
                           success:(OWSThumbnailSuccess)success
                           failure:(OWSThumbnailFailure)failure
 {
@@ -934,7 +934,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     }
 }
 
-- (nullable UIImage *)thumbnailImageSyncWithQuality:(AttachmentThumbnailQuality)quality
+- (nullable UIImage *)thumbnailImageSyncWithQuality:(TSAttachmentThumbnailQuality)quality
 {
     CGFloat thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
     OWSLoadedThumbnail *_Nullable loadedThumbnail =

@@ -359,10 +359,10 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
     public let shouldBeRenderedByYY = false
     let attachmentStream: TSAttachmentStream
     let imageView = CVImageView()
-    let thumbnailQuality: AttachmentThumbnailQuality
+    let thumbnailQuality: TSAttachmentThumbnailQuality
 
     init(attachmentStream: TSAttachmentStream,
-         thumbnailQuality: AttachmentThumbnailQuality) {
+         thumbnailQuality: TSAttachmentThumbnailQuality) {
         self.attachmentStream = attachmentStream
         self.thumbnailQuality = thumbnailQuality
     }
@@ -418,10 +418,10 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
     public let shouldBeRenderedByYY = false
     let attachmentStream: TSAttachmentStream
     let imageView = CVImageView()
-    let thumbnailQuality: AttachmentThumbnailQuality
+    let thumbnailQuality: TSAttachmentThumbnailQuality
 
     init(attachmentStream: TSAttachmentStream,
-         thumbnailQuality: AttachmentThumbnailQuality) {
+         thumbnailQuality: TSAttachmentThumbnailQuality) {
         self.attachmentStream = attachmentStream
         self.thumbnailQuality = thumbnailQuality
     }

@@ -179,6 +179,26 @@ extension TSAttachmentStream: TSResourceStream {
             return nil
         }
     }
+
+    // MARK: - Thumbnails
+
+    public func thumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage? {
+        return await withCheckedContinuation { continuation in
+            self.thumbnailImage(
+                quality: quality.tsQuality,
+                success: { image in
+                    continuation.resume(returning: image)
+                },
+                failure: {
+                    continuation.resume(returning: nil)
+                }
+            )
+        }
+    }
+
+    public func thumbnailImageSync(quality: AttachmentThumbnailQuality) -> UIImage? {
+        return self.thumbnailImageSync(quality: quality.tsQuality)
+    }
 }
 
 extension TSAttachment {

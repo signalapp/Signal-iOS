@@ -1347,7 +1347,7 @@ private class LinkPreviewImageView: CVImageView {
         self.isHero = isHero
         let configurationId = Self.configurationIdCounter.increment()
         self.configurationId = configurationId
-        let thumbnailQuality: AttachmentThumbnailQuality = isHero ? .medium : .small
+        let thumbnailQuality: TSAttachmentThumbnailQuality = isHero ? .medium : .small
 
         if let cacheKey = state.imageCacheKey(thumbnailQuality: thumbnailQuality),
            let image = Self.mediaCache.get(key: cacheKey) as? UIImage {

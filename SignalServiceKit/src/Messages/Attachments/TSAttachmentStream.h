@@ -20,13 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSThumbnailSuccess)(UIImage *image);
 typedef void (^OWSThumbnailFailure)(void);
 
-typedef NS_CLOSED_ENUM(NSUInteger, AttachmentThumbnailQuality) {
-    AttachmentThumbnailQuality_Small,
-    AttachmentThumbnailQuality_Medium,
-    AttachmentThumbnailQuality_MediumLarge,
-    AttachmentThumbnailQuality_Large
+typedef NS_CLOSED_ENUM(NSUInteger, TSAttachmentThumbnailQuality) {
+    TSAttachmentThumbnailQuality_Small,
+    TSAttachmentThumbnailQuality_Medium,
+    TSAttachmentThumbnailQuality_MediumLarge,
+    TSAttachmentThumbnailQuality_Large
 };
-NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value);
+NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality value);
 
 @interface TSAttachmentStream : TSAttachment
 
@@ -179,11 +179,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 - (void)thumbnailImageWithSizeHint:(CGSize)sizeHint
                            success:(OWSThumbnailSuccess)success
                            failure:(OWSThumbnailFailure)failure;
-- (void)thumbnailImageWithQuality:(AttachmentThumbnailQuality)quality
+- (void)thumbnailImageWithQuality:(TSAttachmentThumbnailQuality)quality
                           success:(OWSThumbnailSuccess)success
                           failure:(OWSThumbnailFailure)failure NS_SWIFT_NAME(thumbnailImage(quality:success:failure:));
 
-- (nullable UIImage *)thumbnailImageSyncWithQuality:(AttachmentThumbnailQuality)quality
+- (nullable UIImage *)thumbnailImageSyncWithQuality:(TSAttachmentThumbnailQuality)quality
     NS_SWIFT_NAME(thumbnailImageSync(quality:));
 
 // This method should only be invoked by OWSThumbnailService.
