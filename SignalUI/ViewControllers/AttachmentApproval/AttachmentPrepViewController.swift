@@ -6,6 +6,7 @@
 import AVFoundation
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 import UIKit
 
 protocol AttachmentPrepViewControllerDelegate: AnyObject {

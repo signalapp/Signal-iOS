@@ -5,6 +5,7 @@
 
 import MobileCoin
 import SignalMessaging
+import SignalServiceKit
 
 @objc
 public protocol Payments: AnyObject {

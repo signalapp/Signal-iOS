@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 public class CVComponentGiftBadge: CVComponentBase, CVComponent {

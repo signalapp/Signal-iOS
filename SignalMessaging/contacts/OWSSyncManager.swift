@@ -27,7 +27,7 @@ public class OWSSyncManager: NSObject, SyncManagerProtocolObjc {
             self.addObservers()
 
             if TSAccountManagerObjcBridge.isRegisteredWithMaybeTransaction {
-                owsAssertDebug(self.contactsManagerImpl.isSetup)
+                owsAssertDebug(self.contactsManagerImpl.isSetup.get())
 
                 if TSAccountManagerObjcBridge.isPrimaryDeviceWithMaybeTransaction {
                     // syncAllContactsIfNecessary will skip if nothing has changed,
@@ -398,7 +398,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         guard AppReadiness.isAppReady else {
             return false
         }
-        guard contactsManagerImpl.isSetup else {
+        guard contactsManagerImpl.isSetup.get() else {
             return false
         }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager

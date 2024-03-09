@@ -5,6 +5,7 @@
 
 import PassKit
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 extension DonationViewsUtil {

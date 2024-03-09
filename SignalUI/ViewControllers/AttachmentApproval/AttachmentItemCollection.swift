@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 class AddMoreRailItem: Equatable {
 

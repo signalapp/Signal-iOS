@@ -5,6 +5,7 @@
 
 import UIKit
 import SignalMessaging
+import SignalServiceKit
 
 private class LayerContainerView: UIView {
     let contentLayer: CALayer

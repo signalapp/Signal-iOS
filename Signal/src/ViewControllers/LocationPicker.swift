@@ -13,6 +13,7 @@ import CoreLocation
 import CoreServices
 import MapKit
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 public protocol LocationPickerDelegate: AnyObject {

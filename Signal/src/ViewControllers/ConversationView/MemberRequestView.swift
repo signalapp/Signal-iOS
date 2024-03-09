@@ -5,6 +5,7 @@
 
 import SignalCoreKit
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 class MemberRequestView: UIStackView {

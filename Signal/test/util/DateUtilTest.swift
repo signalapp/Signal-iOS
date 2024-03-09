@@ -5,7 +5,7 @@
 
 import XCTest
 
-@testable import SignalMessaging
+import SignalServiceKit
 
 class DateUtilTest: XCTestCase {
     func buildDate(year: Int = 0,

@@ -6,6 +6,7 @@
 import XCTest
 @testable import Signal
 @testable import SignalMessaging
+import SignalServiceKit
 
 final class DonateViewControllerTest: SignalBaseTest {
     typealias State = DonateViewController.State

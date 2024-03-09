@@ -5,6 +5,7 @@
 
 import LibSignalClient
 import XCTest
+import SignalServiceKit
 
 @testable import SignalMessaging
 

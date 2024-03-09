@@ -9,6 +9,7 @@ import CoreServices
 import Foundation
 import SignalCoreKit
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 import UIKit
 

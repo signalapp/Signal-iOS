@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 // This is a base class for cells in All Media that have a wide, one-per-row

@@ -5,6 +5,7 @@
 
 import AuthenticationServices
 import Foundation
+import SignalServiceKit
 
 // MARK: - Present a new auth session
 

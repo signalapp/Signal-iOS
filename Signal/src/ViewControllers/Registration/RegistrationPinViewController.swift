@@ -7,6 +7,7 @@ import Foundation
 import SafariServices
 import SignalUI
 import SignalMessaging
+import SignalServiceKit
 
 public enum RegistrationPinCharacterSet {
     case digitsOnly

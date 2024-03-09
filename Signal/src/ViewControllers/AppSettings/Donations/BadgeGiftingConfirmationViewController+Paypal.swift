@@ -6,6 +6,7 @@
 import Foundation
 import AuthenticationServices
 import SignalMessaging
+import SignalServiceKit
 
 extension BadgeGiftingConfirmationViewController {
     typealias SendGiftError = DonationViewsUtil.Gifts.SendGiftError

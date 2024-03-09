@@ -6,6 +6,7 @@
 import LibSignalClient
 import SignalCoreKit
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 class StoryGroupReplyLoader: Dependencies {

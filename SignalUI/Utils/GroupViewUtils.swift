@@ -7,6 +7,7 @@ import Foundation
 import UIKit
 import SafariServices
 import SignalMessaging
+import SignalServiceKit
 
 public class GroupViewUtils {
 

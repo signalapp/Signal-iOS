@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 private extension Optional where Wrapped == DonationPaymentMethod {
     var timeoutDuration: TimeInterval {

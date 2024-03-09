@@ -5,6 +5,7 @@
 
 import MediaPlayer
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 // This kind of view is tricky.  I've tried to organize things in the 

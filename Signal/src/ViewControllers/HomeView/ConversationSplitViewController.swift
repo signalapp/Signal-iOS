@@ -5,6 +5,7 @@
 
 import MultipeerConnectivity
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 class ConversationSplitViewController: UISplitViewController, ConversationSplit {

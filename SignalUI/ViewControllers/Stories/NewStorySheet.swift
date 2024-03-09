@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 import UIKit
 
 public class NewStorySheet: OWSTableSheetViewController {

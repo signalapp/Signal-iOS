@@ -6,6 +6,7 @@
 import Foundation
 import AuthenticationServices
 import SignalMessaging
+import SignalServiceKit
 
 extension DonationPaymentDetailsViewController {
     func show3DS(for redirectUrl: URL) -> Promise<String> {

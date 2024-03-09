@@ -9,6 +9,173 @@ import LibSignalClient
 import SignalCoreKit
 import SignalServiceKit
 
+extension Notification.Name {
+    public static let OWSContactsManagerSignalAccountsDidChange = Notification.Name("OWSContactsManagerSignalAccountsDidChangeNotification")
+    public static let OWSContactsManagerContactsDidChange = Notification.Name("OWSContactsManagerContactsDidChangeNotification")
+}
+
+@objc
+public enum RawContactAuthorizationStatus: UInt {
+    case notDetermined, denied, restricted, authorized
+}
+
+public enum ContactAuthorizationForEditing {
+    case notAllowed, denied, restricted, authorized
+}
+
+public enum ContactAuthorizationForSharing {
+    case notDetermined, denied, authorized
+}
+
+@objc
+public class OWSContactsManager: NSObject, ContactsManagerProtocol {
+    let isSetup: AtomicBool = AtomicBool(false, lock: .init())
+    let swiftValues: OWSContactsManagerSwiftValues
+    let systemContactsFetcher: SystemContactsFetcher
+    let keyValueStore: SDSKeyValueStore
+    public var isEditingAllowed: Bool {
+        TSAccountManagerObjcBridge.isPrimaryDeviceWithMaybeTransaction
+    }
+    /// Must call `requestSystemContactsOnce` before accessing this method
+    public var editingAuthorization: ContactAuthorizationForEditing {
+        guard isEditingAllowed else {
+            return .notAllowed
+        }
+        switch systemContactsFetcher.rawAuthorizationStatus {
+        case .notDetermined:
+            owsFailDebug("should have called `requestOnce` before checking authorization status.")
+            fallthrough
+        case .denied:
+            return .denied
+        case .restricted:
+            return .restricted
+        case .authorized:
+            return .authorized
+        }
+    }
+    public var sharingAuthorization: ContactAuthorizationForSharing {
+        switch self.systemContactsFetcher.rawAuthorizationStatus {
+        case .notDetermined:
+            return .notDetermined
+        case .denied, .restricted:
+            return .denied
+        case .authorized:
+            return .authorized
+        }
+    }
+    /// Whether or not we've fetched system contacts on this launch.
+    ///
+    /// This property is set to true even if the user doesn't have any system
+    /// contacts.
+    ///
+    /// This property is only valid if the user has granted contacts access.
+    /// Otherwise, it's value is undefined.
+    public private(set) var hasLoadedSystemContacts: Bool = false
+
+    init(swiftValues: OWSContactsManagerSwiftValues) {
+        keyValueStore = SDSKeyValueStore(collection: "OWSContactsManagerCollection")
+        systemContactsFetcher = SystemContactsFetcher()
+        self.swiftValues = swiftValues
+        super.init()
+        systemContactsFetcher.delegate = self
+
+        SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.setup()
+        }
+    }
+
+    func setup() {
+        setUpSystemContacts()
+        isSetup.set(true)
+    }
+
+    // Request systems contacts and start syncing changes. The user will see an alert
+    // if they haven't previously.
+    public func requestSystemContactsOnce(completion: (((any Error)?) -> Void)? = nil) {
+        AssertIsOnMainThread()
+
+        guard isEditingAllowed else {
+            if let completion = completion {
+                Logger.warn("Editing contacts isn't available on linked devices.")
+                completion(OWSError(error: .genericFailure, description: OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR", comment: "Worst case generic error message"), isRetryable: false))
+            }
+            return
+        }
+        systemContactsFetcher.requestOnce(completion: completion)
+    }
+
+    /// Ensure's the app has the latest contacts, but won't prompt the user for contact
+    /// access if they haven't granted it.
+    public func fetchSystemContactsOnceIfAlreadyAuthorized() {
+        guard isEditingAllowed else {
+            return
+        }
+        systemContactsFetcher.fetchOnceIfAlreadyAuthorized()
+    }
+
+    /// This variant will fetch system contacts if contact access has already been granted,
+    /// but not prompt for contact access. Also, it will always notify delegates, even if
+    /// contacts haven't changed, and will clear out any stale cached SignalAccounts
+    public func userRequestedSystemContactsRefresh() -> AnyPromise {
+        guard isEditingAllowed else {
+            owsFailDebug("Editing contacts isn't available on linked devices.")
+            let promise = AnyPromise()
+            promise.reject(OWSError(error: .assertionFailure, description: OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR", comment: "Worst case generic error message"), isRetryable: false))
+            return promise
+        }
+        return AnyPromise(future: { (future: AnyFuture) in
+            self.systemContactsFetcher.userRequestedRefresh { (error: (any Error)?) in
+                if let error = error {
+                    Logger.error("refreshing contacts failed with error: \(error)")
+                    future.reject(error: error)
+                } else {
+                    future.resolve(value: NSNumber(value: 1))
+                }
+            }
+        })
+    }
+}
+
+// MARK: - SystemContactsFetcherDelegate
+
+extension OWSContactsManager: SystemContactsFetcherDelegate {
+
+    public func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, hasAuthorizationStatus authorizationStatus: RawContactAuthorizationStatus) {
+        guard isEditingAllowed else {
+            owsFailDebug("Syncing contacts isn't available on linked devices.")
+            return
+        }
+        switch authorizationStatus {
+        case .restricted, .denied:
+            self.updateContacts(nil, isUserRequested: false)
+        case .notDetermined, .authorized:
+            break
+        }
+    }
+
+    public func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact], isUserRequested: Bool) {
+        guard isEditingAllowed else {
+            owsFailDebug("Syncing contacts isn't available on linked devices.")
+            return
+        }
+        updateContacts(contacts, isUserRequested: isUserRequested)
+    }
+
+    public func displayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        displayName(for: address, tx: transaction).resolvedValue()
+    }
+
+    public func shortDisplayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+    }
+
+    public func sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        sortSignalServiceAddresses(addresses, transaction: transaction)
+    }
+}
+
 // MARK: - OWSContactsMangerSwiftValues
 
 class OWSContactsManagerSwiftValues {
@@ -1180,18 +1347,6 @@ extension OWSContactsManager: ContactManager {
         displayNamesRefinery(for: addresses, transaction: tx).values.map { $0! }
     }
 
-    @available(swift, obsoleted: 1.0)
-    @objc
-    func _displayNameString(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String {
-        return displayName(for: address, tx: tx).resolvedValue()
-    }
-
-    @available(swift, obsoleted: 1.0)
-    @objc
-    func _shortDisplayNameString(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String {
-        return displayName(for: address, tx: tx).resolvedValue(useShortNameIfAvailable: true)
-    }
-
     private func systemContactNames(for addresses: some Sequence<SignalServiceAddress>, tx: SDSAnyReadTransaction) -> [DisplayName.SystemContactName?] {
         let phoneNumbers = addresses.map { $0.phoneNumber }
         var compactedResult = systemContactNames(for: phoneNumbers.compacted(), tx: tx).makeIterator()
@@ -1238,12 +1393,6 @@ extension OWSContactsManager: ContactManager {
         }
 
         return shortName
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    func _sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-        sortSignalServiceAddresses(addresses, transaction: transaction)
     }
 }
 

@@ -5,6 +5,7 @@
 
 import SafariServices
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 class SupportConstants: NSObject {

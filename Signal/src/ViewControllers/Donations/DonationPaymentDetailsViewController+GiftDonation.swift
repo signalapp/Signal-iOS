@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 extension DonationPaymentDetailsViewController {
     /// Make a gift donation.

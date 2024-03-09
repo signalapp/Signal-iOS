@@ -5,6 +5,7 @@
 
 import UIKit
 import SignalMessaging
+import SignalServiceKit
 
 open class OWSButton: UIButton {
 

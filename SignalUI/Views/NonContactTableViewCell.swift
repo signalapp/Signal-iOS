@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 public final class NonContactTableViewCell: UITableViewCell, ReusableTableViewCell {
 

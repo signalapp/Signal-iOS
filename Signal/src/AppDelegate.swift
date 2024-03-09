@@ -5,6 +5,7 @@
 
 import Intents
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 import WebRTC
 

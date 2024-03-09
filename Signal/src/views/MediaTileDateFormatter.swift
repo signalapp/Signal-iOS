@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalMessaging
+import SignalServiceKit
 
 class MediaTileDateFormatter {
     private static var todayTimeFormatter: DateFormatter = {

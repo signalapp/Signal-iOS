@@ -6,6 +6,7 @@
 import AVFoundation
 import Photos
 import SignalMessaging
+import SignalServiceKit
 import UIKit
 
 protocol VideoEditorViewDelegate: AnyObject {

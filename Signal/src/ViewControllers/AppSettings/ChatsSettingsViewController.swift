@@ -5,6 +5,7 @@
 
 import IntentsUI
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 class ChatsSettingsViewController: OWSTableViewController2 {

@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 
 // MARK: - Delegate Protocols
 

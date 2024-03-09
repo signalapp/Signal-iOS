@@ -5,6 +5,7 @@
 
 import Contacts
 import XCTest
+import SignalServiceKit
 
 @testable import SignalMessaging
 

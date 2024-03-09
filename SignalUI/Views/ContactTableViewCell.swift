@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
 

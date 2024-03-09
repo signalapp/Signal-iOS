@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 /// Represents a voice note that was "interrupted" while being recorded.

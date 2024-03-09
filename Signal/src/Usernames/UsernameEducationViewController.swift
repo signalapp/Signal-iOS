@@ -6,6 +6,7 @@
 import Foundation
 import SignalUI
 import SignalMessaging
+import SignalServiceKit
 import SafariServices
 
 class UsernameEducationViewController: OWSTableViewController2 {

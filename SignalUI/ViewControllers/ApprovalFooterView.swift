@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 // Outgoing message approval can be a multi-step process.
 public enum ApprovalMode: UInt {

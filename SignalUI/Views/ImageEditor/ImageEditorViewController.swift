@@ -5,6 +5,7 @@
 
 import SignalCoreKit
 import SignalMessaging
+import SignalServiceKit
 import UIKit
 
 // Base class for all tool view controllers.

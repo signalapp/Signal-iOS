@@ -227,8 +227,6 @@
 		345AE2B62317048300DB6225 /* GRDBFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345AE2B52317048200DB6225 /* GRDBFinderTest.swift */; };
 		345DE96023ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */; };
 		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
-		346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129A21FD1F09100532771 /* OWSContactsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129A31FD1F09100532771 /* OWSContactsManager.m */; };
 		346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */; };
 		34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463532E256EA525003C5428 /* ConversationViewTest.swift */; };
 		34635332257549F2003C5428 /* CVReactionCountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34635331257549F1003C5428 /* CVReactionCountsView.swift */; };
@@ -2856,8 +2854,6 @@
 		345AE2B52317048200DB6225 /* GRDBFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBFinderTest.swift; sourceTree = "<group>"; };
 		345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2ProfileKeyUpdater.swift; sourceTree = "<group>"; };
 		3461284A1FD0B93F00532771 /* SAELoadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAELoadViewController.swift; sourceTree = "<group>"; };
-		346129A21FD1F09100532771 /* OWSContactsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsManager.h; sourceTree = "<group>"; };
-		346129A31FD1F09100532771 /* OWSContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManager.m; sourceTree = "<group>"; };
 		346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemContactsFetcher.swift; sourceTree = "<group>"; };
 		346129B11FD1F7E800532771 /* OWSProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProfileManager.h; sourceTree = "<group>"; };
 		346129B21FD1F7E800532771 /* OWSProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProfileManager.m; sourceTree = "<group>"; };
@@ -5888,8 +5884,6 @@
 				5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */,
 				50086B9B29DF5CB100F9C072 /* NameResolver.swift */,
 				4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */,
-				346129A21FD1F09100532771 /* OWSContactsManager.h */,
-				346129A31FD1F09100532771 /* OWSContactsManager.m */,
 				3498A0A524DC81E100CA492C /* OWSContactsManager.swift */,
 				885C354F2370DFD50004BA35 /* OWSSyncManager.swift */,
 				50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */,
@@ -10976,7 +10970,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */,
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
 				453518961FC63DBF00210559 /* SignalMessaging.h in Headers */,
 			);
@@ -12417,7 +12410,6 @@
 				764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */,
 				50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */,
 				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
-				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,

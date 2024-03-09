@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 public class ContactCellAccessoryView: NSObject {
     let accessoryView: UIView

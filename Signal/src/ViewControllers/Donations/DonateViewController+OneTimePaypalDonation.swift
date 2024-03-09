@@ -6,6 +6,7 @@
 import AuthenticationServices
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 extension DonateViewController {

@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 public class PaymentOnboarding {
     private class func ftPaymentsLockActionSheetMessage() -> String {

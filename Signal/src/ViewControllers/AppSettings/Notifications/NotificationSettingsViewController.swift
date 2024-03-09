@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 class NotificationSettingsViewController: OWSTableViewController2 {

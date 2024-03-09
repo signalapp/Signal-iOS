@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 /// Only used for group calls currently; adjust if individual calls come to need it.
 class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {

@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 /// This is the collection view cell for "list mode" in All Media.

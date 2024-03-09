@@ -5,6 +5,7 @@
 
 import XCTest
 @testable import SignalMessaging
+import SignalServiceKit
 
 final class StripeTest: XCTestCase {
     private let unknownCurrency = "ZZZ"

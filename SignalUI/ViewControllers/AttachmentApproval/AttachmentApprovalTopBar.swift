@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 import UIKit
 
 class AttachmentApprovalTopBar: MediaTopBar {

@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 import UIKit
 
 public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {

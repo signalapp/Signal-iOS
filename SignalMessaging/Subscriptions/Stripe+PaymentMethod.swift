@@ -5,6 +5,7 @@
 
 import Foundation
 import PassKit
+import SignalServiceKit
 
 /// A fully valid payment method, ready to submit to Stripe.
 ///

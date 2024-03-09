@@ -11,7 +11,6 @@
 #import <SignalCoreKit/NSObject+OWS.h>
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalCoreKit/OWSLogs.h>
-#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/DebugLogger.h>

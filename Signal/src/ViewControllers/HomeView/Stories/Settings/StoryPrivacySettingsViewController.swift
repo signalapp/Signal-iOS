@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 class StoryPrivacySettingsViewController: OWSTableViewController2 {

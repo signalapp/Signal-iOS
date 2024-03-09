@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 extension ConversationViewController {
     func checkPermissionsAndStartRecordingVoiceMessage() {

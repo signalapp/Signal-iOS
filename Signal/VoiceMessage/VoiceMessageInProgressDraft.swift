@@ -5,6 +5,7 @@
 
 import AVFoundation
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 /// Represents a voice note that's actively being recorded.

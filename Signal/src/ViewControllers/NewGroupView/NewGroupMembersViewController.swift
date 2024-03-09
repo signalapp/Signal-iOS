@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 // TODO: Rename to NewGroupViewController; remove old view.

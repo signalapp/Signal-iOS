@@ -5,6 +5,7 @@
 
 import AuthenticationServices
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 class DonationPaymentDetailsViewController: OWSTableViewController2 {

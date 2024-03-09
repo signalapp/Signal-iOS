@@ -5,6 +5,7 @@
 
 import SignalUI
 import SignalMessaging
+import SignalServiceKit
 
 @MainActor
 class BankTransferMandateViewController: OWSTableViewController2 {

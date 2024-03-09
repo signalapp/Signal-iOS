@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 public extension TSGroupThread {
     /// Returns a list of up to `limit` names of group members.

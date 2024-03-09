@@ -6,6 +6,7 @@
 import PassKit
 import QuickLook
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 public class CVComponentGenericAttachment: CVComponentBase, CVComponent {

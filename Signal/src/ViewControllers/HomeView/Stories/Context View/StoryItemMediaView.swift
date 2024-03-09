@@ -8,6 +8,7 @@ import Foundation
 import SafariServices
 import SignalCoreKit
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 import UIKit
 import YYImage

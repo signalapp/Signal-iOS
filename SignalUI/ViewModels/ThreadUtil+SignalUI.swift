@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 public extension ThreadUtil {
     // MARK: - Durable Message Enqueue

@@ -6,6 +6,7 @@
 import XCTest
 @testable import Signal
 @testable import SignalMessaging
+import SignalServiceKit
 
 class BadgeIssueSheetStateTest: XCTestCase {
     typealias State = BadgeIssueSheetState

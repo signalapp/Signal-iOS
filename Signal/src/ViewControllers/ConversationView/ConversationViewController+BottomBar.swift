@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 enum CVCBottomViewType: Equatable {
     // For perf reasons, we don't use a bottom view until

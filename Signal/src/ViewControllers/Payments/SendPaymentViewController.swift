@@ -5,6 +5,7 @@
 
 import Lottie
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 public protocol SendPaymentViewDelegate: AnyObject {

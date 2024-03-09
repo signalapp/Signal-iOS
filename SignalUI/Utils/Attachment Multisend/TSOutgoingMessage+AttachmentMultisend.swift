@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 
 extension TSOutgoingMessage {
     @objc

@@ -6,6 +6,7 @@
 import Foundation
 import MultipeerConnectivity
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNavigationChildController {

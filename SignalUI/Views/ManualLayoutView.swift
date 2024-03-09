@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 
 // ManualLayoutView uses a CATransformLayer by default.
 // CATransformLayer does not render.

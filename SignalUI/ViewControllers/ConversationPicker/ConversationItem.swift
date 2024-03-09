@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 public enum MessageRecipient: Equatable {
     case contact(_ address: SignalServiceAddress)

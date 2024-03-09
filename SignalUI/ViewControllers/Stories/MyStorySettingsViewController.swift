@@ -6,6 +6,7 @@
 import Foundation
 import UIKit
 import SignalMessaging
+import SignalServiceKit
 import BonMot
 
 public class MyStorySettingsViewController: OWSTableViewController2, MyStorySettingsDataSourceDelegate {
