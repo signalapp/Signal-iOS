@@ -1053,6 +1053,7 @@
 		66FC638C29E9E9D200F00DAC /* TextCheckingDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */; };
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
+		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
 		72345D192B9A17CF000237B3 /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
 		72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
@@ -1225,7 +1226,6 @@
 		8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */ = {isa = PBXBuildFile; fileRef = 8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */; };
 		8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8837F74023DA0B0F00772A32 /* MegaphoneView.swift */; };
 		883A7FC3269F4C0000841DF9 /* AvatarSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FC2269F4C0000841DF9 /* AvatarSettingsViewController.swift */; };
-		883A7FD2269F642F00841DF9 /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
 		8840B6E2283F16650036BA4C /* MyStoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8840B6E1283F16650036BA4C /* MyStoriesViewController.swift */; };
 		88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */; };
 		8841584C252F9F1C0078903D /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8841584B252F9F1C0078903D /* SignalCall.swift */; };
@@ -7792,6 +7792,14 @@
 			path = BodyRanges;
 			sourceTree = "<group>";
 		};
+		720547F12B9C8F5E00E2CF2F /* Avatars */ = {
+			isa = PBXGroup;
+			children = (
+				883A7FD1269F642F00841DF9 /* AvatarModel.swift */,
+			);
+			path = Avatars;
+			sourceTree = "<group>";
+		};
 		724D47B12B97BE73001BE973 /* ZkParams */ = {
 			isa = PBXGroup;
 			children = (
@@ -8042,7 +8050,6 @@
 			isa = PBXGroup;
 			children = (
 				34FC7EEB265834F30046707A /* AvatarBuilder.swift */,
-				883A7FD1269F642F00841DF9 /* AvatarModel.swift */,
 			);
 			path = Avatars;
 			sourceTree = "<group>";
@@ -10701,6 +10708,7 @@
 		F9C5CAF8289453B200548EEE /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				720547F12B9C8F5E00E2CF2F /* Avatars */,
 				F9C5CB65289453B200548EEE /* Profiles */,
 				F9C5CB00289453B200548EEE /* AppContext.h */,
 				F9C5CB41289453B200548EEE /* AppContext.m */,
@@ -12396,7 +12404,6 @@
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
 				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
-				883A7FD2269F642F00841DF9 /* AvatarModel.swift in Sources */,
 				88F15F9A25AD4AE0008ABD47 /* BroadcastMediaMessageJob.swift in Sources */,
 				500FE490288615BA00FA090C /* CachedBadge.swift in Sources */,
 				5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */,
@@ -13258,6 +13265,7 @@
 				5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */,
 				50D2FC7D2AEB134C002E4589 /* AuthorMergeHelper.swift in Sources */,
 				500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */,
+				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,
 				665C0D6C2AE0776700539A37 /* Backup.pb.swift in Sources */,
 				665C0D6E2AE07A8A00539A37 /* BackupProto.swift in Sources */,
