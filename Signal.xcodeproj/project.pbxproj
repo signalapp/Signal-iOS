@@ -144,7 +144,6 @@
 		3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95556271B510400B05242 /* ImageEditorCropViewController.swift */; };
 		3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */; };
 		34067EAB2710D61A000407C3 /* DebugLogs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34067EAA2710D61A000407C3 /* DebugLogs.swift */; };
-		3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
 		3406D32225DD40F000885B14 /* PaymentsTransferOutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32125DD40F000885B14 /* PaymentsTransferOutViewController.swift */; };
 		3406D32425DD4A8F00885B14 /* PaymentsQRScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32325DD4A8F00885B14 /* PaymentsQRScanViewController.swift */; };
 		3406D32625DD5EAF00885B14 /* ChatListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32525DD5EAF00885B14 /* ChatListViewController.swift */; };
@@ -1055,6 +1054,7 @@
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
 		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
 		720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
+		720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
 		72345D192B9A17CF000237B3 /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
 		72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
@@ -5812,7 +5812,6 @@
 				883A7FD0269F640D00841DF9 /* Avatars */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
-				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
 			);
 			path = utils;
@@ -10813,6 +10812,7 @@
 				F9C5CB4B289453B200548EEE /* Promise+OWS.swift */,
 				F9C5CB42289453B200548EEE /* ReadyFlag.swift */,
 				F9C5CB46289453B200548EEE /* Refinery.swift */,
+				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
 				F9C5CB45289453B200548EEE /* RemoteConfigManager.swift */,
 				502C69732B06F0A400012867 /* Result.swift */,
 				F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */,
@@ -12438,7 +12438,6 @@
 				D99554712AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				886A58CB276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift in Sources */,
-				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
 				F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */,
 				D9668B33291B03C200665298 /* SessionResetJob.swift in Sources */,
 				D9668B35291B088200665298 /* SignalMessagingJobQueues.swift in Sources */,
@@ -13822,6 +13821,7 @@
 				506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */,
 				50B0E9482AC73C3B005D46AB /* RecipientStateMerger.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
+				720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */,
 				661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */,
 				66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */,
 				66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */,
