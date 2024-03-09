@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-
 /// This object serves as a store of data for interop between the NSE and SyncPushTokensJob.
 /// It lets the NSE record when it handles messages, so that if it hasn't done so in a while,
 /// SyncPushTokensJob can rotate the APNS token to try and recover.

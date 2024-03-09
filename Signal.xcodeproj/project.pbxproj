@@ -1054,6 +1054,7 @@
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
 		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
+		720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		72345D192B9A17CF000237B3 /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
 		72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
@@ -1093,7 +1094,6 @@
 		72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */; };
 		72C905902B9AC9F300E586B8 /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
 		72C905912B9ACA3D00E586B8 /* ScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641E172088D7E900E2EDE5 /* ScreenLock.swift */; };
-		72C905932B9ACAC500E586B8 /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -5810,7 +5810,6 @@
 			isa = PBXGroup;
 			children = (
 				883A7FD0269F640D00841DF9 /* Avatars */,
-				6675F64C2925C012007A311E /* APNSRotationStore.swift */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
@@ -10710,6 +10709,7 @@
 			children = (
 				720547F12B9C8F5E00E2CF2F /* Avatars */,
 				F9C5CB65289453B200548EEE /* Profiles */,
+				6675F64C2925C012007A311E /* APNSRotationStore.swift */,
 				F9C5CB00289453B200548EEE /* AppContext.h */,
 				F9C5CB41289453B200548EEE /* AppContext.m */,
 				F9C5CB6F289453B200548EEE /* AppExpiry.swift */,
@@ -12400,7 +12400,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				72C905932B9ACAC500E586B8 /* APNSRotationStore.swift in Sources */,
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
 				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
@@ -13229,6 +13228,7 @@
 				F915A76C29CB669800EB6F68 /* AccountDataReport.swift in Sources */,
 				F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */,
 				F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */,
+				720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */,
 				F9C5CE13289453B400548EEE /* AppContext.m in Sources */,
 				F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */,
 				F9C5CE52289453B400548EEE /* AppReadiness.swift in Sources */,
