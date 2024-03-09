@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 
 public protocol OWSProximityMonitoringManager: AnyObject {
     func add(lifetime: AnyObject)
@@ -12,6 +11,7 @@ public protocol OWSProximityMonitoringManager: AnyObject {
 }
 
 public class OWSProximityMonitoringManagerImpl: OWSProximityMonitoringManager {
+    public init() {}
 
     private struct State {
         var didAddObserver = false

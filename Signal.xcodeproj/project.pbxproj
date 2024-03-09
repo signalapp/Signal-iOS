@@ -586,7 +586,6 @@
 		4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */; };
 		4CB5F26720F6E1E2004D1B42 /* MessageActionsToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF4C0920F55BBA005DA313 /* MessageActionsToolbar.swift */; };
 		4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5F26820F7D060004D1B42 /* MessageActions.swift */; };
-		4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */; };
 		4CBBFE4A2306F5D300B37450 /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBBFE492306F5D300B37450 /* LogViewController.swift */; };
 		4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */; };
@@ -1055,6 +1054,7 @@
 		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
 		720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
+		720547F72B9C98C600E2CF2F /* ProximityMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */; };
 		72345D192B9A17CF000237B3 /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
 		72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
@@ -5811,7 +5811,6 @@
 			children = (
 				883A7FD0269F640D00841DF9 /* Avatars */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
-				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
 			);
 			path = utils;
@@ -10810,6 +10809,7 @@
 				768F720C2A22CEAC002C4E7D /* Preferences.swift */,
 				D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */,
 				F9C5CB4B289453B200548EEE /* Promise+OWS.swift */,
+				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				F9C5CB42289453B200548EEE /* ReadyFlag.swift */,
 				F9C5CB46289453B200548EEE /* Refinery.swift */,
 				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
@@ -12436,7 +12436,6 @@
 				D938CD6029283402006FB16A /* Paypal.swift in Sources */,
 				F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */,
 				D99554712AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift in Sources */,
-				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				886A58CB276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift in Sources */,
 				F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */,
 				D9668B33291B03C200665298 /* SessionResetJob.swift in Sources */,
@@ -13796,6 +13795,7 @@
 				66CDB7652AFC5E74009A36EC /* ProvisioningServiceResponses.swift in Sources */,
 				F9C5CCFB289453B300548EEE /* ProvisioningSocket.swift in Sources */,
 				F9C5CD97289453B300548EEE /* ProxiedContentDownloader.swift in Sources */,
+				720547F72B9C98C600E2CF2F /* ProximityMonitoringManager.swift in Sources */,
 				503B47222AF0569B00978266 /* PublicKey.swift in Sources */,
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
 				669FAE0E2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift in Sources */,
