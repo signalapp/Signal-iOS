@@ -10,14 +10,6 @@ import Foundation
 @objc
 public extension NSObject {
 
-    final var preferences: Preferences {
-        SMEnvironment.shared.preferencesRef
-    }
-
-    static var preferences: Preferences {
-        SMEnvironment.shared.preferencesRef
-    }
-
     final var profileManagerImpl: OWSProfileManager {
         profileManager as! OWSProfileManager
     }
@@ -62,14 +54,6 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-
-    var preferences: Preferences {
-        SMEnvironment.shared.preferencesRef
-    }
-
-    static var preferences: Preferences {
-        SMEnvironment.shared.preferencesRef
-    }
 
     var contactsManagerImpl: OWSContactsManager {
         contactsManager as! OWSContactsManager

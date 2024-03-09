@@ -15,6 +15,15 @@ public protocol Dependencies {}
 
 @objc
 public extension NSObject {
+
+    final var preferences: Preferences {
+        SSKEnvironment.shared.preferencesRef
+    }
+
+    static var preferences: Preferences {
+        SSKEnvironment.shared.preferencesRef
+    }
+
     final var blockingManager: BlockingManager {
         .shared
     }
@@ -898,6 +907,14 @@ public extension NSObject {
 // MARK: - Swift-only Dependencies
 
 public extension Dependencies {
+
+    var preferences: Preferences {
+        SSKEnvironment.shared.preferencesRef
+    }
+
+    static var preferences: Preferences {
+        SSKEnvironment.shared.preferencesRef
+    }
 
     var groupsV2: GroupsV2 {
         SSKEnvironment.shared.groupsV2Ref

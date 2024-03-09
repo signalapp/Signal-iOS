@@ -15,7 +15,6 @@ public class MockSMEnvironment: SMEnvironment {
     }
 
     private init() {
-        let preferences = Preferences()
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
         let avatarBuilder = AvatarBuilder()
         let smJobQueues = SignalMessagingJobQueues(
@@ -24,7 +23,6 @@ public class MockSMEnvironment: SMEnvironment {
         )
 
         super.init(
-            preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
             avatarBuilder: avatarBuilder,
             smJobQueues: smJobQueues

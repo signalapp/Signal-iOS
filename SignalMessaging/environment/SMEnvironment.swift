@@ -28,7 +28,6 @@ public class SMEnvironment {
         _shared = environment
     }
 
-    public let preferencesRef: Preferences
     public let proximityMonitoringManagerRef: OWSProximityMonitoringManager
     public let avatarBuilderRef: AvatarBuilder
     public let smJobQueuesRef: SignalMessagingJobQueues
@@ -37,12 +36,10 @@ public class SMEnvironment {
     public var lightweightGroupCallManagerRef: LightweightGroupCallManager?
 
     public init(
-        preferences: Preferences,
         proximityMonitoringManager: OWSProximityMonitoringManager,
         avatarBuilder: AvatarBuilder,
         smJobQueues: SignalMessagingJobQueues
     ) {
-        preferencesRef = preferences
         proximityMonitoringManagerRef = proximityMonitoringManager
         avatarBuilderRef = avatarBuilder
         smJobQueuesRef = smJobQueues

@@ -208,6 +208,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             db: dependenciesBridge.db,
             messageSenderJobQueue: messageSenderJobQueue
         )
+        let preferences = Preferences()
 
         super.init(
             contactManager: contactManager,
@@ -267,7 +268,8 @@ public class MockSSKEnvironment: SSKEnvironment {
             messageSendLog: messageSendLog,
             messageSenderJobQueue: messageSenderJobQueue,
             localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
-            callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue
+            callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue,
+            preferences: preferences
         )
     }
 
