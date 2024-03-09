@@ -8,6 +8,104 @@ import Foundation
 import LibSignalClient
 import SignalServiceKit
 
+extension Notification.Name {
+    public static let syncManagerConfigurationSyncDidComplete = Notification.Name("OWSSyncManagerConfigurationSyncDidCompleteNotification")
+    public static let syncManagerKeysSyncDidComplete = Notification.Name("OWSSyncManagerKeysSyncDidCompleteNotification")
+}
+
+@objc
+public class OWSSyncManager: NSObject, SyncManagerProtocolObjc {
+    private static var keyValueStore: SDSKeyValueStore {
+        SDSKeyValueStore(collection: "kTSStorageManagerOWSSyncManagerCollection")
+    }
+    private var isRequestInFlight: Bool = false
+
+    init(default: Void) {
+        super.init()
+        SwiftSingletons.register(self)
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            self.addObservers()
+
+            if TSAccountManagerObjcBridge.isRegisteredWithMaybeTransaction {
+                owsAssertDebug(self.contactsManagerImpl.isSetup)
+
+                if TSAccountManagerObjcBridge.isPrimaryDeviceWithMaybeTransaction {
+                    // syncAllContactsIfNecessary will skip if nothing has changed,
+                    // so this won't yield redundant traffic.
+                    self.syncAllContactsIfNecessary()
+                } else {
+                    self.sendAllSyncRequestMessagesIfNecessary().catch { (_ error: Error) in
+                        Logger.error("Error: \(error).")
+                    }
+                }
+            }
+        }
+    }
+
+    private func addObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(signalAccountsDidChange(_:)), name: .OWSContactsManagerSignalAccountsDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(profileKeyDidChange(_:)), name: UserProfileNotifications.localProfileKeyDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(registrationStateDidChange(_:)), name: RegistrationStateChangeNotifications.registrationStateDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground(_:)), name: .OWSApplicationWillEnterForeground, object: nil)
+    }
+
+    // MARK: - Notifications
+
+    @objc
+    private func signalAccountsDidChange(_ notification: AnyObject) {
+        AssertIsOnMainThread()
+        syncAllContactsIfNecessary()
+    }
+
+    @objc
+    private func profileKeyDidChange(_ notification: AnyObject) {
+        AssertIsOnMainThread()
+        syncAllContactsIfNecessary()
+    }
+
+    @objc
+    private func registrationStateDidChange(_ notification: AnyObject) {
+        AssertIsOnMainThread()
+        syncAllContactsIfNecessary()
+    }
+
+    @objc
+    private func willEnterForeground(_ notification: AnyObject) {
+        AssertIsOnMainThread()
+        _ = syncAllContactsIfFullSyncRequested()
+    }
+
+    // MARK: - SyncManagerProtocolObjc methods
+
+    public func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction) {
+        if syncMessage.hasReadReceipts {
+            SSKEnvironment.shared.receiptManager.setAreReadReceiptsEnabled(syncMessage.readReceipts, transaction: transaction)
+        }
+        if syncMessage.hasUnidentifiedDeliveryIndicators {
+            let updatedValue = syncMessage.unidentifiedDeliveryIndicators
+            self.preferences.setShouldShowUnidentifiedDeliveryIndicators(updatedValue, transaction: transaction)
+        }
+        if syncMessage.hasTypingIndicators {
+            self.typingIndicatorsImpl.setTypingIndicatorsEnabled(value: syncMessage.typingIndicators, transaction: transaction)
+        }
+        if syncMessage.hasLinkPreviews {
+            SSKPreferences.setAreLinkPreviewsEnabled(syncMessage.linkPreviews, transaction: transaction)
+        }
+        transaction.addAsyncCompletionOffMain {
+            NotificationCenter.default.postNotificationNameAsync(.syncManagerConfigurationSyncDidComplete, object: nil)
+        }
+    }
+
+    public func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction) {
+        guard let attachmentPointer = TSAttachmentPointer(fromProto: syncMessage.blob, albumMessage: nil) else {
+            owsFailDebug("failed to create attachment pointer from incoming contacts sync message")
+            return
+        }
+        attachmentPointer.anyInsert(transaction: transaction)
+        self.smJobQueues.incomingContactSyncJobQueue.add(attachmentId: attachmentPointer.uniqueId, isComplete: syncMessage.isComplete, transaction: transaction)
+    }
+}
+
 extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     // MARK: - Constants
@@ -39,7 +137,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         return databaseStorage.write(.promise) { (transaction) -> Promise<Void> in
             let currentAppVersion = AppVersionImpl.shared.currentAppVersion
             let syncRequestedAppVersion = {
-                Self.keyValueStore().getString(
+                Self.keyValueStore.getString(
                     Constants.syncRequestedAppVersionKey,
                     transaction: transaction
                 )
@@ -56,7 +154,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             self.sendSyncRequestMessage(.contacts, transaction: transaction)
             self.sendSyncRequestMessage(.keys, transaction: transaction)
 
-            Self.keyValueStore().setString(
+            Self.keyValueStore.setString(
                 currentAppVersion,
                 key: Constants.syncRequestedAppVersionKey,
                 transaction: transaction
@@ -64,9 +162,9 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
             return Promise.when(fulfilled: [
                 NotificationCenter.default.observe(once: .incomingContactSyncDidComplete).asVoid(),
-                NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
+                NotificationCenter.default.observe(once: .syncManagerConfigurationSyncDidComplete).asVoid(),
                 NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid(),
-                NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
+                NotificationCenter.default.observe(once: .syncManagerKeysSyncDidComplete).asVoid()
             ])
         }.then(on: DependenciesBridge.shared.schedulers.sync) { $0 }
     }
@@ -131,7 +229,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
 
         transaction.addAsyncCompletionOffMain {
-            NotificationCenter.default.postNotificationNameAsync(.OWSSyncManagerKeysSyncDidComplete, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(.syncManagerKeysSyncDidComplete, object: nil)
         }
     }
 
@@ -351,7 +449,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             // main app can send that request the next time in runs.
             if mode == .allSignalAccounts {
                 databaseStorage.write { tx in
-                    Self.keyValueStore().setString(UUID().uuidString, key: Constants.fullSyncRequestIdKey, transaction: tx)
+                    Self.keyValueStore.setString(UUID().uuidString, key: Constants.fullSyncRequestIdKey, transaction: tx)
                 }
             }
             // If a full sync sync is requested in NSE, ignore it. Opportunistic syncs
@@ -404,7 +502,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 message: result.message
             )
             await self.databaseStorage.awaitableWrite { tx in
-                Self.keyValueStore().setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
+                Self.keyValueStore.setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
                 self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
             }
         }
@@ -425,7 +523,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         // Check if there's a pending request from the NSE. Any full sync in the
         // main app can clear this flag, even if it's not started in response to
         // calling syncAllContactsIfFullSyncRequested.
-        let fullSyncRequestId = Self.keyValueStore().getString(Constants.fullSyncRequestIdKey, transaction: tx)
+        let fullSyncRequestId = Self.keyValueStore.getString(Constants.fullSyncRequestIdKey, transaction: tx)
 
         // However, only syncAllContactsIfFullSyncRequested-initiated requests
         // should be skipped if there's no request.
@@ -446,7 +544,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             message: message,
             syncFileUrl: syncFileUrl,
             fullSyncRequestId: fullSyncRequestId,
-            previousMessageHash: Self.keyValueStore().getData(Constants.lastContactSyncKey, transaction: tx)
+            previousMessageHash: Self.keyValueStore.getData(Constants.lastContactSyncKey, transaction: tx)
         )
     }
 
@@ -454,13 +552,13 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         guard let requestId else {
             return
         }
-        let storedRequestId = Self.keyValueStore().getString(Constants.fullSyncRequestIdKey, transaction: tx)
+        let storedRequestId = Self.keyValueStore.getString(Constants.fullSyncRequestIdKey, transaction: tx)
         // If the requestId we just finished matches the one in the database, we've
         // fulfilled the contract with the NSE. If the NSE triggers *another* sync
         // while this is outstanding, the match will fail, and we'll kick off
         // another sync at the next opportunity.
         if storedRequestId == requestId {
-            Self.keyValueStore().removeValue(forKey: Constants.fullSyncRequestIdKey, transaction: tx)
+            Self.keyValueStore.removeValue(forKey: Constants.fullSyncRequestIdKey, transaction: tx)
         }
     }
 
@@ -513,7 +611,7 @@ public extension OWSSyncManager {
 
         let notificationsPromise: Promise<([(threadUniqueId: String, sortOrder: UInt32)], Void, Void)> = Promise.when(fulfilled:
             NotificationCenter.default.observe(once: .incomingContactSyncDidComplete).map { $0.insertedThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
-            NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds),
+            NotificationCenter.default.observe(once: .syncManagerConfigurationSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds),
             NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds)
         )
 

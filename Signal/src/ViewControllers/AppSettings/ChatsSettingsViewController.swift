@@ -19,7 +19,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
-            name: .OWSSyncManagerConfigurationSyncDidComplete,
+            name: .syncManagerConfigurationSyncDidComplete,
             object: nil
         )
     }

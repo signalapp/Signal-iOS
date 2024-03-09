@@ -284,7 +284,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             // TODO: 90 days after all primaries include the master key in every
             // provisioning message, we can make it non-optional and remove this
             // branch entirely.
-            async let syncDidComplete: Void = NotificationCenter.default.observeOnce(.OWSSyncManagerKeysSyncDidComplete)
+            async let syncDidComplete: Void = NotificationCenter.default.observeOnce(.syncManagerKeysSyncDidComplete)
 
             async let requestKeys: Void = self.db.awaitableWrite { tx in
                 self.syncManager.sendKeysSyncRequestMessage(tx: tx)
