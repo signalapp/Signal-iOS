@@ -160,9 +160,9 @@ public class AudioSession: NSObject {
 
     private func reconcileAudioCategory() throws {
         if aggregateBehaviors.contains(.audioMessagePlayback) {
-            SMEnvironment.shared.proximityMonitoringManagerRef.add(lifetime: self)
+            SSKEnvironment.shared.proximityMonitoringManagerRef.add(lifetime: self)
         } else {
-            SMEnvironment.shared.proximityMonitoringManagerRef.remove(lifetime: self)
+            SSKEnvironment.shared.proximityMonitoringManagerRef.remove(lifetime: self)
         }
 
         if aggregateBehaviors.contains(.call) {

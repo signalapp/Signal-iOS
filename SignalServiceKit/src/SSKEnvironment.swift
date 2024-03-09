@@ -85,6 +85,7 @@ public class SSKEnvironment: NSObject {
     public let localUserLeaveGroupJobQueueRef: LocalUserLeaveGroupJobQueue
     public let callRecordDeleteAllJobQueueRef: CallRecordDeleteAllJobQueue
     public let preferencesRef: Preferences
+    public let proximityMonitoringManagerRef: OWSProximityMonitoringManager
 
     private let appExpiryRef: AppExpiry
     private let aciSignalProtocolStoreRef: SignalProtocolStore
@@ -149,7 +150,8 @@ public class SSKEnvironment: NSObject {
         messageSenderJobQueue: MessageSenderJobQueue,
         localUserLeaveGroupJobQueue: LocalUserLeaveGroupJobQueue,
         callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue,
-        preferences: Preferences
+        preferences: Preferences,
+        proximityMonitoringManager: OWSProximityMonitoringManager
     ) {
         self.contactManagerRef = contactManager
         self.linkPreviewManagerRef = linkPreviewManager
@@ -210,6 +212,7 @@ public class SSKEnvironment: NSObject {
         self.localUserLeaveGroupJobQueueRef = localUserLeaveGroupJobQueue
         self.callRecordDeleteAllJobQueueRef = callRecordDeleteAllJobQueue
         self.preferencesRef = preferences
+        self.proximityMonitoringManagerRef = proximityMonitoringManager
     }
 
     public func signalProtocolStoreRef(for identity: OWSIdentity) -> SignalProtocolStore {

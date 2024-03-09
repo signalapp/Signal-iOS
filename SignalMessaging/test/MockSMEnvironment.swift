@@ -15,7 +15,6 @@ public class MockSMEnvironment: SMEnvironment {
     }
 
     private init() {
-        let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
         let avatarBuilder = AvatarBuilder()
         let smJobQueues = SignalMessagingJobQueues(
             db: DependenciesBridge.shared.db,
@@ -23,7 +22,6 @@ public class MockSMEnvironment: SMEnvironment {
         )
 
         super.init(
-            proximityMonitoringManager: proximityMonitoringManager,
             avatarBuilder: avatarBuilder,
             smJobQueues: smJobQueues
         )

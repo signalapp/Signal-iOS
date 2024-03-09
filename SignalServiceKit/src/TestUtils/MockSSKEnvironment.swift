@@ -209,6 +209,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             messageSenderJobQueue: messageSenderJobQueue
         )
         let preferences = Preferences()
+        let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
 
         super.init(
             contactManager: contactManager,
@@ -269,7 +270,8 @@ public class MockSSKEnvironment: SSKEnvironment {
             messageSenderJobQueue: messageSenderJobQueue,
             localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
             callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue,
-            preferences: preferences
+            preferences: preferences,
+            proximityMonitoringManager: proximityMonitoringManager
         )
     }
 
