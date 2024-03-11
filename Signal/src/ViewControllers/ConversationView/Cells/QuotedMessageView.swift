@@ -67,16 +67,14 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         isOutgoing: Bool,
         transaction: SDSAnyReadTransaction
     ) -> State {
-
-        let quotedAuthorName = contactsManager.displayName(for: quotedReplyModel.authorAddress,
-                                                           transaction: transaction)
-
-        return State(quotedReplyModel: quotedReplyModel,
-                     displayableQuotedText: displayableQuotedText,
-                     conversationStyle: conversationStyle,
-                     isOutgoing: isOutgoing,
-                     isForPreview: false,
-                     quotedAuthorName: quotedAuthorName)
+        return State(
+            quotedReplyModel: quotedReplyModel,
+            displayableQuotedText: displayableQuotedText,
+            conversationStyle: conversationStyle,
+            isOutgoing: isOutgoing,
+            isForPreview: false,
+            quotedAuthorName: contactsManager.displayName(for: quotedReplyModel.authorAddress, tx: transaction).resolvedValue()
+        )
     }
 
     static func stateForPreview(
@@ -84,12 +82,6 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         conversationStyle: ConversationStyle,
         transaction: SDSAnyReadTransaction
     ) -> State {
-
-        let quotedAuthorName = contactsManager.displayName(
-            for: quotedReplyModel.authorAddress,
-            transaction: transaction
-        )
-
         var displayableQuotedText: DisplayableText?
         if let body = quotedReplyModel.body, !body.isEmpty {
             let messageBody = MessageBody(text: body, ranges: quotedReplyModel.bodyRanges ?? .empty)
@@ -105,7 +97,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             conversationStyle: conversationStyle,
             isOutgoing: true,
             isForPreview: true,
-            quotedAuthorName: quotedAuthorName
+            quotedAuthorName: contactsManager.displayName(for: quotedReplyModel.authorAddress, tx: transaction).resolvedValue()
         )
     }
 

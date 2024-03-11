@@ -9,11 +9,9 @@ import Network
 extension SignalProxy {
     /// An HTTP Proxy server that relays traffic to a Signal TLS Proxy
     class RelayServer {
-        @Atomic
-        private(set) var isStarted = false
+        @Atomic private(set) var isStarted = false
 
-        @Atomic
-        private(set) var isReady = false {
+        @Atomic private(set) var isReady = false {
             didSet {
                 NotificationCenter.default.postNotificationNameAsync(.isSignalProxyReadyDidChange, object: nil)
             }
@@ -32,14 +30,9 @@ extension SignalProxy {
             ]
         }
 
-        @Atomic
-        private var listener: NWListener?
-
-        @Atomic
-        private var clients = [UUID: RelayClient]()
-
-        @Atomic
-        private var backgroundTask: OWSBackgroundTask?
+        @Atomic private var listener: NWListener?
+        @Atomic private var clients = [UUID: RelayClient]()
+        @Atomic private var backgroundTask: OWSBackgroundTask?
 
         private let queue = DispatchQueue(label: "org.signal.proxy.relay-server", attributes: .concurrent)
 
@@ -92,11 +85,8 @@ extension SignalProxy {
             }
         }
 
-        @Atomic
-        private var restartFailureCount: UInt = 0
-
-        @Atomic
-        private var restartBackoffTimer: Timer?
+        @Atomic private var restartFailureCount: UInt = 0
+        @Atomic private var restartBackoffTimer: Timer?
 
         func restartIfNeeded(error: Error? = nil, ignoreBackoff: Bool = false) {
             guard isStarted else { return }

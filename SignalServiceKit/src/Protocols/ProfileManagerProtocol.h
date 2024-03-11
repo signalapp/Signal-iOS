@@ -54,13 +54,9 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
 - (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo;
-- (BOOL)localProfileIsPniCapable;
 
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
-
-- (nullable NSPersonNameComponents *)nameComponentsForProfileWithAddress:(SignalServiceAddress *)address
-                                                             transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam
                                           transaction:(SDSAnyReadTransaction *)transaction;

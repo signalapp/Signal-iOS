@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre del grup té un nom similar.</string>
+			<string>%1$d membre del grup té el mateix nom.</string>
 			<key>other</key>
-			<string>%1$d membres del grup tenen noms similars.</string>
+			<string>%1$d membres del grup tenen el mateix nom.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>S&apos;ha trobat %1$d conflicte de nom en aquest grup.</string>
+			<key>other</key>
+			<string>S&apos;han trobat %1$d conflictes de nom en aquest grup.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d membre</string>
+			<key>other</key>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre del grup té un nom similar. Revisa els membres a continuació o pren les mesures que calguin.</string>
+			<string>S&apos;ha trobat %1$d conflicte de nom en aquest grup. Revisa els membres més avall o pren mesures.</string>
 			<key>other</key>
-			<string>%1$d membres del grup tenen noms similars. Revisa els membres a continuació o pren les mesures que calguin.</string>
+			<string>S&apos;han trobat %1$d conflictes de nom en aquest grup. Revisa els membres més avall o pren mesures.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; visualització</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; visualitzacions</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Els àlies han de començar amb un mínim d&apos;%1$d caràcter.</string>
+			<key>other</key>
+			<string>Els àlies han de començar amb un mínim de %1$d caràcters.</string>
 		</dict>
 	</dict>
 </dict>

@@ -14,14 +14,14 @@ class UploadManagerTests: XCTestCase {
         helper = UploadManagerMockHelper()
         uploadManager = UploadManagerImpl(
             db: helper.mockDB,
-            attachmentStore: helper.mockAttachmentStore,
             interactionStore: helper.mockInteractionStore,
             networkManager: helper.mockNetworkManager,
             socketManager: helper.mockSocketManager,
             signalService: helper.mockServiceManager,
             attachmentEncrypter: helper.mockAttachmentEncrypter,
             blurHash: helper.mockBlurHash,
-            fileSystem: helper.mockFileSystem
+            fileSystem: helper.mockFileSystem,
+            tsResourceStore: helper.mockResourceStore
         )
     }
 
@@ -39,11 +39,7 @@ class UploadManagerTests: XCTestCase {
         // 3. Successful download
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        _ = try await uploadManager.uploadAttachment(
-            attachmentId: "attachment_1",
-            messageIds: ["message_1"],
-            version: .v3
-        )
+        _ = try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
         if case let .uploadLocation(request) = helper.capturedRequests[1] {
             XCTAssertEqual(request.url!.absoluteString, uploadLocation)
@@ -87,11 +83,7 @@ class UploadManagerTests: XCTestCase {
         // 5. Complete the upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        try await uploadManager.uploadAttachment(
-            attachmentId: "attachment_1",
-            messageIds: ["message_1"],
-            version: .v3
-        )
+        try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
         if case let .uploadTask(request) = helper.capturedRequests[5] {
             XCTAssertEqual(request.url!.absoluteString, location)
@@ -104,7 +96,7 @@ class UploadManagerTests: XCTestCase {
             let lastByte = size - 1
             XCTAssertEqual(request.allHTTPHeaderFields!["content-range"], "bytes \(nextByte)-\(lastByte)/\(size)")
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.sourceFilename, "test-file")
+        XCTAssertEqual(helper.mockResourceStore.uploadedAttachments.first!.asResourceStream()!.bridgeStream.sourceFilename, "test-file")
     }
 
     func testBadRangePrefixRestartUpload_v3_CDN2() async throws {
@@ -125,11 +117,7 @@ class UploadManagerTests: XCTestCase {
         // 5. Complete the upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        try await uploadManager.uploadAttachment(
-            attachmentId: "attachment_1",
-            messageIds: ["message_1"],
-            version: .v3
-        )
+        try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
         if case let .uploadTask(request) = helper.capturedRequests[5] {
             XCTAssertEqual(request.url!.absoluteString, location)
@@ -137,7 +125,7 @@ class UploadManagerTests: XCTestCase {
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(size)")
             XCTAssertNil(request.allHTTPHeaderFields!["Content-Range"])
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.sourceFilename, "test-file")
+        XCTAssertEqual(helper.mockResourceStore.uploadedAttachments.first!.asResourceStream()!.bridgeStream.sourceFilename, "test-file")
     }
 
     func testFullRestartUpload_v3_CDN2() async throws {
@@ -165,11 +153,7 @@ class UploadManagerTests: XCTestCase {
         // 8. Complete the upload
         helper.addUploadRequestMock(auth: auth2, location: location2, type: .success)
 
-        try await uploadManager.uploadAttachment(
-            attachmentId: "attachment_1",
-            messageIds: ["message_1"],
-            version: .v3
-        )
+        try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
         if case let .uploadTask(request) = helper.capturedRequests[8] {
             XCTAssertEqual(request.url!.absoluteString, location2)
@@ -177,6 +161,6 @@ class UploadManagerTests: XCTestCase {
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(size)")
             XCTAssertNil(request.allHTTPHeaderFields!["Content-Range"])
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.sourceFilename, "test-file")
+        XCTAssertEqual(helper.mockResourceStore.uploadedAttachments.first!.asResourceStream()!.bridgeStream.sourceFilename, "test-file")
     }
 }

@@ -25,6 +25,7 @@ class JobRecordTest: XCTestCase {
         case .receiptCredentialRedemption: return ReceiptCredentialRedemptionJobRecord.self
         case .sendGiftBadge: return SendGiftBadgeJobRecord.self
         case .sessionReset: return SessionResetJobRecord.self
+        case .callRecordDeleteAll: return CallRecordDeleteAllJobRecord.self
         }
     }
 
@@ -543,6 +544,30 @@ extension SessionResetJobRecord: ValidatableModel {
     func validate(against: SessionResetJobRecord) throws {
         guard
             contactThreadId == against.contactThreadId
+        else {
+            throw ValidatableModelError.failedToValidate
+        }
+    }
+}
+
+extension CallRecordDeleteAllJobRecord: ValidatableModel {
+    static let constants: [(CallRecordDeleteAllJobRecord, base64JsonData: Data)] = [
+        (
+            CallRecordDeleteAllJobRecord(
+                sendDeleteAllSyncMessage: true,
+                deleteAllBeforeTimestamp: 1234,
+                exclusiveProcessIdentifier: "blorp",
+                failureCount: 19,
+                status: .ready
+            ),
+            Data(base64Encoded: "eyJzdXBlciI6eyJsYWJlbCI6IkNhbGxSZWNvcmREZWxldGVBbGwiLCJ1bmlxdWVJZCI6IjM5ODlDQ0E0LThDMUQtNDNGQy05NUMwLUMzRjU5ODUwQUUyRiIsImV4Y2x1c2l2ZVByb2Nlc3NJZGVudGlmaWVyIjoiYmxvcnAiLCJmYWlsdXJlQ291bnQiOjE5LCJyZWNvcmRUeXBlIjoxMDAsInN0YXR1cyI6MX0sIkNSREFKUl9zZW5kRGVsZXRlQWxsU3luY01lc3NhZ2UiOnRydWUsIkNSREFKUl9kZWxldGVBbGxCZWZvcmVUaW1lc3RhbXAiOjEyMzR9")!
+        )
+    ]
+
+    func validate(against: CallRecordDeleteAllJobRecord) throws {
+        guard
+            sendDeleteAllSyncMessage == against.sendDeleteAllSyncMessage,
+            deleteAllBeforeTimestamp == against.deleteAllBeforeTimestamp
         else {
             throw ValidatableModelError.failedToValidate
         }

@@ -72,7 +72,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             let recipientIdentity = identityManager.recipientIdentity(for: address, tx: tx.asV2Read)
             return Item(
                 address: address,
-                displayName: contactsManager.displayName(for: address, transaction: tx),
+                displayName: contactsManager.displayName(for: address, tx: tx).resolvedValue(),
                 verificationState: recipientIdentity?.verificationState ?? .default,
                 identityKey: recipientIdentity?.identityKey
             )

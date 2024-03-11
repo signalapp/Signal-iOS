@@ -29,12 +29,12 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
 
         self.fingerprint = fingerprint
         self.contactName = Self.databaseStorage.read { tx in
-            return Self.contactsManager.displayName(for: SignalServiceAddress(recipientAci), transaction: tx)
+            return Self.contactsManager.displayName(for: SignalServiceAddress(recipientAci), tx: tx).resolvedValue()
         }
 
         super.init()
 
-        title = NSLocalizedString("SCAN_QR_CODE_VIEW_TITLE", comment: "Title for the 'scan QR code' view.")
+        title = CommonStrings.scanQRCodeTitle
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle {

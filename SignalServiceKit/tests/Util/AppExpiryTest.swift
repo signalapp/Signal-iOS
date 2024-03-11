@@ -74,8 +74,19 @@ final class AppExpiryTest: XCTestCase {
     }
 
     func testWarmCachesIgnoresPersistedValueWithDifferentVersion() {
-        XCTAssertNotEqual(appVersion.currentAppVersion4, "6.5.4.3", "Test version is unexpected")
+        XCTAssertNotEqual(appVersion.currentAppVersion, "6.5.4.3", "Test version is unexpected")
 
+        let savedJson = #"{"appVersion":"6.5.4.3","mode":"immediately"}"#.data(using: .utf8)!
+        db.write { tx in
+            keyValueStore.setData(savedJson, key: AppExpiryImpl.keyValueKey, transaction: tx)
+        }
+
+        db.read { self.appExpiry.warmCaches(with: $0) }
+
+        XCTAssertEqual(appExpiry.expirationDate, defaultExpiry)
+    }
+
+    func testWarmCachesIgnoresPersistedValueWithOldKeyName() {
         let savedJson = #"{"version4":"6.5.4.3","mode":"immediately"}"#.data(using: .utf8)!
         db.write { tx in
             keyValueStore.setData(savedJson, key: AppExpiryImpl.keyValueKey, transaction: tx)
@@ -88,7 +99,7 @@ final class AppExpiryTest: XCTestCase {
 
     func testWarmCachesWithPersistedDefault() throws {
         let savedJson = try JSONEncoder().encode([
-            "version4": appVersion.currentAppVersion4,
+            "appVersion": appVersion.currentAppVersion,
             "mode": "default"
         ])
         db.write { tx in
@@ -102,7 +113,7 @@ final class AppExpiryTest: XCTestCase {
 
     func testWarmCachesWithPersistedImmediateExpiry() throws {
         let savedJson = try JSONEncoder().encode([
-            "version4": appVersion.currentAppVersion4,
+            "appVersion": appVersion.currentAppVersion,
             "mode": "immediately"
         ])
         db.write { tx in
@@ -119,7 +130,7 @@ final class AppExpiryTest: XCTestCase {
 
         let savedJson = """
         {
-            "version4": "\(appVersion.currentAppVersion4)",
+            "appVersion": "\(appVersion.currentAppVersion)",
             "mode": "atDate",
             "expirationDate": \(expirationDate.timeIntervalSinceReferenceDate)
         }

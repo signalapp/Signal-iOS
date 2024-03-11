@@ -10,7 +10,7 @@ import WebRTC
 class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
     private let localVideoCapturePreview = RTCCameraPreviewView()
 
-    private let shouldUseAutolayout: Bool
+    private let shouldUseAutoLayout: Bool
 
     var captureSession: AVCaptureSession? {
         get { localVideoCapturePreview.captureSession }
@@ -21,12 +21,12 @@ class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
         didSet { localVideoCapturePreview.contentMode = contentMode }
     }
 
-    init(shouldUseAutolayout: Bool) {
-        self.shouldUseAutolayout = shouldUseAutolayout
+    init(shouldUseAutoLayout: Bool) {
+        self.shouldUseAutoLayout = shouldUseAutoLayout
         super.init(frame: .zero)
 
         addSubview(localVideoCapturePreview)
-        if shouldUseAutolayout {
+        if shouldUseAutoLayout {
             localVideoCapturePreview.autoPinEdgesToSuperviewEdges()
         }
 
@@ -48,7 +48,7 @@ class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
 
     override var frame: CGRect {
         didSet {
-            if !shouldUseAutolayout {
+            if !shouldUseAutoLayout {
                 updateLocalVideoOrientation()
             }
         }
@@ -57,7 +57,7 @@ class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
     @objc
     private func updateLocalVideoOrientation() {
         defer {
-            if shouldUseAutolayout {
+            if shouldUseAutoLayout {
                 setNeedsUpdateConstraints()
             } else {
                 localVideoCapturePreview.frame = bounds
@@ -93,7 +93,7 @@ class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
 
     // MARK: - CallMemberView_IndividualLocalBridge
 
-    func configure(call: SignalCall, isFullScreen: Bool, memberType: CallMemberView.ConfigurationType) {}
+    func configure(call: SignalCall, isFullScreen: Bool, memberType: CallMemberView.MemberType) {}
 }
 
 extension RTCCameraPreviewView {

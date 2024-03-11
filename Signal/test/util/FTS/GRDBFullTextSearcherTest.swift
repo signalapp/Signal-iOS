@@ -34,16 +34,24 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         // for each test because we're using a new
         // SignalServiceAddressCache for each test and we need
         // consistent backingHashValue.
-        aliceRecipient = SignalServiceAddress(phoneNumber: "+12345678900")
-        bobRecipient = SignalServiceAddress(phoneNumber: "+49030183000")
+        let alicePhoneNumber = "+12345678900"
+        aliceRecipient = SignalServiceAddress(phoneNumber: alicePhoneNumber)
+        let bobPhoneNumber = "+49030183000"
+        bobRecipient = SignalServiceAddress(phoneNumber: bobPhoneNumber)
 
         // Replace this singleton.
-        let fakeContactsManager = FakeContactsManager()
-        fakeContactsManager.mockDisplayNames = [
-            aliceRecipient: "Alice",
-            bobRecipient: "Bob Barker",
+        let fakeContactManager = FakeContactsManager()
+        fakeContactManager.mockSignalAccounts = [
+            alicePhoneNumber: SignalAccount(
+                contact: Contact(phoneNumber: alicePhoneNumber, phoneNumberLabel: "", givenName: "Alice", familyName: nil, nickname: nil, fullName: "Alice"),
+                address: aliceRecipient
+            ),
+            bobPhoneNumber: SignalAccount(
+                contact: Contact(phoneNumber: bobPhoneNumber, phoneNumberLabel: "", givenName: "Bob", familyName: "Barker", nickname: nil, fullName: "Bob Barker"),
+                address: bobRecipient
+            ),
         ]
-        SSKEnvironment.shared.setContactsManagerForUnitTests(fakeContactsManager)
+        SSKEnvironment.shared.setContactManagerForUnitTests(fakeContactManager)
 
         // ensure local client has necessary "registered" state
         let localE164Identifier = "+13235551234"
@@ -453,15 +461,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     // MARK: - Perf
 
     func testPerf() {
-        let aliceE164 = "+13213214321"
-        let aliceUuid = UUID()
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: aliceUuid),
-                    pni: nil,
-                    e164: E164(aliceE164)!
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }

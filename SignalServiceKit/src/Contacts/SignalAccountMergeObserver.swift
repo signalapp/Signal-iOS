@@ -56,8 +56,8 @@ class SignalAccountMergeObserver: RecipientMergeObserver {
 
         let tx = SDSDB.shimOnlyBridge(tx)
 
-        let oldPhoneNumber = mergedRecipient.oldRecipient?.phoneNumber
-        let newPhoneNumber = mergedRecipient.newRecipient.phoneNumber
+        let oldPhoneNumber = mergedRecipient.oldRecipient?.phoneNumber?.stringValue
+        let newPhoneNumber = mergedRecipient.newRecipient.phoneNumber?.stringValue
 
         // The oldPhoneNumber is now associated with nothing. We should delete the
         // SignalAccount if it exists because we no longer have a ServiceId for
@@ -98,7 +98,6 @@ class SignalAccountMergeObserver: RecipientMergeObserver {
     }
 
     private func fetch(for phoneNumber: String, tx: SDSAnyReadTransaction) -> SignalAccount? {
-        let phoneNumberOnlyAddress = SignalServiceAddress(serviceId: nil, phoneNumber: phoneNumber, ignoreCache: true)
-        return SignalAccountFinder().signalAccount(for: phoneNumberOnlyAddress, tx: tx)
+        return SignalAccountFinder().signalAccount(for: phoneNumber, tx: tx)
     }
 }

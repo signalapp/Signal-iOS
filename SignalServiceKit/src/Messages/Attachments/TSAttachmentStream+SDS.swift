@@ -84,7 +84,7 @@ class TSAttachmentStreamSerializer: SDSSerializer {
         let lazyRestoreFragmentId: String? = nil
         let localRelativeFilePath: String? = model.localRelativeFilePath
         let mediaSize: Data? = nil
-        let pointerType: TSAttachmentPointerType? = nil
+        let pointerType: UInt? = nil
         let state: TSAttachmentPointerState? = nil
         let uploadTimestamp: UInt64 = model.uploadTimestamp
         let cdnKey: String = model.cdnKey

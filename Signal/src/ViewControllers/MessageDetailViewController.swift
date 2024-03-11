@@ -886,7 +886,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
                 return false
             }
             self.message = newMessage
-            self.attachments = newMessage.mediaAttachments(with: transaction)
+            self.attachments = newMessage.mediaAttachments(transaction: transaction)
             guard let renderItem = buildRenderItem(
                 message: newMessage,
                 spoilerState: spoilerState,
@@ -924,7 +924,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
             let messageRecipientAddressesUnsorted = outgoingMessage.recipientAddresses()
             let (hasBodyAttachments, messageRecipientAddressesSorted) = self.databaseStorage.read { transaction in
                 return (
-                    outgoingMessage.hasBodyAttachments(with: transaction),
+                    outgoingMessage.hasBodyAttachments(transaction: transaction),
                     self.contactsManagerImpl.sortSignalServiceAddresses(
                         messageRecipientAddressesUnsorted,
                         transaction: transaction
@@ -1246,6 +1246,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     // TODO:
     func didTapViewOnceExpired(_ interaction: TSInteraction) {}
 
+    func didTapContactName(thread: TSContactThread) {}
+
     // TODO:
     func didTapUnknownThreadWarningGroup() {}
     // TODO:
@@ -1256,6 +1258,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapSendPayment() {}
 
     func didTapThreadMergeLearnMore(phoneNumber: String) {}
+
+    func didTapReportSpamLearnMore() {}
 }
 
 extension MessageDetailViewController: UINavigationControllerDelegate {

@@ -82,7 +82,8 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
         if (memberE164s) {
             NSMutableArray<SignalServiceAddress *> *memberAddresses = [NSMutableArray new];
             for (NSString *phoneNumber in memberE164s) {
-                [memberAddresses addObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
+                [memberAddresses addObject:[SignalServiceAddress legacyAddressWithServiceIdString:nil
+                                                                                      phoneNumber:phoneNumber]];
             }
             _groupMembers = [memberAddresses copy];
         } else {

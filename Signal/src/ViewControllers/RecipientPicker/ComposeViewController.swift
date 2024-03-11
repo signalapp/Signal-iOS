@@ -87,7 +87,7 @@ class ComposeViewController: RecipientPickerContainerViewController {
     }
 }
 
-extension ComposeViewController: RecipientPickerDelegate {
+extension ComposeViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,

@@ -562,6 +562,8 @@ message SyncMessage {
       DELETE           = 2;
       BLOCK            = 3;
       BLOCK_AND_DELETE = 4;
+      SPAM             = 5;
+      BLOCK_AND_SPAM   = 6;
     }
 
     reserved /*threadE164*/     1;
@@ -628,6 +630,16 @@ message SyncMessage {
     optional string newE164         = 4;
   }
 
+  message CallLogEvent {
+    enum Type {
+      CLEARED        = 0;
+      MARKED_AS_READ = 1;
+    }
+
+    optional Type type = 1;
+    optional uint64 timestamp = 2;
+  }
+
   optional Sent                   sent                   = 1;
   optional Contacts               contacts               = 2;
   reserved                        /*groups*/               3;
@@ -647,6 +659,7 @@ message SyncMessage {
   reserved                                                 17; // Formerly, PNI identity sync messages
   optional PniChangeNumber        pniChangeNumber        = 18;
   optional CallEvent              callEvent              = 19;
+  optional CallLogEvent           callLogEvent           = 21;
 }
 
 message AttachmentPointer {
@@ -700,7 +713,7 @@ message ContactDetails {
   reserved /* color */ 4;
   reserved /* verified */ 5;
   reserved /* profileKey */ 6;
-  optional bool     blocked     = 7;
+  reserved /* blocked */ 7;
   optional uint32   expireTimer = 8;
   optional uint32   inboxPosition = 10;
   reserved /* archived */ 11;

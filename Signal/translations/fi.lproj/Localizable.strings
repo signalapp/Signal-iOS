@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Kuva";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Kuva";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Puhelut";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Saapuva";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Vastaamaton";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Lähtevä";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Tyhjennä";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Tämä poistaa pysyvästi koko puheluhistorian.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Tyhjennetäänkö puheluhistoria?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Poista";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Kaikki";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Vastaamaton";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Siirry keskusteluun";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Liity äänipuheluun";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Liity";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Liity videopuheluun";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Ei vastaamattomia puheluita";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Ei viimeaikaisia puheluita";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Aloita soittamalla kaverillesi";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Palaa puheluun";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Palaa";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "Ei hakutuloksia haulle %1$@";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Valitse";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Valitse";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Äänipuhelu";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Videopuhelu";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Tietoja";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Ota kuva ja lähetä se";
 
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Etsi käyttäjänimellä";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Avaa asetukset";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Voit hakea yhteystiedoistasi Signalin käyttäjiä sallimalla yhteystietojen käyttö iOS:n asetuksissa.";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Yhdistä uusi laite";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ on estetty";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ on järjestelmän yhteystiedoissa";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Ei suoria viestejä käyttäjän %1$@ kanssa";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Odottava viestipyyntö";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-kontaktit";
@@ -1286,16 +1367,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Lisää olemassaolevaan yhteystietoon";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Lisää yhteystietoihin";
-
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Ylläpitäjät";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Kaikki";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Pois päältä";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Lisää järjestelmän yhteystietoihin";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Valitse, kuka voi muokata ryhmän nimeä, valokuvaa, kuvausta ja katoavien viestien ajastusta.";
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Merkit";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Estetyn käyttäjän lähettämiä viestejä ei näytetä.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Estettyyn ryhmään lähetettyjä viestejä ei näytetä.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Estä ryhmä";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Estä käyttäjä";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Vastattu äänipuhelu";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Saapuva videopuhelu";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Vastaamaton äänipuhelu";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Vastaamaton videopuhelu";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Soitettu äänipuhelu";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Lähtevä videopuhelu";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Muokkaa";
@@ -1425,6 +1509,9 @@
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Poistetaanko %1$@ ryhmästä?";
+
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Ilmoita roskapostista";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Poista ylläpitäjän oikeudet";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Liitteen lataaminen epäonnistui.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Liitteen lähettäminen epäonnistui.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Viestiä lähettäjältä %1$@ ei voitu toimittaa";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Etsi tilisi tiedot";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Anna käyttäjänimi, sen jälkeen piste ja käyttäjänimeen liittyvä numerosarja.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Käyttäjänimi";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Etsi käyttäjänimellä";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merkitse varmennetuksi";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Jäsenet";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tarkista napauttamalla";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Jäsen";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Tarkista jäsenet";
 
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Lähetit käyttäjälle %1$@ maksujen aktivointipyynnön.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "Ilmoitettu roskapostista";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal on saanut ilmoituksen, että tämä henkilö saattaa lähettää roskapostia. Signal ei näe keskustelujen sisältöä.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Ilmoitettu roskapostista";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kutsu kavereita Signaliin";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Lisää";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Haku";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Estä ja poista";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Ilmoita roskapostista ja estä";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Poistetaanko ja poistutaanko ryhmästä?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Tarkista pyynnöt huolellisesti. Signal löysi toisen saman nimisen yhteystiedon.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Yhteystietosi";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Tällä henkilöllä on sama nimi kuin toisella kontaktilla";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Jos et ole varma lähettäjän henkilöllisyydestä, tarkista henkilötiedot alta.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Pyyntö";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Tarkista pyyntö";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Päivitä yhteystieto";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Tarkista pyyntö";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal saa ilmoituksen, että tämä henkilö saattaa lähettää roskapostia. Signal ei näe keskustelujen sisältöä.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Ilmoita roskapostista?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Ilmoita roskapostista";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Ilmoitettu roskapostista.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Ilmoitettu roskapostista ja estetty.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Sallitaanko henkilön %1$@ lähettää sinulle viestejä ja nähdä nimesi ja kuvasi? Olet aiemmin poistanut tämän henkilön.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Ilmoita…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Poista esto";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Lisää napauttamalla";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Vaihtoi äskettäin profiilinimensä %1$@ nimeksi %2$@.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ on äskettäin vaihtanut profiilinsa nimen, ennen: %2$@, nyt: %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ohita";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi ja mobiiliverkko";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Äänipuhelu";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Valitse yhteystieto tai ryhmä, jonka kanssa puhelu aloitetaan.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "Uusi puhelu";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Viesti";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "Uusi puhelu";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Videopuhelu";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Etsi puhelinnumerolla";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Etsi käyttäjänimellä";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Uusi ryhmä";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Valitse ryhmä";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Haku";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Etsi käyttäjää";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Etsi puhelinnumerolla";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Nimeä tarina";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Etsi yhteystietoja puhelinnumerolla";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Etsi kontakteja käyttäjänimellä";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Ei yhteisiä ryhmiä";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Ei kukaan";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Puhelinnumerosi ei näy kenellekään, ellei hän ole tallentanut sitä puhelimensa yhteystietoihin.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Puhelinnumerosi ei näy kenellekään.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5414,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Tietoja (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ muutti profiilinimensä %2$@ nimeksi %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ muutti profiilinsa nimen %2$@ nimeksi %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ muutti profiilinimekseen %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ muutti profiilinsa nimeksi %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Nimi";
@@ -5318,7 +5450,7 @@
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR-koodi tai linkki";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Käyttäjätunnus";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Käyttäjänimi";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Sukunimi on liian pitkä.";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Käyttäjänimi, QR-koodi ja linkki eivät näy profiilissasi. Jaa käyttäjänimesi vain henkilöille, joihin luotat.";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Ihmiset voivat nyt lähettää sinulle viestejä valinnaisella käyttäjänimelläsi, joten sinun ei tarvitse antaa puhelinnumeroasi.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Välityspalvelimen osoite";
@@ -5731,6 +5866,48 @@
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Turvanumerosi käyttäjän %1$@ kanssa on vaihtunut. Saatat halua varmentaa sen.";
 
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Turvallisuusvinkkejä";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "Jos sinulle tuntematon viestittää kryptovaluutoista (esim. Bitcoinista) tai taloudellisesta mahdollisuudesta, ole varovainen – viesti on todennäköisesti roskapostia.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "Kryptovaluutta- tai muut rahahuijaukset";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Varo yrityksiä tai virastoja, jotka ottavat sinuun yhteyttä. Viestit, joissa mainitaan esim. verovirasto tai logistiikkayhtiö, voivat olla roskapostia.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Väärennetyt yritykset ja organisaatiot";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Tarkista pyyntö huolellisesti. Yksikään kontakteistasi tai ihmisistä, joiden kanssa keskustelet, ei ole tässä ryhmässä. Tässä muutamia asioita, joita kiinnittää varoa:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "Turvallisuusvinkkejä";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Ole varovainen vastaanottaessasi viestipyyntöjä tuntemattomilta henkilöiltä. Varo seuraavia:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Ole varovainen tuntemattomien lähettämissä viesteissä, joissa on linkkejä verkkosivustoille. Älä koskaan käy viestin linkeissä, jos et luota sen lähettäjään.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Viestit, joissa on linkkejä";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Herättääkseen mielenkiintosi roskapostittajat aloittavat usein yksinkertaisella viestillä, kuten ”Hei”. Jos vastaat, he jatkavat sitouttamista.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Epämääräisiä tai merkityksettömiä viestejä";
+
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Skannaa yhteystietosi laitteessa näkyvä QR-koodi.";
 
@@ -5768,7 +5945,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Avaa Signalin lukitus";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nimi, käyttäjätunnus tai numero";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nimi, käyttäjänimi tai numero";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Etsi nimellä tai numerolla";
@@ -6020,10 +6197,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Sovelluskuvake";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Näytä yhteystietoihin tallennetut yhteystietokuvat.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Näytä järjestelmän yhteystietoihin tallennetut kuvat.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Järjestelmän yhteystietokuvat";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Käytä järjestelmän yhteystietojen kuvia";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Teema";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Jos haluat muuttaa tätä asetusta, määritä Kuka näkee numeroni -asetukseksi Ei kukaan.";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kuka voi löytää minut puhelinnumerolla";
 
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Tarkastelukerrat pois käytöstä";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Tilaajatunnus kopioitu leikepöydälle";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Lahjoittajan tunnus kopioitu leikepöydälle";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Turvanumerosi yhteystiedon %1$@ kanssa täsmää. Voit nyt merkitä tämän yhteystiedon varmennetuksi.";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR-koodit ja linkit";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Puhelinnumeroasi ei enää jaeta keskusteluissa. Jos numerosi on tallennettu ystäväsi yhteystietoihin, hän näkee sen edelleen.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Puhelinnumeron yksityisyys";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "Uusia tapoja pitää yhteyttä";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Ihmiset voivat nyt lähettää sinulle viestejä valinnaisella käyttäjänimelläsi, joten sinun ei tarvitse antaa puhelinnumeroasi. Käyttäjänimi ei näy profiilissasi.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Käyttäjänimet";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Palauta alkuasetuksiin";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Jos nollaat QR-koodin, nykyinen QR-koodisi ja linkkisi eivät enää toimi.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Jos palautat QR-koodin ja linkin, nykyinen QR-koodi ja linkki eivät enää toimi.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "QR-koodisi ja linkkisi on palautettu oletusasetukseen ja uusi QR-koodi ja linkki on luotu.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Jaa";
@@ -7721,7 +7907,7 @@
 "USERNAME_LINK_TOOLTIP_TITLE" = "Jaa käyttäjänimesi";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "Käyttäjätunnusta etsiessä tapahtui virhe. Yritä uudelleen myöhemmin.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "Käyttäjänimeä etsiessä tapahtui virhe. Yritä uudelleen myöhemmin.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ ei ole kelvollinen käyttäjänimi. Varmista, että olet syöttänyt koko käyttäjänimen ja sen numerosarjan.";
@@ -7730,10 +7916,10 @@
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Virheellinen käyttäjänimi";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
-"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Tämä käyttäjänimilinkki ei ole enää kelvollinen.";
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Tämä käyttäjänimen linkki ei ole enää kelvollinen.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ei ole Signalin käyttäjä. Varmista, että olet syöttänyt koko käyttäjätunnuksen.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ei ole Signalin käyttäjä. Varmista, että olet syöttänyt koko käyttäjänimen.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Käyttäjää ei löydy";
@@ -7745,19 +7931,19 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "QR-koodisi ja linkkisi on palautettu oletusasetukseen ja käyttäjänimesi on %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Käyttäjänimi ei voi alkaa numerolla.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Käyttäjänimi ei voi alkaa numerolla";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Käyttäjänimen vaihtaminen nollaa nykyisen QR-koodisi ja linkkisi. Oletko varma?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Käyttäjänimien avulla muut voivat lähettää sinulle viestejä ilman puhelinnumeroasi. Käyttäjänimi on liitetty numerosarjaan osoitteesi yksityisyyden suojaamiseksi. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Käyttäjänimi yhdistetään aina numerosarjaan. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Valitse käyttäjänimi";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Käyttäjänimet voivat sisältää vain merkkejä a–z, 0–9 ja _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Käyttäjätunnukset voivat sisältää vain merkkejä a–z, 0–9 ja _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Virheellinen käyttäjänimi, anna vähintään 2 numeroa";
@@ -7769,7 +7955,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Mikä tämä numero on?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Tämä käyttäjänimi ei ole saatavilla.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Tämä käyttäjänimi ei ole saatavilla";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Liian monta yritystä, yritä myöhemmin uudelleen";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Käyttäjänimi";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Käyttäjänimi";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Käyttäjänimessä on oltava vähintään %1$@ merkkiä.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Käyttäjänimet eivät voi päättyä numeroihin 00. Kokeile toista numeroa väliltä 1–9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Numero ei voi olla 00. Anna numero väliltä 1–9";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Internet-yhteys vaaditaan käyttäjänimen päivittämiseen.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Laitteen nimi ei voi olla tyhjä";

@@ -15,6 +15,8 @@ protocol UsernameLinkScanDelegate: AnyObject {
 }
 
 class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChildController {
+    var preferredNavigationBarStyle: OWSNavigationBarStyle { .blur }
+
     /// Represents an item selected from the image picker, intended to contain a
     /// username link QR code.
     ///

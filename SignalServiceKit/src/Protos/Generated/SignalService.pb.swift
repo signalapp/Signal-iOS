@@ -2631,6 +2631,15 @@ struct SignalServiceProtos_SyncMessage {
   /// Clears the value of `callEvent`. Subsequent reads from it will return its default value.
   mutating func clearCallEvent() {_uniqueStorage()._callEvent = nil}
 
+  var callLogEvent: SignalServiceProtos_SyncMessage.CallLogEvent {
+    get {return _storage._callLogEvent ?? SignalServiceProtos_SyncMessage.CallLogEvent()}
+    set {_uniqueStorage()._callLogEvent = newValue}
+  }
+  /// Returns true if `callLogEvent` has been explicitly set.
+  var hasCallLogEvent: Bool {return _storage._callLogEvent != nil}
+  /// Clears the value of `callLogEvent`. Subsequent reads from it will return its default value.
+  mutating func clearCallLogEvent() {_uniqueStorage()._callLogEvent = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Sent {
@@ -3248,6 +3257,8 @@ struct SignalServiceProtos_SyncMessage {
       case delete // = 2
       case block // = 3
       case blockAndDelete // = 4
+      case spam // = 5
+      case blockAndSpam // = 6
 
       init() {
         self = .unknown
@@ -3260,6 +3271,8 @@ struct SignalServiceProtos_SyncMessage {
         case 2: self = .delete
         case 3: self = .block
         case 4: self = .blockAndDelete
+        case 5: self = .spam
+        case 6: self = .blockAndSpam
         default: return nil
         }
       }
@@ -3271,6 +3284,8 @@ struct SignalServiceProtos_SyncMessage {
         case .delete: return 2
         case .block: return 3
         case .blockAndDelete: return 4
+        case .spam: return 5
+        case .blockAndSpam: return 6
         }
       }
 
@@ -3631,6 +3646,63 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _newE164: String? = nil
   }
 
+  struct CallLogEvent {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var type: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum {
+      get {return _type ?? .cleared}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var timestamp: UInt64 {
+      get {return _timestamp ?? 0}
+      set {_timestamp = newValue}
+    }
+    /// Returns true if `timestamp` has been explicitly set.
+    var hasTimestamp: Bool {return self._timestamp != nil}
+    /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
+    mutating func clearTimestamp() {self._timestamp = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case cleared // = 0
+      case markedAsRead // = 1
+
+      init() {
+        self = .cleared
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .cleared
+        case 1: self = .markedAsRead
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .cleared: return 0
+        case .markedAsRead: return 1
+        }
+      }
+
+    }
+
+    init() {}
+
+    fileprivate var _type: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum? = nil
+    fileprivate var _timestamp: UInt64? = nil
+  }
+
   init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
@@ -3663,6 +3735,10 @@ extension SignalServiceProtos_SyncMessage.CallEvent.Direction: CaseIterable {
 }
 
 extension SignalServiceProtos_SyncMessage.CallEvent.Event: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -3955,15 +4031,6 @@ struct SignalServiceProtos_ContactDetails {
   /// Clears the value of `avatar`. Subsequent reads from it will return its default value.
   mutating func clearAvatar() {self._avatar = nil}
 
-  var blocked: Bool {
-    get {return _blocked ?? false}
-    set {_blocked = newValue}
-  }
-  /// Returns true if `blocked` has been explicitly set.
-  var hasBlocked: Bool {return self._blocked != nil}
-  /// Clears the value of `blocked`. Subsequent reads from it will return its default value.
-  mutating func clearBlocked() {self._blocked = nil}
-
   var expireTimer: UInt32 {
     get {return _expireTimer ?? 0}
     set {_expireTimer = newValue}
@@ -4021,7 +4088,6 @@ struct SignalServiceProtos_ContactDetails {
   fileprivate var _aci: String? = nil
   fileprivate var _name: String? = nil
   fileprivate var _avatar: SignalServiceProtos_ContactDetails.Avatar? = nil
-  fileprivate var _blocked: Bool? = nil
   fileprivate var _expireTimer: UInt32? = nil
   fileprivate var _inboxPosition: UInt32? = nil
 }
@@ -4454,6 +4520,8 @@ extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: @unchecked Sendabl
 extension SignalServiceProtos_SyncMessage.CallEvent.Direction: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.Event: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.PniChangeNumber: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.CallLogEvent: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer.Flags: @unchecked Sendable {}
 extension SignalServiceProtos_GroupContextV2: @unchecked Sendable {}
@@ -7024,6 +7092,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     16: .same(proto: "viewed"),
     18: .same(proto: "pniChangeNumber"),
     19: .same(proto: "callEvent"),
+    21: .same(proto: "callLogEvent"),
   ]
 
   fileprivate class _StorageClass {
@@ -7044,6 +7113,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _viewed: [SignalServiceProtos_SyncMessage.Viewed] = []
     var _pniChangeNumber: SignalServiceProtos_SyncMessage.PniChangeNumber? = nil
     var _callEvent: SignalServiceProtos_SyncMessage.CallEvent? = nil
+    var _callLogEvent: SignalServiceProtos_SyncMessage.CallLogEvent? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -7067,6 +7137,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _viewed = source._viewed
       _pniChangeNumber = source._pniChangeNumber
       _callEvent = source._callEvent
+      _callLogEvent = source._callLogEvent
     }
   }
 
@@ -7102,6 +7173,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._viewed) }()
         case 18: try { try decoder.decodeSingularMessageField(value: &_storage._pniChangeNumber) }()
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._callEvent) }()
+        case 21: try { try decoder.decodeSingularMessageField(value: &_storage._callLogEvent) }()
         default: break
         }
       }
@@ -7165,6 +7237,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._callEvent {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
       } }()
+      try { if let v = _storage._callLogEvent {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7191,6 +7266,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._viewed != rhs_storage._viewed {return false}
         if _storage._pniChangeNumber != rhs_storage._pniChangeNumber {return false}
         if _storage._callEvent != rhs_storage._callEvent {return false}
+        if _storage._callLogEvent != rhs_storage._callLogEvent {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -7895,6 +7971,8 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: Swift
     2: .same(proto: "DELETE"),
     3: .same(proto: "BLOCK"),
     4: .same(proto: "BLOCK_AND_DELETE"),
+    5: .same(proto: "SPAM"),
+    6: .same(proto: "BLOCK_AND_SPAM"),
   ]
 }
 
@@ -8176,6 +8254,55 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
   }
 }
 
+extension SignalServiceProtos_SyncMessage.CallLogEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallLogEvent"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "type"),
+    2: .same(proto: "timestamp"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._timestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.CallLogEvent, rhs: SignalServiceProtos_SyncMessage.CallLogEvent) -> Bool {
+    if lhs._type != rhs._type {return false}
+    if lhs._timestamp != rhs._timestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "CLEARED"),
+    1: .same(proto: "MARKED_AS_READ"),
+  ]
+}
+
 extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AttachmentPointer"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -8359,7 +8486,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     9: .same(proto: "aci"),
     2: .same(proto: "name"),
     3: .same(proto: "avatar"),
-    7: .same(proto: "blocked"),
     8: .same(proto: "expireTimer"),
     10: .same(proto: "inboxPosition"),
   ]
@@ -8373,7 +8499,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       case 1: try { try decoder.decodeSingularStringField(value: &self._contactE164) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self._name) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._avatar) }()
-      case 7: try { try decoder.decodeSingularBoolField(value: &self._blocked) }()
       case 8: try { try decoder.decodeSingularUInt32Field(value: &self._expireTimer) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._aci) }()
       case 10: try { try decoder.decodeSingularUInt32Field(value: &self._inboxPosition) }()
@@ -8396,9 +8521,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     try { if let v = self._avatar {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     } }()
-    try { if let v = self._blocked {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
-    } }()
     try { if let v = self._expireTimer {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 8)
     } }()
@@ -8416,7 +8538,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     if lhs._aci != rhs._aci {return false}
     if lhs._name != rhs._name {return false}
     if lhs._avatar != rhs._avatar {return false}
-    if lhs._blocked != rhs._blocked {return false}
     if lhs._expireTimer != rhs._expireTimer {return false}
     if lhs._inboxPosition != rhs._inboxPosition {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

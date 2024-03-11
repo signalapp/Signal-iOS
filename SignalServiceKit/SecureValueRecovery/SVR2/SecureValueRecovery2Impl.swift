@@ -125,12 +125,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         else {
             return true
         }
-        return lastAppVersion != appVersion.currentAppVersion4
+        return lastAppVersion != appVersion.currentAppVersion
     }
 
     private func didRefreshCredentialInCurrentVersion(tx: DBWriteTransaction) {
         self.kvStore.setString(
-            appVersion.currentAppVersion4,
+            appVersion.currentAppVersion,
             key: Self.periodicCredentialRefreshAppVersionKey,
             transaction: tx
         )

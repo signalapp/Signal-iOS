@@ -14,4 +14,5 @@ public protocol CVItemViewModel: AnyObject {
     var stickerAttachment: TSAttachmentStream? { get }
     var stickerMetadata: StickerMetadata? { get }
     var isGiftBadge: Bool { get }
+    var hasRenderableContent: Bool { get }
 }

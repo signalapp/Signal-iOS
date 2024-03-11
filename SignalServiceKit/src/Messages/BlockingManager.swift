@@ -93,7 +93,6 @@ public class BlockingManager: NSObject {
 extension BlockingManager {
 
     // MARK: Readers
-
     @objc
     public func isAddressBlocked(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         guard !address.isLocalAddress else {
@@ -124,7 +123,7 @@ extension BlockingManager {
         withCurrentState(transaction: transaction) { state in
             var addressSet = Set<SignalServiceAddress>()
             state.blockedPhoneNumbers.forEach {
-                let address = SignalServiceAddress(phoneNumber: $0)
+                let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: $0)
                 if address.isValid {
                     addressSet.insert(address)
                 }
@@ -232,7 +231,7 @@ extension BlockingManager {
 
                 // Refresh unblocked group.
                 if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-                    groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
+                    groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
                 }
             }
         }
@@ -487,7 +486,7 @@ extension BlockingManager {
 
             var blockedAddresses = [SignalServiceAddress]()
             blockedAddresses.append(contentsOf: newBlockedPhoneNumbers.lazy.compactMap { phoneNumber in
-                let address = SignalServiceAddress(phoneNumber: phoneNumber)
+                let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: phoneNumber)
                 return address.isValid ? address : nil
             })
             blockedAddresses.append(contentsOf: newBlockedAcis.map { SignalServiceAddress($0) })

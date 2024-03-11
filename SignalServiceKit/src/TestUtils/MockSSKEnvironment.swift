@@ -64,7 +64,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         )
         let attachmentDownloads = OWSAttachmentDownloads()
         let blockingManager = BlockingManager()
-        let contactsManager = FakeContactsManager()
+        let contactManager = FakeContactsManager()
         let dateProvider = Date.provider
         let earlyMessageManager = EarlyMessageManager()
         let groupsV2 = MockGroupsV2()
@@ -105,7 +105,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             appVersion: AppVersionImpl.shared,
             attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             earlyMessageManager: earlyMessageManager,
@@ -149,7 +149,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let receiptSender = ReceiptSender(
             kvStoreFactory: dependenciesBridge.keyValueStoreFactory,
-            signalServiceAddressCache: signalServiceAddressCache
+            recipientDatabaseTable: dependenciesBridge.recipientDatabaseTable
         )
         let typingIndicators = TypingIndicatorsImpl()
         let stickerManager = StickerManager()
@@ -185,9 +185,15 @@ public class MockSSKEnvironment: SSKEnvironment {
             db: dependenciesBridge.db,
             reachabilityManager: reachabilityManager
         )
+        let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
+            callRecordDeleteManager: dependenciesBridge.callRecordDeleteManager,
+            callRecordQuerier: dependenciesBridge.callRecordQuerier,
+            db: dependenciesBridge.db,
+            messageSenderJobQueue: messageSenderJobQueue
+        )
 
         super.init(
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             linkPreviewManager: linkPreviewManager,
             messageSender: messageSender,
             pendingReceiptRecorder: pendingReceiptRecorder,
@@ -244,7 +250,8 @@ public class MockSSKEnvironment: SSKEnvironment {
             notificationsManager: notificationsManager,
             messageSendLog: messageSendLog,
             messageSenderJobQueue: messageSenderJobQueue,
-            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue
+            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
+            callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue
         )
     }
 

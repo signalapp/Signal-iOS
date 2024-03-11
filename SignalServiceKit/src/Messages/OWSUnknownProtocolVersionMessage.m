@@ -50,7 +50,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     if (_unknownProtocolVersionMessageSchemaVersion < 1) {
         NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"senderId"];
         if (phoneNumber) {
-            _sender = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            _sender = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
         }
     }
 
@@ -95,6 +95,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
              infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
+                      serverGuid:(nullable NSString *)serverGuid
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                  protocolVersion:(NSUInteger)protocolVersion
                           sender:(nullable SignalServiceAddress *)sender
@@ -129,6 +130,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                infoMessageUserInfo:infoMessageUserInfo
                        messageType:messageType
                               read:read
+                        serverGuid:serverGuid
                unregisteredAddress:unregisteredAddress];
 
     if (!self) {
@@ -167,7 +169,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
         }
     }
 
-    NSString *senderName = [self.contactsManager displayNameForAddress:self.sender transaction:transaction];
+    NSString *senderName = [self.contactManagerObjC displayNameStringForAddress:self.sender transaction:transaction];
 
     if (self.isProtocolVersionUnknown) {
         if (senderName.length > 0) {

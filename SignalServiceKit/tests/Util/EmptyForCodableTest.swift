@@ -75,5 +75,3 @@ final class EmptyForCodableTest: XCTestCase {
         XCTAssertEqual(decodedAsEmpty.prop4, [:])
     }
 }
-
-extension Dictionary: EmptyInitializable {}

@@ -608,13 +608,53 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d člen skupiny má podobné meno.</string>
+			<string>%1$d člen skupiny má rovnaké meno.</string>
 			<key>few</key>
-			<string>%1$d členovia skupiny majú podobné meno.</string>
+			<string>%1$d členovia skupiny majú rovnaké meno.</string>
 			<key>many</key>
-			<string>%1$d člena skupiny má podobné meno.</string>
+			<string>%1$d člena skupiny má rovnaké meno.</string>
 			<key>other</key>
-			<string>%1$d členov skupiny má podobné meno.</string>
+			<string>%1$d členov skupiny má rovnaké meno.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>V tejto skupine sa vyskytol %1$d konflikt mien.</string>
+			<key>few</key>
+			<string>V tejto skupine sa vyskytli %1$d konflikty mien.</string>
+			<key>many</key>
+			<string>V tejto skupine sa vyskytlo %1$d konfliktu mien.</string>
+			<key>other</key>
+			<string>V tejto skupine sa vyskytlo %1$d konfliktov mien.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d člen</string>
+			<key>few</key>
+			<string>%1$d členovia</string>
+			<key>many</key>
+			<string>%1$d člena</string>
+			<key>other</key>
+			<string>%1$d členov</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -628,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d člen skupiny má podobné meno, skontrolujte člena nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>V tejto skupine sa vyskytol %1$d konflikt mien. Overte členov nižšie alebo vykonajte akciu.</string>
 			<key>few</key>
-			<string>%1$d členovia skupiny majú podobné meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>V tejto skupine sa vyskytli %1$d konflikty mien. Overte členov nižšie alebo vykonajte akciu.</string>
 			<key>many</key>
-			<string>%1$d člena skupiny má podobné meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>V tejto skupine sa vyskytlo %1$d konfliktu mien. Overte členov nižšie alebo vykonajte akciu.</string>
 			<key>other</key>
-			<string>%1$d členov skupiny má podobné meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>V tejto skupine sa vyskytlo %1$d konfliktov mien. Overte členov nižšie alebo vykonajte akciu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -648,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d člen skupiny má rovnaké meno, skontrolujte člena nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%1$d člen skupiny má rovnaké meno. Skontrolujte člena nižšie alebo vykonajte akciu.</string>
 			<key>few</key>
-			<string>%1$d členovia skupiny majú rovnaké meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%1$d členovia skupiny majú rovnaké meno. Skontrolujte členov nižšie alebo vykonajte akciu.</string>
 			<key>many</key>
-			<string>%1$d člena skupiny má rovnaké meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%1$d člena skupiny má rovnaké meno. Skontrolujte členov nižšie alebo vykonajte akciu.</string>
 			<key>other</key>
-			<string>%1$d členov skupiny má rovnaké meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%1$d členov skupiny má rovnaké meno. Skontrolujte členov nižšie alebo vykonajte akciu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1515,6 +1555,26 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; pozretia</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; pozretí</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Používateľské mená musia obsahovať minimálne %1$d znak</string>
+			<key>few</key>
+			<string>Používateľské mená musia obsahovať minimálne %1$d znaky</string>
+			<key>many</key>
+			<string>Používateľské mená musia obsahovať minimálne %1$d znaku</string>
+			<key>other</key>
+			<string>Používateľské mená musia obsahovať minimálne %1$d znakov</string>
 		</dict>
 	</dict>
 </dict>

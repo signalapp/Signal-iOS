@@ -110,7 +110,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             return
         }
 
-        let currentAppVersion4 = appVersion.currentAppVersion4
+        let currentAppVersion = appVersion.currentAppVersion
 
         enum ShouldUpdate {
             case no
@@ -158,14 +158,14 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             }
             // Check if the app version has changed.
             let lastUpdateAppVersion = self.kvStore.getString(Keys.lastUpdateAppVersion, transaction: tx)
-            if lastUpdateAppVersion != currentAppVersion4 {
+            if lastUpdateAppVersion != currentAppVersion {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
                     lastAttributeRequestDate: lastAttributeRequestDate,
                     registrationState: registrationState
                 )
             }
-            Logger.info("Skipping; lastAppVersion: \(String(describing: lastUpdateAppVersion)), currentAppVersion4: \(currentAppVersion4).")
+            Logger.info("Skipping; lastAppVersion: \(String(describing: lastUpdateAppVersion)), currentAppVersion: \(currentAppVersion).")
             return .no
         }
         switch shouldUpdate {
@@ -186,7 +186,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             _ = profileManager.fetchLocalUsersProfile(mainAppOnly: true, authedAccount: authedAccount)
 
             await db.awaitableWrite { tx in
-                self.kvStore.setString(currentAppVersion4, key: Keys.lastUpdateAppVersion, transaction: tx)
+                self.kvStore.setString(currentAppVersion, key: Keys.lastUpdateAppVersion, transaction: tx)
                 self.kvStore.setObject(reportedDeviceCapabilities.requestParameters, key: Keys.lastUpdateDeviceCapabilities, transaction: tx)
                 // Clear the update request unless a new update has been requested
                 // while this update was in flight.

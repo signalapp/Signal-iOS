@@ -235,7 +235,7 @@ class StoryItemMediaView: UIView {
                 }
             }
         case .text(let attachment):
-            switch attachment.textContent {
+            switch attachment.textAttachment.textContent {
             case .empty:
                 glyphCount = nil
             case .styled(let text, _):
@@ -250,7 +250,7 @@ class StoryItemMediaView: UIView {
 
             // If a text attachment includes a link preview, play
             // for an additional 2s
-            if attachment.preview != nil { duration += 2 }
+            if attachment.textAttachment.preview != nil { duration += 2 }
         }
 
         // If we have a glyph count, increase the duration to allow it to be readable
@@ -278,9 +278,13 @@ class StoryItemMediaView: UIView {
             size: CGSize(square: 60)
         )
         guard downloadHitRegion.contains(gesture.location(in: self)) else { return false }
-        return item.startAttachmentDownloadIfNecessary { [weak self] in
+        guard let promise = item.startAttachmentDownloadIfNecessary() else {
+            return false
+        }
+        promise.observe(on: DispatchQueue.main) { [weak self] _ in
             self?.updateMediaView()
         }
+        return true
     }
 
     // MARK: - Author Row
@@ -1031,7 +1035,7 @@ class StoryItem: NSObject {
 
         case pointer(Pointer)
         case stream(Stream)
-        case text(TextAttachment)
+        case text(PreloadedTextAttachment)
     }
     var attachment: Attachment
 
@@ -1063,27 +1067,25 @@ extension StoryItem {
     // MARK: - Downloading
 
     @discardableResult
-    func startAttachmentDownloadIfNecessary(completion: (() -> Void)? = nil) -> Bool {
-        guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.attachment.state) else { return false }
+    func startAttachmentDownloadIfNecessary() -> Promise<Void>? {
+        guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.attachment.state) else {
+            return nil
+        }
 
-        attachmentDownloads.enqueueDownloadOfAttachments(
+        return attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: message.uniqueId,
-            attachmentGroup: .allAttachmentsIncoming,
             downloadBehavior: .bypassAll,
-            touchMessageImmediately: true) { _ in
-                Logger.info("Successfully re-downloaded attachment.")
-                DispatchQueue.main.async { completion?() }
-            } failure: { error in
-                Logger.warn("Failed to redownload attachment with error: \(error)")
-                DispatchQueue.main.async { completion?() }
-            }
-
-        return true
+            touchMessageImmediately: true
+        )
     }
 
     var isPendingDownload: Bool {
-        guard case .pointer = attachment else { return false }
-        return true
+        switch attachment {
+        case .pointer:
+            return true
+        case .stream, .text:
+            return false
+        }
     }
 }
 

@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Gambar";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Foto";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Panggilan";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Panggilan Masuk";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Panggilan Tidak Terjawab";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Panggilan Keluar";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Hapus";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Tindakan ini akan menghapus semua riwayat panggilan secara permanen.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Hapus riwayat panggilan?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Hapus";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Semua";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Panggilan Tidak Terjawab";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Buka Obrolan";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Gabung Panggilan Audio";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Bergabung";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Gabung Panggilan Video";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Tidak ada panggilan tidak terjawab";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Tidak ada panggilan baru";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Mulai dengan menelepon teman";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Kembali ke Panggilan";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Kembali";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "Tidak ada hasil ditemukan untuk '%1$@'";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Pilih";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Pilih";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Panggilan Audio";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Panggilan Video";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Ambil gambar dan kemudian kirimkan";
 
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Cari dengan Nama Pengguna";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Buka pengaturan";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Anda dapat mengaktifkan akses kontak pada pengaturan iOS untuk melihat siapa saja kontak Anda yang merupakan pengguna Signal.";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Tautkan Perangkat Baru";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ diblokir";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ ada di kontak sistem Anda";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Tidak ada pesan langsung dengan %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Permintaan pesan tertunda";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Koneksi Signal";
@@ -1288,15 +1369,6 @@
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Tambahkan ke Kontak";
 
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admin";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Semua";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Ternonaktifkan";
-
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pilih siapa yang dapat menyunting nama grup, foto, deskripsi, dan penghitung waktu penghilangan pesan.";
 
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Lencana";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Anda tidak lagi dapat menerima pesan atau pembaruan dari pengguna ini.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Anda tidak akan lagi menerima pesan dan pembaruan dari grup ini.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blokir Grup";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Blokir Pengguna";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Panggilan suara masuk";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Panggilan video masuk";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Panggilan suara tidak terjawab";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Panggilan video tidak terjawab";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Panggilan suara keluar";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Panggilan video keluar";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Sunting";
@@ -1425,6 +1509,9 @@
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Keluarkan %1$@ dari grup?";
+
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Laporkan spam";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Hapus dari Peran Admin";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Gagal mengunduh lampiran.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Gagal mengunggah lampiran.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Sebuah pesan dari %1$@ tidak dapat diterima";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Temukan Informasi Rekening Anda";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Masukkan nama pengguna diikuti dengan titik dan set angka.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Nama Pengguna";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Cari dengan Nama Pengguna";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Tandai sebagai Terverifikasi";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Anggota-anggota";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Ketuk untuk meninjau";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Anggota";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Tinjau Anggota";
 
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Anda mengirimi %1$@ permintaan untuk mengaktifkan Pembayaran.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "Dilaporkan sebagai spam";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal telah diberi tahu bahwa orang ini mungkin mengirim spam. Signal tidak dapat melihat isi obrolan apa pun.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Spam dilaporkan";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Undang Kawan ke Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Selanjutnya";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Cari";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokir dan Hapus";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Laporkan Spam dan Blokir";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Hapus dan Keluar dari Grup?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Tinjau permintaan dengan hati-hati. Signal menemukan kontak lain dengan nama yang sama.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Kontak Anda";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Nama orang ini sama seperti satu kontak lain";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Jika Anda tidak yakin dari siapa permintaan ini, tinjau kontak di bawah dan ambil tindakan.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Permintaan";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Lihat permintaan";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Perbarui kontak";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Lihat permintaan";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal akan diberi tahu bahwa orang ini mungkin mengirim spam. Signal tidak dapat melihat isi obrolan apa pun.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Laporkan spam?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Laporkan spam";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Dilaporkan sebagai spam.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Dilaporkan sebagai spam dan diblokir.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Izinkan %1$@ mengirimi Anda pesan dan bagikan nama serta foto Anda dengannya? Anda telah menghapus orang ini sebelumnya.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Laporkan…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Buka blokir";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Ketuk untuk menambahkan";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Baru saja mengubah nama profil dari %1$@ ke %2$@.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ baru-baru ini mengubah nama profilnya dari %2$@ jadi %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Lewati";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi dan Seluler";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Panggilan Audio";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Pilih kontak atau grup untuk memulai panggilan baru.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "Panggilan baru";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Pesan";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "Panggilan baru";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Panggilan Video";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Temukan lewat Nomor Telepon";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Cari dengan Nama Pengguna";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Grup Baru";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Pilih Grup";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Cari";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Temukan Pengguna";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Temukan lewat Nomor Telepon";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Beri Nama Cerita";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Temukan Kontak dengan Nomor Telepon";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Cari Kontak dengan Nama Pengguna";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Tidak ada grup yang sama";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Tak seorangpun";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Nomor telepon Anda tidak akan terlihat oleh siapa pun kecuali jika nomor telepon tersebut tersimpan di kontak ponsel mereka.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Nomor telepon Anda tidak akan terlihat oleh siapa pun.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@%2$@";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Nama pengguna, kode QR, dan tautan Anda tidak terlihat di profil. Hanya bagikan nama pengguna ke orang yang Anda percayai.";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Orang lain kini bisa mengirimi Anda pesan lewat nama pengguna opsional, jadi Anda tidak perlu memberikan nomor telepon.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Alamat proksi";
@@ -5730,6 +5865,48 @@
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Nomor keamanan Anda dengan %1$@ telah berubah. Anda mungkin mau memverifikasi.";
+
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Tips Keamanan";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "Jika orang yang tidak dikenal mengirim pesan tentang mata uang kripto (seperti Bitcoin) atau peluang finansial, waspadalah—mungkin itu spam.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "Penipuan uang atau kripto";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Waspadai perusahaan atau badan pemerintahan yang menghubungi Anda. Pesan yang melibatkan agen pajak, kurir, atau lainnya bisa jadi adalah spam.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Bisnis dan institusi palsu";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Tinjau permintaan ini dengan cermat. Di grup ini tidak ada yang pernah mengobrol dengan Anda atau tersimpan sebagai kontak Anda. Berikut beberapa hal yang perlu diwaspadai:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "Tips Keamanan";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Berhati-hatilah saat menerima permintaan pesan dari orang tak dikenal. Waspadai:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Waspadai pesan dari orang tak dikenal yang menyertakan tautan ke situs web. Jangan pernah buka tautan dari orang yang tidak Anda percaya.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Pesan berisi tautan";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Penipu sering mengawali dengan pesan sederhana seperti \"Hai\" untuk dapatkan perhatian. Jika direspons, mereka bisa memancing Anda untuk berinteraksi lebih jauh.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Pesan tidak jelas atau tidak relevan";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Pindai kode QR pada perangkat kontak Anda";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Untuk mengubahnya, tetapkan pengaturan \"Siapa Bisa Melihat Nomor Saya\" ke opsi \"Tidak Ada\".";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Siapa Bisa Menemukan Saya dengan Nomor";
 
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Fitur Dilihat nonaktif";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Id pelanggan disalin ke papan klip";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID donor disalin ke papan klip";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Nomor keamanan Anda sesuai dengan %1$@. Anda dapat menandai kontak ini sebagai terverifikasi.";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "Kode QR dan Tautan";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Nomor telepon Anda tidak lagi terlihat di obrolan. Jika nomor Anda disimpan di kontak teman, mereka akan tetap melihatnya.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Privasi Nomor Telepon";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "Cara Baru untuk Terhubung";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Orang lain kini bisa mengirimi Anda pesan lewat nama pengguna opsional, jadi Anda tidak perlu memberikan nomor telepon. Nama pengguna tidak terlihat di profil Anda.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Nama pengguna";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Atur ulang";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Jika Anda mereset kode QR, tautan dan kode QR lama Anda tidak akan berfungsi lagi.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Jika Anda mereset kode QR dan tautan, kode QR dan tautan lama Anda tidak akan berlaku lagi.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Kode QR dan tautan Anda telah direset dan kode QR serta tautan baru telah dibuat.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Bagikan";
@@ -7745,19 +7931,19 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Kode QR dan tautan Anda telah direset dan nama pengguna Anda adalah %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Nama pengguna tidak boleh dimulai dengan angka.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Nama pengguna tidak boleh dimulai dengan angka";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Jika Anda mengubah nama pengguna, tautan dan kode QR yang ada akan direset. Anda yakin?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Dengan nama pengguna, orang lain dapat mengirimi Anda pesan tanpa memerlukan nomor telepon Anda. Nama pengguna dipasangkan dengan serangkaian nomor untuk membantu memastikan alamat Anda tetap privat. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Nama pengguna selalu digabungkan dengan serangkaian angka. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Pilih nama pengguna";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Nama pengguna hanya boleh terdiri dari karakter a-z, 0-9, dan _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Nama pengguna hanya boleh terdiri dari karakter a-z, 0-9, dan _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Nama pengguna tidak valid, masukkan minimal 2 digit";
@@ -7769,7 +7955,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Nomor apa ini?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Nama pengguna ini tidak tersedia.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Nama pengguna ini tidak tersedia";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Terlalu banyak percobaan, coba lagi nanti";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Nama Pengguna";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Nama Pengguna";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Nama pengguna harus terdiri dari minimal %1$@ karakter.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Nama pengguna tidak boleh diakhiri dengan 00. Coba angka lain antara 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Nomor tidak boleh 00. Masukkan angka antara 1–9";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Nama pengguna hanya bisa diubah saat terhubung ke internet.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Nama perangkat tidak boleh kosong";

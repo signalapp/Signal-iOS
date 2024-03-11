@@ -428,7 +428,35 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d人のメンバーが似た名前です。</string>
+			<string>%1$d人のグループメンバーが同じ名前です。</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>グループ内に、%1$d件の名前の重複があります。</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d人</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -442,7 +470,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>以下の%1$d人のメンバーが似た名前です。グループ内でメンバーを区別できるように、対応してください。</string>
+			<string>グループ内に、%1$d件の名前の重複があります。以下のメンバーを確認するか、対処してください。</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -456,7 +484,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>以下の%1$d人のメンバーが似た名前です。グループ内でメンバーを区別できるように、対応してください。</string>
+			<string>%1$d名のグループメンバーが同じ名前です。以下のメンバーを確認するか、対処してください。</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1059,6 +1087,20 @@
 			<string>d</string>
 			<key>other</key>
 			<string>閲覧数 &lt;bold&gt;%1$d&lt;/bold&gt;</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>ユーザーネームは%1$d字以上にしてください</string>
 		</dict>
 	</dict>
 </dict>

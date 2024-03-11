@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "이미지";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "사진";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "전화";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "수신";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "부재중";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "발신";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "지우기";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "모든 통화 기록을 영구 삭제합니다.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "통화 기록을 지울까요?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "삭제";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "전체";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "부재중";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "대화로 이동";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "음성 통화 시작";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "참가";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "영상 통화 시작";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "부재중 전화 없음";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "최근 통화 없음";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "친구에게 전화를 걸어 시작하세요.";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "전화로 돌아가기";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "반환";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "'%1$@' 검색 결과 없음";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "선택";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "선택";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "음성 통화";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "영상 통화";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "정보";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "사진을 찍은 후 전송하세요";
 
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "사용자 이름으로 검색";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "설정 열기";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS 설정 앱에서 연락처 권한을 허용하면 내 연락처에서 누가 Signal을 사용하고 있는지 알 수 있습니다.";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "새 기기 연결";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ 님을 차단함";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ 님이 내 시스템 연락처에 있습니다.";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ 님이 내 기기 연락처에 있습니다.";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "%1$@ 님과 직접 주고받은 메시지가 없음";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "보류 중인 메시지 요청";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal 커넥션";
@@ -1286,16 +1367,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "기존 연락처에 추가";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "시스템 연락처에 추가";
-
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "관리자";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "모두";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "꺼짐";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "기기 연락처에 추가";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "그룹 이름, 사진, 설명 및 사라지는 메시지 타이머를 편집할 수 있는 사용자를 선택하세요.";
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "배지";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "이 사용자에게서 메시지 또는 새 소식을 받을 수 없게 됩니다.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "이 그룹에게서 메시지 또는 새 소식을 받을 수 없게 됩니다.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "그룹 차단";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "사용자 차단";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "수신 음성 통화";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "수신 영상 통화";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "부재중 음성 통화";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "부재중 영상 통화";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "발신 음성 통화";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "발신 영상 통화";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "수정";
@@ -1425,6 +1509,9 @@
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ 님을 그룹에서 제거하시겠습니까?";
+
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "스팸 신고";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "관리자 권한으로 제거";
@@ -1697,7 +1784,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "삭제";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "이 사용자를 내 시스템 연락처에서 삭제합니다. 검색 시 이 사용자가 표시되지 않습니다. 향후 해당 사용자가 메시지를 보내는 경우 메시지 요청이 수신됩니다.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "이 사용자를 내 기기 연락처에서 삭제합니다. 검색 시 이 사용자가 표시되지 않습니다. 향후 해당 사용자가 메시지를 보내는 경우 메시지 요청이 수신됩니다.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "연락처를 삭제하고 목록에서 제거할까요?";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "첨부 파일 다운로드에 실패했습니다.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "첨부 파일 업로드에 실패했습니다.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@ 님이 보낸 메시지를 받지 못했습니다.";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "계좌 정보를 찾으세요";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "사용자 이름 뒤에 마침표와 해당 세트 번호를 입력하세요.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "사용자 이름";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "사용자 이름으로 검색";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "검증으로 표시";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "멤버";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "탭하여 검토하세요.";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "멤버";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "멤버 검토";
 
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "%1$@ 님에게 결제를 활성화해달라는 요청을 보냈습니다.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "스팸으로 신고함";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal에 이 사람이 스팸을 보내는 것 같다는 알림이 전송되었습니다. Signal은 대화의 내용을 볼 수 없습니다.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "스팸으로 신고함";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Signal로 친구를 초대하세요.";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "더 보기";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "검색";
@@ -3674,10 +3779,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "링크 미리보기";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad에서는 더 이상 시스템 연락처 관리 기능을 사용할 수 없습니다. 시스템 연락처에 Signal 커넥션을 추가하려면 휴대폰에서 Signal을 여세요.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad에서는 더 이상 기기 연락처 관리 기능을 사용할 수 없습니다. 기기 연락처에 Signal 커넥션을 추가하려면 휴대폰에서 Signal을 여세요.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad에서는 더 이상 시스템 연락처 관리 기능이 지원되지 않습니다. 이 기기는 휴대폰의 Signal에 적용되는 모든 변경 내용을 계속해서 동기화합니다.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad에서는 더 이상 기기 연락처 관리 기능이 지원되지 않습니다. 이 기기는 휴대폰의 Signal에 적용되는 모든 변경 내용을 계속해서 동기화합니다.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "자세히 알아보기";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "차단 후 삭제";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "스팸 신고 및 차단";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "그룹을 삭제하고 나가시겠습니까?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "요청을 신중하게 검토하세요. Signal에서 같은 이름의 다른 연락처를 또 찾았습니다.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "내 연락처";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "이 사람의 이름이 연락처의 다른 사람과 이름이 같습니다.";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "요청을 보낸 사람이 누군지 모르겠다면 아래 연락처를 검토하고 작업을 수행하세요.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "요청";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "요청 검토";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "연락처 업데이트";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "요청 검토";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal에 이 사람이 스팸을 보내는 것 같다는 알림이 전송됩니다. Signal은 대화의 내용을 볼 수 없습니다.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "스팸으로 신고할까요?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "스팸 신고";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "스팸으로 신고했습니다.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "스팸으로 신고하고 차단했습니다.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@ 님이 내게 메시지를 보내도록 허용하고, 내 이름과 사진을 공유할까요? 이 사용자는 귀하가 이전에 제거한 사용자입니다.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "신고…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "차단 해제";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "탭하여 추가";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "최근에 프로필 이름을 %1$@에서 %2$@(으)로 변경했습니다.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ 님이 최근 프로필 이름을 %2$@에서 %3$@(으)로 변경했습니다.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "건너뛰기";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi 및 셀룰러";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "음성 통화";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "연락처 또는 그룹을 선택하여 새로운 통화를 시작하세요.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "새 통화";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "메시지";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "새 통화";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "영상 통화";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "전화번호로 찾기";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "사용자 이름으로 검색";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "새 그룹";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "그룹 선택";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "검색";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "사용자 찾기";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "전화번호로 찾기";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "스토리 이름 지정";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "전화번호로 연락처 찾기";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "사용자 이름으로 연락처 찾기";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "공통 그룹 없음";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "모두에게 금지";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "휴대폰 연락처에 내 전화번호를 저장한 사람을 제외하고 다른 사람에게 전화번호가 표시되지 않습니다.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "전화번호가 다른 사람에게 표시되지 않습니다.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "사용자 이름과 QR 코드, 링크가 프로필에 표시되지 않습니다. 신뢰하는 사람과만 사용자 이름을 공유하세요.";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "이제 나에게 메시지를 보낼 때 선택적 사용자 이름을 사용할 수 있으므로 다른 사람과 전화번호를 공유할 필요가 없습니다.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "프록시 주소";
@@ -5731,6 +5866,48 @@
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%1$@ 님과의 안전 번호가 변경되었습니다. 안전 번호를 검증해보세요.";
 
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "안전 팁";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "모르는 사람이 암호화폐(예: 비트코인) 또는 금융 기회에 관해 메시지 할 경우 조심하세요. 사기일 가능성이 높습니다.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "암호화폐 또는 금융 사기";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "비즈니스 또는 정부 기관에서 오는 연락을 조심하세요. 국세청, 배송 업체 등과 관련된 메시지는 스팸일 수 있습니다.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "가짜 비즈니스 또는 기관";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "이 요청을 신중하게 검토하세요. 내 연락처 또는 나와 대화한 사람이 이 그룹에 없습니다. 다음에 유의하세요.";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "안전 팁";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "모르는 사람이 보내는 메시지 요청을 수락할 때 조심하세요. 다음에 유의하세요.";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "모르는 사람이 보내는 링크나 웹사이트가 있는 메시지를 조심하세요. 신뢰할 수 없는 사람이 보내는 링크를 절대 방문하지 마세요.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "링크가 있는 메시지";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "스팸을 보내는 사람은 상대의 주의를 끌기 위해 '안녕하세요'와 같은 간단한 메시지로 대화를 시작합니다. 반응할 경우 대화에 더 말려들 수 있습니다.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "모호하거나 관련이 없는 메시지";
+
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "연락처의 기기에서 QR 코드를 스캔하세요.";
 
@@ -6020,10 +6197,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "앱 아이콘";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "가능한 경우 시스템 연락처 사진을 표시합니다.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "가능한 경우 기기 연락처 사진을 표시합니다.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "시스템 연락처 사진 사용";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "기기 연락처 사진 사용";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "테마";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "이 설정을 바꾸려면 '내 전화번호를 볼 수 있는 사람'을 '아무도 보지 못함'으로 설정하세요.";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "전화번호로 나를 찾을 수 있는 사람";
 
@@ -7253,7 +7436,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "메시지 요청 수락";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "시스템 연락처에 포함";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "기기 연락처에 포함";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "내 커넥션은 내 이름과 사진을 볼 수 있으며, 따로 숨기지 않는 한 '내 스토리'에 전송하는 스토리를 볼 수 있습니다.";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "보기 사용 안 함";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "구독자 ID를 클립보드에 복사함";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "기부자 ID를 클립보드에 복사함";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%1$@ 님과의 안전 번호가 일치합니다. 이 연락처를 검증했다고 표시할 수 있습니다.";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR 코드와 링크";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "이 대화에 내 전화번호가 더 이상 표시되지 않습니다. 내 전화번호를 연락처에 저장한 친구는 계속 내 전화번호를 볼 수 있습니다.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "전화번호 개인 정보 보호";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "새로운 연락 방법";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "이제 나에게 메시지를 보낼 때 선택적 사용자 이름을 사용할 수 있으므로 다른 사람과 전화번호를 공유할 필요가 없습니다. 사용자 이름은 프로필에 표시되지 않습니다.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "사용자 이름";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "초기화";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "QR 코드를 초기화하면 기존 QR 코드와 링크가 더 이상 작동하지 않습니다.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "QR 코드와 링크를 초기화하면 기존 QR 코드와 링크가 더 이상 작동하지 않습니다.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "QR 코드와 링크를 초기화하고 새 QR 코드와 링크를 만들었습니다.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "공유";
@@ -7751,13 +7937,13 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "사용자 이름을 변경하면 기존 QR 코드와 링크가 초기화됩니다. 계속할까요?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "사용자 이름을 이용하면 다른 사람들이 내 전화번호가 없어도 나에게 메시지를 보낼 수 있습니다. 사용자 이름은 사용자의 주소를 비공개로 유지할 수 있도록 일련번호와 함께 조합되어 사용됩니다. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "사용자 이름은 항상 숫자와 짝지어 쓰입니다. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "사용자 이름을 선택하세요.";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "사용자 이름은 오직 a-z, 0-9, _만 포함할 수 있습니다.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "사용자 이름은 오직 a-z, 0-9, _만 등록할 수 있습니다";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "사용자 이름이 잘못되었습니다. 2자 이상으로 입력해 주세요.";
@@ -7771,17 +7957,20 @@
 /* An error message shown when the user wants to set their username to an unavailable value. */
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "이 사용자 이름은 사용할 수 없습니다.";
 
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "너무 많이 시도했습니다. 나중에 다시 시도해 주세요.";
+
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "사용자 이름";
 
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "사용자 이름";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "사용자 이름은 %1$@자리 이상이어야 합니다.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "사용자 이름은 00으로 끝날 수 없습니다. 1~9 중 하나로 시도해 보세요.";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "이 번호는 00으로 끝날 수 없습니다. 1–9 중 하나를 입력하세요.";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "사용자 이름은 인터넷에 연결됐을 때만 업데이트할 수 있습니다.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "기기 이름은 비워둘 수 없습니다";

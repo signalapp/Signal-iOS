@@ -13,8 +13,6 @@
 
 #define BATCH_SIZE 100
 
-static const int kPreKeyOfLastResortId = 0xFFFFFF;
-
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
@@ -146,18 +144,10 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         lastPreKeyId = [self.metadataStore getInt:TSNextPrekeyIdKey defaultValue:0 transaction:transaction];
     }];
-
-    if (lastPreKeyId < 1) {
-        // One-time prekey ids must be > 0 and < kPreKeyOfLastResortId.
-        lastPreKeyId = 1 + arc4random_uniform(kPreKeyOfLastResortId - (BATCH_SIZE + 1));
-    } else if (lastPreKeyId > kPreKeyOfLastResortId - BATCH_SIZE) {
-        // We want to "overflow" to 1 when we reach the "prekey of last resort" id
-        // to avoid biasing towards higher values.
-        lastPreKeyId = 1;
+    if (lastPreKeyId < 0 || lastPreKeyId > INT32_MAX) {
+        lastPreKeyId = 0;
     }
-    OWSAssertDebug(lastPreKeyId > 0 && lastPreKeyId < kPreKeyOfLastResortId);
-
-    return lastPreKeyId;
+    return [PreKeyId nextPreKeyIdWithLastPreKeyId:(uint32_t)lastPreKeyId minimumCapacity:BATCH_SIZE];
 }
 
 - (void)cullPreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction

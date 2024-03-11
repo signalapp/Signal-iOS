@@ -43,6 +43,27 @@ public extension UIImageView {
         imageView.setTemplateImageName(imageName, tintColor: tintColor)
         return imageView
     }
+
+    /// Creates an image view with the given theme icon, tinted with the given
+    /// color, and constrained to the given size if present.
+    /// - Parameters:
+    ///   - icon: The ``ThemeIcon`` to display.
+    ///   - tintColor: The color to tint the icon
+    ///   - size: The size to constrain the image to.
+    ///   When `nil`, no constraints are added.
+    /// - Returns: A `UIImageView` of the icon.
+    class func withTemplateIcon(
+        _ icon: ThemeIcon,
+        tintColor: UIColor,
+        constrainedTo size: CGSize? = nil
+    ) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.setTemplateImage(Theme.iconImage(icon), tintColor: tintColor)
+        if let size {
+            imageView.autoSetDimensions(to: size)
+        }
+        return imageView
+    }
 }
 
 // MARK: -

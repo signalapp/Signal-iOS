@@ -1,6 +1,6 @@
 # Signal iOS
 
-Signal is a free, open source, messaging app for simple private communication with friends. 
+Signal is a free, open source, messaging app for simple private communication with friends.
 
 [![Available on the App Store](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://apps.apple.com/app/id874139669)
 
@@ -16,7 +16,7 @@ We use GitHub for bug tracking. Please search [existing issues](https://github.c
 
 ## Contributing Code
 
-Instructions on how to setup your development environment and build Signal-iOS can be found in [BUILDING.md](https://github.com/signalapp/Signal-iOS/blob/main/BUILDING.md). Other useful instructions for development can be found in the [Development Guide wiki page](https://github.com/signalapp/Signal-iOS/wiki/Development-Guide). We also recommend reading the [contribution guidelines](https://github.com/signalapp/Signal-iOS/blob/main/CONTRIBUTING.md).
+Instructions on how to setup your development environment and build Signal-iOS can be found in [BUILDING.md](https://github.com/signalapp/Signal-iOS/blob/main/BUILDING.md). We also recommend reading the [contribution guidelines](https://github.com/signalapp/Signal-iOS/blob/main/CONTRIBUTING.md).
 
 ## Contributing Ideas
 
@@ -33,8 +33,8 @@ The form and manner of this distribution makes it eligible for export under the 
 
 ## License
 
-Licensed under [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html)
+Copyright 2013-2024 Signal Messenger, LLC
 
-Copyright 2014-2023 Open Whisper Systems
+Licensed under the GNU AGPLv3: https://www.gnu.org/licenses/agpl-3.0.html
 
 _Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc., registered in the U.S. and other countries._

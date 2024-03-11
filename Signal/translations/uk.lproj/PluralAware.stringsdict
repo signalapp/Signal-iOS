@@ -608,13 +608,53 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d учасник групи має схоже ім&apos;я.</string>
+			<string>%1$d учасник групи має таке саме ім&apos;я.</string>
 			<key>few</key>
-			<string>%1$d учасники групи мають схожі імена.</string>
+			<string>%1$d учасники групи мають таке саме ім&apos;я.</string>
 			<key>many</key>
-			<string>%1$d учасників групи мають схожі імена.</string>
+			<string>%1$d учасників групи мають таке саме ім&apos;я.</string>
 			<key>other</key>
-			<string>%1$d учасника групи мають схожі імена.</string>
+			<string>%1$d учасника групи мають таке саме ім&apos;я.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>У групі виявлено %1$d конфлікт імен.</string>
+			<key>few</key>
+			<string>У групі виявлено %1$d конфлікти імен.</string>
+			<key>many</key>
+			<string>У групі виявлено %1$d конфліктів імен.</string>
+			<key>other</key>
+			<string>У групі виявлено %1$d конфлікту імен.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d учасник</string>
+			<key>few</key>
+			<string>%1$d учасники</string>
+			<key>many</key>
+			<string>%1$d учасників</string>
+			<key>other</key>
+			<string>%1$d учасника</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -628,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d учасник групи має схоже ім&apos;я. Перегляньте учасника нижче або вживіть відповідних заходів.</string>
+			<string>У групі виявлено %1$d конфлікт імен. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>few</key>
-			<string>%1$d учасники групи мають схожі імена. Перегляньте учасників нижче або вживіть відповідних заходів.</string>
+			<string>У групі виявлено %1$d конфлікти імен. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>many</key>
-			<string>%1$d учасників групи мають схожі імена. Перегляньте учасників нижче або вживіть відповідних заходів.</string>
+			<string>У групі виявлено %1$d конфліктів імен. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>other</key>
-			<string>%1$d учасника групи мають схожі імена. Перегляньте учасників нижче або вживіть відповідних заходів.</string>
+			<string>У групі виявлено %1$d конфлікту імен. Перегляньте учасників нижче або виберіть дію.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -648,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d учасник групи має таке саме ім&apos;я. Перегляньте учасника нижче або вживіть відповідних заходів.</string>
+			<string>%1$d учасник групи має таке саме ім&apos;я. Перегляньте учасника нижче або виберіть дію.</string>
 			<key>few</key>
-			<string>%1$d учасники групи мають однакові імена. Перегляньте учасників нижче або вживіть відповідних заходів.</string>
+			<string>%1$d учасники групи мають однакові імена. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>many</key>
-			<string>%1$d учасників групи мають однакові імена. Перегляньте учасників нижче або вживіть відповідних заходів.</string>
+			<string>%1$d учасників групи мають однакові імена. Перегляньте учасників нижче або виберіть дію.</string>
 			<key>other</key>
-			<string>%1$d учасника групи мають однакові імена. Перегляньте учасників нижче або вживіть відповідних заходів.</string>
+			<string>%1$d учасника групи мають однакові імена. Перегляньте учасників нижче або виберіть дію.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1515,6 +1555,26 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; переглядів</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; перегляду</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ім&apos;я користувача повинне містити принаймні %1$d символ</string>
+			<key>few</key>
+			<string>Ім&apos;я користувача повинне містити принаймні %1$d символи</string>
+			<key>many</key>
+			<string>Ім&apos;я користувача повинне містити принаймні %1$d символів</string>
+			<key>other</key>
+			<string>Ім&apos;я користувача повинне містити принаймні %1$d символа</string>
 		</dict>
 	</dict>
 </dict>

@@ -203,7 +203,7 @@ extension ConversationViewController: MessageActionsDelegate {
             return
         }
         let contactName = databaseStorage.read { tx in
-            return self.contactsManager.displayName(for: contactAddress, transaction: tx)
+            return self.contactsManager.displayName(for: contactAddress, tx: tx).resolvedValue()
         }
 
         let paymentHistoryItem = PaymentsHistoryItem(paymentModel: model, displayName: contactName)

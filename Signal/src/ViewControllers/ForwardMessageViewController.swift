@@ -309,11 +309,11 @@ extension ForwardMessageViewController {
                     )
                 }
 
-                func hasRenderableContent(interaction: TSInteraction) -> Bool {
+                func hasRenderableContent(interaction: TSInteraction, tx: SDSAnyReadTransaction) -> Bool {
                     guard let message = interaction as? TSMessage else {
                         return false
                     }
-                    return message.hasRenderableContent()
+                    return message.hasRenderableContent(tx: tx)
                 }
 
                 // Make sure the message and its content haven't been deleted (view-once
@@ -325,7 +325,7 @@ extension ForwardMessageViewController {
                             uniqueId: interactionId,
                             transaction: transaction
                         ),
-                        hasRenderableContent(interaction: latestInteraction)
+                        hasRenderableContent(interaction: latestInteraction, tx: transaction)
                     else {
                         throw ForwardError.missingInteraction
                     }
@@ -789,9 +789,10 @@ public struct ForwardMessageItem {
                 builder.messageBody = hydratedBody.asMessageBodyForForwarding(preservingAllMentions: true)
             }
 
-            if let linkPreview = componentState.linkPreviewModel {
+            if let linkPreview = componentState.linkPreviewModel, let message = interaction as? TSMessage {
                 builder.linkPreviewDraft = Self.tryToCloneLinkPreview(
                     linkPreview: linkPreview,
+                    parentMessage: message,
                     transaction: transaction
                 )
             }
@@ -833,8 +834,11 @@ public struct ForwardMessageItem {
         return item
     }
 
-    private static func tryToCloneLinkPreview(linkPreview: OWSLinkPreview,
-                                              transaction: SDSAnyReadTransaction) -> OWSLinkPreviewDraft? {
+    private static func tryToCloneLinkPreview(
+        linkPreview: OWSLinkPreview,
+        parentMessage: TSMessage,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSLinkPreviewDraft? {
         guard let urlString = linkPreview.urlString,
               let url = URL(string: urlString) else {
             owsFailDebug("Missing or invalid urlString.")
@@ -865,7 +869,7 @@ public struct ForwardMessageItem {
             }
         }
         var linkPreviewImage: LinkPreviewImage?
-        if let imageAttachmentId = linkPreview.imageAttachmentId,
+        if let imageAttachmentId = linkPreview.imageAttachmentId(forParentMessage: parentMessage, tx: transaction),
            let image = LinkPreviewImage.load(attachmentId: imageAttachmentId,
                                              transaction: transaction) {
             linkPreviewImage = image

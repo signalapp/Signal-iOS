@@ -117,21 +117,6 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             owsAssertDebug(item != nil)
         }
 
-        // UnknownThreadWarning are the second item in the thread
-        if messageLoader.shouldShowUnknownThreadWarning(thread: thread, transaction: transaction) {
-            // The "Unknown Thread Warning" should have a stable timestamp.
-            let timestamp: UInt64
-            if let firstInteraction = messageLoader.loadedInteractions.first {
-                timestamp = max(1, firstInteraction.timestamp) - 1
-            } else {
-                timestamp = 2
-            }
-            let unknownThreadWarning = UnknownThreadWarningInteraction(thread: thread,
-                                                                       timestamp: timestamp)
-            let item = addItem(interaction: unknownThreadWarning)
-            owsAssertDebug(item != nil)
-        }
-
         var interactionIds = Set<String>()
         for interaction in messageLoader.loadedInteractions {
             guard !interactionIds.contains(interaction.uniqueId) else {
@@ -491,7 +476,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }
 
         if let nextMessage = nextItem?.interaction as? TSMessage,
-           let attachment = nextMessage.mediaAttachments(with: transaction).first,
+           let attachment = nextMessage.mediaAttachments(transaction: transaction).first,
            attachment.isAudioMimeType {
 
             itemViewState.nextAudioAttachment = AudioAttachment(
@@ -715,10 +700,6 @@ private extension MessageLoader {
         !canLoadOlder
     }
 
-    func shouldShowUnknownThreadWarning(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        !canLoadOlder && NSObject.contactsManagerImpl.shouldShowUnknownThreadWarning(thread: thread, transaction: transaction)
-    }
-
     func shouldShowDefaultDisappearingMessageTimer(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         ThreadFinder().shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: transaction)
     }
@@ -776,29 +757,24 @@ private class ItemBuilder {
 // MARK: -
 
 class DisplayNameCache: Dependencies {
-    private var shortDisplayNameCache = [ServiceId: String]()
+    private var displayNameCache = [ServiceId: DisplayName]()
 
-    func shortDisplayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        if let serviceId = address.serviceId, let value = shortDisplayNameCache[serviceId] {
-            return value
+    private func _displayName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> DisplayName {
+        if let serviceId = address.serviceId, let displayName = displayNameCache[serviceId] {
+            return displayName
         }
-        let value = contactsManager.shortDisplayName(for: address, transaction: transaction)
+        let displayName = contactsManager.displayName(for: address, tx: tx)
         if let serviceId = address.serviceId {
-            shortDisplayNameCache[serviceId] = value
+            displayNameCache[serviceId] = displayName
         }
-        return value
+        return displayName
     }
 
-    private var displayNameCache = [ServiceId: String]()
+    func shortDisplayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return _displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+    }
 
     func displayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        if let serviceId = address.serviceId, let value = displayNameCache[serviceId] {
-            return value
-        }
-        let value = contactsManager.displayName(for: address, transaction: transaction)
-        if let serviceId = address.serviceId {
-            displayNameCache[serviceId] = value
-        }
-        return value
+        return _displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: false)
     }
 }

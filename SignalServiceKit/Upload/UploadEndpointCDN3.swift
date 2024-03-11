@@ -81,13 +81,12 @@ struct UploadEndpointCDN3: UploadEndpoint {
         progress progressBlock: @escaping UploadEndpointProgress
     ) async throws -> Upload.Result {
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber)
-        let formatInt = OWSFormat.formatInt
         let totalDataLength = attempt.localMetadata.encryptedDataLength
 
         var headers = uploadForm.headers
         headers["Content-Type"] = "application/offset+octet-stream"
         headers["Tus-Resumable"] = "1.0.0"
-        headers["Upload-Offset"] = formatInt(startPoint)
+        headers["Upload-Offset"] = "\(startPoint)"
 
         let method: HTTPMethod
         let temporaryFileUrl: URL
@@ -100,8 +99,8 @@ struct UploadEndpointCDN3: UploadEndpoint {
             // For initial uploads, send a POST to create the file
             method = .post
             temporaryFileUrl = attempt.localMetadata.fileUrl
-            headers["Content-Length"] = formatInt(totalDataLength)
-            headers["Upload-Length"] = formatInt(totalDataLength)
+            headers["Content-Length"] = "\(totalDataLength)"
+            headers["Upload-Length"] = "\(totalDataLength)"
 
             // On creation, provide a checksum for the server to validate
             headers["x-signal-checksum-sha256"] = attempt.localMetadata.digest.base64EncodedString()
@@ -119,7 +118,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
             method = .patch
             temporaryFileUrl = dataSliceFileUrl
             fileToCleanup = dataSliceFileUrl
-            headers["Content-Length"] = formatInt(dataSliceLength)
+            headers["Content-Length"] = "\(dataSliceLength)"
         }
 
         defer {

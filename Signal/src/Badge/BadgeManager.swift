@@ -3,27 +3,31 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalCoreKit
 import SignalServiceKit
 
 public protocol BadgeObserver {
-    func didUpdateBadgeValue(_ badgeManager: BadgeManager, badgeValue: UInt)
+    func didUpdateBadgeCount(
+        _ badgeManager: BadgeManager,
+        badgeCount: BadgeCount
+    )
 }
 
 public class BadgeManager {
+    public typealias FetchBadgeCountBlock = () -> BadgeCount
+
     private let mainScheduler: Scheduler
     private let serialScheduler: Scheduler
-    private let fetchBadgeValueBlock: () -> UInt
+    private let fetchBadgeCountBlock: FetchBadgeCountBlock
 
     public init(
         mainScheduler: Scheduler,
         serialScheduler: Scheduler,
-        fetchBadgeValue: @escaping () -> UInt
+        fetchBadgeCountBlock: @escaping FetchBadgeCountBlock
     ) {
         self.mainScheduler = mainScheduler
         self.serialScheduler = serialScheduler
-        self.fetchBadgeValueBlock = fetchBadgeValue
+        self.fetchBadgeCountBlock = fetchBadgeCountBlock
     }
 
     public convenience init(
@@ -34,9 +38,10 @@ public class BadgeManager {
         self.init(
             mainScheduler: mainScheduler,
             serialScheduler: serialScheduler,
-            fetchBadgeValue: {
-                databaseStorage.read { tx in
-                    InteractionFinder.unreadCountInAllThreads(transaction: tx)
+            fetchBadgeCountBlock: {
+                return databaseStorage.read { tx -> BadgeCount in
+                    return DependenciesBridge.shared.badgeCountFetcher
+                        .fetchBadgeCount(tx: tx.asV2Read)
                 }
             }
         )
@@ -45,7 +50,7 @@ public class BadgeManager {
     private var observers = [Weak<BadgeObserver>]()
     private var shouldFetch: Bool = true
     private var isFetching: Bool = false
-    private(set) var mostRecentBadgeValue: UInt?
+    private(set) var mostRecentBadgeCount: BadgeCount?
 
     private func fetchBadgeValueIfNeeded() {
         guard shouldFetch, !observers.isEmpty, !isFetching else {
@@ -55,17 +60,17 @@ public class BadgeManager {
         shouldFetch = false
         let backgroundTask = OWSBackgroundTask(label: #function)
         serialScheduler.async {
-            let badgeValue = self.fetchBadgeValueBlock()
+            let badgeCount = self.fetchBadgeCountBlock()
             self.mainScheduler.async {
                 self.isFetching = false
                 self.observers.removeAll(where: { $0.value == nil })
                 if self.observers.isEmpty {
                     // If there are no observers, we're going to stop fetching badge values for
                     // a while, so don't keep around a value that's potentially outdated.
-                    self.mostRecentBadgeValue = nil
+                    self.mostRecentBadgeCount = nil
                 } else {
-                    self.mostRecentBadgeValue = badgeValue
-                    self.observers.forEach { $0.value?.didUpdateBadgeValue(self, badgeValue: badgeValue) }
+                    self.mostRecentBadgeCount = badgeCount
+                    self.observers.forEach { $0.value?.didUpdateBadgeCount(self, badgeCount: badgeCount) }
                     self.fetchBadgeValueIfNeeded()
                 }
                 backgroundTask.end()
@@ -90,8 +95,8 @@ public class BadgeManager {
     /// value to the new observer, even if it's slightly out of date.
     public func addObserver(_ observer: BadgeObserver) {
         AssertIsOnMainThread()
-        if let mostRecentBadgeValue {
-            observer.didUpdateBadgeValue(self, badgeValue: mostRecentBadgeValue)
+        if let mostRecentBadgeCount {
+            observer.didUpdateBadgeCount(self, badgeCount: mostRecentBadgeCount)
         }
         observers.append(Weak(value: observer))
         fetchBadgeValueIfNeeded()
@@ -107,6 +112,7 @@ extension BadgeManager: DatabaseChangeDelegate {
         let badgeMightBeDifferent = (
             databaseChanges.didUpdateInteractions
             || databaseChanges.didUpdateModel(collection: String(describing: ThreadAssociatedData.self))
+            || databaseChanges.didUpdateModel(collection: String(describing: CallRecord.self))
         )
         guard badgeMightBeDifferent else {
             return

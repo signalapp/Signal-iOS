@@ -59,7 +59,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             sentProto.destinationServiceID != nil
             || sentProto.destinationE164 != nil
         {
-            let destinationAddress = SignalServiceAddress(
+            let destinationAddress = SignalServiceAddress.legacyAddress(
                 serviceIdString: sentProto.destinationServiceID,
                 phoneNumber: sentProto.destinationE164
             )
@@ -171,7 +171,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
                 continue
             }
 
-            var recipientState: TSOutgoingMessageRecipientState = TSOutgoingMessageRecipientState()
+            let recipientState: TSOutgoingMessageRecipientState = TSOutgoingMessageRecipientState()
             recipientState.state = .sent
             recipientState.wasSentByUD = statusProto.unidentified
             recipientStates[.init(serviceId: serviceId, e164: nil)] = recipientState

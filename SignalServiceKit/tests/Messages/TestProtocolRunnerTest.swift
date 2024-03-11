@@ -20,11 +20,7 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
 
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: .init()),
-                    pni: nil,
-                    e164: .init("+13235551234")!
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }
@@ -129,11 +125,7 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: .init()),
-                    pni: nil,
-                    e164: .init("+13235551234")!
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }
@@ -165,11 +157,7 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: .init()),
-                    pni: nil,
-                    e164: .init("+13235551234")!
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }

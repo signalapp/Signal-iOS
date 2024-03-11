@@ -107,11 +107,6 @@ public enum Upload {
         let encryptedDataLength: Int
     }
 
-    public enum FormVersion {
-        case v3
-        case v4
-    }
-
     public struct Result {
         let cdnKey: String
         let cdnNumber: UInt32

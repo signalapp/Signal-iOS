@@ -50,7 +50,7 @@ class AddToBlockListViewController: RecipientPickerContainerViewController {
     }
 }
 
-extension AddToBlockListViewController: RecipientPickerDelegate {
+extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,

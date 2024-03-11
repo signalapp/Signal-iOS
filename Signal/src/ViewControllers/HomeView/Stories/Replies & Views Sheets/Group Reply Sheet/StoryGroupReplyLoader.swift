@@ -255,7 +255,7 @@ class StoryGroupReplyLoader: Dependencies {
 
                 let displayName = authorAddress.isLocalAddress
                     ? CommonStrings.you
-                    : displayNamesByAddress[authorAddress]
+                    : displayNamesByAddress[authorAddress]?.resolvedValue()
                 replyItem = StoryGroupReplyViewItem(
                     message: message,
                     authorAddress: authorAddress,

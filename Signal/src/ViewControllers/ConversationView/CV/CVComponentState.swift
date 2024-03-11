@@ -108,6 +108,8 @@ public class CVComponentState: Equatable, Dependencies {
     }
     let viewOnce: ViewOnce?
 
+    let hasRenderableContent: Bool
+
     struct QuotedReply: Equatable {
         let viewState: QuotedMessageView.State
 
@@ -251,6 +253,11 @@ public class CVComponentState: Equatable, Dependencies {
     let typingIndicator: TypingIndicator?
 
     struct ThreadDetails: Equatable {
+        enum MutualGroupsTapAction: Equatable {
+            case showContactSafetyTip
+            case showGroupSafetyTip
+        }
+
         let avatarDataSource: ConversationAvatarDataSource?
         let isAvatarBlurred: Bool
         let titleText: String
@@ -258,6 +265,7 @@ public class CVComponentState: Equatable, Dependencies {
         let bioText: String?
         let detailsText: String?
         let mutualGroupsText: NSAttributedString?
+        let mutualGroupsTapAction: MutualGroupsTapAction?
         let groupDescriptionText: String?
     }
     let threadDetails: ThreadDetails?
@@ -310,7 +318,8 @@ public class CVComponentState: Equatable, Dependencies {
                      bottomButtons: BottomButtons?,
                      failedOrPendingDownloads: FailedOrPendingDownloads?,
                      sendFailureBadge: SendFailureBadge?,
-                     messageHasBodyAttachments: Bool) {
+                     messageHasBodyAttachments: Bool,
+                     hasRenderableContent: Bool) {
 
         self.messageCellType = messageCellType
         self.senderName = senderName
@@ -338,6 +347,7 @@ public class CVComponentState: Equatable, Dependencies {
         self.failedOrPendingDownloads = failedOrPendingDownloads
         self.sendFailureBadge = sendFailureBadge
         self.messageHasBodyAttachments = messageHasBodyAttachments
+        self.hasRenderableContent = hasRenderableContent
     }
 
     // MARK: - Equatable
@@ -428,12 +438,14 @@ public class CVComponentState: Equatable, Dependencies {
         var failedOrPendingDownloads: FailedOrPendingDownloads?
         var sendFailureBadge: SendFailureBadge?
         var messageHasBodyAttachments: Bool
+        var hasRenderableContent: Bool
 
         var bottomButtonsActions = [CVMessageAction]()
 
         init(interaction: TSInteraction, itemBuildingContext: CVItemBuildingContext) {
             self.interaction = interaction
-            self.messageHasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(with: itemBuildingContext.transaction) ?? false
+            self.messageHasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: itemBuildingContext.transaction) ?? false
+            self.hasRenderableContent = (interaction as? TSMessage)?.hasRenderableContent(tx: itemBuildingContext.transaction) ?? false
             self.itemBuildingContext = itemBuildingContext
         }
 
@@ -468,7 +480,8 @@ public class CVComponentState: Equatable, Dependencies {
                                     bottomButtons: bottomButtons,
                                     failedOrPendingDownloads: failedOrPendingDownloads,
                                     sendFailureBadge: sendFailureBadge,
-                                    messageHasBodyAttachments: messageHasBodyAttachments)
+                                    messageHasBodyAttachments: messageHasBodyAttachments,
+                                    hasRenderableContent: hasRenderableContent)
         }
 
         // MARK: -
@@ -715,9 +728,7 @@ fileprivate extension CVComponentState.Builder {
             self.threadDetails = buildThreadDetails()
             return build()
         case .unknownThreadWarning:
-            self.unknownThreadWarning = CVComponentSystemMessage.buildUnknownThreadWarningState(interaction: interaction,
-                                                                                                threadViewModel: threadViewModel,
-                                                                                                transaction: transaction)
+            // TODO: Remove this case entirely?
             return build()
         case .defaultDisappearingMessageTimer:
             self.defaultDisappearingMessageTimer = CVComponentSystemMessage.buildDefaultDisappearingMessageTimerState(
@@ -872,7 +883,7 @@ fileprivate extension CVComponentState.Builder {
 
         do {
             // TODO: Rename this method to TSMessage.bodyAttachments(...)?
-            let bodyAttachments = message.mediaAttachments(with: transaction)
+            let bodyAttachments = message.mediaAttachments(transaction: transaction)
             let mediaAlbumItems = buildMediaAlbumItems(for: bodyAttachments, message: message)
             if mediaAlbumItems.count > 0 {
                 var mediaAlbumHasFailedAttachment = false
@@ -959,7 +970,7 @@ fileprivate extension CVComponentState.Builder {
             if message.isViewOnceComplete {
                 return buildViewOnce(viewOnceState: .incomingExpired)
             }
-            let hasMoreThanOneAttachment: Bool = message.bodyAttachmentIds(with: transaction).count > 1
+            let hasMoreThanOneAttachment: Bool = message.bodyAttachmentIds(transaction: transaction).count > 1
             let hasBodyText: Bool = !(message.body?.isEmpty ?? true)
             if hasMoreThanOneAttachment || hasBodyText {
                 // Refuse to render incoming "view once" messages if they
@@ -967,7 +978,7 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Invalid content.")
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
-            let mediaAttachments: [TSAttachment] = message.mediaAttachments(with: transaction)
+            let mediaAttachments: [TSAttachment] = message.mediaAttachments(transaction: transaction)
             // We currently only support single attachments for view-once messages.
             guard let mediaAttachment = mediaAttachments.first else {
                 owsFailDebug("Missing attachment.")
@@ -1280,16 +1291,10 @@ fileprivate extension CVComponentState.Builder {
             }
         } else {
             let linkPreviewAttachment = { () -> TSAttachment? in
-                guard let imageAttachmentId = linkPreview.imageAttachmentId,
-                      !imageAttachmentId.isEmpty else {
+                guard let linkPreviewAttachment = linkPreview.imageAttachment(forParentMessage: message, tx: transaction) else {
                     return nil
                 }
 
-                guard let linkPreviewAttachment = TSAttachment.anyFetch(uniqueId: imageAttachmentId,
-                                                                        transaction: self.transaction) else {
-                    owsFailDebug("Could not load link preview image attachment.")
-                    return nil
-                }
                 guard linkPreviewAttachment.isImageMimeType else {
                     owsFailDebug("Link preview attachment isn't an image.")
                     return nil

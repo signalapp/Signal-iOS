@@ -63,7 +63,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     if (self.infoMessageSchemaVersion < 2) {
         NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"unregisteredRecipientId"];
         if (phoneNumber) {
-            _unregisteredAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            _unregisteredAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
         }
     }
 
@@ -86,6 +86,15 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                      timestamp:(uint64_t)timestamp
                    messageType:(TSInfoMessageType)infoMessage
 {
+    self = [self initWithThread:thread timestamp:0 serverGuid:nil messageType:infoMessage];
+    return self;
+}
+
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                    serverGuid:(nullable NSString *)serverGuid
+                   messageType:(TSInfoMessageType)infoMessage
+{
     TSMessageBuilder *builder;
     if (timestamp > 0) {
         builder = [TSMessageBuilder messageBuilderWithThread:thread timestamp:timestamp messageBody:nil];
@@ -97,6 +106,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         return self;
     }
 
+    _serverGuid = serverGuid;
     _messageType = infoMessage;
     _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
 
@@ -146,6 +156,23 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                    serverGuid:(nullable NSString *)serverGuid
+                   messageType:(TSInfoMessageType)infoMessageType
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
+{
+    self = [self initWithThread:thread timestamp:timestamp serverGuid:serverGuid messageType:infoMessageType];
+    if (!self) {
+        return self;
+    }
+
+    _infoMessageUserInfo = infoMessageUserInfo;
+
+    return self;
+}
+
+
+- (instancetype)initWithThread:(TSThread *)thread
                    messageType:(TSInfoMessageType)infoMessage
            unregisteredAddress:(SignalServiceAddress *)unregisteredAddress
 {
@@ -192,6 +219,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
              infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
+                      serverGuid:(nullable NSString *)serverGuid
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
 {
     self = [super initWithGrdbId:grdbId
@@ -229,6 +257,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     _infoMessageUserInfo = infoMessageUserInfo;
     _messageType = messageType;
     _read = read;
+    _serverGuid = serverGuid;
     _unregisteredAddress = unregisteredAddress;
 
     return self;
@@ -275,8 +304,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             return OWSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
             if (self.unregisteredAddress.isValid) {
-                NSString *recipientName = [self.contactsManager displayNameForAddress:self.unregisteredAddress
-                                                                          transaction:transaction];
+                NSString *recipientName = [self.contactManagerObjC displayNameStringForAddress:self.unregisteredAddress
+                                                                                   transaction:transaction];
                 return [NSString stringWithFormat:OWSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
                                                       @"Format string for 'unregistered user' error. Embeds {{the "
                                                       @"unregistered user's name or signal id}}."),
@@ -307,7 +336,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageUserJoinedSignal: {
             SignalServiceAddress *address = [TSContactThread contactAddressFromThreadId:self.uniqueThreadId
                                                                             transaction:transaction];
-            NSString *recipientName = [self.contactsManager displayNameForAddress:address transaction:transaction];
+            NSString *recipientName = [self.contactManagerObjC displayNameStringForAddress:address
+                                                                               transaction:transaction];
             NSString *format = OWSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
                 @"Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact "
                 @"name}}");
@@ -329,7 +359,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 return @"";
             }
             SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithServiceIdObjC:aci];
-            NSString *userName = [self.contactsManager displayNameForAddress:address transaction:transaction];
+            NSString *userName = [self.contactManagerObjC displayNameStringForAddress:address transaction:transaction];
 
             NSString *format = OWSLocalizedString(@"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT",
                 @"Indicates that another user has changed their phone number. Embeds: {{ the user's name}}".);
@@ -358,6 +388,9 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             return [self threadMergeDescriptionWithTx:transaction];
         case TSInfoMessageSessionSwitchover:
             return [self sessionSwitchoverDescriptionWithTx:transaction];
+        case TSInfoMessageReportedSpam:
+            return OWSLocalizedString(
+                @"INFO_MESSAGE_REPORTED_SPAM", @"Shown when a user reports a conversation as spam.");
     }
 
     OWSFailDebug(@"Unknown info message type");
@@ -388,6 +421,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessagePaymentsActivated:
         case TSInfoMessageThreadMerge:
         case TSInfoMessageSessionSwitchover:
+        case TSInfoMessageReportedSpam:
             return NO;
         case TSInfoMessageUserJoinedSignal:
             // In the conversation list, we want conversations with an unread "new user" notification to

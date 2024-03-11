@@ -44,26 +44,11 @@ public protocol _EditManager_DataStore {
         tx: DBWriteTransaction
     )
 
-    func getBodyAttachmentIds(
-        message: TSMessage,
-        tx: DBReadTransaction
-    ) -> [String]
-
-    func getMediaAttachments(
-        message: TSMessage,
-        tx: DBReadTransaction
-    ) -> [TSAttachment]
-
     func getIsVoiceMessage(
         forAttachment attachment: TSAttachment,
         on message: TSMessage,
         tx: DBReadTransaction
     ) -> Bool
-
-    func getOversizedTextAttachments(
-        message: TSMessage,
-        tx: DBReadTransaction
-    ) -> TSAttachment?
 
     func insertMessageCopy(
         message: TSMessage,
@@ -141,33 +126,12 @@ public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         )
     }
 
-    public func getBodyAttachmentIds(
-        message: TSMessage,
-        tx: DBReadTransaction
-    ) -> [String] {
-        message.bodyAttachmentIds(with: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func getMediaAttachments(
-        message: TSMessage,
-        tx: DBReadTransaction
-    ) -> [TSAttachment] {
-        message.mediaAttachments(with: SDSDB.shimOnlyBridge(tx))
-    }
-
     public func getIsVoiceMessage(
         forAttachment attachment: TSAttachment,
         on message: TSMessage,
         tx: DBReadTransaction
     ) -> Bool {
         attachment.isVoiceMessage(inContainingMessage: message, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func getOversizedTextAttachments(
-        message: TSMessage,
-        tx: DBReadTransaction
-    ) -> TSAttachment? {
-        message.oversizeTextAttachment(with: SDSDB.shimOnlyBridge(tx))
     }
 
     public func insertMessageCopy(

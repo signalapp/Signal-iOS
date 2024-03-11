@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membro do grupo tem nome similar.</string>
+			<string>%1$d membro do grupo tem o mesmo nome.</string>
 			<key>other</key>
-			<string>%1$d membros do grupo têm nomes similares.</string>
+			<string>%1$d membros do grupo tem o mesmo nome.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d conflito de nome encontrado neste grupo.</string>
+			<key>other</key>
+			<string>%1$d conflitos de nome encontrados neste grupo.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d membro</string>
+			<key>other</key>
+			<string>%1$d membros</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membros do grupo tem nome similar, reveja o membro abaixo e escolha que ação tomar.</string>
+			<string>%1$d conflito de nome encontrado neste grupo. Verifique os membros em baixo ou escolha que ação tomar.</string>
 			<key>other</key>
-			<string>%1$d membros do grupo têm nomes similares, reveja os membros abaixo e escolha que ação tomar.</string>
+			<string>%1$d conflitos de nome encontrados neste grupo. Verifique os membros em baixo ou escolha que ação tomar.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -520,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membro do grupo tem o mesmo nome, reveja o membro abaixo e escolha que ação tomar.</string>
+			<string>%1$d membro do grupo tem o mesmo nome. Verifique o membro abaixo ou opte por tomar medidas.</string>
 			<key>other</key>
-			<string>%1$d membros do grupo têm o mesmo nome, reveja os membros abaixo e escolha que ação tomar.</string>
+			<string>%1$d membros do grupo têm o mesmo nome. Verifique os membros abaixo ou opte por tomar medidas.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; visualização</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; visualizações</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Os nomes de utilizador devem conter pelo menos %1$d carácter no início</string>
+			<key>other</key>
+			<string>Os nomes de utilizador devem conter pelo menos %1$d caracteres no início</string>
 		</dict>
 	</dict>
 </dict>

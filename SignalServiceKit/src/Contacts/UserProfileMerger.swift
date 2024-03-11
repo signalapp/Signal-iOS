@@ -61,7 +61,7 @@ class UserProfileMerger: RecipientMergeObserver {
         }
         let normalizedAddress = NormalizedDatabaseRecordAddress(
             aci: recipient.aci,
-            phoneNumber: recipient.phoneNumber,
+            phoneNumber: recipient.phoneNumber?.stringValue,
             pni: recipient.pni
         )
         // One of these might not be set, or one of them might have a non-canonical

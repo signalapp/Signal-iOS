@@ -156,7 +156,9 @@ class DebugUIStress: DebugUIPage, Dependencies {
         }
 
         items.append(OWSTableItem(title: "Make group w. unregistered users", actionBlock: {
-            DebugUIStress.makeUnregisteredGroup()
+            Task {
+                try await DebugUIStress.makeUnregisteredGroup()
+            }
         }))
 
         // Other
@@ -211,12 +213,11 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
     // MARK: Groups
 
-    private static func makeUnregisteredGroup() {
-        var recipientAddresses: [SignalServiceAddress] = (0...2).map { _ in
-            var phoneNumber = "+1651555"
-            phoneNumber.append(String(format: "%04d", Int.random(in: 0...9999)))
-            return SignalServiceAddress(serviceId: Aci(fromUUID: UUID()), phoneNumber: phoneNumber)
-        }
+    @MainActor
+    private static func makeUnregisteredGroup() async throws {
+        var recipientAddresses = [SignalServiceAddress]()
+
+        recipientAddresses.append(contentsOf: (0...2).map { _ in SignalServiceAddress(Aci(fromUUID: UUID())) })
 
         if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
             recipientAddresses.append(localAddress)
@@ -224,16 +225,13 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
         recipientAddresses.append(contentsOf: (0...2).map { _ in SignalServiceAddress(Aci(fromUUID: UUID())) })
 
-        GroupManager.localCreateNewGroup(
+        let groupThread = try await GroupManager.localCreateNewGroup(
             members: recipientAddresses,
             name: UUID().uuidString,
             disappearingMessageToken: .disabledToken,
             shouldSendMessage: false
-        ).done { groupThread in
-            SignalApp.shared.presentConversationForThread(groupThread, animated: true)
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
+        )
+        SignalApp.shared.presentConversationForThread(groupThread, animated: true)
     }
 
     private static func copyToAnotherGroup(_ srcGroupThread: TSGroupThread, fromViewController: UIViewController) {

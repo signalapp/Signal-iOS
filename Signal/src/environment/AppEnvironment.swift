@@ -119,10 +119,8 @@ public class AppEnvironment: NSObject {
                     .cleanupRingingCalls(tx: tx)
             }
 
-            db.asyncWrite { tx in
-                DependenciesBridge.shared.deletedCallRecordCleanupManager
-                    .startCleanupIfNecessary(tx: tx)
-            }
+            DependenciesBridge.shared.deletedCallRecordCleanupManager
+                .startCleanupIfNecessary()
         }
 
         // Hang certain singletons on SMEnvironment too.

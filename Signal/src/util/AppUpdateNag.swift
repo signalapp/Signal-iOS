@@ -17,7 +17,7 @@ class AppUpdateNag: NSObject {
     }()
 
     public func showAppUpgradeNagIfNecessary() {
-        let currentVersion = AppVersionImpl.shared.currentAppReleaseVersion
+        let currentVersion = AppVersionImpl.shared.currentAppVersion
 
         guard let bundleIdentifier = self.bundleIdentifier else {
             owsFailDebug("bundleIdentifier was unexpectedly nil")
@@ -32,8 +32,9 @@ class AppUpdateNag: NSObject {
         firstly {
             self.versionService.fetchLatestVersion(lookupURL: lookupURL)
         }.then(on: DispatchQueue.global()) { (appStoreRecord) -> Promise<Void> in
-            guard appStoreRecord.version.compare(currentVersion, options: .numeric) == ComparisonResult.orderedDescending else {
-                Logger.debug("remote version: \(appStoreRecord) is not newer than currentVersion: \(currentVersion)")
+            let appStoreVersion = AppVersionNumber(appStoreRecord.version)
+            let currentVersion = AppVersionNumber(currentVersion)
+            guard appStoreVersion > currentVersion else {
                 self.clearFirstHeardOfNewVersionDate()
                 return Promise.value(())
             }

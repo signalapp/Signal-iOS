@@ -298,14 +298,12 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         let thread = TSContactThread.getWithContactAddress(address, transaction: tx)
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let dmConfig = thread.map { dmConfigurationStore.fetchOrBuildDefault(for: .thread($0), tx: tx.asV2Read) }
-        let contactName = contactsManager.displayName(for: address, transaction: tx)
-        let comparableName = contactsManager.comparableName(for: address, transaction: tx)
+        let displayName = contactsManager.displayName(for: address, tx: tx)
         return ContactConversationItem(
             address: address,
             isBlocked: isBlocked,
             disappearingMessagesConfig: dmConfig,
-            contactName: contactName,
-            comparableName: comparableName
+            comparableName: ComparableDisplayName(address: address, displayName: displayName, config: .current())
         )
     }
 
@@ -429,7 +427,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
                 contactItems.append(contactItem)
             }
-            contactItems.sort()
+            contactItems.sort(by: <)
 
             let pinnedItems = pinnedItemsByThreadId.sorted { lhs, rhs in
                 guard let lhsIndex = pinnedThreadIds.firstIndex(of: lhs.key),

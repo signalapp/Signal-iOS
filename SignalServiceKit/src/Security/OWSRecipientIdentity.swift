@@ -135,7 +135,16 @@ extension OWSRecipientIdentity {
                 let cursor = try Row.fetchCursor(grdbTransaction.database, sql: sql, arguments: StatementArguments(args))
                 var result = [SignalServiceAddress: Data]()
                 while let row = try cursor.next() {
-                    result[SignalServiceAddress(serviceIdString: row[0] ?? row[2], phoneNumber: row[1])] = row[3]
+                    let normalizedAddress = NormalizedDatabaseRecordAddress(
+                        aci: (row[0] as String?).flatMap { try? Aci.parseFrom(serviceIdString: $0) },
+                        phoneNumber: row[1],
+                        pni: (row[2] as String?).flatMap { try? Pni.parseFrom(serviceIdString: $0) }
+                    )
+                    let address = SignalServiceAddress(
+                        serviceId: normalizedAddress?.serviceId,
+                        phoneNumber: normalizedAddress?.phoneNumber
+                    )
+                    result[address] = row[3]
                 }
                 return result
             } catch {

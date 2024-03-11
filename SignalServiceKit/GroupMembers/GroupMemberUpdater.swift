@@ -74,8 +74,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
             let expectedAddress = expectedAddresses.remove(SignalServiceAddress(
                 serviceId: oldAddress.serviceId,
                 phoneNumber: oldAddress.phoneNumber,
-                cache: signalServiceAddressCache,
-                cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+                cache: signalServiceAddressCache
             ))
 
             let newAddress = NormalizedDatabaseRecordAddress(address: expectedAddress)

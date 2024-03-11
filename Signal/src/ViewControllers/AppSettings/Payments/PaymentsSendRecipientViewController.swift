@@ -28,7 +28,7 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
 
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
-        recipientPicker.allowsAddByPhoneNumber = false
+        recipientPicker.allowsAddByAddress = false
         recipientPicker.shouldHideLocalRecipient = true
         recipientPicker.groupsToShow = .noGroups
         recipientPicker.delegate = self
@@ -62,7 +62,7 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
 
 // MARK: -
 
-extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
+extension PaymentsSendRecipientViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,

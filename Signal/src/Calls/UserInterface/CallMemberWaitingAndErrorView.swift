@@ -42,14 +42,15 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: CallMemberView.ConfigurationType
+        memberType: CallMemberView.MemberType
     ) {
         switch memberType {
-        case .local:
-            owsFailDebug("CallMemberWaitingAndErrorView should not be in the view hierarchy for individual calls!")
-        case .remote(let remoteDeviceState, let context):
+        case .local, .remoteInIndividual:
+            owsFailDebug("CallMemberWaitingAndErrorView should not be in the view hierarchy!")
+        case .remoteInGroup(let remoteDeviceState, let context):
             deferredReconfigTimer?.invalidate()
 
+            guard let remoteDeviceState else { return }
             let isRemoteDeviceBlocked = databaseStorage.read { tx in
                 return blockingManager.isAddressBlocked(remoteDeviceState.address, transaction: tx)
             }
@@ -74,7 +75,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                     guard call.isGroupCall, let groupCall = call.groupCall else { return }
                     guard let updatedState = groupCall.remoteDeviceStates.values
                             .first(where: { $0.demuxId == configuredDemuxId }) else { return }
-                    self.configure(call: call, memberType: .remote(updatedState, context))
+                    self.configure(call: call, memberType: .remoteInGroup(updatedState, context))
                 })
             } else if !remoteDeviceState.mediaKeysReceived {
                 // No media keys. Display error view
@@ -94,7 +95,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                 comment: "Text describing the local user in the group call members sheet when connected from another device.")
         } else {
-            displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+            displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
         }
 
         let blockFormat = OWSLocalizedString(

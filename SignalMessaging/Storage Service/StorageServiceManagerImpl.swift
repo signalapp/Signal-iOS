@@ -1373,7 +1373,7 @@ class StorageServiceOperation: OWSOperation {
 
     private func cleanUpRecordsWithUnknownFields(in state: inout State) {
         var shouldCleanUpRecordsWithUnknownFields =
-            state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion4
+            state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion
         #if DEBUG
         // Debug builds don't have proper version numbers but we do want to run
         // these migrations on them.
@@ -1386,7 +1386,7 @@ class StorageServiceOperation: OWSOperation {
         guard shouldCleanUpRecordsWithUnknownFields else {
             return
         }
-        state.unknownFieldLastCheckedAppVersion = AppVersionImpl.shared.currentAppVersion4
+        state.unknownFieldLastCheckedAppVersion = AppVersionImpl.shared.currentAppVersion
 
         func fetchRecordsWithUnknownFields(
             stateUpdater: some StorageServiceStateUpdater,
@@ -1568,7 +1568,7 @@ class StorageServiceOperation: OWSOperation {
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
-                groupsV2: groupsV2Swift,
+                groupsV2: groupsV2,
                 legacyChangePhoneNumber: legacyChangePhoneNumber,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager,
                 paymentsHelper: paymentsHelperSwift,
@@ -1607,7 +1607,8 @@ class StorageServiceOperation: OWSOperation {
                 usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
                 recipientManager: DependenciesBridge.shared.recipientManager,
                 recipientMerger: DependenciesBridge.shared.recipientMerger,
-                recipientHidingManager: DependenciesBridge.shared.recipientHidingManager
+                recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
+                signalServiceAddressCache: signalServiceAddressCache
             ),
             changeState: \.accountIdChangeMap,
             storageIdentifier: \.accountIdToIdentifierMap,
@@ -1629,7 +1630,7 @@ class StorageServiceOperation: OWSOperation {
             recordUpdater: StorageServiceGroupV2RecordUpdater(
                 authedAccount: authedAccount,
                 blockingManager: blockingManager,
-                groupsV2: groupsV2Swift,
+                groupsV2: groupsV2,
                 profileManager: profileManager
             ),
             changeState: \.groupV2ChangeMap,

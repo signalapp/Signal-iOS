@@ -129,11 +129,7 @@ public class UserProfileFinder: NSObject {
         }
         return userProfiles
     }
-}
 
-// MARK: -
-
-extension UserProfileFinder {
     func enumerateMissingAndStaleUserProfiles(
         transaction tx: SDSAnyReadTransaction,
         block: (OWSUserProfile) -> Void
@@ -175,6 +171,27 @@ extension UserProfileFinder {
         let arguments: StatementArguments = [convertDateForGrdb(activeDate), convertDateForGrdb(staleDate)]
         OWSUserProfile.anyEnumerate(transaction: tx, sql: sql, arguments: arguments) { userProfile, _ in
             block(userProfile)
+        }
+    }
+
+    func fetchAcisWithSharedPhoneNumbers(tx: SDSAnyReadTransaction) throws -> [Aci] {
+        let sql: String
+        if OWSUserProfile.isPhoneNumberSharedByDefault {
+            sql = """
+                SELECT \(userProfileColumn: .serviceIdString) FROM \(OWSUserProfile.databaseTableName)
+                WHERE \(userProfileColumn: .isPhoneNumberShared) IS NOT FALSE
+            """
+        } else {
+            sql = """
+                SELECT \(userProfileColumn: .serviceIdString) FROM \(OWSUserProfile.databaseTableName)
+                WHERE \(userProfileColumn: .isPhoneNumberShared) IS TRUE
+            """
+        }
+        do {
+            let serviceIdStrings = try String?.fetchAll(tx.unwrapGrdbRead.database, sql: sql)
+            return serviceIdStrings.compactMap(Aci.parseFrom(aciString:))
+        } catch {
+            throw error.grdbErrorForLogging
         }
     }
 }

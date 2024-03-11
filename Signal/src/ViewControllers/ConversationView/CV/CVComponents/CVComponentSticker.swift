@@ -83,9 +83,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 break
             case .downloading:
                 break
-            case .restoring:
-                // TODO: We could easily show progress for restores.
-                owsFailDebug("Restoring progress type.")
             case .unknown:
                 owsFailDebug("Unknown progress type.")
             }

@@ -546,10 +546,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 public enum PhoneNumberSharingMode: Int {
     case everybody = 0
     case nobody = 2
+
+    public static let defaultValue: PhoneNumberSharingMode = .nobody
 }
 
 extension Optional where Wrapped == PhoneNumberSharingMode {
     public var orDefault: PhoneNumberSharingMode {
-        return self ?? (FeatureFlags.phoneNumberPrivacy ? .nobody : .everybody)
+        return self ?? .defaultValue
     }
 }

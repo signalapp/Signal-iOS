@@ -29,7 +29,7 @@ class GroupMemberMergeObserverImpl: RecipientMergeObserver {
         if let aci = mergedRecipient.newRecipient.aci {
             groupThreadIds.append(contentsOf: groupMemberStore.groupThreadIds(withFullMember: aci, tx: tx))
         }
-        if let phoneNumber = E164(mergedRecipient.newRecipient.phoneNumber) {
+        if let phoneNumber = E164(mergedRecipient.newRecipient.phoneNumber?.stringValue) {
             groupThreadIds.append(contentsOf: groupMemberStore.groupThreadIds(withFullMember: phoneNumber, tx: tx))
         }
         if let pni = mergedRecipient.newRecipient.pni {

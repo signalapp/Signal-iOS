@@ -436,7 +436,7 @@ class PlayerProgressView: UIView {
             }
 
             slider.minimumValue = 0
-            slider.maximumValue = Float(CMTimeGetSeconds(item.asset.duration))
+            slider.maximumValue = max(0.01, Float(CMTimeGetSeconds(item.asset.duration)))
 
             progressObserver = avPlayer.addPeriodicTimeObserver(
                 forInterval: CMTime(seconds: 1/60, preferredTimescale: Self.preferredTimeScale),

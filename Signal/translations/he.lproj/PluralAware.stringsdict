@@ -608,13 +608,53 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>לחבר/ת קבוצה %1$d יש שם דומה.</string>
+			<string>לחבר/ת קבוצה %1$d יש אותו שם.</string>
 			<key>two</key>
-			<string>ל–%1$d חברי קבוצה יש שמות דומים.</string>
+			<string>ל–%1$d חברי קבוצה יש אותו שם.</string>
 			<key>many</key>
-			<string>ל–%1$d חברי קבוצה יש שמות דומים.</string>
+			<string>ל–%1$d חברי קבוצה יש אותו שם.</string>
 			<key>other</key>
-			<string>ל–%1$d חברי קבוצה יש שמות דומים.</string>
+			<string>ל–%1$d חברי קבוצה יש אותו שם.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>התנגשות שם %1$d נמצאה בקבוצה זו.</string>
+			<key>two</key>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו.</string>
+			<key>many</key>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו.</string>
+			<key>other</key>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>חבר/ה %1$d</string>
+			<key>two</key>
+			<string>%1$d חברים</string>
+			<key>many</key>
+			<string>%1$d חברים</string>
+			<key>other</key>
+			<string>%1$d חברים</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -628,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>לחבר/ת קבוצה %1$d יש שם דומה, אפשר לסקור את החבר/ה למטה או לבחור לנקוט בפעולה.</string>
+			<string>התנגשות שם %1$d נמצאה בקבוצה זו. אפשר לסקור את כל החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>two</key>
-			<string>ל–%1$d חברי קבוצה יש שם דומה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו. אפשר לסקור את כל החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>many</key>
-			<string>ל–%1$d חברי קבוצה יש שם דומה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו. אפשר לסקור את כל החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>other</key>
-			<string>ל–%1$d חברי קבוצה יש שם דומה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
+			<string>%1$d התנגשויות שם נמצאו בקבוצה זו. אפשר לסקור את כל החברים למטה או לבחור לנקוט בפעולה.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -648,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>לחבר/ת קבוצה %1$d יש שם זהה, אפשר לסקור את החבר/ה למטה או לבחור לנקוט בפעולה.</string>
+			<string>לחבר/ת קבוצה %1$d יש שם זהה. אפשר לסקור את החבר/ה למטה או לבחור לנקוט בפעולה.</string>
 			<key>two</key>
-			<string>ל–%1$d חברי קבוצה יש שם זהה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
+			<string>ל–%1$d חברי קבוצה יש שם זהה. אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>many</key>
-			<string>ל–%1$d חברי קבוצה יש שם זהה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
+			<string>ל–%1$d חברי קבוצה יש שם זהה. אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>other</key>
-			<string>ל–%1$d חברי קבוצה יש שם זהה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
+			<string>ל–%1$d חברי קבוצה יש שם זהה. אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1515,6 +1555,26 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; צפיות</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; צפיות</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>שמות משתמש חייבים להכיל לפחות תו %1$d</string>
+			<key>two</key>
+			<string>שמות משתמש חייבים להכיל לפחות %1$d תווים</string>
+			<key>many</key>
+			<string>שמות משתמש חייבים להכיל לפחות %1$d תווים</string>
+			<key>other</key>
+			<string>שמות משתמש חייבים להכיל לפחות %1$d תווים</string>
 		</dict>
 	</dict>
 </dict>

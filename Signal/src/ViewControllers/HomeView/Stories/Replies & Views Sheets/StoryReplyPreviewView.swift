@@ -45,7 +45,7 @@ class StoryReplyPreviewView: UIView {
             authorName = CommonStrings.you
         } else {
             authorName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: quotedReplyModel.authorAddress, transaction: tx)
+                return contactsManager.displayName(for: quotedReplyModel.authorAddress, tx: tx).resolvedValue()
             }
         }
 

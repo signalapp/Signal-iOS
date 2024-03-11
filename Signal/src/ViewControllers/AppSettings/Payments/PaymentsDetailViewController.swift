@@ -214,7 +214,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             let title: String
             if let senderOrRecipientAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
                 let username = databaseStorage.read { tx in
-                    return contactsManager.displayName(for: SignalServiceAddress(senderOrRecipientAci), transaction: tx)
+                    return contactsManager.displayName(for: SignalServiceAddress(senderOrRecipientAci), tx: tx).resolvedValue()
                 }
                 let titleFormat: String = {
                     switch paymentItem {
@@ -285,12 +285,15 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                 if paymentItem.isOutgoing {
                     return CommonStrings.you
                 }
+                let displayName: DisplayName
                 if let senderAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
-                    return databaseStorage.read { tx in
-                        return contactsManager.displayName(for: SignalServiceAddress(senderAci), transaction: tx)
+                    displayName = databaseStorage.read { tx in
+                        return contactsManager.displayName(for: SignalServiceAddress(senderAci), tx: tx)
                     }
+                } else {
+                    displayName = .unknown
                 }
-                return OWSContactsManager.unknownUserLabel
+                return displayName.resolvedValue()
             }()
             let value: String
             if let mcLedgerBlockDate = paymentItem.paymentModel.mcLedgerBlockDate {
@@ -413,13 +416,19 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                 config.dataSource = .address(address)
             }
 
-            let username = Self.contactsManager.displayName(for: address, transaction: transaction)
-            let usernameFormat = (self.paymentItem.isIncoming
-                                    ? OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT",
-                                                        comment: "Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}.")
-                                    : OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT",
-                                                        comment: "Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}."))
-            usernameLabel.text = String(format: usernameFormat, username)
+            let displayName = Self.contactsManager.displayName(for: address, tx: transaction).resolvedValue()
+            let displayNameFormat = (
+                self.paymentItem.isIncoming
+                ? OWSLocalizedString(
+                    "SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT",
+                    comment: "Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}."
+                )
+                : OWSLocalizedString(
+                    "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT",
+                    comment: "Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}."
+                )
+            )
+            usernameLabel.text = String(format: displayNameFormat, displayName)
         }
 
         let headerStack = UIStackView(arrangedSubviews: stackViews)

@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "รูปภาพ";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "รูปถ่าย";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "การโทร";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "โทรเข้า";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "ไม่ได้รับ";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "โทรออก";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "ล้าง";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "การดำเนินการนี้จะลบประวัติการโทรทั้งหมดอย่างถาวร";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "ล้างประวัติการโทรใช่หรือไม่";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "ลบ";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "ทั้งหมด";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "ไม่ได้รับ";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "ไปที่แชท";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "เข้าร่วมการโทรเสียง";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "เข้าร่วม";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "เข้าร่วมวิดีโอคอล";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "ไม่มีสายที่ไม่ได้รับ";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "ไม่มีการโทรล่าสุด";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "เริ่มต้นด้วยการโทรหาเพื่อนของคุณ";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "กลับไปที่สาย";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "กลับไปที่การโทรกลุ่ม";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "ไม่พบผลลัพธ์สำหรับ '%1$@'";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "เลือก";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "เลือก";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "โทรเสียง";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "โทรวิดีโอ";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "ข้อมูล";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "ถ่ายรูปและส่งรูป";
 
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ค้นหาด้วยชื่อผู้ใช้";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "เปิดการตั้งค่า";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "คุณสามารถเปิดการเข้าถึงรายชื่อผู้ติดต่อในการตั้งค่าของ iOS เพื่อดูว่าใครในรายชื่อผู้ติดต่อของคุณเป็นผู้ใช้ Signal";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "เชื่อมโยงอุปกรณ์ใหม่";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ ถูกบล็อกอยู่";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ อยู่ในรายชื่อผู้ติดต่อของระบบคุณ";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "ไม่มีข้อความส่วนตัวกับ %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "มีคำขอส่งข้อความที่รอตอบกลับ";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "เครือข่าย Signal";
@@ -1288,15 +1369,6 @@
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "เพิ่มลงในรายชื่อผู้ติดต่อของระบบ";
 
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "ผู้ดูแล";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "ทั้งหมด";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "หยุดใช้";
-
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "เลือกว่าใครสามารถแก้ไขชื่อกลุ่ม รูปภาพ คำอธิบาย และตั้งเวลาให้ข้อความหายไป";
 
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "โล่";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "คุณจะไม่ได้รับข้อความหรือความเคลื่อนไหวจากผู้ใช้นี้อีกต่อไป";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "คุณจะไม่ได้รับข้อความหรือความเคลื่อนไหวจากกลุ่มนี้อีกต่อไป";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "บล็อกกลุ่ม";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "บล็อกผู้ใช้";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "สายเรียกเข้า";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "วิดีโอคอลขาเข้า";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "โทรเสียงที่พลาด";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "วิดีโอคอลที่ไม่ได้รับ";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "สายโทรออก";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "วิดีโอคอลขาออก";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "แก้ไข";
@@ -1425,6 +1509,9 @@
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "ลบ %1$@ ออกจากกลุ่มใช่หรือไม่";
+
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "รายงานว่าเป็นสแปม";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "ปลดจากการเป็นผู้ดูแล";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "การดาวน์โหลดแฟ้มแนบล้มเหลว";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "อัปโหลดไฟล์แนบไม่สำเร็จ";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "ไม่สามารถส่งข้อความจาก %1$@ ได้";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "ค้นหาข้อมูลบัญชีของคุณ";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "ป้อนชื่อผู้ใช้แล้วตามด้วยจุดและชุดตัวเลข";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "ชื่อผู้ใช้";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "ค้นหาด้วยชื่อผู้ใช้";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "ทำเครื่องหมายว่าตรวจยืนยันแล้ว";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "สมาชิก";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "แตะเพื่อพิจารณา";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "สมาชิก";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "พิจารณาสมาชิกกลุ่ม";
 
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "คุณได้ส่งคำขอให้ %1$@ เปิดใช้การชำระเงินแล้ว";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "รายงานว่าเป็นสแปมแล้ว";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal ได้รับแจ้งว่าบุคคลนี้อาจส่งข้อความสแปมแล้ว โดย Signal จะไม่สามารถเห็นเนื้อหาใดๆ ของแชท";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "รายงานว่าเป็นสแปมแล้ว";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "ชวนเพื่อนมาใช้ Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "ดูเพิ่ม";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "ค้นหา";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "บล็อกและลบ";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "รายงานว่าเป็นสแปมและบล็อก";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ลบและออกจากกลุ่มใช่หรือไม่";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Signal พบผู้ติดต่ออีกรายการที่มีชื่อเหมือนกัน โปรดพิจารณาคำขออย่างถี่ถ้วน";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "ผู้ติดต่อของคุณ";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "ผู้ใช้คนนี้ใช้ชื่อเหมือนกันกับผู้ติดต่ออีกคน";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "หากคุณไม่มั่นใจว่าคำขอมาจากใคร คุณสามารถพิจารณาได้จากรายชื่อผู้ติดต่อด้านล่างแล้วเลือกตัดสินใจ";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "คำขอ";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "พิจารณาคำขอ";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "ปรับปรุงผู้ติดต่อ";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "พิจารณาคำขอ";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal จะได้รับแจ้งว่าบุคคลนี้อาจส่งข้อความสแปม โดย Signal จะไม่สามารถเห็นเนื้อหาใดๆ ของแชท";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "รายงานว่าเป็นสแปมหรือไม่";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "รายงานว่าเป็นสแปม";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "รายงานว่าเป็นสแปมแล้ว";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "รายงานว่าเป็นสแปมและบล็อกแล้ว";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "อนุญาตให้ %1$@ ส่งข้อความหารวมถึงมองเห็นชื่อและรูปของคุณหรือไม่ โปรดทราบว่าคุณเคยลบผู้ใช้คนนี้";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "รายงาน…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "เลิกบล็อก";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "แตะเพื่อเพิ่ม";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "เพิ่งเปลี่ยนชื่อของเขาจาก %1$@ เป็น %2$@";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ เพิ่งเปลี่ยนชื่อโปรไฟล์จาก %2$@ เป็น %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ข้าม";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "WiFi และเซลลูลาร์";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "โทรเสียง";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "เลือกผู้ติดต่อหรือกลุ่มเพื่อเริ่มต้นการโทร";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "การโทรใหม่";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "ส่งข้อความ";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "การโทรใหม่";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "โทรวิดีโอ";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ค้นหาด้วยหมายเลขโทรศัพท์";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "ค้นหาด้วยชื่อผู้ใช้";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "กลุ่มแบบใหม่";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "เลือกกลุ่ม";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "ค้นหา";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ค้นหาผู้ใช้";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ค้นหาด้วยหมายเลขโทรศัพท์";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "ตั้งชื่อสตอรี่";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ค้นหาผู้ติดต่อด้วยหมายเลขโทรศัพท์";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "ค้นหาผู้ติดต่อด้วยชื่อผู้ใช้";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "ไม่มีกลุ่มร่วมกัน";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "คนที่คุณไม่รู้จัก";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "จะไม่มีใครเห็นหมายเลขโทรศัพท์ของคุณ เว้นแต่ว่าคนคนนั้นจะบันทึกเบอร์คุณไว้ในรายชื่อผู้ติดต่อบนโทรศัพท์";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "จะไม่มีใครเห็นหมายเลขโทรศัพท์ของคุณ";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5414,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "เกี่ยวกับ (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ ได้เปลี่ยนชื่อโปรไฟล์ของพวกเขาจาก %2$@ เป็น %3$@";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ เปลี่ยนชื่อโปรไฟล์จาก %2$@ เป็น %3$@";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ได้เปลี่ยนชื่อโปรไฟล์เป็น %2$@";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ เปลี่ยนชื่อโปรไฟล์เป็น %2$@";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "ชื่อของคุณ";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "ชื่อผู้ใช้ คิวอาร์โค้ดและลิงก์จะไม่ปรากฏบนโปรไฟล์ของคุณ เราขอแนะนำให้แชร์ชื่อผู้ใช้ของคุณกับคนที่ไว้วางใจเท่านั้น";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "ผู้ติดต่อจะสามารถส่งข้อความหาคุณผ่านชื่อผู้ใช้ที่คุณกำหนด วิธีนี้ทำให้คุณไม่จำเป็นต้องบอกหมายเลขโทรศัพท์กับใคร";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "ที่อยู่พร็อกซี";
@@ -5731,6 +5866,48 @@
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "หมายเลขความปลอดภัยของคุณกับ %1$@ ได้เปลี่ยนไป คุณอาจต้องการตรวจยืนยันอีกครั้ง";
 
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "คำแนะนำเพื่อความปลอดภัย";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "หากมีคนที่ไม่รู้จักส่งข้อความหาคุณเกี่ยวกับคริปโตเคอร์เรนซี (เช่น บิตคอยน์) หรือโอกาสทางการเงิน โปรดระมัดระวังเป็นพิเศษ เพราะเป็นไปได้สูงว่านั่นคือสแปม";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "การหลอกลวงทางการเงินหรือคริปโต";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "ระวังให้มากเมื่อได้รับการติดต่อจากหน่วยงานรัฐหรือธุรกิจห้างร้าน ข้อความที่เกี่ยวกับสำนักงานภาษี บริษัทขนส่ง หรือหน่วยงานใกล้เคียงกันนี้อาจเป็นสแปม";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "ธุรกิจและหน่วยงานปลอม";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "โปรดพิจารณาคำขอนี้อย่างถี่ถ้วน กลุ่มนี้ไม่มีสมาชิกที่เป็นผู้ติดต่อของคุณหรือผู้ใช้ที่คุณแชทด้วย ใช้ความระมัดระวังและลองตรวจสอบตามข้อสังเกตนี้:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "คำแนะนำเพื่อความปลอดภัย";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "โปรดใช้ความระมัดระวังในการตอบรับคำขอส่งข้อความจากคนที่คุณไม่รู้จัก ลองตรวจสอบตามข้อสังเกตนี้:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "ระวังข้อความจากคนแปลกหน้าที่มีลิงก์ไปยังเว็บไซต์ อย่ากดลิงก์จากผู้ใช้ที่คุณไม่ไว้วางใจโดยเด็ดขาด";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "ข้อความที่แนบลิงก์";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "ผู้ส่งสแปมมักเริ่มต้นส่งข้อความด้วยคำทักทายทั่วไป เช่น “สวัสดี” เพื่อเรียกความสนใจของคุณ หากคุณตอบข้อความ คนพวกนั้นอาจชวนคุณพูดคุยต่อไปเรื่อยๆ";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "ข้อความคลุมเครือหรือไม่เจาะจง";
+
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "สแกนรหัส QR บนอุปกรณ์ของผู้ติดต่อของคุณ";
 
@@ -5768,7 +5945,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "ปลดล็อก Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "ชื่อ ชื่อผู้ใช้ และหมายเลข";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "ชื่อ ชื่อผู้ใช้ หรือหมายเลขโทรศัพท์";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ค้นหาโดยชื่อหรือหมายเลข";
@@ -6020,10 +6197,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "ไอคอนแอป";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "แสดงรูปผู้ติดต่อจากระบบ ถ้าทำได้";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "แสดงรูปผู้ติดต่อของระบบ ถ้าทำได้";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "ใช้รูปผู้ติดต่อจากระบบ";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "ใช้รูปผู้ติดต่อของระบบ";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "ธีม";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "หากต้องการเปลี่ยนการตั้งค่านี้ ให้ไปที่หัวข้อ “คนที่สามารถเห็นหมายเลขโทรศัพท์ของฉัน” แล้วเลือก “ไม่อนุญาตให้ใครเห็น”";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "คนที่สามารถใช้หมายเลขโทรศัพท์ค้นหาฉันได้";
 
@@ -7253,7 +7436,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "รับคำขอส่งข้อความ";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "มีรายชื่ออยู่ในระบบผู้ติดต่อของคุณ";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "บันทึกไว้ในรายชื่อผู้ติดต่อของระบบคุณ";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "เครือข่ายของคุณจะเห็นชื่อและรูปภาพของคุณ รวมถึงโพสต์ที่คุณส่งใน “สตอรี่ของฉัน” เว้นแต่ว่าคุณจะซ่อนสตอรี่นั้นจากพวกเขา";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "ปิดการแจ้งว่าอ่านแล้ว";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "คัดลอกไอดีสมาชิกไปยังคลิปบอร์ดแล้ว";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "คัดลอกไอดีผู้บริจาคไปยังคลิปบอร์ดแล้ว";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "หมายเลขความปลอดภัยของคุณกับ %1$@ ตรงกัน คุณสามารถทำเครื่องหมายว่าผู้ติดต่อนี้ได้รับการตรวจยืนยันแล้ว";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "คิวอาร์โค้ดและลิงก์";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "ระบบจะไม่แสดงหมายเลขโทรศัพท์ของคุณในแชทอีกต่อไป ผู้ติดต่อจะยังคงเห็นหมายเลขโทรศัพท์ของคุณ หากบันทึกเบอร์คุณไว้ในรายชื่อติดต่อ";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "การรักษาความเป็นส่วนตัวของหมายเลขโทรศัพท์";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "วิธีใหม่ในการติดต่อสื่อสาร";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "ผู้ติดต่อจะสามารถส่งข้อความหาคุณผ่านชื่อผู้ใช้ที่คุณกำหนด วิธีนี้ทำให้คุณไม่จำเป็นต้องบอกหมายเลขโทรศัพท์กับใคร โดยชื่อผู้ใช้จะไม่ปรากฏบนโปรไฟล์ของคุณ";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "ชื่อผู้ใช้";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "รีเซ็ต";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "หากคุณรีเซ็ตคิวอาร์โค้ด คิวอาร์โค้ดและลิงก์ที่มีอยู่เดิมของคุณจะใช้งานไม่ได้อีกต่อไป";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "หากคุณรีเซ็ตคิวอาร์โค้ดและลิงก์ คิวอาร์โค้ดและลิงก์ที่มีอยู่เดิมของคุณจะใช้งานไม่ได้อีกต่อไป";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "รีเซ็ตคิวอาร์โค้ดและลิงก์ของคุณแล้ว และสร้างคิวอาร์โค้ดและลิงก์ใหม่เรียบร้อยแล้ว";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "แบ่งปัน";
@@ -7751,7 +7937,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "การเปลี่ยนชื่อผู้ใช้จะทำให้คิวอาร์โค้ดและลิงก์ที่มีอยู่เดิมของคุณถูกรีเซ็ต ต้องการดำเนินการต่อหรือไม่";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ชื่อผู้ใช้จะช่วยให้ผู้ใช้รายอื่นส่งข้อความหาคุณได้โดยไม่จำเป็นต้องมีหมายเลขโทรศัพท์ของคุณ ชื่อผู้ใช้จะถูกผูกเข้ากับกลุ่มตัวเลขเพื่อช่วยรักษาความเป็นส่วนตัวของข้อมูลคุณ %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ชื่อผู้ใช้จะต้องมีชุดตัวเลขร่วมด้วยเสมอ %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "เลือกชื่อผู้ใช้";
@@ -7771,17 +7957,20 @@
 /* An error message shown when the user wants to set their username to an unavailable value. */
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "ไม่สามารถใช้ชื่อผู้ใช้นี้ได้";
 
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "คุณลองตั้งชื่อหลายครั้งเกินไป โปรดลองใหม่ในภายหลัง";
+
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "ชื่อผู้ใช้";
 
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "ชื่อผู้ใช้";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "ชื่อผู้ใช้ต้องมีอักขระอย่างน้อย %1$@ ตัว";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "ไม่สามารถลงท้ายชื่อผู้ใช้ด้วยตัวเลข 00 ได้ โปรดลองอีกครั้งด้วยตัวเลข 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "ไม่สามารถใช้ตัวเลข 00 ได้ โปรดกรอกตัวเลข 1–9";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "สามารถอัปเดตชื่อผู้ใช้เมื่ออุปกรณ์เชื่อมต่อกับอินเทอร์เน็ตอยู่เท่านั้น";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "เว้นว่างชื่ออุปกรณ์ไม่ได้";

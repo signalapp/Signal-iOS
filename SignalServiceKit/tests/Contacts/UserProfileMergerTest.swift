@@ -109,7 +109,7 @@ class UserProfileMergerTest: XCTestCase {
             badges: [],
             lastFetchDate: nil,
             lastMessagingDate: nil,
-            isPniCapable: false
+            isPhoneNumberShared: false
         )
     }
 }

@@ -453,6 +453,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
             case TSInfoMessagePaymentsActivationRequest:
             case TSInfoMessagePaymentsActivated:
             case TSInfoMessageSessionSwitchover:
+            case TSInfoMessageReportedSpam:
                 break;
         }
     }

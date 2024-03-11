@@ -101,19 +101,11 @@ public class AuthedAccount: NSObject {
 
     @objc
     public func isAddressForLocalUser(_ address: SignalServiceAddress) -> Bool {
-        guard let localAddress = localUserAddress() else {
-            return false
-        }
-        return address.isEqualToAddress(localAddress)
-    }
-
-    @objc
-    public func localUserAddress() -> SignalServiceAddress? {
         switch info {
         case .implicit:
-            return nil
+            return false
         case let .explicit(info):
-            return info.localUserAddress()
+            return info.isAddressForLocalUser(address)
         }
     }
 
@@ -146,11 +138,7 @@ public class AuthedAccount: NSObject {
 extension AuthedAccount.Explicit {
 
     public func isAddressForLocalUser(_ address: SignalServiceAddress) -> Bool {
-        return address.isEqualToAddress(localUserAddress())
-    }
-
-    public func localUserAddress() -> SignalServiceAddress {
-        return SignalServiceAddress(serviceId: aci, phoneNumber: e164.stringValue)
+        return localIdentifiers.contains(address: address)
     }
 
     public var localIdentifiers: LocalIdentifiers {

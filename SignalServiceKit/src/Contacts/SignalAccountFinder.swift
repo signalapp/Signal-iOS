@@ -175,4 +175,15 @@ public class SignalAccountFinder: NSObject {
         }
         return result
     }
+
+    func fetchPhoneNumbers(tx: SDSAnyReadTransaction) throws -> [String] {
+        let sql = """
+            SELECT \(SignalAccount.columnName(.recipientPhoneNumber)) FROM \(SignalAccount.databaseTableName)
+        """
+        do {
+            return try String?.fetchAll(tx.unwrapGrdbRead.database, sql: sql).compacted()
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
 }

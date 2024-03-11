@@ -728,17 +728,65 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d عضو بالمجموعة له اسم متشابه.</string>
+			<string>%1$d عضو بالمجموعة لهم نفس الاسم.</string>
 			<key>one</key>
-			<string>%1$d عضو بالمجموعة له اسم متشابه.</string>
+			<string>%1$d عضو بالمجموعة له نفس الاسم.</string>
 			<key>two</key>
-			<string>%1$d عضوان بالمجموعة لهما اسم متشابه.</string>
+			<string>%1$d عضوان بالمجموعة لهما نفس الاسم.</string>
 			<key>few</key>
-			<string>%1$d أعضاء بالمجموعة لهم اسم متشابه.</string>
+			<string>%1$d أعضاء بالمجموعة لهم نفس الاسم.</string>
 			<key>many</key>
-			<string>%1$d عضوًا بالمجموعة لهم اسم متشابه.</string>
+			<string>%1$d عضو بالمجموعة لهم نفس الاسم.</string>
 			<key>other</key>
-			<string>%1$d عضوٍ بالمجموعة لهم اسم متشابه.</string>
+			<string>%1$d عضوا بالمجموعة لهم نفس اﻻسم.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>تم العثور على %1$d تضاربات أسماء في هذه المجموعة.</string>
+			<key>one</key>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة.</string>
+			<key>two</key>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة.</string>
+			<key>few</key>
+			<string>تم العثور على %1$d تضاربات أسماء في هذه المجموعة.</string>
+			<key>many</key>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة.</string>
+			<key>other</key>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>%1$d أعضاء</string>
+			<key>one</key>
+			<string>%1$d عضو</string>
+			<key>two</key>
+			<string>%1$d عضويْن</string>
+			<key>few</key>
+			<string>%1$d أعضاء</string>
+			<key>many</key>
+			<string>%1$d عضوًا</string>
+			<key>other</key>
+			<string>%1$d عضو</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -752,17 +800,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d عضو بالمجموعة له اسم متشابه، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
+			<string>تم العثور على %1$d تضاربات أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>one</key>
-			<string>%1$d عضو بالمجموعة له اسم متشابه، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
+			<string>تم العثور على %1$d تضارب اسم في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>two</key>
-			<string>%1$d عضوان بالمجموعة لهما أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
+			<string>تم العثور على %1$d تضاربي أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>few</key>
-			<string>%1$d أعضاء بالمجموعة لهم أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
+			<string>تم العثور على %1$d تضاربات أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>many</key>
-			<string>%1$d عضوًا بالمجموعة لهم أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 			<key>other</key>
-			<string>%1$d عضوٍ بالمجموعة لهم أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
+			<string>تم العثور على %1$d تضارب أسماء في هذه المجموعة. راجع الأعضاء أسفله أو اختر اتخاذ إجراء.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -776,7 +824,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d عضو بالمجموعة له اسم متشابه، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
+			<string>%1$d عضو بالمجموعة له نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
 			<key>one</key>
 			<string>%1$d عضو بالمجموعة له نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء.</string>
 			<key>two</key>
@@ -1819,6 +1867,30 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; مُشَاهدة</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; مُشَاهدة</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>يجب أن تبدأ أسماء المُستخدمين بـ %1$d أحرف على الأقل</string>
+			<key>one</key>
+			<string>يجب أن تبدأ أسماء المُستخدمين بـ %1$d حرف على الأقل</string>
+			<key>two</key>
+			<string>يجب أن تبدأ أسماء المُستخدمين بـ %1$d حرفين على الأقل</string>
+			<key>few</key>
+			<string>يجب أن تبدأ أسماء المُستخدمين بـ %1$d أحرف على الأقل</string>
+			<key>many</key>
+			<string>يجب أن تبدأ أسماء المُستخدمين بـ %1$d حرفا على الأقل</string>
+			<key>other</key>
+			<string>يجب أن تبدأ أسماء المُستخدمين بـ %1$d حرف على الأقل</string>
 		</dict>
 	</dict>
 </dict>

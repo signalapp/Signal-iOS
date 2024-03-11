@@ -68,9 +68,11 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
                         return false
                     }
 
-                    guard GroupsV2MessageProcessor.discardMode(forMessageFrom: sender,
-                                                               groupId: groupId,
-                                                               transaction: transaction) == .doNotDiscard else {
+                    guard GroupsV2MessageProcessor.discardMode(
+                        forMessageFrom: sender,
+                        groupId: groupId,
+                        tx: transaction
+                    ) == .doNotDiscard else {
                         NSELogger.uncorrelated.warn("discarding group ring \(ringId) from \(sender)")
                         return false
                     }
@@ -181,7 +183,10 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         serverReceivedTimestamp: UInt64,
         completion: @escaping () -> Void
     ) {
-        NSELogger.uncorrelated.info("Received group call update for thread \(groupThread.uniqueId)")
+        GroupCallPeekLogger.shared.info(
+            "Received group call update message for thread \(groupThread.uniqueId), eraId \(String(describing: updateMessage.eraID))"
+        )
+
         lightweightGroupCallManager?.peekGroupCallAndUpdateThread(
             groupThread,
             peekTrigger: .receivedGroupUpdateMessage(

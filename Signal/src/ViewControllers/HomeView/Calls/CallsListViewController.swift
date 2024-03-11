@@ -21,41 +21,48 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallViewModel.ID>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallViewModel.ID>
 
+    private enum Constants {
+        /// The maximum number of search results to match.
+        static let maxSearchResults: UInt = 100
+
+        /// An interval to wait after the search term changes before actually
+        /// issuing a search.
+        static let searchDebounceInterval: TimeInterval = 0.1
+    }
+
     // MARK: - Dependencies
 
     private struct Dependencies {
+        let badgeManager: BadgeManager
+        let blockingManager: BlockingManager
         let callRecordDeleteManager: CallRecordDeleteManager
+        let callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
+        let callRecordMissedCallManager: CallRecordMissedCallManager
         let callRecordQuerier: CallRecordQuerier
         let callRecordStore: CallRecordStore
         let callService: CallService
-        let contactsManager: ContactsManagerProtocol
+        let contactsManager: any ContactManager
         let db: SDSDatabaseStorage
-        let fullTextSearchFinder: CallRecordLoader.Shims.FullTextSearchFinder
+        let fullTextSearchFinder: FullTextSearchFinder.Type
         let interactionStore: InteractionStore
         let threadStore: ThreadStore
     }
 
     private lazy var deps: Dependencies = Dependencies(
+        badgeManager: AppEnvironment.shared.badgeManager,
+        blockingManager: SSKEnvironment.shared.blockingManagerRef,
         callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
+        callRecordDeleteAllJobQueue: SSKEnvironment.shared.callRecordDeleteAllJobQueueRef,
+        callRecordMissedCallManager: DependenciesBridge.shared.callRecordMissedCallManager,
         callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
         callRecordStore: DependenciesBridge.shared.callRecordStore,
         callService: NSObject.callService,
         contactsManager: NSObject.contactsManager,
         db: NSObject.databaseStorage,
-        fullTextSearchFinder: CallRecordLoader.Wrappers.FullTextSearchFinder(),
+        fullTextSearchFinder: FullTextSearchFinder.self,
         interactionStore: DependenciesBridge.shared.interactionStore,
         threadStore: DependenciesBridge.shared.threadStore
     )
-
-    private enum Constants {
-        /// The max number of records to request when loading a new page of
-        /// calls.
-        static let pageSizeToLoad: UInt = 50
-
-        /// The maximum number of calls this view should hold in-memory at once.
-        /// Any calls beyond this number are dropped when loading new ones.
-        static let maxCallsToHoldAtOnce: Int = 150
-    }
 
     // MARK: - Lifecycle
 
@@ -79,12 +86,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.titleView = tabPicker
+        navigationItem.titleView = filterPicker
         updateBarButtonItems()
-
-        let searchController = UISearchController(searchResultsController: nil)
-        navigationItem.searchController = searchController
-        searchController.searchResultsUpdater = self
 
         view.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
@@ -95,16 +98,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         tableView.contentInset = .zero
         tableView.register(CallCell.self, forCellReuseIdentifier: Self.callCellReuseIdentifier)
         tableView.dataSource = dataSource
-
-        // [CallsTab] TODO: Remove when releasing
-        let internalReminder = ReminderView(
-            style: .warning,
-            text: "The calls tab is internal-only. Some features are not yet implemented."
-        )
-        // tableHeaderView doesn't like autolayout. I'm sure I could get it to
-        // work but it's internal anyway so I'm not gonna bother.
-        internalReminder.frame.height = 100
-        tableView.tableHeaderView = internalReminder
 
         view.addSubview(emptyStateMessageView)
         emptyStateMessageView.autoCenterInSuperview()
@@ -119,6 +112,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         loadCallRecordsAnew(animated: false)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        updateDisplayedDateForAllCallCells()
+        clearMissedCallsIfNecessary()
+    }
+
     override func themeDidChange() {
         super.themeDidChange()
         applyTheme()
@@ -128,7 +126,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func updateBarButtonItems() {
         if tableView.isEditing {
             navigationItem.leftBarButtonItem = cancelMultiselectButton()
-            navigationItem.rightBarButtonItem = nil
+            navigationItem.rightBarButtonItem = deleteAllCallsButton()
         } else {
             navigationItem.leftBarButtonItem = profileBarButtonItem()
             navigationItem.rightBarButtonItem = newCallButton()
@@ -148,7 +146,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             actions: { settingsAction in
                 [
                     .init(
-                        title: "Select", // [CallsTab] TODO: Localize
+                        title: Strings.selectCallsButtonTitle,
                         image: Theme.iconImage(.contextMenuSelect),
                         attributes: []
                     ) { [weak self] _ in
@@ -185,8 +183,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         multiselectToolbarContainer?.toolbar
     }
 
+    private lazy var toolbarDeleteButton = UIBarButtonItem(
+        title: CommonStrings.deleteButton,
+        style: .plain,
+        target: self,
+        action: #selector(deleteSelectedCalls)
+    )
+
     private func showToolbar() {
-        guard let tabController = tabBarController as? HomeTabBarController else { return }
+        guard
+            // Don't create a new toolbar if we already have one
+            multiselectToolbarContainer == nil,
+            let tabController = tabBarController as? HomeTabBarController
+        else { return }
 
         let toolbarContainer = BlurredToolbarContainer()
         toolbarContainer.alpha = 0
@@ -195,64 +204,31 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         toolbarContainer.autoPinEdge(toSuperviewEdge: .bottom)
         self.multiselectToolbarContainer = toolbarContainer
 
-        tabController.setTabBarHidden(true, animated: true, duration: 0.1) { _ in
+        let bottomInset = tabController.tabBar.height - tabController.tabBar.safeAreaInsets.bottom
+        self.tableView.contentInset.bottom = bottomInset
+        self.tableView.verticalScrollIndicatorInsets.bottom = bottomInset
+
+        tabController.setTabBarHidden(true, animated: true, duration: 0.1) { [weak self] _ in
+            guard let self else { return }
             // See ChatListViewController.showToolbar for why this is async
             DispatchQueue.main.async {
+                let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+                self.multiselectToolbar?.setItems(
+                    [spacer, self.toolbarDeleteButton],
+                    animated: false
+                )
                 self.updateMultiselectToolbarButtons()
             }
             UIView.animate(withDuration: 0.25) {
                 toolbarContainer.alpha = 1
-            } completion: { _ in
-                self.tableView.contentSize.height += toolbarContainer.height
             }
         }
     }
 
     private func updateMultiselectToolbarButtons() {
-        guard let multiselectToolbar else { return }
-
         let selectedRows = tableView.indexPathsForSelectedRows ?? []
-        let areAllEntriesSelected = selectedRows.count == tableView.numberOfRows(inSection: 0)
         let hasSelectedEntries = !selectedRows.isEmpty
-
-        let selectAllButtonTitle = areAllEntriesSelected ? "Deselect all" : "Select all" // [CallsTab] TODO: Localize
-        let selectAllButton = UIBarButtonItem(
-            title: selectAllButtonTitle,
-            style: .plain,
-            target: self,
-            action: #selector(selectAllCalls)
-        )
-
-        let deleteButton = UIBarButtonItem(
-            title: CommonStrings.deleteButton,
-            style: .plain,
-            target: self,
-            action: #selector(deleteSelectedCalls)
-        )
-        deleteButton.isEnabled = hasSelectedEntries
-
-        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        multiselectToolbar.setItems(
-            [selectAllButton, spacer, deleteButton],
-            animated: false
-        )
-    }
-
-    @objc
-    private func selectAllCalls() {
-        let selectedRows = tableView.indexPathsForSelectedRows ?? []
-        let numberOfRows = tableView.numberOfRows(inSection: 0)
-        let areAllEntriesSelected = selectedRows.count == numberOfRows
-
-        if areAllEntriesSelected {
-            selectedRows.forEach { tableView.deselectRow(at: $0, animated: false) }
-        } else {
-            (0..<numberOfRows)
-                .lazy
-                .map { .indexPathForPrimarySection(row: $0) }
-                .forEach { tableView.selectRow(at: $0, animated: false, scrollPosition: .none) }
-        }
-        updateMultiselectToolbarButtons()
+        toolbarDeleteButton.isEnabled = hasSelectedEntries
     }
 
     @objc
@@ -261,12 +237,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             return
         }
 
-        let selectedViewModels: [CallViewModel] = selectedRows.compactMap { idxPath in
-            return calls.viewModels[safe: idxPath.row]
+        let selectedViewModelIds: [CallViewModel.ID] = selectedRows.compactMap { idxPath in
+            return calls.allLoadedViewModelIds[safe: idxPath.row]
         }
-        owsAssertBeta(selectedRows.count == selectedViewModels.count)
+        owsAssertBeta(selectedRows.count == selectedViewModelIds.count)
 
-        deleteCalls(from: selectedViewModels)
+        deleteCalls(viewModelIds: selectedViewModelIds)
     }
 
     // MARK: New call button
@@ -278,14 +254,21 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             target: self,
             action: #selector(newCall)
         )
-        // [CallsTab] TODO: Accessibility label
+        barButtonItem.accessibilityLabel = OWSLocalizedString(
+            "NEW_CALL_LABEL",
+            comment: "Accessibility label for the new call button on the Calls Tab"
+        )
+        barButtonItem.accessibilityHint = OWSLocalizedString(
+            "NEW_CALL_HINT",
+            comment: "Accessibility hint describing the action of the new call button on the Calls Tab"
+        )
         return barButtonItem
     }
 
     @objc
     private func newCall() {
-        Logger.debug("New call")
         let viewController = NewCallViewController()
+        viewController.delegate = self
         let modal = OWSNavigationController(rootViewController: viewController)
         self.navigationController?.presentFormSheet(modal, animated: true)
     }
@@ -304,7 +287,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     @objc
     private func cancelMultiselect() {
-        Logger.debug("Cancel selecting calls")
         tableView.setEditing(false, animated: true)
         updateBarButtonItems()
         hideToolbar()
@@ -314,11 +296,46 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         guard let multiselectToolbarContainer else { return }
         UIView.animate(withDuration: 0.25) {
             multiselectToolbarContainer.alpha = 0
-            self.tableView.contentSize.height = self.tableView.sizeThatFitsMaxSize.height
         } completion: { _ in
             multiselectToolbarContainer.removeFromSuperview()
+            self.multiselectToolbarContainer = nil
             guard let tabController = self.tabBarController as? HomeTabBarController else { return }
-            tabController.setTabBarHidden(false, animated: true, duration: 0.1)
+            tabController.setTabBarHidden(false, animated: true, duration: 0.1) { _ in
+                self.tableView.contentInset.bottom = 0
+                self.tableView.verticalScrollIndicatorInsets.bottom = 0
+            }
+        }
+    }
+
+    // MARK: Delete All button
+
+    private func deleteAllCallsButton() -> UIBarButtonItem {
+        return UIBarButtonItem(
+            title: Strings.deleteAllCallsButtonTitle,
+            style: .plain,
+            target: self,
+            action: #selector(promptAboutDeletingAllCalls)
+        )
+    }
+
+    @objc
+    private func promptAboutDeletingAllCalls() {
+        OWSActionSheets.showConfirmationAlert(
+            title: Strings.deleteAllCallsPromptTitle,
+            message: Strings.deleteAllCallsPromptMessage,
+            proceedTitle: Strings.deleteAllCallsButtonTitle,
+            proceedStyle: .destructive
+        ) { _ in
+            self.deps.db.asyncWrite { tx in
+                /// This will ultimately post "call records deleted"
+                /// notifications that this view is listening to, so we don't
+                /// need to do any manual UI updates.
+                self.deps.callRecordDeleteAllJobQueue.addJob(
+                    sendDeleteAllSyncMessage: true,
+                    deleteAllBeforeTimestamp: Date().ows_millisecondsSince1970,
+                    tx: tx
+                )
+            }
         }
     }
 
@@ -329,26 +346,50 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case missed = 1
     }
 
-    private lazy var tabPicker: UISegmentedControl = {
-        let segmentedControl = UISegmentedControl(items: ["All", "Missed"]) // [CallsTab] TODO: Localize
+    private lazy var filterPicker: UISegmentedControl = {
+        let segmentedControl = UISegmentedControl(items: [
+            Strings.filterPickerOptionAll,
+            Strings.filterPickerOptionMissed
+        ])
         segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(tabChanged), for: .valueChanged)
+        segmentedControl.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
         return segmentedControl
     }()
 
+    // MARK: Search bar
+
+    /// Sets the navigation item's search controller if it hasn't already been
+    /// set. Call this after loading the table the first time so that the search
+    /// bar is collapsed by default.
+    func setSearchControllerIfNeeded() {
+        guard navigationItem.searchController == nil else { return }
+        let searchController = UISearchController(searchResultsController: nil)
+        navigationItem.searchController = searchController
+        searchController.searchResultsUpdater = self
+    }
+
     @objc
-    private func tabChanged() {
+    private func filterChanged() {
         loadCallRecordsAnew(animated: true)
         updateMultiselectToolbarButtons()
     }
 
     private var currentFilterMode: FilterMode {
-        FilterMode(rawValue: tabPicker.selectedSegmentIndex) ?? .all
+        FilterMode(rawValue: filterPicker.selectedSegmentIndex) ?? .all
     }
 
     // MARK: - Observers and Notifications
 
     private func attachSelfAsObservers() {
+        deps.db.appendDatabaseChangeDelegate(self)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(significantTimeChangeOccurred),
+            name: UIApplication.significantTimeChangeNotification,
+            object: nil
+        )
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(groupCallInteractionWasUpdated),
@@ -368,6 +409,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             observer: self,
             syncStateImmediately: false
         )
+    }
+
+    /// A significant time change has occurred, according to the system. We
+    /// should update the displayed date for all visible calls.
+    @objc
+    private func significantTimeChangeOccurred() {
+        updateDisplayedDateForAllCallCells()
+    }
+
+    private func updateDisplayedDateForAllCallCells() {
+        for callCell in tableView.visibleCells.compactMap({ $0 as? CallCell }) {
+            callCell.updateDisplayedDateAndScheduleRefresh()
+        }
     }
 
     /// When a group call interaction changes, we'll reload the row for the call
@@ -500,103 +554,199 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         reloadRows(forIdentifiers: callViewModelIdsToReload)
     }
 
-    // MARK: - Call Record Loading
+    // MARK: - Clear missed calls
 
-    /// Loads call records that we convert to ``CallViewModel``s. Configured on
-    /// init with the current UI state of this view, e.g. filter mode and/or
-    /// search term.
-    private var callRecordLoader: CallRecordLoader!
+    /// A serial queue for clearing the missed-call badge.
+    private let clearMissedCallQueue = DispatchQueue(label: "org.signal.calls-list-clear-missed")
 
-    /// Recreates ``callRecordLoader`` with the current UI state, and kicks off
-    /// an initial load.
+    /// Asynchronously clears any missed-call badges, avoiding write
+    /// transactions if possible.
+    ///
+    /// - Important
+    /// The asynchronous work enqueued by this method is executed serially, such
+    /// that multiple calls to this method will not race.
+    private func clearMissedCallsIfNecessary() {
+        clearMissedCallQueue.async {
+            let unreadMissedCallCount = self.deps.db.read { tx in
+                self.deps.callRecordMissedCallManager.countUnreadMissedCalls(
+                    tx: tx.asV2Read
+                )
+            }
+
+            /// We expect that the only unread calls to mark as read will be
+            /// missed calls, so if there's no unread missed calls no need to
+            /// open a write transaction.
+            guard unreadMissedCallCount > 0 else { return }
+
+            self.deps.db.write { tx in
+                self.deps.callRecordMissedCallManager.markUnreadCallsAsRead(
+                    beforeTimestamp: nil,
+                    sendMarkedAsReadSyncMessage: true,
+                    tx: tx.asV2Write
+                )
+            }
+        }
+    }
+
+    // MARK: - Call loading
+
+    private var _calls: LoadedCalls!
+    private var calls: LoadedCalls! {
+        get {
+            AssertIsOnMainThread()
+            return _calls
+        }
+        set(newValue) {
+            AssertIsOnMainThread()
+            _calls = newValue
+        }
+    }
+
+    /// Used to avoid concurrent calls to ``loadCallRecordsAnew(animated:)``
+    /// from clobbering each other.
+    private let loadCallRecordsAnewToken = AtomicUuid(lock: AtomicLock())
+
+    /// Asynchronously resets our current ``LoadedCalls`` for the current UI
+    /// state, then kicks off an initial page load.
+    ///
+    /// - Note
+    /// This method will perform an FTS search for our current search term, if
+    /// we have one. That operation can be painfully slow for users with a large
+    /// FTS index, so we need to do it asynchronously.
     private func loadCallRecordsAnew(animated: Bool) {
-        AssertIsOnMainThread()
-
+        let searchTerm = self.searchTerm
         let onlyLoadMissedCalls: Bool = {
-            switch currentFilterMode {
+            switch self.currentFilterMode {
             case .all: return false
             case .missed: return true
             }
         }()
 
-        // Throw away all our existing calls.
-        calls = Calls(models: [])
+        let loadIdentifier = loadCallRecordsAnewToken.rotate()
 
-        // Rebuild the loader.
-        callRecordLoader = CallRecordLoader(
-            callRecordQuerier: deps.callRecordQuerier,
-            fullTextSearchFinder: deps.fullTextSearchFinder,
-            configuration: CallRecordLoader.Configuration(
-                onlyLoadMissedCalls: onlyLoadMissedCalls,
-                searchTerm: searchTerm
-            )
-        )
+        deps.db.asyncRead(
+            block: { tx -> CallRecordLoader.Configuration in
+                if let searchTerm {
+                    let threadRowIdsMatchingSearchTerm: [Int64] = self.deps.fullTextSearchFinder
+                        .findThreadsMatching(
+                            searchTerm: searchTerm,
+                            maxSearchResults: Constants.maxSearchResults,
+                            tx: tx
+                        )
+                        .map { thread in
+                            guard let sqliteRowId = thread.sqliteRowId else {
+                                owsFail("How did we match a thread in the FTS index that hasn't been inserted?")
+                            }
 
-        // Load the initial page of records.
-        loadMoreCalls(direction: .older, animated: animated)
-    }
+                            return sqliteRowId
+                        }
 
-    private enum LoadDirection {
-        case older
-        case newer
-    }
-
-    /// Load more calls and add them to the table.
-    private func loadMoreCalls(
-        direction loadDirection: LoadDirection,
-        animated: Bool
-    ) {
-        deps.db.read { tx in
-            let loaderLoadDirection: CallRecordLoader.LoadDirection = {
-                switch loadDirection {
-                case .older:
-                    return .older(oldestCallTimestamp: calls.viewModels.last?.callBeganTimestamp)
-                case .newer:
-                    guard let newestCall = calls.viewModels.first else {
-                        // A little weird, but if we have no calls these are
-                        // equivalent anyway.
-                        return .older(oldestCallTimestamp: nil)
-                    }
-
-                    return .newer(newestCallTimestamp: newestCall.callBeganTimestamp)
+                    return CallRecordLoader.Configuration(
+                        onlyLoadMissedCalls: onlyLoadMissedCalls,
+                        onlyMatchThreadRowIds: threadRowIdsMatchingSearchTerm
+                    )
+                } else {
+                    return CallRecordLoader.Configuration(
+                        onlyLoadMissedCalls: onlyLoadMissedCalls,
+                        onlyMatchThreadRowIds: nil
+                    )
                 }
-            }()
+            },
+            completionQueue: .main,
+            completion: { configuration in
+                guard self.loadCallRecordsAnewToken.get() == loadIdentifier else {
+                    /// While we were building the configuration, another caller
+                    /// entered this method. Bail out in preference of the later
+                    /// caller!
+                    return
+                }
 
-            let newCallRecords: [CallRecord] = callRecordLoader.loadCallRecords(
-                loadDirection: loaderLoadDirection,
-                pageSize: Constants.pageSizeToLoad,
-                tx: tx.asV2Read
-            )
+                // Build a loader for this view's current state.
+                let callRecordLoader = CallRecordLoader(
+                    callRecordQuerier: self.deps.callRecordQuerier,
+                    configuration: configuration
+                )
 
-            let newViewModels: [CallViewModel] = newCallRecords.map { callRecord in
-                return createCallViewModel(callRecord: callRecord, tx: tx)
+                // Reset our loaded calls.
+                self.calls = LoadedCalls(
+                    callRecordLoader: callRecordLoader,
+                    createCallViewModelBlock: self.createCallViewModel
+                )
+
+                // Load the initial page of records. We've thrown away all our
+                // existing calls, so we want to always update the snapshot.
+                self.loadMoreCalls(
+                    direction: .older,
+                    animated: animated,
+                    forceUpdateSnapshot: true
+                )
             }
+        )
+    }
 
-            let combinedViewModels: [CallViewModel] = {
-                switch loadDirection {
-                case .older: return calls.viewModels + newViewModels
-                case .newer: return newViewModels + calls.viewModels
-                }
-            }()
-
-            if combinedViewModels.count <= Constants.maxCallsToHoldAtOnce {
-                calls = Calls(models: combinedViewModels)
-            } else {
-                let clampedModels: [CallViewModel] = {
-                    let overage = combinedViewModels.count - Constants.maxCallsToHoldAtOnce
-                    switch loadDirection {
-                    case .older:
-                        return Array(combinedViewModels.dropFirst(overage))
-                    case .newer:
-                        return Array(combinedViewModels.dropLast(overage))
-                    }
-                }()
-
-                calls = Calls(models: clampedModels)
+    /// Load more calls as necessary given that a row for the given index path
+    /// is soon going to be presented.
+    ///
+    /// - Returns
+    /// The call view model for this index path. A return value of `nil`
+    /// represents an unexpected error.
+    private func loadMoreCallsIfNecessary(
+        indexPathToBeDisplayed indexPath: IndexPath
+    ) -> CallViewModel? {
+        if indexPath.row == calls.allLoadedViewModelIds.count - 1 {
+            /// If this index path represents the oldest loaded call, try and
+            /// load another page of even-older calls.
+            loadMoreCalls(direction: .older, animated: false)
+        } else if !calls.hasCachedViewModel(rowIndex: indexPath.row) {
+            /// If we don't have a view model ready to go for this row, load
+            /// until we do.
+            ///
+            /// This is probably because we're scrolling through so many calls
+            /// we can't keep them all cached and we've evicted the view model
+            /// for this row, but we've scrolled back to it and need to re-load
+            /// the view model.
+            ///
+            /// Note that the table may request view models for totally disjoint
+            /// rows. For example, imagine we're scrolled down a couple hundred
+            /// calls and the user triggers the "scroll-to-top" gesture. The
+            /// table is gonna scroll super-fast to the top and request models
+            /// for rows right at the top, which have long been paged out. Along
+            /// the way, it may request view models for sporadic rows as it
+            /// passes over them.
+            ///
+            /// All of that to say: we need support for "page in view models for
+            /// an arbitrary index path", which is what this does.
+            deps.db.read { tx in
+                calls.loadUntilCached(rowIndex: indexPath.row, tx: tx)
             }
         }
 
-        updateSnapshot(animated: animated)
+        return calls.getCachedViewModel(rowIndex: indexPath.row)
+    }
+
+    /// Synchronously loads more calls, then asynchronously update the snapshot
+    /// if any new calls were actually loaded.
+    ///
+    /// - Parameter forceUpdateSnapshot
+    /// Whether we should always update the snapshot, regardless of if any new
+    /// calls were loaded.
+    private func loadMoreCalls(
+        direction loadDirection: LoadedCalls.LoadDirection,
+        animated: Bool,
+        forceUpdateSnapshot: Bool = false
+    ) {
+        let shouldUpdateSnapshot = deps.db.read { tx in
+            return calls.loadMore(direction: loadDirection, tx: tx)
+        }
+
+        guard forceUpdateSnapshot || shouldUpdateSnapshot else { return }
+
+        DispatchQueue.main.async {
+            self.updateSnapshot(animated: animated)
+            // Add the search bar after loading table content the first time so
+            // that it is collapsed by default.
+            self.setSearchControllerIfNeeded()
+        }
     }
 
     /// Converts a ``CallRecord`` to a ``CallViewModel``.
@@ -678,10 +828,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
             return CallViewModel(
                 backingCallRecord: callRecord,
-                title: deps.contactsManager.displayName(
-                    for: contactThread.contactAddress,
-                    transaction: tx
-                ),
+                title: deps.contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue(),
                 recipientType: .individual(type: callType, contactThread: contactThread),
                 direction: callDirection,
                 state: callState
@@ -699,13 +846,49 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
     }
 
+    // MARK: - Search term
+
+    /// - Important
+    /// Don't use this directly – use ``searchTerm``.
+    private var _searchTerm: String? {
+        didSet {
+            guard oldValue != searchTerm else {
+                // If the term hasn't changed, don't do anything.
+                return
+            }
+
+            searchTermDidChange()
+        }
+    }
+
+    /// The user's current search term. Coalesces empty strings into `nil`.
+    private var searchTerm: String? {
+        get { _searchTerm?.nilIfEmpty }
+        set { _searchTerm = newValue?.nilIfEmpty }
+    }
+
+    private func searchTermDidChange() {
+        let searchTermSnapshot = searchTerm
+
+        DispatchQueue.global().asyncAfter(deadline: .now() + Constants.searchDebounceInterval) {
+            guard self.searchTerm == searchTermSnapshot else {
+                /// The search term changed in the debounce period, so we'll
+                /// bail out here in preference for the later-changed search
+                /// term.
+                return
+            }
+
+            self.loadCallRecordsAnew(animated: true)
+        }
+    }
+
     // MARK: - Table view
 
     fileprivate enum Section: Int, Hashable {
         case primary = 0
     }
 
-    fileprivate struct CallViewModel: Hashable, Identifiable {
+    struct CallViewModel: Hashable, Identifiable {
         enum Direction: Hashable {
             case outgoing
             case incoming
@@ -714,11 +897,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             var label: String {
                 switch self {
                 case .outgoing:
-                    return "Outgoing" // [CallsTab] TODO: Localize
+                    return Strings.callDirectionLabelOutgoing
                 case .incoming:
-                    return "Incoming" // [CallsTab] TODO: Localize
+                    return Strings.callDirectionLabelIncoming
                 case .missed:
-                    return "Missed" // [CallsTab] TODO: Localize
+                    return Strings.callDirectionLabelMissed
                 }
             }
         }
@@ -822,127 +1005,47 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     let tableView = UITableView(frame: .zero, style: .plain)
 
-    /// - Important
-    /// Don't use this directly – use ``searchTerm``.
-    private var _searchTerm: String? {
-        didSet {
-            guard oldValue != searchTerm else {
-                // If the term hasn't changed, don't do anything.
-                return
-            }
-
-            loadCallRecordsAnew(animated: true)
-        }
-    }
-
-    /// The user's current search term. Coalesces empty strings into `nil`.
-    private var searchTerm: String? {
-        get { _searchTerm?.nilIfEmpty }
-        set { _searchTerm = newValue?.nilIfEmpty }
-    }
-
-    private struct Calls {
-        private(set) var viewModels: [CallViewModel]
-        private var viewModelIndicesByIds: [CallViewModel.ID: Int]
-
-        init(models: [CallViewModel]) {
-            self.viewModels = models
-            self.viewModelIndicesByIds = Self.viewModelIndicesByIds(viewModels: models)
-        }
-
-        private static func viewModelIndicesByIds(
-            viewModels: [CallViewModel]
-        ) -> [CallViewModel.ID: Int] {
-            return Dictionary(
-                viewModels.enumerated().map { (idx, model) -> (CallViewModel.ID, Int) in
-                    return (model.id, idx)
-                },
-                uniquingKeysWith: { _, new in new }
-            )
-        }
-
-        subscript(id id: CallViewModel.ID) -> CallViewModel? {
-            guard let index = viewModelIndicesByIds[id] else { return nil }
-
-            return viewModels[index]
-        }
-
-        mutating func dropViewModels(ids idsToRemove: [CallViewModel.ID]) {
-            let idsToRemove: Set<CallViewModel.ID> = Set(idsToRemove)
-
-            viewModels.removeAll { viewModel in
-                idsToRemove.contains(viewModel.id)
-            }
-
-            viewModelIndicesByIds = Self.viewModelIndicesByIds(viewModels: viewModels)
-        }
-
-        /// Recreates the view model for the given ID by calling the given
-        /// block. If a given ID is not currently loaded, it is ignored.
-        ///
-        /// - Returns
-        /// The IDs for the view models that were recreated. Note that this will
-        /// not include any IDs that were ignored.
-        mutating func recreateViewModels(
-            ids: [CallViewModel.ID],
-            recreateModelBlock: (CallViewModel.ID) -> CallViewModel?
-        ) -> [CallViewModel.ID] {
-            let indicesToReload: [(Int, CallViewModel)] = ids.compactMap { viewModelId in
-                guard
-                    let index = viewModelIndicesByIds[viewModelId],
-                    let newViewModel = recreateModelBlock(viewModelId)
-                else {
-                    return nil
-                }
-
-                return (index, newViewModel)
-            }
-
-            for (index, newViewModel) in indicesToReload {
-                viewModels[index] = newViewModel
-            }
-
-            return indicesToReload.map { $0.1.id }
-        }
-    }
-
-    private var _calls: Calls!
-    private var calls: Calls! {
-        get {
-            AssertIsOnMainThread()
-            return _calls
-        }
-        set(newValue) {
-            AssertIsOnMainThread()
-            _calls = newValue
-        }
-    }
-
     private static var callCellReuseIdentifier = "callCell"
 
-    private lazy var dataSource = UITableViewDiffableDataSource<Section, CallViewModel.ID>(tableView: tableView) { [weak self] tableView, indexPath, modelID -> UITableViewCell? in
-        let cell = tableView.dequeueReusableCell(withIdentifier: Self.callCellReuseIdentifier)
+    private lazy var dataSource = UITableViewDiffableDataSource<Section, CallViewModel.ID>(
+        tableView: tableView
+    ) { [weak self] tableView, indexPath, modelID -> UITableViewCell? in
+        guard
+            let self,
+            let callCell = tableView.dequeueReusableCell(
+                withIdentifier: Self.callCellReuseIdentifier
+            ) as? CallCell
+        else { return UITableViewCell() }
 
-        guard let callCell = cell as? CallCell else {
-            owsFail("Unexpected cell type")
+        /// This load should be sufficiently fast that doing it here
+        /// synchronously is fine.
+        if let viewModelForIndexPath = self.loadMoreCallsIfNecessary(
+            indexPathToBeDisplayed: indexPath
+        ) {
+            callCell.delegate = self
+            callCell.viewModel = viewModelForIndexPath
+
+            return callCell
+        } else {
+            owsFailBeta("Missing cached view model – how did this happen?")
+
+            /// Return an empty table cell, rather than a ``CallCell`` that's
+            /// gonna be incorrectly configured.
+            return UITableViewCell()
         }
-
-        callCell.delegate = self
-        callCell.viewModel = self?.calls[id: modelID]
-
-        return callCell
     }
 
     private func getSnapshot() -> Snapshot {
         var snapshot = Snapshot()
         snapshot.appendSections([.primary])
-        snapshot.appendItems(calls.viewModels.map(\.id))
+        snapshot.appendItems(calls.allLoadedViewModelIds)
         return snapshot
     }
 
     private func updateSnapshot(animated: Bool) {
         dataSource.apply(getSnapshot(), animatingDifferences: animated)
         updateEmptyStateMessage()
+        cancelMultiselectIfEmpty()
     }
 
     /// Reload the rows for the given view model IDs that are currently loaded.
@@ -953,17 +1056,16 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         // This step will also drop any IDs for models that are not currently
         // loaded, which should not be included in the snapshot.
         let identifiersToReload = deps.db.read { tx -> [CallViewModel.ID] in
-            return calls.recreateViewModels(ids: identifiersToReload) { viewModelId -> CallViewModel? in
+            return calls.recreateViewModels(
+                ids: identifiersToReload, tx: tx
+            ) { viewModelId -> CallRecord? in
                 switch deps.callRecordStore.fetch(
-                    callId: viewModelId.callId,
-                    threadRowId: viewModelId.threadRowId,
-                    tx: tx.asV2Read
+                    viewModelId: viewModelId, tx: tx
                 ) {
-                case .matchNotFound, .matchDeleted:
-                    logger.warn("Call record missing while reloading!")
-                    return nil
                 case .matchFound(let freshCallRecord):
-                    return createCallViewModel(callRecord: freshCallRecord, tx: tx)
+                    return freshCallRecord
+                case .matchNotFound, .matchDeleted:
+                    return nil
                 }
             }
         }
@@ -979,10 +1081,22 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         dataSource.apply(snapshot)
     }
 
+    private func cancelMultiselectIfEmpty() {
+        if
+            tableView.isEditing,
+            calls.allLoadedViewModelIds.isEmpty
+        {
+            cancelMultiselect()
+        }
+    }
+
     private func updateEmptyStateMessage() {
-        switch (calls.viewModels.count, searchTerm) {
+        switch (calls.allLoadedViewModelIds.count, searchTerm) {
         case (0, .some(let searchTerm)) where !searchTerm.isEmpty:
-            noSearchResultsView.text = "No results found for '\(searchTerm)'" // [CallsTab] TODO: Localize
+            noSearchResultsView.text = String(
+                format: Strings.searchNoResultsFoundLabelFormat,
+                arguments: [searchTerm]
+            )
             noSearchResultsView.layer.opacity = 1
             emptyStateMessageView.layer.opacity = 0
         case (0, _):
@@ -990,14 +1104,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 switch currentFilterMode {
                 case .all:
                     return [
-                        "No recent calls", // [CallsTab] TODO: Localize
+                        Strings.noRecentCallsLabel,
                         "\n",
-                        "Get started by calling a friend" // [CallsTab] TODO: Localize
+                        Strings.noRecentCallsSuggestionLabel
                             .styled(with: .font(.dynamicTypeSubheadline)),
                     ]
                 case .missed:
                     return [
-                        "No missed calls" // [CallsTab] TODO: Localize
+                        Strings.noMissedCallsLabel
                     ]
                 }
             }())
@@ -1047,35 +1161,37 @@ private extension SignalCall {
     }
 }
 
+private extension CallRecordStore {
+    func fetch(
+        viewModelId: CallsListViewController.CallViewModel.ID,
+        tx: SDSAnyReadTransaction
+    ) -> CallRecordStoreMaybeDeletedFetchResult {
+        return fetch(
+            callId: viewModelId.callId,
+            threadRowId: viewModelId.threadRowId,
+            tx: tx.asV2Read
+        )
+    }
+}
+
 // MARK: UITableViewDelegate
 
 extension CallsListViewController: UITableViewDelegate {
 
-    private func viewModel(forRowAt indexPath: IndexPath) -> CallViewModel? {
+    private func viewModel(
+        forIndexPathThatShouldHaveOne indexPath: IndexPath
+    ) -> CallViewModel? {
         owsAssert(
             indexPath.section == Section.primary.rawValue,
             "Unexpected section for index path: \(indexPath.section)"
         )
 
-        return calls.viewModels[safe: indexPath.row]
-    }
-
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
-            DispatchQueue.main.async {
-                // Try and load the next page if we're about to hit the top.
-                DispatchQueue.main.async {
-                    self.loadMoreCalls(direction: .newer, animated: false)
-                }
-            }
+        guard let viewModel = calls.getCachedViewModel(rowIndex: indexPath.row) else {
+            owsFailBeta("Missing view model for index path. How did this happen?")
+            return nil
         }
 
-        if indexPath.row == calls.viewModels.count - 1 {
-            // Try and load the next page if we're about to hit the bottom.
-            DispatchQueue.main.async {
-                self.loadMoreCalls(direction: .older, animated: false)
-            }
-        }
+        return viewModel
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -1086,7 +1202,7 @@ extension CallsListViewController: UITableViewDelegate {
 
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard let viewModel = viewModel(forRowAt: indexPath) else {
+        guard let viewModel = viewModel(forIndexPathThatShouldHaveOne: indexPath) else {
             return owsFailDebug("Missing view model")
         }
         callBack(from: viewModel)
@@ -1098,6 +1214,15 @@ extension CallsListViewController: UITableViewDelegate {
         }
     }
 
+    func tableView(_ tableView: UITableView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool {
+        true
+    }
+
+    func tableView(_ tableView: UITableView, didBeginMultipleSelectionInteractionAt indexPath: IndexPath) {
+        updateBarButtonItems()
+        showToolbar()
+    }
+
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         return self.longPressActions(forRowAt: indexPath)
             .map { actions in UIMenu.init(children: actions) }
@@ -1107,7 +1232,7 @@ extension CallsListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard let viewModel = viewModel(forRowAt: indexPath) else {
+        guard let viewModel = viewModel(forIndexPathThatShouldHaveOne: indexPath) else {
             owsFailDebug("Missing call view model")
             return nil
         }
@@ -1116,7 +1241,7 @@ extension CallsListViewController: UITableViewDelegate {
             style: .normal,
             color: .ows_accentBlue,
             image: "arrow-square-upright-fill",
-            title: "Go to Chat" // [CallsTab] TODO: Localize
+            title: Strings.goToChatActionTitle
         ) { [weak self] in
             self?.goToChat(from: viewModel)
         }
@@ -1125,7 +1250,7 @@ extension CallsListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard let viewModel = viewModel(forRowAt: indexPath) else {
+        guard let viewModel = viewModel(forIndexPathThatShouldHaveOne: indexPath) else {
             owsFailDebug("Missing call view model")
             return nil
         }
@@ -1136,7 +1261,7 @@ extension CallsListViewController: UITableViewDelegate {
             image: "trash-fill",
             title: CommonStrings.deleteButton
         ) { [weak self] in
-            self?.deleteCalls(from: [viewModel])
+            self?.deleteCalls(viewModelIds: [viewModel.id])
         }
 
         return .init(actions: [deleteAction])
@@ -1170,7 +1295,7 @@ extension CallsListViewController: UITableViewDelegate {
     }
 
     private func longPressActions(forRowAt indexPath: IndexPath) -> [UIAction]? {
-        guard let viewModel = viewModel(forRowAt: indexPath) else {
+        guard let viewModel = viewModel(forIndexPathThatShouldHaveOne: indexPath) else {
             owsFailDebug("Missing call view model")
             return nil
         }
@@ -1183,10 +1308,10 @@ extension CallsListViewController: UITableViewDelegate {
             let joinCallIconName: String
             switch viewModel.callType {
             case .audio:
-                joinCallTitle = "Join Audio Call" // [CallsTab] TODO: Localize
+                joinCallTitle = Strings.joinAudioCallActionTitle
                 joinCallIconName = Theme.iconName(.contextMenuVoiceCall)
             case .video:
-                joinCallTitle = "Join Video Call" // [CallsTab] TODO: Localize
+                joinCallTitle = Strings.joinVideoCallActionTitle
                 joinCallIconName = Theme.iconName(.contextMenuVideoCall)
             }
             let joinCallAction = UIAction(
@@ -1206,7 +1331,7 @@ extension CallsListViewController: UITableViewDelegate {
                 returnToCallIconName = Theme.iconName(.contextMenuVideoCall)
             }
             let returnToCallAction = UIAction(
-                title: "Return to Call", // [CallsTab] TODO: Localize
+                title: Strings.returnToCallActionTitle,
                 image: UIImage(named: returnToCallIconName),
                 attributes: []
             ) { [weak self] _ in
@@ -1217,7 +1342,7 @@ extension CallsListViewController: UITableViewDelegate {
             switch viewModel.recipientType {
             case .individual:
                 let audioCallAction = UIAction(
-                    title: "Audio Call", // [CallsTab] TODO: Localize
+                    title: Strings.startAudioCallActionTitle,
                     image: Theme.iconImage(.contextMenuVoiceCall),
                     attributes: []
                 ) { [weak self] _ in
@@ -1229,7 +1354,7 @@ extension CallsListViewController: UITableViewDelegate {
             }
 
             let videoCallAction = UIAction(
-                title: "Video Call", // [CallsTab] TODO: Localize
+                title: Strings.startVideoCallActionTitle,
                 image: Theme.iconImage(.contextMenuVideoCall),
                 attributes: []
             ) { [weak self] _ in
@@ -1239,7 +1364,7 @@ extension CallsListViewController: UITableViewDelegate {
         }
 
         let goToChatAction = UIAction(
-            title: "Go to Chat", // [CallsTab] TODO: Localize
+            title: Strings.goToChatActionTitle,
             image: Theme.iconImage(.contextMenuOpenInChat),
             attributes: []
         ) { [weak self] _ in
@@ -1248,7 +1373,7 @@ extension CallsListViewController: UITableViewDelegate {
         actions.append(goToChatAction)
 
         let infoAction = UIAction(
-            title: "Info", // [CallsTab] TODO: Localize
+            title: Strings.viewCallInfoActionTitle,
             image: Theme.iconImage(.contextMenuInfo),
             attributes: []
         ) { [weak self] _ in
@@ -1257,7 +1382,7 @@ extension CallsListViewController: UITableViewDelegate {
         actions.append(infoAction)
 
         let selectAction = UIAction(
-            title: "Select", // [CallsTab] TODO: Localize
+            title: Strings.selectCallActionTitle,
             image: Theme.iconImage(.contextMenuSelect),
             attributes: []
         ) { [weak self] _ in
@@ -1268,11 +1393,11 @@ extension CallsListViewController: UITableViewDelegate {
         switch viewModel.state {
         case .active, .ended:
             let deleteAction = UIAction(
-                title: "Delete", // [CallsTab] TODO: Localize
+                title: Strings.deleteCallActionTitle,
                 image: Theme.iconImage(.contextMenuDelete),
                 attributes: .destructive
             ) { [weak self] _ in
-                self?.deleteCalls(from: [viewModel])
+                self?.deleteCalls(viewModelIds: [viewModel.id])
             }
             actions.append(deleteAction)
         case .participating:
@@ -1285,7 +1410,7 @@ extension CallsListViewController: UITableViewDelegate {
 
 // MARK: - Actions
 
-extension CallsListViewController: CallCellDelegate {
+extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelegate {
 
     private func callBack(from viewModel: CallViewModel) {
         switch viewModel.callType {
@@ -1296,34 +1421,61 @@ extension CallsListViewController: CallCellDelegate {
         }
     }
 
+    private var callStarterContext: CallStarter.Context {
+        .init(
+            blockingManager: deps.blockingManager,
+            databaseStorage: deps.db,
+            callService: deps.callService
+        )
+    }
+
     private func startAudioCall(from viewModel: CallViewModel) {
-        // [CallsTab] TODO: See ConversationViewController.startIndividualCall(withVideo:)
         switch viewModel.recipientType {
         case let .individual(_, contactThread):
-            callService.initiateCall(thread: contactThread, isVideo: false)
+            CallStarter(
+                contactThread: contactThread,
+                withVideo: false,
+                context: self.callStarterContext
+            ).startCall(from: self)
         case .group:
             owsFail("Shouldn't be able to start audio call from group")
         }
     }
 
     private func startVideoCall(from viewModel: CallViewModel) {
-        // [CallsTab] TODO: Check if the conversation is blocked or there's a message request.
-        // See ConversationViewController.startIndividualCall(withVideo:)
-        // and  ConversationViewController.showGroupLobbyOrActiveCall()
         switch viewModel.recipientType {
         case let .individual(_, contactThread):
-            callService.initiateCall(thread: contactThread, isVideo: true)
+            CallStarter(
+                contactThread: contactThread,
+                withVideo: true,
+                context: self.callStarterContext
+            ).startCall(from: self)
         case let .group(groupThread):
-            GroupCallViewController.presentLobby(thread: groupThread)
+            CallStarter(
+                groupThread: groupThread,
+                context: self.callStarterContext
+            ).startCall(from: self)
         }
     }
 
     private func goToChat(from viewModel: CallViewModel) {
-        SignalApp.shared.presentConversationForThread(viewModel.thread, action: .compose, animated: false)
+        goToChat(for: viewModel.thread)
     }
 
-    private func deleteCalls(from viewModels: [CallViewModel]) {
+    private func deleteCalls(viewModelIds: [CallViewModel.ID]) {
         deps.db.asyncWrite { tx in
+            let callRecords = viewModelIds.compactMap { viewModelId -> CallRecord? in
+                switch self.deps.callRecordStore.fetch(
+                    viewModelId: viewModelId,
+                    tx: tx
+                ) {
+                case .matchFound(let callRecord):
+                    return callRecord
+                case .matchDeleted, .matchNotFound:
+                    return nil
+                }
+            }
+
             /// Deleting these call records will trigger a ``CallRecordStoreNotification``,
             /// which we're listening for in this view and will in turn lead us
             /// to update the UI as appropriate.
@@ -1331,7 +1483,7 @@ extension CallsListViewController: CallCellDelegate {
             /// We also want to send a sync message since this is a delete
             /// originating from this device.
             self.deps.callRecordDeleteManager.deleteCallRecordsAndAssociatedInteractions(
-                callRecords: viewModels.map { $0.backingCallRecord },
+                callRecords: callRecords,
                 sendSyncMessageOnDelete: true,
                 tx: tx.asV2Write
             )
@@ -1346,15 +1498,54 @@ extension CallsListViewController: CallCellDelegate {
     // MARK: CallCellDelegate
 
     fileprivate func joinCall(from viewModel: CallViewModel) {
-        Logger.debug("Join call")
+        guard case let .group(groupThread) = viewModel.recipientType else {
+            owsFailBeta("Individual call should not be showing a join button")
+            return
+        }
+        CallStarter(
+            groupThread: groupThread,
+            context: self.callStarterContext
+        ).startCall(from: self)
     }
 
     fileprivate func returnToCall(from viewModel: CallViewModel) {
-        Logger.debug("Return to call")
+        guard WindowManager.shared.hasCall else { return }
+        WindowManager.shared.returnToCallView()
     }
 
     fileprivate func showCallInfo(from viewModel: CallViewModel) {
-        Logger.debug("Show call info")
+        AssertIsOnMainThread()
+
+        let (threadViewModel, isSystemContact) = deps.db.read { tx in
+            let thread = viewModel.thread
+            let threadViewModel = ThreadViewModel(
+                thread: thread,
+                forChatList: false,
+                transaction: tx
+            )
+            let isSystemContact = thread.isSystemContact(
+                contactsManager: deps.contactsManager,
+                tx: tx
+            )
+            return (threadViewModel, isSystemContact)
+        }
+
+        let callDetailsView = ConversationSettingsViewController(
+            threadViewModel: threadViewModel,
+            isSystemContact: isSystemContact,
+            // Nothing would have been revealed, so this can be a fresh instance
+            spoilerState: SpoilerRenderState(),
+            callViewModel: viewModel
+        )
+
+        callDetailsView.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(callDetailsView, animated: true)
+    }
+
+    // MARK: NewCallViewControllerDelegate
+
+    func goToChat(for thread: TSThread) {
+        SignalApp.shared.presentConversationForThread(thread, action: .compose, animated: false)
     }
 }
 
@@ -1366,16 +1557,300 @@ extension CallsListViewController: UISearchResultsUpdating {
     }
 }
 
+// MARK: - DatabaseChangeDelegate
+
+extension CallsListViewController: DatabaseChangeDelegate {
+    /// If the database changed externally – which is to say, in the NSE – state
+    /// that this view relies on may have changed. We can't know if it'll have
+    /// affected us, so we'll simply load calls fresh and make the table view
+    /// reload all the cells.
+    func databaseChangesDidUpdateExternally() {
+        logger.info("Database changed externally, loading calls anew and reloading all rows.")
+
+        loadCallRecordsAnew(animated: false)
+        reloadAllRows()
+    }
+
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {}
+    func databaseChangesDidReset() {}
+}
+
+// MARK: - LoadedCalls
+
+private extension CallsListViewController {
+    struct LoadedCalls {
+        typealias CreateCallViewModelBlock = (CallRecord, SDSAnyReadTransaction) -> CallViewModel
+
+        enum LoadDirection {
+            case older
+            case newer
+        }
+
+        private struct LoadedViewModelIds {
+            private(set) var ids: [CallViewModel.ID] = []
+            private var indicesByIds: [CallViewModel.ID: Int] = [:]
+
+            func index(id: CallViewModel.ID) -> Int? {
+                return indicesByIds[id]
+            }
+
+            /// Append the new loaded IDs.
+            mutating func append(ids newIds: [CallViewModel.ID]) {
+                for newId in newIds {
+                    indicesByIds[newId] = ids.count
+                    ids.append(newId)
+                }
+            }
+
+            /// Prepend new loaded IDs.
+            mutating func prepend(ids newIds: [CallViewModel.ID]) {
+                ids = newIds + ids
+                indicesByIds = LoadedCalls.indicesByIds(ids)
+            }
+
+            /// Drop the given loaded IDs.
+            mutating func drop(ids idsToDrop: Set<CallViewModel.ID>) {
+                ids.removeAll { idsToDrop.contains($0) }
+                indicesByIds = LoadedCalls.indicesByIds(ids)
+            }
+        }
+
+        private enum Constants {
+            static let pageSizeToLoad: UInt = 50
+            static let maxCachedViewModelCount: Int = 150
+        }
+
+        private var callRecordLoader: CallRecordLoader
+        private let createCallViewModelBlock: CreateCallViewModelBlock
+
+        private var loadedViewModelIds: LoadedViewModelIds
+        var allLoadedViewModelIds: [CallViewModel.ID] { loadedViewModelIds.ids }
+
+        private var cachedViewModels: [CallViewModel] {
+            didSet {
+                cachedViewModelIndicesByIds = Self.indicesByIds(cachedViewModels.map { $0.id })
+            }
+        }
+        private var cachedViewModelIndicesByIds: [CallViewModel.ID: Int]
+
+        private static func indicesByIds(_ viewModelIds: [CallViewModel.ID]) -> [CallViewModel.ID: Int] {
+            return Dictionary(
+                viewModelIds.enumerated().map { (idx, viewModelId) -> (CallViewModel.ID, Int) in
+                    return (viewModelId, idx)
+                },
+                uniquingKeysWith: { _, new in new }
+            )
+        }
+
+        init(
+            callRecordLoader: CallRecordLoader,
+            createCallViewModelBlock: @escaping CreateCallViewModelBlock
+        ) {
+            self.callRecordLoader = callRecordLoader
+            self.createCallViewModelBlock = createCallViewModelBlock
+
+            self.loadedViewModelIds = LoadedViewModelIds()
+
+            self.cachedViewModels = []
+            self.cachedViewModelIndicesByIds = [:]
+        }
+
+        // MARK: Accessors
+
+        func getCachedViewModel(id viewModelId: CallViewModel.ID) -> CallViewModel? {
+            guard let index = cachedViewModelIndicesByIds[viewModelId] else {
+                return nil
+            }
+
+            return cachedViewModels[index]
+        }
+
+        func getCachedViewModel(rowIndex: Int) -> CallViewModel? {
+            guard let viewModelId = loadedViewModelIds.ids[safe: rowIndex] else {
+                return nil
+            }
+
+            return getCachedViewModel(id: viewModelId)
+        }
+
+        func hasCachedViewModel(rowIndex: Int) -> Bool {
+            return getCachedViewModel(rowIndex: rowIndex) != nil
+        }
+
+        // MARK: Mutators
+
+        /// Repeatedly loads pages of view models until a cached view model is
+        /// available for the given row index.
+        ///
+        /// This method is safe to call for any valid row index; i.e., for any
+        /// index covered by ``loadedViewModelIds``.
+        ///
+        /// - Note
+        /// This may result in multiple synchronous page loads if necessary. For
+        /// example, if view models are cached for rows in range `(500, 600)`
+        /// and this method is called for row 10, all the rows between row 500
+        /// and row 10 will be loaded.
+        ///
+        /// This behavior should be fine in practice, since loading a page is an
+        /// extremely fast operation.
+        mutating func loadUntilCached(
+            rowIndex: Int,
+            tx: SDSAnyReadTransaction
+        ) {
+            guard
+                let firstCachedViewModel = cachedViewModels.first,
+                let firstCachedViewModelRowIndex = loadedViewModelIds.index(id: firstCachedViewModel.id),
+                let lastCachedViewModel = cachedViewModels.last,
+                let lastCachedViewModelRowIndex = loadedViewModelIds.index(id: lastCachedViewModel.id)
+            else {
+                owsFail("How did we attempt to load until a specific row index, without *any* cached models?")
+            }
+
+            let loadDirection: LoadDirection = {
+                if rowIndex > lastCachedViewModelRowIndex {
+                    return .older
+                } else if rowIndex < firstCachedViewModelRowIndex {
+                    return .newer
+                }
+
+                owsFail("Row index is in the cached range, but somehow we didn't have a cached model. How did that happen?")
+            }()
+
+            while true {
+                if hasCachedViewModel(rowIndex: rowIndex) {
+                    break
+                }
+
+                _ = loadMore(direction: loadDirection, tx: tx)
+            }
+        }
+
+        /// Load a page of calls in the requested direction.
+        ///
+        /// - Returns
+        /// Whether any new calls were loaded as part of this operation.
+        mutating func loadMore(
+            direction loadDirection: LoadDirection,
+            tx: SDSAnyReadTransaction
+        ) -> Bool {
+            let loadDirection: CallRecordLoader.LoadDirection = {
+                switch loadDirection {
+                case .older:
+                    return .older(oldestCallTimestamp: cachedViewModels.last?.callBeganTimestamp)
+                case .newer:
+                    guard let newestCachedViewModel = cachedViewModels.first else {
+                        // A little weird, but if we have no cached calls these
+                        // are equivalent anyway.
+                        return .older(oldestCallTimestamp: nil)
+                    }
+
+                    return .newer(newestCallTimestamp: newestCachedViewModel.callBeganTimestamp)
+                }
+            }()
+
+            let newCallRecords: [CallRecord] = callRecordLoader.loadCallRecords(
+                loadDirection: loadDirection,
+                pageSize: Constants.pageSizeToLoad,
+                tx: tx.asV2Read
+            )
+
+            let newViewModels: [CallViewModel] = newCallRecords.map { callRecord in
+                return createCallViewModelBlock(callRecord, tx)
+            }
+
+            let firstTimeLoadedViewModelIds = newViewModels
+                .map { $0.id }
+                .filter { loadedViewModelIds.index(id: $0) == nil }
+
+            if !firstTimeLoadedViewModelIds.isEmpty {
+                switch loadDirection {
+                case .older:
+                    /// This is a hot codepath; we get here every time we load a
+                    /// new page of records because we scrolled to the last
+                    /// loaded one.
+                    loadedViewModelIds.append(ids: firstTimeLoadedViewModelIds)
+                case .newer:
+                    /// We should only get here if a new call was started;
+                    /// otherwise, a `.newer` load should never produce a
+                    /// brand-new view model.
+                    loadedViewModelIds.prepend(ids: firstTimeLoadedViewModelIds)
+                }
+            }
+
+            cachedViewModels = {
+                let combinedViewModels: [CallViewModel] = {
+                    switch loadDirection {
+                    case .older: return cachedViewModels + newViewModels
+                    case .newer: return newViewModels + cachedViewModels
+                    }
+                }()
+
+                if combinedViewModels.count <= Constants.maxCachedViewModelCount {
+                    return combinedViewModels
+                } else {
+                    switch loadDirection {
+                    case .older:
+                        return Array(combinedViewModels.suffix(Constants.maxCachedViewModelCount))
+                    case .newer:
+                        return Array(combinedViewModels.prefix(Constants.maxCachedViewModelCount))
+                    }
+                }
+            }()
+
+            return !firstTimeLoadedViewModelIds.isEmpty
+        }
+
+        mutating func dropViewModels(ids viewModelIdsToDrop: [CallViewModel.ID]) {
+            let viewModelIdsToDrop = Set(viewModelIdsToDrop)
+
+            loadedViewModelIds.drop(ids: viewModelIdsToDrop)
+            cachedViewModels.removeAll { viewModelIdsToDrop.contains($0.id) }
+        }
+
+        /// Recreates the view model for the given ID by calling the given
+        /// block. If a given ID is not currently loaded, it is ignored.
+        ///
+        /// - Returns
+        /// The IDs for the view models that were recreated. Note that this will
+        /// not include any IDs that were ignored.
+        mutating func recreateViewModels(
+            ids idsToReload: [CallViewModel.ID],
+            tx: SDSAnyReadTransaction,
+            fetchCallRecordBlock: (CallViewModel.ID) -> CallRecord?
+        ) -> [CallViewModel.ID] {
+            let indicesToReload: [(
+                Int,
+                CallRecord,
+                CallViewModel.ID
+            )] = idsToReload.compactMap { viewModelId in
+                guard
+                    let cachedViewModelIndex = cachedViewModelIndicesByIds[viewModelId],
+                    let freshCallRecord = fetchCallRecordBlock(viewModelId)
+                else { return nil }
+
+                return (
+                    cachedViewModelIndex,
+                    freshCallRecord,
+                    viewModelId
+                )
+            }
+
+            for (index, freshCallRecord, _) in indicesToReload {
+                cachedViewModels[index] = createCallViewModelBlock(freshCallRecord, tx)
+            }
+
+            return indicesToReload.map { $0.2 }
+        }
+    }
+}
+
 // MARK: - Call cell
 
-extension CallsListViewController {
-    fileprivate class CallCell: UITableViewCell {
-
+private extension CallsListViewController {
+    class CallCell: UITableViewCell {
         private static var verticalMargin: CGFloat = 11
         private static var horizontalMargin: CGFloat = 20
         private static var joinButtonMargin: CGFloat = 18
-        // [CallsTab] TODO: Dynamic type?
-        private static var subtitleIconSize: CGFloat = 16
 
         weak var delegate: CallCellDelegate?
 
@@ -1398,12 +1873,7 @@ extension CallsListViewController {
             return label
         }()
 
-        private lazy var subtitleIcon: UIImageView = UIImageView()
-        private lazy var subtitleLabel: UILabel = {
-            let label = UILabel()
-            label.font = .dynamicTypeBody2
-            return label
-        }()
+        private lazy var subtitleLabel = UILabel()
 
         private lazy var timestampLabel: UILabel = {
             let label = UILabel()
@@ -1428,7 +1898,7 @@ extension CallsListViewController {
         private func makeJoinPill() -> UIView? {
             guard let viewModel else { return nil }
 
-            let icon: UIImage?
+            let icon: UIImage
             switch viewModel.callType {
             case .audio:
                 icon = Theme.iconImage(.phoneFill16)
@@ -1439,28 +1909,33 @@ extension CallsListViewController {
             let text: String
             switch viewModel.state {
             case .active:
-                text = "Join" // [CallsTab] TODO: Localize
+                text = Strings.joinCallButtonTitle
             case .participating:
-                text = "Return" // [CallsTab] TODO: Localize
+                text = Strings.returnToCallButtonTitle
             case .ended:
                 return nil
             }
 
-            let iconView = UIImageView(image: icon)
-            iconView.tintColor = .ows_white
-
-            let label = UILabel()
-            label.text = text
-            label.font = .dynamicTypeBody2Clamped.bold()
-            label.textColor = .ows_white
-
-            let stackView = UIStackView(arrangedSubviews: [iconView, label])
-            stackView.addPillBackgroundView(backgroundColor: .ows_accentGreen)
-            stackView.layoutMargins = .init(hMargin: 12, vMargin: 4)
-            stackView.isLayoutMarginsRelativeArrangement = true
-            stackView.isUserInteractionEnabled = false
-            stackView.spacing = 4
-            return stackView
+            let button = OWSRoundedButton()
+            let font = UIFont.dynamicTypeBody2.bold()
+            let title = NSAttributedString.composed(of: [
+                NSAttributedString.with(
+                    image: icon,
+                    font: .dynamicTypeCallout,
+                    centerVerticallyRelativeTo: font,
+                    heightReference: .pointSize
+                ),
+                " ",
+                text,
+            ]).styled(
+                with: .font(font),
+                .color(.ows_white)
+            )
+            button.setAttributedTitle(title, for: .normal)
+            button.backgroundColor = .ows_accentGreen
+            button.contentEdgeInsets = .init(hMargin: 12, vMargin: 4)
+            button.setCompressionResistanceHigh()
+            return button
         }
 
         // MARK: Init
@@ -1468,22 +1943,17 @@ extension CallsListViewController {
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-            let subtitleHStack = UIStackView(arrangedSubviews: [subtitleIcon, subtitleLabel])
-            subtitleHStack.axis = .horizontal
-            subtitleHStack.spacing = 6
-            subtitleIcon.autoSetDimensions(to: .square(Self.subtitleIconSize))
-
             let bodyVStack = UIStackView(arrangedSubviews: [
                 titleLabel,
-                subtitleHStack,
+                subtitleLabel,
             ])
             bodyVStack.axis = .vertical
-            bodyVStack.spacing = 2
 
             let leadingHStack = UIStackView(arrangedSubviews: [
                 avatarView,
                 bodyVStack,
             ])
+            leadingHStack.alignment = .center
             leadingHStack.axis = .horizontal
             leadingHStack.spacing = 12
 
@@ -1526,6 +1996,56 @@ extension CallsListViewController {
             fatalError("init(coder:) has not been implemented")
         }
 
+        deinit {
+            timestampDisplayRefreshTimer?.invalidate()
+        }
+
+        // MARK: Dynamically-refreshing timestamp
+
+        /// A timer tracking the next time this cell should refresh its
+        /// displayed timestamp.
+        private var timestampDisplayRefreshTimer: Timer?
+
+        /// Immediately update the display timestamp for this cell, and schedule
+        /// an automatic refresh of the display timestamp as appropriate.
+        func updateDisplayedDateAndScheduleRefresh() {
+            AssertIsOnMainThread()
+
+            timestampDisplayRefreshTimer?.invalidate()
+            timestampDisplayRefreshTimer = nil
+
+            guard let viewModel else { return }
+
+            let date: Date? = {
+                switch viewModel.state {
+                case .active, .participating:
+                    /// Don't show a date for active calls.
+                    return nil
+                case .ended:
+                    return viewModel.callBeganDate
+                }
+            }()
+
+            guard let date else {
+                timestampLabel.text = nil
+                return
+            }
+
+            let (formattedDate, nextRefreshDate) = DateUtil.formatDynamicDateShort(date)
+
+            timestampLabel.text = formattedDate
+
+            if let nextRefreshDate {
+                timestampDisplayRefreshTimer = .scheduledTimer(
+                    withTimeInterval: max(1, nextRefreshDate.timeIntervalSinceNow),
+                    repeats: false
+                ) { [weak self] _ in
+                    guard let self else { return }
+                    self.updateDisplayedDateAndScheduleRefresh()
+                }
+            }
+        }
+
         // MARK: Updates
 
         private func updateContents() {
@@ -1540,7 +2060,6 @@ extension CallsListViewController {
             }
 
             self.titleLabel.text = viewModel.title
-            self.subtitleLabel.text = viewModel.direction.label
 
             switch viewModel.direction {
             case .incoming, .outgoing:
@@ -1549,12 +2068,26 @@ extension CallsListViewController {
                 titleLabel.textColor = .ows_accentRed
             }
 
-            switch viewModel.callType {
-            case .audio:
-                subtitleIcon.image = Theme.iconImage(.phone16)
-            case .video:
-                subtitleIcon.image = Theme.iconImage(.video16)
-            }
+            self.subtitleLabel.attributedText = {
+                let icon: ThemeIcon
+                switch viewModel.callType {
+                case .audio:
+                    icon = .phone16
+                case .video:
+                    icon = .video16
+                }
+
+                return .composed(of: [
+                    NSAttributedString.with(
+                        image: Theme.iconImage(icon),
+                        font: .dynamicTypeCallout,
+                        centerVerticallyRelativeTo: .dynamicTypeBody2,
+                        heightReference: .pointSize
+                    ),
+                    " ",
+                    viewModel.direction.label,
+                ]).styled(with: .font(.dynamicTypeBody2))
+            }()
 
             self.joinPill?.removeFromSuperview()
 
@@ -1570,17 +2103,13 @@ extension CallsListViewController {
                     joinPill.autoVCenterInSuperview()
                     joinPill.autoPinWidthToSuperviewMargins()
                 }
-
-                timestampLabel.text = nil
             case .ended:
                 // Info button
                 detailsButton.setImage(imageName: "info")
                 detailsButton.tintColor = Theme.primaryIconColor
-
-                timestampLabel.text = DateUtil.formatDateShort(viewModel.callBeganDate)
-                // [CallsTab] TODO: Automatic updates
-                // See ChatListCell.nextUpdateTimestamp
             }
+
+            updateDisplayedDateAndScheduleRefresh()
         }
 
         private func applyTheme() {
@@ -1589,9 +2118,8 @@ extension CallsListViewController {
             multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
 
             titleLabel.textColor = Theme.primaryTextColor
-            subtitleIcon.tintColor = Theme.secondaryTextAndIconColor
-            subtitleLabel.textColor = Theme.secondaryTextAndIconColor
-            timestampLabel.textColor = Theme.secondaryTextAndIconColor
+            subtitleLabel.textColor = Theme.snippetColor
+            timestampLabel.textColor = Theme.snippetColor
         }
 
         // MARK: Actions
@@ -1614,5 +2142,27 @@ extension CallsListViewController {
                 delegate.showCallInfo(from: viewModel)
             }
         }
+    }
+}
+
+// MARK: - FullTextSearchFinder
+
+private extension FullTextSearchFinder {
+    static func findThreadsMatching(
+        searchTerm: String,
+        maxSearchResults: UInt,
+        tx: SDSAnyReadTransaction
+    ) -> [TSThread] {
+        var threads = [TSThread]()
+
+        FullTextSearchFinder.enumerateObjects(
+            searchText: searchTerm,
+            maxResults: maxSearchResults,
+            transaction: tx
+        ) { (thread: TSThread, _, _) in
+            threads.append(thread)
+        }
+
+        return threads
     }
 }

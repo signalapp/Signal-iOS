@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d ryhmän jäsenellä on samankaltainen nimi.</string>
+			<string>%1$d ryhmän jäsenellä on sama nimi.</string>
 			<key>other</key>
-			<string>%1$d ryhmän jäsenellä on samankaltaiset nimet.</string>
+			<string>%1$d ryhmän jäsenellä on sama nimi.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Tästä ryhmästä löytyi %1$d nimiristiriita.</string>
+			<key>other</key>
+			<string>Tästä ryhmästä löytyi %1$d nimiristiriitaa.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d jäsen</string>
+			<key>other</key>
+			<string>%1$d jäsentä</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d ryhmän jäsenellä on samankaltainen nimi. Tarkista jäsen alla tai korjaa ongelma.</string>
+			<string>Tästä ryhmästä löytyi %1$d nimiristiriita. Tarkista jäsenet alla tai korjaa ongelma.</string>
 			<key>other</key>
-			<string>%1$d ryhmän jäsenellä on samankaltaiset nimet. Tarkista jäsenet alla tai korjaa ongelma.</string>
+			<string>Tästä ryhmästä löytyi %1$d nimiristiriitaa. Tarkista jäsenet alla tai korjaa ongelma.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -520,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d ryhmän jäsenellä on sama nimi. Tarkista jäsen alla tai korjaa ongelma.</string>
+			<string>%1$d ryhmän jäsenellä on sama nimi. Tarkista, kuka jäsen on, alla tai korjaa ongelma.</string>
 			<key>other</key>
-			<string>%1$d ryhmän jäsenellä on sama nimi. Tarkista jäsenet alla tai korjaa ongelma.</string>
+			<string>%1$d ryhmän jäsenellä on sama nimi. Tarkista, keitä jäsenet ovat, alla tai korjaa ongelma.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; katselukerta</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; katselukertaa</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Käyttäjänimessä on oltava vähintään %1$d merkki</string>
+			<key>other</key>
+			<string>Käyttäjänimessä on oltava vähintään %1$d merkkiä</string>
 		</dict>
 	</dict>
 </dict>

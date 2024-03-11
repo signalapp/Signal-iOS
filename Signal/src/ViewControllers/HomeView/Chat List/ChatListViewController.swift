@@ -71,33 +71,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         firstConversationCueView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
 
         // Search
-        searchBar.placeholder = NSLocalizedString(
-            "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
-            comment: "Placeholder text for search bar which filters conversations."
-        )
-        searchBar.delegate = self
-        searchBar.accessibilityIdentifier = "ChatListViewController.searchBar"
-        searchBar.textField?.accessibilityIdentifier = "ChatListViewController.conversation_search"
-        searchBar.sizeToFit()
-        searchBar.layoutMargins = .zero
-        let searchBarContainer = UIView()
-        searchBarContainer.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 0)
-        searchBarContainer.frame = searchBar.frame
-        searchBarContainer.addSubview(searchBar)
-        searchBar.autoPinEdgesToSuperviewMargins()
-
-        // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
-        owsAssertDebug(tableView.tableHeaderView == nil)
-        tableView.tableHeaderView = searchBarContainer
-        // Hide search bar by default.  User can pull down to search.
-        tableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
-
+        navigationItem.searchController = viewState.searchController
+        viewState.searchController.searchResultsUpdater = self
         searchResultsController.delegate = self
-        addChild(searchResultsController)
-        view.addSubview(searchResultsController.view)
-        searchResultsController.view.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-        searchResultsController.view.autoPinTopToSuperviewMargin(withInset: 56)
-        searchResultsController.view.isHidden = true
 
         updateBarButtonItems()
         updateReminderViews()
@@ -110,19 +86,15 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         isViewVisible = true
 
-        // Ensure the tabBar is always hidden if it's disabled or we're in the archive.
-        let isTabBarEnabled = (tabBarController as? HomeTabBarController)?.isTabBarEnabled ?? false
-        let shouldHideTabBar = !isTabBarEnabled || chatListMode == .archive
+        // Ensure the tabBar is always hidden if we're in the archive.
+        let shouldHideTabBar = chatListMode == .archive
         if shouldHideTabBar {
             tabBarController?.tabBar.isHidden = true
             extendedLayoutIncludesOpaqueBars = true
         }
 
-        let isShowingSearchResults = !searchResultsController.view.isHidden
-        if isShowingSearchResults {
-            owsAssertDebug(!(searchBar.text ?? "").stripped.isEmpty)
+        if isSearching {
             scrollSearchBarToTop()
-            searchBar.becomeFirstResponder()
         } else if let lastViewedThread {
             owsAssertDebug((searchBar.text ?? "").stripped.isEmpty)
 
@@ -142,8 +114,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             applyDefaultBackButton()
         }
 
-        searchResultsController.viewWillAppear(animated)
-        ensureSearchBarCancelButton()
+        viewState.searchResultsController.viewWillAppear(animated)
 
         updateUnreadPaymentNotificationsCountWithSneakyTransaction()
 
@@ -185,7 +156,14 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         requestReviewIfAppropriate()
 
-        searchResultsController.viewDidAppear(animated)
+        viewState.searchResultsController.viewDidAppear(animated)
+
+        if viewState.shouldFocusSearchOnAppear {
+            viewState.shouldFocusSearchOnAppear = false
+            DispatchQueue.main.async {
+                self.focusSearch()
+            }
+        }
 
         showBadgeSheetIfNecessary()
         Task { await self.checkForFailedServiceExtensionLaunches() }
@@ -1032,14 +1010,14 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             return
         }
 
-        let userName = contactsManager.shortDisplayName(for: address, transaction: transaction)
+        let shortName = contactsManager.displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         let formattedAmount = PaymentsFormat.format(paymentAmount: paymentAmount,
                                                     isShortForm: true,
                                                     withCurrencyCode: true,
                                                     withSpace: true)
         let format = OWSLocalizedString("PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT",
                                        comment: "Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}.")
-        let title = String(format: format, userName, formattedAmount)
+        let title = String(format: format, shortName, formattedAmount)
 
         let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.paymentsBannerAvatarSize), localUserDisplayMode: .asUser)
         avatarView.update(transaction) { config in
@@ -1047,7 +1025,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,
-                                                      displayName: userName)
+                                                      displayName: shortName)
 
         configureUnreadPaymentsBanner(paymentsReminderView,
                                       title: title,
@@ -1534,16 +1512,20 @@ extension ChatListViewController: GetStartedBannerViewControllerDelegate {
 extension ChatListViewController {
 
     func updateFirstConversationLabel() {
-        let contactNames = databaseStorage.read { tx in
-            let contactAddresses = contactsManagerImpl.sortSignalServiceAddresses(
-                profileManager.allWhitelistedRegisteredAddresses(tx: tx),
-                transaction: tx
+        let contactNames = databaseStorage.read { tx -> [ComparableDisplayName] in
+            let comparableNames = contactsManager.sortedComparableNames(
+                for: profileManager.allWhitelistedRegisteredAddresses(tx: tx),
+                tx: tx
             )
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            let localAddress = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
-            return Array(contactAddresses.lazy.filter { $0 != localAddress }.prefix(3).map {
-                return self.contactsManager.displayName(for: $0, transaction: tx)
-            })
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                return []
+            }
+            return Array(
+                comparableNames.lazy
+                    .filter { !localIdentifiers.contains(address: $0.address) }
+                    .prefix(3)
+            )
         }
 
         let formatString = { () -> String in
@@ -1575,8 +1557,11 @@ extension ChatListViewController {
 
         let attributedString = NSAttributedString.make(
             fromFormat: formatString,
-            attributedFormatArgs: contactNames.map { name in
-                return .string(name, attributes: [.font: firstConversationLabel.font.semibold()])
+            attributedFormatArgs: contactNames.map { comparableName in
+                return .string(
+                    comparableName.resolvedValue(),
+                    attributes: [.font: firstConversationLabel.font.semibold()]
+                )
             }
         )
 

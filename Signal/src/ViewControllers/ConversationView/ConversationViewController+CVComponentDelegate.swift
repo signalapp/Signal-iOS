@@ -212,15 +212,9 @@ extension ConversationViewController: CVComponentDelegate {
 
         attachmentDownloads.enqueueDownloadOfAttachments(
             forMessageId: message.uniqueId,
-            attachmentGroup: .allAttachmentsIncoming,
+            attachmentGroup: .allAttachments,
             downloadBehavior: .bypassAll,
-            touchMessageImmediately: true,
-            success: { _ in
-                Logger.info("Successfully re-downloaded attachment.")
-            },
-            failure: { error in
-                Logger.warn("Failed to redownload message with error: \(error)")
-            }
+            touchMessageImmediately: true
         )
     }
 
@@ -479,15 +473,18 @@ extension ConversationViewController: CVComponentDelegate {
         // return from FingerprintViewController.
         dismissKeyBoard()
 
-        var address = address
-        // Reload the address from disk if missing info so we don't rely on any cache.
-        if address.serviceId == nil || address.e164 == nil {
-            databaseStorage.read { tx in
-                address = SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: tx)?.address ?? address
+        let addressAci: Aci? = address.aci ?? {
+            guard let phoneNumber = address.phoneNumber else {
+                return nil
             }
-        }
+            // Reload the address from disk if we lack an ACI.
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            return databaseStorage.read { tx in
+                return recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)?.aci
+            }
+        }()
 
-        FingerprintViewController.present(for: address.aci, from: self)
+        FingerprintViewController.present(for: addressAci, from: self)
     }
 
     public func didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {
@@ -505,7 +502,7 @@ extension ConversationViewController: CVComponentDelegate {
         headerImageView.autoSetDimension(.width, toSize: 200)
         headerImageView.autoSetDimension(.height, toSize: 110)
 
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
         let messageFormat = OWSLocalizedString("UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT",
                                               comment: "Description for the unverified safety number change. Embeds {name of contact with identity change}")
 
@@ -529,7 +526,7 @@ extension ConversationViewController: CVComponentDelegate {
         AssertIsOnMainThread()
 
         let keyOwner = databaseStorage.read { tx in
-            return contactsManager.displayName(for: message.theirSignalAddress(), transaction: tx)
+            return contactsManager.displayName(for: message.theirSignalAddress(), tx: tx).resolvedValue()
         }
         let titleFormat = OWSLocalizedString("SAFETY_NUMBERS_ACTIONSHEET_TITLE", comment: "Action sheet heading")
         let titleText = String(format: titleFormat, keyOwner)
@@ -670,7 +667,7 @@ extension ConversationViewController: CVComponentDelegate {
         }
 
         let displayName = databaseStorage.read { tx in
-            return contactsManager.displayName(for: contactThread.contactAddress, transaction: tx)
+            return contactsManager.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
         }
 
         let alert = ActionSheetController(title: CallStrings.callBackAlertTitle,
@@ -703,7 +700,7 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
         let address = contactThread.contactAddress
-        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
 
         let alert = ActionSheetController(
             title: String(
@@ -920,6 +917,12 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
+    public func didTapContactName(thread: TSContactThread) {
+        AssertIsOnMainThread()
+        ContactAboutSheet(thread: thread, spoilerState: self.spoilerState)
+            .present(from: self)
+    }
+
     public func didTapUnknownThreadWarningGroup() {
         AssertIsOnMainThread()
 
@@ -981,7 +984,7 @@ extension ConversationViewController: CVComponentDelegate {
             )
             let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
             let shortDisplayName = databaseStorage.read { tx in
-                return contactsManager.shortDisplayName(for: contactAddress, transaction: tx)
+                return contactsManager.displayName(for: contactAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true)
             }
             return String(format: formatString, formattedPhoneNumber, shortDisplayName)
         }()
@@ -1002,5 +1005,24 @@ extension ConversationViewController: CVComponentDelegate {
         actionSheet.customHeader = customHeader
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))
         presentActionSheet(actionSheet)
+    }
+
+    public func didTapReportSpamLearnMore() {
+        AssertIsOnMainThread()
+
+        let alert = ActionSheetController(
+            title: OWSLocalizedString(
+                "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE",
+                comment: "Title of the alert shown when a user taps on 'learn more' via the spam info message."
+            ),
+            message: OWSLocalizedString(
+                "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE",
+                comment: "Body message of the alert shown when a user taps on 'learn more' via the spam info message.")
+        )
+        alert.addAction(OWSActionSheets.okayAction)
+
+        inputToolbar?.clearDesiredKeyboard()
+        dismissKeyBoard()
+        self.presentActionSheet(alert)
     }
 }

@@ -189,7 +189,10 @@ extension UsernameSelectionViewController {
 
             @discardableResult
             override func becomeFirstResponder() -> Bool {
-                discriminatorTextField.becomeFirstResponder()
+                guard !discriminatorTextField.isHidden else {
+                    return false
+                }
+                return discriminatorTextField.becomeFirstResponder()
             }
 
             /// Tapping the discriminator when it is not focused should start

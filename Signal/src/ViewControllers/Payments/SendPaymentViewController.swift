@@ -319,7 +319,7 @@ public class SendPaymentViewController: OWSViewController {
             comment: "Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }}"
         )
         let recipientName: String = self.databaseStorage.read { tx in
-            self.contactsManager.displayName(for: recipientAddress, transaction: tx)
+            self.contactsManager.displayName(for: recipientAddress, tx: tx).resolvedValue()
         }
         let title = String(format: titleFormat, recipientName)
         let actionSheet = ActionSheetController(

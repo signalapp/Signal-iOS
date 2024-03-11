@@ -326,8 +326,7 @@ final class ThreadMergerTest: XCTestCase {
         let result = TSContactThread(contactAddress: SignalServiceAddress(
             serviceId: aci,
             phoneNumber: phoneNumber?.stringValue,
-            cache: _signalServiceAddressCache,
-            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            cache: _signalServiceAddressCache
         ))
         threadAssociatedDataStore.values[result.uniqueId] = ThreadAssociatedData(threadUniqueId: result.uniqueId)
         return result

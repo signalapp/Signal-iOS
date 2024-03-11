@@ -6,10 +6,6 @@
 import LibSignalClient
 
 public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
-    func getLastResortKyberPreKey(
-        tx: DBReadTransaction
-    ) -> SignalServiceKit.KyberPreKeyRecord?
-
     func generateLastResortKyberPreKey(
         signedBy keyPair: ECKeyPair,
         tx: DBWriteTransaction
@@ -17,9 +13,14 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 
     /// Keys returned by this method should not be stored in the local
     /// KyberPreKeyStore since there is no guarantee the key ID is unique.
-    func generateEphemeralLastResortKyberPreKey(
+    func generateLastResortKyberPreKeyForLinkedDevice(
         signedBy keyPair: ECKeyPair
     ) throws -> SignalServiceKit.KyberPreKeyRecord
+
+    func storeLastResortPreKeyFromLinkedDevice(
+        record: KyberPreKeyRecord,
+        tx: DBWriteTransaction
+    ) throws
 
     func generateKyberPreKeyRecords(
         count: Int,
@@ -27,7 +28,7 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         tx: DBWriteTransaction
     ) throws -> [SignalServiceKit.KyberPreKeyRecord]
 
-    func storeLastResortPreKeyAndMarkAsCurrent(
+    func storeLastResortPreKey(
         record: SignalServiceKit.KyberPreKeyRecord,
         tx: DBWriteTransaction
     ) throws
@@ -37,12 +38,10 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         tx: DBWriteTransaction
     ) throws
 
-    func storeKyberPreKey(
-        record: SignalServiceKit.KyberPreKeyRecord,
+    func cullLastResortPreKeyRecords(
+        justUploadedLastResortPreKey: KyberPreKeyRecord,
         tx: DBWriteTransaction
     ) throws
-
-    func cullLastResortPreKeyRecords(tx: DBWriteTransaction) throws
 
     func removeLastResortPreKey(
         record: SignalServiceKit.KyberPreKeyRecord,
@@ -51,12 +50,12 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 
     func cullOneTimePreKeyRecords(tx: DBWriteTransaction) throws
 
-    func setLastSuccessfulPreKeyRotationDate(
+    func setLastSuccessfulRotationDate(
         _ date: Date,
         tx: DBWriteTransaction
     )
 
-    func getLastSuccessfulPreKeyRotationDate(
+    func getLastSuccessfulRotationDate(
         tx: DBReadTransaction
     ) -> Date?
 
@@ -74,12 +73,12 @@ public struct KyberPreKeyRecord: Codable {
 
     public let signature: Data
     public let generatedAt: Date
-    public let id: Int32
+    public let id: UInt32
     public let keyPair: KEMKeyPair
     public let isLastResort: Bool
 
     public init(
-        _ id: Int32,
+        _ id: UInt32,
         keyPair: KEMKeyPair,
         signature: Data,
         generatedAt: Date,
@@ -106,7 +105,7 @@ public struct KyberPreKeyRecord: Codable {
         let keyData = try container.decode(Data.self, forKey: .keyData)
 
         let record = try LibSignalClient.KyberPreKeyRecord(bytes: keyData)
-        self.id = Int32(bitPattern: record.id)
+        self.id = record.id
         self.keyPair = record.keyPair
         self.signature = Data(record.signature)
         self.generatedAt = Date(millisecondsSince1970: record.timestamp)
@@ -147,9 +146,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
             static let metadataStoreCollection = "SSKKyberPreKeyStorePNIMetadataStore"
         }
 
-        static let currentLastResortKeyId = "currentLastResortKeyId"
         static let lastKeyId = "lastKeyId"
-        static let maxKeyId: Int32 = 0xFFFFFF
 
         static let lastKeyRotationDate = "lastKeyRotationDate"
 
@@ -185,19 +182,15 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         }
     }
 
-    private func nextKyberPreKeyId(ensureCapacity count: Int32 = 1, tx: DBReadTransaction) -> Int32 {
-        let lastKyberPreKeyId = metadataStore.getInt32(Constants.lastKeyId, defaultValue: 0, transaction: tx)
-        if lastKyberPreKeyId < 1 {
-            return 1 + Int32.random(in: 0...(Constants.maxKeyId - (count + 1)))
-        } else if lastKyberPreKeyId > Constants.maxKeyId - count {
-            return 1
-        } else {
-            return lastKyberPreKeyId + 1
-        }
+    private func nextKyberPreKeyId(minimumCapacity: UInt32 = 1, tx: DBReadTransaction) -> UInt32 {
+        return PreKeyId.nextPreKeyId(
+            lastPreKeyId: UInt32(exactly: metadataStore.getInt32(Constants.lastKeyId, defaultValue: 0, transaction: tx)) ?? 0,
+            minimumCapacity: minimumCapacity
+        )
     }
 
     private func generateKyberPreKeyRecord(
-        id: Int32,
+        id: UInt32,
         signedBy identityKeyPair: ECKeyPair,
         isLastResort: Bool
     ) throws -> KyberPreKeyRecord {
@@ -222,7 +215,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         signedBy keyPair: ECKeyPair,
         tx: DBWriteTransaction
     ) throws -> [KyberPreKeyRecord] {
-        var nextKeyId = nextKyberPreKeyId(ensureCapacity: Int32(count), tx: tx)
+        var nextKeyId = nextKyberPreKeyId(minimumCapacity: UInt32(count), tx: tx)
         let records = try (0..<count).map { _ in
             let record = try generateKyberPreKeyRecord(
                 id: nextKeyId,
@@ -232,7 +225,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
             nextKeyId += 1
             return record
         }
-        metadataStore.setInt32(nextKeyId - 1, key: Constants.lastKeyId, transaction: tx)
+        metadataStore.setInt32(Int32(nextKeyId - 1), key: Constants.lastKeyId, transaction: tx)
         return records
     }
 
@@ -248,45 +241,32 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
             signedBy: keyPair,
             isLastResort: true
         )
-        metadataStore.setInt32(keyId, key: Constants.lastKeyId, transaction: tx)
+        metadataStore.setInt32(Int32(keyId), key: Constants.lastKeyId, transaction: tx)
         return record
     }
 
-    public func generateEphemeralLastResortKyberPreKey(
+    public func generateLastResortKyberPreKeyForLinkedDevice(
         signedBy keyPair: ECKeyPair
     ) throws -> SignalServiceKit.KyberPreKeyRecord {
-        let keyId = Int32.random(in: 1...(Constants.maxKeyId))
         return try generateKyberPreKeyRecord(
-            id: keyId,
+            id: PreKeyId.random(),
             signedBy: keyPair,
             isLastResort: true
         )
     }
 
-    // Mark as current
-    public func storeLastResortPreKeyAndMarkAsCurrent(record: KyberPreKeyRecord, tx: DBWriteTransaction) throws {
+    public func storeLastResortPreKey(record: KyberPreKeyRecord, tx: DBWriteTransaction) throws {
         try storeKyberPreKey(record: record, tx: tx)
-        self.metadataStore.setInt32(record.id, key: Constants.currentLastResortKeyId, transaction: tx)
     }
 
-    private func getLastResortKyberPreKeyId(tx: DBReadTransaction) -> Int32? {
-        return self.metadataStore.getInt32(Constants.currentLastResortKeyId, transaction: tx)
-    }
-
-    public func getLastResortKyberPreKey(tx: DBReadTransaction) -> SignalServiceKit.KyberPreKeyRecord? {
-        guard
-            let lastResortId = getLastResortKyberPreKeyId(tx: tx),
-            let record = loadKyberPreKey(id: lastResortId, tx: tx),
-            record.isLastResort
-        else {
-            return nil
-        }
-        return record
+    public func storeLastResortPreKeyFromLinkedDevice(record: KyberPreKeyRecord, tx: DBWriteTransaction) throws {
+        try storeLastResortPreKey(record: record, tx: tx)
+        metadataStore.setInt32(Int32(record.id), key: Constants.lastKeyId, transaction: tx)
     }
 
     // MARK: - LibSignalClient.KyberPreKeyStore conformance
 
-    public func loadKyberPreKey(id: Int32, tx: DBReadTransaction) -> SignalServiceKit.KyberPreKeyRecord? {
+    public func loadKyberPreKey(id: UInt32, tx: DBReadTransaction) -> SignalServiceKit.KyberPreKeyRecord? {
         try? self.keyStore.getCodableValue(forKey: key(for: id), transaction: tx)
     }
 
@@ -296,14 +276,14 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         }
     }
 
-    public func storeKyberPreKey(record: SignalServiceKit.KyberPreKeyRecord, tx: DBWriteTransaction) throws {
+    private func storeKyberPreKey(record: SignalServiceKit.KyberPreKeyRecord, tx: DBWriteTransaction) throws {
         try self.keyStore.setCodable(record, key: key(for: record.id), transaction: tx)
     }
 
-    public func markKyberPreKeyUsed(id: Int32, tx: DBWriteTransaction) throws {
+    public func markKyberPreKeyUsed(id: UInt32, tx: DBWriteTransaction) throws {
         // fetch the key, see if it's was a last resort.
         // if not, remove the key from the list of uses (or mark it as used?)
-        guard let record = loadKyberPreKey(id: id, tx: tx) else { throw Error.noKyberPreKeyWithId(UInt32(id)) }
+        guard let record = loadKyberPreKey(id: id, tx: tx) else { throw Error.noKyberPreKeyWithId(id) }
         if !record.isLastResort {
             self.keyStore.removeValue(forKey: key(for: id), transaction: tx)
         }
@@ -318,9 +298,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
 }
 
 extension SSKKyberPreKeyStore {
-    internal func key(for id: Int32) -> String {
-        return NSNumber(value: id).stringValue
-    }
+    internal func key(for id: UInt32) -> String { "\(id)" }
 }
 
 extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
@@ -334,14 +312,14 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         context: LibSignalClient.StoreContext
     ) throws -> LibSignalClient.KyberPreKeyRecord {
         guard let preKey = self.loadKyberPreKey(
-            id: Int32(bitPattern: id),
+            id: id,
             tx: context.asTransaction.asV2Read
         ) else {
             throw Error.noKyberPreKeyWithId(id)
         }
 
         return try LibSignalClient.KyberPreKeyRecord(
-            id: UInt32(bitPattern: preKey.id),
+            id: preKey.id,
             timestamp: preKey.generatedAt.ows_millisecondsSince1970,
             keyPair: preKey.keyPair,
             signature: preKey.signature
@@ -356,7 +334,7 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         context: LibSignalClient.StoreContext
     ) throws {
         let record = SignalServiceKit.KyberPreKeyRecord(
-            Int32(id),
+            id,
             keyPair: record.keyPair,
             signature: Data(record.signature),
             generatedAt: Date(millisecondsSince1970: record.timestamp),
@@ -366,14 +344,14 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
     }
 
     public func markKyberPreKeyUsed(id: UInt32, context: StoreContext) throws {
-        try self.markKyberPreKeyUsed(id: Int32(bitPattern: id), tx: context.asTransaction.asV2Write)
+        try self.markKyberPreKeyUsed(id: id, tx: context.asTransaction.asV2Write)
     }
 
-    public func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: DBWriteTransaction) {
+    public func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction) {
         self.metadataStore.setDate(date, key: Constants.lastKeyRotationDate, transaction: tx)
     }
 
-    public func getLastSuccessfulPreKeyRotationDate(tx: DBReadTransaction) -> Date? {
+    public func getLastSuccessfulRotationDate(tx: DBReadTransaction) -> Date? {
         self.metadataStore.getDate(Constants.lastKeyRotationDate, transaction: tx)
     }
 
@@ -395,19 +373,19 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         self.keyStore.removeValues(forKeys: keysToRemove, transaction: tx)
     }
 
-    public func cullLastResortPreKeyRecords(tx: DBWriteTransaction) throws {
-
+    public func cullLastResortPreKeyRecords(
+        justUploadedLastResortPreKey: KyberPreKeyRecord,
+        tx: DBWriteTransaction
+    ) throws {
         // get a list of keys
-        // get the current key
-        // don't touch the current
+        // don't touch what we just uploaded
         // remove all others older than 30 days
-        guard let currentLastResort = getLastResortKyberPreKey(tx: tx) else { return }
 
         let recordsToRemove: [KyberPreKeyRecord] = try self.keyStore
             .allCodableValues(transaction: tx)
             .filter { record in
                 guard record.isLastResort else { return false }
-                guard record.id != currentLastResort.id else { return false }
+                guard record.id != justUploadedLastResortPreKey.id else { return false }
                 let keyAge = dateProvider().timeIntervalSince(record.generatedAt)
                 return keyAge >= Constants.lastResortKeyExpirationInterval
             }
@@ -427,7 +405,7 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 extension LibSignalClient.KyberPreKeyRecord {
     func asSSKLastResortRecord() -> SignalServiceKit.KyberPreKeyRecord {
         return SignalServiceKit.KyberPreKeyRecord(
-            Int32(bitPattern: self.id),
+            self.id,
             keyPair: self.keyPair,
             signature: Data(self.signature),
             generatedAt: Date(millisecondsSince1970: self.timestamp),
@@ -439,7 +417,7 @@ extension LibSignalClient.KyberPreKeyRecord {
 extension SignalServiceKit.KyberPreKeyRecord {
     func asLSCRecord() throws -> LibSignalClient.KyberPreKeyRecord {
         try LibSignalClient.KyberPreKeyRecord(
-            id: UInt32(bitPattern: self.id),
+            id: self.id,
             timestamp: self.generatedAt.ows_millisecondsSince1970,
             keyPair: self.keyPair,
             signature: self.signature

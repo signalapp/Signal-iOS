@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self) {
         if (_recipientAddress == nil) {
             NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
-            _recipientAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            _recipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
             OWSAssertDebug(_recipientAddress.isValid);
         }
     }
@@ -79,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
              infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
+                      serverGuid:(nullable NSString *)serverGuid
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                    isLocalChange:(BOOL)isLocalChange
                 recipientAddress:(SignalServiceAddress *)recipientAddress
@@ -114,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
                infoMessageUserInfo:infoMessageUserInfo
                        messageType:messageType
                               read:read
+                        serverGuid:serverGuid
                unregisteredAddress:unregisteredAddress];
 
     if (!self) {

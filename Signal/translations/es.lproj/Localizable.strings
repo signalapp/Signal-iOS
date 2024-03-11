@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Foto";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Foto";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Llamadas";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Entrante";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Perdida";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Saliente";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Eliminar";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Esto eliminará permanentemente todo tu historial de llamadas.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "¿Eliminar historial de llamadas?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Eliminar";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Todos";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Perdida";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Ir al chat";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Unirse a la llamada";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Unirse";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Unirse a videollamada";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Sin llamadas perdidas";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "No hay llamadas recientes";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Empieza llamando a alguien";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Volver a la llamada";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Atrás";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "No se encontraron resultados para «%1$@»";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Seleccionar";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Seleccionar";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Llamar";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Videollamada";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Detalles";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Haz una foto y envíala";
 
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Buscar por alias";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Abrir ajustes";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Al activar el acceso a los contactos en «Ajustes» de iOS puedes saber quien usa Signal. Tus contactos no se guardarán en el servidor de Signal.";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Enlazar nuevo dispositivo";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ está bloqueadx";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ está entre tus contactos del sistema";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "No hay mensajes directos con %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Solicitud de mensaje pendiente";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Conexión de Signal";
@@ -1286,16 +1367,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Añadir a contacto existente";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Añadir a los contactos de iOS";
-
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Cualquiera";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Desactivada";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Añadir a los contactos del sistema";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Selecciona quién puede modificar el nombre, descripción e imagen del grupo y la desaparición de mensajes.";
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Insignias";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "No podrás enviar ni recibir más mensajes de esta persona.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "No podrás enviar ni recibir más mensajes en este grupo.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Bloquear grupo";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Bloquear persona";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Llamada entrante";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Videollamada entrante";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Llamada perdida";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Videollamada perdida";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Llamada realizada";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Videollamada realizada";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Editar";
@@ -1425,6 +1509,9 @@
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "¿Expulsar a %1$@ del grupo?";
+
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Denunciar spam";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Retirar permisos de admin";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Fallo al descargar adjunto.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Fallo al subir adjunto.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "No se pudo recibir un mensaje de %1$@";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Buscar información de tu cuenta";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Introduce un alias seguido de un punto y su conjunto de números.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Alias";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Buscar por alias";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marcar como verificada";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Participantes";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Toca para revisar";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Participante";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Revisar participantes";
 
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Has mandado una solicitud a %1$@ para activar Pagos.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "Denunciado como spam";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal ha sido notificado de que esta persona puede estar enviando spam. Signal no puede ver el contenido de ningún chat.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Spam denunciado";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invitar personas a Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Más";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Buscar";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Bloquear y eliminar";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Denunciar como spam y bloquear";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "¿Eliminar y abandonar grupo?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Revisa las solicitudes cuidadosamente. Signal ha encontrado otra persona con el mismo nombre.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Tu contacto";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Esta persona tiene el mismo nombre que otro contacto";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Si no sabes quién ha enviado esta solicitud, revisa la lista de personas debajo para tomar la decisión correcta.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Solicitud";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Revisar solicitud";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Actualizar contacto";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Revisar solicitud";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal será notificado de que esta persona puede estar enviando spam. Signal no puede ver el contenido de ningún chat.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "¿Denunciar spam?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Denunciar spam";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Denunciado como spam.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Denunciado como spam y bloqueado.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "¿Quieres compartir tu nombre y foto con %1$@ y permitir que te mande un mensaje? En el pasado, eliminaste a esta persona.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Denunciar…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Desbloquear";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Pulsa para añadir";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Ha cambiado su nombre de %1$@ a %2$@ recientemente.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ ha cambiado su nombre de perfil recientemente de %2$@ a %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ahora no";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi y red móvil";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Llamar";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Selecciona una persona o grupo para empezar una nueva llamada.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "Nueva llamada";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Mensaje de texto";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "Nueva llamada";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Videollamada";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Encontrar por núm. de teléfono";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Buscar por alias";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Crear grupo";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Seleccionar grupo";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Buscar";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Buscar persona";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Encontrar por núm. de teléfono";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Poner título a la historia";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Encontrar por núm. de teléfono";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Buscar contactos por alias";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Sin grupos en común";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Nadie";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Tu número de teléfono no será visible para nadie a menos que lo tenga guardado en los contactos de su teléfono.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Tu número de teléfono ya no es visible para nadie.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@%2$@";
@@ -5282,10 +5414,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Biografía (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ ha cambiado su nombre de %2$@ a %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ ha cambiado su nombre de perfil de %2$@ a %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ha cambiado su nombre a %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ha cambiado su nombre de perfil a %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Tu nombre";
@@ -5318,7 +5450,7 @@
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "Código QR o enlace";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Alias (nombre de usuari@)";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Alias";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Tu apellido es demasiado largo.";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Tu alias, código QR y enlace no son visibles en tu perfil. Comparte tu alias solo con personas de confianza.";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Ahora, la gente puede enviarte mensajes usando tu alias opcional, con lo que no necesitas dar tu número de teléfono.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Dirección del proxy";
@@ -5730,6 +5865,48 @@
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Tus cifras de seguridad con %1$@ han cambiado. Por favor, verifica su identidad.";
+
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Consejos de seguridad";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "Si alguien a quién no conoces te envía mensajes sobre criptomonedas (como Bitcoin) o con una oportunidad financiera: ten cuidado, es probable que se trate de spam.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "Estafas de criptomonedas o dinero";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Ten cuidado con las empresas o agencias gubernamentales que se pongan en contacto contigo. Los mensajes que involucren a agencias tributarias y servicios de mensajería, entre otros, pueden ser spam.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Empresas e instituciones falsas";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Revisa cuidadosamente esta solicitud. Ninguno de tus contactos o personas con las que chateas están en este grupo. Aquí hay algunas cosas a tener en cuenta:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "Consejos de seguridad";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Ten cuidado al aceptar solicitudes de mensajes de personas que no conoces. Presta atención a:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Ten cuidado con los mensajes de personas que no conoces y que tienen enlaces a sitios web. Nunca visites enlaces de personas en las que no confíes.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Mensajes con enlaces";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Los spammers a menudo comienzan con un mensaje simple, como \"Hola\", para atraer tu atención. Si respondes, es posible que te involucren más.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Mensajes confusos o irrelevantes";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Escanea el código QR mostrado en el dispositivo de tu contacto.";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Para cambiar esto, selecciona \"Nadie\" en el ajuste \"Quién puede ver mi número\".";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Quién puede encontrarme a través de mi número";
 
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Visualizaciones desactivadas";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Id de usuaria copiada al portapapeles";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Id de donante copiada al portapapeles";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Tus cifras de seguridad con %1$@ coinciden. Puedes marcar su identidad como verificada.";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "Códigos QR y enlaces";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Tu número de teléfono ya no es visible en los chats. Incluso aunque tu amigx tenga tu número guardado en sus contactos, no le aparecerá.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Privacidad del número de teléfono";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "Nuevas formas de conectarte";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Ahora, la gente puede enviarte mensajes usando tu alias opcional, con lo que no necesitas dar tu número de teléfono. Los alias no son visibles en tu perfil.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Alias";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Reiniciar";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Si restableces tu código QR, tu código QR y tu enlace actuales dejarán de funcionar.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Si reinicias tu código QR y tu enlace, tu código QR y tu enlace actuales dejarán de funcionar.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Tu código QR y tu enlace se han restablecido, y se han creado un código QR y enlace nuevos.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Compartir";
@@ -7697,7 +7883,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Escanear";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Se ha copiado el nombre de usuario";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Se ha copiado el alias";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Enlace copiado";
@@ -7745,19 +7931,19 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Tu código QR y tu enlace se han restablecido y tu alias es %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "El alias no puede comenzar con un número.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "El alias no puede comenzar con un número";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Cambiar tu alias restablecerá tu código QR y tu enlace. ¿Seguro que quieres hacer esto?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Los alias les permiten a otras personas mandarte un mensaje sin necesidad de tu número de teléfono. Funcionan conjuntamente con una serie de dígitos para ayudarte a mantener tu dirección en privado. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Los alias siempre están emparejados con un conjunto de números. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Elige tu alias";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Tu alias solo puede contener a-Z, 0-9 y _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Tu alias solo puede contener a-Z, 0-9 y _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Alias no válido, ingresa un mínimo de 2 dígitos";
@@ -7769,7 +7955,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "¿Qué es este número?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Alias no disponible.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Alias no disponible";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Se han realizado demasiados intentos; inténtalo de nuevo más tarde";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Alias";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Alias";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Un alias debe empezar con al menos %1$@ caracteres.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Los alias no pueden terminar en 00. Prueba otro dígito del 1 al 9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Este número no puede ser 00. Introduce un dígito del 1 al 9";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Los alias solo se pueden actualizar con una conexión a internet activa.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "El nombre de dispositivo no puede quedar en blanco";

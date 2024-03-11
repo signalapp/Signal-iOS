@@ -90,10 +90,11 @@ public final class MediaGalleryManager: NSObject {
         }
 
         guard
-            let originalAlbumIndex = message.indexOf(
-                attachmentId: attachmentStream.uniqueId,
-                transaction: transaction.asAnyRead
-            )?.intValue
+            let originalAlbumIndex = DependenciesBridge.shared.tsResourceStore.indexForBodyAttachmentId(
+                .legacy(uniqueId: attachmentStream.uniqueId),
+                on: message,
+                tx: transaction.asAnyRead.asV2Read
+            )
         else {
             owsFailDebug("originalAlbumIndex was unexpectedly nil")
             return nil

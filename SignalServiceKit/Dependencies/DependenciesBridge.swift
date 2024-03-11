@@ -41,12 +41,20 @@ public class DependenciesBridge {
     public let accountAttributesUpdater: AccountAttributesUpdater
 
     public let appExpiry: AppExpiry
+
+    public let attachmentManager: AttachmentManager
+    public let attachmentStore: AttachmentStore
+
     public let authorMergeHelper: AuthorMergeHelper
+
+    public let badgeCountFetcher: BadgeCountFetcher
 
     let deletedCallRecordStore: DeletedCallRecordStore
     public let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
+
     public let callRecordStore: CallRecordStore
     public let callRecordDeleteManager: CallRecordDeleteManager
+    public let callRecordMissedCallManager: CallRecordMissedCallManager
     public let callRecordQuerier: CallRecordQuerier
 
     public let groupCallRecordManager: GroupCallRecordManager
@@ -83,6 +91,7 @@ public class DependenciesBridge {
     public let masterKeySyncManager: MasterKeySyncManager
 
     public let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
+    public let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
 
     public let pinnedThreadStore: PinnedThreadStore
     public let pinnedThreadManager: PinnedThreadManager
@@ -119,6 +128,9 @@ public class DependenciesBridge {
 
     public let tsAccountManager: TSAccountManager
 
+    public let tsResourceManager: TSResourceManager
+    public let tsResourceStore: TSResourceStore
+
     public let uploadManager: UploadManager
 
     public let usernameApiClient: UsernameApiClient
@@ -136,11 +148,11 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
-        contactsManager: ContactsManagerProtocol,
+        contactManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         earlyMessageManager: EarlyMessageManager,
-        groupsV2: GroupsV2Swift,
+        groupsV2: GroupsV2,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
@@ -174,7 +186,7 @@ public class DependenciesBridge {
             appVersion: appVersion,
             attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             earlyMessageManager: earlyMessageManager,
@@ -217,11 +229,11 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
-        contactsManager: ContactsManagerProtocol,
+        contactManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         earlyMessageManager: EarlyMessageManager,
-        groupsV2: GroupsV2Swift,
+        groupsV2: GroupsV2,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
@@ -257,11 +269,14 @@ public class DependenciesBridge {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
-        let recipientManager = SignalRecipientManagerImpl(
-            recipientDatabaseTable: recipientDatabaseTable,
-            storageServiceManager: storageServiceManager
-        )
-        self.recipientManager = recipientManager
+        let attachmentStore = AttachmentStoreImpl()
+        let attachmentManager = AttachmentManagerImpl(attachmentStore: attachmentStore)
+        self.attachmentStore = attachmentStore
+        self.attachmentManager = attachmentManager
+
+        let tsResourceStore = TSResourceStoreImpl(attachmentStore: attachmentStore)
+        self.tsResourceManager = TSResourceManagerImpl(attachmentManager: attachmentManager)
+        self.tsResourceStore = tsResourceStore
 
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
@@ -271,6 +286,21 @@ public class DependenciesBridge {
             schedulers: schedulers
         )
         self.tsAccountManager = tsAccountManager
+
+        let userProfileStore = UserProfileStoreImpl()
+        let phoneNumberVisibilityFetcher = PhoneNumberVisibilityFetcherImpl(
+            contactsManager: contactManager,
+            tsAccountManager: tsAccountManager,
+            userProfileStore: userProfileStore
+        )
+        self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
+
+        let recipientManager = SignalRecipientManagerImpl(
+            phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
+            recipientDatabaseTable: recipientDatabaseTable,
+            storageServiceManager: storageServiceManager
+        )
+        self.recipientManager = recipientManager
 
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             db: db,
@@ -287,6 +317,8 @@ public class DependenciesBridge {
             appVersion: appVersion,
             schedulers: schedulers
         )
+
+        self.badgeCountFetcher = BadgeCountFetcherImpl()
 
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
@@ -308,6 +340,7 @@ public class DependenciesBridge {
         )
 
         self.changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
+            db: self.db,
             identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
@@ -329,12 +362,13 @@ public class DependenciesBridge {
                 groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
                 keyValueStoreFactory: keyValueStoreFactory,
                 linkPreviewShim: EditManager.Wrappers.LinkPreview(),
-                receiptManagerShim: EditManager.Wrappers.ReceiptManager(receiptManager: receiptManager)
+                receiptManagerShim: EditManager.Wrappers.ReceiptManager(receiptManager: receiptManager),
+                tsResourceStore: tsResourceStore
             )
         )
 
         let groupUpdateItemBuilder = GroupUpdateItemBuilderImpl(
-            contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactsManager),
+            contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactManager),
             recipientDatabaseTable: recipientDatabaseTable
         )
 
@@ -392,7 +426,6 @@ public class DependenciesBridge {
             keyValueStoreFactory: self.keyValueStoreFactory,
             notificationScheduler: self.schedulers.main
         )
-        let userProfileStore = UserProfileStoreImpl()
 
         self.disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
 
@@ -443,6 +476,13 @@ public class DependenciesBridge {
                 threadStore: self.threadStore
             )
             self.callRecordQuerier = CallRecordQuerierImpl()
+
+            self.callRecordMissedCallManager = CallRecordMissedCallManagerImpl(
+                callRecordQuerier: self.callRecordQuerier,
+                callRecordStore: self.callRecordStore,
+                messageSenderJobQueue: messageSenderJobQueue,
+                threadStore: self.threadStore
+            )
 
             self.groupCallRecordManager = GroupCallRecordManagerImpl(
                 callRecordStore: self.callRecordStore,
@@ -541,36 +581,34 @@ public class DependenciesBridge {
         )
         self.pniHelloWorldManager = PniHelloWorldManagerImpl(
             database: db,
-            identityManager: PniHelloWorldManagerImpl.Wrappers.IdentityManager(identityManager),
+            identityManager: identityManager,
             keyValueStoreFactory: keyValueStoreFactory,
             networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
             recipientDatabaseTable: self.recipientDatabaseTable,
             schedulers: schedulers,
             tsAccountManager: tsAccountManager
         )
 
+        self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
         self.preKeyManager = PreKeyManagerImpl(
             dateProvider: dateProvider,
             db: db,
             identityManager: PreKey.Wrappers.IdentityManager(identityManager),
+            keyValueStoryFactory: keyValueStoreFactory,
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
             protocolStoreManager: signalProtocolStoreManager,
             serviceClient: accountServiceClient,
+            socketManager: self.socketManager,
             tsAccountManager: tsAccountManager
-
         )
 
         self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
             accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            pniIdentityKeyChecker: pniIdentityKeyChecker,
-            preKeyManager: preKeyManager,
             registrationStateChangeManager: registrationStateChangeManager,
             schedulers: schedulers,
             tsAccountManager: tsAccountManager
@@ -653,7 +691,6 @@ public class DependenciesBridge {
 
         self.sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
             attachmentDownloads: SentMessageTranscriptReceiverImpl.Wrappers.AttachmentDownloads(attachmentDownloads),
-            attachmentStore: AttachmentStoreImpl(),
             disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
             earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
             groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
@@ -661,6 +698,7 @@ public class DependenciesBridge {
             paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
             signalProtocolStoreManager: signalProtocolStoreManager,
             tsAccountManager: tsAccountManager,
+            tsResourceManager: tsResourceManager,
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
         )
 
@@ -697,7 +735,6 @@ public class DependenciesBridge {
             tsAccountManager: tsAccountManager
         )
 
-        self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
         self.externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
 
         // TODO: Move this into ProfileFetcherJob.
@@ -716,14 +753,14 @@ public class DependenciesBridge {
 
         self.uploadManager = UploadManagerImpl(
             db: db,
-            attachmentStore: AttachmentStoreImpl(),
             interactionStore: InteractionStoreImpl(),
             networkManager: networkManager,
             socketManager: socketManager,
             signalService: signalService,
             attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
             blurHash: Upload.Wrappers.BlurHash(),
-            fileSystem: Upload.Wrappers.FileSystem()
+            fileSystem: Upload.Wrappers.FileSystem(),
+            tsResourceStore: tsResourceStore
         )
     }
 }

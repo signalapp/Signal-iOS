@@ -19,11 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
-typedef NS_CLOSED_ENUM(NSUInteger, OutgoingGroupProtoResult) {
-    OutgoingGroupProtoResult_AddedWithoutGroupAvatar,
-    OutgoingGroupProtoResult_Error
-};
-
 NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRecipientAll";
 
 NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value)
@@ -924,7 +919,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                 result = OutgoingGroupProtoResult_Error;
                 break;
             case GroupsVersionV2:
-                result = [self addGroupsV2ToDataMessageBuilder:builder groupThread:groupThread transaction:transaction];
+                result = [self addGroupsV2ToDataMessageBuilder:builder groupThread:groupThread tx:transaction];
                 break;
         }
         switch (result) {
@@ -936,20 +931,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
     
     // Message Attachments
-    NSMutableArray<SSKProtoAttachmentPointer *> *attachments = [NSMutableArray new];
-    for (NSString *attachmentId in [self bodyAttachmentIdsWithTransaction:transaction]) {
-        SSKProtoAttachmentPointer *_Nullable attachmentProto =
-            [TSAttachmentStream buildProtoForAttachmentId:attachmentId containingMessage:self transaction:transaction];
-        if (!attachmentProto) {
-            OWSFailDebug(@"could not build protobuf.");
-            return nil;
-        }
-        [attachments addObject:attachmentProto];
-        if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionCdnSelectorAttachments
-            && (attachmentProto.cdnKey.length > 0 || attachmentProto.cdnNumber > 0)) {
-            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionCdnSelectorAttachments;
-        }
-    }
+    NSArray<SSKProtoAttachmentPointer *> *attachments = [self buildProtosForBodyAttachmentsWithTx:transaction];
     [builder setAttachments:attachments];
 
     // Quoted Reply
@@ -973,7 +955,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // Contact Share
     if (self.contactShare) {
-        SSKProtoDataMessageContact *_Nullable contactProto = [self.contactShare protoWithTransaction:transaction];
+        SSKProtoDataMessageContact *_Nullable contactProto =
+            [self.contactShare buildProtoWithParentMessage:self tx:transaction];
         if (contactProto) {
             [builder addContact:contactProto];
         } else {
@@ -987,16 +970,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         if (self.linkPreview.title.length > 0) {
             [previewBuilder setTitle:self.linkPreview.title];
         }
-        if (self.linkPreview.imageAttachmentId) {
-            SSKProtoAttachmentPointer *_Nullable attachmentProto =
-                [TSAttachmentStream buildProtoForAttachmentId:self.linkPreview.imageAttachmentId
-                                            containingMessage:self
-                                                  transaction:transaction];
-            if (!attachmentProto) {
-                OWSFailDebug(@"Could not build link preview image protobuf.");
-            } else {
-                [previewBuilder setImage:attachmentProto];
-            }
+        SSKProtoAttachmentPointer *_Nullable attachmentProto =
+            [self buildProtoForLinkPreviewAttachmentWithTx:transaction];
+        if (attachmentProto) {
+            [previewBuilder setImage:attachmentProto];
         }
         if (self.linkPreview.date) {
             uint64_t interval = [self.linkPreview.date ows_millisecondsSince1970];
@@ -1017,10 +994,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // Sticker
     if (self.messageSticker) {
-        SSKProtoAttachmentPointer *_Nullable attachmentProto =
-            [TSAttachmentStream buildProtoForAttachmentId:self.messageSticker.attachmentId
-                                        containingMessage:self
-                                              transaction:transaction];
+        SSKProtoAttachmentPointer *_Nullable attachmentProto = [self buildProtoForStickerAttachmentWithTx:transaction];
         if (!attachmentProto) {
             OWSFailDebug(@"Could not build sticker attachment protobuf.");
         } else {
@@ -1061,33 +1035,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return builder;
 }
 
-- (OutgoingGroupProtoResult)addGroupsV2ToDataMessageBuilder:(SSKProtoDataMessageBuilder *)builder
-                                                groupThread:(TSGroupThread *)groupThread
-                                                transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(builder);
-    OWSAssertDebug(groupThread);
-    OWSAssertDebug(transaction);
-
-    if (![groupThread.groupModel isKindOfClass:[TSGroupModelV2 class]]) {
-        OWSFailDebug(@"Invalid group model.");
-        return OutgoingGroupProtoResult_Error;
-    }
-    TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
-
-    NSError *error;
-    SSKProtoGroupContextV2 *_Nullable groupContextV2 =
-        [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel
-                                       changeActionsProtoData:self.changeActionsProtoData
-                                                        error:&error];
-    if (groupContextV2 == nil || error != nil) {
-        OWSFailDebug(@"Error: %@", error);
-        return OutgoingGroupProtoResult_Error;
-    }
-    [builder setGroupV2:groupContextV2];
-    return OutgoingGroupProtoResult_AddedWithoutGroupAvatar;
-}
-
 - (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.quotedMessage) {
@@ -1124,20 +1071,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
     }
 
-    if (quotedMessage.hasAttachment) {
+    QuotedThumbnailAttachmentMetadata *_Nullable thumbnailAttachment =
+        [quotedMessage fetchThumbnailAttachmentMetadataForParentMessage:self transaction:transaction];
+    if (thumbnailAttachment) {
         SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
             [SSKProtoDataMessageQuoteQuotedAttachment builder];
-        quotedAttachmentBuilder.contentType = quotedMessage.contentType;
-        quotedAttachmentBuilder.fileName = quotedMessage.sourceFilename;
-
-        if (quotedMessage.thumbnailAttachmentId && quotedMessage.isThumbnailOwned) {
-            NSString *attachmentId = quotedMessage.thumbnailAttachmentId;
-            quotedAttachmentBuilder.thumbnail = [TSAttachmentStream buildProtoForAttachmentId:attachmentId
-                                                                            containingMessage:self
-                                                                                  transaction:transaction];
-        } else if (quotedMessage.thumbnailAttachmentId) {
-            OWSFailDebug(@"Referencing an attachment that isn't owned by the quote.");
-        }
+        quotedAttachmentBuilder.contentType = thumbnailAttachment.mimeType;
+        quotedAttachmentBuilder.fileName = thumbnailAttachment.sourceFilename;
+        quotedAttachmentBuilder.thumbnail = [self buildProtoForQuotedReplyAttachmentWithTx:transaction];
 
         NSError *error;
         SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =

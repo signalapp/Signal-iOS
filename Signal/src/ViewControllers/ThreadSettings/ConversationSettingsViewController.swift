@@ -27,11 +27,14 @@ public protocol ConversationSettingsViewDelegate: AnyObject {
 // TODO: We should describe which state updates & when it is committed.
 class ConversationSettingsViewController: OWSTableViewController2, BadgeCollectionDataSource {
 
+    typealias CallViewModel = CallsListViewController.CallViewModel
+
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 
     private(set) var threadViewModel: ThreadViewModel
     private(set) var isSystemContact: Bool
-    private let spoilerState: SpoilerRenderState
+    let spoilerState: SpoilerRenderState
+    let callViewModel: CallViewModel?
 
     var thread: TSThread {
         threadViewModel.threadRecord
@@ -51,7 +54,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     public var showVerificationOnAppear = false
 
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
-    var avatarView: PrimaryImageView?
+    var avatarView: ConversationAvatarView?
 
     var isShowingAllGroupMembers = false
     var isShowingAllMutualGroups = false
@@ -61,11 +64,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     public required init(
         threadViewModel: ThreadViewModel,
         isSystemContact: Bool,
-        spoilerState: SpoilerRenderState
+        spoilerState: SpoilerRenderState,
+        callViewModel: CallViewModel? = nil
     ) {
         self.threadViewModel = threadViewModel
         self.isSystemContact = isSystemContact
         self.spoilerState = spoilerState
+        self.callViewModel = callViewModel
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
         disappearingMessagesConfiguration = Self.databaseStorage.read { tx in
@@ -553,7 +558,9 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     func presentPrimaryBadgeSheet() {
         guard let contactAddress = (thread as? TSContactThread)?.contactAddress else { return }
         guard let primaryBadge = availableBadges.first?.badge else { return }
-        let contactShortName = databaseStorage.read { contactsManager.shortDisplayName(for: contactAddress, transaction: $0) }
+        let contactShortName = databaseStorage.read {
+            return contactsManager.displayName(for: contactAddress, tx: $0).resolvedValue(useShortNameIfAvailable: true)
+        }
 
         let badgeSheet = BadgeDetailsSheet(focusedBadge: primaryBadge, owner: .remote(shortName: contactShortName))
         present(badgeSheet, animated: true, completion: nil)
@@ -707,6 +714,16 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             return
         }
         BlockListUIUtils.showBlockThreadActionSheet(thread, from: self) { [weak self] _ in
+            self?.reloadThreadAndUpdateContent()
+        }
+    }
+
+    func didTapReportSpam() {
+        ReportSpamUIUtils.showReportSpamActionSheet(
+            thread,
+            isBlocked: threadViewModel.isBlocked,
+            from: self
+        ) { [weak self] _ in
             self?.reloadThreadAndUpdateContent()
         }
     }

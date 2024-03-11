@@ -240,12 +240,22 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         }
         contents.add(mainSection)
 
-        if FeatureFlags.usernames, let localUsernameState {
+        if let localUsernameState {
             let usernameSection = OWSTableSection()
-            usernameSection.footerTitle = OWSLocalizedString(
-                "PROFILE_VIEW_USERNAME_DESCRIPTION",
-                comment: "Footer below the usernames section of the profile settings explaining username visibility."
-            )
+
+            switch localUsernameState {
+            case .unset:
+                usernameSection.footerTitle = OWSLocalizedString(
+                    "PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION",
+                    comment: "Footer below the usernames section of the profile settings when a username has not been set."
+                )
+            case .available, .linkCorrupted, .usernameAndLinkCorrupted:
+                usernameSection.footerTitle = OWSLocalizedString(
+                    "PROFILE_VIEW_USERNAME_DESCRIPTION",
+                    comment: "Footer below the usernames section of the profile settings explaining username visibility."
+                )
+            }
+
             switch localUsernameState {
             case .unset:
                 usernameSection.add(usernameUnsetTableItem())
@@ -575,28 +585,32 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             fromViewController: self,
             canCancel: false
         ) { modal in
-            firstly(on: self.context.schedulers.global()) { () -> Promise<Void> in
+            firstly(on: self.context.schedulers.global()) { () -> Guarantee<Usernames.RemoteMutationResult<Void>> in
                 self.context.db.write { tx in
                     return self.context.localUsernameManager
                         .deleteUsername(tx: tx)
                 }
             }
-            .ensure(on: self.context.schedulers.main) {
+            .map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Void> in
                 let newState = self.context.db.read { tx in
                     return self.context.localUsernameManager.usernameState(tx: tx)
                 }
 
                 // State may have changed with either success or failure.
                 self.usernameStateDidChange(newState: newState)
+
+                return remoteMutationResult
             }
-            .done(on: self.context.schedulers.main) {
-                modal.dismiss()
-            }
-            .catch(on: self.context.schedulers.main) { error in
-                modal.dismiss {
-                    OWSActionSheets.showErrorAlert(
-                        message: CommonStrings.somethingWentWrongTryAgainLaterError
-                    )
+            .done(on: self.context.schedulers.main) { remoteMutationResult in
+                switch remoteMutationResult {
+                case .success:
+                    modal.dismiss()
+                case .failure(let remoteMutationError):
+                    modal.dismiss {
+                        OWSActionSheets.showErrorAlert(
+                            message: remoteMutationError.localizedDescription
+                        )
+                    }
                 }
             }
         }

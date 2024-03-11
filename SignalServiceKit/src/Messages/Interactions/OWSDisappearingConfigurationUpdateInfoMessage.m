@@ -85,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
              infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
+                      serverGuid:(nullable NSString *)serverGuid
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
     configurationDurationSeconds:(unsigned int)configurationDurationSeconds
           configurationIsEnabled:(BOOL)configurationIsEnabled
@@ -121,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
                infoMessageUserInfo:infoMessageUserInfo
                        messageType:messageType
                               read:read
+                        serverGuid:serverGuid
                unregisteredAddress:unregisteredAddress];
 
     if (!self) {

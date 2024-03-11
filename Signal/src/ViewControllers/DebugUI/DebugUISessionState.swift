@@ -119,7 +119,7 @@ class DebugUISessionState: DebugUIPage, Dependencies {
         recipientSelection.addAction(OWSActionSheets.cancelAction)
 
         recipientAddresses.forEach { address in
-            let name = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+            let name = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
             recipientSelection.addAction(ActionSheetAction(
                 title: name,
                 handler: { _ in
@@ -137,7 +137,7 @@ class DebugUISessionState: DebugUIPage, Dependencies {
             owsFailDebug("No identity for address \(address)")
             return
         }
-        let name = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+        let name = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
         let message = "\(name) is currently marked as \(OWSVerificationStateToString(identity.verificationState))"
 
         let stateSelection = ActionSheetController(title: "Select a verification state", message: message)

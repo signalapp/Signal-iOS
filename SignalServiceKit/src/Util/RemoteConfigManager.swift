@@ -244,10 +244,6 @@ public class RemoteConfig: BaseFlags {
         getUInt32Value(forFlag: .maxNicknameLength, defaultValue: 32)
     }
 
-    static var tryToReturnAcisWithoutUaks: Bool {
-        return !(isEnabled(.cdsDisableCompatibilityMode) || FeatureFlags.disableCdsCompatibilityMode)
-    }
-
     public static var maxAttachmentDownloadSizeBytes: UInt {
         return getUIntValue(forFlag: .maxAttachmentDownloadSizeBytes, defaultValue: 100 * 1024 * 1024)
     }
@@ -258,6 +254,13 @@ public class RemoteConfig: BaseFlags {
 
     public static var shouldCheckForServiceExtensionFailures: Bool {
         return !isEnabled(.serviceExtensionFailureKillSwitch)
+    }
+
+    public static var backgroundRefreshInterval: TimeInterval {
+        return TimeInterval(getUIntValue(
+            forFlag: .backgroundRefreshInterval,
+            defaultValue: UInt(kDayInterval)
+        ))
     }
 
     // MARK: UInt values
@@ -476,7 +479,6 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
-    case cdsDisableCompatibilityMode = "cds.disableCompatibilityMode"
     case canDonateWithSepa = "ios.canDonateWithSepa"
     case enableGifSearch = "global.gifSearch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
@@ -497,7 +499,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalMonthlyDonationKillSwitch: fallthrough
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
-        case .cdsDisableCompatibilityMode: fallthrough
         case .canDonateWithSepa: fallthrough
         case .enableGifSearch: fallthrough
         case .serviceExtensionFailureKillSwitch:
@@ -522,7 +523,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalMonthlyDonationKillSwitch: fallthrough
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
-        case .cdsDisableCompatibilityMode: fallthrough
         case .canDonateWithSepa: fallthrough
         case .enableGifSearch:
             return false
@@ -550,13 +550,13 @@ private enum ValueFlag: String, FlagType {
     case minNicknameLength = "global.nicknames.min"
     case maxNicknameLength = "global.nicknames.max"
     case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
+    case backgroundRefreshInterval = "ios.backgroundRefreshInterval"
 
     var isSticky: Bool {
         switch self {
         case .groupsV2MaxGroupSizeRecommended: fallthrough
         case .groupsV2MaxGroupSizeHardLimit:
             return true
-
         case .clientExpiration: fallthrough
         case .cdsSyncInterval: fallthrough
         case .automaticSessionResetAttemptInterval: fallthrough
@@ -573,7 +573,8 @@ private enum ValueFlag: String, FlagType {
         case .maxGroupCallRingSize: fallthrough
         case .minNicknameLength: fallthrough
         case .maxNicknameLength: fallthrough
-        case .maxAttachmentDownloadSizeBytes:
+        case .maxAttachmentDownloadSizeBytes: fallthrough
+        case .backgroundRefreshInterval:
             return false
         }
     }
@@ -590,9 +591,9 @@ private enum ValueFlag: String, FlagType {
         case .paypalDisabledRegions: fallthrough
         case .sepaEnabledRegions: fallthrough
         case .idealEnabledRegions: fallthrough
-        case .maxGroupCallRingSize:
+        case .maxGroupCallRingSize: fallthrough
+        case .backgroundRefreshInterval:
             return true
-
         case .clientExpiration: fallthrough
         case .cdsSyncInterval: fallthrough
         case .standardMediaQualityLevel: fallthrough
@@ -1010,16 +1011,16 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     private func remoteExpirationDate(minimumVersions: [MinimumVersion]) -> Date? {
         var oldestEnforcementDate: Date?
-        let currentVersion4 = AppVersionImpl.shared.currentAppVersion4
+        let currentVersion = AppVersionNumber(AppVersionImpl.shared.currentAppVersion)
         for minimumVersion in minimumVersions {
             // We only are interested in minimum versions greater than our current version.
             // Note: This method of comparison will only work as long as we always use
             // *long* version strings (x.x.x.x). We enforce that `MinimumVersion` only
             // uses long versions while decoding.
-            guard minimumVersion.string.compare(
-                currentVersion4,
-                options: .numeric
-            ) == .orderedDescending else { continue }
+            let minimumVersionNumber = AppVersionNumber(minimumVersion.string)
+            guard minimumVersionNumber > currentVersion else {
+                continue
+            }
 
             if let enforcementDate = oldestEnforcementDate {
                 oldestEnforcementDate = min(enforcementDate, minimumVersion.enforcementDate)

@@ -80,24 +80,24 @@ public class SDSDB: DB {
 
     // MARK: Async Methods
 
-    public func asyncRead(
+    public func asyncRead<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBReadTransaction) -> Void,
+        block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue = .main,
-        completion: (() -> Void)? = nil
+        completion: ((T) -> Void)? = nil
     ) {
         databaseStorage.asyncRead(file: file, function: function, line: line, block: {block(ReadTx($0))}, completionQueue: completionQueue, completion: completion)
     }
 
-    public func asyncWrite(
+    public func asyncWrite<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBWriteTransaction) -> Void,
+        block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue = .main,
-        completion: (() -> Void)? = nil
+        completion: ((T) -> Void)? = nil
     ) {
         databaseStorage.asyncWrite(file: file, function: function, line: line, block: {block(WriteTx($0))}, completionQueue: completionQueue, completion: completion)
     }

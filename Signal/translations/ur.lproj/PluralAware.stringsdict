@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>گروپ کے %1$d ممبر کا نام مماثل ہے۔</string>
+			<string>%1$d گروپ ممبر کا ایک جیسا نام ہے۔</string>
 			<key>other</key>
-			<string>گروپ کے %1$d ممبرز کے نام مماثل ہیں۔</string>
+			<string>%1$d گروپ ممبرز کے ایک جیسے نام ہے۔</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d نام کا تصادم اس گروپ میں پایا گیا۔</string>
+			<key>other</key>
+			<string>%1$d نام کے تصادم اس گروپ میں پائے گئے۔</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d ممبر</string>
+			<key>other</key>
+			<string>%1$d ممبرز</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>گروپ کے %1$d ممبر کا نام مماثل ہے، ممبر کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
+			<string>اس گروپ میں %1$d نام کا تنازعہ دریافت ہوا تھا۔ ذیل میں ممبرز کا جائزہ لیں یا کارروائی کرنے کا انتخاب کریں۔</string>
 			<key>other</key>
-			<string>گروپ کے %1$d ممبرز کے نام مماثل ہیں، ممبرز کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
+			<string>اس گروپ میں %1$d نام کے تنازعات دریافت ہوئے تھے۔ ذیل میں ممبرز کا جائزہ لیں یا کارروائی کرنے کا انتخاب کریں۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -520,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>گروپ کے %1$d ممبر کا نام مماثل ہے، ممبر کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
+			<string>%1$d گروپ ممبر کا ایک جیسا نام ہے۔ ذیل میں ممبر کا جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
 			<key>other</key>
-			<string>گروپ کے %1$d ممبرز کے نام مماثل ہیں، ممبرز کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
+			<string>%1$d گروپ ممبرز کے ایک جیسے نام ہیں۔ ذیل میں ممبرز کا جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; ویو</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; ویوز</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>یوزر نیمز کے شروع میں کم از کم %1$d حرف لازمی ہونا چاہیئے</string>
+			<key>other</key>
+			<string>یوزر نیمز کے شروع میں کم از کم %1$d حروف لازمی ہونے چاہیئے</string>
 		</dict>
 	</dict>
 </dict>

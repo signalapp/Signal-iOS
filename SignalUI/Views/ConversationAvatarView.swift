@@ -8,15 +8,15 @@ import LibSignalClient
 import UIKit
 import SignalMessaging
 
-public protocol ConversationAvatarViewDelegate: AnyObject {
+// swiftlint:disable:next class_delegate_protocol
+public protocol ConversationAvatarViewDelegate: UIViewController {
     func didTapBadge()
 
     func presentStoryViewController()
     func presentAvatarViewController()
 }
 
-public extension ConversationAvatarViewDelegate where Self: UIViewController {
-
+public extension ConversationAvatarViewDelegate {
     func didTapAvatar(_ configuration: ConversationAvatarView.Configuration) {
         if configuration.hasStoriesToDisplay {
             let actionSheet = ActionSheetController()
@@ -496,7 +496,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         return tapGestureRecognizer
     }()
 
-    public weak var interactionDelegate: (ConversationAvatarViewDelegate & UIViewController)? {
+    public weak var interactionDelegate: (any ConversationAvatarViewDelegate)? {
         didSet {
             if interactionDelegate != nil, oldValue == nil {
                 avatarView.addGestureRecognizer(avatarTapGestureRecognizer)

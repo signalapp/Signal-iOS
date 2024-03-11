@@ -117,15 +117,13 @@ struct ContactConversationItem: Dependencies {
     let address: SignalServiceAddress
     let isBlocked: Bool
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
-    let contactName: String
-    let comparableName: String
+    let comparableName: ComparableDisplayName
 
     init(
         address: SignalServiceAddress,
         isBlocked: Bool,
         disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?,
-        contactName: String,
-        comparableName: String
+        comparableName: ComparableDisplayName
     ) {
         owsAssertBeta(
             !isBlocked,
@@ -135,14 +133,9 @@ struct ContactConversationItem: Dependencies {
         self.address = address
         self.isBlocked = isBlocked
         self.disappearingMessagesConfig = disappearingMessagesConfig
-        self.contactName = contactName
         self.comparableName = comparableName
     }
-}
 
-// MARK: -
-
-extension ContactConversationItem: Comparable {
     public static func < (lhs: ContactConversationItem, rhs: ContactConversationItem) -> Bool {
         return lhs.comparableName < rhs.comparableName
     }
@@ -166,7 +159,7 @@ extension ContactConversationItem: ConversationItem {
             return MessageStrings.noteToSelf
         }
 
-        return contactName
+        return comparableName.resolvedValue()
     }
 
     var image: UIImage? {

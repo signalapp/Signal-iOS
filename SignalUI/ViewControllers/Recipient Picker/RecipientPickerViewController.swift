@@ -29,11 +29,15 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         case allGroupsWhenSearching
     }
 
-    public weak var delegate: RecipientPickerDelegate?
+    public weak var delegate: RecipientPickerDelegate? {
+        didSet {
+            recipientContextMenuHelper.delegate = delegate
+        }
+    }
 
     // MARK: Configuration
 
-    public var allowsAddByPhoneNumber = true
+    public var allowsAddByAddress = true
     public var shouldHideLocalRecipient = true
     public var selectionMode = SelectionMode.default
     public var groupsToShow = GroupsToShow.groupsThatUserIsMemberOfWhenSearching
@@ -45,12 +49,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     // MARK: Signal Connections
 
-    fileprivate struct SignalConnection {
-        var address: SignalServiceAddress
-        var comparableName: String
-    }
-
-    private var signalConnections = [SignalConnection]()
+    private var signalConnections = [ComparableDisplayName]()
     private var signalConnectionAddresses = Set<SignalServiceAddress>()
 
     // MARK: Picker
@@ -243,17 +242,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
     private lazy var searchBar: OWSSearchBar = {
         let searchBar = OWSSearchBar()
         searchBar.delegate = self
-        if FeatureFlags.usernames {
-            searchBar.placeholder = OWSLocalizedString(
-                "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
-                comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number."
-            )
-        } else {
-            searchBar.placeholder = OWSLocalizedString(
-                "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
-                comment: "Placeholder text indicating the user can search for contacts by name or phone number."
-            )
-        }
+        searchBar.placeholder = OWSLocalizedString(
+            "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
+            comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number."
+        )
         searchBar.accessibilityIdentifier = "RecipientPickerViewController.searchBar"
         searchBar.textField?.accessibilityIdentifier = "RecipientPickerViewController.contact_search"
         searchBar.sizeToFit()
@@ -302,7 +294,8 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
             accountManager: DependenciesBridge.shared.tsAccountManager,
             contactsManager: contactsManager,
-            fromViewController: self
+            fromViewController: self,
+            delegate: self.delegate
         )
     }()
 
@@ -323,14 +316,13 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                 resolvedAddresses.remove(localIdentifiers.aciAddress)
             }
 
-            let sortableAddresses = contactsManagerImpl.sortedSortableAddresses(for: resolvedAddresses, tx: tx)
-            signalConnections = sortableAddresses.map { sortableAddress in
-                return SignalConnection(
-                    address: sortableAddress.address,
-                    comparableName: sortableAddress.comparableName
-                )
+            signalConnections = contactsManagerImpl.sortedComparableNames(for: resolvedAddresses, tx: tx).filter {
+                if case .unknown = $0.displayName {
+                    return false
+                }
+                return true
             }
-            signalConnectionAddresses = resolvedAddresses
+            signalConnectionAddresses = Set(signalConnections.lazy.map { $0.address })
         }
     }
 
@@ -375,8 +367,24 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             ))
         }
 
-        // Find Non-Contacts by Phone Number
-        if allowsAddByPhoneNumber && !isSearching {
+        if allowsAddByAddress && !isSearching {
+            // Find by username
+            staticSection.add(OWSTableItem.disclosureItem(
+                icon: .profileUsername,
+                name: OWSLocalizedString(
+                    "NEW_CONVERSATION_FIND_BY_USERNAME",
+                    comment: "A label for the cell that lets you add a new member by their username"
+                ),
+                accessibilityIdentifier: "RecipientPickerViewController.find_by_username",
+                actionBlock: { [weak self] in
+                    guard let self else { return }
+                    let viewController = FindByUsernameViewController()
+                    viewController.findByUsernameDelegate = self
+                    self.navigationController?.pushViewController(viewController, animated: true)
+                }
+            ))
+
+            // Find by phone number
             staticSection.add(OWSTableItem.disclosureItem(
                 icon: .phoneNumber,
                 name: OWSLocalizedString(
@@ -392,21 +400,6 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                         requiresRegisteredNumber: self.selectionMode != .blocklist
                     )
                     self.navigationController?.pushViewController(viewController, animated: true)
-                }
-            ))
-        }
-
-        // Invite Contacts
-        if shouldShowInvites && !isSearching && contactsManagerImpl.sharingAuthorization != .denied {
-            staticSection.add(OWSTableItem.disclosureItem(
-                icon: .settingsInvite,
-                name: OWSLocalizedString(
-                    "INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                    comment: "Label for the cell that presents the 'invite contacts' workflow."
-                ),
-                accessibilityIdentifier: "RecipientPickerViewController.invite_contacts",
-                actionBlock: { [weak self] in
-                    self?.presentInviteFlow()
                 }
             ))
         }
@@ -468,6 +461,26 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                     return self.collation.sectionTitles
                 }
             }
+        }
+
+        // Invite Contacts
+        if shouldShowInvites && !isSearching && contactsManagerImpl.sharingAuthorization != .denied {
+            let bottomSection = OWSTableSection(title: OWSLocalizedString(
+                "INVITE_FRIENDS_CONTACT_TABLE_HEADER",
+                comment: "Header label above a section for more options for adding contacts"
+            ))
+            bottomSection.add(OWSTableItem.disclosureItem(
+                icon: .settingsInvite,
+                name: OWSLocalizedString(
+                    "INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                    comment: "Label for the cell that presents the 'invite contacts' workflow."
+                ),
+                accessibilityIdentifier: "RecipientPickerViewController.invite_contacts",
+                actionBlock: { [weak self] in
+                    self?.presentInviteFlow()
+                }
+            ))
+            tableContents.add(bottomSection)
         }
 
         tableViewController.contents = tableContents
@@ -738,7 +751,18 @@ extension RecipientPickerViewController {
             )
         }
 
-        if allowsAddByPhoneNumber {
+        if allowsAddByAddress {
+            addButton(
+                title: OWSLocalizedString(
+                    "NO_CONTACTS_SEARCH_BY_USERNAME",
+                    comment: "Label for a button that lets users search for contacts by username"
+                ),
+                selector: #selector(hideBackgroundView),
+                accessibilityIdentifierName: "searchByPhoneNumberButton",
+                icon: .composeFindByUsernameLarge,
+                innerIconSize: 40
+            )
+
             addButton(
                 title: OWSLocalizedString(
                     "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
@@ -892,21 +916,9 @@ extension RecipientPickerViewController {
 
     private func contactAccessDeniedReminderItem() -> OWSTableItem {
         return OWSTableItem(customCellBlock: {
-            let reminderView = ReminderView(
-                style: .warning,
-                text: OWSLocalizedString(
-                    "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
-                    comment: "Multi-line label explaining why compose-screen contact picker is empty."
-                ),
-                tapAction: { CurrentAppContext().openSystemSettings() }
-            )
-
-            let cell = OWSTableItem.newCell()
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "missing_contacts")
-            cell.contentView.addSubview(reminderView)
-            reminderView.autoPinEdgesToSuperviewEdges()
-
-            return cell
+            ContactAccessDeniedReminderTableViewCell {
+                CurrentAppContext().openSystemSettings()
+            }
         })
     }
 
@@ -962,19 +974,6 @@ extension RecipientPickerViewController {
 // MARK: - Contacts, Connections, & Groups
 
 extension RecipientPickerViewController {
-    private class CollatableSignalConnection: NSObject {
-        private let rawValue: SignalConnection
-
-        init(_ rawValue: SignalConnection) {
-            self.rawValue = rawValue
-        }
-
-        @objc
-        func collationString() -> String {
-            return rawValue.comparableName
-        }
-    }
-
     private func contactsSection() -> [OWSTableSection] {
         guard !signalConnections.isEmpty else {
             return [ noContactsTableSection() ]
@@ -991,11 +990,11 @@ extension RecipientPickerViewController {
             )]
         }
 
-        var collatedSignalConnections = collation.sectionTitles.map { _ in return [SignalConnection]() }
+        var collatedSignalConnections = collation.sectionTitles.map { _ in return [ComparableDisplayName]() }
         for signalConnection in signalConnections {
             let section = collation.section(
-                for: CollatableSignalConnection(signalConnection),
-                collationStringSelector: #selector(CollatableSignalConnection.collationString)
+                for: CollatableComparableDisplayName(signalConnection),
+                collationStringSelector: #selector(CollatableComparableDisplayName.collationString)
             )
             guard section >= 0 else {
                 continue
@@ -1099,7 +1098,8 @@ extension RecipientPickerViewController {
                 },
                 actionBlock: { [weak self] in
                     self?.tryToSelectRecipient(recipient)
-                }
+                },
+                contextMenuActionProvider: recipientContextMenuHelper.actionProvider(groupThread: groupThread)
             )
         }
     }
@@ -1121,6 +1121,8 @@ extension RecipientPickerViewController {
                 if let attributedSubtitle = delegate.recipientPicker(self, attributedSubtitleForRecipient: recipient, transaction: transaction) {
                     configuration.attributedSubtitle = attributedSubtitle
                 }
+
+                configuration.allowUserInteraction = delegate.recipientPicker(self, shouldAllowUserInteractionForRecipient: recipient, transaction: transaction)
             }
             cell.configure(configuration: configuration, transaction: transaction)
         }
@@ -1134,9 +1136,9 @@ extension RecipientPickerViewController {
             if delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
                 cell.selectionStyle = .none
             }
-
-            cell.accessoryMessage = databaseStorage.read {
-                delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: $0)
+            databaseStorage.read { tx in
+                cell.accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: tx)
+                cell.customAccessoryView = delegate.recipientPicker(self, accessoryViewForRecipient: recipient, transaction: tx)?.accessoryView
             }
         }
 
@@ -1493,6 +1495,21 @@ extension RecipientPickerViewController: FindByPhoneNumberDelegate {
     }
 }
 
+extension RecipientPickerViewController: FindByUsernameDelegate {
+    func findByUsername(address: SignalServiceAddress) {
+        owsAssertDebug(address.isValid)
+        tryToSelectRecipient(.for(address: address))
+    }
+
+    var shouldShowQRCodeButton: Bool {
+        delegate?.shouldShowQRCodeButton ?? false
+    }
+
+    func openQRCodeScanner() {
+        delegate?.openUsernameQRCodeScanner()
+    }
+}
+
 // MARK: - Find by Username
 
 extension RecipientPickerViewController {
@@ -1523,9 +1540,6 @@ extension RecipientPickerViewController {
     }
 
     private func findByUsernameSection(for searchResults: ComposeScreenSearchResultSet) -> OWSTableSection? {
-        guard FeatureFlags.usernames else {
-            return nil
-        }
         guard let username = parsePossibleSearchUsername(for: searchResults.searchText) else {
             return nil
         }
@@ -1560,5 +1574,59 @@ extension RecipientPickerViewController {
                 }
             )
         }
+    }
+}
+
+// MARK: - ContactAccessDeniedReminderTableViewCell
+
+private class ContactAccessDeniedReminderTableViewCell: UITableViewCell {
+    private let tapAction: () -> Void
+
+    init(openSettingsAction: @escaping () -> Void) {
+        self.tapAction = openSettingsAction
+        super.init(style: .default, reuseIdentifier: nil)
+
+        let label = UILabel()
+        contentView.addSubview(label)
+        label.autoPinEdgesToSuperviewMargins()
+        label.numberOfLines = 0
+        label.attributedText = NSAttributedString.composed(of: [
+            OWSLocalizedString(
+                "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
+                comment: "Multi-line label explaining why compose-screen contact picker is empty."
+            ),
+            "\n",
+            OWSLocalizedString(
+                "COMPOSE_SCREEN_MISSING_CONTACTS_CTA",
+                comment: "Button to open settings from an empty compose-screen contact picker."
+            ).styled(
+                with: .font(.dynamicTypeSubheadline.semibold()),
+                .alignment(.trailing)
+            )
+        ]).styled(
+            with: .font(.dynamicTypeSubheadline),
+            .color(Theme.primaryTextColor)
+        )
+
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc
+    private func didTap() {
+        tapAction()
+    }
+}
+
+extension ContactAccessDeniedReminderTableViewCell: CustomBackgroundColorCell {
+    func customBackgroundColor(forceDarkMode: Bool) -> UIColor {
+        ReminderView.warningBackgroundColor(forceDarkMode: forceDarkMode)
+    }
+
+    func customSelectedBackgroundColor(forceDarkMode: Bool) -> UIColor {
+        customBackgroundColor(forceDarkMode: forceDarkMode)
     }
 }

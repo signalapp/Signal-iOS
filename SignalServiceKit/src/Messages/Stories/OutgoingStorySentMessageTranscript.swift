@@ -108,10 +108,19 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
 
         switch storyMessage.attachment {
         case .file(let file):
-            guard let attachmentProto = TSAttachmentStream.buildProto(
-                attachmentId: file.attachmentId,
-                containingStoryMessage: storyMessage,
-                transaction: transaction
+            guard
+                let stream = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: file.attachmentId, transaction: transaction),
+                stream.cdnKey.isEmpty.negated,
+                stream.cdnNumber > 0
+            else {
+                owsFailDebug("Missing attachment for outgoing story message")
+                return nil
+            }
+            let resourceReference = TSAttachmentReference(uniqueId: file.attachmentId, attachment: stream)
+            let pointer = TSResourcePointer(resource: stream, cdnNumber: stream.cdnNumber, cdnKey: stream.cdnKey)
+            guard let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+                from: resourceReference,
+                pointer: pointer
             ) else {
                 owsFailDebug("Missing attachment for outgoing story message")
                 return nil
@@ -122,9 +131,12 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
             guard
                 let resource = StoryMessageResource.fetch(storyMessage: storyMessage, tx: transaction),
                 let attachment = resource.fetchAttachment(tx: transaction),
-                let attachmentProto = (attachment as? TSAttachmentStream)?.buildProto(
-                    withCaption: resource.caption,
-                    attachmentType: resource.isLoopingVideo ? .GIF : .default
+                let stream = attachment as? TSAttachmentStream,
+                stream.cdnKey.isEmpty.negated,
+                stream.cdnNumber > 0,
+                let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+                    from: TSAttachmentReference(uniqueId: stream.uniqueId, attachment: stream),
+                    pointer: TSResourcePointer(resource: stream, cdnNumber: stream.cdnNumber, cdnKey: stream.cdnKey)
                 )
             else {
                 owsFailDebug("Missing attachment for outgoing story message")

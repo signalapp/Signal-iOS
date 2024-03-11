@@ -428,7 +428,35 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d 位群組成員的名稱相似。</string>
+			<string>%1$d 群組成員的名字相同。</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>在此群組中發現 %1$d 個名字衝突。</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d 位成員</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -442,7 +470,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d 位群組成員的名稱相似，請檢視下列成員並選擇要採取的動作。</string>
+			<string>在此群組中發現 %1$d 個名字衝突。檢視下列成員或選擇採取行動。</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -456,7 +484,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d 位群組成員的名稱相同，請檢視下列成員並選擇要採取的動作。</string>
+			<string>%1$d 位群組成員的名稱相同。請檢視下列成員並選擇要採取的動作。</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -792,7 +820,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>所有 Signal 聯絡人 · %1$d 位瀏覽者</string>
+			<string>所有 Signal 人脈 · %1$d 位瀏覽者</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -806,7 +834,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>所有 Signal 聯絡人 · 已排除 %1$d 人</string>
+			<string>所有 Signal 人脈 · 已排除 %1$d 人</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -1059,6 +1087,20 @@
 			<string>d</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; 瀏覽次數</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>用戶名稱必須至少以 %1$d 個字元開始</string>
 		</dict>
 	</dict>
 </dict>

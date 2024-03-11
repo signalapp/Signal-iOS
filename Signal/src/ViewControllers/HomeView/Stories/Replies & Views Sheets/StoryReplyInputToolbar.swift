@@ -226,7 +226,7 @@ class StoryReplyInputToolbar: UIView {
                     comment: "placeholder text for replying to a private story. Embeds {{author name}}"
                 )
                 let authorName = databaseStorage.read { tx in
-                    return contactsManager.displayName(for: quotedReplyModel.authorAddress, transaction: tx)
+                    return contactsManager.displayName(for: quotedReplyModel.authorAddress, tx: tx).resolvedValue()
                 }
                 return String(format: format, authorName)
             } else {

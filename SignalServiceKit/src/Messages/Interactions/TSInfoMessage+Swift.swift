@@ -8,10 +8,28 @@ import LibSignalClient
 
 // MARK: - Group updates
 
+public enum GroupUpdateSpamReportingMetadata {
+    // This update contains information that can be reported as spam.
+    case reportable(serverGuid: String)
+    // This update is missing necessary information to report as spam.
+    // This could be because the information was dropped (as with the round trip to a backup)
+    // or the serverGuid is otherwise missing. This information being missing
+    // isn't a fatal error, it just means that no attempt will be made to record or report
+    // spam based on this group action.
+    case unreportable
+    // We can't report this update because it came from a group action (create, join, etc.)
+    // intiated locally by the user.
+    case createdByLocalAction
+    // These updates were initiated locally to update the group state.
+    // there's no metadata to associate with these updates for reporting purposes.
+    case learnedByLocallyInitatedRefresh
+}
+
 public extension TSInfoMessage {
 
     static func newGroupUpdateInfoMessage(
         timestamp: UInt64,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupThread: TSGroupThread,
         updateItems: [PersistableGroupUpdateItem]
     ) -> TSInfoMessage {
@@ -21,9 +39,19 @@ public extension TSInfoMessage {
 
         userInfoForNewMessage[.groupUpdateItems] = PersistableGroupUpdateItemsWrapper(updateItems)
 
+        let spamReportingServerGuid: String? = {
+            switch spamReportingMetadata {
+            case .reportable(serverGuid: let serverGuid):
+                return serverGuid
+            case .unreportable, .createdByLocalAction, .learnedByLocallyInitatedRefresh:
+                return nil
+            }
+        }()
+
         let infoMessage = TSInfoMessage(
             thread: groupThread,
             timestamp: timestamp,
+            serverGuid: spamReportingServerGuid,
             messageType: .typeGroupUpdate,
             infoMessageUserInfo: userInfoForNewMessage
         )
@@ -246,7 +274,7 @@ public extension TSInfoMessage {
             guard let address = TSContactThread.contactAddress(fromThreadId: uniqueThreadId, transaction: tx) else {
                 return nil
             }
-            return contactsManager.displayName(for: address, transaction: tx)
+            return contactsManager.displayName(for: address, tx: tx).resolvedValue()
         }()
         return result ?? OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
     }
@@ -391,11 +419,8 @@ extension TSInfoMessage {
             )
         }
 
-        let name = contactsManager.displayName(
-            for: SignalServiceAddress(aci),
-            transaction: transaction
-        )
-        return String(format: formatString, name)
+        let displayName = contactsManager.displayName(for: SignalServiceAddress(aci), tx: transaction)
+        return String(format: formatString, displayName.resolvedValue())
     }
 
     @objc
@@ -409,15 +434,12 @@ extension TSInfoMessage {
                 comment: "Shown when a user activates payments from a chat"
             )
         case .incoming(let aci):
-            let name = contactsManager.displayName(
-                for: SignalServiceAddress(aci),
-                transaction: transaction
-            )
+            let displayName = contactsManager.displayName(for: SignalServiceAddress(aci), tx: transaction)
             let format = OWSLocalizedString(
                 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED",
                 comment: "Shown when a user activates payments from a chat. Embeds: {{ the user's name}}"
             )
-            return String(format: format, name)
+            return String(format: format, displayName.resolvedValue())
         }
     }
 }

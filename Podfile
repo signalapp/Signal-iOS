@@ -13,21 +13,21 @@ pod 'SwiftProtobuf', ">= 1.14.0"
 pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
-ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '18d8fe6e79cbafd2cb09224d92c692bcd0f0f1345b26c9edf9a4be361612dce3'
-pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.39.3', testspecs: ["Tests"]
+ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '86bf02a0d6140126c3525e7446ec3d5c641e8ce57f85213a9f8f15aecd58dce8'
+pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.41.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal-client', testspecs: ["Tests"]
 
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'
 
-ENV['RINGRTC_PREBUILD_CHECKSUM'] = 'fcf1c41743b528dabfdae683c2c8e347ae9111a837d1203868f5b0806098ec9e'
-pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.37.0', inhibit_warnings: true
+ENV['RINGRTC_PREBUILD_CHECKSUM'] = '53f405493587603df7974009978e70717f3880aa9a56cb5a06f59bf396b97931'
+pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.39.0', inhibit_warnings: true
 # pod 'SignalRingRTC', path: '../ringrtc', testspecs: ["Tests"]
 
 pod 'GRDB.swift/SQLCipher'
 # pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 
-pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', tag: 'v4.5.5-f_barrierfsync-fts5'
+pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', tag: 'v4.5.6-f_barrierfsync'
 # pod 'SQLCipher', path: '../sqlcipher'
 
 ###
@@ -81,16 +81,14 @@ end
 
 # These extensions inherit all of the common pods
 
-target 'SignalMessaging' do 
-  pod 'MobileCoinMinimal', git: 'https://github.com/signalapp/MobileCoin-Swift.git', branch: 'charlesmchen/mobileCoinMinimal', testspecs: ["Tests"]
-  # pod 'MobileCoinMinimal', path: '../MobileCoinMinimal', testspecs: ["Tests"]
+target 'SignalMessaging' do
 end
 
-target 'SignalShareExtension' do 
+target 'SignalShareExtension' do
   ui_pods
 end
 
-target 'SignalUI' do 
+target 'SignalUI' do
   ui_pods
 
   target 'SignalUITests' do
@@ -100,6 +98,8 @@ end
 
 target 'SignalServiceKit' do
   pod 'CocoaLumberjack'
+  pod 'MobileCoinMinimal', git: 'https://github.com/signalapp/MobileCoin-Swift.git', branch: 'charlesmchen/mobileCoinMinimal', testspecs: ["Tests"]
+  # pod 'MobileCoinMinimal', path: '../MobileCoinMinimal', testspecs: ["Tests"]
   pod 'SAMKeychain'
 
   target 'SignalServiceKitTests' do
@@ -107,7 +107,7 @@ target 'SignalServiceKit' do
   end
 end
 
-target 'SignalNSE' do 
+target 'SignalNSE' do
 end
 
 post_install do |installer|
@@ -230,8 +230,8 @@ def strip_valid_archs(installer)
   end
 end
 
-#update_framework_scripts updates Pod-Signal-frameworks.sh to fix a bug in the .XCFramework->.framework 
-#conversation process, by ensuring symlinks are properly respected in the XCFramework. 
+#update_framework_scripts updates Pod-Signal-frameworks.sh to fix a bug in the .XCFramework->.framework
+#conversation process, by ensuring symlinks are properly respected in the XCFramework.
 #See https://github.com/CocoaPods/CocoaPods/issues/7587
 def update_frameworks_script(installer)
     fw_script = File.read('Pods/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh')

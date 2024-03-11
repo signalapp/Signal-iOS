@@ -162,7 +162,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 - (SignalServiceAddress *)contactAddress
 {
-    return [[SignalServiceAddress alloc] initWithServiceIdString:self.contactUUID phoneNumber:self.contactPhoneNumber];
+    return [SignalServiceAddress legacyAddressWithServiceIdString:self.contactUUID phoneNumber:self.contactPhoneNumber];
 }
 
 - (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(SDSAnyReadTransaction *)transaction

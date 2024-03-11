@@ -120,7 +120,7 @@ public final class OWSHttpHeaders: Dependencies, CustomDebugStringConvertible {
     public static var userAgentHeaderKey: String { "User-Agent" }
 
     public static var userAgentHeaderValueSignalIos: String {
-        "Signal-iOS/\(AppVersionImpl.shared.currentAppVersion4) iOS/\(UIDevice.current.systemVersion)"
+        "Signal-iOS/\(AppVersionImpl.shared.currentAppVersion) iOS/\(UIDevice.current.systemVersion)"
     }
 
     public static var acceptLanguageHeaderKey: String { "Accept-Language" }

@@ -12,7 +12,7 @@ public enum StoryUtil: Dependencies {
 
     static func authorDisplayName(
         for storyMessage: StoryMessage,
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         useFullNameForLocalAddress: Bool = true,
         useShortGroupName: Bool = true,
         transaction: SDSAnyReadTransaction
@@ -38,10 +38,10 @@ public enum StoryUtil: Dependencies {
             if storyMessage.authorAddress.isLocalAddress {
                 authorShortName = CommonStrings.you
             } else {
-                authorShortName = contactsManager.shortDisplayName(
+                authorShortName = contactsManager.displayName(
                     for: storyMessage.authorAddress,
-                    transaction: transaction
-                )
+                    tx: transaction
+                ).resolvedValue(useShortNameIfAvailable: true)
             }
 
             let nameFormat = OWSLocalizedString(
@@ -55,8 +55,8 @@ public enum StoryUtil: Dependencies {
             }
             return contactsManager.displayName(
                 for: storyMessage.authorAddress,
-                transaction: transaction
-            )
+                tx: transaction
+            ).resolvedValue()
         }
     }
 

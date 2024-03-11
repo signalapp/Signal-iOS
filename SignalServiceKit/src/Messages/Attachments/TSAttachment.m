@@ -333,8 +333,8 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
             attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_GIF",
                 @"Short text label for a gif attachment, used for thread preview and on the lock screen");
         } else {
-            attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_IMAGE",
-                @"Short text label for an image attachment, used for thread preview and on the lock screen");
+            attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_PHOTO",
+                @"Short text label for a photo attachment, used for thread preview and on the lock screen");
         }
     } else if ([MIMETypeUtil isImage:self.contentType]) {
         attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_PHOTO",

@@ -206,10 +206,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             direction = .download(attachmentPointer: attachmentPointer)
         case .downloading(let attachmentPointer):
             direction = .download(attachmentPointer: attachmentPointer)
-        case .restoring:
-            // TODO: We could easily show progress for restores.
-            owsFailDebug("Restoring progress type.")
-            return nil
         case .unknown:
             owsFailDebug("Unknown progress type.")
             return nil
@@ -231,10 +227,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         case .pendingDownload,
              .downloading:
             return true
-        case .restoring:
-            // TODO: We could easily show progress for restores.
-            owsFailDebug("Restoring progress type.")
-            return false
         case .unknown:
             owsFailDebug("Unknown progress type.")
             return false

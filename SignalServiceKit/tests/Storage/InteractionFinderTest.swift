@@ -104,15 +104,31 @@ class InteractionFinderTest: SSKBaseTestSwift {
     }
 
     func testEnumerateMessagesWithAttachments() throws {
+        func makeRandomAttachment(tx: SDSAnyWriteTransaction) -> TSAttachment {
+            let attachmentData = Randomness.generateRandomBytes(1024)
+            let attachment = TSAttachmentStream(
+                contentType: OWSMimeTypeImageGif,
+                byteCount: UInt32(attachmentData.count),
+                sourceFilename: "some.gif",
+                caption: nil,
+                attachmentType: .default,
+                albumMessageId: nil
+            )
+            attachment.anyInsert(transaction: tx)
+            return attachment
+        }
+
         // Create some messages with attachments.
         let threads = ContactThreadFactory().create(count: 2)
         let threadMessages = threads.map { thread in
             let messageFactory = IncomingMessageFactory()
             messageFactory.threadCreator = { _ in thread }
             var n = 0
-            messageFactory.attachmentIdsBuilder = {
+            messageFactory.attachmentIdsBuilder = { tx in
                 defer { n += 1 }
-                return (0..<n).map { _ in UUID().uuidString }
+                return (0..<n).map { _ in
+                    return makeRandomAttachment(tx: tx).uniqueId
+                }
             }
             return messageFactory.create(count: 3)
         }

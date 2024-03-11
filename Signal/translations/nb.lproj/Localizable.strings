@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Bilde";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Bilde";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Samtaler";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Innkommende";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Ubesvart";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Utgående";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Tøm";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Alle anropene slettes fra listen permanent.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Vil du tømme anropsloggen?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Slett";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Alle";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Ubesvart";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Gå til samtale";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Bli med i lydsamtalen";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Bli med";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Bli med i videosamtalen";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Ingen ubesvarte anrop";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Ingen nylige anrop";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Kom i gang ved å ringe en venn";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Gå tilbake til samtale";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Tilbake";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "Ingen resultater funnet for '%1$@'";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Velg";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Velg";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Taleanrop";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Videosamtale";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Ta et bilde og send det";
 
@@ -932,7 +1001,7 @@
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Det nye nummeret kan ikke være det samme som det gamle. Skriv inn et nytt telefonnummer for å bytte nummer.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Nummeret du oppgav hører ikke til kontoen din.";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Telefonnummeret du oppga hører ikke til kontoen din.";
 
 /* Error indicating that the user's new phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Det nye telefonnummeret er ugyldig. Skriv inn et gyldig telefonnummer for å endre nummeret i profilen.";
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Søk etter brukernavn";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Åpne innstillingene";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan slå på kontakttilgang i iOS-innstillingene for å se hvilke av kontaktene dine som er Signal-brukere.";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Koble til ny enhet";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ er blokkert";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ står i kontaktlisten på enheten din";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Ingen direktemeldinger med %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Ventende meldingsforespørsel";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-kontakter";
@@ -1286,16 +1367,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Legg til eksisterende kontakt";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Legg til i systemkontakter";
-
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administratorer";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Alle";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Deaktivert";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Legg til i kontaktlisten på enheten";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Velg hvem som kan redigere gruppenavnet, gruppeavataren og når meldinger forsvinner.";
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Merker";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Du vil ikke lenger motta meldinger eller oppdateringer fra denne brukeren.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Du vil ikke lenger motta meldinger eller oppdateringer fra denne gruppen.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blokker gruppe";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Blokker bruker";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Innkommende lydsamtale";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Innkommende videoanrop";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Tapt lydsamtale";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Tapt videoanrop";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Utgående lydsamtale";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Utgående videoanrop";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Rediger";
@@ -1425,6 +1509,9 @@
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Vil du fjerne %1$@ fra denne gruppen?";
+
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Rapporter som søppelpost";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Fjern som administrator";
@@ -1685,7 +1772,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Slett kontoen";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Nummeret du oppgav hører ikke til kontoen din.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Telefonummeret du oppga hører ikke til kontoen din.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Vil du slette alle meldingene i samtalen?";
@@ -1697,7 +1784,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Slett";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Personen slettes fra kontaktlisten din på Signal. Du vil ikke se personen når du søker. Du får en meldingsforespørsel hvis vedkommende sender deg en melding.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Personen slettes fra kontaktlisten på enheten din. Du vil ikke se personen når du søker. Du får en meldingsforespørsel hvis vedkommende sender deg en melding.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Vil du slette og fjerne denne personen fra kontaktlisten?";
@@ -2420,7 +2507,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Ugyldig svar fra tjenesten.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denne enheten er ikke lengre registrert med ditt telefonnummer. Reinstaller Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denne enheten er ikke registrert med ditt telefonnummer. Last ned Signal på nytt.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfeil. Vennligst forsøk igjen senere.";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Nedlasting av vedlegg mislyktes.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Vedlegget kunne ikke lastes opp.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "En melding fra %1$@ kunne ikke leveres";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Slik finner du bankopplysningene dine";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Angi brukernavnet etterfulgt av et punktum og tallrekken.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Brukernavn";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Søk etter brukernavn";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merk som verifisert";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Medlemmer";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Trykk for å gå gjennom";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Medlem";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Gå gjennom medlemmer";
 
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Du har sendt en forespørsel til %1$@ om å aktivere betalinger.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "Rapportert som søppelpost";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal har fått beskjed om at denne personen kan ha sendt søppelpost. Signal kan ikke se innholdet i samtaler.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Rapportert som søppelpost";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter venner til Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Mer";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Søk";
@@ -3674,10 +3779,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Lenkeforhåndsvisning";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Det er ikke lenger mulig å administrere systemkontakter på iPad. Åpne Signal på en telefon for å legge Signal-kontakter til i systemkontaktene dine.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Det er ikke lenger mulig å administrere kontaktlisten på iPad. Åpne Signal på en telefon for å legge Signal-kontakter til i kontaktlisten på enheten.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Det er ikke lenger mulig å administrere systemkontakter på iPad. Denne enheten vil fortsette å synkronisere alle endringene i kontaktlisten din fra Signal-appen på telefonen din.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Det er ikke lenger mulig å administrere kontaktlisten på iPad. Denne enheten vil fortsette å synkronisere alle endringene i kontaktlisten din fra Signal-appen på telefonen din.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Les mer";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokker og slett";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Rapporter søppelpost og blokkér";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Vil du slette og forlate gruppen?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Se gjennom forespørslene nøye. Signal fant en annen kontakt med samme navn.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Din kontakt";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Denne personen har samme navn som en annen kontakt";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Hvis du ikke er sikker på hvem forespørselen er fra, se gjennom kontaktene nedenfor og velg handling.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Forespør";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Se gjennom forespørsel";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Oppdater kontakt";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Se gjennom forespørsel";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal får beskjed om at denne personen kan ha sendt søppelpost. Signal kan ikke se innholdet i samtaler.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Rapporter som søppelpost?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Rapporter som søppelpost";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Rapportert som søppelpost.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Rapportert som søppelpost og blokkert.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Vil du at %1$@ skal kunne se navnet og bildet ditt samt kunne sende deg meldinger? Du har fjernet denne personen fra kontaktlisten din tidligere.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Rapporter";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Fjern blokkeringen";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Trykk for å legge til";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Endret nylig profilnavn fra %1$@ til %2$@.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ endret nylig profilnavnet fra %2$@ til %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Hopp over";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi og mobildata";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Taleanrop";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Velg hvilken kontakt eller gruppe du vil ringe.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "Nytt anrop";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Melding";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "Nytt anrop";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Videosamtale";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Finn via telefonnummer";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Søk etter brukernavn";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Ny gruppe";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Velg gruppe";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Søk";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Finn bruker";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Finn via telefonnummer";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Gi navn til storyen";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Finn kontakter ved å søke på telefonnummer";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Finn kontakter ved å søke etter brukernavn";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Ingen grupper til felles";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Ingen";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Telefonnummeret ditt vises kun for de som har det lagret i kontaktlisten på telefonen sin.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Telefonnummeret ditt skjules for alle.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Brukernavnet, QR-koden og lenken er ikke synlige i profilen din. Ikke del brukernavnet ditt med personer du ikke stoler på.";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Nå kan andre sende deg meldinger via brukernavnet ditt, slik at du slipper å gi ut telefonnummeret ditt.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Proxy-adresse";
@@ -5731,6 +5866,48 @@
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ditt sikkerhetsnummer med %1$@ har endret seg. Det kan være lurt å verifisere dem.";
 
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Sikkerhetstips";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "Hvis noen du ikke kjenner sender deg meldinger om kryptovaluta (f.eks. Bitcoin) eller økonomiske tilbud, må du være forsiktig – det er mest sannsynlig søppelpost.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "Krypto- og pengesvindel";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Vær forsiktig hvis du blir kontaktet av virksomheter eller offentlige etater. Meldinger som omhandler skattebetalinger, forsendelser og lignende er ofte søppelpost.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Falske virksomheter og organisasjoner";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Se nøye gjennom denne forespørselen. Du har ingen kontakter eller samtalepartnere i denne gruppen. Her er et par ting du må være bevisst på:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "Sikkerhetstips";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Vær forsiktig når du godtar meldingsforespørsler fra personer du ikke kjenner. Vær forsiktig med:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Vær forsiktig med meldinger fra folk du ikke kjenner, som har lenker til nettsteder. Du bør aldri trykke på lenker fra personer du ikke kjenner eller stoler på.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Meldinger med nettlenker";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Svindlere starter ofte samtalen med enkle meldinger, som «Hei». Hvis du svarer på meldingen, går de ofte videre for å lure deg.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Vage eller irrelevante meldinger";
+
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Skann QR-koden på kontaktens enhet.";
 
@@ -5768,7 +5945,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Lås opp Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Navn, brukernavn, eller nummer";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Navn, brukernavn, eller telefonnummer";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Søk på navn eller nummer";
@@ -6020,10 +6197,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "App-ikon";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis systemkontaktbilder hvis tilgjengelig.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis bilder fra kontaktlisten hvis tilgjengelig.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Benytt systemkontaktbilder";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Benytt bilder fra kontaktlisten";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "For å endre dette velger du «Ingen» under «Hvem kan se telefonnummeret mitt?».";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Hvem kan finne meg ved å søke opp telefonnummeret mitt?";
 
@@ -7253,7 +7436,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "godta en meldingsforespørsel";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "ha dem i kontaktlisten på enheten din";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "De står i kontaktlisten på enheten din";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Kontaktene dine kan se navnet og profilbildet ditt, i tillegg til det du deler på Min story, med mindre du skjuler det for dem.";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Visninger er slått av";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Abonnent-ID kopiert til utklippstavlen";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Givernummer kopiert til utklippstavlen";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Sikkerhetsnummeret for %1$@ stemmer. Du kan nå markere denne kontakten som verifisert.";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR-koder og lenker";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Telefonnummeret ditt er skjult i alle samtaler. Venner som har nummeret ditt lagret på enheten sin, kan fremdeles se det.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Skjult telefonnummer";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "Nye måter å finne hverandre på";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Nå kan andre sende deg meldinger via brukernavnet ditt, slik at du slipper å gi ut telefonnummeret ditt. Brukernavnet ditt vises ikke i profilen.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Brukernavn";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Tilbakestill";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "QR-koden og profillenken din vil slutte å virke hvis du tilbakestiller QR-koden.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "QR-koden og lenken din slutter å virke hvis du tilbakestiller dem.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "QR-koden og lenken er tilbakestilt, og vi har opprettet en ny QR-kode og lenke for deg.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Del";
@@ -7751,13 +7937,13 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Hvis du endrer brukernavnet, får du også en ny QR-kode og profillenke. Er du sikker?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Brukernavnet gjør det mulig for andre å sende deg meldinger uten telefonnummeret ditt. Det er knyttet til en tallrekke for å holde adressen din skjult. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Alle brukernavn består av bokstaver og en tallrekke. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Velg et brukernavn";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Brukernavn kan bare inneholde a-z, 0-9, og _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Brukernavn kan bare inneholde a-z, 0-9, og _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Ugyldig brukernavn. Angi minst 2 tall.";
@@ -7769,7 +7955,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Hva er dette nummeret?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Dette brukernavnet er ikke tilgjengelig.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Dette brukernavnet er ikke tilgjengelig";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Du har gjort for mange forsøk. Prøv igjen senere.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Brukernavn";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Brukernavn";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Brukernavnet må inneholde minst %1$@ tegn.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Brukernavnet kan ikke slutte på 00. Prøv med et annet tall fra 1 til 9.";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Dette tallet kan ikke være 00. Angi et tall mellom 1 og 9.";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Du må være koblet til internett for å kunne endre brukernavnet.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Enhetsnavnet kan ikke være tomt";

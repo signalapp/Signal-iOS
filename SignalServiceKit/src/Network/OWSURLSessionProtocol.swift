@@ -8,7 +8,6 @@ import SignalCoreKit
 
 // MARK: - HTTPMethod
 
-@objc
 public enum HTTPMethod: UInt {
     case get
     case post
@@ -76,13 +75,11 @@ public struct OWSUrlDownloadResponse {
 
 // MARK: - OWSUrlFrontingInfo
 
-@objc
-public class OWSUrlFrontingInfo: NSObject, Dependencies {
+public class OWSUrlFrontingInfo: Dependencies {
     public let frontingURLWithoutPathPrefix: URL
     public let frontingURLWithPathPrefix: URL
     public let unfrontedBaseUrl: URL
 
-    @objc
     public init(
         frontingURLWithoutPathPrefix: URL,
         frontingURLWithPathPrefix: URL,
@@ -210,14 +207,6 @@ public extension OWSURLSessionProtocol {
     // MARK: - Upload Tasks Convenience
 
     func uploadTaskPromise(
-        request: URLRequest,
-        data requestData: Data,
-        progress progressBlock: ProgressBlock? = nil
-    ) -> Promise<HTTPResponse> {
-        return self.uploadTaskPromise(request: request, data: requestData, progress: progressBlock)
-    }
-
-    func uploadTaskPromise(
         _ urlString: String,
         method: HTTPMethod,
         headers: [String: String]? = nil,
@@ -231,20 +220,6 @@ public extension OWSURLSessionProtocol {
     }
 
     func uploadTaskPromise(
-        request: URLRequest,
-        fileUrl: URL,
-        ignoreAppExpiry: Bool = false,
-        progress progressBlock: ProgressBlock? = nil
-    ) -> Promise<HTTPResponse> {
-        return self.uploadTaskPromise(
-            request: request,
-            fileUrl: fileUrl,
-            ignoreAppExpiry: ignoreAppExpiry,
-            progress: progressBlock
-        )
-    }
-
-    func uploadTaskPromise(
         _ urlString: String,
         method: HTTPMethod,
         headers: [String: String]? = nil,
@@ -253,18 +228,11 @@ public extension OWSURLSessionProtocol {
     ) -> Promise<HTTPResponse> {
         firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers)
-            return self.uploadTaskPromise(request: request, fileUrl: fileUrl, progress: progressBlock)
+            return self.uploadTaskPromise(request: request, fileUrl: fileUrl, ignoreAppExpiry: false, progress: progressBlock)
         }
     }
 
     // MARK: - Data Tasks Convenience
-
-    func dataTaskPromise(
-        request: URLRequest,
-        ignoreAppExpiry: Bool = false
-    ) -> Promise<HTTPResponse> {
-        return dataTaskPromise(request: request, ignoreAppExpiry: ignoreAppExpiry)
-    }
 
     func dataTaskPromise(
         on scheduler: Scheduler = DispatchQueue.global(),
@@ -281,21 +249,6 @@ public extension OWSURLSessionProtocol {
     }
 
     // MARK: - Download Tasks Convenience
-
-    func downloadTaskPromise(
-        requestUrl: URL,
-        resumeData: Data,
-        progress progressBlock: ProgressBlock? = nil
-    ) -> Promise<OWSUrlDownloadResponse> {
-        return self.downloadTaskPromise(requestUrl: requestUrl, resumeData: resumeData, progress: progressBlock)
-    }
-
-    func downloadTaskPromise(
-        request: URLRequest,
-        progress progressBlock: ProgressBlock? = nil
-    ) -> Promise<OWSUrlDownloadResponse> {
-        return self.downloadTaskPromise(request: request, progress: progressBlock)
-    }
 
     func downloadTaskPromise(
         on scheduler: Scheduler = DispatchQueue.global(),

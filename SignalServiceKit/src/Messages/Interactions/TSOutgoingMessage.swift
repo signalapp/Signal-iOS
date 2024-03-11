@@ -215,6 +215,30 @@ public extension TSOutgoingMessage {
         return builder.buildInfallibly()
     }
 
+    @objc
+    func addGroupsV2ToDataMessageBuilder(
+        _ builder: SSKProtoDataMessageBuilder,
+        groupThread: TSGroupThread,
+        tx: SDSAnyReadTransaction
+    ) -> OutgoingGroupProtoResult {
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return .error
+        }
+
+        do {
+            let groupContextV2 = try groupsV2.buildGroupContextV2Proto(
+                groupModel: groupModel,
+                changeActionsProtoData: self.changeActionsProtoData
+            )
+            builder.setGroupV2(groupContextV2)
+            return .addedWithoutGroupAvatar
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return .error
+        }
+    }
+
     fileprivate func maybeClearShouldSharePhoneNumber(
         for recipientAddress: SignalServiceAddress,
         recipientDeviceId deviceId: UInt32,
@@ -272,6 +296,62 @@ public extension TSOutgoingMessage {
 
         if messagePniData == currentPni.rawUUID.data {
             identityManager.clearShouldSharePhoneNumber(with: aci, tx: transaction.asV2Write)
+        }
+    }
+}
+
+// MARK: - Attachments
+
+extension TSOutgoingMessage {
+
+    @objc
+    func buildProtosForBodyAttachments(tx: SDSAnyReadTransaction) -> [SSKProtoAttachmentPointer] {
+        let references = DependenciesBridge.shared.tsResourceStore.bodyAttachments(for: self, tx: tx.asV2Read)
+        return buildProtosForSending(references, tx: tx.asV2Read)
+    }
+
+    @objc
+    func buildProtoForLinkPreviewAttachment(tx: SDSAnyReadTransaction) -> SSKProtoAttachmentPointer? {
+        let reference = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(for: self, tx: tx.asV2Read)
+        return buildProtosForSending([reference].compacted(), tx: tx.asV2Read).first
+    }
+
+    @objc
+    func buildProtoForStickerAttachment(tx: SDSAnyReadTransaction) -> SSKProtoAttachmentPointer? {
+        let reference = DependenciesBridge.shared.tsResourceStore.stickerAttachment(for: self, tx: tx.asV2Read)
+        return buildProtosForSending([reference].compacted(), tx: tx.asV2Read).first
+    }
+
+    @objc
+    func buildProtoForQuotedReplyAttachment(tx: SDSAnyReadTransaction) -> SSKProtoAttachmentPointer? {
+        let reference = DependenciesBridge.shared.tsResourceStore.quotedMessageThumbnailAttachment(for: self, tx: tx.asV2Read)
+        return buildProtosForSending([reference].compacted(), tx: tx.asV2Read).first
+    }
+
+    private func buildProtosForSending(
+        _ references: [TSResourceReference],
+        tx: DBReadTransaction
+    ) -> [SSKProtoAttachmentPointer] {
+        let attachments = DependenciesBridge.shared.tsResourceStore.fetch(references.map(\.resourceId), tx: tx)
+        var pointers = [TSResourceId: TSResourcePointer]()
+        attachments.forEach { attachment in
+            guard let cdnNumber = attachment.transitCdnNumber, let cdnKey = attachment.transitCdnKey else {
+                owsFailDebug("Generating proto for non-uploaded attachment!")
+                return
+            }
+            let pointer = TSResourcePointer(resource: attachment, cdnNumber: cdnNumber, cdnKey: cdnKey)
+            pointers[attachment.resourceId] = pointer
+        }
+
+        return references.compactMap { reference in
+            guard let pointer = pointers[reference.resourceId] else {
+                owsFailDebug("Missing pointer for attachment being sent!")
+                return nil
+            }
+            return DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+                from: reference,
+                pointer: pointer
+            )
         }
     }
 }

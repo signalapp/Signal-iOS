@@ -30,26 +30,24 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let logger = PrefixedLogger(prefix: "PHWM")
 
     private let database: DB
-    private let identityManager: Shims.IdentityManager
+    private let identityManager: any OWSIdentityManager
     private let keyValueStore: KeyValueStore
     private let networkManager: Shims.NetworkManager
     private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
     private let pniKyberPreKeyStore: SignalKyberPreKeyStore
-    private let profileManager: Shims.ProfileManager
     private let recipientDatabaseTable: any RecipientDatabaseTable
     private let schedulers: Schedulers
     private let tsAccountManager: TSAccountManager
 
     init(
         database: DB,
-        identityManager: Shims.IdentityManager,
+        identityManager: any OWSIdentityManager,
         keyValueStoreFactory: KeyValueStoreFactory,
         networkManager: Shims.NetworkManager,
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
         pniKyberPreKeyStore: SignalKyberPreKeyStore,
-        profileManager: Shims.ProfileManager,
         recipientDatabaseTable: any RecipientDatabaseTable,
         schedulers: Schedulers,
         tsAccountManager: TSAccountManager
@@ -61,7 +59,6 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         self.pniDistributionParameterBuilder = pniDistributionParameterBuilder
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
         self.pniKyberPreKeyStore = pniKyberPreKeyStore
-        self.profileManager = profileManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.schedulers = schedulers
         self.tsAccountManager = tsAccountManager
@@ -71,7 +68,6 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         let logger = logger
 
         guard tsAccountManager.registrationState(tx: syncTx).isRegisteredPrimaryDevice else {
-            logger.info("Skipping PNI Hello World, am a linked device.")
             return
         }
 
@@ -80,13 +76,13 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
             defaultValue: false,
             transaction: syncTx
         ) else {
-            logger.info("Skipping PNI Hello World, already completed.")
             return
         }
 
         guard
             let localIdentifiers = tsAccountManager.localIdentifiers(tx: syncTx),
             localIdentifiers.pni != nil,
+            let localE164 = E164(localIdentifiers.phoneNumber),
             let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: syncTx)
         else {
             logger.warn("Skipping PNI Hello World, missing local account parameters!")
@@ -95,24 +91,28 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         let localRecipientId = localRecipient.uniqueId
         let localDeviceIds = localRecipient.deviceIds
 
-        guard profileManager.isLocalProfilePniCapable() else {
-            logger.info("Skipping PNI Hello World, profile not yet PNI capable.")
-            return
-        }
-
-        // Use the primary device's existing PNI identity and e164.
-        guard
-            let localE164 = E164(localIdentifiers.phoneNumber),
-            let localPniIdentityKeyPair = identityManager.pniIdentityKeyPair(tx: syncTx),
-            let localDevicePniSignedPreKey = pniSignedPreKeyStore.currentSignedPreKey(tx: syncTx),
-            let localDevicePniPqLastResortPreKey = pniKyberPreKeyStore.getLastResortKyberPreKey(tx: syncTx)
-        else {
-            logger.warn("Skipping PNI Hello World, missing PNI parameters!")
-            return
+        let localPniIdentityKeyPair: ECKeyPair
+        if let existingKeyPair = identityManager.identityKeyPair(for: .pni, tx: syncTx) {
+            localPniIdentityKeyPair = existingKeyPair
+        } else {
+            localPniIdentityKeyPair = identityManager.generateNewIdentityKeyPair()
+            identityManager.setIdentityKeyPair(localPniIdentityKeyPair, for: .pni, tx: syncTx)
         }
 
         let localDeviceId = tsAccountManager.storedDeviceId(tx: syncTx)
         let localDevicePniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx: syncTx)
+
+        let localDevicePniSignedPreKey = pniSignedPreKeyStore.generateSignedPreKey(signedBy: localPniIdentityKeyPair)
+        pniSignedPreKeyStore.storeSignedPreKey(localDevicePniSignedPreKey.id, signedPreKeyRecord: localDevicePniSignedPreKey, tx: syncTx)
+
+        let localDevicePniPqLastResortPreKey: KyberPreKeyRecord
+        do {
+            localDevicePniPqLastResortPreKey = try pniKyberPreKeyStore.generateLastResortKyberPreKey(signedBy: localPniIdentityKeyPair, tx: syncTx)
+            try pniKyberPreKeyStore.storeLastResortPreKey(record: localDevicePniPqLastResortPreKey, tx: syncTx)
+        } catch {
+            logger.warn("Skipping PNI Hello World; couldn't generate last resort key")
+            return
+        }
 
         firstly(on: schedulers.sync) { () -> Guarantee<PniDistribution.ParameterGenerationResult> in
             logger.info("Building PNI distribution parameters.")
@@ -173,33 +173,11 @@ private extension OWSRequestFactory {
 
 extension PniHelloWorldManagerImpl {
     enum Shims {
-        typealias IdentityManager = _PniHelloWorldManagerImpl_IdentityManager_Shim
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Shim
-        typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Shim
     }
 
     enum Wrappers {
-        typealias IdentityManager = _PniHelloWorldManagerImpl_IdentityManager_Wrapper
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Wrapper
-        typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Wrapper
-    }
-}
-
-// MARK: IdentityManager
-
-protocol _PniHelloWorldManagerImpl_IdentityManager_Shim {
-    func pniIdentityKeyPair(tx: DBReadTransaction) -> ECKeyPair?
-}
-
-class _PniHelloWorldManagerImpl_IdentityManager_Wrapper: _PniHelloWorldManagerImpl_IdentityManager_Shim {
-    private let identityManager: OWSIdentityManager
-
-    init(_ identityManager: OWSIdentityManager) {
-        self.identityManager = identityManager
-    }
-
-    func pniIdentityKeyPair(tx: DBReadTransaction) -> ECKeyPair? {
-        return identityManager.identityKeyPair(for: .pni, tx: tx)
     }
 }
 
@@ -222,23 +200,5 @@ class _PniHelloWorldManagerImpl_NetworkManager_Wrapper: _PniHelloWorldManagerImp
         )
 
         return networkManager.makePromise(request: helloWorldRequest).asVoid()
-    }
-}
-
-// MARK: ProfileManager
-
-protocol _PniHelloWorldManagerImpl_ProfileManager_Shim {
-    func isLocalProfilePniCapable() -> Bool
-}
-
-class _PniHelloWorldManagerImpl_ProfileManager_Wrapper: _PniHelloWorldManagerImpl_ProfileManager_Shim {
-    private let profileManager: ProfileManager
-
-    init(_ profileManager: ProfileManager) {
-        self.profileManager = profileManager
-    }
-
-    func isLocalProfilePniCapable() -> Bool {
-        return profileManager.localProfileIsPniCapable()
     }
 }

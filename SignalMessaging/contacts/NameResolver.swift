@@ -18,71 +18,36 @@ import SignalServiceKit
 /// re-fetch it from disk. In debug builds, this class will ensure that it's
 /// always used with the same transaction object.
 public protocol NameResolver {
-    func displayName(
-        for address: SignalServiceAddress,
-        useShortNameIfAvailable: Bool,
-        transaction: DBReadTransaction
-    ) -> String
-
-    func comparableName(
-        for address: SignalServiceAddress,
-        transaction: DBReadTransaction
-    ) -> String
+    func displayName(for address: SignalServiceAddress, tx: DBReadTransaction) -> DisplayName
 }
 
 public class NameResolverImpl: NameResolver {
-    private let contactsManager: ContactsManagerProtocol
+    private let contactsManager: any ContactManager
 
-    private var displayNameCache = [SignalServiceAddress: String]()
-    private var shortDisplayNameCache = [SignalServiceAddress: String]()
-    private var comparableNameCache = [SignalServiceAddress: String]()
+    private var displayNameCache = [SignalServiceAddress: DisplayName]()
 
-    public init(contactsManager: ContactsManagerProtocol) {
+    public init(contactsManager: any ContactManager) {
         self.contactsManager = contactsManager
     }
 
     private func cachedValue(
         for address: SignalServiceAddress,
-        in cache: inout [SignalServiceAddress: String],
-        orValue value: @autoclosure () -> String
-    ) -> String {
-        if let cachedResult = cache[address] {
+        orValue value: @autoclosure () -> DisplayName
+    ) -> DisplayName {
+        if let cachedResult = displayNameCache[address] {
             return cachedResult
         }
         let result = value()
-        cache[address] = result
+        displayNameCache[address] = result
         return result
     }
 
-    public func displayName(
-        for address: SignalServiceAddress,
-        useShortNameIfAvailable: Bool,
-        transaction: DBReadTransaction
-    ) -> String {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-        checkTransaction(transaction: transaction)
-        if useShortNameIfAvailable {
-            return cachedValue(
-                for: address,
-                in: &shortDisplayNameCache,
-                orValue: contactsManager.shortDisplayName(for: address, transaction: transaction)
-            )
-        } else {
-            return cachedValue(
-                for: address,
-                in: &displayNameCache,
-                orValue: contactsManager.displayName(for: address, transaction: transaction)
-            )
-        }
-    }
-
-    public func comparableName(for address: SignalServiceAddress, transaction: DBReadTransaction) -> String {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-        checkTransaction(transaction: transaction)
+    public func displayName(for address: SignalServiceAddress, tx: DBReadTransaction) -> DisplayName {
+        let tx = SDSDB.shimOnlyBridge(tx)
+        checkTransaction(transaction: tx)
         return cachedValue(
             for: address,
-            in: &comparableNameCache,
-            orValue: contactsManager.comparableName(for: address, transaction: transaction)
+            orValue: contactsManager.displayName(for: address, tx: tx)
         )
     }
 

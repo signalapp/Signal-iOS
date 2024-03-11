@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্রুপের %1$d জন সদস্যের নাম একই।</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই রকম।</string>
 			<key>other</key>
-			<string>গ্রুপের %1$d জন সদস্যের নাম একই।</string>
+			<string>গ্রুপের %1$d জনের একই নাম আছে।</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>এই গ্রুপে %1$d-টি নামের সংঘাত পাওয়া গেছে।</string>
+			<key>other</key>
+			<string>এই গ্রুপে %1$d-টি নামের সংঘাত পাওয়া গেছে।</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d জন সদস্য</string>
+			<key>other</key>
+			<string>%1$d জন সদস্য</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্রুপের %1$d জন সদস্যের নাম একই, নিচের সদস্যকে পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
+			<string>এই গ্ৰুপে %1$dটি নামের সমস্যা পাওয়া গেছে। নিচে সদস্যদের রিভিউ করুন অথবা পদক্ষেপ নেওয়ার জন্য নির্বাচন করুন।</string>
 			<key>other</key>
-			<string>গ্রুপের %1$d জন সদস্যের নাম একই, নিচের সদস্যদের পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
+			<string>এই গ্ৰুপে %1$dটি নামের সমস্যা পাওয়া গেছে। নিচে সদস্যদের রিভিউ করুন অথবা পদক্ষেপ নেওয়ার জন্য নির্বাচন করুন।</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -520,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্রুপের %1$d জন সদস্যের নাম একই, নিচের সদস্যকে পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই। নিচের সদস্যকে পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
 			<key>other</key>
-			<string>গ্রুপের %1$d জন সদস্যের নাম একই, নিচের সদস্যদের পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই। নিচের সদস্যদের পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt;টি ভিউ</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt;টি ভিউ</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>ব্যবহারকারীর নাম কমপক্ষে %1$d-টি অক্ষর দিয়ে শুরু করতে হবে</string>
+			<key>other</key>
+			<string>ব্যবহারকারীর নাম কমপক্ষে %1$d-টি অক্ষর দিয়ে শুরু করতে হবে</string>
 		</dict>
 	</dict>
 </dict>

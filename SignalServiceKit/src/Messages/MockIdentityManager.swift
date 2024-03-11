@@ -62,8 +62,13 @@ open class MockIdentityManager: OWSIdentityManager {
     open func groupContainsUnverifiedMember(_ groupUniqueID: String, tx: DBReadTransaction) -> Bool { fatalError() }
     open func recipientIdentity(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSRecipientIdentity? { fatalError() }
     open func fireIdentityStateChangeNotification(after tx: DBWriteTransaction) { fatalError() }
-    open func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? { fatalError() }
-    open func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) { fatalError() }
+    var identityKeyPairs = [OWSIdentity: ECKeyPair]()
+    open func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
+        return identityKeyPairs[identity]
+    }
+    open func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
+        identityKeyPairs[identity] = keyPair
+    }
     open func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? { fatalError() }
     open func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError> { fatalError() }
     open func untrustedIdentityForSending(to address: SignalServiceAddress, untrustedThreshold: Date?, tx: DBReadTransaction) -> OWSRecipientIdentity? { fatalError() }

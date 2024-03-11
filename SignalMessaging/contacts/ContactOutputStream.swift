@@ -12,8 +12,7 @@ final class ContactOutputStream: OWSChunkedOutputStream {
         phoneNumber: E164?,
         signalAccount: SignalAccount?,
         disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration?,
-        inboxPosition: Int?,
-        isBlocked: Bool
+        inboxPosition: Int?
     ) throws {
         let contactBuilder = SSKProtoContactDetails.builder()
         if let phoneNumber {
@@ -48,11 +47,6 @@ final class ContactOutputStream: OWSChunkedOutputStream {
         contactBuilder.setExpireTimer(0)
         if let disappearingMessagesConfiguration, disappearingMessagesConfiguration.isEnabled {
             contactBuilder.setExpireTimer(disappearingMessagesConfiguration.durationSeconds)
-        }
-
-        // TODO: Stop writing this once all iPads are running at least v6.50.
-        if isBlocked {
-            contactBuilder.setBlocked(true)
         }
 
         let contactData: Data

@@ -36,6 +36,7 @@ public class OutgoingMessagePreparer: NSObject {
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
         transaction: SDSAnyWriteTransaction
     ) {
+        let messageRowId: Int64
         if let message = message as? OutgoingEditMessage {
             // Write changes and insert new edit revisions/records
             guard let thread = message.thread(tx: transaction) else {
@@ -47,14 +48,23 @@ public class OutgoingMessagePreparer: NSObject {
                 thread: thread,
                 tx: transaction.asV2Write
             )
+            guard let id = message.sqliteRowId else {
+                // We failed to insert!
+                return
+            }
+            messageRowId = id
         } else {
             unpreparedMessage.anyInsert(transaction: transaction)
+            messageRowId = message.sqliteRowId!
         }
 
         if let linkPreviewDraft = linkPreviewDraft {
             do {
-                let linkPreview = try OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreviewDraft,
-                                                                               transaction: transaction)
+                let linkPreview = try OWSLinkPreview.buildValidatedLinkPreview(
+                    fromInfo: linkPreviewDraft,
+                    messageRowId: messageRowId,
+                    transaction: transaction
+                )
                 unpreparedMessage.update(with: linkPreview, transaction: transaction)
             } catch {
                 Logger.error("error: \(error)")
@@ -71,14 +81,11 @@ public class OutgoingMessagePreparer: NSObject {
             // cannot be sent along with stickers.
             owsAssertDebug(unpreparedMessage.messageSticker == nil)
 
-            let isVoiceMessage = unpreparedMessage.isVoiceMessage
-            let attachmentStreams = try unsavedAttachmentInfos.map {
-                try $0.asStreamConsumingDataSource(isVoiceMessage: isVoiceMessage)
-            }
-
-            unpreparedMessage.addBodyAttachments(attachmentStreams, transaction: transaction)
-
-            attachmentStreams.forEach { $0.anyInsert(transaction: transaction) }
+            try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentStreams(
+                consumingDataSourcesOf: unsavedAttachmentInfos,
+                message: unpreparedMessage,
+                tx: transaction.asV2Write
+            )
         }
 
         self.savedAttachmentIds = Self.prepareAttachments(message: unpreparedMessage, tx: transaction)
@@ -93,14 +100,15 @@ public class OutgoingMessagePreparer: NSObject {
     private static func prepareAttachments(message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) -> [String] {
         var attachmentIds = [String]()
 
-        attachmentIds.append(contentsOf: message.bodyAttachmentIds(with: tx))
+        attachmentIds.append(contentsOf: message.bodyAttachmentIds(transaction: tx))
 
-        if message.quotedMessage?.thumbnailAttachmentId != nil {
+        if message.quotedMessage?.fetchThumbnailAttachmentId(forParentMessage: message, transaction: tx) != nil {
             // We need to update the message record here to reflect the new attachments we may create.
-            message.anyUpdateOutgoingMessage(transaction: tx) { message in
-                let thumbnail = message.quotedMessage?.createThumbnailIfNecessary(with: tx)
-                thumbnail.map { attachmentIds.append($0.uniqueId) }
-            }
+            let thumbnail = message.quotedMessage?.createThumbnailAndUpdateMessageIfNecessary(
+                withParentMessage: message,
+                transaction: tx
+            )
+            thumbnail.map { attachmentIds.append($0.uniqueId) }
         }
 
         if let contactShare = message.contactShare, contactShare.avatarAttachmentId != nil {
@@ -109,10 +117,11 @@ public class OutgoingMessagePreparer: NSObject {
             attachmentStream.map { attachmentIds.append($0.uniqueId) }
         }
 
-        if let linkPreview = message.linkPreview, let attachmentId = linkPreview.imageAttachmentId {
-            let attachmentStream = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: attachmentId, transaction: tx)
-            owsAssertDebug(attachmentStream != nil)
-            attachmentStream.map { attachmentIds.append($0.uniqueId) }
+        if
+            let linkPreview = message.linkPreview,
+            let attachmentId = linkPreview.imageAttachmentStreamId(forParentMessage: message, tx: tx)
+        {
+            attachmentIds.append(attachmentId)
         }
 
         if let messageSticker = message.messageSticker {

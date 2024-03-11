@@ -76,7 +76,7 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
 
 - (SignalServiceAddress *)senderAddress
 {
-    return [[SignalServiceAddress alloc] initWithAciString:self.senderUUID phoneNumber:self.senderPhoneNumber];
+    return [SignalServiceAddress legacyAddressWithServiceIdString:self.senderUUID phoneNumber:self.senderPhoneNumber];
 }
 
 @end

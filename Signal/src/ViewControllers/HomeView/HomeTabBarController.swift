@@ -36,8 +36,8 @@ class HomeTabBarController: UITabBarController {
     lazy var callsListNavController = OWSNavigationController(rootViewController: callsListViewController)
     lazy var callsListTabBarItem = UITabBarItem(
         title: OWSLocalizedString("CALLS_LIST_TITLE", comment: "Title for the calls list view."),
-        image: UIImage(systemName: "phone.fill"),
-        selectedImage: UIImage(systemName: "phone.fill")
+        image: UIImage(named: "tab-calls"),
+        selectedImage: UIImage(named: "tab-calls")
     )
 
     var selectedTab: Tabs {
@@ -69,10 +69,7 @@ class HomeTabBarController: UITabBarController {
         // small window where the tab bar is in the wrong state at app launch.
         let areStoriesEnabled = databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
 
-        self.viewControllers = tabsToShow(
-            areStoriesEnabled: areStoriesEnabled,
-            shouldShowCallsTab: FeatureFlags.shouldShowCallsTab
-        )
+        self.viewControllers = tabsToShow(areStoriesEnabled: areStoriesEnabled)
 
         chatListNavController.tabBarItem = chatListTabBarItem
         storiesNavController.tabBarItem = storiesTabBarItem
@@ -81,8 +78,7 @@ class HomeTabBarController: UITabBarController {
         AppEnvironment.shared.badgeManager.addObserver(self)
         storyBadgeCountManager.beginObserving(observer: self)
 
-        let shouldShowTabBar = areStoriesEnabled || FeatureFlags.shouldShowCallsTab
-        setTabBarHidden(!shouldShowTabBar, animated: false)
+        setTabBarHidden(false, animated: false)
     }
 
     @objc
@@ -97,11 +93,8 @@ class HomeTabBarController: UITabBarController {
         tabBar.tintColor = Theme.primaryTextColor
     }
 
-    private func tabsToShow(areStoriesEnabled: Bool, shouldShowCallsTab: Bool) -> [UIViewController] {
-        var tabs = [chatListNavController]
-        if shouldShowCallsTab {
-            tabs.append(callsListNavController)
-        }
+    private func tabsToShow(areStoriesEnabled: Bool) -> [UIViewController] {
+        var tabs = [chatListNavController, callsListNavController]
         if areStoriesEnabled {
             tabs.append(storiesNavController)
         }
@@ -110,31 +103,24 @@ class HomeTabBarController: UITabBarController {
 
     @objc
     private func storiesEnabledStateDidChange() {
-        if isTabBarEnabled {
-            viewControllers = tabsToShow(
-                areStoriesEnabled: StoryManager.areStoriesEnabled,
-                shouldShowCallsTab: FeatureFlags.shouldShowCallsTab
-            )
-            setTabBarHidden(false, animated: false)
-        } else {
-            if selectedTab == .stories {
-                storiesNavController.popToRootViewController(animated: false)
-            }
-            selectedTab = .chatList
-            setTabBarHidden(true, animated: false)
+        viewControllers = tabsToShow(
+            areStoriesEnabled: StoryManager.areStoriesEnabled
+        )
+
+        if selectedTab == .stories {
+            storiesNavController.popToRootViewController(animated: false)
         }
+
+        selectedTab = .chatList
+        setTabBarHidden(false, animated: false)
     }
 
     // MARK: - Hiding the tab bar
 
     private var isTabBarHidden: Bool = false
 
-    // [CallsTab] TODO: Remove once calls tab is enabled globally
-    var isTabBarEnabled: Bool {
-        StoryManager.areStoriesEnabled || FeatureFlags.shouldShowCallsTab
-    }
-
-    /// Hides or displays the tab bar, resizing `selectedViewController` to fill the space remaining.
+    /// Hides or displays the tab bar, resizing the selected view controller to
+    /// fill the space remaining.
     public func setTabBarHidden(
         _ hidden: Bool,
         animated: Bool = true,
@@ -193,8 +179,13 @@ class HomeTabBarController: UITabBarController {
 }
 
 extension HomeTabBarController: BadgeObserver {
-    func didUpdateBadgeValue(_ badgeManager: BadgeManager, badgeValue: UInt) {
-        chatListTabBarItem.badgeValue = badgeValue > 0 ? "\(badgeValue)" : nil
+    func didUpdateBadgeCount(_ badgeManager: BadgeManager, badgeCount: BadgeCount) {
+        func stringify(_ badgeValue: UInt) -> String? {
+            return badgeValue > 0 ? "\(badgeValue)" : nil
+        }
+
+        chatListTabBarItem.badgeValue = stringify(badgeCount.unreadChatCount)
+        callsListTabBarItem.badgeValue = stringify(badgeCount.unreadCallsCount)
     }
 }
 

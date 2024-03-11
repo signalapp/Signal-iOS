@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre du groupe a un nom similaire.</string>
+			<string>%1$d membre du groupe porte le même nom.</string>
 			<key>other</key>
-			<string>%1$d membres du groupe ont un nom similaire.</string>
+			<string>%1$d membres du groupe portent le même nom.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d cas de nom dupliqué dans ce groupe.</string>
+			<key>other</key>
+			<string>%1$d cas de nom dupliqué dans ce groupe.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d membre</string>
+			<key>other</key>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre du groupe porte un nom similaire. Examinez-le ci-dessous ou choisissez l’action appropriée.</string>
+			<string>%1$d cas de nom dupliqué a été constaté dans ce groupe. Examinez les membres ci-dessous et choisissez l’action appropriée.</string>
 			<key>other</key>
-			<string>%1$d membres du groupe portent un nom similaire. Examinez-les ci-dessous ou choisissez l’action appropriée.</string>
+			<string>%1$d cas de nom dupliqué ont été constatés dans ce groupe. Examinez les membres et choisissez l’action appropriée.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -520,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre du groupe porte le même nom. Examinez-le ci-dessous et choisissez l’action appropriée.</string>
+			<string>%1$d membre du groupe porte le même nom. Examinez-le ci-dessous et choisissez l’action appropriée.</string>
 			<key>other</key>
-			<string>%1$d membres du groupe portent le même nom. Examinez-les ci-dessous et choisissez l’action appropriée.</string>
+			<string>%1$d membres du groupe portent le même nom. Examinez la liste ci-dessous et choisissez l’action appropriée.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -904,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toutes les connexions Signal · %1$d spectateur</string>
+			<string>Tous les contacts Signal · %1$d spectateur</string>
 			<key>other</key>
-			<string>Toutes les connexions Signal · %1$d spectateurs</string>
+			<string>Tous les contacts Signal · %1$d spectateurs</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -920,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toutes les connexions Signal · %1$d exclu</string>
+			<string>Tous les contacts Signal · %1$d exclu</string>
 			<key>other</key>
-			<string>Toutes les connexions Signal · %1$d exclus</string>
+			<string>Tous les contacts Signal · %1$d exclus</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vue</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vues</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>La première partie du nom d’utilisateur doit comporter au moins %1$d caractère</string>
+			<key>other</key>
+			<string>La première partie du nom d’utilisateur doit comporter au moins %1$d caractères</string>
 		</dict>
 	</dict>
 </dict>

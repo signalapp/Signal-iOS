@@ -60,7 +60,7 @@ public protocol LocalUsernameManager {
     /// Reserve a username from the given set of candidates.
     func reserveUsername(
         usernameCandidates: Usernames.HashedUsername.GeneratedCandidates
-    ) -> Promise<Usernames.ReservationResult>
+    ) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ReservationResult>>
 
     /// Set the local user's username to the given reserved username, on the
     /// service and locally. Note that setting a new username also sets a
@@ -68,15 +68,19 @@ public protocol LocalUsernameManager {
     func confirmUsername(
         reservedUsername: Usernames.HashedUsername,
         tx: DBWriteTransaction
-    ) -> Promise<Usernames.ConfirmationResult>
+    ) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ConfirmationResult>>
 
     /// Delete the local user's username and username link.
-    func deleteUsername(tx: DBWriteTransaction) -> Promise<Void>
+    func deleteUsername(
+        tx: DBWriteTransaction
+    ) -> Guarantee<Usernames.RemoteMutationResult<Void>>
 
     // MARK: Username links and the service
 
     /// Rotate the local user's username link, without modifying their username.
-    func rotateUsernameLink(tx: DBWriteTransaction) -> Promise<Usernames.UsernameLink>
+    func rotateUsernameLink(
+        tx: DBWriteTransaction
+    ) -> Guarantee<Usernames.RemoteMutationResult<Usernames.UsernameLink>>
 
     /// Update the case of the local user's existing username, as it will be
     /// visibly presented.
@@ -93,7 +97,7 @@ public protocol LocalUsernameManager {
     func updateVisibleCaseOfExistingUsername(
         newUsername: String,
         tx: DBWriteTransaction
-    ) -> Promise<Void>
+    ) -> Guarantee<Usernames.RemoteMutationResult<Void>>
 }
 
 public extension Usernames {
@@ -147,6 +151,15 @@ public extension Usernames {
             }
         }
     }
+
+    /// Errors related to the local user updating remote state pertaining to
+    /// their username.
+    enum RemoteMutationError: Error {
+        case networkError
+        case otherError
+    }
+
+    typealias RemoteMutationResult<T> = Result<T, RemoteMutationError>
 
     typealias ReservationResult = ApiClientReservationResult
 
@@ -266,6 +279,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
     private let corruptionStore: CorruptionStore
     private let usernameStore: UsernameStore
 
+    private let maxNetworkRequestRetries: Int
+
     private var logger: PrefixedLogger { UsernameLogger.shared }
 
     init(
@@ -275,7 +290,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         usernameApiClient: UsernameApiClient,
-        usernameLinkManager: UsernameLinkManager
+        usernameLinkManager: UsernameLinkManager,
+        maxNetworkRequestRetries: Int = 2
     ) {
         self.db = db
         self.reachabilityManager = reachabilityManager
@@ -286,6 +302,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
         corruptionStore = CorruptionStore(kvStoreFactory: kvStoreFactory)
         usernameStore = UsernameStore(kvStoreFactory: kvStoreFactory)
+
+        self.maxNetworkRequestRetries = maxNetworkRequestRetries
     }
 
     // MARK: - Local state
@@ -388,20 +406,35 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
     func reserveUsername(
         usernameCandidates: Usernames.HashedUsername.GeneratedCandidates
-    ) -> Promise<Usernames.ReservationResult> {
-        return usernameApiClient.reserveUsernameCandidates(
-            usernameCandidates: usernameCandidates
-        )
+    ) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ReservationResult>> {
+        guard reachabilityManager.isReachable else {
+            logger.warn("Not attempting to reserve username – Reachability indicates we will fail.")
+            return .value(.failure(.networkError))
+        }
+
+        return self.makeRequestWithNetworkRetries(requestBlock: {
+            return self.usernameApiClient.reserveUsernameCandidates(
+                usernameCandidates: usernameCandidates
+            )
+        }).map(on: schedulers.sync) { reservationResult -> Usernames.RemoteMutationResult<Usernames.ReservationResult> in
+            return .success(reservationResult)
+        }.recover(on: schedulers.sync) { error -> Guarantee<Usernames.RemoteMutationResult<Usernames.ReservationResult>> in
+            if error.isNetworkFailureOrTimeout {
+                return .value(.failure(.networkError))
+            }
+
+            return .value(.failure(.otherError))
+        }
     }
 
     /// Confirm the given reserved username, setting it as our username.
     func confirmUsername(
         reservedUsername: Usernames.HashedUsername,
         tx syncTx: DBWriteTransaction
-    ) -> Promise<Usernames.ConfirmationResult> {
+    ) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ConfirmationResult>> {
         guard reachabilityManager.isReachable else {
-            logger.warn("Not attempting to  username – Reachability indicates we will fail.")
-            return Promise(error: NoReachabilityError())
+            logger.warn("Not attempting to confirm username – Reachability indicates we will fail.")
+            return .value(.failure(.networkError))
         }
 
         let linkEntropy: Data
@@ -416,7 +449,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             )
         } catch let error {
             UsernameLogger.shared.error("Failed to generate encrypted username! \(error)")
-            return Promise(error: error)
+            return .value(.failure(.otherError))
         }
 
         // Mark as corrupted in case we encounter an unexpected error while
@@ -426,7 +459,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         // negative), we remove the corrupted flag.
         markUsernameCorrupted(true, tx: syncTx)
 
-        return firstly(on: schedulers.global()) { () throws -> Promise<(Usernames.ApiClientConfirmationResult)> in
+        return firstly(on: schedulers.global()) { () throws -> Promise<Usernames.ApiClientConfirmationResult> in
             return self.makeRequestWithNetworkRetries(requestBlock: {
                 return self.usernameApiClient.confirmReservedUsername(
                     reservedUsername: reservedUsername,
@@ -434,8 +467,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                     chatServiceAuth: .implicit()
                 )
             })
-        }.map(on: schedulers.global()) { apiClientConfirmationResult -> Usernames.ConfirmationResult in
-            self.db.write { tx in
+        }.map(on: schedulers.global()) { apiClientConfirmationResult -> Usernames.RemoteMutationResult<Usernames.ConfirmationResult> in
+            let confirmationResult = self.db.write { tx -> Usernames.ConfirmationResult in
                 switch apiClientConfirmationResult {
                 case let .success(linkHandle):
                     guard let usernameLink = Usernames.UsernameLink(
@@ -469,19 +502,23 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                     return .rateLimited
                 }
             }
-        }.recover(on: schedulers.global()) { error throws -> Promise<Usernames.ConfirmationResult> in
-            UsernameLogger.shared.error(
-                "Error while confirming username. Username now assumed corrupted!"
-            )
 
-            throw error
+            return .success(confirmationResult)
+        }.recover(on: schedulers.global()) { error -> Guarantee<Usernames.RemoteMutationResult<Usernames.ConfirmationResult>> in
+            if error.isNetworkFailureOrTimeout {
+                UsernameLogger.shared.error("Network error while confirming username. Username now assumed corrupted!")
+                return .value(.failure(.networkError))
+            }
+
+            UsernameLogger.shared.error("Unknown error while confirming username. Username now assumed corrupted!")
+            return .value(.failure(.otherError))
         }
     }
 
-    func deleteUsername(tx syncTx: DBWriteTransaction) -> Promise<Void> {
+    func deleteUsername(tx syncTx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Void>> {
         guard reachabilityManager.isReachable else {
             logger.warn("Not attempting to delete username – Reachability indicates we will fail.")
-            return Promise(error: NoReachabilityError())
+            return .value(.failure(.networkError))
         }
 
         // Mark as corrupted in case we encounter an unexpected error while
@@ -494,7 +531,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             return self.makeRequestWithNetworkRetries(requestBlock: {
                 return self.usernameApiClient.deleteCurrentUsername()
             })
-        }.done(on: schedulers.global()) {
+        }.map(on: schedulers.global()) { () -> Usernames.RemoteMutationResult<Void> in
             self.db.write { tx in
                 self.clearLocalUsername(tx: tx)
             }
@@ -502,12 +539,16 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             // We back up the username and link in StorageService, so
             // trigger a backup now.
             self.storageServiceManager.recordPendingLocalAccountUpdates()
-        }.recover(on: schedulers.global()) { error -> Promise<Void> in
-            UsernameLogger.shared.error(
-                "Error while deleting username. Username now assumed corrupted!"
-            )
 
-            throw error
+            return .success(())
+        }.recover(on: schedulers.sync) { error -> Guarantee<Usernames.RemoteMutationResult<Void>> in
+            if error.isNetworkFailureOrTimeout {
+                UsernameLogger.shared.error("Network error while deleting username. Username now assumed corrupted!")
+                return .value(.failure(.networkError))
+            }
+
+            UsernameLogger.shared.error("Unknown error while deleting username. Username now assumed corrupted!")
+            return .value(.failure(.otherError))
         }
     }
 
@@ -515,16 +556,15 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
     func rotateUsernameLink(
         tx syncTx: DBWriteTransaction
-    ) -> Promise<Usernames.UsernameLink> {
+    ) -> Guarantee<Usernames.RemoteMutationResult<Usernames.UsernameLink>> {
         guard reachabilityManager.isReachable else {
             logger.warn("Not attempting to rotate username link – Reachability indicates we will fail.")
-            return Promise(error: NoReachabilityError())
+            return .value(.failure(.networkError))
         }
 
         guard let currentUsername = usernameState(tx: syncTx).username else {
-            return Promise(error: OWSAssertionError(
-                "Tried to rotate link, but missing current username!"
-            ))
+            owsFailDebug("Tried to rotate link, but missing current username!")
+            return .value(.failure(.otherError))
         }
 
         let newEntropy: Data
@@ -539,7 +579,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             )
         } catch let error {
             UsernameLogger.shared.error("Failed to generate encrypted username! \(error)")
-            return Promise(error: error)
+            return .value(.failure(.otherError))
         }
 
         // Mark as corrupted in case we encounter an unexpected error while
@@ -555,7 +595,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                     keepLinkHandle: false
                 )
             })
-        }.map(on: schedulers.global()) { newHandle -> Usernames.UsernameLink in
+        }.map(on: schedulers.global()) { newHandle -> Usernames.RemoteMutationResult<Usernames.UsernameLink> in
             guard let newUsernameLink = Usernames.UsernameLink(
                 handle: newHandle,
                 entropy: newEntropy
@@ -575,23 +615,25 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             // trigger a backup now.
             self.storageServiceManager.recordPendingLocalAccountUpdates()
 
-            return newUsernameLink
-        }.recover(on: schedulers.global()) { error -> Promise<Usernames.UsernameLink> in
-            UsernameLogger.shared.error(
-                "Error while rotating username link. Username link now assumed corrupted!"
-            )
+            return .success(newUsernameLink)
+        }.recover(on: schedulers.sync) { error -> Guarantee<Usernames.RemoteMutationResult<Usernames.UsernameLink>> in
+            if error.isNetworkFailureOrTimeout {
+                UsernameLogger.shared.error("Network error while rotating username link. Username link now assumed corrupted!")
+                return .value(.failure(.networkError))
+            }
 
-            throw error
+            UsernameLogger.shared.error("Error while rotating username link. Username link now assumed corrupted!")
+            return .value(.failure(.otherError))
         }
     }
 
     func updateVisibleCaseOfExistingUsername(
         newUsername: String,
         tx syncTx: DBWriteTransaction
-    ) -> Promise<Void> {
+    ) -> Guarantee<Usernames.RemoteMutationResult<Void>> {
         guard reachabilityManager.isReachable else {
             logger.warn("Not attempting to update visible username case – Reachability indicates we will fail.")
-            return Promise(error: NoReachabilityError())
+            return .value(.failure(.networkError))
         }
 
         let currentUsernameState = usernameState(tx: syncTx)
@@ -601,9 +643,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             let currentUsername = currentUsernameState.username,
             newUsername.lowercased() == currentUsername.lowercased()
         else {
-            return Promise(error: OWSAssertionError(
-                "Attempting to change username case, but new nickname does not match existing username!"
-            ))
+            owsFailDebug("Attempting to change username case, but new nickname does not match existing username!")
+            return .value(.failure(.otherError))
         }
 
         let newEncryptedUsername: Data
@@ -614,7 +655,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             )
         } catch let error {
             UsernameLogger.shared.error("Failed to generate encrypted username! \(error)")
-            return Promise(error: error)
+            return .value(.failure(.otherError))
         }
 
         // Mark as corrupted in case we encounter an unexpected error while
@@ -637,9 +678,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             })
         }.map(on: schedulers.global()) { newHandle throws -> Void in
             guard currentUsernameLink.handle == newHandle else {
-                UsernameLogger.shared.error(
-                    "Handle received while changing username case did not match existing! Is this a server bug?"
-                )
+                UsernameLogger.shared.error("Handle received while changing username case did not match existing! Is this a server bug?")
                 throw OWSGenericError("")
             }
 
@@ -650,7 +689,9 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                     tx: tx
                 )
             }
-        }.recover(on: schedulers.global()) { error -> Promise<Void> in
+        }.map(on: schedulers.sync) { () -> Usernames.RemoteMutationResult<Void> in
+            return .success(())
+        }.recover(on: schedulers.global()) { error -> Guarantee<Usernames.RemoteMutationResult<Void>> in
             // Even though we failed to update the link, we can save the new
             // nickname locally. If the user rotates their link to fix the
             // issue, the new link will reflect the updated nickname.
@@ -661,15 +702,19 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 )
             }
 
-            UsernameLogger.shared.error(
-                "Error while updating username link for nickname case change. Username updated locally, but link now assumed corrupted!"
-            )
+            if error.isNetworkFailureOrTimeout {
+                UsernameLogger.shared.error("Network error while updating username link for nickname case change. Username updated locally, but link now assumed corrupted!")
+                return .value(.failure(.networkError))
+            }
 
-            throw error
-        }.ensure(on: schedulers.global()) {
+            UsernameLogger.shared.error("Unknown error while updating username link for nickname case change. Username updated locally, but link now assumed corrupted!")
+            return .value(.failure(.otherError))
+        }.map(on: schedulers.global()) { (remoteMutationResult) -> Usernames.RemoteMutationResult<Void> in
             // We back up the username and link in StorageService, and in all
             // codepaths we've updated the username, so trigger a backup now.
             self.storageServiceManager.recordPendingLocalAccountUpdates()
+
+            return remoteMutationResult
         }
     }
 }
@@ -684,12 +729,14 @@ private extension LocalUsernameManagerImpl {
     /// where possible.
     func makeRequestWithNetworkRetries<T>(
         requestBlock: @escaping () -> Promise<T>,
-        retriesRemaining: Int = 2
+        retriesRemaining: Int? = nil
     ) -> Promise<T> {
         firstly(on: schedulers.sync) { () -> Promise<T> in
             return requestBlock()
         }
         .recover(on: schedulers.global()) { error throws -> Promise<T> in
+            let retriesRemaining = retriesRemaining ?? self.maxNetworkRequestRetries
+
             guard error.isNetworkFailureOrTimeout else {
                 UsernameLogger.shared.error("Non-network error during username request!")
                 throw error

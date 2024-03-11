@@ -38,6 +38,11 @@ public protocol InteractionStore {
         block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
     ) throws
 
+    func messageHasRenderableContent(
+        _ message: TSMessage,
+        tx: DBReadTransaction
+    ) -> Bool
+
     // MARK: -
 
     /// Insert the given interaction to the databse.
@@ -64,12 +69,6 @@ public protocol InteractionStore {
     func insertOrReplacePlaceholder(
         for interaction: TSInteraction,
         from sender: SignalServiceAddress,
-        tx: DBWriteTransaction
-    )
-
-    func addBodyAttachments(
-        _ attachments: [TSAttachment],
-        to outgoingMessage: TSOutgoingMessage,
         tx: DBWriteTransaction
     )
 
@@ -149,6 +148,10 @@ public class InteractionStoreImpl: InteractionStore {
         }
     }
 
+    public func messageHasRenderableContent(_ message: TSMessage, tx: DBReadTransaction) -> Bool {
+        return message.hasRenderableContent(tx: SDSDB.shimOnlyBridge(tx))
+    }
+
     // MARK: -
 
     public func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
@@ -192,14 +195,6 @@ public class InteractionStoreImpl: InteractionStore {
         tx: DBWriteTransaction
     ) {
         interaction.insertOrReplacePlaceholder(from: sender, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func addBodyAttachments(
-        _ attachments: [TSAttachment],
-        to outgoingMessage: TSOutgoingMessage,
-        tx: DBWriteTransaction
-    ) {
-        outgoingMessage.addBodyAttachments(attachments, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     // MARK: - TSOutgoingMessage state updates
@@ -288,6 +283,10 @@ open class MockInteractionStore: InteractionStore {
         }
     }
 
+    open func messageHasRenderableContent(_ message: TSMessage, tx: DBReadTransaction) -> Bool {
+        return true
+    }
+
     // MARK: -
 
     open func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
@@ -324,14 +323,6 @@ open class MockInteractionStore: InteractionStore {
     open func insertOrReplacePlaceholder(
         for interaction: TSInteraction,
         from sender: SignalServiceAddress,
-        tx: DBWriteTransaction
-    ) {
-        // Do nothing
-    }
-
-    public func addBodyAttachments(
-        _ attachments: [TSAttachment],
-        to outgoingMessage: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) {
         // Do nothing

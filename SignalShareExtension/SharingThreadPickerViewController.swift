@@ -162,25 +162,14 @@ extension SharingThreadPickerViewController {
                 throw OWSAssertionError("Missing or invalid contact data for contact share attachment")
             }
 
-            let contactShareRecord = OWSContact(cnContact: cnContact)
-            var avatarImageData = contactsManager.avatarData(forCNContactId: cnContact.identifier)
-
-            if avatarImageData == nil {
-                let contact = Contact(systemContact: cnContact)
-                for address in contact.registeredAddresses() {
-                    let avatarData = databaseStorage.read { tx in
-                        return profileManager.profileAvatarData(for: address, transaction: tx)
-                    }
-                    guard let avatarData else {
-                        continue
-                    }
-                    avatarImageData = avatarData
-                    contactShareRecord.isProfileAvatar = true
-                    break
-                }
+            let contactShare = databaseStorage.read { tx in
+                return ContactShareViewModel.load(
+                    cnContact: cnContact,
+                    signalContact: Contact(systemContact: cnContact),
+                    tx: tx
+                )
             }
 
-            let contactShare = ContactShareViewModel(contactShareRecord: contactShareRecord, avatarImageData: avatarImageData)
             let approvalView = ContactShareViewController(contactShare: contactShare)
             approvalVC = approvalView
             approvalView.shareDelegate = self
@@ -339,7 +328,7 @@ extension SharingThreadPickerViewController {
                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
 
         let attachmentIds: [String]? = databaseStorage.read { tx in
-            return self.outgoingMessages.first?.bodyAttachmentIds(with: tx)
+            return self.outgoingMessages.first?.bodyAttachmentIds(transaction: tx)
         }
 
         var progressPerAttachment = [String: Float]()
@@ -471,7 +460,7 @@ extension SharingThreadPickerViewController {
                 comment: "alert body when sharing file failed because of untrusted/changed identity keys"
             )
             let displayName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: SignalServiceAddress(untrustedServiceId), transaction: tx)
+                return contactsManager.displayName(for: SignalServiceAddress(untrustedServiceId), tx: tx).resolvedValue()
             }
             let failureMessage = String(format: failureFormat, displayName)
 

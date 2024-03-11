@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d gruppmedlem har liknande namn.</string>
+			<string>%1$d gruppmedlem har samma namn.</string>
 			<key>other</key>
-			<string>%1$d gruppmedlemmar har liknande namn.</string>
+			<string>%1$d gruppmedlemmar har samma namn.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d namnkonflikt hittades i denna grupp.</string>
+			<key>other</key>
+			<string>%1$d namnkonflikter hittades i denna grupp.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d medlem</string>
+			<key>other</key>
+			<string>%1$d medlemmar</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d gruppmedlem har liknande namn. Granska medlemmen nedan eller välj att vidta åtgärder.</string>
+			<string>%1$d namnkonflikt hittades i denna grupp. Granska medlemmarna nedan eller välj att vidta åtgärder.</string>
 			<key>other</key>
-			<string>%1$d gruppmedlemmar har liknande namn. Granska medlemmarna nedan eller välj att vidta åtgärder.</string>
+			<string>%1$d namnkonflikter hittades i denna grupp. Granska medlemmarna nedan eller välj att vidta åtgärder.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; visning</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; visningar</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Användarnamn måste börja med minst %1$d tecken</string>
+			<key>other</key>
+			<string>Användarnamn måste börja med minst %1$d tecken</string>
 		</dict>
 	</dict>
 </dict>

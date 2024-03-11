@@ -126,7 +126,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 timestamp: timestampBuilder(),
                                                 messageBody: messageBodyBuilder(),
                                                 bodyRanges: bodyRangesBuilder(),
-                                                attachmentIds: attachmentIdsBuilder(),
+                                                attachmentIds: attachmentIdsBuilder(transaction),
                                                 expiresInSeconds: expiresInSecondsBuilder(),
                                                 expireStartedAt: expireStartedAtBuilder(),
                                                 isVoiceMessage: isVoiceMessageBuilder(),
@@ -172,7 +172,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return MessageBodyRanges.empty
     }
 
-    public var attachmentIdsBuilder: () -> [String] = {
+    public var attachmentIdsBuilder: (SDSAnyWriteTransaction) -> [String] = { _ in
         return []
     }
 
@@ -280,7 +280,7 @@ public class IncomingMessageFactory: NSObject, Factory {
             authorE164: nil,
             messageBody: messageBodyBuilder(),
             bodyRanges: bodyRangesBuilder(),
-            attachmentIds: attachmentIdsBuilder(),
+            attachmentIds: attachmentIdsBuilder(transaction),
             editState: editStateBuilder(),
             expiresInSeconds: expiresInSecondsBuilder(),
             quotedMessage: quotedMessageBuilder(),
@@ -342,7 +342,7 @@ public class IncomingMessageFactory: NSObject, Factory {
         }().aci!
     }
 
-    public var attachmentIdsBuilder: () -> [String] = {
+    public var attachmentIdsBuilder: (SDSAnyWriteTransaction) -> [String] = { _ in
         return []
     }
 
@@ -475,7 +475,7 @@ public class ConversationFactory: NSObject {
             let messagePreparer = OutgoingMessagePreparer(message, unsavedAttachmentInfos: attachmentInfos)
             _ = try! messagePreparer.prepareMessage(transaction: asyncTransaction)
 
-            for attachment in message.allAttachments(with: asyncTransaction) as! [TSAttachmentStream] {
+            for attachment in message.allAttachments(transaction: asyncTransaction) as! [TSAttachmentStream] {
                 attachment.updateAsUploaded(withEncryptionKey: Randomness.generateRandomBytes(16),
                                             digest: Randomness.generateRandomBytes(16),
                                             serverId: 1,

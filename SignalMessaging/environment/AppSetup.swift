@@ -93,7 +93,7 @@ public class AppSetup {
         let versionedProfiles = VersionedProfilesImpl()
 
         let usernameLookupManager = UsernameLookupManagerImpl()
-        let contactsManager = OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
+        let contactManager = OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
             usernameLookupManager: usernameLookupManager
         ))
 
@@ -103,7 +103,7 @@ public class AppSetup {
             appVersion: appVersion,
             attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             earlyMessageManager: earlyMessageManager,
@@ -164,7 +164,7 @@ public class AppSetup {
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let receiptSender = ReceiptSender(
             kvStoreFactory: dependenciesBridge.keyValueStoreFactory,
-            signalServiceAddressCache: signalServiceAddressCache
+            recipientDatabaseTable: dependenciesBridge.recipientDatabaseTable
         )
         let typingIndicators = TypingIndicatorsImpl()
         let stickerManager = StickerManager()
@@ -202,6 +202,12 @@ public class AppSetup {
             db: dependenciesBridge.db,
             reachabilityManager: reachabilityManager
         )
+        let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
+            callRecordDeleteManager: dependenciesBridge.callRecordDeleteManager,
+            callRecordQuerier: dependenciesBridge.callRecordQuerier,
+            db: dependenciesBridge.db,
+            messageSenderJobQueue: messageSenderJobQueue
+        )
 
         let smEnvironment = SMEnvironment(
             preferences: preferences,
@@ -212,7 +218,7 @@ public class AppSetup {
         SMEnvironment.setShared(smEnvironment)
 
         let sskEnvironment = SSKEnvironment(
-            contactsManager: contactsManager,
+            contactManager: contactManager,
             linkPreviewManager: linkPreviewManager,
             messageSender: messageSender,
             pendingReceiptRecorder: pendingReceiptRecorder,
@@ -269,13 +275,15 @@ public class AppSetup {
             notificationsManager: notificationPresenter,
             messageSendLog: messageSendLog,
             messageSenderJobQueue: messageSenderJobQueue,
-            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue
+            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
+            callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue
         )
         SSKEnvironment.setShared(sskEnvironment, isRunningTests: appContext.isRunningTests)
 
         // Register renamed classes.
         NSKeyedUnarchiver.setClass(OWSUserProfile.self, forClassName: OWSUserProfile.collection())
         NSKeyedUnarchiver.setClass(TSGroupModelV2.self, forClassName: "TSGroupModelV2")
+        NSKeyedUnarchiver.setClass(PendingProfileUpdate.self, forClassName: "SignalMessaging.PendingProfileUpdate")
 
         Sounds.performStartupTasks()
 
@@ -390,6 +398,16 @@ extension AppSetup.FinalContinuation {
 
         guard setUpLocalIdentifiers(willResumeInProgressRegistration: willResumeInProgressRegistration) else {
             return .corruptRegistrationState
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [dependenciesBridge] in
+            let preKeyManager = dependenciesBridge.preKeyManager
+            Task {
+                // Rotate ACI keys first since PNI keys may block on incoming messages.
+                // TODO: Don't block ACI operations if PNI operations are blocked.
+                await preKeyManager.rotatePreKeysOnUpgradeIfNecessary(for: .aci)
+                await preKeyManager.rotatePreKeysOnUpgradeIfNecessary(for: .pni)
+            }
         }
 
         return nil

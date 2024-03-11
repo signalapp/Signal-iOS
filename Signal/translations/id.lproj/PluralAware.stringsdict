@@ -428,7 +428,35 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d anggota grup memiliki nama yang mirip.</string>
+			<string>%1$d anggota grup punya nama yang sama.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d konflik nama ditemukan di grup ini.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d Anggota</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -442,7 +470,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d anggota grup memiliki nama yang mirip, tinjau anggota di bawah atau pilih untuk mengambil tindakan.</string>
+			<string>%1$d pertentangan nama ditemukan di grup ini. Tinjau anggota di bawah atau pilih untuk mengambil tindakan.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -456,7 +484,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d anggota grup memiliki nama yang sama, tinjau anggota di bawah atau pilih untuk mengambil tindakan.</string>
+			<string>%1$d anggota grup punya nama yang sama. Tinjau anggota di bawah atau pilih untuk ambil tindakan.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1059,6 +1087,20 @@
 			<string>d</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; dilihat</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Nama pengguna harus terdiri dari minimal %1$d karakter</string>
 		</dict>
 	</dict>
 </dict>

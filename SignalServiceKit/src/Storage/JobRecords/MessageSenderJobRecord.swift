@@ -59,7 +59,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
             }
 
             messageId = messageIdParam
-            isMediaMessage = message.hasMediaAttachments(with: transaction)
+            isMediaMessage = message.hasMediaAttachments(transaction: transaction)
             invisibleMessage = nil
         } else {
             messageId = nil

@@ -82,13 +82,13 @@ class GroupCallViewController: UIViewController {
         owsAssertDebug(call.isGroupCall)
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
-            speakerView = CallMemberView(type: .remote(isGroupCall: true))
+            speakerView = CallMemberView(type: .remoteInGroup(nil, .speaker))
         } else {
             speakerView = GroupCallRemoteMemberView(context: .speaker)
         }
 
-        if FeatureFlags.useCallMemberComposableViewsForLocalUserInGroupCalls {
-            localMemberView = CallMemberView(type: .local(call))
+        if FeatureFlags.useCallMemberComposableViewsForLocalUser {
+            localMemberView = CallMemberView(type: .local)
         } else {
             localMemberView = GroupCallLocalMemberView()
         }
@@ -520,7 +520,7 @@ class GroupCallViewController: UIViewController {
             if let speakerView = speakerView as? CallMemberView {
                 speakerView.configure(
                     call: call,
-                    memberType: .remote(speakerState, .speaker)
+                    memberType: .remoteInGroup(speakerState, .speaker)
                 )
             } else if let speakerView = speakerView as? GroupCallRemoteMemberView {
                 speakerView.configure(call: call, device: speakerState)
@@ -533,7 +533,7 @@ class GroupCallViewController: UIViewController {
 
         // TODO: When ``CallMemberCameraOffView`` is used in Production,
         // `noVideoIndicatorView` in this class will no longer be needed.
-        let showNoVideoIndicator = !FeatureFlags.useCallMemberComposableViewsForLocalUserInGroupCalls && groupCall.remoteDeviceStates.isEmpty && groupCall.isOutgoingVideoMuted
+        let showNoVideoIndicator = !FeatureFlags.useCallMemberComposableViewsForLocalUser && groupCall.remoteDeviceStates.isEmpty && groupCall.isOutgoingVideoMuted
         // Hide the subviews of this view to collapse the stack.
         noVideoIndicatorView.subviews.forEach { $0.isHidden = !showNoVideoIndicator }
 
@@ -1033,7 +1033,7 @@ extension GroupCallViewController: CallMemberErrorPresenter {
             let titleFormat = OWSLocalizedString(
                 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT",
                 comment: "Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }}")
-            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
             title = String(format: titleFormat, displayName)
 
         case let .noMediaKeys(address):
@@ -1044,7 +1044,7 @@ extension GroupCallViewController: CallMemberErrorPresenter {
             let titleFormat = OWSLocalizedString(
                 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT",
                 comment: "Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }}")
-            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
+            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
             title = String(format: titleFormat, displayName)
         }
 

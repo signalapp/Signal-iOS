@@ -459,7 +459,7 @@ class RecipientMergerImpl: RecipientMerger {
         // without any modifications. This will be the path taken in 99% of cases
         // (ie, we'll hit this path every time a recipient sends you a message,
         // assuming they haven't changed their phone number).
-        if let aciRecipient, aciRecipient.phoneNumber == phoneNumber.stringValue {
+        if let aciRecipient, aciRecipient.phoneNumber?.stringValue == phoneNumber.stringValue {
             return aciRecipient
         }
 
@@ -501,7 +501,7 @@ class RecipientMergerImpl: RecipientMerger {
     ) -> SignalRecipient? {
         if let aciRecipient {
             guard let phoneNumberRecipient else {
-                aciRecipient.phoneNumber = phoneNumber.stringValue
+                aciRecipient.phoneNumber = .init(stringValue: phoneNumber.stringValue, isDiscoverable: false)
                 aciRecipient.pni = nil
                 return aciRecipient
             }
@@ -596,7 +596,7 @@ class RecipientMergerImpl: RecipientMerger {
                 return nil
             }
 
-            pniRecipient.phoneNumber = phoneNumber.stringValue
+            pniRecipient.phoneNumber = .init(stringValue: phoneNumber.stringValue, isDiscoverable: false)
             return pniRecipient
         }
 
@@ -695,7 +695,7 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     private func fetchPhoneNumber(for pni: Pni, tx: DBReadTransaction) -> E164? {
-        return E164(recipientDatabaseTable.fetchRecipient(serviceId: pni, transaction: tx)?.phoneNumber)
+        return E164(recipientDatabaseTable.fetchRecipient(serviceId: pni, transaction: tx)?.phoneNumber?.stringValue)
     }
 
     // MARK: - Merge Handling
@@ -840,7 +840,7 @@ class RecipientMergerImpl: RecipientMerger {
         // fallback message in those cases.
         return .sessionSwitchover(recipientPair.intoValue, phoneNumber: {
             if let phoneNumber = recipientPair.fromValue.phoneNumber, recipientPair.intoValue.aciString != nil {
-                return phoneNumber
+                return phoneNumber.stringValue
             }
             return nil
         }())
@@ -934,7 +934,7 @@ extension SignalServiceAddressCache: RecipientMergeObserver {
     func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
-        updateRecipient(mergedRecipient.newRecipient)
+        updateRecipient(mergedRecipient.newRecipient, tx: tx)
 
         // If there are any threads with addresses that have been merged, we should
         // reload them from disk. This allows us to rebuild the addresses with the

@@ -40,6 +40,7 @@ final class CallRecordQuerierTest: XCTestCase {
     /// The row ID of the thread these call records are associated with.
     private func insertCallRecordsForThread(
         callStatuses: [CallRecord.CallStatus],
+        unreadStatus: CallRecord.CallUnreadStatus? = nil,
         knownThreadRowId: Int64? = nil
     ) -> Int64 {
         return inMemoryDB.write { tx -> Int64 in
@@ -66,7 +67,7 @@ final class CallRecordQuerierTest: XCTestCase {
                     }
                 }()
 
-                try! CallRecord(
+                let callRecord = CallRecord(
                     callId: .maxRandom,
                     interactionRowId: interactionRowId,
                     threadRowId: threadRowId,
@@ -74,7 +75,13 @@ final class CallRecordQuerierTest: XCTestCase {
                     callDirection: .incoming,
                     callStatus: callStatus,
                     callBeganTimestamp: runningCallBeganTimestampForInsertedCallRecords
-                ).insert(db)
+                )
+
+                if let unreadStatus {
+                    callRecord.unreadStatus = unreadStatus
+                }
+
+                try! callRecord.insert(db)
 
                 runningCallBeganTimestampForInsertedCallRecords += 1
             }
@@ -290,6 +297,39 @@ final class CallRecordQuerierTest: XCTestCase {
                 )!.drain(),
                 count: 1,
                 sortDirection: .ascending
+            )
+        }
+    }
+
+    func testFetchUnreadByCallStatus() {
+        _ = insertCallRecordsForThread(callStatuses: [.group(.ringingMissed)], unreadStatus: .unread)
+        _ = insertCallRecordsForThread(callStatuses: [.group(.ringingMissed)], unreadStatus: .read)
+        _ = insertCallRecordsForThread(callStatuses: [.group(.ringingMissed)], unreadStatus: .unread)
+        _ = insertCallRecordsForThread(callStatuses: [.group(.ringingMissed)], unreadStatus: .read)
+        _ = insertCallRecordsForThread(callStatuses: [.individual(.incomingMissed)], unreadStatus: .unread)
+        _ = insertCallRecordsForThread(callStatuses: [.individual(.incomingMissed)], unreadStatus: .read)
+
+        func testCase(
+            _ callRecords: [CallRecord],
+            count: Int,
+            sortDirection: SortDirection
+        ) {
+            assertExplanation(contains: "index_call_record_on_callStatus_and_unreadStatus_and_timestamp")
+            XCTAssertEqual(callRecords.count, count)
+            XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })
+            XCTAssertTrue(callRecords.allSatisfy { $0.unreadStatus == .unread })
+            XCTAssertTrue(callRecords.isSortedByTimestamp(sortDirection))
+        }
+
+        inMemoryDB.read { tx in
+            testCase(
+                try! callRecordQuerier.fetchCursorForUnread(
+                    callStatus: .group(.ringingMissed),
+                    ordering: .descending,
+                    db: tx.database
+                )!.drain(),
+                count: 2,
+                sortDirection: .descending
             )
         }
     }

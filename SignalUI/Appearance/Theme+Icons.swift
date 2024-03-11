@@ -41,6 +41,8 @@ public enum ThemeIcon: UInt {
     case contactInfoUserInContacts
     case contactInfoAddToContacts
     case contactInfoSignalConnection
+    case contactInfoNoDirectChat
+    case contactInfoPendingRequest
     case contactInfoPhone
     case contactInfoGroups
     case groupInfoLeaveGroup
@@ -71,6 +73,7 @@ public enum ThemeIcon: UInt {
     case maximize
     case minimize
     case refresh
+    case spam
     case official
     case qrCode
     case qrCodeLight
@@ -115,8 +118,10 @@ public enum ThemeIcon: UInt {
     case contextMenuOpenInChat
     case contextMenuVoiceCall
     case contextMenuVideoCall
+    case contextMenuMessage
 
     case composeNewGroupLarge
+    case composeFindByUsernameLarge
     case composeFindByPhoneNumberLarge
     case composeInviteLarge
 
@@ -258,6 +263,10 @@ public extension Theme {
             return "person-circle-plus"
         case .contactInfoSignalConnection:
             return "connections"
+        case .contactInfoNoDirectChat:
+            return "chat-x"
+        case .contactInfoPendingRequest:
+            return "chat-badge"
         case .contactInfoPhone:
             return "phone"
         case .contactInfoGroups:
@@ -318,6 +327,8 @@ public extension Theme {
             return "minimize"
         case .refresh:
             return "refresh"
+        case .spam:
+            return "spam"
         case .official:
             return isDarkThemeEnabled ? "official-dark" : "official"
         case .qrCode:
@@ -406,10 +417,14 @@ public extension Theme {
             return "phone-light"
         case .contextMenuVideoCall:
             return "video-light"
+        case .contextMenuMessage:
+            return "chat-light"
 
             // Empty chat list
         case .composeNewGroupLarge:
             return "group-resizable"
+        case .composeFindByUsernameLarge:
+            return "at-display-bold"
         case .composeFindByPhoneNumberLarge:
             return "number-resizable"
         case .composeInviteLarge:

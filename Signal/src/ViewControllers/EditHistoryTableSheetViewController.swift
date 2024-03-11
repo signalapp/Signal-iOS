@@ -439,6 +439,8 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapViewOnceExpired(_ interaction: TSInteraction) {}
 
+    func didTapContactName(thread: TSContactThread) {}
+
     func didTapUnknownThreadWarningGroup() {}
     func didTapUnknownThreadWarningContact() {}
     func didTapDeliveryIssueWarning(_ message: TSErrorMessage) {}
@@ -447,4 +449,6 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
     func didTapSendPayment() {}
 
     func didTapThreadMergeLearnMore(phoneNumber: String) {}
+
+    func didTapReportSpamLearnMore() {}
 }

@@ -215,26 +215,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 
 #pragma mark - Protobuf
 
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
-                                                containingMessage:(TSMessage *)message
-                                                      transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(buildProto(attachmentId:containingMessage:transaction:));
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
-                                           containingStoryMessage:(StoryMessage *)storyMessage
-                                                      transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(buildProto(attachmentId:containingStoryMessage:transaction:));
-
-
-- (nullable SSKProtoAttachmentPointer *)buildProtoForContainingMessage:(TSMessage *)message
-                                                           transaction:(SDSAnyReadTransaction *)transaction;
-
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
-                                                          caption:(nullable NSString *)caption
-                                                   attachmentType:(TSAttachmentType)attachmentType
-                                                      transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(buildProto(attachmentId:caption:attachmentType:transaction:));
-- (nullable SSKProtoAttachmentPointer *)buildProtoWithCaption:(nullable NSString *)caption
-                                               attachmentType:(TSAttachmentType)attachmentType;
+- (nullable SSKProtoAttachmentPointer *)buildProto;
 
 @end
 

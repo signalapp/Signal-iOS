@@ -215,7 +215,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             return
         }
 
-        callRecordStore.updateRecordStatus(
+        callRecordStore.updateCallAndUnreadStatus(
             callRecord: existingCallRecord,
             newCallStatus: .individual(newIndividualCallStatus),
             tx: tx

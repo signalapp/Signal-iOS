@@ -6,50 +6,6 @@
 import Foundation
 import GRDB
 
-@objc
-public protocol DatabaseChanges: AnyObject {
-    typealias UniqueId = String
-    typealias RowId = Int64
-
-    var threadUniqueIds: Set<UniqueId> { get }
-    /// Unique ids for threads that have been changed in a user-facing way
-    /// that should affect the chat list UI.
-    var threadUniqueIdsForChatListUpdate: Set<UniqueId> { get }
-    var interactionUniqueIds: Set<UniqueId> { get }
-    var storyMessageUniqueIds: Set<UniqueId> { get }
-    var storyMessageRowIds: Set<RowId> { get }
-
-    var interactionDeletedUniqueIds: Set<UniqueId> { get }
-    var storyMessageDeletedUniqueIds: Set<UniqueId> { get }
-
-    var tableNames: Set<String> { get }
-    var collections: Set<String> { get }
-
-    var didUpdateInteractions: Bool { get }
-
-    var didUpdateThreads: Bool { get }
-
-    var didUpdateInteractionsOrThreads: Bool { get }
-
-    // Note that this method should only be used for model
-    // collections, not key-value stores.
-    @objc(didUpdateModelWithCollection:)
-    func didUpdateModel(collection: String) -> Bool
-
-    // Note: In GRDB, this will return true for _any_ key-value write.
-    //       This should be acceptable.
-    @objc(didUpdateKeyValueStore:)
-    func didUpdate(keyValueStore: SDSKeyValueStore) -> Bool
-
-    @objc(didUpdateInteraction:)
-    func didUpdate(interaction: TSInteraction) -> Bool
-
-    @objc(didUpdateThread:)
-    func didUpdate(thread: TSThread) -> Bool
-}
-
-// MARK: -
-
 // Our observers collect "pending" and "committed" database state.
 // This struct DRYs up a bunch of that handling, especially around
 // thread safety.
@@ -438,7 +394,7 @@ private struct ObservedModelChanges {
 
 // MARK: - Published state
 
-extension ObservedDatabaseChanges: DatabaseChanges {
+extension ObservedDatabaseChanges {
 
     var threadUniqueIds: Set<UniqueId> {
         #if TESTABLE_BUILD
@@ -448,106 +404,40 @@ extension ObservedDatabaseChanges: DatabaseChanges {
         return threads.uniqueIds.keys
     }
 
-    var threadUniqueIdsForChatListUpdate: Set<UniqueId> {
+    func snapshot() -> DatabaseChangesSnapshot {
         #if TESTABLE_BUILD
         checkConcurrency()
         #endif
 
-        return threads.uniqueIds.keys(where: \.chatListUiUpdateRule.shouldUpdate)
-    }
+        let threadUniqueIds: Set<UniqueId> = threads.uniqueIds.keys
+        let threadUniqueIdsForChatListUpdate: Set<UniqueId> = threads.uniqueIds.keys(where: \.chatListUiUpdateRule.shouldUpdate)
+        let interactionUniqueIds: Set<UniqueId> = interactions.uniqueIds.keys
+        let storyMessageUniqueIds: Set<UniqueId> = storyMessages.uniqueIds.keys
+        let storyMessageRowIds: Set<RowId> = storyMessages.rowIds
+        let interactionDeletedUniqueIds: Set<UniqueId> = interactions.deletedUniqueIds.keys
+        let storyMessageDeletedUniqueIds: Set<UniqueId> = storyMessages.deletedUniqueIds.keys
+        let tableNames: Set<String> = _tableNames
+        let collections: Set<String> = _collections
+        let didUpdateInteractions: Bool = collections.contains(TSInteraction.collection())
+        let didUpdateThreads: Bool = collections.contains(TSThread.collection())
+        let didUpdateInteractionsOrThreads: Bool = didUpdateInteractions || didUpdateThreads
+        let lastError = _lastError
 
-    var interactionUniqueIds: Set<UniqueId> {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        return interactions.uniqueIds.keys
-    }
-
-    var storyMessageUniqueIds: Set<UniqueId> {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        return storyMessages.uniqueIds.keys
-    }
-
-    var storyMessageRowIds: Set<RowId> {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        return storyMessages.rowIds
-    }
-
-    var interactionDeletedUniqueIds: Set<UniqueId> {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        return interactions.deletedUniqueIds.keys
-    }
-
-    var storyMessageDeletedUniqueIds: Set<UniqueId> {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        return storyMessages.deletedUniqueIds.keys
-    }
-
-    var tableNames: Set<String> {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        return _tableNames
-    }
-
-    var collections: Set<String> {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        return _collections
-    }
-
-    var didUpdateInteractions: Bool {
-        return didUpdate(collection: TSInteraction.collection())
-    }
-
-    var didUpdateThreads: Bool {
-        return didUpdate(collection: TSThread.collection())
-    }
-
-    var didUpdateInteractionsOrThreads: Bool {
-        return didUpdateInteractions || didUpdateThreads
-    }
-
-    private func didUpdate(collection: String) -> Bool {
-        collections.contains(collection)
-    }
-
-    @objc(didUpdateModelWithCollection:)
-    func didUpdateModel(collection: String) -> Bool {
-        return didUpdate(collection: collection)
-    }
-
-    @objc(didUpdateKeyValueStore:)
-    func didUpdate(keyValueStore: SDSKeyValueStore) -> Bool {
-        // GRDB: SDSKeyValueStore.dataStoreCollection
-        return (didUpdate(collection: keyValueStore.collection) ||
-                    didUpdate(collection: SDSKeyValueStore.dataStoreCollection))
-    }
-
-    @objc(didUpdateInteraction:)
-    func didUpdate(interaction: TSInteraction) -> Bool {
-        interactionUniqueIds.contains(interaction.uniqueId)
-    }
-
-    @objc(didUpdateThread:)
-    func didUpdate(thread: TSThread) -> Bool {
-        threadUniqueIds.contains(thread.uniqueId)
+        return DatabaseChangesSnapshot(
+            threadUniqueIds: threadUniqueIds,
+            threadUniqueIdsForChatListUpdate: threadUniqueIdsForChatListUpdate,
+            interactionUniqueIds: interactionUniqueIds,
+            storyMessageUniqueIds: storyMessageUniqueIds,
+            storyMessageRowIds: storyMessageRowIds,
+            interactionDeletedUniqueIds: interactionDeletedUniqueIds,
+            storyMessageDeletedUniqueIds: storyMessageDeletedUniqueIds,
+            tableNames: tableNames,
+            collections: collections,
+            didUpdateInteractions: didUpdateInteractions,
+            didUpdateThreads: didUpdateThreads,
+            didUpdateInteractionsOrThreads: didUpdateInteractionsOrThreads,
+            lastError: lastError
+        )
     }
 
     /// Finalizes the current set of changes, mapping any row Ids to uniqueIds by doing database lookups.
@@ -572,8 +462,8 @@ extension ObservedDatabaseChanges: DatabaseChanges {
         let interactions = self.interactions
         let threads = self.threads
         let storyMessages = self.storyMessages
-        let collections = self.collections
-        let tableNames = self.tableNames
+        let collections = self._collections
+        let tableNames = self._tableNames
 
         lock.withLock {
             committedChanges.interactions.merge(interactions)
@@ -694,7 +584,7 @@ extension ObservedDatabaseChanges: DatabaseChanges {
     }()
 
     private func mapTableNamesToCollections() {
-        let tableNames = self.tableNames
+        let tableNames = self._tableNames
         guard tableNames.count > 0 else {
             return
         }

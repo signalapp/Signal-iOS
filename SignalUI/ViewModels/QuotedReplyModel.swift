@@ -44,9 +44,28 @@ public class QuotedReplyModel: NSObject {
 
     public convenience init?(storyMessage: StoryMessage, reactionEmoji: String? = nil, transaction: SDSAnyReadTransaction) {
         let thumbnailImage = storyMessage.thumbnailImage(transaction: transaction)
+
+        let preloadedTextAttachment: PreloadedTextAttachment?
+        switch storyMessage.attachment {
+        case .file, .foreignReferenceAttachment:
+            preloadedTextAttachment = nil
+        case .text(let textAttachment):
+            preloadedTextAttachment = PreloadedTextAttachment.from(
+                textAttachment,
+                storyMessage: storyMessage,
+                tx: transaction
+            )
+        }
+
         let thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)?
-        if thumbnailImage == nil {
-            thumbnailViewFactory = { return storyMessage.thumbnailView(spoilerState: $0) }
+        if thumbnailImage == nil, let preloadedTextAttachment  {
+            thumbnailViewFactory = { spoilerState in
+                return TextAttachmentView(
+                    attachment: preloadedTextAttachment,
+                    interactionIdentifier: .fromStoryMessage(storyMessage),
+                    spoilerState: spoilerState
+                ).asThumbnailView()
+            }
         } else {
             thumbnailViewFactory = nil
         }
@@ -128,34 +147,17 @@ public class QuotedReplyModel: NSObject {
             return nil
         }
 
-        let thumbnailImage: UIImage?
-        let failedAttachmentPointer: TSAttachmentPointer?
-
-        let attachment = message.fetchQuotedMessageThumbnail(with: transaction)
-        if let attachmentStream = attachment as? TSAttachmentStream {
-            thumbnailImage = attachmentStream.thumbnailImageSmallSync()
-            failedAttachmentPointer = nil
-        } else if !quotedMessage.isThumbnailOwned {
-            // If the quoted message isn't owning the thumbnail attachment, it's going to be referencing
-            // some other attachment (e.g. undownloaded media). In this case, let's just use the blur hash
-            if let blurHash = attachment?.blurHash {
-                thumbnailImage = BlurHash.image(for: blurHash)
-            } else {
-                thumbnailImage = nil
-            }
-            failedAttachmentPointer = nil
-        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            // If the quoted message has ownership of the thumbnail, but it hasn't been downloaded yet,
-            // we should surface this in the view.
-            thumbnailImage = nil
-            failedAttachmentPointer = attachmentPointer
-        } else {
-            thumbnailImage = nil
-            failedAttachmentPointer = nil
-        }
-
-        let attachmentType: TSAttachmentType? = attachment?
-            .attachmentType(forContainingMessage: message, transaction: transaction)
+        let attachmentMetadata = quotedMessage.fetchThumbnailAttachmentMetadata(
+            forParentMessage: message,
+            transaction: transaction
+        )
+        let displayableThumbnail: DisplayableQuotedThumbnailAttachment? = attachmentMetadata.map {
+            quotedMessage.displayableThumbnailAttachment(
+                for: $0,
+                parentMessage: message,
+                transaction: transaction
+            )
+        } ?? nil
 
         var body: String? = quotedMessage.body
         var bodyRanges: MessageBodyRanges? = quotedMessage.bodyRanges
@@ -179,11 +181,11 @@ public class QuotedReplyModel: NSObject {
             bodySource: quotedMessage.bodySource,
             body: body,
             bodyRanges: bodyRanges,
-            thumbnailImage: thumbnailImage,
-            contentType: quotedMessage.contentType,
-            sourceFilename: quotedMessage.sourceFilename,
-            attachmentType: attachmentType,
-            failedThumbnailAttachmentPointer: failedAttachmentPointer,
+            thumbnailImage: displayableThumbnail?.thumbnailImage,
+            contentType: attachmentMetadata?.mimeType,
+            sourceFilename: attachmentMetadata?.sourceFilename,
+            attachmentType: displayableThumbnail?.attachmentType,
+            failedThumbnailAttachmentPointer: displayableThumbnail?.failedAttachmentPointer,
             isGiftBadge: quotedMessage.isGiftBadge,
             isPayment: isPayment
         )
@@ -370,7 +372,7 @@ public class QuotedReplyModel: NSObject {
         var hasText = !quotedText.isEmptyOrNil
 
         var quotedAttachment: TSAttachmentStream?
-        if let attachmentStream = message.bodyAttachments(with: transaction).first as? TSAttachmentStream {
+        if let attachmentStream = message.bodyAttachments(transaction: transaction).first as? TSAttachmentStream {
             // If the attachment is "oversize text", try the quote as a reply to text, not as
             // a reply to an attachment.
             if !hasText && attachmentStream.contentType == OWSMimeTypeOversizeTextMessage {

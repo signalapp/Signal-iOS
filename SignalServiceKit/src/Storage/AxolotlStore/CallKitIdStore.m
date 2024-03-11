@@ -81,7 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
         // Finally check the phone number store, for very old 1:1 calls.
         NSString *_Nullable phoneNumber = [self.phoneNumberStore getString:callKitId transaction:transaction];
         if (phoneNumber) {
-            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            SignalServiceAddress *address = [SignalServiceAddress legacyAddressWithServiceIdString:nil
+                                                                                       phoneNumber:phoneNumber];
             result = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
             return;
         }

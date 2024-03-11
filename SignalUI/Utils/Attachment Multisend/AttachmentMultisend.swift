@@ -251,7 +251,10 @@ public class AttachmentMultisend: Dependencies {
             // (Each destination needs its own independent TSAttachment so that deleting one has no effect on
             // the others)
             let attachmentToUploadIdentifier = UUID()
-            guard let attachmentToUpload = textAttachment.validateLinkPreviewAndBuildTextAttachment(transaction: transaction) else {
+            guard
+                let (_, imageAttachmentUniqueId) =
+                    textAttachment.validateLinkPreviewAndBuildUnownedTextAttachment(transaction: transaction)
+            else {
                 throw OWSAssertionError("Invalid text attachment")
             }
 
@@ -271,7 +274,7 @@ public class AttachmentMultisend: Dependencies {
             }
 
             if
-                let linkPreviewAttachmentId = attachmentToUpload.preview?.imageAttachmentId,
+                let linkPreviewAttachmentId = imageAttachmentUniqueId,
                 let correspondingAttachments = state.correspondingAttachmentIds[attachmentToUploadIdentifier]
             {
                 // Map the unique ID of the attachment we intend to actually upload to the unique IDs

@@ -181,6 +181,31 @@ public struct CVLabelConfig {
         }
     }
 
+    public func applyForRendering(button: UIButton) {
+        button.titleLabel?.font = self.font
+        button.titleLabel?.numberOfLines = self.numberOfLines
+        button.titleLabel?.lineBreakMode = self.lineBreakMode
+        button.setTitleColor(self.textColor, for: .normal)
+        if let textAlignment = textAlignment {
+            button.titleLabel?.textAlignment = textAlignment
+        } else {
+            button.titleLabel?.textAlignment = .natural
+        }
+
+        switch text {
+        case .text(let text):
+            button.setTitle(text, for: .normal)
+        case .attributedText(let attributedText):
+            button.setAttributedTitle(attributedText, for: .normal)
+        case .messageBody(let hydratedMessageBody):
+            let attributedText = hydratedMessageBody.asAttributedStringForDisplay(
+                config: self.displayConfig,
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+            )
+            button.setAttributedTitle(attributedText, for: .normal)
+        }
+    }
+
     public func measure(maxWidth: CGFloat) -> CGSize {
         let size = CVText.measureLabel(config: self, maxWidth: maxWidth)
         if size.width > maxWidth {

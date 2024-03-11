@@ -151,10 +151,11 @@ public class GroupV2UpdatesImpl: Dependencies {
 
 // MARK: - GroupV2UpdatesSwift
 
-extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
+extension GroupV2UpdatesImpl: GroupV2Updates {
 
     public func updateGroupWithChangeActions(
         groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         downloadedAvatars: GroupV2DownloadedAvatars,
         transaction: SDSAnyWriteTransaction
@@ -186,6 +187,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
             newlyLearnedPniToAciAssociations: changedGroupModel.newlyLearnedPniToAciAssociations,
             groupUpdateSource: changedGroupModel.updateSource,
             localIdentifiers: localIdentifiers,
+            spamReportingMetadata: spamReportingMetadata,
             transaction: transaction
         ).groupThread
 
@@ -215,6 +217,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
     ) -> Promise<TSGroupThread> {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
         return tryToRefreshV2GroupThread(groupId: groupId,
+                                         spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                                          groupSecretParamsData: groupSecretParamsData,
                                          groupUpdateMode: groupUpdateMode)
     }
@@ -226,6 +229,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
     ) -> Promise<TSGroupThread> {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
         return tryToRefreshV2GroupThread(groupId: groupId,
+                                         spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                                          groupSecretParamsData: groupSecretParamsData,
                                          groupUpdateMode: groupUpdateMode,
                                          groupModelOptions: groupModelOptions)
@@ -233,10 +237,12 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
 
     public func tryToRefreshV2GroupThread(
         groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupSecretParamsData: Data,
         groupUpdateMode: GroupUpdateMode
     ) -> Promise<TSGroupThread> {
         tryToRefreshV2GroupThread(groupId: groupId,
+                                  spamReportingMetadata: spamReportingMetadata,
                                   groupSecretParamsData: groupSecretParamsData,
                                   groupUpdateMode: groupUpdateMode,
                                   groupModelOptions: [])
@@ -264,6 +270,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
             let groupId = groupModel.groupId
             let groupSecretParamsData = groupModel.secretParamsData
             return self.tryToRefreshV2GroupThread(groupId: groupId,
+                                                  spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                                                   groupSecretParamsData: groupSecretParamsData,
                                                   groupUpdateMode: groupUpdateMode).asVoid()
         }.catch(on: DispatchQueue.global()) { error in
@@ -273,6 +280,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
 
     private func tryToRefreshV2GroupThread(
         groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupSecretParamsData: Data,
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions
@@ -310,6 +318,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
         }
 
         let operation = GroupV2UpdateOperation(groupId: groupId,
+                                               spamReportingMetadata: spamReportingMetadata,
                                                groupSecretParamsData: groupSecretParamsData,
                                                groupUpdateMode: groupUpdateMode,
                                                groupModelOptions: groupModelOptions)
@@ -354,15 +363,18 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
         let groupSecretParamsData: Data
         let groupUpdateMode: GroupUpdateMode
         let groupModelOptions: TSGroupModelOptions
+        let spamReportingMetadata: GroupUpdateSpamReportingMetadata
 
         let promise: Promise<TSGroupThread>
         let future: Future<TSGroupThread>
 
         required init(groupId: Data,
+                      spamReportingMetadata: GroupUpdateSpamReportingMetadata,
                       groupSecretParamsData: Data,
                       groupUpdateMode: GroupUpdateMode,
                       groupModelOptions: TSGroupModelOptions) {
             self.groupId = groupId
+            self.spamReportingMetadata = spamReportingMetadata
             self.groupSecretParamsData = groupSecretParamsData
             self.groupUpdateMode = groupUpdateMode
             self.groupModelOptions = groupModelOptions
@@ -388,7 +400,8 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
             }.then(on: DispatchQueue.global()) { () in
                 self.groupV2UpdatesImpl.refreshGroupFromService(groupSecretParamsData: self.groupSecretParamsData,
                                                                 groupUpdateMode: self.groupUpdateMode,
-                                                                groupModelOptions: self.groupModelOptions)
+                                                                groupModelOptions: self.groupModelOptions,
+                                                                spamReportingMetadata: self.spamReportingMetadata)
             }.done(on: DispatchQueue.global()) { (groupThread: TSGroupThread) in
                 Logger.verbose("Group refresh succeeded.")
 
@@ -461,17 +474,21 @@ private extension GroupV2UpdatesImpl {
     func refreshGroupFromService(
         groupSecretParamsData: Data,
         groupUpdateMode: GroupUpdateMode,
-        groupModelOptions: TSGroupModelOptions
+        groupModelOptions: TSGroupModelOptions,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) -> Promise<TSGroupThread> {
 
         return firstly {
-            return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+            Promise.wrapAsync {
+                try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+            }
         }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
             // Try to use individual changes.
             return firstly(on: DispatchQueue.global()) {
                 self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                            groupUpdateMode: groupUpdateMode,
-                                                           groupModelOptions: groupModelOptions)
+                                                           groupModelOptions: groupModelOptions,
+                                                           spamReportingMetadata: spamReportingMetadata)
                     .timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                              description: "Update via changes") {
                         GroupsV2Error.timeout
@@ -516,7 +533,8 @@ private extension GroupV2UpdatesImpl {
                 return self.fetchAndApplyCurrentGroupV2SnapshotFromService(
                     groupSecretParamsData: groupSecretParamsData,
                     groupUpdateMode: groupUpdateMode,
-                    groupModelOptions: groupModelOptions
+                    groupModelOptions: groupModelOptions,
+                    spamReportingMetadata: spamReportingMetadata
                 )
             }
         }
@@ -525,7 +543,8 @@ private extension GroupV2UpdatesImpl {
     private func fetchAndApplyChangeActionsFromService(
         groupSecretParamsData: Data,
         groupUpdateMode: GroupUpdateMode,
-        groupModelOptions: TSGroupModelOptions
+        groupModelOptions: TSGroupModelOptions,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) -> Promise<TSGroupThread> {
 
         return firstly { () -> Promise<GroupsV2Impl.GroupChangePage> in
@@ -535,6 +554,7 @@ private extension GroupV2UpdatesImpl {
             let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
             let applyPromise = self.tryToApplyGroupChangesFromService(
                 groupId: groupId,
+                spamReportingMetadata: spamReportingMetadata,
                 groupSecretParamsData: groupSecretParamsData,
                 groupChanges: groupChanges.changes,
                 groupUpdateMode: groupUpdateMode,
@@ -556,7 +576,8 @@ private extension GroupV2UpdatesImpl {
                 return self.fetchAndApplyChangeActionsFromService(
                     groupSecretParamsData: groupSecretParamsData,
                     groupUpdateMode: groupUpdateMode,
-                    groupModelOptions: groupModelOptions
+                    groupModelOptions: groupModelOptions,
+                    spamReportingMetadata: spamReportingMetadata
                 )
             }
         }
@@ -610,6 +631,7 @@ private extension GroupV2UpdatesImpl {
 
     private func tryToApplyGroupChangesFromService(
         groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupSecretParamsData: Data,
         groupChanges: [GroupV2Change],
         groupUpdateMode: GroupUpdateMode,
@@ -624,6 +646,7 @@ private extension GroupV2UpdatesImpl {
         }.then(on: DispatchQueue.global()) {
             return self.tryToApplyGroupChangesFromServiceNow(
                 groupId: groupId,
+                spamReportingMetadata: spamReportingMetadata,
                 groupSecretParamsData: groupSecretParamsData,
                 groupChanges: groupChanges,
                 upToRevision: groupUpdateMode.upToRevision,
@@ -634,6 +657,7 @@ private extension GroupV2UpdatesImpl {
 
     private func tryToApplyGroupChangesFromServiceNow(
         groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupSecretParamsData: Data,
         groupChanges: [GroupV2Change],
         upToRevision: UInt32?,
@@ -649,6 +673,7 @@ private extension GroupV2UpdatesImpl {
             // See comment on getOrCreateThreadForGroupChanges(...).
             guard var (groupThread, localUserWasAddedBy) = self.getOrCreateThreadForGroupChanges(
                 groupId: groupId,
+                spamReportingMetadata: spamReportingMetadata,
                 groupV2Params: groupV2Params,
                 groupChanges: groupChanges,
                 groupModelOptions: groupModelOptions,
@@ -688,6 +713,7 @@ private extension GroupV2UpdatesImpl {
                         profileKeysByAci: &profileKeysByAci,
                         authoritativeProfileKeysByAci: &authoritativeProfileKeysByAci,
                         localIdentifiers: localIdentifiers,
+                        spamReportingMetadata: spamReportingMetadata,
                         transaction: transaction
                     )
                 }
@@ -715,7 +741,7 @@ private extension GroupV2UpdatesImpl {
                 localUserWasAddedByBlockedUser = false
             case .legacyE164(let e164):
                 localUserWasAddedByBlockedUser = self.blockingManager.isAddressBlocked(
-                    .init(e164),
+                    .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue),
                     transaction: transaction
                 )
             case .aci(let aci):
@@ -769,6 +795,7 @@ private extension GroupV2UpdatesImpl {
     // actions going forward to keep the group up-to-date.
     private func getOrCreateThreadForGroupChanges(
         groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupV2Params: GroupV2Params,
         groupChanges: [GroupV2Change],
         groupModelOptions: TSGroupModelOptions,
@@ -816,6 +843,7 @@ private extension GroupV2UpdatesImpl {
                 canInsert: true,
                 didAddLocalUserToV2Group: didAddLocalUserToV2Group,
                 localIdentifiers: localIdentifiers,
+                spamReportingMetadata: spamReportingMetadata,
                 transaction: transaction
             )
 
@@ -847,6 +875,7 @@ private extension GroupV2UpdatesImpl {
         profileKeysByAci: inout [Aci: Data],
         authoritativeProfileKeysByAci: inout [Aci: Data],
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
     ) throws -> ApplySingleChangeFromServiceResult? {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
@@ -966,6 +995,7 @@ private extension GroupV2UpdatesImpl {
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
             groupUpdateSource: groupUpdateSource,
             localIdentifiers: localIdentifiers,
+            spamReportingMetadata: spamReportingMetadata,
             transaction: transaction
         ).groupThread
 
@@ -999,7 +1029,8 @@ private extension GroupV2UpdatesImpl {
     func fetchAndApplyCurrentGroupV2SnapshotFromService(
         groupSecretParamsData: Data,
         groupUpdateMode: GroupUpdateMode,
-        groupModelOptions: TSGroupModelOptions
+        groupModelOptions: TSGroupModelOptions,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) -> Promise<TSGroupThread> {
 
         return firstly {
@@ -1008,7 +1039,8 @@ private extension GroupV2UpdatesImpl {
             return self.tryToApplyCurrentGroupV2SnapshotFromService(
                 groupV2Snapshot: groupV2Snapshot,
                 groupUpdateMode: groupUpdateMode,
-                groupModelOptions: groupModelOptions
+                groupModelOptions: groupModelOptions,
+                spamReportingMetadata: spamReportingMetadata
             )
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Update via snapshot") {
@@ -1019,7 +1051,8 @@ private extension GroupV2UpdatesImpl {
     private func tryToApplyCurrentGroupV2SnapshotFromService(
         groupV2Snapshot: GroupV2Snapshot,
         groupUpdateMode: GroupUpdateMode,
-        groupModelOptions: TSGroupModelOptions
+        groupModelOptions: TSGroupModelOptions,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) -> Promise<TSGroupThread> {
 
         return firstly { () -> Guarantee<Void> in
@@ -1031,14 +1064,16 @@ private extension GroupV2UpdatesImpl {
         }.then(on: DispatchQueue.global()) { () in
             self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(
                 groupV2Snapshot: groupV2Snapshot,
-                groupModelOptions: groupModelOptions
+                groupModelOptions: groupModelOptions,
+                spamReportingMetadata: spamReportingMetadata
             )
         }
     }
 
     private func tryToApplyCurrentGroupV2SnapshotFromServiceNow(
         groupV2Snapshot: GroupV2Snapshot,
-        groupModelOptions: TSGroupModelOptions
+        groupModelOptions: TSGroupModelOptions,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) -> Promise<TSGroupThread> {
 
         let localProfileKey = profileManager.localProfileKey()
@@ -1077,6 +1112,7 @@ private extension GroupV2UpdatesImpl {
                 canInsert: true,
                 didAddLocalUserToV2Group: false,
                 localIdentifiers: localIdentifiers,
+                spamReportingMetadata: spamReportingMetadata,
                 transaction: transaction
             )
 
@@ -1339,8 +1375,15 @@ public extension GroupsProtoGroupChangeActions {
             // or even just push this up to the callsite. In any case,
             // the time to differentiate is when looking at the group updates
             // or before/after model we get from the server.
-            owsAssertDebug(self.deletePendingMembers.count == 1)
-            owsAssertDebug(self.deletePendingMembers.first?.deletedUserID == Data(pni.serviceIdBinary))
+            if
+                self.deletePendingMembers.count == 1,
+                let firstDeletePendingMemberIdData = self.deletePendingMembers.first?.deletedUserID,
+                let firstDeletePendingMemberId = try? groupV2Params.serviceId(for: firstDeletePendingMemberIdData)
+            {
+                owsAssertDebug(firstDeletePendingMemberId == pni, "Canary: pni for group update doesn't match")
+            } else {
+                owsFailDebug("Canary: unknown type of pni authored group update")
+            }
 
             // At this point we are processing a new set of group changes; its safe
             // to compare our pni against this pni.

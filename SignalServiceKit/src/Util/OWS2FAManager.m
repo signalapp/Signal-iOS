@@ -5,7 +5,6 @@
 
 #import "OWS2FAManager.h"
 #import "AppReadiness.h"
-#import "HTTPUtils.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

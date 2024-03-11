@@ -55,13 +55,11 @@ public protocol RegistrationStateChangeManager {
      *
      * Note that some side effects (generally, those that must happen in the same write transaction)
      * are triggered internally by this class and don't need separate observation.
-     *
-     * PNP0 TODO: once all devices are PNI-capable, remove PNI nullability here.
      */
     func didProvisionSecondary(
         e164: E164,
         aci: Aci,
-        pni: Pni?,
+        pni: Pni,
         authToken: String,
         deviceId: UInt32,
         tx: DBWriteTransaction
@@ -75,14 +73,11 @@ public protocol RegistrationStateChangeManager {
      *
      * Note that some side effects (generally, those that must happen in the same write transaction)
      * are triggered internally by this class and don't need separate observation.
-     *
-     * PNP0 TODO: once all devices are PNI-capable, remove PNI nullability here.
-     * The `pni` parameter is nullable to support legacy behavior.
      */
     func didUpdateLocalPhoneNumber(
         _ e164: E164,
         aci: Aci,
-        pni: Pni?,
+        pni: Pni,
         tx: DBWriteTransaction
     )
 

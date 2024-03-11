@@ -12,12 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachmentStream;
 @class TSMessage;
 
-typedef NS_ENUM(NSUInteger, TSAttachmentPointerType) {
-    TSAttachmentPointerTypeUnknown = 0,
-    TSAttachmentPointerTypeIncoming = 1,
-    TSAttachmentPointerTypeRestoring = 2,
-};
-
 typedef NS_CLOSED_ENUM(NSUInteger, TSAttachmentPointerState) {
     TSAttachmentPointerStateEnqueued = 0,
     TSAttachmentPointerStateDownloading = 1,
@@ -41,7 +35,8 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
  */
 @interface TSAttachmentPointer : TSAttachment
 
-@property (nonatomic, readonly) TSAttachmentPointerType pointerType;
+/// Unused and deprecated. Maintained for sds compatibility, but no meaning should be derived from the value.
+@property (nonatomic, readonly) NSUInteger pointerType;
 @property (nonatomic, readonly) TSAttachmentPointerState state;
 
 // Though now required, `digest` may be null for pre-existing records or from
@@ -136,7 +131,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
-                     pointerType:(TSAttachmentPointerType)pointerType
+                     pointerType:(NSUInteger)pointerType
                            state:(TSAttachmentPointerState)state
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:videoDuration:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
 

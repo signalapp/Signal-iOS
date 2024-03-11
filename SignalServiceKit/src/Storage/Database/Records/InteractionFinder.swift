@@ -751,7 +751,7 @@ public class InteractionFinder: NSObject {
 
     public func enumerateMessagesWithAttachments(
         transaction: SDSAnyReadTransaction,
-        block: @escaping (TSMessage, inout Bool) -> Void
+        block: (TSMessage, inout Bool) -> Void
     ) throws {
         let emptyArraySerializedData = try! NSKeyedArchiver.archivedData(withRootObject: [String](), requiringSecureCoding: true)
 
@@ -781,7 +781,7 @@ public class InteractionFinder: NSObject {
             // Attachment (once it exists) will not use this method; this is used
             // for orphan data cleanup which will take just a completely different
             // form with Attachment, this message enumeration will be obsolete.
-            guard message.hasBodyAttachments(with: transaction) else {
+            guard message.hasBodyAttachments(transaction: transaction) else {
                 owsFailDebug("message unexpectedly has no attachments")
                 continue
             }
@@ -1032,6 +1032,81 @@ public class InteractionFinder: NSObject {
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
                 AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
+                LIMIT 1
+            )
+        """
+
+        let arguments: StatementArguments = [threadUniqueId]
+        do {
+            return try Bool.fetchOne(
+                transaction.unwrapGrdbRead.database,
+                sql: sql,
+                arguments: arguments
+            )!
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find info message")
+        }
+    }
+
+    public func enumerateRecentGroupUpdateMessages(
+        transaction: SDSAnyReadTransaction,
+        block: (TSInfoMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) throws {
+        // In DEBUG builds, confirm that we use the expected index.
+        let indexedBy: String
+        #if DEBUG
+        indexedBy = "INDEXED BY index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"
+        #else
+        indexedBy = ""
+        #endif
+
+        let sql = """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            \(indexedBy)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+            AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
+            ORDER BY \(interactionColumn: .id) DESC
+        """
+
+        let cursor = TSInfoMessage.grdbFetchCursor(
+            sql: sql,
+            arguments: [threadUniqueId],
+            transaction: transaction.unwrapGrdbRead
+        )
+
+        while let interaction = try cursor.next() {
+            guard let infoMessage = interaction as? TSInfoMessage else { return }
+            var stop: ObjCBool = false
+            block(infoMessage, &stop)
+            if stop.boolValue {
+                return
+            }
+        }
+    }
+
+    public func hasUserReportedSpam(transaction: SDSAnyReadTransaction) -> Bool {
+        // In DEBUG builds, confirm that we use the expected index.
+        let indexedBy: String
+        #if DEBUG
+        indexedBy = "INDEXED BY index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"
+        #else
+        indexedBy = ""
+        #endif
+
+        let sql = """
+            SELECT EXISTS(
+                SELECT 1
+                FROM \(InteractionRecord.databaseTableName)
+                \(indexedBy)
+                WHERE \(interactionColumn: .threadUniqueId) = ?
+                AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+                AND \(interactionColumn: .messageType) = \(TSInfoMessageType.reportedSpam.rawValue)
                 LIMIT 1
             )
         """

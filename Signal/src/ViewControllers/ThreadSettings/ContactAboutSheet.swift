@@ -12,10 +12,12 @@ import SignalServiceKit
 class ContactAboutSheet: StackSheetViewController {
     private let thread: TSContactThread
     private let isLocalUser: Bool
+    private let spoilerState: SpoilerRenderState
 
-    init(thread: TSContactThread) {
+    init(thread: TSContactThread, spoilerState: SpoilerRenderState) {
         self.thread = thread
         self.isLocalUser = thread.isNoteToSelf
+        self.spoilerState = spoilerState
         super.init()
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -29,7 +31,7 @@ class ContactAboutSheet: StackSheetViewController {
 
     // MARK: Layout
 
-    private lazy var avatarViewContainer: UIView = {
+    private lazy var avatarView: ConversationAvatarView = {
         let avatarView = ConversationAvatarView(
             sizeClass: .customDiameter(240),
             localUserDisplayMode: .asUser,
@@ -38,7 +40,11 @@ class ContactAboutSheet: StackSheetViewController {
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(thread)
         }
+        avatarView.interactionDelegate = self
+        return avatarView
+    }()
 
+    private lazy var avatarViewContainer: UIView = {
         let container = UIView.container()
         container.addSubview(avatarView)
         avatarView.autoCenterInSuperview()
@@ -91,8 +97,9 @@ class ContactAboutSheet: StackSheetViewController {
     private func updateContents() {
         databaseStorage.read { tx in
             updateContactNames(tx: tx)
+            updateIsVerified(tx: tx)
             updateProfileBio(tx: tx)
-            updateIsConnection(tx: tx)
+            updateConnectionState(tx: tx)
             updateIsInSystemContacts(tx: tx)
             updateMutualGroupThreadCount(tx: tx)
         }
@@ -123,12 +130,25 @@ class ContactAboutSheet: StackSheetViewController {
 
         stackView.addArrangedSubview(ProfileDetailLabel.profile(title: self.contactName))
 
+        if isVerified {
+            stackView.addArrangedSubview(ProfileDetailLabel.verified())
+        }
+
         if let profileBio {
             stackView.addArrangedSubview(ProfileDetailLabel.profileAbout(bio: profileBio))
         }
 
-        if isConnection {
+        switch connectionState {
+        case .connection:
             stackView.addArrangedSubview(ProfileDetailLabel.signalConnectionLink(shouldDismissOnNavigation: true, presentEducationFrom: fromViewController))
+        case .blocked:
+            stackView.addArrangedSubview(ProfileDetailLabel.blocked(name: self.contactShortName))
+        case .pending:
+            stackView.addArrangedSubview(ProfileDetailLabel.pendingRequest(name: self.contactShortName))
+        case .noConnection:
+            stackView.addArrangedSubview(ProfileDetailLabel.noDirectChat(name: self.contactShortName))
+        case nil:
+            break
         }
 
         if isInSystemContacts {
@@ -157,20 +177,23 @@ class ContactAboutSheet: StackSheetViewController {
             return
         }
 
-        contactName = {
-            let name = contactsManager.displayName(for: thread, transaction: tx)
-            if name == thread.contactAddress.phoneNumber {
-                return PhoneNumber
-                    .bestEffortFormatPartialUserSpecifiedText(
-                        toLookLikeAPhoneNumber: name
-                    )
-            }
-            return name
-        }()
-        contactShortName = contactsManager.shortDisplayName(
-            for: thread.contactAddress,
-            transaction: tx
-        )
+        let displayName = contactsManager.displayName(for: thread.contactAddress, tx: tx)
+        self.contactName = displayName.resolvedValue()
+        self.contactShortName = displayName.resolvedValue(useShortNameIfAvailable: true)
+
+        if case .phoneNumber(let phoneNumber) = displayName {
+            self.contactName = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(
+                toLookLikeAPhoneNumber: phoneNumber.stringValue
+            )
+        }
+    }
+
+    // MARK: Verified
+
+    private var isVerified = false
+    private func updateIsVerified(tx: SDSAnyReadTransaction) {
+        let identityManager = DependenciesBridge.shared.identityManager
+        isVerified = identityManager.verificationState(for: thread.contactAddress, tx: tx.asV2Read) == .verified
     }
 
     // MARK: Bio
@@ -182,13 +205,26 @@ class ContactAboutSheet: StackSheetViewController {
 
     // MARK: Connection
 
-    private var isConnection = false
-    private func updateIsConnection(tx: SDSAnyReadTransaction) {
+    private enum ConnectionState {
+        case connection
+        case blocked
+        case pending
+        case noConnection
+    }
+
+    private var connectionState: ConnectionState?
+    private func updateConnectionState(tx: SDSAnyReadTransaction) {
         if isLocalUser {
-            isConnection = false
-            return
+            connectionState = nil
+        } else if profileManager.isThread(inProfileWhitelist: thread, transaction: tx) {
+            connectionState = .connection
+        } else if blockingManager.isAddressBlocked(thread.contactAddress, transaction: tx) {
+            connectionState = .blocked
+        } else if thread.hasPendingMessageRequest(transaction: tx) {
+            connectionState = .pending
+        } else {
+            connectionState = .noConnection
         }
-        isConnection = profileManager.isThread(inProfileWhitelist: thread, transaction: tx)
     }
 
     // MARK: System contacts
@@ -238,4 +274,43 @@ extension ContactAboutSheet: DatabaseChangeDelegate {
     func databaseChangesDidReset() {
         updateContents()
     }
+}
+
+// MARK: - ConversationAvatarViewDelegate
+
+extension ContactAboutSheet: ConversationAvatarViewDelegate {
+    func didTapBadge() {
+        // Badges are not shown on contact about sheet
+    }
+
+    func presentStoryViewController() {
+        let vc = StoryPageViewController(
+            context: self.thread.storyContext,
+            spoilerState: self.spoilerState
+        )
+        present(vc, animated: true)
+    }
+
+    func presentAvatarViewController() {
+        guard
+            avatarView.primaryImage != nil,
+            let vc = databaseStorage.read(block: { tx in
+                AvatarViewController(
+                    thread: self.thread,
+                    renderLocalUserAsNoteToSelf: false,
+                    readTx: tx
+                )
+            })
+        else {
+            return
+        }
+
+        present(vc, animated: true)
+    }
+}
+
+// MARK: - AvatarViewPresentationContextProvider
+
+extension ContactAboutSheet: AvatarViewPresentationContextProvider {
+    var conversationAvatarView: ConversationAvatarView? { avatarView }
 }

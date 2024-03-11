@@ -202,7 +202,7 @@ public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvide
             comment: "action sheet header when re-sending message which failed because of untrusted identity keys"
         )
         return String(format: format, databaseStorage.read { tx in
-            return contactsManager.displayName(for: SignalServiceAddress(serviceId), transaction: tx)
+            return contactsManager.displayName(for: SignalServiceAddress(serviceId), tx: tx).resolvedValue()
         })
     }
 
@@ -239,7 +239,7 @@ public class InvalidKeySignatureError: NSObject, CustomNSError, IsRetryableProvi
             comment: "action sheet header when re-sending message which failed because of an invalid key signature"
         )
         return String(format: format, databaseStorage.read { tx in
-            return contactsManager.displayName(for: SignalServiceAddress(serviceId), transaction: tx)
+            return contactsManager.displayName(for: SignalServiceAddress(serviceId), tx: tx).resolvedValue()
         })
     }
 

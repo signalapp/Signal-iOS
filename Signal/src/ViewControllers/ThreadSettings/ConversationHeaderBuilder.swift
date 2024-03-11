@@ -175,8 +175,7 @@ struct ConversationHeaderBuilder: Dependencies {
             let subtitle = NSMutableAttributedString()
             subtitle.appendTemplatedImage(named: "check-extra-small", font: .dynamicTypeSubheadlineClamped)
             subtitle.append(" ")
-            subtitle.append(OWSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-                                              comment: "Badge indicating that the user is verified."))
+            subtitle.append(SafetyNumberStrings.verified)
             builder.addSubtitleLabel(attributedText: subtitle)
         }
 
@@ -317,7 +316,7 @@ struct ConversationHeaderBuilder: Dependencies {
             subviews.append(stackView)
         }
 
-        subviews.append(.spacer(withHeight: 24))
+        subviews.append(.spacer(withHeight: 20))
 
         if needsTwoRows {
             addButtonRow(Array(buttons.prefix(Int(ceil(CGFloat(buttons.count) / 2)))))
@@ -394,21 +393,24 @@ struct ConversationHeaderBuilder: Dependencies {
         return avatarView
     }
 
-    func buildThreadNameLabel() -> UILabel {
-        let label = OWSLabel()
-        label.attributedText = delegate.threadAttributedString(
+    func buildThreadNameLabel() -> OWSButton {
+        let button = OWSButton()
+        button.setAttributedTitle(delegate.threadAttributedString(
             renderLocalUserAsNoteToSelf: options.contains(.renderLocalUserAsNoteToSelf),
             transaction: transaction
-        )
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        label.lineBreakMode = .byWordWrapping
+        ), for: .normal)
+        button.titleLabel?.numberOfLines = 0
+        button.titleLabel?.textAlignment = .center
+        button.titleLabel?.lineBreakMode = .byWordWrapping
+        button.titleLabel?.setContentHuggingHigh()
+        button.titleLabel?.autoMatch(.height, to: .height, of: button)
         if delegate.canTapThreadName {
-            label.addTapGesture { [weak delegate] in
+            button.block = { [weak delegate] in
                 delegate?.didTapThreadName()
             }
+            button.dimsWhenHighlighted = true
         }
-        return label
+        return button
     }
 
     @discardableResult
@@ -420,7 +422,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
     @discardableResult
     mutating func addSubtitleLabel(attributedText: NSAttributedString) -> OWSLabel {
-        subviews.append(UIView.spacer(withHeight: hasSubtitleLabel ? 4 : 8))
+        subviews.append(UIView.spacer(withHeight: 4))
         let label = buildHeaderSubtitleLabel(attributedText: attributedText)
         subviews.append(label)
         hasSubtitleLabel = true
@@ -475,7 +477,7 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies, Conversatio
 
     func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String
 
-    var avatarView: PrimaryImageView? { get set }
+    var avatarView: ConversationAvatarView? { get set }
 
     var isGroupV1Thread: Bool { get }
     var canEditConversationAttributes: Bool { get }
@@ -500,8 +502,8 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies, Conversatio
 extension ConversationHeaderDelegate {
     func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String {
         var threadName: String
-        if thread.isNoteToSelf, !renderLocalUserAsNoteToSelf, let localName = profileManager.localFullName() {
-            threadName = localName
+        if thread.isNoteToSelf, !renderLocalUserAsNoteToSelf {
+            threadName = profileManager.localFullName() ?? ""
         } else {
             threadName = contactsManager.displayName(for: thread, transaction: transaction)
         }
@@ -589,10 +591,18 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
     var tableViewController: OWSTableViewController2 { self }
 
     func buildMainHeader() -> UIView {
-        ConversationHeaderBuilder.buildHeader(
+        let options: ConversationHeaderBuilder.Options
+        if callViewModel == nil {
+            options = [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf]
+        } else {
+            // Call details
+            options = [.message, .videoCall, .audioCall, .mute]
+        }
+
+        return ConversationHeaderBuilder.buildHeader(
             for: thread,
             sizeClass: .eightyEight,
-            options: [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf],
+            options: options,
             delegate: self
         )
     }
@@ -610,7 +620,7 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
     }
 
     var canTapThreadName: Bool {
-        !thread.isGroupThread
+        !thread.isGroupThread && !thread.isNoteToSelf
     }
 
     func didTapThreadName() {
@@ -618,7 +628,8 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
             owsFailDebug("Conversation name should only be tappable for contact threads")
             return
         }
-        ContactAboutSheet(thread: contactThread).present(from: self)
+        ContactAboutSheet(thread: contactThread, spoilerState: self.spoilerState)
+            .present(from: self)
     }
 }
 

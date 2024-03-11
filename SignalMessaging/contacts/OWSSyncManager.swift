@@ -37,7 +37,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
 
         return databaseStorage.write(.promise) { (transaction) -> Promise<Void> in
-            let currentAppVersion = AppVersionImpl.shared.currentAppVersion4
+            let currentAppVersion = AppVersionImpl.shared.currentAppVersion
             let syncRequestedAppVersion = {
                 Self.keyValueStore().getString(
                     Constants.syncRequestedAppVersionKey,
@@ -197,6 +197,11 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         case .blockAndDelete:
             thread.softDelete(with: transaction)
             blockingManager.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
+        case .spam:
+            TSInfoMessage(thread: thread, messageType: .reportedSpam).anyInsert(transaction: transaction)
+        case .blockAndSpam:
+            blockingManager.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
+            TSInfoMessage(thread: thread, messageType: .reportedSpam).anyInsert(transaction: transaction)
         case .unknown, .none:
             owsFailDebug("unexpected message request response type")
         }
@@ -431,7 +436,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         let message = OWSSyncContactsMessage(thread: thread, isFullSync: true, tx: tx)
         guard let syncFileUrl = ContactSyncAttachmentBuilder.buildAttachmentFile(
             for: message,
-            blockingManager: Self.blockingManager,
             contactsManager: Self.contactsManagerImpl,
             tx: tx
         ) else {

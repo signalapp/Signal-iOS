@@ -225,7 +225,7 @@ class CallHeader: UIView {
         case .notJoined, .joining, .pending:
             if case .incomingRing(let caller, _) = call.groupCallRingState {
                 let callerName = databaseStorage.read { transaction in
-                    contactsManager.shortDisplayName(for: caller, transaction: transaction)
+                    contactsManager.displayName(for: caller, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
                 }
                 let formatString = OWSLocalizedString(
                     "GROUP_CALL_INCOMING_RING_FORMAT",
@@ -235,7 +235,7 @@ class CallHeader: UIView {
             } else if let joinedMembers = call.groupCall.peekInfo?.joinedMembers, !joinedMembers.isEmpty {
                 let memberNames: [String] = databaseStorage.read { tx in
                     joinedMembers.prefix(2).map {
-                        contactsManager.shortDisplayName(for: SignalServiceAddress(Aci(fromUUID: $0)), transaction: tx)
+                        contactsManager.displayName(for: SignalServiceAddress(Aci(fromUUID: $0)), tx: tx).resolvedValue(useShortNameIfAvailable: true)
                     }
                 }
                 callStatusText = describeMembers(
@@ -350,7 +350,7 @@ class CallHeader: UIView {
             firstMember.presenting == true
         {
             let presentingName = databaseStorage.read { tx in
-                contactsManager.shortDisplayName(for: SignalServiceAddress(Aci(fromUUID: firstMember.userId)), transaction: tx)
+                contactsManager.displayName(for: SignalServiceAddress(Aci(fromUUID: firstMember.userId)), tx: tx).resolvedValue(useShortNameIfAvailable: true)
             }
             let formatString = OWSLocalizedString(
                 "GROUP_CALL_PRESENTING_FORMAT",

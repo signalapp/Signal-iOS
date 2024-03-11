@@ -342,6 +342,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+            let serverGuid: String? = record.serverGuid
             let unregisteredAddressSerialized: Data? = record.unregisteredAddress
             let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
 
@@ -375,6 +376,7 @@ extension TSInteraction {
                                                 infoMessageUserInfo: infoMessageUserInfo,
                                                 messageType: messageType,
                                                 read: read,
+                                                serverGuid: serverGuid,
                                                 unregisteredAddress: unregisteredAddress)
 
         case .addToProfileWhitelistOfferMessage:
@@ -420,6 +422,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+            let serverGuid: String? = record.serverGuid
             let unregisteredAddressSerialized: Data? = record.unregisteredAddress
             let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
 
@@ -453,6 +456,7 @@ extension TSInteraction {
                                                         infoMessageUserInfo: infoMessageUserInfo,
                                                         messageType: messageType,
                                                         read: read,
+                                                        serverGuid: serverGuid,
                                                         unregisteredAddress: unregisteredAddress)
 
         case .disappearingConfigurationUpdateInfoMessage:
@@ -498,6 +502,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+            let serverGuid: String? = record.serverGuid
             let unregisteredAddressSerialized: Data? = record.unregisteredAddress
             let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
             let configurationDurationSeconds: UInt32 = try SDSDeserialization.required(record.configurationDurationSeconds, name: "configurationDurationSeconds")
@@ -535,6 +540,7 @@ extension TSInteraction {
                                                                  infoMessageUserInfo: infoMessageUserInfo,
                                                                  messageType: messageType,
                                                                  read: read,
+                                                                 serverGuid: serverGuid,
                                                                  unregisteredAddress: unregisteredAddress,
                                                                  configurationDurationSeconds: configurationDurationSeconds,
                                                                  configurationIsEnabled: configurationIsEnabled,
@@ -1141,6 +1147,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+            let serverGuid: String? = record.serverGuid
             let unregisteredAddressSerialized: Data? = record.unregisteredAddress
             let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
             let protocolVersion: UInt = try SDSDeserialization.required(record.protocolVersion, name: "protocolVersion")
@@ -1177,6 +1184,7 @@ extension TSInteraction {
                                                     infoMessageUserInfo: infoMessageUserInfo,
                                                     messageType: messageType,
                                                     read: read,
+                                                    serverGuid: serverGuid,
                                                     unregisteredAddress: unregisteredAddress,
                                                     protocolVersion: protocolVersion,
                                                     sender: sender)
@@ -1224,6 +1232,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+            let serverGuid: String? = record.serverGuid
             let unregisteredAddressSerialized: Data? = record.unregisteredAddress
             let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
             let isLocalChange: Bool = try SDSDeserialization.required(record.isLocalChange, name: "isLocalChange")
@@ -1263,6 +1272,7 @@ extension TSInteraction {
                                                      infoMessageUserInfo: infoMessageUserInfo,
                                                      messageType: messageType,
                                                      read: read,
+                                                     serverGuid: serverGuid,
                                                      unregisteredAddress: unregisteredAddress,
                                                      isLocalChange: isLocalChange,
                                                      recipientAddress: recipientAddress,
@@ -1496,6 +1506,7 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+            let serverGuid: String? = record.serverGuid
             let unregisteredAddressSerialized: Data? = record.unregisteredAddress
             let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
 
@@ -1529,6 +1540,7 @@ extension TSInteraction {
                                  infoMessageUserInfo: infoMessageUserInfo,
                                  messageType: messageType,
                                  read: read,
+                                 serverGuid: serverGuid,
                                  unregisteredAddress: unregisteredAddress)
 
         case .interaction:
@@ -2888,6 +2900,7 @@ extension TSInteraction: DeepCopyable {
             }
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
+            let serverGuid: String? = modelToCopy.serverGuid
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
@@ -2937,6 +2950,7 @@ extension TSInteraction: DeepCopyable {
                                                      infoMessageUserInfo: infoMessageUserInfo,
                                                      messageType: messageType,
                                                      read: read,
+                                                     serverGuid: serverGuid,
                                                      unregisteredAddress: unregisteredAddress,
                                                      isLocalChange: isLocalChange,
                                                      recipientAddress: recipientAddress,
@@ -3060,6 +3074,7 @@ extension TSInteraction: DeepCopyable {
             }
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
+            let serverGuid: String? = modelToCopy.serverGuid
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
@@ -3118,6 +3133,7 @@ extension TSInteraction: DeepCopyable {
                                                     infoMessageUserInfo: infoMessageUserInfo,
                                                     messageType: messageType,
                                                     read: read,
+                                                    serverGuid: serverGuid,
                                                     unregisteredAddress: unregisteredAddress,
                                                     protocolVersion: protocolVersion,
                                                     sender: sender)
@@ -3240,6 +3256,7 @@ extension TSInteraction: DeepCopyable {
             }
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
+            let serverGuid: String? = modelToCopy.serverGuid
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
@@ -3288,6 +3305,7 @@ extension TSInteraction: DeepCopyable {
                                                                  infoMessageUserInfo: infoMessageUserInfo,
                                                                  messageType: messageType,
                                                                  read: read,
+                                                                 serverGuid: serverGuid,
                                                                  unregisteredAddress: unregisteredAddress,
                                                                  configurationDurationSeconds: configurationDurationSeconds,
                                                                  configurationIsEnabled: configurationIsEnabled,
@@ -3412,6 +3430,7 @@ extension TSInteraction: DeepCopyable {
             }
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
+            let serverGuid: String? = modelToCopy.serverGuid
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
@@ -3456,6 +3475,7 @@ extension TSInteraction: DeepCopyable {
                                                         infoMessageUserInfo: infoMessageUserInfo,
                                                         messageType: messageType,
                                                         read: read,
+                                                        serverGuid: serverGuid,
                                                         unregisteredAddress: unregisteredAddress)
         }
 
@@ -3576,6 +3596,7 @@ extension TSInteraction: DeepCopyable {
             }
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
+            let serverGuid: String? = modelToCopy.serverGuid
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
@@ -3620,6 +3641,7 @@ extension TSInteraction: DeepCopyable {
                                                 infoMessageUserInfo: infoMessageUserInfo,
                                                 messageType: messageType,
                                                 read: read,
+                                                serverGuid: serverGuid,
                                                 unregisteredAddress: unregisteredAddress)
         }
 
@@ -3740,6 +3762,7 @@ extension TSInteraction: DeepCopyable {
             }
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
+            let serverGuid: String? = modelToCopy.serverGuid
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
@@ -3784,6 +3807,7 @@ extension TSInteraction: DeepCopyable {
                                  infoMessageUserInfo: infoMessageUserInfo,
                                  messageType: messageType,
                                  read: read,
+                                 serverGuid: serverGuid,
                                  unregisteredAddress: unregisteredAddress)
         }
 

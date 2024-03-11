@@ -426,8 +426,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                           if (![message isKindOfClass:[StoryMessage class]]) {
                                               return;
                                           }
-                                          [allStoryAttachmentIds
-                                              addObject:[message attachmentUniqueIdWithTx:transaction]];
+                                          NSString *attachmentUniqueId = [message attachmentUniqueIdWithTx:transaction];
+                                          if (attachmentUniqueId != nil) {
+                                              [allStoryAttachmentIds addObject:attachmentUniqueId];
+                                          }
                                       }];
 
         if (shouldAbort) {
@@ -554,7 +556,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                     OWSLogInfo(@"Completed orphan data cleanup.");
 
                     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        [self.keyValueStore setString:AppVersion.shared.currentAppReleaseVersion
+                        [self.keyValueStore setString:AppVersion.shared.currentAppVersion
                                                   key:OWSOrphanDataCleaner_LastCleaningVersionKey
                                           transaction:transaction];
 

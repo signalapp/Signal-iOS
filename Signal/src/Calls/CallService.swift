@@ -898,7 +898,7 @@ public final class CallService: LightweightGroupCallManager {
         // If the currentCall is for the provided thread, we don't need to perform an explicit
         // peek. Connected calls will receive automatic updates from RingRTC
         guard currentCall?.thread != thread else {
-            Logger.info("Ignoring peek request for the current call")
+            GroupCallPeekLogger.shared.info("Ignoring peek request for the current call")
             return
         }
 
@@ -990,7 +990,7 @@ extension CallService: CallObserver {
         }
 
         guard let peekInfo = call.groupCall.peekInfo else {
-            Logger.warn("No peek info for call: \(call)")
+            GroupCallPeekLogger.shared.warn("No peek info for call: \(call)")
             return
         }
 
@@ -1531,9 +1531,11 @@ extension CallService: CallManagerDelegate {
                 return .cancel
             }
 
-            guard GroupsV2MessageProcessor.discardMode(forMessageFrom: caller,
-                                                       groupId: groupId,
-                                                       transaction: transaction) == .doNotDiscard else {
+            guard GroupsV2MessageProcessor.discardMode(
+                forMessageFrom: caller,
+                groupId: groupId,
+                tx: transaction
+            ) == .doNotDiscard else {
                 Logger.warn("discarding group ring \(ringId) from \(senderAci)")
                 return .cancel
             }

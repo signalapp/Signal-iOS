@@ -9,6 +9,7 @@ import LibSignalClient
 public protocol GroupUpdateInfoMessageInserter {
     func insertGroupUpdateInfoMessageForNewGroup(
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupThread: TSGroupThread,
         groupModel: TSGroupModel,
         disappearingMessageToken: DisappearingMessageToken,
@@ -18,6 +19,7 @@ public protocol GroupUpdateInfoMessageInserter {
 
     func insertGroupUpdateInfoMessage(
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupThread: TSGroupThread,
         oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
@@ -46,6 +48,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
 
     public func insertGroupUpdateInfoMessageForNewGroup(
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupThread: TSGroupThread,
         groupModel: TSGroupModel,
         disappearingMessageToken: DisappearingMessageToken,
@@ -54,6 +57,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
     ) {
         _insertGroupUpdateInfoMessage(
             localIdentifiers: localIdentifiers,
+            spamReportingMetadata: spamReportingMetadata,
             groupThread: groupThread,
             oldGroupModel: nil,
             newGroupModel: groupModel,
@@ -67,6 +71,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
 
     public func insertGroupUpdateInfoMessage(
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupThread: TSGroupThread,
         oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
@@ -78,6 +83,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
     ) {
         _insertGroupUpdateInfoMessage(
             localIdentifiers: localIdentifiers,
+            spamReportingMetadata: spamReportingMetadata,
             groupThread: groupThread,
             oldGroupModel: oldGroupModel,
             newGroupModel: newGroupModel,
@@ -91,6 +97,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
 
     private func _insertGroupUpdateInfoMessage(
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupThread: TSGroupThread,
         oldGroupModel: TSGroupModel?,
         newGroupModel: TSGroupModel,
@@ -192,6 +199,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         owsAssert(!updateItemsForNewMessage.isEmpty)
         let infoMessage = TSInfoMessage.newGroupUpdateInfoMessage(
             timestamp: dateProvider().ows_millisecondsSince1970,
+            spamReportingMetadata: spamReportingMetadata,
             groupThread: groupThread,
             updateItems: updateItemsForNewMessage
         )

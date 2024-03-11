@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d gruppemedlem har et lignende navn.</string>
+			<string>%1$d gruppemedlem har samme navn.</string>
 			<key>other</key>
-			<string>%1$d gruppemedlemmer har lignende navn.</string>
+			<string>%1$d gruppemedlemmer har samme navn.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d navneproblem ble oppdaget i denne gruppen.</string>
+			<key>other</key>
+			<string>%1$d navneproblemer ble oppdaget i denne gruppen.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d medlem</string>
+			<key>other</key>
+			<string>%1$d medlemmer</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d gruppemedlem har et lignende navn. Se medlemmet nedenfor, eller velg en handling.</string>
+			<string>%1$d navneproblem ble oppdaget i denne gruppen. Se gjennom medlemslisten nedenfor, eller velg en handling.</string>
 			<key>other</key>
-			<string>%1$d gruppemedlemmer har lignende navn. Se medlemmene nedenfor, eller velg en handling.</string>
+			<string>%1$d navneproblemer ble oppdaget i denne gruppen. Se gjennom medlemslisten nedenfor, eller velg en handling.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>Sett av &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 			<key>other</key>
 			<string>Sett av &lt;bold&gt;%1$d&lt;/bold&gt;</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Brukernavnet må inneholde minst %1$d tegn.</string>
+			<key>other</key>
+			<string>Brukernavnet må inneholde minst %1$d tegn.</string>
 		</dict>
 	</dict>
 </dict>

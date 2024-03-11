@@ -298,7 +298,7 @@
 			<key>one</key>
 			<string>Dit bericht kan slechts %1$d keer bewerkt worden.</string>
 			<key>other</key>
-			<string>Dit bericht kan slechts %1$d keren bewerkt worden.</string>
+			<string>Dit bericht kan slechts %1$d keer bewerkt worden.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en %1$d ander nemen deel aan het gesprek</string>
+			<string>%2$@, %3$@ en %1$d ander nemen deel aan de oproep</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %1$d anderen nemen deel aan het gesprek</string>
+			<string>%2$@, %3$@ en %1$d anderen nemen deel aan de oproep</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en %1$d ander hebben het gesprek verlaten</string>
+			<string>%2$@, %3$@ en %1$d ander hebben de oproep verlaten</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %1$d anderen hebben het gesprek verlaten</string>
+			<string>%2$@, %3$@ en %1$d anderen hebben de oproep verlaten</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d groepslid heeft bijna dezelfde naam.</string>
+			<string>%1$d groepslid heeft dezelfde naam.</string>
 			<key>other</key>
-			<string>%1$d groepsleden hebben bijna dezelfde naam.</string>
+			<string>%1$d groepsleden hebben dezelfde naam.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d naamconflict gevonden in deze groep.</string>
+			<key>other</key>
+			<string>%1$d naamconflicten gevonden in deze groep.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d lid</string>
+			<key>other</key>
+			<string>%1$d leden</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d groepslid heeft bijna dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie.</string>
+			<string>Er is %1$d naamconflict gevonden in deze groep. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
 			<key>other</key>
-			<string>%1$d groepsleden hebben bijna dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie.</string>
+			<string>Er zijn %1$d naamconflicten gevonden in deze groep. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als iemand anders.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -522,7 +554,7 @@
 			<key>one</key>
 			<string>%1$d groepslid heeft dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
 			<key>other</key>
-			<string>%1$d groepsleden hebben dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
+			<string>%1$d groepsleden hebben dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als iemand anders.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; weergave</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; weergaven</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Gebruikersnamen moet beginnen met minimaal %1$d karakter</string>
+			<key>other</key>
+			<string>Gebruikersnamen moeten beginnen met minimaal %1$d karakters</string>
 		</dict>
 	</dict>
 </dict>

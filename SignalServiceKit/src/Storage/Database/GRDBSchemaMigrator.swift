@@ -245,6 +245,11 @@ public class GRDBSchemaMigrator: NSObject {
         case addCallRecordQueryIndices
         case addDeletedCallRecordTable
         case addFirstDeletedIndexToDeletedCallRecord
+        case addCallRecordDeleteAllColumnsToJobRecord
+        case addPhoneNumberSharingAndDiscoverability
+        case removeRedundantPhoneNumbers2
+        case scheduleFullIntersection
+        case addUnreadToCallRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -304,7 +309,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 64
+    public static let grdbSchemaVersionLatest: UInt = 67
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2570,6 +2575,90 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.addCallRecordDeleteAllColumnsToJobRecord) { tx in
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "CRDAJR_sendDeleteAllSyncMessage", .boolean)
+                table.add(column: "CRDAJR_deleteAllBeforeTimestamp", .integer)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addPhoneNumberSharingAndDiscoverability) { tx in
+            try tx.database.alter(table: "model_SignalRecipient") { table in
+                table.add(column: "isPhoneNumberDiscoverable", .boolean)
+            }
+            try tx.database.alter(table: "model_OWSUserProfile") { table in
+                table.add(column: "isPhoneNumberShared", .boolean)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeRedundantPhoneNumbers2) { tx in
+            removeMigration("removeRedundantPhoneNumbers", db: tx.database)
+            try removeLocalProfileSignalRecipient(in: tx.database)
+            try removeRedundantPhoneNumbers(
+                in: tx.database,
+                tableName: "model_OWSUserProfile",
+                serviceIdColumn: "recipientUUID",
+                phoneNumberColumn: "recipientPhoneNumber"
+            )
+            try removeRedundantPhoneNumbers(
+                in: tx.database,
+                tableName: "model_TSThread",
+                serviceIdColumn: "contactUUID",
+                phoneNumberColumn: "contactPhoneNumber"
+            )
+            try removeRedundantPhoneNumbers(
+                in: tx.database,
+                tableName: "model_TSGroupMember",
+                serviceIdColumn: "uuidString",
+                phoneNumberColumn: "phoneNumber"
+            )
+            return .success(())
+        }
+
+        // Perform a full sync to ensure isDiscoverable values are correct.
+        migrator.registerMigration(.scheduleFullIntersection) { tx in
+            try tx.database.execute(sql: """
+            DELETE FROM "keyvalue" WHERE (
+                "collection" = 'OWSContactsManagerCollection'
+                AND "key" = 'OWSContactsManagerKeyNextFullIntersectionDate2'
+            )
+            """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addUnreadToCallRecord) { tx in
+            /// Annoyingly, we need to provide a DEFAULT value in this migration
+            /// to cover all existing rows. I'd prefer that we make the column
+            /// not have a default value that applies going forward, since all
+            /// records inserted after this migration runs will provide a value
+            /// for this column.
+            ///
+            /// However, SQLite doesn't know that, and consequently won't allow
+            /// us to create a NOT NULL column without a default – even if we
+            /// were to run a separate SQL statement after creating the column
+            /// to populate it for existing rows.
+            try tx.database.alter(table: "CallRecord") { table in
+                table.add(column: "unreadStatus", .integer)
+                    .notNull()
+                    .defaults(to: CallRecord.CallUnreadStatus.read.rawValue)
+            }
+
+            try tx.database.create(
+                index: "index_call_record_on_callStatus_and_unreadStatus_and_timestamp",
+                on: "CallRecord",
+                columns: [
+                    "status",
+                    "unreadStatus",
+                    "timestamp",
+                ]
+            )
+
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -3252,6 +3341,58 @@ public class GRDBSchemaMigrator: NSObject {
             INSERT INTO "indexable_text_fts" ("indexable_text_fts", "rank") VALUES ('secure-delete', 1)
         """)
     }
+
+    static func removeLocalProfileSignalRecipient(in db: Database) throws {
+        try db.execute(sql: """
+        DELETE FROM "model_SignalRecipient" WHERE "recipientPhoneNumber" = 'kLocalProfileUniqueId'
+        """)
+    }
+
+    static func removeRedundantPhoneNumbers(
+        in db: Database,
+        tableName: StaticString,
+        serviceIdColumn: StaticString,
+        phoneNumberColumn: StaticString
+    ) throws {
+        // If kLocalProfileUniqueId has a ServiceId, remove it. This should only
+        // exist for OWSUserProfile (and it shouldn't have a ServiceId), but it
+        // unfortunately exists for threads as well.
+        try db.execute(sql: """
+        UPDATE "\(tableName)"
+        SET
+            "\(serviceIdColumn)" = NULL
+        WHERE
+            "\(phoneNumberColumn)" = 'kLocalProfileUniqueId'
+        """)
+
+        // If there are any rows with an ACI & phone number, remove the latter.
+        try db.execute(sql: """
+        UPDATE "\(tableName)"
+        SET
+            "\(phoneNumberColumn)" = NULL
+        WHERE
+            "\(serviceIdColumn)" < 'PNI:'
+            AND "\(phoneNumberColumn)" IS NOT NULL;
+        """)
+
+        // If there are any rows with just a phone number, try to replace it with the ACI.
+        try db.execute(sql: """
+        UPDATE "\(tableName)"
+        SET
+            "\(phoneNumberColumn)" = NULL,
+            "\(serviceIdColumn)" = "signalRecipientAciString"
+        FROM (
+            SELECT
+                "recipientUUID" AS "signalRecipientAciString",
+                "recipientPhoneNumber" AS "signalRecipientPhoneNumber"
+            FROM "model_SignalRecipient"
+        )
+        WHERE
+            "\(serviceIdColumn)" IS NULL
+            AND "\(phoneNumberColumn)" = "signalRecipientPhoneNumber"
+            AND "signalRecipientAciString" IS NOT NULL;
+        """)
+    }
 }
 
 // MARK: -
@@ -3335,9 +3476,13 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
 
 private func hasRunMigration(_ identifier: String, transaction: GRDBReadTransaction) -> Bool {
     do {
-        return try String.fetchOne(transaction.database, sql: "SELECT identifier FROM grdb_migrations WHERE identifier = ?", arguments: [identifier]) != nil
+        return try String.fetchOne(
+            transaction.database,
+            sql: "SELECT identifier FROM grdb_migrations WHERE identifier = ?",
+            arguments: [identifier]
+        ) != nil
     } catch {
-        owsFail("Error: \(error)")
+        owsFail("Error: \(error.grdbErrorForLogging)")
     }
 }
 
@@ -3345,6 +3490,14 @@ private func insertMigration(_ identifier: String, db: Database) {
     do {
         try db.execute(sql: "INSERT INTO grdb_migrations (identifier) VALUES (?)", arguments: [identifier])
     } catch {
-        owsFail("Error: \(error)")
+        owsFail("Error: \(error.grdbErrorForLogging)")
+    }
+}
+
+private func removeMigration(_ identifier: String, db: Database) {
+    do {
+        try db.execute(sql: "DELETE FROM grdb_migrations WHERE identifier = ?", arguments: [identifier])
+    } catch {
+        owsFail("Error: \(error.grdbErrorForLogging)")
     }
 }

@@ -48,8 +48,7 @@ final class RecipientStateMerger {
             return SignalServiceAddress(
                 serviceId: aci,
                 phoneNumber: nil,
-                cache: signalServiceAddressCache,
-                cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+                cache: signalServiceAddressCache
             )
         }
     }

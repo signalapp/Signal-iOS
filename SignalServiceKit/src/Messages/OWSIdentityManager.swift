@@ -646,7 +646,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             recipientId = key
         case let value as String:
             // Previously, we stored phone numbers in this KV store.
-            let address = SignalServiceAddress(phoneNumber: value)
+            let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: value)
             guard let accountId_ = try? recipientIdFinder.recipientId(for: address, tx: tx)?.get() else {
                 return nil
             }

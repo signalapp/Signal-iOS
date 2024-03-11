@@ -47,20 +47,23 @@ public class ThreadViewModel: NSObject {
         self.disappearingMessagesConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
 
         self.isGroupThread = thread.isGroupThread
-        self.name = Self.contactsManager.displayName(for: thread, transaction: transaction)
+
+        let threadDisplayName = Self.contactsManager.displayName(for: thread, tx: transaction)
+        self.name = threadDisplayName?.resolvedValue() ?? ""
+
+        if case .contactThread(let displayName) = threadDisplayName {
+            self.shortName = displayName.resolvedValue(useShortNameIfAvailable: true)
+        } else {
+            self.shortName = nil
+        }
 
         let associatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
         self.associatedData = associatedData
 
         if let contactThread = thread as? TSContactThread {
             self.contactAddress = contactThread.contactAddress
-            self.shortName = Self.contactsManager.shortDisplayName(
-                for: contactThread.contactAddress,
-                transaction: transaction
-            )
         } else {
             self.contactAddress = nil
-            self.shortName = nil
         }
 
         let unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction)
@@ -194,7 +197,7 @@ public class ChatListInfo: Dependencies {
                   let addedByAddress = groupThread.groupModel.addedByAddress else {
                 return nil
             }
-            return Self.contactsManager.shortDisplayName(for: addedByAddress, transaction: transaction)
+            return Self.contactsManager.displayName(for: addedByAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         }
 
         if isBlocked {

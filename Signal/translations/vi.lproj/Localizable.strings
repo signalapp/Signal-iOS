@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "Ảnh GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Hình ảnh";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Ảnh";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Cuộc gọi";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Cuộc gọi đến";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Cuộc gọi nhỡ";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Cuộc gọi đi";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Xoá";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Thao tác này sẽ xóa vĩnh viễn tất cả lịch sử cuộc gọi.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Xóa lịch sử cuộc gọi?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Xóa";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Tất cả";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Cuộc gọi nhỡ";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Đến Cuộc trò chuyện";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Tham gia Cuộc gọi Âm thanh";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Tham gia";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Tham gia Cuộc gọi Video";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Không có cuộc gọi nhỡ";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Không cuộc gọi gần đây";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Bắt đầu với việc gọi cho một người bạn";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Quay về Cuộc gọi";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Quay về";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "Không tìm thấy kết quả cho '%1$@'";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Chọn";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Chọn";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Cuộc gọi Âm thanh";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Gọi video";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Thông tin";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Chụp một bức ảnh và gửi đi";
 
@@ -935,10 +1004,10 @@
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Số điện thoại bạn đã nhập không trùng khớp với số của tài khoản của bạn.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Số điện thoại mới không đúng. Vui lòng nhập một số điện thoại đúng để đổi số của bạn.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Số điện thoại mới không hợp lệ. Vui lòng nhập một số điện thoại hợp lệ để đổi số của bạn.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Số điện thoại cũ không đúng. Vui lòng nhập một số điện thoại đúng để đổi số của bạn.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Số điện thoại cũ không hợp lệ. Vui lòng nhập một số điện thoại hợp lệ để đổi số của bạn.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Đây là mẫu xem trước của màu cuộc trò chuyện.";
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Tìm theo Tên người dùng";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Mở cài đặt";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Bạn có thể cấp quyền truy cập danh bạ trong Cài đặt iOS để thấy những liên hệ nào đang dùng Signal.";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Liên kết Thiết bị Mới";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ đã bị chặn";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ có trong danh bạ trên hệ thống của bạn";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ có trong danh bạ của thiết bị";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Không có tin nhắn trực tiếp với %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Yêu cầu gửi tin nhắn chưa duyệt";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Liên hệ Signal";
@@ -1286,16 +1367,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Thêm vào liên hệ có sẵn";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Thêm vào danh bạ hệ thống";
-
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Quản trị viên";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Tất cả";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Tắt";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Thêm vào danh bạ của thiết bị";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Chọn ai có thể chỉnh sửa tên nhóm, ảnh, miêu tả, và đồng hồ biến mất tin nhắn.";
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Huy hiệu";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Bạn sẽ không còn nhận được tin nhắn hoặc cập nhật từ người dùng này.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Bạn sẽ không còn nhận tin nhắn hay cập nhật từ nhóm này nữa.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Chặn Nhóm";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Chặn Người Dùng";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Cuộc gọi âm thanh đang đến";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Cuộc gọi video đến";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Cuộc gọi âm thanh bị nhỡ";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Cuộc gọi video bị nhỡ";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Cuộc gọi âm thanh đang gọi đi";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Cuộc gọi video đi";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Sửa";
@@ -1426,6 +1510,9 @@
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Xóa %1$@ khỏi nhóm?";
 
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Báo cáo spam";
+
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Gỡ vai trò Quản trị viên";
 
@@ -1490,7 +1577,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Chọn Mã quốc gia";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Giới thiệu về quyền riêng tư cho số điện thoại, tên người dùng và đường dẫn tùy chọn.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Sự riêng tư cho số điện thoại, tên người dùng và đường dẫn tùy chọn.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "Cách Mới để Kết Nối";
@@ -1685,7 +1772,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Xóa Tài khoản";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Số điện thoại bạn đã nhập không trùng khớp với số của tài khoản của bạn.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Số điện thoại bạn nhập vào không khớp với số của tài khoản của bạn.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Xóa tất cả các tin nhắn trong cuộc trò chuyện?";
@@ -1697,7 +1784,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Xóa";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Người này sẽ bị xóa khỏi danh bạn trên hệ thống của bạn. Bạn sẽ không nhìn thấy người này khi tìm kiếm. Bạn sẽ nhận được một yêu cầu gửi tin nhắn nếu người này nhắn tin cho bạn trong tương lai.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Người này sẽ bị xóa khỏi danh bạ của thiết bị. Bạn sẽ không nhìn thấy người này khi tìm kiếm. Bạn sẽ nhận được một yêu cầu gửi tin nhắn nếu người này nhắn tin cho bạn trong tương lai.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Xóa Liên hệ và gỡ khỏi danh sách của bạn?";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Không tải được tập đính kèm.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Không thể tải lên tệp đính kèm.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Không thể nhận được một tin nhắn từ %1$@";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Tìm Thông Tin Tài Khoản Của Bạn";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Nhập tên người dùng, sau đó là một dấu chấm và dãy số của tên người dùng.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Tên người dùng";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Tìm theo Tên người dùng";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Đánh dấu là Đã xác minh";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Thành viên";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Nhấn để xem lại";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Thành viên";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Xét duyệt Thành viên";
 
@@ -3520,11 +3613,20 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Bạn đã gửi cho %1$@ một yêu cầu bật tính năng Thanh toán.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "Đã báo cáo là spam";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal đã được thông báo rằng người này có thể đang gửi spam. Signal không thể xem nội dung của bất kỳ cuộc trò chuyện nào.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Đã báo cáo spam";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ đã đổi số điện thoại của mình.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ đã đổi số điện thoại của họ.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ đang sử dụng Signal!";
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Mời Bạn bè sử dụng Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Thêm";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Tìm kiếm";
@@ -3674,10 +3779,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Xem trước Đường dẫn";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Việc quản lý danh bạ của hệ thống không còn khả dụng trên iPad. Để thêm liên hệ Signal vào danh bạ của hệ thống, hãy mở Signal trên điện thoại của bạn.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Việc quản lý danh bạ của thiết bị không còn khả dụng trên iPad. Để thêm liên hệ Signal vào danh bạ của thiết bị, hãy mở Signal trên điện thoại của bạn.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Việc quản lý danh bạ của hệ thống không còn khả dụng trên iPad. Thiết bị này sẽ tiếp tục đồng bộ các thay đổi với danh sách liên hệ từ Signal trên điện thoại của bạn.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Việc quản lý danh bạ của thiết bị không còn khả dụng trên iPad. Thiết bị này sẽ tiếp tục đồng bộ các thay đổi với danh bạ từ Signal trên điện thoại của bạn.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Tìm hiểu thêm";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Chặn và Xóa";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Báo cáo Spam và Chặn";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Xóa và rời nhóm?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Xem qua các yêu cầu cẩn thận. Signal tìm thấy một liên hệ khác với cùng tên.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Liên hệ của bạn";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Người này có cùng tên với một liên hệ khác";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Nếu bạn không chắc yêu cầu này từ ai, xem qua các liên hệ dưới đây và chọn hành động.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Yêu cầu";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Xét duyệt Yêu cầu";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Cập nhật liên hệ";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Xét duyệt Yêu cầu";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal sẽ nhận được thông báo rằng người này có thể đang gửi spam. Signal không thể xem nội dung của bất kỳ cuộc trò chuyện nào.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Báo cáo spam?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Báo cáo spam";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Đã báo cáo là spam.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Đã báo cáo spam và chặn.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Cho phép %1$@ nhắn tin cho bạn và chia sẻ tên và ảnh của bạn với họ? Bạn đã xóa người này trước đây.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Báo cáo…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Bỏ chặn";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Nhấn để thêm";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Gần đây vừa đổi tên hồ sơ cá nhâ của họ từ %1$@ sang %2$@.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ gần đây đã đổi tên hồ sơ từ %2$@ thành %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Bỏ qua";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi và Di động";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Cuộc gọi Âm thanh";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Chọn một liên hệ hoặc nhóm để bắt đầu cuộc gọi.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "Cuộc gọi mới";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Tin nhắn";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "Cuộc gọi mới";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Gọi video";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Tìm bằng Số điện thoại";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Tìm theo Tên người dùng";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nhóm Mới";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Chọn Nhóm";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Tìm kiếm";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Tìm Người dùng";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Tìm bằng Số điện thoại";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Đặt tên cho Story";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Tìm Liên hệ bằng Số Điện thoại";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Tìm Liên hệ theo Tên người dùng";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Không có nhóm chung";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Không ai";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Số điện thoại của bạn sẽ không hiển thị với bất kỳ ai trừ trường hợp người đó đã lưu số của bạn trong danh bạ trên máy họ.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Số điện thoại của bạn sẽ không hiển thị với bất kỳ ai.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@%2$@";
@@ -5285,7 +5417,7 @@
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ đã đổi tên hồ sơ từ %2$@ thành %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ đã thay đổi tên đại diện của họ thành %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ đã đổi tên hồ sơ thành %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Tên của Bạn";
@@ -5300,7 +5432,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Có vấn đề với tên người dùng của bạn, tên này không còn gắn liền với tài khoản của bạn. Bạn có thể thử và đặt lại hoặc chọn một tên mới.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Xóa Tên người dùng";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Xóa tên người dùng";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Sửa ngay";
@@ -5309,7 +5441,7 @@
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Thao tác này sẽ xóa tên người dùng của bạn, đồng thời vô hiệu hóa mã QR và đường dẫn của bạn. \"%1$@\" sẽ có thể được sử dụng bởi thành viên khác. Bạn có chắc không?";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Xóa Tên người dùng";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Xóa tên người dùng";
 
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Sửa tên người dùng";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Tên người dùng, mã QR và đường dẫn không hiển thị trên hồ sơ của bạn. Chỉ chia sẻ tên người dùng với người bạn tin tưởng.";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Giờ đây mọi người có thể gửi tin nhắn cho bạn qua tên người dùng tùy chọn của bạn nên bạn không cần cung cấp số điện thoại của mình.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Địa chỉ proxy";
@@ -5465,10 +5600,10 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Không thể chọn được người dùng.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ không phải là người dùng Signal Thử lại với một số điện thoại hợp lệ.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ không phải là người dùng Signal. Thử lại với một số điện thoại hợp lệ.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Số Điện thoại Không hợp lệ";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Số điện thoại không hợp lệ";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
 "RECIPIENT_PICKER_INVITE_ACTION" = "Tin nhắn";
@@ -5633,10 +5768,10 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Vui lòng nhập số điện thoại hợp lệ để đăng ký.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Số Điện thoại Không hợp lệ";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Số điện thoại không hợp lệ";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Mã xác nhận sẽ được gửi đến số điện thoại này. Số điện thoại ở trên của bạn có chính xác không?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Mã xác minh sẽ được gửi đến số điện thoại này. Số điện thoại ở trên của bạn có chính xác không?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Số Xác nhận: %1$@";
@@ -5730,6 +5865,48 @@
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Số an toàn của bạn với %1$@ đã thay đổi. Bạn nên xác minh lại.";
+
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Lời khuyên để giữ an toàn";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "Nếu một người bạn không biết gửi tin nhắn về tiền điện tử (như Bitcoin) hay một cơ hội kiếm tiền, hãy cẩn trọng—đó có thể là nội dung spam.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "Lừa đảo tiền điện tử hoặc tiền";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Hãy cẩn trọng khi có các doanh nghiệp hoặc cơ quan của chính phủ liên hệ với bạn. Tin nhắn có nội dung liên quan đến cơ quan thuế, giao hàng, v.v. có thể là spam.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Doanh nghiệp và tổ chức giả mạo";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Xem xét thật cẩn thận yêu cầu này. Không có ai trong số các liên hệ của bạn hoặc người bạn có trò chuyện cùng ở trong nhóm này. Đây là một số điều bạn cần chú ý:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "Lời khuyên để giữ an toàn";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Hãy cẩn trọng khi chấp nhận yêu cầu gửi tin nhắn từ những người bạn không biết. Chú ý:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Hãy cẩn trọng với tin nhắn từ những người bạn không biết và có chứa đường dẫn đến các trang web. Đừng bao giờ bấm vào các đường dẫn từ những người bạn không tin tưởng.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Tin nhắn có chứa đường dẫn";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Người gửi spam thường gửi cho bạn một tin nhắn đơn giản như “Xin chào” để khiến bạn tò mò. Nếu bạn trả lời, họ có thể sẽ tiếp tục tương tác với bạn.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Tin nhắn không liên quan";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Quét Mã QR trên thiết bị của người liên hệ của bạn.";
@@ -5972,7 +6149,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Nếu được bật, Signal sẽ thử tránh kiểm duyệt. Không bật tính năng này trừ khi bạn đang ở một nơi đang chặn Signal.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Tránh Kiểm duyệt đã được bật dựa trên số điện thoại trong tài khoản của bạn.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Tránh kiểm duyệt đã được bật dựa trên số điện thoại trong tài khoản của bạn.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Bạn vừa tắt tính năng tránh kiểm duyệt theo cách thủ công.";
@@ -6062,7 +6239,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Thay đổi số";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Bạn chuẩn bị đổi số điện thoại từ %1$@ thành %2$@.\n\nTrước khi tiến hành, vui lòng xác minh số dưới đây là đúng.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Bạn chuẩn bị đổi số điện thoại từ %1$@ thành %2$@\n\n.Trước khi tiến hành, vui lòng xác minh số dưới đây là đúng.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Mã quốc gia";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Để đổi cài đặt này, đặt mục “Ai có thể thấy số của tôi” thành “Không ai cả”.";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Ai Có Thể Tìm Tôi Bằng Số Điện Thoại";
 
@@ -6731,7 +6914,7 @@
 "SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Chọn người có thể thấy số điện thoại của bạn và người có thể liên hệ với bạn trên Signal với số đó.";
 
 /* The title for phone number privacy settings. */
-"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Số Điện Thoại";
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Số điện thoại";
 
 /* The title for the phone number sharing setting section. */
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Ai Có Thể Thấy Số Điện Thoại Của Tôi";
@@ -7253,7 +7436,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Chấp nhận yêu cầu gửi tin nhắn";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Có những người này trong danh bạ trên hệ thống";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Có những người này trong danh bạ của thiết bị";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Các liên hệ của bạn có thể thấy tên và ảnh của bạn, và nội dung bạn chia sẻ trong \"Story của tôi\" trừ khi bạn ẩn story với các liên hệ.";
@@ -7271,7 +7454,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ai Có Thể Xem Story Này";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Chọn các Liên hệ Signal có thể xem story của bạn. Bạn có thể thay đổi tùy chọn này bất kỳ lúc nào trong mục cài đặt quyền riêng tư.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Chọn các Liên hệ Signal có thể xem story của bạn. Bạn có thể thay đổi tùy chọn này bất kỳ lúc nào trong mục cài đặt sự riêng tư.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Các video dùng cho Story sẽ được cắt thành các đoạn dài %1$d và đăng thành nhiều story.";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Đã tắt thông báo lượt xem";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Đã sao chép mã người ủng hộ vào clipboard.";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Đã sao chép ID của Nhà Ủng hộ vào clipboard";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Số an toàn của bạn với %1$@ trùng khớp. Bạn có thể đánh dấu liên hệ này là đã xác minh.";
@@ -7652,19 +7835,19 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "Mã QR và Đường Dẫn";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Số điện thoại của bạn không còn hiển thị trong các cuộc trò chuyện. Nếu số điện thoại của bạn đã được lưu vào danh bạ của một người bạn, họ vẫn có thể nhìn thấy.";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "Quyền Riêng Tư cho Số Điện Thoại";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Sự riêng tư cho số điện thoại";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Thiết lập Tên người dùng của bạn";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Đặt tên người dùng Signal của bạn";
 
 /* Title to set up signal username */
 "USERNAME_EDUCATION_TITLE" = "Cách Mới để Kết Nối";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Giờ đây mọi người có thể gửi tin nhắn cho bạn qua tên người dùng tùy chọn của bạn nên bạn không cần cung cấp số điện thoại của mình. Tên người dùng không hiển thị trên hồ sơ của bạn.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Tên người dùng";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Đặt lại";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Nếu đặt lại mã QR, mã QR và đường dẫn hiện tại của bạn sẽ không còn hiệu lực nữa.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Nếu đặt lại mã QR và đường dẫn, mã QR và đường dẫn hiện tại của bạn sẽ không còn hiệu lực nữa.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Mã QR và đường dẫn của bạn đã được đặt lại, một mã QR và đường dẫn mới đã được tạo.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Chia sẻ";
@@ -7718,7 +7904,7 @@
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "Cho phép người khác bắt đầu một cuộc trò chuyện với bạn bằng cách chia sẻ mã QR hoặc đường dẫn riêng của bạn.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Chia sẻ Tên Người Dùng của bạn";
+"USERNAME_LINK_TOOLTIP_TITLE" = "Chia sẻ tên người dùng của bạn";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Đã xảy ra lỗi khi tìm tên người dùng. Hãy thử lại sau.";
@@ -7745,31 +7931,34 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Mã QR và đường dẫn của bạn đã được đặt lại và tên người dùng của bạn là %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Tên người dùng không thể bắt đầu bằng một số.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Tên người dùng không thể bắt đầu bằng một số";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Thay đổi tên người dùng sẽ đặt lại mã QR và đường dẫn hiện tại của bạn. Bạn có chắc không?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Tên người dùng giúp các thành viên khác nhắn tin cho bạn mà không cần có số điện thoại của bạn. Tên người dùng được ghép với một dãy ký tự để giúp giữ bí mật thông tin của bạn. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Tên người dùng luôn được ghép với một dãy số. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Chọn tên người dùng của bạn";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Tên người dùng chỉ được chứa các ký tự a-z, 0-9, và _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Tên người dùng chỉ được chứa các ký tự a-z, 0-9, và _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Tên người dùng không hợp lệ, nhập tối thiểu 2 ký tự";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Các ký tự này giúp giữ bí mật tên người dùng của bạn giúp bạn tránh các tin nhắn ngoài ý muốn. Chỉ chia sẻ tên người dùng của bạn với những người hoặc nhóm bạn muốn trò chuyện. Nếu bạn đổi tên người dùng, bạn sẽ nhận được một dãy ký tự mới.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Các số này giúp giữ bí mật tên người dùng của bạn giúp bạn tránh các tin nhắn ngoài ý muốn. Chỉ chia sẻ tên người dùng của bạn với những người hoặc nhóm bạn muốn trò chuyện. Nếu bạn đổi tên người dùng, bạn sẽ nhận được một dãy số mới.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Số này là gì?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Tên người dùng này không khả dụng.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Tên người dùng này không khả dụng";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Vượt quá số lần thử, vui lòng thử lại sau";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Tên người dùng";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Tên người dùng";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Tên người dùng phải bắt đầu với ít nhất %1$@ ký tự.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Tên người dùng không thể kết thúc với 00. Thử ký tự khác trong khoảng 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Số này không thể là 00. Nhập một ký tự trong khoảng 1–9";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Tên người dùng chỉ có thể được cập nhật khi có kết nối internet.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Không được để trống tên thiết bị";

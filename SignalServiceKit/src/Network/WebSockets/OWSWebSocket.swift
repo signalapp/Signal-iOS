@@ -276,16 +276,53 @@ public class OWSWebSocket: NSObject {
 
     // MARK: -
 
-    private let lastState = AtomicValue<OWSWebSocketState>(.closed)
+    private struct StateObservation {
+        var currentState: OWSWebSocketState
+        var onOpen: (guarantee: Guarantee<Void>, future: GuaranteeFuture<Void>)?
+    }
+
+    private let stateObservation = AtomicValue(
+        StateObservation(currentState: .closed, onOpen: nil),
+        lock: AtomicLock()
+    )
 
     private func notifyStatusChange() {
         let newState = self.currentState
-        let oldState = lastState.swap(newState)
-        if oldState != newState {
+        let (oldState, futureToResolve): (OWSWebSocketState, GuaranteeFuture<Void>?)
+        (oldState, futureToResolve) = stateObservation.update {
+            let oldState = $0.currentState
+            if newState == oldState {
+                return (oldState, nil)
+            }
+            $0.currentState = newState
+
+            var futureToResolve: GuaranteeFuture<Void>?
+            if case .open = newState {
+                futureToResolve = $0.onOpen?.future
+                $0.onOpen = nil
+            }
+
+            return (oldState, futureToResolve)
+        }
+        if newState != oldState {
             Logger.info("\(logPrefix): \(oldState) -> \(newState)")
         }
-
+        futureToResolve?.resolve()
         NotificationCenter.default.postNotificationNameAsync(Self.webSocketStateDidChange, object: nil)
+    }
+
+    func waitForOpen() -> Guarantee<Void> {
+        return stateObservation.update {
+            if $0.currentState == .open {
+                return .value(())
+            }
+            if let onOpen = $0.onOpen {
+                return onOpen.guarantee
+            }
+            let (guarantee, future) = Guarantee<Void>.pending()
+            $0.onOpen = (guarantee, future)
+            return guarantee
+        }
     }
 
     // MARK: - Message Sending

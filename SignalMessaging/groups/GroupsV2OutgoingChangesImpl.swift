@@ -259,12 +259,12 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         var newUserAcis: Set<Aci> = Set(membersToAdd.keys)
         newUserAcis.insert(localAci)
 
-        return firstly(on: DispatchQueue.global()) { () -> Promise<GroupsV2Swift.ProfileKeyCredentialMap> in
-            self.groupsV2Swift.loadProfileKeyCredentials(
+        return firstly(on: DispatchQueue.global()) { () -> Promise<GroupsV2.ProfileKeyCredentialMap> in
+            self.groupsV2.loadProfileKeyCredentials(
                 for: Array(newUserAcis),
                 forceRefresh: forceRefreshProfileKeyCredentials
             )
-        }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsV2BuiltGroupChange in
+        }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: GroupsV2.ProfileKeyCredentialMap) throws -> GroupsV2BuiltGroupChange in
             try self.buildGroupChangeProto(
                 currentGroupModel: currentGroupModel,
                 currentDisappearingMessageToken: currentDisappearingMessageToken,
@@ -314,7 +314,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
     private func buildGroupChangeProto(
         currentGroupModel: TSGroupModelV2,
         currentDisappearingMessageToken: DisappearingMessageToken,
-        profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap
+        profileKeyCredentialMap: GroupsV2.ProfileKeyCredentialMap
     ) throws -> GroupsV2BuiltGroupChange {
         let groupV2Params = try currentGroupModel.groupV2Params()
 

@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d μέλος της ομάδας έχει παρόμοιο όνομα.</string>
+			<string>%1$d μέλος της ομάδας έχει το ίδιο όνομα.</string>
 			<key>other</key>
-			<string>%1$d μέλη της ομάδας έχουν παρόμοια ονόματα.</string>
+			<string>%1$d μέλη της ομάδας έχουν το ίδιο όνομα.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Υπάρχει σύγκρουση μεταξύ %1$d ονόματος σε αυτήν την ομάδα.</string>
+			<key>other</key>
+			<string>Υπάρχει σύγκρουση μεταξύ %1$d ονομάτων σε αυτήν την ομάδα.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d μέλος</string>
+			<key>other</key>
+			<string>%1$d μέλη</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d από τα μέλη της ομάδας έχουν παρόμοια ονόματα. Έλεγξε τα μέλη παρακάτω ή επίλεξε ενέργεια.</string>
+			<string>Υπάρχει σύγκρουση μεταξύ %1$d ονόματος σε αυτήν την ομάδα. Ελέγξτε τα μέλη παρακάτω ή αναλάβετε δράση.</string>
 			<key>other</key>
-			<string>%1$d από τα μέλη της ομάδας έχουν παρόμοια ονόματα. Έλεγξε τα μέλη παρακάτω ή επίλεξε ενέργεια.</string>
+			<string>Υπάρχει σύγκρουση μεταξύ %1$d ονομάτων σε αυτήν την ομάδα. Ελέγξτε τα μέλη παρακάτω ή αναλάβετε δράση.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -520,7 +552,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d από τα μέλη της ομάδας έχουν το ίδιο όνομα. Έλεγξε τα μέλη παρακάτω ή επίλεξε ενέργεια.</string>
+			<string>%1$d μέλος της ομάδας έχει το ίδιο όνομα. Έλεγξε το μέλος παρακάτω ή επίλεξε ενέργεια.</string>
 			<key>other</key>
 			<string>%1$d από τα μέλη της ομάδας έχουν το ίδιο όνομα. Έλεγξε τα μέλη παρακάτω ή επίλεξε ενέργεια.</string>
 		</dict>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; προβολή</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; προβολές</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Τα ονόματα χρήστη πρέπει να ξεκινούν με τουλάχιστον %1$d χαρακτήρα</string>
+			<key>other</key>
+			<string>Τα ονόματα χρήστη πρέπει να ξεκινούν με τουλάχιστον %1$d χαρακτήρες</string>
 		</dict>
 	</dict>
 </dict>

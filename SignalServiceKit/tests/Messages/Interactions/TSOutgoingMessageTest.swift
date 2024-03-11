@@ -333,7 +333,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .init(
                     aci: aci,
-                    pni: .init(fromUUID: .init()),
+                    pni: Pni.randomForTesting(),
                     e164: .init("+17775550199")!
                 ),
                 tx: tx.asV2Write

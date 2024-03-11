@@ -41,7 +41,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     if (self.errorMessageSchemaVersion == 1) {
         NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
         if (phoneNumber) {
-            _recipientAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            _recipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
             OWSAssertDebug(_recipientAddress.isValid);
         }
     }
@@ -193,8 +193,8 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
             if (self.sender) {
                 NSString *formatString = OWSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
                     @"Error message for a decryption failure. Embeds {{sender short name}}.");
-                NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender
-                                                                            transaction:transaction];
+                NSString *senderName = [self.contactManagerObjC shortDisplayNameStringForAddress:self.sender
+                                                                                     transaction:transaction];
                 return [[NSString alloc] initWithFormat:formatString, senderName];
             } else {
                 return OWSLocalizedString(

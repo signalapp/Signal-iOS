@@ -29,11 +29,11 @@ public class MockLocalUsernameManager: LocalUsernameManager {
     public func clearLocalUsername(tx: DBWriteTransaction) { owsFail("Not implemented!") }
     public func usernameLinkQRCodeColor(tx: DBReadTransaction) -> Usernames.QRCodeColor { owsFail("Not implemented!") }
     public func setUsernameLinkQRCodeColor(color: Usernames.QRCodeColor, tx: DBWriteTransaction) { owsFail("Not implemented!") }
-    public func reserveUsername(usernameCandidates: Usernames.HashedUsername.GeneratedCandidates) -> Promise<Usernames.ReservationResult> { owsFail("Not implemented!") }
-    public func confirmUsername(reservedUsername: Usernames.HashedUsername, tx: DBWriteTransaction) -> Promise<Usernames.ConfirmationResult> { owsFail("Not implemented!") }
-    public func deleteUsername(tx: DBWriteTransaction) -> Promise<Void> { owsFail("Not implemented!") }
-    public func rotateUsernameLink(tx: DBWriteTransaction) -> Promise<Usernames.UsernameLink> { owsFail("Not implemented!") }
-    public func updateVisibleCaseOfExistingUsername(newUsername: String, tx: DBWriteTransaction) -> Promise<Void> { owsFail("Not implemented!") }
+    public func reserveUsername(usernameCandidates: Usernames.HashedUsername.GeneratedCandidates) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ReservationResult>> { owsFail("Not implemented!") }
+    public func confirmUsername(reservedUsername: Usernames.HashedUsername, tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ConfirmationResult>> { owsFail("Not implemented!") }
+    public func deleteUsername(tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Void>> { owsFail("Not implemented!") }
+    public func rotateUsernameLink(tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Usernames.UsernameLink>> { owsFail("Not implemented!") }
+    public func updateVisibleCaseOfExistingUsername(newUsername: String, tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Void>> { owsFail("Not implemented!") }
 }
 
 #endif

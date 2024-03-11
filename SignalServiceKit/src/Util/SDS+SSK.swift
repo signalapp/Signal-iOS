@@ -30,9 +30,6 @@ extension TSGroupMetaMessage: DatabaseValueConvertible { }
 extension TSAttachmentType: Codable { }
 extension TSAttachmentType: DatabaseValueConvertible { }
 
-extension TSAttachmentPointerType: Codable { }
-extension TSAttachmentPointerType: DatabaseValueConvertible { }
-
 extension TSAttachmentPointerState: Codable { }
 extension TSAttachmentPointerState: DatabaseValueConvertible { }
 

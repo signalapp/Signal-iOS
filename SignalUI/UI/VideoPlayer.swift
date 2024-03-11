@@ -86,7 +86,10 @@ public class VideoPlayer: Dependencies {
         owsAssertBeta(avPlayer.rate == 0 || avPlayer.rate == 1)
         // Seek with a tolerance (or precision) of a hundredth of a second.
         let tolerance = CMTime(seconds: 0.01, preferredTimescale: Self.preferredTimescale)
-        avPlayer.seek(to: time, toleranceBefore: tolerance, toleranceAfter: tolerance)
+        // Bound the time
+        var boundedTime = max(time, CMTime(seconds: 0, preferredTimescale: Self.preferredTimescale))
+        boundedTime = min(boundedTime, avPlayer.currentItem?.asset.duration ?? CMTime(seconds: 0, preferredTimescale: Self.preferredTimescale))
+        avPlayer.seek(to: boundedTime, toleranceBefore: tolerance, toleranceAfter: tolerance)
     }
 
     public func rewind(_ seconds: TimeInterval) {

@@ -278,6 +278,10 @@ final public class Theme: NSObject {
 
     public class var placeholderColor: UIColor { .ows_gray45 }
 
+    public class var snippetColor: UIColor {
+        isDarkThemeEnabled ? darkThemeSnippetColor : lightThemeSnippetColor
+    }
+
     public class var hairlineColor: UIColor {
         isDarkThemeEnabled ? .ows_gray75 : .ows_gray15
     }
@@ -372,6 +376,8 @@ final public class Theme: NSObject {
 
     public class var lightThemeSecondaryTextAndIconColor: UIColor { .ows_gray60 }
 
+    public class var lightThemeSnippetColor: UIColor { .ows_gray45 }
+
     // MARK: - Dark Theme Colors
 
     public class var darkThemeBackgroundColor: UIColor { .black }
@@ -379,6 +385,8 @@ final public class Theme: NSObject {
     public class var darkThemePrimaryColor: UIColor { .ows_gray02 }
 
     public class var darkThemeSecondaryTextAndIconColor: UIColor { .ows_gray25 }
+
+    public class var darkThemeSnippetColor: UIColor { .ows_gray25 }
 
     public class var darkThemeWashColor: UIColor { .ows_gray75 }
 

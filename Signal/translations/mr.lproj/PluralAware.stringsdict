@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d ग्रुप सदस्यांचे नाव सारखेच आहे.</string>
+			<string>%1$d गट सदस्याचे नाव सारखे आहे.</string>
 			<key>other</key>
-			<string>%1$d ग्रुप सदस्यांची नावे सारखीच आहेत.</string>
+			<string>%1$d गट सदस्यांची नावे सारखी आहेत.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>या %1$d गटात नाव साध्यर्म आढळले आहे.</string>
+			<key>other</key>
+			<string>या %1$d गटात नाव साध्यर्मे आढळली आहेत.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d सदस्य</string>
+			<key>other</key>
+			<string>%1$d सदस्य</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d ग्रुप सदस्याचे नाव सारखेच आहे, खालील सदस्याचे पुनरावलोकन करा किंवा कृती करण्यासाठी निवड करा.</string>
+			<string>या गटात %1$d नाव साध्यर्म आढळले आहे. खालील सदस्याचे पुनरावलोकन करा किंवा कृती करण्यासाठी निवडा.</string>
 			<key>other</key>
-			<string>%1$d ग्रुप सदस्यांची नावे सारखीच आहेत, खालील सदस्यांचे पुनरावलोकन करा किंवा कृती करण्यासाठी निवडा.</string>
+			<string>या गटात %1$d नाव साध्यर्म आढळले आहे. खालील सदस्यांचे पुनरावलोकन करा किंवा कृती करण्यासाठी निवडा.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -520,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d ग्रुप सदस्याचे नाव सारखे आहे, खालील सदस्यांचे पुनरावलोकन करा किंवा कृती करण्यासाठी निवड करा.</string>
+			<string>%1$d ग्रुप सदस्याचे नाव सारखे आहे. खालील सदस्यांचे पुनरावलोकन करा किंवा कृती करण्यासाठी निवड करा.</string>
 			<key>other</key>
-			<string>%1$d ग्रुप सदस्यांची नावे सारखी आहेत, खालील सदस्यांचे पुनरावलोकन करा किंवा कृती करण्यासाठी निवडा.</string>
+			<string>%1$d ग्रुप सदस्यांची नावे सारखी आहेत. खालील सदस्यांचे पुनरावलोकन करा किंवा कृती करण्यासाठी निवडा.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; दृश्य</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; दृश्ये</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>वापरकर्ता नाव कमीतकमी %1$d वर्णाचे असायला हवे</string>
+			<key>other</key>
+			<string>वापरकर्ता नाव हे कमीत कमी %1$d वर्णांनी सुरू होणे आवश्यक आहे</string>
 		</dict>
 	</dict>
 </dict>

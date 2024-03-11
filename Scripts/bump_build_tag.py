@@ -104,19 +104,6 @@ def set_versions(plist_file_path, release_version, build_version_1, build_versio
         fail("Could not parse .plist")
     text = text[: file_match.start(1)] + build_version_1 + text[file_match.end(1) :]
 
-    # The build version 4.
-    #
-    # <key>OWSBundleVersion4</key>
-    # <string>2.20.0.3</string>
-    file_regex = re.compile(
-        r"<key>OWSBundleVersion4</key>\s*<string>([\d\.]+)</string>", re.MULTILINE
-    )
-    file_match = file_regex.search(text)
-    # print 'match', match
-    if not file_match:
-        fail("Could not parse .plist")
-    text = text[: file_match.start(1)] + build_version_4 + text[file_match.end(1) :]
-
     with open(plist_file_path, "wt") as f:
         f.write(text)
 
@@ -222,8 +209,6 @@ def get_versions(plist_file_path):
     # <string>2.13.0</string>
     # <key>CFBundleVersion</key>
     # <string>13</string>
-    # <key>OWSBundleVersion4</key>
-    # <string>2.13.0.13</string>
     #
     # See:
     #

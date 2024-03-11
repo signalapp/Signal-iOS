@@ -30,7 +30,7 @@ public class AppExpiryImpl: AppExpiry {
     private let schedulers: Schedulers
 
     private struct ExpirationState: Codable, Equatable {
-        let version4: String
+        let appVersion: String
 
         enum Mode: String, Codable {
             case `default`
@@ -41,8 +41,8 @@ public class AppExpiryImpl: AppExpiry {
 
         let expirationDate: Date?
 
-        init(version4: String, mode: Mode = .default, expirationDate: Date? = nil) {
-            self.version4 = version4
+        init(appVersion: String, mode: Mode = .default, expirationDate: Date? = nil) {
+            self.appVersion = appVersion
             self.mode = mode
             self.expirationDate = expirationDate
 
@@ -69,7 +69,7 @@ public class AppExpiryImpl: AppExpiry {
         self.schedulers = schedulers
 
         self.expirationState = AtomicValue(
-            .init(version4: appVersion.currentAppVersion4, mode: .default)
+            .init(appVersion: appVersion.currentAppVersion, mode: .default)
         )
     }
 
@@ -93,7 +93,7 @@ public class AppExpiryImpl: AppExpiry {
         // We only want to restore the persisted state if it's for our current version.
         guard
             let persistedExpirationState,
-            persistedExpirationState.version4 == appVersion.currentAppVersion4
+            persistedExpirationState.appVersion == appVersion.currentAppVersion
         else {
             return
         }
@@ -143,7 +143,7 @@ public class AppExpiryImpl: AppExpiry {
     public func setHasAppExpiredAtCurrentVersion(db: DB) {
         Logger.warn("")
 
-        let newState = ExpirationState(version4: appVersion.currentAppVersion4, mode: .immediately)
+        let newState = ExpirationState(appVersion: appVersion.currentAppVersion, mode: .immediately)
         updateExpirationState(newState, db: db)
     }
 
@@ -157,12 +157,12 @@ public class AppExpiryImpl: AppExpiry {
             // Ignore any expiration date that is later than when the app expires by default.
             guard newExpirationDate < AppVersionImpl.shared.defaultExpirationDate else { return }
             newState = .init(
-                version4: appVersion.currentAppVersion4,
+                appVersion: appVersion.currentAppVersion,
                 mode: .atDate,
                 expirationDate: newExpirationDate
             )
         } else {
-            newState = .init(version4: appVersion.currentAppVersion4, mode: .default)
+            newState = .init(appVersion: appVersion.currentAppVersion, mode: .default)
         }
         updateExpirationState(newState, db: db)
     }

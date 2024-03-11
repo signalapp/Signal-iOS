@@ -10,6 +10,15 @@ open class ReminderView: UIView {
         case info
         case warning
     }
+
+    static func warningBackgroundColor(forceDarkMode: Bool = false) -> UIColor {
+        if forceDarkMode || Theme.isDarkThemeEnabled {
+            return .ows_gray75
+        } else {
+            return UIColor(rgbHex: 0xFCF0D9)
+        }
+    }
+
     private let style: Style
     public var text: String {
         didSet { render() }
@@ -104,6 +113,7 @@ open class ReminderView: UIView {
     @objc
     private func render() {
         textLabel.text = text
+        textLabel.textColor = Theme.primaryTextColor
         actionLabel.textColor = Theme.primaryTextColor
 
         textContainer.removeArrangedSubview(actionLabel)
@@ -119,16 +129,9 @@ open class ReminderView: UIView {
 
         switch style {
         case .warning:
-            if Theme.isDarkThemeEnabled {
-                backgroundView.backgroundColor = .ows_gray75
-                textLabel.textColor = .ows_gray05
-            } else {
-                backgroundView.backgroundColor = UIColor(rgbHex: 0xFCF0D9)
-                textLabel.textColor = .ows_gray65
-            }
+            backgroundView.backgroundColor = Self.warningBackgroundColor()
         case .info:
             backgroundView.backgroundColor = Theme.secondaryBackgroundColor
-            textLabel.textColor = Theme.primaryTextColor
         }
     }
 

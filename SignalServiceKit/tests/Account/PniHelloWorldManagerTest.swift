@@ -27,12 +27,11 @@ class PniHelloWorldManagerTest: XCTestCase {
         }
     }
 
-    private var identityManagerMock: IdentityManagerMock!
+    private var identityManagerMock: MockIdentityManager!
     private var networkManagerMock: NetworkManagerMock!
     private var pniDistributionParameterBuilderMock: PniDistributionParamaterBuilderMock!
     private var pniSignedPreKeyStoreMock: MockSignalSignedPreKeyStore!
     private var pniKyberPreKeyStoreMock: MockKyberPreKeyStore!
-    private var profileManagerMock: ProfileManagerMock!
     private var recipientDatabaseTableMock: MockRecipientDatabaseTable!
     private var tsAccountManagerMock: MockTSAccountManager!
 
@@ -43,12 +42,16 @@ class PniHelloWorldManagerTest: XCTestCase {
     private var pniHelloWorldManager: PniHelloWorldManager!
 
     override func setUp() {
-        identityManagerMock = .init()
+        let recipientDatabaseTable = MockRecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
+        identityManagerMock = .init(recipientIdFinder: RecipientIdFinder(
+            recipientDatabaseTable: recipientDatabaseTable,
+            recipientFetcher: recipientFetcher
+        ))
         networkManagerMock = .init()
         pniDistributionParameterBuilderMock = .init()
         pniSignedPreKeyStoreMock = .init()
         pniKyberPreKeyStoreMock = .init(dateProvider: Date.provider)
-        profileManagerMock = .init()
         recipientDatabaseTableMock = .init()
         tsAccountManagerMock = .init()
 
@@ -66,7 +69,6 @@ class PniHelloWorldManagerTest: XCTestCase {
             pniDistributionParameterBuilder: pniDistributionParameterBuilderMock,
             pniSignedPreKeyStore: pniSignedPreKeyStoreMock,
             pniKyberPreKeyStore: pniKyberPreKeyStoreMock,
-            profileManager: profileManagerMock,
             recipientDatabaseTable: recipientDatabaseTableMock,
             schedulers: schedulers,
             tsAccountManager: tsAccountManagerMock
@@ -99,19 +101,9 @@ class PniHelloWorldManagerTest: XCTestCase {
                 deviceIds: [1, 2, 3]
             ), transaction: tx)
         }
-        profileManagerMock.isPniCapable = true
 
         let keyPair = ECKeyPair.generateKeyPair()
-        identityManagerMock.identityKeyPair = keyPair
-        pniSignedPreKeyStoreMock.setCurrentSignedPreKey(
-            pniSignedPreKeyStoreMock.generateSignedPreKey(
-                signedBy: keyPair
-            )
-        )
-        db.write { tx in
-            let key = try! pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: keyPair, tx: tx)
-            try! pniKyberPreKeyStoreMock.storeLastResortPreKeyAndMarkAsCurrent(record: key, tx: tx)
-        }
+        identityManagerMock.identityKeyPairs[.pni] = keyPair
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.success]
 
@@ -122,6 +114,16 @@ class PniHelloWorldManagerTest: XCTestCase {
 
     func testHappyPath() {
         setMocksForHappyPath(includingNetworkRequest: true)
+
+        runRunRun()
+
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3]])
+        XCTAssertTrue(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
+    }
+
+    func testGeneratesIfMissingPniIdentityKey() {
+        setMocksForHappyPath(includingNetworkRequest: true)
+        identityManagerMock.identityKeyPairs[.pni] = nil
 
         runRunRun()
 
@@ -182,27 +184,6 @@ class PniHelloWorldManagerTest: XCTestCase {
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
-    func testSkipsIfNotPniCapable() {
-        setMocksForHappyPath()
-        profileManagerMock.isPniCapable = false
-
-        runRunRun()
-
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
-    }
-
-    func testSkipsIfMissingPniKeyParameters() {
-        setMocksForHappyPath()
-        identityManagerMock.identityKeyPair = nil
-        pniSignedPreKeyStoreMock.setCurrentSignedPreKey(nil)
-
-        runRunRun()
-
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
-    }
-
     func testSkipsRequestIfBuildFailed() {
         setMocksForHappyPath()
         pniDistributionParameterBuilderMock.buildOutcomes = [.failure]
@@ -225,16 +206,6 @@ class PniHelloWorldManagerTest: XCTestCase {
 }
 
 // MARK: - Mocks
-
-// MARK: IdentityManager
-
-private class IdentityManagerMock: _PniHelloWorldManagerImpl_IdentityManager_Shim {
-    var identityKeyPair: ECKeyPair?
-
-    func pniIdentityKeyPair(tx: DBReadTransaction) -> ECKeyPair? {
-        return identityKeyPair
-    }
-}
 
 // MARK: NetworkManager
 
@@ -289,15 +260,5 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
         case .failure:
             return .value(.failure)
         }
-    }
-}
-
-// MARK: ProfileManager
-
-private class ProfileManagerMock: _PniHelloWorldManagerImpl_ProfileManager_Shim {
-    var isPniCapable: Bool = false
-
-    func isLocalProfilePniCapable() -> Bool {
-        return isPniCapable
     }
 }

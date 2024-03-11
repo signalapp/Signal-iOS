@@ -45,31 +45,31 @@ final class InMemoryDB: DB {
 
     func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) { fatalError() }
 
-    func asyncRead(
+    func asyncRead<T>(
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBReadTransaction) -> Void,
+        block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: (() -> Void)?
+        completion: ((T) -> Void)?
     ) {
         DispatchQueue.global().async {
-            self.read(file: file, function: function, line: line, block: block)
-            if let completion { completionQueue.async(completion) }
+            let result: T = self.read(file: file, function: function, line: line, block: block)
+            if let completion { completionQueue.async({ completion(result) }) }
         }
     }
 
-    func asyncWrite(
+    func asyncWrite<T>(
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) -> Void,
+        block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: (() -> Void)?
+        completion: ((T) -> Void)?
     ) {
         DispatchQueue.global().async {
-            self.write(file: file, function: function, line: line, block: block)
-            if let completion { completionQueue.async(completion) }
+            let result = self.write(file: file, function: function, line: line, block: block)
+            if let completion { completionQueue.async({ completion(result) }) }
         }
     }
 

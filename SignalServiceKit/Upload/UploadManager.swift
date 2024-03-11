@@ -12,14 +12,12 @@ public protocol UploadManager {
     ///   - param attachmentId: The id of the TSAttachmentStream to upload
     ///   - param messageIds: A list of TSInteractions representing the message or
     ///   album this attachment is associated with
-    ///   - param version: The upload endpoint to use for creating an upload form
-    func uploadAttachment(attachmentId: String, messageIds: [String], version: Upload.FormVersion) async throws
+    func uploadAttachment(attachmentId: String, messageIds: [String]) async throws
 }
 
 public actor UploadManagerImpl: UploadManager {
 
     private let db: DB
-    private let attachmentStore: AttachmentStore
     private let interactionStore: InteractionStore
     private let networkManager: NetworkManager
     private let socketManager: SocketManager
@@ -27,20 +25,20 @@ public actor UploadManagerImpl: UploadManager {
     private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let blurHash: Upload.Shims.BlurHash
     private let fileSystem: Upload.Shims.FileSystem
+    private let tsResourceStore: TSResourceUploadStore
 
     public init(
         db: DB,
-        attachmentStore: AttachmentStore,
         interactionStore: InteractionStore,
         networkManager: NetworkManager,
         socketManager: SocketManager,
         signalService: OWSSignalServiceProtocol,
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         blurHash: Upload.Shims.BlurHash,
-        fileSystem: Upload.Shims.FileSystem
+        fileSystem: Upload.Shims.FileSystem,
+        tsResourceStore: TSResourceUploadStore
     ) {
         self.db = db
-        self.attachmentStore = attachmentStore
         self.interactionStore = interactionStore
         self.networkManager = networkManager
         self.socketManager = socketManager
@@ -48,6 +46,7 @@ public actor UploadManagerImpl: UploadManager {
         self.attachmentEncrypter = attachmentEncrypter
         self.blurHash = blurHash
         self.fileSystem = fileSystem
+        self.tsResourceStore = tsResourceStore
     }
 
     /// Entry point for uploading a `TSAttachmentStream`
@@ -56,7 +55,7 @@ public actor UploadManagerImpl: UploadManager {
     ///
     /// It is assumed any errors that could be retried or otherwise handled will have happend at a lower level,
     /// so any error encountered here is considered unrecoverable and thrown to the caller.
-    public func uploadAttachment(attachmentId: String, messageIds: [String], version: Upload.FormVersion) async throws {
+    public func uploadAttachment(attachmentId: String, messageIds: [String]) async throws {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[\(attachmentId)]")
 
         let attachmentStream = try db.read(block: { tx in
@@ -87,7 +86,6 @@ public actor UploadManagerImpl: UploadManager {
                 attachmentEncrypter: attachmentEncrypter,
                 fileSystem: fileSystem,
                 sourceURL: sourceURL,
-                version: version,
                 logger: logger
             )
 
@@ -125,7 +123,7 @@ public actor UploadManagerImpl: UploadManager {
         tx: DBReadTransaction
     ) throws -> TSAttachmentStream {
         guard
-            let attachmentStream = attachmentStore.fetchAttachmentStream(uniqueId: attachmentId, tx: tx)
+            let attachmentStream = tsResourceStore.fetch(.legacy(uniqueId: attachmentId), tx: tx)?.bridge as? TSAttachmentStream
         else {
             logger.warn("Missing attachment.")
             // Not finding a local attachment is a terminal failure.
@@ -150,7 +148,7 @@ public actor UploadManagerImpl: UploadManager {
                 tx: tx
             )
 
-            self.attachmentStore.updateAsUploaded(
+            self.tsResourceStore.updateAsUploaded(
                 attachmentStream: attachmentStream,
                 encryptionKey: result.localUploadMetadata.key,
                 digest: result.localUploadMetadata.digest,

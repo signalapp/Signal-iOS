@@ -17,16 +17,14 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
     // MARK: - Setup/Teardown
 
-    private let aliceE164 = "+13213214321"
-    private let aliceAci = Aci.randomForTesting()
-    private lazy var aliceAddress = SignalServiceAddress(serviceId: aliceAci, phoneNumber: aliceE164)
+    private let localIdentifiers: LocalIdentifiers = .forUnitTests
 
     override func setUp() {
         super.setUp()
 
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(aci: aliceAci, pni: nil, e164: E164(aliceE164)!),
+                localIdentifiers: localIdentifiers,
                 tx: tx.asV2Write
             )
         }
@@ -35,7 +33,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         self.write { transaction in
             self.profileManager.setProfileKeyData(
                 OWSAES256Key.generateRandom().keyData,
-                for: self.aliceAddress,
+                for: localIdentifiers.aciAddress,
                 userProfileWriter: .tests,
                 authedAccount: .implicit(),
                 transaction: transaction
@@ -50,7 +48,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         // Ensure UD is enabled by setting our own access level to enabled.
         write { tx in
-            udManagerImpl.setUnidentifiedAccessMode(.enabled, for: aliceAci, tx: tx)
+            udManagerImpl.setUnidentifiedAccessMode(.enabled, for: localIdentifiers.aci, tx: tx)
         }
 
         let bobRecipientAci = Aci.randomForTesting()
@@ -99,7 +97,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         // Ensure UD is enabled by setting our own access level to enabled.
         write { tx in
-            udManagerImpl.setUnidentifiedAccessMode(.enabled, for: aliceAci, tx: tx)
+            udManagerImpl.setUnidentifiedAccessMode(.enabled, for: localIdentifiers.aci, tx: tx)
         }
 
         let bobRecipientAci = Aci.randomForTesting()

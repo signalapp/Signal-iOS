@@ -25,6 +25,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         case callStatus = "status"
         case _groupCallRingerAci = "groupCallRingerAci"
         case callBeganTimestamp = "timestamp"
+        case unreadStatus = "unreadStatus"
     }
 
     /// This record's SQLite row ID, if it represents a record that has already
@@ -57,6 +58,17 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     public let callType: CallType
     public internal(set) var callDirection: CallDirection
     public internal(set) var callStatus: CallStatus
+
+    /// The "unread" status of this call, which is used for app icon and Calls
+    /// Tab badging.
+    ///
+    /// - Note
+    /// Only missed calls should ever be in an unread state. All other calls
+    /// should have already been marked as read.
+    ///
+    /// - SeeAlso: ``CallRecord/CallStatus/isMissedCall``
+    /// - SeeAlso: ``CallRecordStore/updateCallAndUnreadStatus(callRecord:newCallStatus:tx:)``
+    public internal(set) var unreadStatus: CallUnreadStatus
 
     /// If this record represents a group ring, returns the user that initiated
     /// the ring.
@@ -124,6 +136,11 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     /// as for display.
     public internal(set) var callBeganTimestamp: UInt64
 
+    /// Creates a ``CallRecord`` with the given parameters.
+    ///
+    /// - Note
+    /// The ``unreadStatus`` for this call record is automatically derived from
+    /// its given call status.
     public init(
         callId: UInt64,
         interactionRowId: Int64,
@@ -140,6 +157,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         self.callType = callType
         self.callDirection = callDirection
         self.callStatus = callStatus
+        self.unreadStatus = CallUnreadStatus(callStatus: callStatus)
         self.callBeganTimestamp = callBeganTimestamp
 
         if let groupCallRingerAci, isGroupRing {
@@ -168,144 +186,16 @@ extension CallRecord {
         case outgoing = 1
     }
 
-    public enum CallStatus: Codable, Equatable {
-        case individual(IndividualCallStatus)
-        case group(GroupCallStatus)
+    public enum CallUnreadStatus: Int, Codable {
+        case read = 0
+        case unread = 1
 
-        /// Represents the states that an individual (1:1) call may be in.
-        ///
-        /// - Important
-        /// The raw values of the cases of this enum must not overlap with those
-        /// for ``GroupCallStatus``, or en/decoding becomes ambiguous.
-        public enum IndividualCallStatus: Int, CaseIterable {
-            /// This is a call for which no action has yet been taken.
-            ///
-            /// For example, this call may have been accepted on a linked
-            /// device, but we haven't yet received the corresponding sync
-            /// message. Records with this status can be used to bridge between
-            /// an incoming sync mesage and other state, such as the
-            /// corresponding interaction.
-            ///
-            /// Records with this status should eventually be updated to another
-            /// status. If they aren't, the call should be treated as missed.
-            case pending = 0
-
-            /// This call was accepted.
-            ///
-            /// For an incoming call, indicates we accepted the ring. For an
-            /// outgoing call, indicates the receiver accepted the ring.
-            case accepted = 1
-
-            /// This call was not accepted.
-            ///
-            /// For an incoming call, indicates we actively declined the ring.
-            /// For an outgoing call, indicates the receiver did not accept.
-            case notAccepted = 2
-
-            /// This was an incoming call that we missed.
-            ///
-            /// An incoming missed call is contrasted with an actively-declined
-            /// one, which would fall under ``notAccepted`` above.
-            ///
-            /// - Note
-            /// Calls declined as "busy" use this case.
-            case incomingMissed = 3
-        }
-
-        /// Represents the states that a group call may be in.
-        ///
-        /// - Important
-        /// The raw values of the cases of this enum must not overlap with those
-        /// for ``IndividualCallStatus``, or en/decoding becomes ambiguous.
-        public enum GroupCallStatus: Int, CaseIterable {
-            /// This is a call that was started without ringing, which we have
-            /// learned about but are not involved with.
-            case generic = 4
-
-            /// This is a call that was started without ringing, which we have
-            /// joined.
-            case joined = 5
-
-            /// This call involves ringing which is actively occuring. No action
-            /// has yet been taken on the ring, and it has not expired.
-            ///
-            /// - Note
-            /// We do not track the state of outgoing group rings and instead
-            /// record them as accepted when we start the ring. Consequently,
-            /// only incoming rings should be in this state.
-            case ringing = 9
-
-            /// This call involved ringing, and the ring was accepted.
-            ///
-            /// - Note
-            /// We do not track the state of outgoing group rings and instead
-            /// record them as accepted when we start the ring. All outgoing
-            /// group rings will therefore end up in this state.
-            case ringingAccepted = 6
-
-            /// This call involved ringing, and the ring was declined.
-            ///
-            /// For an incoming call, indicates we actively declined the ring.
-            ///
-            /// - Note
-            /// We do not track the state of outgoing group rings and instead
-            /// record them as accepted when we start the ring. Consequently,
-            /// only incoming rings should be in this state.
-            case ringingDeclined = 7
-
-            /// This call involved ringing, and no action was taken on the ring
-            /// before it expired.
-            ///
-            /// A missed call is contrasted with an actively-declined one, which
-            /// would fall under ``ringingNotAccepted`` above.
-            ///
-            /// - Note
-            /// Calls declined as "busy" use this case.
-            ///
-            /// - Note
-            /// We do not track the state of outgoing group rings and instead
-            /// record them as accepted when we start the ring. Consequently,
-            /// only incoming rings should be in this state.
-            case ringingMissed = 8
-        }
-
-        // MARK: Codable
-
-        var intValue: Int {
-            switch self {
-            case .individual(let individualCallStatus): return individualCallStatus.rawValue
-            case .group(let groupCallStatus): return groupCallStatus.rawValue
-            }
-        }
-
-        private init?(intValue: Int) {
-            if let individualCallStatus = IndividualCallStatus(rawValue: intValue) {
-                self = .individual(individualCallStatus)
-            } else if let groupCallStatus = GroupCallStatus(rawValue: intValue) {
-                self = .group(groupCallStatus)
+        init(callStatus: CallStatus) {
+            if callStatus.isMissedCall {
+                self = .unread
             } else {
-                owsFailDebug("Unexpected int value: \(intValue)")
-                return nil
+                self = .read
             }
-        }
-
-        public init(from decoder: Decoder) throws {
-            let singleValueContainer = try decoder.singleValueContainer()
-            let intValue = try singleValueContainer.decode(Int.self)
-
-            guard let selfValue = CallStatus(intValue: intValue) else {
-                throw DecodingError.dataCorruptedError(
-                    in: singleValueContainer,
-                    debugDescription: "\(type(of: self)) contained unexpected int value: \(intValue)"
-                )
-            }
-
-            self = selfValue
-        }
-
-        public func encode(to encoder: Encoder) throws {
-            var singleValueContainer = encoder.singleValueContainer()
-            try singleValueContainer.encode(intValue)
         }
     }
 }
@@ -326,7 +216,8 @@ extension CallRecord {
             callDirection == other.callDirection,
             callStatus == other.callStatus,
             groupCallRingerAci == other.groupCallRingerAci,
-            callBeganTimestamp == other.callBeganTimestamp
+            callBeganTimestamp == other.callBeganTimestamp,
+            unreadStatus == other.unreadStatus
         {
             return true
         }

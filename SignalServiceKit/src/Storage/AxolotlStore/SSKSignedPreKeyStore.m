@@ -47,7 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - SSKSignedPreKeyStore
 
-NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
 @interface SSKSignedPreKeyStore ()
@@ -107,11 +106,6 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
     return [self.keyStore allValuesWithTransaction:transaction];
 }
 
-- (NSArray<NSString *> *)availableSignedPreKeyIdsWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.keyStore allKeysWithTransaction:transaction];
-}
-
 - (void)storeSignedPreKey:(int)signedPreKeyId
        signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord
               transaction:(SDSAnyWriteTransaction *)transaction
@@ -121,12 +115,6 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
                              transaction:transaction];
 }
 
-- (BOOL)containsSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.keyStore signedPreKeyRecordForKey:[SDSKeyValueStore keyWithInt:signedPreKeyId]
-                                       transaction:transaction];
-}
-
 - (void)removeSignedPreKey:(int)signedPrekeyId transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSLogInfo(@"Removing signed prekey id: %lu.", (unsigned long)signedPrekeyId);
@@ -134,70 +122,16 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
     [self.keyStore removeValueForKey:[SDSKeyValueStore keyWithInt:signedPrekeyId] transaction:transaction];
 }
 
-- (nullable NSNumber *)currentSignedPrekeyId
-{
-    __block NSNumber *_Nullable result;
-    [self.databaseStorage
-        readWithBlock:^(
-            SDSAnyReadTransaction *transaction) { result = [self currentSignedPrekeyIdWithTransaction:transaction]; }
-                 file:__FILE__
-             function:__FUNCTION__
-                 line:__LINE__];
-    return result;
-}
-
-- (nullable NSNumber *)currentSignedPrekeyIdWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.metadataStore getObjectForKey:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
-}
-
-- (void)setCurrentSignedPrekeyId:(int)value transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSLogInfo(@"%lu.", (unsigned long)value);
-    [self.metadataStore setObject:@(value) key:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
-}
-
-- (nullable SignedPreKeyRecord *)currentSignedPreKey
-{
-    __block SignedPreKeyRecord *_Nullable currentRecord;
-    [self.databaseStorage
-        readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            currentRecord = [self currentSignedPreKeyWithTransaction:transaction];
-        }
-                 file:__FILE__
-             function:__FUNCTION__
-                 line:__LINE__];
-
-    return currentRecord;
-}
-
-- (nullable SignedPreKeyRecord *)currentSignedPreKeyWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    NSNumber *_Nullable preKeyId = [self.metadataStore getObjectForKey:kPrekeyCurrentSignedPrekeyIdKey
-                                                           transaction:transaction];
-
-    if (preKeyId == nil) {
-        return nil;
-    }
-
-    return [self.keyStore signedPreKeyRecordForKey:preKeyId.stringValue transaction:transaction];
-}
-
-- (void)cullSignedPreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)cullSignedPreKeyRecordsWithJustUploadedSignedPreKey:(SignedPreKeyRecord *)justUploadedSignedPreKey
+                                                transaction:(SDSAnyWriteTransaction *)transaction
 {
     const NSTimeInterval kSignedPreKeysDeletionTime = 30 * kDayInterval;
-
-    SignedPreKeyRecord *_Nullable currentRecord = [self currentSignedPreKeyWithTransaction:transaction];
-    if (!currentRecord) {
-        OWSFailDebug(@"Couldn't find current signed pre-key; skipping culling until we have one");
-        return;
-    }
 
     NSMutableArray<SignedPreKeyRecord *> *oldSignedPrekeys =
         [[self loadSignedPreKeysWithTransaction:transaction] mutableCopy];
     // Remove the current record from the list.
     for (NSUInteger i = 0; i < oldSignedPrekeys.count; ++i) {
-        if (oldSignedPrekeys[i].Id == currentRecord.Id) {
+        if (oldSignedPrekeys[i].Id == justUploadedSignedPreKey.Id) {
             [oldSignedPrekeys removeObjectAtIndex:i];
             break;
         }
@@ -213,11 +147,10 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
     // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
     for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
-        OWSLogInfo(@"Considering signed prekey id: %d, generatedAt: %@, createdAt: %@, wasAcceptedByService: %d",
+        OWSLogInfo(@"Considering signed prekey id: %d, generatedAt: %@, createdAt: %@",
             signedPrekey.Id,
             signedPrekey.generatedAt,
-            signedPrekey.createdAt,
-            signedPrekey.wasAcceptedByService);
+            signedPrekey.createdAt);
 
         // Always keep at least 3 keys, accepted or otherwise.
         if (oldSignedPreKeyCount <= 3) {
@@ -238,70 +171,17 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
 #pragma mark - Prekey update failures
 
-- (void)setLastSuccessfulPreKeyRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setLastSuccessfulRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self.metadataStore setDate:date key:kLastPreKeyRotationDate transaction:transaction];
 }
 
-- (nullable NSDate *)getLastSuccessfulPreKeyRotationDateWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSDate *)getLastSuccessfulRotationDateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSDate *lastSuccess = [self.metadataStore getDate:kLastPreKeyRotationDate transaction:transaction];
-
-    // For compatibility with existing signed prekeys, fall back to the last
-    if (lastSuccess == nil) {
-        SignedPreKeyRecord *currentSignedPreKey = [self currentSignedPreKeyWithTransaction:transaction];
-        if (currentSignedPreKey.wasAcceptedByService) {
-            // Return the date the last key was signed at as an approximation of last rotation date.
-            return currentSignedPreKey.generatedAt;
-        }
-        return nil;
-    }
-
-    return lastSuccess;
+    return [self.metadataStore getDate:kLastPreKeyRotationDate transaction:transaction];
 }
 
 #pragma mark - Debugging
-
-- (void)logSignedPreKeyReport
-{
-    NSString *tag = @"SSKSignedPreKeyStore";
-
-    NSNumber *currentId = [self currentSignedPrekeyId];
-
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        __block int i = 0;
-
-        OWSLogInfo(@"%@ SignedPreKeys Report:", tag);
-        OWSLogInfo(@"%@   currentId: %@", tag, currentId);
-
-        NSUInteger count = [self.keyStore numberOfKeysWithTransaction:transaction];
-        OWSLogInfo(@"%@   All Keys (count: %lu):", tag, (unsigned long)count);
-
-        [self.keyStore
-            enumerateKeysAndObjectsWithTransaction:transaction
-                                             block:^(NSString *_Nonnull key,
-                                                 id _Nonnull signedPreKeyObject,
-                                                 BOOL *_Nonnull stop) {
-                                                 i++;
-                                                 if (![signedPreKeyObject isKindOfClass:[SignedPreKeyRecord class]]) {
-                                                     OWSFailDebug(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
-                                                         tag,
-                                                         [signedPreKeyObject class]);
-                                                     return;
-                                                 }
-                                                 SignedPreKeyRecord *signedPreKeyRecord
-                                                     = (SignedPreKeyRecord *)signedPreKeyObject;
-                                                 OWSLogInfo(@"%@     #%d <SignedPreKeyRecord: id: %d, generatedAt: %@, "
-                                                            @"wasAcceptedByService:%@, signature: %@",
-                                                     tag,
-                                                     i,
-                                                     signedPreKeyRecord.Id,
-                                                     signedPreKeyRecord.generatedAt,
-                                                     (signedPreKeyRecord.wasAcceptedByService ? @"YES" : @"NO"),
-                                                     signedPreKeyRecord.signature);
-                                             }];
-    }];
-}
 
 #if TESTABLE_BUILD
 - (void)removeAll:(SDSAnyWriteTransaction *)transaction

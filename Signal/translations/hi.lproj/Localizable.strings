@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "तस्वीर";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "तस्वीर";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "कॉल";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "इनकमिंग";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "मिस्ड";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "आउटगोइंग";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "हटाएँ";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "इससे सभी कॉल इतिहास स्थायी रूप से डिलीट कर दिया जाएगा।";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "कॉल इतिहास साफ करें?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "डिलीट करें";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "सब";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "मिस्ड";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "चैट पर जाएँ";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "ऑडियो कॉल ज्वाइन करें";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "जुड़ें";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "वीडियो कॉल ज्वाइन करें";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "कोई मिस्ड कॉल नहीं";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "कोई नवीनतम कॉल नहीं";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "किसी दोस्त को कॉल करके शुरू करें";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "कॉल पर वापस जाएँ";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "वापस जाएँ";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "'%1$@' के लिए कोई परिणाम नहीं मिला";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "चुनिए";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "चुनिए";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "ऑडियो कॉल";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "वीडियो कॉल";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "जानकारी";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "एक तस्वीर लें औेर भेजें";
 
@@ -929,16 +998,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "फ़ोटो एडिट करें";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "आप नए नंबर के रूप में अपना पुराना नंबर इस्तेमाल नहीं कर सकते। अपना नंबर बदलने के लिए कृपया एक नया फ़ोन नंबर दर्ज करें।";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "आप नए नंबर के रूप में अपना पुराना नंबर इस्तेमाल नहीं कर सकते। अपना नंबर बदलने के लिए कृपया एक नया फोन नंबर दर्ज करें।";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "आपके द्वारा दर्ज किया गया फ़ोन नंबर आपके खाते के फ़ोन नंबर से मेल नहीं खाता है।";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "आपके द्वारा दर्ज किया गया फोन नंबर आपके खाते के फोन नंबर से मेल नहीं खाता है।";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "नया फ़ोन नंबर अमान्य है। अपना नंबर बदलने के लिए कृपया एक मान्य फ़ोन नंबर दर्ज करें।";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "नया फोन नंबर अमान्य है। अपना नंबर बदलने के लिए कृपया एक मान्य फोन नंबर दर्ज करें।";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "पुराना फ़ोन नंबर अमान्य है। अपना नंबर बदलने के लिए कृपया एक मान्य फ़ोन नंबर दर्ज करें।";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "पुराना फोन नंबर अमान्य है। अपना नंबर बदलने के लिए कृपया एक मान्य फोन नंबर दर्ज करें।";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "ये चैट रंग का पूर्वावलोकन है।";
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "यूज़रनेम से ढूँढ़ें";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "सेटिंग्स खोलें";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "आपके कितने संपर्क Signal उपभोगकर्ता हैं, यह जानने के लिये iOS सेटिंग्स ऐप में जा कर Signal को आपके संपर्क पढने की अनुमति दें।";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "नया डिवाइस लिंक करें";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ ब्लॉक किया गया है";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ आपके सिस्टम संपर्कों में है";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "%1$@ के साथ कोई सीधा संदेश नहीं";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "संदेश अनुरोध लंबित";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal कनेक्शन";
@@ -1100,7 +1181,7 @@
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "ईमेल उपलब्ध नहीं है।";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "फ़ोन नंबर उपलब्ध नहीं है।";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "फोन नंबर उपलब्ध नहीं है।";
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "संपर्क चुनें";
@@ -1286,16 +1367,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "वर्तमान संपर्को में जोङें";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "सिस्टम के संपर्को में जोङें";
-
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "एडमिन";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "सब";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "अक्षम";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "सिस्टम संपर्कों में जोङें";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "चुनें कि समूह का नाम, फ़ोटो, विवरण और गायब होने वाले संदेशों के समय को कौन संपादित कर सकता है।";
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "बैज";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "अब आपको इस यूज़र से कोई संदेश या अपडेट नहीं मिलेंगे।";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "अब आपको इस ग्रुप से कोई संदेश या अपडेट नहीं मिलेंगे।";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "ग्रुप को ब्लॉक करें";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "यूज़र को ब्लॉक करें";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "ऑडियो कॉल आ रही है";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "इनकमिंग वीडियो कॉल";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "मिस हुई ऑडियो कॉल";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "छूटी हुई वीडियो कॉल";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "ऑडियो कॉल की जा रही है";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "आउटगोइंग वीडियो कॉल";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "बदलें";
@@ -1426,6 +1510,9 @@
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ को ग्रुप से निकालें?";
 
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "स्पैम की रिपोर्ट करें";
+
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "एडमिन के रूप से हटाएँ";
 
@@ -1490,7 +1577,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "देश कोड चुनें";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "फ़ोन नंबर गोपनीयता, वैकल्पिक यूज़रनेम और लिंक का परिचय।";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "फोन नंबर गोपनीयता, वैकल्पिक यूज़रनेम और लिंक का परिचय।";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "जुड़ने के नए तरीके";
@@ -1676,7 +1763,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "इंटरनेट कनेक्शन नहीं है। सुनिश्चित करें कि Wi-Fi या मोबाइल डेटा चालू है, फिर दोबारा प्रयास करें।";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "फ़ोन नंबर";
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "फोन नंबर";
 
 /* Section header */
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "अपने Signal नंबर की पुष्टि करें";
@@ -1685,7 +1772,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "अकाउंट डिलीट करें";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "आपके द्वारा दर्ज किया गया फ़ोन नंबर आपके खाते के फ़ोन नंबर से मेल नहीं खाता है।";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "आपके द्वारा दर्ज किया गया फोन नंबर आपके खाते के फोन नंबर से मेल नहीं खाता है।";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "चैट में सभी संदेश डिलीट करें?";
@@ -1712,7 +1799,7 @@
 "DEREGISTRATION_NOTIFICATION" = "आपको इस डिवाइस पर Signal से लॉग आउट कर दिया गया है।";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "इस फ़ोन नंबर को पुनः पंजीकृत करें";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "इस फोन नंबर को पुनः पंजीकृत करें";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "यह डिवाइस अब पंजीकृत नहीं है। ऐसा शायद इसलिए हो सकता है कि आपने अपना फोन नंबर किसी दूसरी डिवाइस पर Signal के साथ पंजीकृत किया है।";
@@ -2420,7 +2507,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "सर्विस से अवैध जवाब आया है।";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "यह डिवाइस अब आपके फ़ोन नंबर के साथ पंजिकृत नहीं है। कृपया Signal पुनः स्थापित करें।";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "यह डिवाइस अब आपके फोन नंबर के साथ पंजिकृत नहीं है। कृपया Signal पुनः स्थापित करें।";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "सर्वर से गलती हुई है, कृपया फिर कोशिश करें।";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "अटैचमेंट का डाउनलोड असफल रहा।";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "अटैचमेंट अपलोड विफल रहा।";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@ का कोई संदेश डिलीवर नहीं किया जा सका";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "अपने अकाउंट की जानकारी ढूंढें";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "एक यूज़रनेम और उसके बाद एक बिंदु और उसके अंकों का सेट दर्ज करें।";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "यूज़रनेम";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "यूज़रनेम से ढूँढ़ें";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "सत्यापित मार्क करे";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "सदस्यों";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "समीक्षा के लिए टैप करें";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "सदस्य";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "सदस्यों की समीक्षा करें";
 
@@ -3520,11 +3613,20 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "आपने भुगतान सक्रीय करने हेतु %1$@ को एक अनुरोध भेजा।";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "स्पैम के रूप में रिपोर्ट किया गया";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal को सूचित किया गया है कि यह व्यक्ति स्पैम भेज सकता है। Signal किसी भी चैट की सामग्री नहीं देख सकता।";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "रिपोर्ट किया गया स्पैम";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ ने अपना फ़ोन नंबर बदल दिया है।";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ ने अपना फोन नंबर बदल दिया है।";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ अब Signal पर हैं!";
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "मित्रों को Signal में शामिल होने के लिए आमंत्रित करें";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "अधिक";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "सर्च";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ब्लॉक करके डिलीट करें";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "स्पैम और ब्लॉक की रिपोर्ट करें";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ग्रुप को डिलीट करके छोड़ दें?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "निवेदनों की ध्यानपूर्वक समीक्षा करें। Signal को एक ही नाम वाला एक और संपर्क मिला।";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "आपकी संपर्क जानकारी";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "इस व्यक्ति का नाम अन्य संपर्क के समान ही है";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "अगर आप इस निवेदन को भेजने वाले के बारे में निश्चित नहीं हों, तो नीचे दिए गए संपर्कों की समीक्षा करें और कार्रवाई करें।";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "निवेदन";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "निवेदन की समीक्षा करें";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "संपर्क जानकारी अपडेट करें";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "निवेदन की समीक्षा करें";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal को सूचित किया जाएगा कि यह व्यक्ति स्पैम भेज सकता है। Signal किसी भी चैट की सामग्री नहीं देख सकता।";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "स्पैम की रिपोर्ट करें?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "स्पैम की रिपोर्ट करें";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "स्पैम के रूप में रिपोर्ट किया गया।";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "स्पैम के रूप में रिपोर्ट किया गया और अवरुद्ध कर दिया गया।";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@ को आपको संदेश भेजने और अपना नाम और फ़ोटो उनके साथ साझा करने दें? आपने इस व्यक्ति को पहले हटाया है।";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "रिपोर्ट करें…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "अनब्लॉक करें";
@@ -4190,7 +4301,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "निम्न को छोड़कर सभी…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Signal के सभी कनेक्शन";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "सभी Signal कनेक्शन";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "केवल निम्न के साथ शेयर करें…";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "जोड़ने के लिए टैप करें";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "हाल ही में अपना प्रोफ़ाइल नाम %1$@ से बदलकर %2$@ कर दिया।";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "हाल ही में %1$@ अपना प्रोफ़ाइल नाम %2$@ से %3$@ में बदला है";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "छोड़ दे";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi और सेलुलर";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "ऑडियो कॉल";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "नई कॉल शुरू करने के लिए किसी संपर्क या समूह का चयन करें।";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "नई कॉल";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "मेसेज";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "नई कॉल";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "वीडियो कॉल";
+
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "फ़ोन नंबर से खोजें";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "फोन नंबर से खोजें";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "यूज़रनेम से ढूँढ़ें";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "नया ग्रुप";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "ग्रुप चुनें";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "खोजें";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "उपभोगकर्ता खोजें";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "फोन नंबर से खोजें";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "नाम वाली स्टोरी";
@@ -4322,7 +4451,10 @@
 "NEW_STORY_SHEET_TITLE" = "स्टोरी का प्रकार चुनें";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "संपर्क को फ़ोन नंबर से खोजें";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "संपर्क को फोन नंबर से खोजें";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "यूज़रनेम के आधार पर संपर्क ढूंढें";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "कोई साझा ग्रुप नहीं";
@@ -4463,13 +4595,13 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "आपके नंबर के साथ आपको कौन ढूँढ सकता है?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "आपका फ़ोन नंबर";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "आपका फोन नंबर";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "दोबारा प्रयास करने से पहले कृपया कुछ मिनट इंतज़ार करें। (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "अमान्य फ़ोन नंबर। रजिस्टर करने के लिए कृपया एक मान्य फ़ोन नंबर दर्ज करें।";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "अमान्य फोन नंबर। रजिस्टर करने के लिए कृपया एक मान्य फोन नंबर दर्ज करें।";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "आपके पिन सोचने के सारे मौके ख्तम हो चुके हैं, पर आप नया पिन बना के अपना Signal खाता चला सकते हैं। आपकी गोपनीयता और सुरक्षा के लिये आपका खाता बिना किसी सहेजी हुई प्रोफ़ाइल की जानकारी या सेटिंग्स के पुनः स्थापित होगा।";
@@ -4481,7 +4613,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "ग़लत पिन";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "आपका पिन अनुमान समाप्त हो गया है, लेकिन आप अभी भी अपना फ़ोन नंबर सत्यापित करके अपने Signal अकाउंट तक पहुँचने का प्रयास कर सकते हैं। आपकी निजता और सुरक्षा के लिए आपका अकाउंट बिना किसी सहेजी गई प्रोफ़ाइल जानकारी या सेटिंग के पुनर्स्थापित कर दिया जाएगा।";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "आपका पिन अनुमान समाप्त हो गया है, लेकिन आप अभी भी अपना फोन नंबर सत्यापित करके अपने Signal अकाउंट तक पहुँचने का प्रयास कर सकते हैं। आपकी निजता और सुरक्षा के लिए आपका अकाउंट बिना किसी सहेजी गई प्रोफ़ाइल जानकारी या सेटिंग के पुनर्स्थापित कर दिया जाएगा।";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "नियम और गोपनीयता नीति";
@@ -4508,7 +4640,7 @@
 "ONBOARDING_VERIFICATION_HELP_BULLET_2" = "पुष्टि करें कि आप नंबर पर एक फोन कॉल प्राप्त कर सकते हैं";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "जाँच करें कि आपने अपना फ़ोन नंबर सही रूप से दर्ज किया है";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "जाँच करें कि आपने अपना फोन नंबर सही रूप से दर्ज किया है";
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "पंजीकरण में परेशानी हो रही है?";
@@ -4964,16 +5096,16 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "हर कोई";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "आपका फ़ोन नंबर उन लोगों और ग्रुप्स को दिखेगा जिन्हें आप संदेश भेजेंगे।";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "आपका फोन नंबर उन लोगों और ग्रुप्स को दिखेगा जिन्हें आप संदेश भेजेंगे।";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "कोई नहीं";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "आपका फोन नंबर किसी को तब तक नहीं दिखाई देगा जब तक कि उन्होंने इसे अपने फोन के संपर्कों में न सहेजा हो।";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "आपका फोन नंबर किसी को दिखाई नहीं देगा।";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5414,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "(%1$@) के बारे में";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ ने अपना प्रोफाइल नाम %2$@ से बदल कर %3$@ रख लिया।";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ ने अपना प्रोफ़ाइल नाम %2$@ से बदल कर %3$@ रख लिया।";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ने अपना प्रोफाइल नाम बदल कर %2$@ रख लिया।";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ने अपना प्रोफ़ाइल नाम बदल कर %2$@ रख लिया।";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "आपका नाम";
@@ -5312,13 +5444,13 @@
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "यूज़र नाम डिलीट करें";
 
 /* Title for a menu action allowing users to edit their existing username. */
-"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "उपयोगकर्ता नाम संपादित करें";
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "यूज़रनेम संपादित करें";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
 "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR कोड या लिंक";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "उपयोगकर्ता नाम";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "यूज़रनेम";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "आपका उपनाम बहुत लंबा है।";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "आपका यूज़रनेम, QR कोड और लिंक आपके प्रोफाइल पर दिखाई नहीं दे रहे हैं। अपना यूज़रनेम केवल उन लोगों के साथ साझा करें जिन पर आपको भरोसा है।";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "लोग अब आपका वैकल्पिक यूज़रनेम इस्तेमाल करके आपको संदेश भेज सकते हैं, ताकि आपको अपना फोन नंबर न देना पड़े।";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "प्रॉक्सी पता";
@@ -5465,10 +5600,10 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "यूज़र को चुना नहीं जा सकता।";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ एक Signal यूज़र नहीं है। किसी मान्य फ़ोन नंबर से फिर से प्रयास करें।";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ एक Signal यूज़र नहीं है। किसी मान्य फोन नंबर से फिर से प्रयास करें।";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "अमान्य फ़ोन नंबर";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "अमान्य फोन नंबर";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
 "RECIPIENT_PICKER_INVITE_ACTION" = "मेसेज";
@@ -5558,13 +5693,13 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "आरंभ करने के लिए अपना फोन नंबर दर्ज करें।";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
-"REGISTRATION_PHONE_NUMBER_TITLE" = "आपका फ़ोन नंबर";
+"REGISTRATION_PHONE_NUMBER_TITLE" = "आपका फोन नंबर";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
 "REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "इस नंबर को वेरिफाई करने के लिए आपको एक कॉल आएगी। क्या ऊपर दिया आपका फोन नंबर सही है?";
 
 /* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "फ़ोन नंबर";
+"REGISTRATION_PHONENUMBER_BUTTON" = "फोन नंबर";
 
 /* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
 "REGISTRATION_PIN_CONFIRM_SUBTITLE" = "आपके द्वारा अभी बनाए गए पिन को दोबारा दर्ज करें।";
@@ -5630,13 +5765,13 @@
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "आपके द्वारा दर्ज किया गया कोड मान्य नहीं है। कृपया कोड पुनः भेजकर दोबारा प्रयास करें।";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "कृपया पंजीकरन के लिये कोई वैध फ़ोन नंबर डालें";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "कृपया पंजीकरन के लिये कोई वैध फोन नंबर डालें";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "अवैध फ़ोन नंबर";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "अवैध फोन नंबर";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "इस नंबर पर एक सत्यापन कोड भेजा जाएगा। क्या ऊपर दिया गया आपका फ़ोन नंबर सही है?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "इस नंबर पर एक सत्यापन कोड भेजा जाएगा। क्या ऊपर दिया गया आपका फोन नंबर सही है?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "नंबर की पुष्टि: %1$@";
@@ -5731,6 +5866,48 @@
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%1$@ के साथ आपका सुरक्षा नंबर बदल गया है। आप एक बार सत्यापित कर लें।";
 
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "सुरक्षा टिप्स";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "यदि कोई व्यक्ति जिसे आप नहीं जानते हैं, क्रिप्टोकरेंसी (जैसे बिटकॉइन) या वित्तीय अवसर के बारे में संदेश भेजता है, तो सावधान रहें - यह संभावित रूप से स्पैम है।";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "क्रिप्टो या मनी स्कैम";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "आपसे संपर्क करने वाले व्यवसायों या सरकारी एजेंसियों से सावधान रहें। कर एजेंसियों, कोरियर और अन्य से जुड़े संदेश स्पैम हो सकते हैं।";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "नकली व्यवसाय और संस्थाएँ";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "इस अनुरोध की सावधानीपूर्वक समीक्षा करें। आपका कोई भी संपर्क या जिन लोगों से आप चैट करते हैं, वे इस समूह में नहीं हैं। यहां कुछ बातों का ध्यान रखना चाहिए:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "सुरक्षा टिप्स";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "जिन लोगों को आप नहीं जानते उनसे संदेश अनुरोध स्वीकार करते समय सावधान रहें। इन बातों से सावधान रहें:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "उन लोगों के संदेशों से सावधान रहें जिन्हें आप नहीं जानते जिनमें वेबसाइटों के लिंक हैं। उन लोगों के लिंक पर कभी न जाएँ जिन पर आपको भरोसा नहीं है।";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "लिंक के साथ संदेश";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "स्पैमर अक्सर आपको आकर्षित करने के लिए \"हाय\" जैसे सरल संदेश से शुरुआत करते हैं। यदि आप जवाब देते हैं तो वे आपसे आगे जुड़ सकते हैं।";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "अस्पष्ट या अप्रासंगिक संदेश";
+
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "अपने संपर्क के डिवाइस के QR कोड को स्कैन करें।";
 
@@ -5768,7 +5945,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal खोलो";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "नाम, उपयोगकर्ता नाम या संख्या";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "नाम, यूज़रनेम या नंबर";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "नाम या संख्या से खोजें";
@@ -5972,7 +6149,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "यदि चालू किया गया तो Signal आपके लिए सेंसर-कार्य तोड़ने की कोशिश करेगा। यदि आप किसी सेन्सरशिप वाली जगह पर नहीं हैं तो इस फ़ीचर को चालू ना करें।";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "आपके खाते के फ़ोन नंबर के आधार पर  सेंसरशिप से बचाव सक्षम कर दिया गया है।";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "आपके खाते के फोन नंबर के आधार पर  सेंसरशिप से बचाव सक्षम कर दिया गया है।";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "आपने खुद सेंसरशिप से बचाव अक्षम कर दिया है।";
@@ -6020,10 +6197,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "ऐप आइकन";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "यदि उपलब्ध हो तो सिस्टम की संपर्क फ़ोटो प्रदर्शित करें।";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "यदि उपलब्ध हो तो सिस्टम संपर्कों फ़ोटो प्रदर्शित करें।";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "सिस्टम की संपर्क फ़ोटो का उपयोग करें";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "सिस्टम संपर्क फ़ोटो का उपयोग करें";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "विषय";
@@ -6056,13 +6233,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "नंबर संपादित करें";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "फ़ोन नंबर बदलें";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "फोन नंबर बदलें";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "नंबर बदलें";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "आप अपना फ़ोन नंबर %1$@ से बदलकर %2$@ करनेवाले हैं।\n\nआगे बढ़ने से पहले कृपया सत्यापित करे लें कि नीचे दिया गया नंबर सही है।";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "आप अपना फोन नंबर %1$@ से बदलकर %2$@ करनेवाले हैं।\n\nआगे बढ़ने से पहले कृपया सत्यापित करे लें कि नीचे दिया गया नंबर सही है।";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "देश कोड";
@@ -6080,13 +6257,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "आपका पुराना नंबर";
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "फ़ोन नंबर";
+"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "फोन नंबर";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "अपने मौजूदा फ़ोन नंबर को नए फ़ोन नंबर से बदलने के लिए इसका उपयोग करें। आप इस बदलाव को पहले जैसा नहीं कर सकते हैं।\n\nजारी रखने से पहले सुनिश्चित कर लें कि आपके नए नंबर पर SMS या कॉल आ सकते हों।";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "अपने मौजूदा फोन नंबर को नए फोन नंबर से बदलने के लिए इसका उपयोग करें। आप इस बदलाव को पहले जैसा नहीं कर सकते हैं।\n\nजारी रखने से पहले सुनिश्चित कर लें कि आपके नए नंबर पर SMS या कॉल आ सकते हों।";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "फ़ोन नंबर बदलें";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "फोन नंबर बदलें";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "नंबर बदलें";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "इस सेटिंग्स को बदलने के लिए, \"मेरा नंबर कौन देख सकता है\" को \"कोई नहीं\" पर सेट करें।";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "मुझे नंबर से कौन ढूंढ सकता है";
 
@@ -6731,7 +6914,7 @@
 "SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "चुनें कि कौन आपका फोन नंबर देख सकता है और कौन इसके साथ Signal पर आपसे संपर्क कर सकता है।";
 
 /* The title for phone number privacy settings. */
-"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "फ़ोन नंबर";
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "फोन नंबर";
 
 /* The title for the phone number sharing setting section. */
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "मेरा नंबर कौन देख सकता है";
@@ -6848,7 +7031,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "पंजीकरण लॉक";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal के साथ अपना फ़ोन नंबर दोबारा रजिस्टर करने के लिए आपका Signal PIN आवश्यक होता है।";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal के साथ अपना फोन नंबर दोबारा रजिस्टर करने के लिए आपका Signal PIN आवश्यक होता है।";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "टाइपिंग संकेतक";
@@ -7253,7 +7436,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "संदेश अनुरोध स्वीकार करके";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "अपने सिस्टम के संपर्कों में उन्हें रखकर";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "अपने सिस्टम संपर्कों में उन्हें रखकर";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "आपके कनेक्शन तब तक आपका नाम और फ़ोटो, तथा \"मेरी स्टोरी\" पर आपके द्वारा भेजी जानेवाली विषयवस्तु को देख सकते हैं जब तक कि आपने उसे उनसे छिपा न रखा हो।";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "व्यू ऑफ़";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "सब्सक्राइबर आईडी को क्लिपबोर्ड पर कॉपी किया गया";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "दाता आईडी को क्लिपबोर्ड पर कॉपी किया गया";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "आपका सुरक्षा नंबर %1$@ के साथ मेल खा रहा है। आप उन्हें सत्यापित मार्क करे हुए कर सकते हैं।";
@@ -7652,10 +7835,10 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR कोड और लिंक";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "आपका फोन नंबर अब चैट में दिखाई नहीं देगा। यदि आपका नंबर किसी मित्र के संपर्कों में सहेजा गया है, तो भी वे इसे देखेंगे।";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "फ़ोन नंबर गोपनीयता";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "फोन नंबर गोपनीयता";
 
 /* Label for the 'set up' button on the username education sheet */
 "USERNAME_EDUCATION_SET_UP_BUTTON" = "अपना यूज़रनेम सेट करें";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "जुड़ने के नए तरीके";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "लोग अब आपका वैकल्पिक यूज़रनेम इस्तेमाल करके आपको संदेश भेज सकते हैं, ताकि आपको अपना फोन नंबर न देना पड़े। आपकी प्रोफ़ाइल पर यूज़रनेम दिखाई नहीं दे रहे हैं।";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "यूज़रनेम";
@@ -7676,7 +7859,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "रंग";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "केवल अपना QR कोड साझा करें और उन लोगों के साथ लिंक करें, जिन पर आप भरोसा करते हैं। साझा किए जाने पर अन्य लोग आपका उपयोगकर्ता नाम देख सकेंगे और आपके साथ चैट शुरू कर सकेंगे।";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "केवल अपना QR कोड साझा करें और उन लोगों के साथ लिंक करें, जिन पर आप भरोसा करते हैं। साझा किए जाने पर अन्य लोग आपका यूज़रनेम देख सकेंगे और आपके साथ चैट शुरू कर सकेंगे।";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR कोड और लिंक सेट नहीं है। अपने नेटवर्क कनेक्शन की जांच करके पुनः प्रयास करें।";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "फिर से स्थापित करना";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "यदि आप अपना QR कोड फिर से स्थापित करते हैं, तो आपका मौजूदा QR कोड और लिंक अब काम नहीं करेगा।";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "यदि आप अपना QR कोड और लिंक फिर से स्थापित करते हैं, तो आपका मौजूदा QR कोड और लिंक अब काम नहीं करेगा।";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "आपका QR कोड और लिंक फिर से स्थापित कर दिया गया है और एक नया QR कोड और लिंक बनाया गया है।";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "साझा करें";
@@ -7721,7 +7907,7 @@
 "USERNAME_LINK_TOOLTIP_TITLE" = "अपना यूज़रनेम साझा करें";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "उपभोगकर्ता नाम खोजते समय त्रुटि हुई है। कृपया कुछ देर बाद कोशिश करें।";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "यूज़रनेम खोजते समय त्रुटि हुई है। कृपया कुछ देर बाद कोशिश करें।";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ मान्य यूज़रनेम नहीं है। सुनिश्चित करें कि आपने पूरा यूज़रनेम और उसके बाद उसके अंकों का सेट दर्ज किया है।";
@@ -7733,7 +7919,7 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "इस यूज़रनेम का लिंक अब मान्य नहीं है।";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ एक Signal उपयोगकर्ता नहीं है। सुनिश्चित करें कि आपने उपयोगकर्ता का पूरा नाम डाला है।";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ एक Signal यूज़र नहीं है। सुनिश्चित करें कि आपने उपयोगकर्ता का पूरा नाम डाला है।";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "उपयोगकर्ता नहीं मिला";
@@ -7745,19 +7931,19 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "आपका QR कोड और लिंक फिर से स्थापित कर दिया गया है और आपका यूज़रनेम %1$@ है";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "यूज़रनेम एक संख्या से शुरू नहीं हो सकते हैं।";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "यूज़रनेम एक संख्या से शुरू नहीं हो सकते हैं";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "आपका यूज़रनेम बदलने से आपका मौजूदा QR कोड और लिंक फिर से स्थापित हो जाएगा। क्या आपको यकीन है?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "यूज़रनेम से अन्य लोग बिना आपके फ़ोन नंबर के बिना ही आपको संदेश भेज सकते हैं। वे कुछ अंकों के समूह में होते हैं ताकि आपको अपना पता निजी रखने में मदद मिल सके। %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "यूज़रनेम हमेशा संख्याओं के एक समूह के साथ जोड़े जाते हैं। %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "अपना यूज़रनेम चुनें";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "उपयोगकर्ता नाम में केवल a-z, 0-9, और _ आ सकते हैं।";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "उपयोगकर्ता नाम में केवल a-z, 0-9, और _ आ सकते हैं";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "अमान्य यूज़रनेम, न्यूनतम 2 अंक दर्ज करें";
@@ -7771,17 +7957,20 @@
 /* An error message shown when the user wants to set their username to an unavailable value. */
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "यह यूज़रनेम उपलब्ध नहीं है।";
 
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "बहुत अधिक प्रयास किए गए, कृपया बाद में पुनः प्रयास करें";
+
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "यूज़रनेम";
 
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "यूज़रनेम";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "यूज़रनेम कम से कम %1$@ वर्णों से शुरू होने चाहिए।";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "यूज़रनेम 00 पर समाप्त नहीं हो सकते। 1-9 के बीच का कोई दूसरा अंक आज़माएं";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "यह संख्या 00 नहीं हो सकती। 1-9 के बीच का कोई अंक दर्ज करें";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "यूज़रनेम तभी अपडेट हो सकता है जब आप इंटरनेट से जुड़े हों।";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "डिवाइस का नाम ख़ाली नहीं हो सकता";

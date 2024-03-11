@@ -177,7 +177,7 @@ final class CallRecordStoreTest: XCTestCase {
         }
     }
 
-    // MARK: - updateRecordStatus
+    // MARK: - updateCallStatus
 
     func testUpdateRecordStatus() {
         let callRecord = makeCallRecord(callStatus: .group(.generic))
@@ -187,7 +187,7 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         inMemoryDB.write { tx in
-            callRecordStore.updateRecordStatus(
+            callRecordStore.updateCallAndUnreadStatus(
                 callRecord: callRecord,
                 newCallStatus: .group(.joined),
                 db: InMemoryDB.shimOnlyBridge(tx).db
@@ -204,6 +204,84 @@ final class CallRecordStoreTest: XCTestCase {
 
         XCTAssertEqual(callRecord.callStatus, .group(.joined))
         XCTAssertTrue(callRecord.matches(fetched))
+    }
+
+    func testUpdateRecordStatusAndUnread() {
+        /// Some of these are not updates that can happen in production; for
+        /// example, a missed individual call cannot move into a pending state.
+        ///
+        /// However, for the purposes of ``CallRecordStore`` we're just
+        /// interested in testing that it does a dumb update.
+        let testCases: [(
+            beforeCallStatus: CallRecord.CallStatus,
+            beforeUnreadStatus: CallRecord.CallUnreadStatus,
+            afterCallStatus: CallRecord.CallStatus,
+            afterUnreadStatus: CallRecord.CallUnreadStatus
+        )] = [
+            (.individual(.pending), .read, .individual(.incomingMissed), .unread),
+            (.individual(.incomingMissed), .unread, .individual(.pending), .read),
+            (.individual(.incomingMissed), .unread, .individual(.accepted), .read),
+            (.individual(.incomingMissed), .unread, .individual(.notAccepted), .read),
+
+            (.group(.generic), .read, .group(.ringingMissed), .unread),
+            (.group(.ringingMissed), .unread, .group(.generic), .read),
+            (.group(.ringingMissed), .unread, .group(.joined), .read),
+            (.group(.ringingMissed), .unread, .group(.ringing), .read),
+            (.group(.ringingMissed), .unread, .group(.ringingAccepted), .read),
+            (.group(.ringingMissed), .unread, .group(.ringingDeclined), .read),
+        ]
+        XCTAssertEqual(
+            testCases.count,
+            CallRecord.CallStatus.allCases.count
+        )
+
+        for (beforeCallStatus, beforeUnreadStatus, afterCallStatus, afterUnreadStatus) in testCases {
+            let callRecord = makeCallRecord(callStatus: beforeCallStatus)
+            XCTAssertEqual(callRecord.unreadStatus, beforeUnreadStatus)
+
+            inMemoryDB.write { tx in
+                callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db)
+
+                callRecordStore.updateCallAndUnreadStatus(
+                    callRecord: callRecord,
+                    newCallStatus: afterCallStatus,
+                    db: InMemoryDB.shimOnlyBridge(tx).db
+                )
+                XCTAssertEqual(callRecord.callStatus, afterCallStatus)
+                XCTAssertEqual(callRecord.unreadStatus, afterUnreadStatus)
+
+                let fetched = callRecordStore.fetch(
+                    callId: callRecord.callId,
+                    threadRowId: callRecord.threadRowId,
+                    db: InMemoryDB.shimOnlyBridge(tx).db
+                ).unwrapped
+                XCTAssertTrue(callRecord.matches(fetched))
+            }
+        }
+    }
+
+    // MARK: - markAsRead
+
+    func testMarkAsRead() {
+        let unreadCallRecord = makeCallRecord(callStatus: .group(.ringingMissed))
+        XCTAssertEqual(unreadCallRecord.unreadStatus, .unread)
+
+        inMemoryDB.write { tx in
+            let db = InMemoryDB.shimOnlyBridge(tx).db
+            callRecordStore.insert(callRecord: unreadCallRecord, db: db)
+            callRecordStore.markAsRead(callRecord: unreadCallRecord, db: db)
+            XCTAssertEqual(unreadCallRecord.unreadStatus, .read)
+        }
+
+        let fetched = inMemoryDB.read { tx in
+            callRecordStore.fetch(
+                callId: unreadCallRecord.callId,
+                threadRowId: unreadCallRecord.threadRowId,
+                db: InMemoryDB.shimOnlyBridge(tx).db
+            ).unwrapped
+        }
+
+        XCTAssert(fetched.matches(unreadCallRecord))
     }
 
     // MARK: - updateWithMergedThread
@@ -307,6 +385,7 @@ final class CallRecordStoreTest: XCTestCase {
         let (interaction1, thread1) = insertThreadAndInteraction()
         let (interaction2, thread2) = insertThreadAndInteraction()
         let (interaction3, thread3) = insertThreadAndInteraction()
+        let (interaction4, thread4) = insertThreadAndInteraction()
 
         try inMemoryDB.write { tx in
             try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
@@ -321,9 +400,10 @@ final class CallRecordStoreTest: XCTestCase {
         try inMemoryDB.write { tx in
             try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
                 INSERT INTO "CallRecord"
-                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "timestamp", "groupCallRingerAci" )
+                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "timestamp", "groupCallRingerAci", "unreadStatus" )
                 VALUES
-                ( 3, 12345, \(interaction3), \(thread3), 2, 0, 8, 1701300001, X'c2459e888a6a474b80fd51a79923fd50' );
+                ( 3, 12345, \(interaction3), \(thread3), 2, 0, 8, 1701300001, X'c2459e888a6a474b80fd51a79923fd50', 0 ),
+                ( 4, 123456, \(interaction4), \(thread4), 2, 0, 8, 1701300002, X'227a8eefe8dd45f2a18c3276dc2da653', 1 );
             """)
         }
 
@@ -348,16 +428,35 @@ final class CallRecordStoreTest: XCTestCase {
                 callStatus: .group(.ringingAccepted),
                 callBeganTimestamp: 1701300000
             ),
+            {
+                /// A call record's unread status is set during init, based on
+                /// its call status. This fixture, however, represents a missed
+                /// ring that was later marked as read – so we'll manually
+                /// overwrite the unread property.
+                let fixture: CallRecord = .fixture(
+                    id: 3,
+                    callId: 12345,
+                    interactionRowId: interaction3,
+                    threadRowId: thread3,
+                    callType: .groupCall,
+                    callDirection: .incoming,
+                    callStatus: .group(.ringingMissed),
+                    groupCallRingerAci: Aci.constantForTesting("C2459E88-8A6A-474B-80FD-51A79923FD50"),
+                    callBeganTimestamp: 1701300001
+                )
+                fixture.unreadStatus = .read
+                return fixture
+            }(),
             .fixture(
-                id: 3,
-                callId: 12345,
-                interactionRowId: interaction3,
-                threadRowId: thread3,
+                id: 4,
+                callId: 123456,
+                interactionRowId: interaction4,
+                threadRowId: thread4,
                 callType: .groupCall,
                 callDirection: .incoming,
                 callStatus: .group(.ringingMissed),
-                groupCallRingerAci: Aci.constantForTesting("C2459E88-8A6A-474B-80FD-51A79923FD50"),
-                callBeganTimestamp: 1701300001
+                groupCallRingerAci: Aci.constantForTesting("227A8EEF-E8DD-45F2-A18C-3276DC2DA653"),
+                callBeganTimestamp: 1701300002
             ),
         ]
 

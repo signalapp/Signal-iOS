@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "תמונה";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "תמונה";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "שיחות";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "שיחה נכנסת";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "שיחה שלא נענתה";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "שיחה יוצאת";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "ניקוי";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "זה ימחק לצמיתות את כל היסטוריית השיחות";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "לנקות היסטוריית שיחות?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "מחיקה";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "הכל";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "לא נענו";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "מעבר לצ׳אט";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "הצטרפות לשיחה קולית";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "הצטרף";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "הצטרפות לשיחת וידאו";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "אין שיחות שלא נענו";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "אין שיחות אחרונות";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "כדי להתחיל, אפשר להתקשר לחבר או חברה";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "חזור אל השיחה";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "חזור";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "תוצאות לא נמצאו עבור '%1$@'";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "בחר";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "בחר";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "שיחת שמע";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "שיחת וידאו";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "מידע";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "צלם תמונה ואז שלח אותה";
 
@@ -929,16 +998,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "ערוך תמונה";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "המספר החדש שלך לא אמור להיות כמו המספר הישן שלך. אנא הכנס מספר חדש של טלפון כדי לשנות את המספר שלך.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "המספר החדש שלך לא אמור להיות כמו המספר הישן שלך. אנא הכנס מספר טלפון חדש כדי לשנות את המספר שלך.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "מספר הטלפון שהכנסת אינו תואם אל המספר של החשבון שלך.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "מספר חדש בלתי תקף של טלפון. אנא הכנס מספר תקף של טלפון כדי לשנות את המספר שלך.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "מספר טלפון חדש בלתי תקף. אנא הכנס מספר טלפון תקף כדי לשנות את המספר שלך.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "מספר ישן בלתי תקף של טלפון. אנא הכנס מספר תקף של טלפון כדי לשנות את המספר שלך.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "מספר טלפון ישן בלתי תקף. אנא הכנס מספר טלפון תקף כדי לשנות את המספר שלך.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "הנה תצוגה מקדימה של צבע הצ׳אט.";
@@ -998,7 +1067,10 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "מצא לפי מספר טלפון";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "מצא לפי שם משתמש";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "חיפוש לפי שם משתמש";
+
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "פתיחת הגדרות";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות אילו מאנשי הקשר שלך הם משתמשי Signal.";
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "קשר מכשיר חדש";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "חסמת את %1$@";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ נמצא/ת באנשי הקשר של המערכת שלך";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "אין הודעות ישירות עם %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "בקשת הודעה ממתינה";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "חבר/ת Signal";
@@ -1288,15 +1369,6 @@
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "הוסף אל אנשי קשר של המערכת";
 
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "מנהלנים";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "הכול";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "מושבת";
-
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "בחר מי יכול לערוך את השם, התמונה, התיאור וקוצב זמן ההודעות הנעלמות של הקבוצה.";
 
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "תגים";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "לא תקבל יותר הודעות או עדכונים ממשתמש זה.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "לא תקבל יותר הודעות או עדכונים מקבוצה זו.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "חסימת קבוצה";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "חסימת משתמש/ת";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "שיחת שמע נכנסת";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "שיחת וידאו נכנסת";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "שיחת שמע שלא נענתה";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "שיחת וידאו שלא נענתה";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "שיחת שמע יוצאת";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "שיחת וידאו יוצאת";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "ערוך";
@@ -1426,6 +1510,9 @@
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "להסיר את %1$@ מהקבוצה?";
 
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "דיווח כספאם";
+
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "הסרת תפקיד מנהל/ת";
 
@@ -1490,7 +1577,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "בחר קוד מדינה";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "מעכשיו פרטיות מספר טלפון, שמות משתמש אופציונליים ולינקים.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "מעכשיו: פרטיות מספר טלפון, שמות משתמש אופציונליים ולינקים.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "דרכים חדשות להתחבר";
@@ -1685,7 +1772,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "מחיקת חשבון";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "מספר הטלפון שהכנסת אינו תואם אל המספר של החשבון שלך.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "מספר הטלפון שהכנסת אינו תואם את המספר של החשבון שלך.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "למחוק את כל ההודעות בצ'אט?";
@@ -1697,7 +1784,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "מחיקה";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "האדם הזה ימחק מאנשי הקשר במערכת שלך. לא נציג לך את האדם הזה בזמן החיפוש. אם היא או הוא ישלחו לך הודעה בעתיד, תופיע אצלך בקשת הודעה.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "האדם הזה ימחק מאנשי הקשר של המערכת שלך. לא נציג לך את האדם הזה בזמן החיפוש. אם היא או הוא ישלחו לך הודעה בעתיד, תופיע אצלך בקשת הודעה.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "למחוק איש קשר ולהסיר אותו או אותה מהרשימה שלך?";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "הורדת צרופה נכשלה.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "העלאת הקובץ המצורף נכשלה.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "הודעה מאת %1$@ לא יכלה להימסר";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "מציאת פרטי החשבון שלך";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "יש להזין שם משתמש ואחריו נקודה ואת סט המספרים שלו.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "שם משתמש";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "חיפוש לפי שם משתמש";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "סמן כמוודא";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "חברי קבוצה";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "הקש כדי לסקור";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "חבר קבוצה";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "סקור חברי קבוצה";
 
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "שלחת ל%1$@ בקשה להפעיל תשלומים.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "דוּוח/ה כספאם";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal קיבלה הודעה שהאדם הזה חשוד בשליחת ספאם. Signal לא יכולה לראות את התוכן של אף צ׳אט.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "דוּוח/ה כספאם";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "הזמן חברים אל Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "עוד";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "חיפוש";
@@ -3674,10 +3779,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "תצוגה מקדימה של קישור";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "ניהול אנשי קשר במערכת לא זמין יותר ב–iPad. כדי להוסיף חברי Signal לאנשי הקשר של המערכת שלך, צריך לפתוח את Signal בטלפון.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "ניהול אנשי קשר של המערכת לא זמין יותר ב–iPad. כדי להוסיף חברי Signal לאנשי הקשר של המערכת שלך, צריך לפתוח את Signal בטלפון.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "ניהול אנשי קשר במערכת לא נתמך יותר ב–iPad. המכשיר הזה ימשיך לסנכרן כל שינוי ברשימת אנשי הקשר שלך מ–Signal בטלפון שלך.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "ניהול אנשי קשר של המערכת לא נתמך יותר ב–iPad. המכשיר הזה ימשיך לסנכרן כל שינוי ברשימת אנשי הקשר שלך מ–Signal בטלפון שלך.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "למידע נוסף";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "חסימה ומחיקה";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "דיווח על דואר זבל וחסימה";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "למחוק ולעזוב קבוצה?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "סקור בקשות בזהירות. Signal מצא איש קשר אחר עם אותו שם.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "איש הקשר שלך";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "לאדם הזה יש את אותו שם משתמש כמו לאיש קשר אחר";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "אם אינך בטוח ממי הבקשה, סקור את אנשי הקשר למטה ונקוט בפעולה.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "בקשה";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "סקור בקשה";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "עדכן איש קשר";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "סקור בקשה";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal תקבל הודעה שהאדם הזה חשוד בשליחת ספאם. Signal לא יכולה לראות את התוכן של אף צ׳אט.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "לדווח על ספאם?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "דיווח כספאם";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "דוּוח/ה כספאם.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "דווח/ה כדואר זבל ונחסם/ה.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "לתת ל%1$@ לשלוח לך הודעות ולשתף את השם והתמונה שלך איתו או איתה? הסרת את האדם הזה בעבר.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "דיווח…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "ביטול חסימה";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "אפשר ללחוץ כדי להוסיף";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "שינה/שינתה לאחרונה את שם הפרופיל מן %1$@ אל %2$@.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ החליף/ה לאחרונה את שם הפרופיל מ%2$@ ל%3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "דלג";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi וסלולרי";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "שיחת שמע";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "בחירת איש קשר או קבוצה להתחיל איתם שיחה חדשה.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "שיחה חדשה";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "שליחת הודעה";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "שיחה חדשה";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "שיחת וידאו";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "מצא לפי מספר טלפון";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "חיפוש לפי שם משתמש";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "קבוצה חדשה";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "בחירת קבוצה";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "חפש";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "מצא משתמש";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "מצא לפי מספר טלפון";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "מתן שם לסטורי";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "מצא אנשי קשר לפי מספר טלפון";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "חיפוש אנשי קשר לפי שם משתמש";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "אין קבוצות במשותף";
@@ -4457,7 +4589,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "התר הרשאות";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "בחר מי יכול למצוא אותך ב־Signal עם המספר שלך %1$@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "בחר מי יכול למצוא אותך ב־Signal עם מספר הטלפון שלך %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "מי יכול למצוא אותך עם המספר שלך?";
@@ -4469,7 +4601,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "אנא המתן מספר דקות לפני שתנסה שוב. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "מספר בלתי תקף של טלפון. אנא הכנס מספר תקף של טלפון כדי להירשם.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "מספר טלפון בלתי תקף. אנא הכנס מספר טלפון תקף כדי להירשם.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "ניחושי PIN אזלו לך, אבל אתה עדין יכול להשיג גישה אל חשבון Signal שלך ע״י יצירת PIN חדש. למען פרטיותך ואבטחתך, חשבונך ישוחזר בלי מידע פרופיל שמור כלשהו או הגדרות שמורות כלשהן.";
@@ -4949,7 +5081,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "כולם";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "כל מי שיש להם את המספר הטלפון שלך יראו אותך ב–Signal ויוכלו להתחיל איתך צ׳אט.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "כל מי שיש להם את מספר הטלפון שלך יראו אותך ב–Signal ויוכלו להתחיל איתך צ׳אט.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "אף אחד";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "אף אחד";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "מספר הטלפון שלך לא יהיה גלוי לאף אחד אלא אם כן המספר שמור ברשימת אנשי הקשר שלו או שלה.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "מספר הטלפון שלך לא יהיה גלוי לאף אחד.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5347,6 +5479,9 @@
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "שם המשתמש, קוד ה–QR והלינק שלך לא גלויים בפרופיל שלך. כדאי לשתף את שם המשתמש שלך רק עם אנשים שבוטחים בהם.";
 
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "אנשים יכולים לשלוח לך הודעות באמצעות שם המשתמש האופציונלי שלך, כך שכבר אין צורך לתת את מספר הטלפון שלך.";
+
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "כתובת יפוי כוח";
 
@@ -5630,10 +5765,10 @@
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "הקוד שהכנסת לא חוקי. כדאי לבדוק את הקוד ולנסות שוב.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "אנא הכנס מספר תקף של טלפון כדי להירשם.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "אנא הכנס מספר טלפון תקף כדי להירשם.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "מספר בלתי תקף של טלפון";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "מספר טלפון בלתי תקף";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "קוד וידוא יישלח אל מספר זה. האם מספר הטלפון שלך למעלה נכון?";
@@ -5730,6 +5865,48 @@
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "מספר הביטחון שלך עם %1$@ השתנה. מומלץ לוודא אותו.";
+
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "טיפים לבטיחות";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "אם מישהו שלא מכירים שולח הודעות על מטבעות קריפטו (כמו ביטקוין) או הזדמנות פיננסית, חשוב להיזהר—זה כנראה ספאם.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "הונאות קריפטו או הונאות כספיות";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "חשוב להיזהר מעסקים או סוכנויות ממשלתיות שיוצרים איתך קשר. הודעות הקשורות בסוכנויות מס, שליחויות ועוד עלולות להיות ספאם.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "עסקים ומוסדות מזויפים";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "יש לסקור את הבקשה הזו בזהירות. אף אחד מאנשי הקשר שלך או האנשים שהתכתבת איתם לא נמצאים בקבוצה הזו. הנה כמה דברים שכדאי להיזהר מהם:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "טיפים לבטיחות";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "חשוב להיזהר כשמקבלים בקשת הודעה מאנשים שלא מכירים. כדאי להיזהר מ:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "חשוב להיזהר מהודעות מאנשים שלא מכירים שמכילות לינקים לאתרי אינטרנט. אף פעם לא ללחוץ על לינקים מאנשים שלא סומכים עליהם.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "הודעות עם לינקים";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "שולחי ספאם לרוב מתחילים עם הודעה פשוטה כמו ״היי״ כדי למשוך אותך פנימה. אם מגיבים, הם עשויים לנסות להעמיק את התקשורת.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "הודעות מעורפלות או לא רלוונטיות";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "סרוק את קוד ה־QR במכשיר של איש הקשר שלך.";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "כדי לשנות את ההגדרה הזו, יש להגדיר את \"מי יכול לראות את המספר שלי\" כ\"אף אחד\".";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "מי יכול למצוא אותי לפי המספר שלי?";
 
@@ -7253,7 +7436,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "אישור בקשת הודעה";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "שמירה שלהם באנשי הקשר שלך";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "שמירה שלהם באנשי הקשר של המערכת שלך";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "חברי ה–Signal שלך יוכלו לראות את השם והתמונה שלך, וגם את מה ששלחת ל״הסטורי שלי״ אלא אם כן הסתרת זאת מהם.";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "אישורי קריאה מושבתים";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "זהות מינוי הועתקה ללוח.";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "מזהה התורם הועתק ללוח";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "מספר הביטחון שלך עם %1$@ תואם. אתה יכול לסמן איש קשר זה כמוודא.";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "קודי QR ולינקים";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "מספר הטלפון שלך כבר לא גלוי בצ׳אטים. אם המספר שלך שמור באנשי הקשר של חבר או חברה, הם עדיין יראו אותו.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "פרטיות מספר טלפון";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "דרכים חדשות להתחבר";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "אנשים יכולים לשלוח לך הודעות באמצעות שם המשתמש האופציונלי שלך, כך שכבר אין צורך לתת את מספר הטלפון שלך. שמות משתמש לא גלויים בפרופיל שלך.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "שמות משתמש";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "אפס";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "איפוס קוד ה–QR שלך יגרום לכך שקוד ה–QR והלינק הקיימים שלך לא יפעלו יותר.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "איפוס קוד ה–QR והלינק שלך יגרום לכך שקוד ה–QR והלינק הקיימים שלך לא יפעלו יותר.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "קוד ה–QR והלינק שלך אופסו ונוצרו קוד QR ולינק חדשים.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "שתף";
@@ -7745,19 +7931,19 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "קוד ה–QR והלינק שלך אופסו ושם המשתמש שלך הוא %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "שמות משתמש לא יכולים להתחיל במספר.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "שם משתמש לא יכול להתחיל במספר";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "שינוי שם המשתמש שלך יאפס את קוד ה–QR והלינק הקיימים שלך. להמשיך?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "שמות משתמש מאפשרים לאחרים לשלוח לך הודעה בלי להזדקק למספר הטלפון שלך. הם מוצמדים לסט של ספרות כדי לעזור לשמור על פרטיות הכתובת שלך. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "שמות משתמש תמיד מוצמדים לסט של מספרים. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "בחירת שם המשתמש שלך";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "שמות משתמש יכולים להכיל רק a-z, 0-9, ואת התו _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "שמות משתמש יכולים להכיל רק a-z, 0-9 והתו _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "שם משתמש לא חוקי, יש להזין לפחות 2 ספרות";
@@ -7769,7 +7955,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "מה זה המספר הזה?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "שם משתמש לא זמין.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "שם משתמש לא זמין";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "נעשו יותר מדי ניסיונות, יש לנסות שוב מאוחר יותר";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "שם משתמש";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "שם משתמש";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "שמות משתמש חייבים להכיל לפחות %1$@ תווים.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "שמות משתמש לא יכולים להסתיים ב–00. יש לנסות ספרה אחרת בין 9–1";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "המספר הזה לא יכול להיות 00. יש להזין ספרה בין 9–1";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "שמות משתמש יכולים להתעדכן רק בזמן חיבור לאינטרנט.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "שם מכשיר אינו יכול להיות ריק";

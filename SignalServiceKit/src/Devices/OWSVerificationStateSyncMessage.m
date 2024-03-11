@@ -59,8 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (_verificationForRecipientAddress == nil) {
-        _verificationForRecipientAddress =
-            [[SignalServiceAddress alloc] initWithPhoneNumber:[coder decodeObjectForKey:@"verificationForRecipientId"]];
+        NSString *phoneNumber = [coder decodeObjectForKey:@"verificationForRecipientId"];
+        _verificationForRecipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil
+                                                                                      phoneNumber:phoneNumber];
         OWSAssertDebug(_verificationForRecipientAddress.isValid);
     }
 

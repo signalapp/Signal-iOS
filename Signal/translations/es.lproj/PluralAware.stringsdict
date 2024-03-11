@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante del grupo tiene un nombre similar.</string>
+			<string>%1$d participante usa el mismo nombre.</string>
 			<key>other</key>
-			<string>%1$d participantes del grupo tienen nombres similares.</string>
+			<string>%1$d participantes usan el mismo nombre.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Se encontró %1$d conflicto de nombre en este grupo.</string>
+			<key>other</key>
+			<string>Se encontraron %1$d conflictos de nombre en este grupo.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d participante</string>
+			<key>other</key>
+			<string>%1$d participantes</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante del grupo tiene un nombre similar. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>Se encontró %1$d conflicto de nombre en este grupo. Revisa los participantes más abajo o elige tomar medidas.</string>
 			<key>other</key>
-			<string>%1$d participantes del grupo tienen nombres similares. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>Se encontraron %1$d conflictos de nombre en este grupo. Revisa los participantes más abajo o elige tomar medidas.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vista</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vistas</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Un alias debe empezar con al menos %1$d carácter.</string>
+			<key>other</key>
+			<string>Un alias debe empezar con al menos %1$d caracteres.</string>
 		</dict>
 	</dict>
 </dict>

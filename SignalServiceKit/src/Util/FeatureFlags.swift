@@ -58,13 +58,6 @@ public class FeatureFlags: BaseFlags {
 
     public static let choochoo = build.includes(.internal)
 
-    public static let phoneNumberPrivacy = build.includes(.internal)
-
-    static let disableCdsCompatibilityMode = build.includes(.internal)
-
-    @objc
-    public static let usernames = build.includes(.internal)
-
     @objc
     public static let linkedPhones = build.includes(.internal)
 
@@ -90,12 +83,9 @@ public class FeatureFlags: BaseFlags {
 
     public static let allowInternalIDEALDonations = build.includes(.internal)
 
-    public static let shouldShowCallsTab = build.includes(.internal)
-
-    public static let useCallMemberComposableViewsForLocalUserInGroupCalls = false
-    public static let useCallMemberComposableViewsForLocalUserInIndividualCalls = false
     public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = false
     public static let useCallMemberComposableViewsForRemoteUserInIndividualCalls = false
+    public static let useCallMemberComposableViewsForLocalUser = false
 
     @objc
     public static var notificationServiceExtension: Bool {
@@ -125,13 +115,12 @@ public class FeatureFlags: BaseFlags {
         }
     }
 
-    public static let editMessageSend = true
-
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
 
     public static let messageBackupFileAlpha = build.includes(.internal)
 
-    public static let useAttachmentsV4Endpoint = build.includes(.internal)
+    public static let readV2Attachments = false
+    public static let newAttachmentsUseV2 = false
 }
 
 // MARK: -

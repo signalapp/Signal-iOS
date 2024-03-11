@@ -233,7 +233,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                 let threadName = contactsManager.displayName(for: thread, transaction: transaction)
                 let callerNameForGroupCall: String?
                 if thread.isGroupThread {
-                    callerNameForGroupCall = contactsManager.displayName(for: caller, transaction: transaction)
+                    callerNameForGroupCall = contactsManager.displayName(for: caller, tx: transaction).resolvedValue()
                 } else {
                     callerNameForGroupCall = nil
                 }
@@ -601,7 +601,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
 
         let messageText = rawMessageText.filterStringForDisplay()
 
-        let senderName = contactsManager.displayName(for: incomingMessage.authorAddress, transaction: transaction)
+        let senderName = contactsManager.displayName(for: incomingMessage.authorAddress, tx: transaction).resolvedValue()
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -724,7 +724,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
         // disturb the user for a non-message
         guard previewType == .namePreview else { return }
 
-        let senderName = contactsManager.displayName(for: reaction.reactor, transaction: transaction)
+        let senderName = contactsManager.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
 
         let notificationTitle: String
 
@@ -757,8 +757,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
             notificationBody = String(format: NotificationStrings.incomingReactionStickerMessageFormat, reaction.emoji)
         } else if message.contactShare != nil {
             notificationBody = String(format: NotificationStrings.incomingReactionContactShareMessageFormat, reaction.emoji)
-        } else if message.hasBodyAttachments(with: transaction) {
-            let mediaAttachments = message.mediaAttachments(with: transaction)
+        } else if message.hasBodyAttachments(transaction: transaction) {
+            let mediaAttachments = message.mediaAttachments(transaction: transaction)
             let firstAttachment = mediaAttachments.first
             let firstAttachmentType = firstAttachment?.attachmentType(forContainingMessage: message, transaction: transaction)
 
@@ -1054,7 +1054,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                         case .unknown, .localUser:
                             groupUpdateAuthor = nil
                         case .legacyE164(let e164):
-                            groupUpdateAuthor = .init(e164)
+                            groupUpdateAuthor = .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue)
                         case .aci(let aci):
                             groupUpdateAuthor = .init(aci)
                         case .rejectedInviteToPni(let pni):

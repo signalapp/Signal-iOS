@@ -36,7 +36,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .init(
                     aci: localAci,
-                    pni: nil,
+                    pni: Pni.randomForTesting(),
                     e164: E164("+16505550100")!
                 ),
                 tx: tx.asV2Write

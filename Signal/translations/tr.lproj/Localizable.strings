@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Görüntü";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Fotoğraf";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Aramalar";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Gelen";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Cevapsız";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Giden";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Kaldır";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Bu, tüm arama geçmişini kalıcı olarak silecektir.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Arama geçmişi temizlensin mi?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Sil";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Tümü";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Cevapsız";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Sohbete Git";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Sesli Aramaya Katıl";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Katıl";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Görüntülü Aramaya Katıl";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Cevapsız arama yok";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Güncel arama yok";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Bir arkadaşını arayarak başla";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Aramaya Dön";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Geri Dön";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "'%1$@' ile eşleşen sonuç bulunamadı";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Seç";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Seç";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Sesli Arama";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Görüntülü Arama";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Bilgi";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Bir fotoğraf çekin ve gönderin";
 
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Kullanıcı adına göre bul";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Ayarları aç";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Hangi kişilerinizin Signal kullandığını görmek için iOS Ayarlar uygulamasından kişiler erişimini etkinleştirebilirsiniz.";
 
@@ -1027,11 +1099,20 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Yeni Cihaz Bağla";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ engellendi";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ sistem kişilerin arasında";
 
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "%1$@ kişisinden doğrudan mesaj yok";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Bekleyen mesaj isteği";
+
 /* A label indicating a user is a signal connection. */
-"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Bağlantısı";
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Kişisi";
 
 /* The title for a contact 'about' sheet. */
 "CONTACT_ABOUT_SHEET_TITLE" = "Hakkında";
@@ -1288,15 +1369,6 @@
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Sistem Kişilerine Ekle";
 
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Yöneticiler";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Tümü";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Devre dışı";
-
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Grup adını, fotoğrafını, açıklamasını ve kaybolan ileti zamanlayıcısını kimlerin düzenleyebileceğini seçin.";
 
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Rozetler";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Bu kullanıcının iletilerini veya güncellemelerini almayacaksınız.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Bu grubun iletilerini veya güncellemelerini almayacaksınız.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Grubu Engelle";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Kullanıcıyı Engelle";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Gelen sesli arama";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Gelen görüntülü arama";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Cevapsız sesli arama";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Cevapsız görüntülü arama";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Giden sesli arama";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Giden görüntülü arama";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Düzenle";
@@ -1425,6 +1509,9 @@
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ gruptan çıkarılsın mı?";
+
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Spam bildir";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Yöneticilikten Çıkart";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Eklenti indirmesi başarısız oldu.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Eklenti yükleme başarısız oldu.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@ tarafından gelen bir ileti teslim edilemedi";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Hesap bilgilerini bul";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Bir kullanıcı adı ve ardından bir nokta ve sayı kümesi gir.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Kullanıcı adı";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Kullanıcı adına göre bul";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Doğrulanmış olarak İşaretle";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Üyeler";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Gözden geçirmek için dokunun";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Üye";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Üyeleri İncele";
 
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Ödemeleri etkinleştirmek için %1$@ adlı kişiye bir istek gönderdin";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "Spam olarak bildirildi";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal, bu kişinin spam gönderiyor olabileceği konusunda bilgilendirildi. Signal hiçbir sohbetin içeriğini göremez.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Spam bildirildi";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Arkadaşlarınızı Signal'e Davet Edin";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Daha fazla";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Ara";
@@ -3674,7 +3779,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Bağlantı Ön İzlemesi";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Sistem kişilerinin yönetimi artık iPad'de kullanılamıyor. Sistem kişilerine Signal bağlantıları eklemek için telefonunda Signal'i aç.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Sistem kişilerinin yönetimi artık iPad'de kullanılamıyor. Sistem kişilerine Signal kişileri eklemek için telefonunda Signal'i aç.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Sistem kişilerinin yönetimi artık iPad'de desteklenmemektedir. Bu cihaz, telefonundaki Signal'den kişi listendeki değişiklikleri senkronize etmeye devam edecektir.";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Engelle ve Sil";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "İstenmeyen İleti Olarak Bildir ve Engelle";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Grubu Sil ve Ayrıl?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "İstekleri dikkatle gözden geçirin. Signal aynı ada sahip başka bir kişi buldu.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Kişiniz";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Bu kişi başka bir kişiyle aynı ada sahip";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "İsteğin kimden geldiğinden emin değilseniz, aşağıdaki kişileri inceleyerek tercih yapabilirsiniz.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "İstek";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "İsteği İncele";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Kişiyi güncelle";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "İsteği İncele";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal, bu kişinin spam gönderiyor olabileceği konusunda bilgilendirilecektir. Signal hiçbir sohbetin içeriğini göremiyor.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Spam bildirilsin mi?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Spam bildir";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Spam olarak bildirildi.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Gereksiz olarak bildirildi ve engellendi.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@ adlı kişinin sana mesaj atmasına ve adını ve fotoğrafını görmesine izin veriyor musun? Bu kişiyi geçmişte kaldırmıştın.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Bildir…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Engeli kaldır";
@@ -4190,7 +4301,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "…Hariç Herkes";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Tüm Signal Bağlantıları";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Tüm Signal Kişileri";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Sadece Bu Kişilerle Paylaş…";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Eklemek için dokun";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Yakın zamanda profil adı %1$@ iken %2$@ olarak değiştirdi.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ yakın zamanda profil adını %2$@ iken %3$@ olarak değiştirdi";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Atla";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Kablosuz Ağ ve Hücresel";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Sesli Arama";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Yeni bir arama başlatmak için bir kişi veya grup seç.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "Yeni arama";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "İleti";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "Yeni arama";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Görüntülü Arama";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Telefon Numarası ile Bul";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Kullanıcı adına göre bul";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Yeni Grup";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Grup Seç";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Konuşmada Ara";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Kullanıcıyı Bul";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Telefon Numarası ile Bul";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Hikayeyi Adlandır";
@@ -4324,6 +4453,9 @@
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kişileri Telefon Numarası ile Bul";
 
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Kullanıcı Adına Göre Kişileri Bul";
+
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Ortak grubunuz yok";
 
@@ -4367,10 +4499,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Bildirimler açılsın mı?";
 
 /* Shown as the body of an alert when notifications can't be shown due to an error. */
-"NOTIFICATIONS_ERROR_MESSAGE" = "Restart your %1$@ if you’re not receiving Signal notifications.";
+"NOTIFICATIONS_ERROR_MESSAGE" = "Signal bildirimlerini almıyorsan, %1$@ cihazını yeniden başlat.";
 
 /* Shown as the title of an alert when notifications can't be shown due to an error. */
-"NOTIFICATIONS_ERROR_TITLE" = "Couldn’t Show Notifications";
+"NOTIFICATIONS_ERROR_TITLE" = "Bildirimler Gösterilemedi";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "\"Okundu olarak işaretle\", \"Yanıtla\" ve \"Geri ara\" gibi eylemler içerir.";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Hiç kimse";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Telefon numaran, telefon rehberinde kayıtlı olmadığı sürece kimse tarafından görülmez.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Telefon numaran kimse tarafından görülmez.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Kullanıcı adın, kare kodun ve bağlantın profilinde görünmez. Kullanıcı adını yalnızca güvendiğin kişilerle paylaş.";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "İnsanlar artık isteğe bağlı kullanıcı adını kullanarak sana mesaj gönderebilir, böylece telefon numaranı vermene gerek kalmaz.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Vekil adresi";
@@ -5731,6 +5866,48 @@
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%1$@ ile olan güvenlik numaranız değişti. Doğrulamak isteyebilirsiniz.";
 
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Güvenlik İpuçları";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "Tanımadığın biri kripto para (Bitcoin gibi) veya finansal bir fırsat hakkında mesaj gönderirse dikkatli ol; spam olması olasıdır.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "Kripto veya para dolandırıcılıkları";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Seninle iletişime geçen işletmelere veya devlet kurumlarına karşı dikkatli ol. Vergi daireleri, kuryeler ve daha fazlasını içeren mesajlar spam olabilir.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Sahte işletmeler ve kurumlar";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Bu isteği dikkatlice incele. Kişilerinden veya sohbet ettiğin kişilerden hiçbiri bu grupta değil. İşte dikkat etmen gereken birkaç şey:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "Güvenlik İpuçları";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Tanımadığın kişilerden gelen mesaj isteklerini kabul ederken dikkatli ol. Şunlara dikkat et:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Tanımadığın kişilerden gelen ve web sitelerine bağlantılar içeren mesajlara dikkat et. Güvenmediğin kişilerin bağlantılarını asla ziyaret etme.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Bağlantı içeren mesajlar";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spam gönderenler genelde seni cezbetmek için \"Merhaba\" gibi basit bir mesajla başlar. Yanıt verirsen, seninle daha fazla etkileşime geçebilirler.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Belirsiz veya ilgisiz mesajlar";
+
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Kişinizin cihazındaki karekodu tarayın.";
 
@@ -5768,7 +5945,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal'in Kilidini Aç";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "İsim, kullanıcı adı, veya numara";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "İsim, kullanıcı adı veya numara";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "İsim ya da numara bul";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Bu ayarı değiştirmek için \"Numaramı Kimler Görebilir\" seçeneğini \"Hiç kimse\" olarak ayarla.";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kimler Beni Numaram ile Bulabilir?";
 
@@ -7253,25 +7436,25 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Bir mesaj isteğini kabul etmiş olman";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Bu kişilerin sistemdeki bağlantılarında olması";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Bu kişilerin sistem kişilerinde olması";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Bağlantıların; adını, fotoğrafını ve onlardan gizlemediğin sürece “Hikayem” kısmında ne paylaştığını görebilir.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Bağlantıları</bold> aşağıdaki şekillerde güvenmeyi seçtiğin kişilerdir:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Kişileri</bold> aşağıdaki şekillerde güvenmeyi seçtiğin kişilerdir:";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "Hikayeler";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Hikayeni Signal Bağlantıları'ndan hangilerinin görüntüleyebileceğini seç. Değişiklikler, daha önce gönderdiğin hikayeleri etkilemez.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Hikayeni Signal Kişilerinden hangilerinin görüntüleyebileceğini seç. Değişiklikler, daha önce gönderdiğin hikayeleri etkilemez.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Bu Hikayeyi Kimler Görebilir";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Hikayeni hangi Signal bağlantılarının görüntüleyebileceğini seç. Seçimini istediğin zaman gizlilik ayarlarından değiştirebilirsin.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Hikayeni hangi Signal Kişilerinin görüntüleyebileceğini seç. Seçimini istediğin zaman gizlilik ayarlarından değiştirebilirsin.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videolar %1$d saniyelik kliplere bölünür ve birden çok hikaye olarak paylaşılır.";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Görüntüleme kapalı";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Abonelik kimliği panoya kopyalandı";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Bağışçı kimliği panoya kopyalandı";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%1$@ ile olan güvenlik numaranız eşleşiyor. Bu kişiyi doğrulanmış olarak işaretleyebilirsiniz.";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "Kare Kodlar ve Bağlantılar";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Telefon numaran artık sohbetlerde görünmüyor. Numaran bir arkadaşının kişilerinde kayıtlıysa, numaranı yine görecektir.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Telefon Numarası Gizliliği";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "Bağlanmanın Yeni Yolları";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "İnsanlar artık isteğe bağlı kullanıcı adını kullanarak sana mesaj gönderebilir, böylece telefon numaranı vermene gerek kalmaz. Kullanıcı adları profilinde görünmez.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Kullanıcı adları";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Sıfırla";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Kare kodunu sıfırlarsan mevcut kare kodun ve bağlantın artık çalışmaz.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Kare kodunu ve bağlantını sıfırlarsan mevcut kare kodun ve bağlantın artık çalışmaz.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Kare kodun ve bağlantın sıfırlandı ve yeni bir kare kod ve bağlantı oluşturuldu.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Paylaş";
@@ -7745,19 +7931,19 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Kare kodun ve bağlantın sıfırlandı ve kullanıcı adın %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Kullanıcı adı rakam ile başlayamaz.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Kullanıcı adı bir sayı ile başlayamaz";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Kullanıcı adını değiştirmek, mevcut kare kodunu ve bağlantını sıfırlar. Emin misin?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Kullanıcı adları, telefon numarana ihtiyaç duymadan diğer kullanıcıların sana mesaj göndermesini sağlar. Adresini gizli tutmaya yardımcı olmak için kullanıcı adın bir dizi rakamla eşleştirilir. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Kullanıcı adları daima bir dizi sayı ile eşleştirilir. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Kullanıcı adını seç";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Kullanıcı adları yalnızca a-z, 0-9 ve _ içerebilir.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Kullanıcı adları yalnızca a-z, 0-9, ve _ içerebilir";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Geçersiz kullanıcı adı, en az 2 hane gir";
@@ -7769,7 +7955,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Bu numara kimin?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Bu kullanıcı adı kullanılamıyor.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Bu kullanıcı adı kullanılamıyor";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Çok fazla deneme yapıldı, lütfen daha sonra tekrar dene";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Kullanıcı adı";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Kullanıcı adı";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Kullanıcı adları en az %1$@ karakterle başlamalıdır.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Kullanıcı adları 00 ile bitemez. 1-9 arasında başka bir rakam dene";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Bu sayı 00 olamaz. 1-9 arasında bir rakam gir";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Kullanıcı adları yalnızca internete bağlıyken güncellenebilir.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Cihaz adı boş olamaz";

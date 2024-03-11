@@ -4,9 +4,12 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public protocol SocketManager {
     var isAnySocketOpen: Bool { get }
+    func waitForSocketToOpen(webSocketType: OWSWebSocketType) async throws
+
     var hasEmptiedInitialQueue: Bool { get }
 
     func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState
@@ -69,32 +72,34 @@ public class SocketManagerImpl: SocketManager {
                               failure: failure)
     }
 
-    private func waitForSocketToOpen(webSocketType: OWSWebSocketType,
-                                     waitStartDate: Date = Date()) -> Promise<Void> {
+    public func waitForSocketToOpen(webSocketType: OWSWebSocketType) async throws {
+        let (waiterPromise, waiterFuture) = Promise<Void>.pending()
+        try await withTaskCancellationHandler(
+            operation: {
+                let openGuarantee = webSocket(ofType: webSocketType).waitForOpen()
+                waiterFuture.resolve(on: SyncScheduler(), with: openGuarantee)
+                try await waiterPromise.awaitable()
+            },
+            onCancel: { waiterFuture.reject(CancellationError()) }
+        )
+    }
+
+    private func waitForSocketToOpenIfItShouldBeOpen(
+        webSocketType: OWSWebSocketType
+    ) -> Promise<Void> {
         assertOnQueue(OWSWebSocket.serialQueue)
 
         let webSocket = self.webSocket(ofType: webSocketType)
-        if webSocket.canMakeRequests {
-            // The socket is open; proceed.
-            return Promise.value(())
-        }
         guard webSocket.shouldSocketBeOpen else {
             // The socket wants to be open, but isn't.
             // Proceed even though we will probably fail.
             return Promise.value(())
         }
-        let maxWaitInteral = kSecondInterval * 30
-        guard abs(waitStartDate.timeIntervalSinceNow) < maxWaitInteral else {
-            // The socket wants to be open, but isn't.
-            // Proceed even though we will probably fail.
-            return Promise.value(())
-        }
-        return firstly(on: OWSWebSocket.serialQueue) {
-            Guarantee.after(seconds: kSecondInterval / 10)
-        }.then(on: OWSWebSocket.serialQueue) {
-            self.waitForSocketToOpen(webSocketType: webSocketType,
-                                     waitStartDate: waitStartDate)
-        }
+        // After 30 seconds, we try anyways. We'll probably fail.
+        let maxWaitInterval = 30 * kSecondInterval
+        return webSocket
+            .waitForOpen()
+            .timeout(on: OWSWebSocket.serialQueue, seconds: maxWaitInterval)
     }
 
     // This method can be called from any thread.
@@ -135,7 +140,7 @@ public class SocketManagerImpl: SocketManager {
         let unsubmittedRequestToken = webSocket(ofType: webSocketType).makeUnsubmittedRequestToken()
 
         return firstly(on: OWSWebSocket.serialQueue) {
-            self.waitForSocketToOpen(webSocketType: webSocketType)
+            self.waitForSocketToOpenIfItShouldBeOpen(webSocketType: webSocketType)
         }.then(on: OWSWebSocket.serialQueue) { () -> Promise<HTTPResponse> in
             let (promise, future) = Promise<HTTPResponse>.pending()
             self.makeRequest(request,
@@ -180,6 +185,9 @@ public class SocketManagerMock: SocketManager {
     public var isAnySocketOpen: Bool = false
 
     public var hasEmptiedInitialQueue: Bool = false
+
+    public func waitForSocketToOpen(webSocketType: OWSWebSocketType) async throws {
+    }
 
     public var socketStatesPerType = [OWSWebSocketType: OWSWebSocketState]()
 

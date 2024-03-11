@@ -31,17 +31,17 @@ public class AllSignalConnectionsViewController: OWSTableViewController2 {
         defer { self.contents = contents }
 
         let allConnections = databaseStorage.read { transaction in
-            profileManager.allWhitelistedRegisteredAddresses(tx: transaction)
-                .lazy
-                .filter { !$0.isLocalAddress }
-                .map { ConnectionModel(address: $0, transaction: transaction) }
-                .sorted { lhs, rhs in
-                    lhs.comparableName.localizedCaseInsensitiveCompare(rhs.comparableName) == .orderedAscending
-                }
+            return contactsManager.sortedComparableNames(
+                for: profileManager.allWhitelistedRegisteredAddresses(tx: transaction).filter { !$0.isLocalAddress },
+                tx: transaction
+            )
         }
 
         let collatedConnections = Dictionary(grouping: allConnections) {
-            collation.section(for: $0, collationStringSelector: #selector(ConnectionModel.stringForCollation))
+            return collation.section(
+                for: CollatableComparableDisplayName($0),
+                collationStringSelector: #selector(CollatableComparableDisplayName.collationString)
+            )
         }
 
         for (idx, title) in collation.sectionTitles.enumerated() {
@@ -61,7 +61,7 @@ public class AllSignalConnectionsViewController: OWSTableViewController2 {
         }
     }
 
-    private func items(for connections: [ConnectionModel]) -> [OWSTableItem] {
+    private func items(for connections: [ComparableDisplayName]) -> [OWSTableItem] {
         var items = [OWSTableItem]()
         for connection in connections {
             items.append(.init(dequeueCellBlock: { tableView in
@@ -77,17 +77,4 @@ public class AllSignalConnectionsViewController: OWSTableViewController2 {
         }
         return items
     }
-}
-
-private class ConnectionModel: Dependencies {
-    let address: SignalServiceAddress
-    let comparableName: String
-
-    init(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
-        self.address = address
-        self.comparableName = Self.contactsManager.comparableName(for: address, transaction: transaction)
-    }
-
-    @objc
-    func stringForCollation() -> String { comparableName }
 }

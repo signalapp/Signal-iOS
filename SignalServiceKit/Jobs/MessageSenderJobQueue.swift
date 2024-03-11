@@ -166,7 +166,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             jobRecord: jobRecord,
             future: jobFutures.pop(jobRecord.uniqueId)
         )
-        operation.queuePriority = jobRecord.isHighPriority ? .high : MessageSender.sendingQueuePriority(for: message)
+        operation.queuePriority = jobRecord.isHighPriority ? .high : MessageSender.sendingQueuePriority(for: message, tx: transaction)
 
         // Media messages run on their own queue to not block future non-media sends,
         // but should not start sending until all previous operations have executed.

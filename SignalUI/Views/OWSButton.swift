@@ -57,6 +57,34 @@ open class OWSButton: UIButton {
         self.tintColor = tintColor
     }
 
+    /// Creates a button with a title and image.
+    /// - Parameters:
+    ///   - title: The title for the button label.
+    ///   - imageName: The image for the button.
+    ///   - tintColor: The tint color for the image.
+    ///   Note that this does not tint the text.
+    ///   - spacing: The spacing between the image and title.
+    ///   - block: The action to perform on tap.
+    public init(
+        title: String,
+        imageName: String,
+        tintColor: UIColor?,
+        spacing: CGFloat,
+        block: @escaping () -> Void = {}
+    ) {
+        super.init(frame: .zero)
+
+        setTitle(title, for: .normal)
+
+        setImage(imageName: imageName)
+        self.tintColor = tintColor
+
+        addImageTitleSpacing(spacing)
+
+        self.block = block
+        addTarget(self, action: #selector(didTap), for: .touchUpInside)
+    }
+
     public func setImage(imageName: String?) {
         guard let imageName = imageName else {
             setImage(nil, for: .normal)
@@ -86,6 +114,16 @@ open class OWSButton: UIButton {
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    /// Adds spacing between the image and title.
+    ///
+    /// Does so by modifying `contentEdgeInsets` and `titleEdgeInsets`,
+    /// so call this after setting those.
+    public func addImageTitleSpacing(_ spacing: CGFloat) {
+        contentEdgeInsets.trailing += spacing
+        titleEdgeInsets.leading += spacing
+        titleEdgeInsets.trailing -= spacing
     }
 
     // MARK: - Common Style Reuse

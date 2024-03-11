@@ -19,7 +19,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
     /// but we are moving towards more explicit dependencies.
     private let dependencies: Dependencies
     private struct Dependencies {
-        let contactsManager: ContactsManagerProtocol
+        let contactsManager: any ContactManager
         let databaseStorage: SDSDatabaseStorage
         let recipientHidingManager: RecipientHidingManager
         let tsAccountManager: TSAccountManager
@@ -39,7 +39,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         e164: E164,
         serviceId: ServiceId?,
         viewControllerPresentingToast: UIViewController,
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
         recipientHidingManager: RecipientHidingManager,
         tsAccountManager: TSAccountManager
@@ -129,18 +129,19 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
     ///
     /// - Parameter nameComponents: The name components of the person whose names
     ///   we will return.
-    private func names(nameComponents: PersonNameComponents?) -> [String] {
-        guard let nameComponents = nameComponents else {
+    private func names(systemContactName: DisplayName.SystemContactName?) -> [String] {
+        guard let systemContactName else {
             return []
         }
-        if let nickname = nameComponents.nickname {
+        let config: DisplayName.Config = .current()
+        if config.shouldUseNicknames, let nickname = systemContactName.nameComponents.nickname {
             return [nickname]
         }
         var names = [String]()
-        if let firstName = nameComponents.givenName {
+        if let firstName = systemContactName.nameComponents.givenName {
             names.append(firstName)
         }
-        if let lastName = nameComponents.familyName {
+        if let lastName = systemContactName.nameComponents.familyName {
             names.append(lastName)
         }
         return names
@@ -152,9 +153,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let addressForProfileLookup = SignalServiceAddress(serviceId: serviceId, e164: e164)
         let (
             image,
-            nameComponents,
-            displayNameForToast,
-            phoneNumber
+            systemContactName
         ) = dependencies.databaseStorage.read { tx in
             let image = avatarBuilder.avatarImage(
                 forAddress: addressForProfileLookup,
@@ -162,25 +161,11 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                 localUserDisplayMode: .asUser,
                 transaction: tx
             )
-            let nameComponents = dependencies.contactsManager.nameComponents(
-                for: addressForProfileLookup,
-                transaction: tx
-            )
-            let displayNameForToast = dependencies.contactsManager.displayName(
-                for: addressForProfileLookup,
-                transaction: tx
-            ).formattedForActionSheetTitle()
-            let phoneNumber = SignalRecipient.fetchRecipient(
-                for: addressForProfileLookup,
-                onlyIfRegistered: false,
+            let systemContactName = dependencies.contactsManager.systemContactName(
+                for: e164.stringValue,
                 tx: tx
-            )?.phoneNumber
-            return (
-                image,
-                nameComponents,
-                displayNameForToast,
-                phoneNumber
             )
+            return (image, systemContactName)
         }
 
         // Avatar
@@ -199,13 +184,13 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         contents.add(avatarSection)
 
         // Name(s)
-        let names = names(nameComponents: nameComponents)
+        let names = names(systemContactName: systemContactName)
         if !names.isEmpty {
             let nameSection = OWSTableSection()
             names.forEach { name in
                 nameSection.add(
                     OWSTableItem.label(
-                        withText: name,
+                        withText: name.filterForDisplay,
                         accessoryType: .none
                     )
                 )
@@ -214,17 +199,15 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         }
 
         // Phone Number
-        if let signalPhoneNum = phoneNumber {
-            let formattedPhoneNum = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: signalPhoneNum)
-            let phoneNumberSection = OWSTableSection()
-            phoneNumberSection.add(
-                OWSTableItem.label(
-                    withText: formattedPhoneNum,
-                    accessoryType: .none
-                )
+        let formattedPhoneNum = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: e164.stringValue)
+        let phoneNumberSection = OWSTableSection()
+        phoneNumberSection.add(
+            OWSTableItem.label(
+                withText: formattedPhoneNum,
+                accessoryType: .none
             )
-            contents.add(phoneNumberSection)
-        }
+        )
+        contents.add(phoneNumberSection)
 
         // Delete Contact button
         let deleteContactSection = OWSTableSection()
@@ -242,7 +225,11 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
-                    self.displayDeleteContactActionSheet(phoneNumber: phoneNumber, displayNameForToast: displayNameForToast)
+                    let displayName: DisplayName = systemContactName.map { .systemContactName($0) } ?? .unknown
+                    self.displayDeleteContactActionSheet(
+                        phoneNumber: self.e164.stringValue,
+                        displayNameForToast: displayName.resolvedValue().formattedForActionSheetTitle()
+                    )
                 }
             )
         )

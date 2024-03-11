@@ -7,12 +7,20 @@ import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 
+public class GroupCallPeekLogger: PrefixedLogger {
+    public static let shared = GroupCallPeekLogger()
+
+    private convenience init() {
+        self.init(prefix: "GroupCallPeek")
+    }
+}
+
 public class GroupCallPeekClient: Dependencies {
     private var sfuUrl: String {
         DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
     }
 
-    private let logger = PrefixedLogger(prefix: "GCPeek")
+    private let logger = GroupCallPeekLogger.shared
 
     let httpClient: SignalRingRTC.HTTPClient
     private let sfuClient: SignalRingRTC.SFUClient

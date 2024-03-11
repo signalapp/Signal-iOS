@@ -5,7 +5,7 @@
 "ABOUT_SECTION_TITLE" = "Over Signal";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Nieuw veiligheidsnummer aanvaarden";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Nieuw veiligheidsnummer accepteren";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Bijlage";
@@ -83,7 +83,7 @@
 "ACTION_VIDEO_CALL" = "Video-oproep";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Groespleden toevoegen";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Groepsleden toevoegen";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Wil je jouw profiel voor deze groep zichtbaar maken?";
@@ -227,7 +227,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Opslagruimte bijna vol";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "De overgezette gegevens van je oude apparaat konden niet worden hersteld op dit apparaat. Stuur een foutopsporingslog naar support@signal.org zodat we we een oplossing kunnen zoeken voor dit probleem. Als je Signal opnieuw installeert, gaat je gespreksgeschiedenis misschien verloren.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "De overgezette gegevens van je oude apparaat konden niet worden hersteld op dit apparaat. Stuur een foutopsporingslog naar support@signal.org zodat we een oplossing kunnen zoeken voor dit probleem. Als je Signal opnieuw installeert, gaat je gespreksgeschiedenis misschien verloren.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Het overzetten van je Signal-account kon niet succesvol worden afgerond";
@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Afbeelding";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Afbeelding";
 
@@ -449,7 +446,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audiobericht";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio-oproep";
+"AUDIO_CALL_LABEL" = "Spraakoproep";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Luidspreker";
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Oproepen";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Inkomend";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Gemist";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Uitgaand";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Wissen";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Hiermee wordt de oproepgeschiedenis voorgoed gewist.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Oproepgeschiedenis wissen?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Verwijderen";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Alles";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Gemist";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Chat openen";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Deelnemen aan spraakoproep";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Deelnemen";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Deelnemen aan video-oproep";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Geen gemiste oproepen";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Geen recente oproepen";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Begin door een contact te bellen";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Naar de oproep terugkeren";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Terugkeren";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "Geen resultaten voor ‘%1$@’ gevonden";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Selecteren";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Selecteren";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Spraakoproep";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Video-oproep";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Oproepdetails";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Neem een foto en verzend deze";
 
@@ -995,10 +1064,13 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groepen";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Zoek op nummer";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Zoeken op telefoonnummer";
 
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Zoeken op gebruikersnaam";
+
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Instellingen openen";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Je kunt toegang tot contacten inschakelen in de iOS-instellingen-app om te zien welke van je contacten Signal gebruiken.";
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Nieuw apparaat koppelen";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is geblokkeerd";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ staat in je systeemcontactenlijst";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Geen individuele chat met %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Openstaand gespreksverzoek";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-contact";
@@ -1286,16 +1367,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Aan bestaand contactpersoon toevoegen";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Aan systeemcontacten toevoegen";
-
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Beheerders";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Alles";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Uitgeschakeld";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Aan systeemcontactenlijst toevoegen";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, -afbeelding, -omschrijving en de timer voor verdwijnende berichten kan bewerken.";
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Badges";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Je zult niet langer berichten of meldingen van deze persoon ontvangen.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Je zult niet langer berichten of meldingen van deze groep ontvangen.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Groep blokkeren";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Persoon blokkeren";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Inkomende spraakoproep";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Inkomende video-oproep";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Gemiste spraakoproep";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Gemiste video-oproep";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Uitgaande spraakoproep";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Uitgaande video-oproep";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Bewerken";
@@ -1425,6 +1509,9 @@
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ uit de groep verwijderen?";
+
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Spam melden";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Beheerdersbevoegdheden intrekken";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Downloaden van bijlage is mislukt.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Het uploaden van bijlagen is mislukt.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Een bericht van %1$@ kan niet worden afgeleverd";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Je rekeninginformatie vinden";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Voer een gebruikersnaam in, gevolgd door een punt en de bijbehorende cijfercombinatie.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Gebruikersnaam";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Zoeken op gebruikersnaam";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Als geverifieerd markeren";
@@ -2753,7 +2852,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "Het veiligheidsnummer van een gespreksdeelnemer is veranderd. Tik om te bekijken.";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Het veiligheidsnummer van deelnemer die zich bij het gesprek voegt is veranderd. Tik om te bekijken.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Het veiligheidsnummer van een gespreksdeelnemer is veranderd. Tik om te bekijken.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Veeg omhoog om gedeeld scherm te zien";
@@ -2882,10 +2981,10 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft beheerdersgoedkeuring van nieuwe leden ingeschakeld voor de groepslink.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging aanvaard hebben.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging geaccepteerd hebben.";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Deze personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging aanvaard hebben.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Deze personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging geaccepteerd hebben.";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "De groepsinstellingen zijn aangepast om alle groepsleden de mogelijkheid te geven om berichten te verzenden en oproepen te beginnen.";
@@ -3017,10 +3116,10 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ heeft je een beheerder gemaakt.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Je hebt een uitnodiging om lid te worden van de groep aanvaard.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Je hebt een uitnodiging om lid te worden van de groep geaccepteerd.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Je hebt een uitnodiging van %1$@ om lid te worden van de groep aanvaard.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Je hebt een uitnodiging van %1$@ om lid te worden van de groep geaccepteerd.";
 
 /* Message indicating that the local user declined an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Je hebt een uitnodiging om lid te worden van de groep verworpen.";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Leden";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tik hier om ze te vergelijken";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Lid van deze groep maar staat niet in je contactenlijst";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Groepsleden vergelijken";
 
@@ -3101,13 +3194,13 @@
 "GROUP_NAME_VIEW_TITLE" = "Groepsnaam";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%1$@ heeft een uitnodiging om lid te worden van de groep aanvaard.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%1$@ heeft een uitnodiging om lid te worden van de groep geaccepteerd.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ heeft je uitnodiging om lid te worden van de groep aanvaard.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ heeft je uitnodiging om lid te worden van de groep geaccepteerd.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ heeft een uitnodiging van %2$@ om lid te worden van de groep aanvaard.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ heeft een uitnodiging van %2$@ om lid te worden van de groep geaccepteerd.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Je hebt %1$@ toegevoegd.";
@@ -3119,10 +3212,10 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%1$@ is toegevoegd aan de groep.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "Één persoon heeft een uitnodiging om lid te worden van de groep verworpen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "Eén persoon heeft een uitnodiging om lid te worden van de groep verworpen.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "Één persoon, die door %1$@ was uitgenodigd om lid te worden van de groep, heeft de uitnodiging verworpen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "Eén persoon, die door %1$@ was uitgenodigd om lid te worden van de groep, heeft de uitnodiging verworpen.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ heeft je uitnodiging om lid te worden van de groep verworpen.";
@@ -3173,7 +3266,7 @@
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft het verzoek om lid te worden van de groep ingetrokken.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Je hebt het verzoek van %1$@ om lid te te worden van de groep geweigerd.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Je hebt het verzoek van %1$@ om lid te worden van de groep geweigerd.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ rejecting user name }}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ heeft een verzoek van %1$@ om lid te worden van de groep geweigerd.";
@@ -3230,7 +3323,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsafbeelding verwijderd.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "De groepsafbeeldig is aangepast.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "De groepsafbeelding is aangepast.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Jij hebt de groepsafbeelding aangepast.";
@@ -3317,7 +3410,7 @@
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Deze persoon is al lid van de groep.";
 
 /* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Kon de uitnodiging niet aanvaarden.";
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Kon de uitnodiging niet accepteren.";
 
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "Groep blokkeren";
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Je hebt %1$@ een verzoek gestuurd om Betalingen te activeren.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "Gemeld als spam";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal is op de hoogte gebracht dat deze persoon mogelijk spam verstuurt. Signal kan de inhoud van chats niet zien.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Gemeld als spam";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Vrienden uitnodigen voor Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Meer";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Zoeken";
@@ -3674,7 +3779,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Linkvoorbeeld";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Het beheren van systeemcontacten is niet meer beschikbaar op iPad. Om Signal-verbindingen aan je systeemcontacten toe te voegen, open je Signal op je telefoon.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Het beheren van systeemcontacten is niet meer beschikbaar op iPad. Om Signal-contacten aan je systeemcontactenlijst toe te voegen, open je Signal op je telefoon.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Het beheren van systeemcontacten wordt niet meer ondersteund op iPad. Dit apparaat blijft alle wijzigingen in je contactenlijst van Signal op je telefoon synchroniseren.";
@@ -3860,7 +3965,7 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Bellen";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime audio-oproep";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime spraakoproep";
 
 /* Label for button to make a FaceTime video call to a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime video-oproep";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokkeren en verwijderen";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Spam melden en blokkeren";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Groep verwijderen en verlaten?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Overweeg dit gespreksverzoek zorgvuldig, want er is een andere contactpersoon met dezelfde naam.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Persoon die in je contactenlijst staat";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Deze persoon heeft dezelfde naam als een ander contact";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Vergelijk als je niet zeker bent van wie het lidmaatschapsverzoek afkomstig is de personen hieronder en neem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Wil een gesprek met je beginnen";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Vergelijk, als je niet zeker bent van wie het gespreksverzoek afkomstig is, de personen hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Lidmaatschapsverzoeken vergelijken";
@@ -4015,14 +4114,23 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Contactpersoon aanpassen";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Personen vergelijken";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal wordt op de hoogte gebracht dat deze persoon mogelijk spam verstuurt. Signal kan de inhoud van chats niet zien.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Spam melden?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Spam melden";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Gemeld als spam.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Gemeld als spam en geblokkeerd.";
 
 /* A button used to accept a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Aanvaarden";
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Accepteren";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokkeren";
@@ -4049,16 +4157,19 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Wil je je profielnaam, -foto en -omschrijving voor deze groep zichtbaar maken om je chat met de groep voort te kunnen zetten?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen, en sta je toe dat diegene je profielnaam, -foto en -omschrijving kan zien? Als je leesbevestigingen hebt ingeschakeld kan hij of zij die nog niet zien totdat je de uitnodiging hebt aanvaard.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen, en sta je toe dat diegene je profielnaam, -foto en -omschrijving kan zien? Personen weten niet dat je hun berichten hebt gezien totdat je het gespreksverzoek hebt geaccepteerd.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Wil je lid worden van deze groep, en sta je toe dat alle leden van de groep je profielnaam, -foto en -omschrijving kunnen zien? Als je leesbevestigingen hebt ingeschakeld kunnen de leden van deze groep die nog niet zien totdat je de uitnodiging hebt aanvaard.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Wil je lid worden van deze groep, en sta je toe dat alle leden van de groep je profielnaam, -foto en -omschrijving kunnen zien? Leden van de groep weten niet dat je hun berichten hebt gezien totdat je het gespreksverzoek hebt geaccepteerd.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Je bent door iemand met wie je eerder een gesprek hebt gehad of met wie je in dezelfde groep zat toegevoegd aan deze groep. Wil je lid blijven van deze groep? Als je leesbevestigingen hebt ingeschakeld kunnen de leden van deze groep die nog niet zien totdat je de uitnodiging hebt aanvaard.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Wil je lid worden van deze groep? Leden van de groep weten niet dat je hun berichten hebt gezien totdat je het gespreksverzoek hebt geaccepteerd.";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen, en sta je toe dat diegene je profielnaam, -foto en -omschrijving kan zien? Je hebt deze persoon in het verleden verwijderd.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Rapporteren…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Deblokkeren";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Tik om toe te voegen";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Heeft recent diens profielnaam gewijzigd van “%1$@” naar “%2$@”.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ heeft recent diens profielnaam gewijzigd van %2$@ naar %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Overslaan";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Bij wifi & mobiele data";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Spraakoproep";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Kies een contact of groep om een nieuwe oproep mee te beginnen.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "Nieuwe oproep";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Bericht";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "Nieuwe oproep";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Video-oproep";
+
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Op telefoonnummer zoeken";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Zoeken op telefoonnummer";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Zoeken op gebruikersnaam";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nieuwe groep";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Groep kiezen";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Zoeken";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Persoon zoeken";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Zoeken op telefoonnummer";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Naam van verhaal";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Zoek contactpersonen op telefoonnummer";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Zoeken op gebruikersnaam";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Geen gemeenschappelijke groepen";
@@ -4835,10 +4967,10 @@
 "PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Onbekende betaling";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Deze persoon moet eerst een gespreksverzoek van je aanvaarden voordat je een betaling kunt verzenden naar deze persoon.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Deze persoon moet eerst een gespreksverzoek van je accepteren voordat je een betaling kunt verzenden naar deze persoon.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Deze persoon moet eerst een gespreksverzoek van je aanvaarden voordat je een betaling kunt verzenden naar deze persoon.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Deze persoon moet eerst een gespreksverzoek van je accepteren voordat je een betaling kunt verzenden naar deze persoon.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Kan betaling niet verzenden";
@@ -4907,7 +5039,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Uitnodiging voor de groep “%1$@” intrekken?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Profielinformatie van personen die zijn uitgenodigd voor de groep wordt niet weergegeven. Als een genodigde er voor kiest de uitnodiging te aanvaarden, dan zullen op dat moment diens profielnaam, -foto en -omschrijving zichtbaar worden voor de groep. Deze personen zullen nog geen groepsberichten ontvangen, totdat ze de uitnodiging hebben aanvaard.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Profielinformatie van personen die zijn uitgenodigd voor de groep wordt niet weergegeven. Als een genodigde er voor kiest de uitnodiging te accepteren, dan zullen op dat moment diens profielnaam, -foto en -omschrijving zichtbaar worden voor de groep. Deze personen zullen nog geen groepsberichten ontvangen, totdat ze de uitnodiging hebben geaccepteerd.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen in deze lijst proberen via de groepslink lid te worden van “%1$@”.";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Niemand";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Je telefoonnummer is voor niemand zichtbaar, tenzij het is opgeslagen in de contacten van hun telefoon.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Je telefoonnummer is voor niemand zichtbaar.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5066,13 +5198,13 @@
 "PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signals servers zodat alleen jij er toegang toe hebt. Je kunt hierdoor je profiel, instellingen en contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de pincode niet nodig om de app te openen.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Meer over PINs";
+"PIN_CREATION_LEARN_MORE" = "Meer over pincodes";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
 "PIN_CREATION_LEARN_MORE_TEXT" = "Pincodes houden je informatie versleuteld opgeslagen bij Signal, zodat alleen jij er toegang toe hebt. Je profiel, instellingen en contacten worden hersteld wanneer je opnieuw installeert.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "Over Signal-PINs";
+"PIN_CREATION_LEARN_MORE_TITLE" = "Over Signal-pincodes";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
@@ -5306,7 +5438,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Nu oplossen";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Dit verwijdert je gebruikersnaam en schakelt je QR-code en link uit. Anderen kunnen \"%1$@\" claimen. Weet je het zeker?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Hiermee wordt je gebruikersnaam verwijderd en worden je QR-code en link uitgeschakeld. “%1$@” kan hierna door anderen worden geclaimd. Weet je het zeker?";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Gebruikersnaam verwijderen";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Je gebruikersnaam, QR-code en link zijn niet zichtbaar op je profiel. Deel je gebruikersnaam alleen met mensen die je vertrouwt.";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Mensen kunnen je nu berichten sturen via je optionele gebruikersnaam zodat je je telefoonnummer niet hoeft te geven.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Proxyadres";
@@ -5615,7 +5750,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Je moet je registreren voordat je een bericht kunt verzenden.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Audio-oproep";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Spraakoproep";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We konden je geen verificatiecode sturen via sms. Probeer in plaats daarvan je code via een spraakoproep te ontvangen.";
@@ -5651,7 +5786,7 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "SMS versturen";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We konden je geen verificatiecode sturen via een audio-oproep. Probeer je code per sms te ontvangen.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We konden je geen verificatiecode sturen via een spraakoproep. Probeer je code per sms te ontvangen.";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Weigeren";
@@ -5730,6 +5865,48 @@
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Je veiligheidsnummer met %1$@ is veranderd. Het wordt aanbevolen het nieuwe veiligheidsnummer te verifiëren.";
+
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Veiligheidstips";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "Als iemand die je niet kent je berichten stuurt over cryptocurrency (zoals Bitcoin) of een financiële investering, wees dan voorzichtig — het is waarschijnlijk spam.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "Crypto- of geldscams";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Wees voorzichtig met bedrijven of overheidsinstanties die je benaderen. Berichten van de belastingdienst, koeriers en andere bedrijven kunnen spam zijn.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Nepbedrijven en -instellingen";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Bekijk dit verzoek zorgvuldig. Geen van je contacten of mensen met wie je chat, maakt deel uit van deze groep. Hier zijn een paar dingen om op te letten:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "Veiligheidstips";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Wees voorzichtig met het accepteren van gespreksverzoeken van mensen die je niet kent. Kijk uit voor:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Wees voorzichtig met berichten van mensen die je niet kent die links bevatten. Klik nooit op links van mensen die je niet vertrouwt.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Berichten met links";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammers beginnen vaak met een eenvoudig bericht als “Hallo” om je te lokken. Als je reageert, proberen ze je aan de praat te houden.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Vage of irrelevante berichten";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Scan de QR-code op het apparaat van je gesprekspartner.";
@@ -5810,7 +5987,7 @@
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Op je andere apparaat wordt een verouderde versie van Signal uitgevoerd welke het scannen van QR-codes van iPads niet ondersteund. Installeer de meest recente versie van Signal en probeer het opnieuw.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Scannent apparaat bijwerken";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Scannend apparaat bijwerken";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Koppelen van je apparaat is mislukt";
@@ -6014,10 +6191,10 @@
 "SETTINGS_APP_ICON_FOOTER" = "De app-naam “Signal” is zichtbaar op het beginscherm, in meldingen en in de appbibliotheek.";
 
 /* The title for the app icon selection settings page. */
-"SETTINGS_APP_ICON_TITLE" = "App-icoon";
+"SETTINGS_APP_ICON_TITLE" = "App-pictogram";
 
 /* The title for the app icon section in the appearance settings. */
-"SETTINGS_APPEARANCE_APP_ICON" = "App-icoon";
+"SETTINGS_APPEARANCE_APP_ICON" = "App-pictogram";
 
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Geef indien beschikbaar de profielfoto's uit je eigen systeemcontactenlijst weer.";
@@ -6724,8 +6901,14 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Om deze instelling te wijzigen, stel ‘Wie kan mijn nummer zien’ in op ‘Niemand’.";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wie kan mij vinden via mijn nummer";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wie kan mij via mijn nummer vinden";
 
 /* Description label for Phone Number Privacy */
 "SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Kies wie je telefoonnummer kan zien en wie ermee contact met je kan opnemen op Signal.";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Weergaven uit";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "AbonnementsID naar klembord gekopieerd";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Donateur-ID naar klembord gekopieerd";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Je veiligheidsnummer met %1$@ komt overeen. Je kunt deze contactpersoon markeren als geverifieerd.";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR-codes en links";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Je telefoonnummer is niet meer zichtbaar in chats. Als iemand je nummer heeft opgeslagen, dan blijft het wel zichtbaar voor deze persoon.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Telefoonnummerprivacy";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "Nieuwe manieren om contact te maken";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Mensen kunnen je nu berichten sturen via je optionele gebruikersnaam zodat je je telefoonnummer niet hoeft te geven. Gebruikersnamen zijn niet zichtbaar op je profiel.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Gebruikersnamen";
@@ -7676,7 +7859,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Kleur";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Deel je QR-code en link alleen met mensen die je vertrouwt. Wanneer gedeeld, kunnen anderen je gebruikersnaam zien en een chat met je starten.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Deel je QR-code en link alleen met mensen die je vertrouwt. Wanneer je deze deelt, kunnen anderen je gebruikersnaam zien en een chat met je starten.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-code en link niet ingesteld. Check je netwerkverbinding en probeer het opnieuw.";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "QR-code vernieuwen";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Als je je QR-code vernieuwt, werken je bestaande QR-code en link niet meer.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Als je je QR-code en link vernieuwt, werken je bestaande QR-code en link niet meer.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Je QR-code en link zijn vernieuwd, een nieuwe QR-code en link zijn beschikbaar.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "delen";
@@ -7715,7 +7901,7 @@
 "USERNAME_LINK_SHEET_BUTTON" = "link";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Laat anderen een chat met jou starten door je unieke QR-code of link te delen.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Laat anderen een chat met jou starten door je unieke QR-code of link met hen te delen.";
 
 /* Title for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_TITLE" = "Deel je gebruikersnaam";
@@ -7724,7 +7910,7 @@
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Er is iets fout gegaan bij het opzoeken van de gebruikersnaam. Probeer het later opnieuw.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is geen geldige gebruikersnaam. Zorg ervoor dat je de volledige gebruikersnaam hebt ingevoerd, gevolgd door de bijbehorende reeks cijfers.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is geen geldige gebruikersnaam. Zorg ervoor dat je de volledige gebruikersnaam hebt ingevoerd, inclusief de punt en bijbehorende cijfercombinatie.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Ongeldige gebruikersnaam";
@@ -7733,7 +7919,7 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Deze gebruikersnaam is niet meer geldig.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is geen Signal-gebruiker. Ga na dat je de complete gebruikersnaam hebt ingevuld.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is geen Signal-gebruiker. Controleer of je de volledige gebruikersnaam hebt ingevoerd.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Deze persoon is niet gevonden";
@@ -7745,31 +7931,34 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Je QR-code en link zijn hersteld en je gebruikersnaam is %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Gebruikersnamen mogen niet met een cijfer beginnen.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Gebruikersnamen mogen niet met een cijfer beginnen";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Wanneer je je gebruikersnaam wijzigt, werken je bestaande QR-code en link niet langer en worden deze vernieuwd. Weet je het zeker?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Gebruikersnamen zorgen ervoor dat anderen jou berichten kunnen sturen zonder je telefoonnummer nodig te hebben. Ze zijn gekoppeld aan een cijferset zodat jouw adres privé blijft. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Gebruikersnamen zijn altijd gekoppeld aan een cijfercombinatie. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Kies jouw gebruikersnaam";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Gebruikersnamen mogen alleen uit de karakters a-z, 0-9 en _ bestaan.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Gebruikersnamen mogen alleen uit a-z, 0-9 en _ bestaan";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Ongeldige gebruikersnaam, voer minimaal 2 cijfers in";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Deze cijfers helpen om je gebruikersnaam privé te houden zodat je ongewenste berichten kunt voorkomen. Deel je gebruikersnaam alleen met mensen en groepen waarmee je zou willen chatten. Als je je gebruikersnaam wijzigt, krijg je een nieuwe cijferset.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Deze cijfers helpen om je gebruikersnaam privé te houden zodat je ongewenste berichten kunt voorkomen. Deel je gebruikersnaam alleen met mensen en groepen waarmee je zou willen chatten. Als je je gebruikersnaam wijzigt, krijg je een nieuwe cijfercombinatie.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Wat is dit nummer?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Deze gebruikersnaam is niet beschikbaar.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Deze gebruikersnaam is niet beschikbaar";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Je hebt te veel pogingen gedaan. Probeer het later opnieuw";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Gebruikersnaam";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Gebruikersnaam";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Gebruikersnamen moeten beginnen met minimaal %1$@ tekens.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Gebruikersnamen kunnen niet eindigen op 00. Probeer een ander cijfer tussen 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Dit nummer kan niet 00 zijn. Voer een cijfer tussen 1-9 in";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Gebruikersnamen kunnen alleen worden bijgewerkt als je bent verbonden met het internet.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Apparaatnaam mag niet leeg zijn";

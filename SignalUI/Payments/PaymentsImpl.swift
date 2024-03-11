@@ -54,15 +54,15 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
 
         let appVersionKey = "appVersion"
-        let currentAppVersion4 = AppVersionImpl.shared.currentAppVersion4
+        let currentAppVersion = AppVersionImpl.shared.currentAppVersion
 
         let shouldUpdate = Self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
             // Check if the app version has changed.
             let lastAppVersion = self.keyValueStore.getString(appVersionKey, transaction: transaction)
-            guard lastAppVersion == currentAppVersion4 else {
+            guard lastAppVersion == currentAppVersion else {
                 return true
             }
-            Logger.info("Skipping; lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion4: \(currentAppVersion4).")
+            Logger.info("Skipping; lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion: \(currentAppVersion).")
             return false
         }
         guard shouldUpdate else {
@@ -73,7 +73,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         databaseStorage.write { transaction in
             self.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
 
-            self.keyValueStore.setString(currentAppVersion4, key: appVersionKey, transaction: transaction)
+            self.keyValueStore.setString(currentAppVersion, key: appVersionKey, transaction: transaction)
         }
     }
 

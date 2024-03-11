@@ -12,7 +12,6 @@ import SignalServiceKit
 enum ContactSyncAttachmentBuilder {
     static func buildAttachmentFile(
         for contactSyncMessage: OWSSyncContactsMessage,
-        blockingManager: BlockingManager,
         contactsManager: OWSContactsManager,
         tx: SDSAnyReadTransaction
     ) -> URL? {
@@ -45,7 +44,6 @@ enum ContactSyncAttachmentBuilder {
                 to: ContactOutputStream(outputStream: outputStream),
                 isFullSync: contactSyncMessage.isFullSync,
                 localAddress: localAddress,
-                blockingManager: blockingManager,
                 contactsManager: contactsManager,
                 tx: tx
             )
@@ -66,7 +64,6 @@ enum ContactSyncAttachmentBuilder {
         to contactOutputStream: ContactOutputStream,
         isFullSync: Bool,
         localAddress: SignalServiceAddress,
-        blockingManager: BlockingManager,
         contactsManager: OWSContactsManager,
         tx: SDSAnyReadTransaction
     ) throws {
@@ -90,7 +87,6 @@ enum ContactSyncAttachmentBuilder {
                     contactThread: contactThread,
                     signalAccount: signalAccount,
                     inboxPosition: inboxPosition,
-                    blockingManager: blockingManager,
                     tx: tx
                 )
             }
@@ -108,7 +104,6 @@ enum ContactSyncAttachmentBuilder {
                         contactThread: contactThread,
                         signalAccount: nil,
                         inboxPosition: inboxPosition,
-                        blockingManager: blockingManager,
                         tx: tx
                     )
                 }
@@ -122,20 +117,17 @@ enum ContactSyncAttachmentBuilder {
         contactThread: TSContactThread?,
         signalAccount: SignalAccount?,
         inboxPosition: Int?,
-        blockingManager: BlockingManager,
         tx: SDSAnyReadTransaction
     ) throws {
         let dmStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let dmConfiguration = contactThread.map { dmStore.fetchOrBuildDefault(for: .thread($0), tx: tx.asV2Read) }
-        let isBlocked = blockingManager.isAddressBlocked(address, transaction: tx)
 
         try contactOutputStream.writeContact(
             aci: address.serviceId as? Aci,
             phoneNumber: address.e164,
             signalAccount: signalAccount,
             disappearingMessagesConfiguration: dmConfiguration,
-            inboxPosition: inboxPosition,
-            isBlocked: isBlocked
+            inboxPosition: inboxPosition
         )
     }
 

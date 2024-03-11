@@ -220,16 +220,6 @@ class DebugContactsUtils: Dependencies {
             OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
         }
     }
-
-    // MARK: -
-
-    static func logSignalAccounts() {
-        databaseStorage.read { transaction in
-            SignalAccount.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { (account: SignalAccount, _) in
-                Logger.verbose("---- \(account.uniqueId),  \(account.recipientAddress),  \(String(describing: account.contactFirstName)),  \(String(describing: account.contactLastName)),  \(String(describing: account.contactNicknameIfAvailable())), ")
-            }
-        }
-    }
 }
 
 #endif

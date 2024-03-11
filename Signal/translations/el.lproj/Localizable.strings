@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Φωτογραφία";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Φωτογραφία";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Κλήσεις";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Εισερχόμενη";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Αναπάντητη";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Εξερχόμενη";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Εκκαθάριση";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Με αυτή την επιλογή θα διαγραφεί μόνιμα το ιστορικό κλήσεων.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Διαγραφή ιστορικού κλήσεων;";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Διαγραφή";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Όλες";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Αναπάντητη";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Μετάβαση στη συνομιλία";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Μπες στην ηχητική κλήση";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Είσοδος";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Μπες στη βιντεοκλήση";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Δεν υπάρχουν αναπάντητες κλήσεις";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Δεν υπάρχουν πρόσφατες κλήσεις";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Ξεκίνα καλώντας κάποιον φίλο";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Επιστροφή στην κλήση";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Επιστροφή";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "Δεν βρέθηκαν αποτελέσματα για «%1$@»";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Επιλογή";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Επιλογή";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Ηχητική Κλήση";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Βιντεοκλήση";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Πληροφορίες";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Βγάλε μια φωτογραφία και στείλ' την";
 
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Αναζήτηση με όνομα χρήστη";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Άνοιγμα ρυθμίσεων";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Μπορείς να ενεργοποιήσεις την πρόσβαση στις επαφές στην εφαρμογή Ρυθμίσεις του iOS για να δεις ποιές από τις επαφές σου χρησιμοποιούν το Signal.";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Σύνδεση νέας συσκευής";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Ο/Η %1$@ έχει αποκλειστεί";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "Ο χρήστης %1$@ βρίσκεται στις επαφές του συστήματός σου";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Δεν υπάρχουν άμεσα μηνύματα με τον χρήστη %1$@";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Αίτημα μηνύματος σε εκκρεμότητα";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Επαφή Signal";
@@ -1288,15 +1369,6 @@
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Προσθήκη στις επαφές συστήματος";
 
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Διαχειριστές/τριες";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Όλοι/ες";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Απενεργοποιημένο";
-
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Διάλεξε ποιοί θα μπορούν να επεξεργάζονται το όνομα της ομάδας, τη φωτογραφία, τη περιγραφή και το χρόνο εξαφάνισης μηνυμάτων.";
 
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Σήματα";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Δεν θα λαμβάνεις πια μηνύματα ή ενημερώσεις από αυτόν τον/την χρήστη.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Δεν θα λαμβάνεις πια μηνύματα ή ενημερώσεις από αυτήν την ομάδα.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Αποκλεισμός ομάδας";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Αποκλεισμός χρήστη";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Εισερχόμενη ηχητική κλήση";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Εισερχόμενη βιντεοκλήση";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Αναπάντητη ηχητική κλήση";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Αναπάντητη βιντεοκλήση";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Εξερχόμενη ηχητική κλήση";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Εξερχόμενη βιντεοκλήση";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Eπεξεργασία";
@@ -1425,6 +1509,9 @@
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Αφαίρεση του/της %1$@ από την ομάδα;";
+
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Αναφορά ως ανεπιθύμητο";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Αφαίρεση από ρόλο διαχειριστή";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Αποτυχία ανάκτησης του συνημμένου.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Αποτυχία μεταφόρτωσης του συνημμένου.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Ένα μήνυμα από τον/την %1$@ δεν μπόρεσε να παραδοθεί";
@@ -2544,6 +2631,18 @@
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Βρες τα στοιχεία του λογαριασμού σου";
+
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Γράψε ένα όνομα χρήστη, ακολουθούμενο από μια τελεία και το σύνολο αριθμών του.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Όνομα χρήστη";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Αναζήτηση με όνομα χρήστη";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Σημείωση ως επιβεβαιωμένο";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Μέλη";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Πάτα για εξέταση";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Μέλος";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Ανασκόπηση μελών";
 
@@ -3520,6 +3613,15 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Έστειλες στον/στην %1$@ αίτημα να ενεργοποιήσει τις Πληρωμές.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "Έγινε αναφορά ως ανεπιθύμητο";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Το Signal έχει ειδοποιηθεί ότι αυτό το άτομο ενδέχεται να στέλνει ανεπιθύμητα. Το Signal δεν μπορεί να δει το περιεχόμενο οποιασδήποτε συνομιλίας.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Έγινε αναφορά ως ανεπιθύμητο";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Πρόσκληση φίλων στο Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Περισσότερα";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Αναζήτηση";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Αποκλεισμός και διαγραφή";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Αναφορά ως ανεπιθύμητο και αποκλεισμός";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Διαγραφή και αποχώρηση από την ομάδα;";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Εξέτασε τα αιτήματα με προσοχή. Το Signal βρήκε μια άλλη επαφή με το ίδιο όνομα.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Επαφή σου";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Αυτό το άτομο έχει το ίδιο όνομα με μια άλλη επαφή";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Αν δεν είσαι σίγουρος/η από ποιόν είναι το αίτημα, εξέτασε τις παρακάτω επαφές, και κάνε κάποια ενέργεια.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Αίτημα";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Ανασκόπηση αιτήματος";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Ανανέωση επαφής";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Ανασκόπηση αιτήματος";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Το Signal θα ειδοποιηθεί ότι αυτό το άτομο ενδέχεται να στέλνει ανεπιθύμητα. Το Signal δεν μπορεί να δει το περιεχόμενο οποιασδήποτε συνομιλίας.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Αναφορά ως ανεπιθύμητο;";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Αναφορά ως ανεπιθύμητο";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Έγινε αναφορά ως ανεπιθύμητο.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Αναφέρθηκε ως ανεπιθύμητο και είναι σε αποκλεισμό.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Να μπορεί ο/η %1$@ να σου στείλει μηνύματα και να μοιραστείς το όνομα και τη φωτογραφία σου μαζί του/της; Έχεις αφαιρέσει αυτό το άτομο στο παρελθόν.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Αναφορά…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Κατάργηση αποκλεισμού";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Πάτα για προσθήκη";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Άλλαξε πρόσφατα το όνομα προφίλ του/της από %1$@ σε %2$@.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Ο χρήστης %1$@ άλλαξε πρόσφατα το όνομα του προφίλ του από %2$@ σε %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Παράλειψη";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi και δεδομένα κινητής";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Ηχητική Κλήση";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Διάλεξε μια επαφή ή μια ομάδα για να αρχίσεις μία νέα κλήση.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "Νέα κλήση";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Μήνυμα";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "Νέα κλήση";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Βιντεοκλήση";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Εύρεση με αριθμό τηλεφώνου";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Αναζήτηση με όνομα χρήστη";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Νέα ομάδα";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Επιλογή ομάδας";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Αναζήτηση";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Αναζήτηση χρήστη/τριας";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Εύρεση με αριθμό τηλεφώνου";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Όνομα ιστορίας";
@@ -4323,6 +4452,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Αναζήτηση επαφών μέσω αριθμού τηλεφώνου";
+
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Αναζήτηση επαφών με όνομα χρήστη";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Καμία κοινή ομάδα";
@@ -4457,7 +4589,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Να δοθούν δικαιώματα";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Επέλεξε ποιοί μπορούν να σε βρουν στο Signal χρησιμοποιώντας τον αριθμό σου %1$@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Επίλεξε ποίοι μπορούν να σε βρουν στο Signal χρησιμοποιώντας τον αριθμό τηλεφώνου σου %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Ποιοί μπορούν να σε βρουν με τον αριθμό σου;";
@@ -4481,7 +4613,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Λάθος ΡΙΝ";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Σου τέλειωσαν οι απόπειρες για το PIN, αλλά μπορείς να αποκτήσεις πρόσβαση στον λογαριασμό Signal σου επαληθεύοντας τον αριθμό σου. Για το απόρρητο και την ασφάλειά σου ο λογαριασμός δεν θα έχει προϋπάρχουσες πληροφορίες προφίλ και ρυθμίσεις.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Σου τέλειωσαν οι απόπειρες για το PIN, αλλά μπορείς να αποκτήσεις πρόσβαση στον λογαριασμό Signal σου επαληθεύοντας τον αριθμό τηλεφώνου σου. Για το απόρρητο και την ασφάλειά σου ο λογαριασμός δεν θα έχει προϋπάρχουσες πληροφορίες προφίλ και ρυθμίσεις.";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Όροι & Πολιτική Απορρήτου";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Κανένας";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Ο αριθμός τηλεφώνου σου δεν θα είναι ορατός σε κανέναν χρήστη, εκτός αν τον έχει αποθηκεύσει στις επαφές του τηλεφώνου του.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Ο αριθμός τηλεφώνου σου δεν θα είναι ορατός σε κανέναν χρήστη.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5347,6 +5479,9 @@
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Το όνομα χρήστη, ο κωδικός QR και ο σύνδεσμός σου δεν είναι ορατά στο προφίλ σου. Να μοιράζεσαι μόνο το όνομα χρήστη σου με άτομα που εμπιστεύεσαι.";
 
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Οι χρήστες μπορούν πλέον να σου στέλνουν μήνυμα χρησιμοποιώντας το προαιρετικό όνομα χρήστη σου, ώστε να μη χρειάζεται να δώσεις τον αριθμό τηλεφώνου σου.";
+
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Διεύθυνση proxy";
 
@@ -5555,7 +5690,7 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Έλεγχος σύνδεσης";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Γράψε τον αριθμό σου για να ξεκινήσεις.";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Γράψε τον αριθμό τηλεφώνου σου για να ξεκινήσεις.";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Ο αριθμός τηλεφώνου σου";
@@ -5657,7 +5792,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Απόρριψη";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός που προσπαθείς να καταχωρήσεις έχει ήδη καταχωρηθεί σε κάποιον άλλον διακομιστή, παρακαλώ απεγγράψου από εκεί και δοκίμασε ξανά.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός τηλεφώνου που προσπαθείς να καταχωρήσεις έχει ήδη καταχωρηθεί σε κάποιον άλλον διακομιστή, παρακαλώ απεγγράψου από εκεί και δοκίμασε ξανά.";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Διόρθωση τώρα";
@@ -5730,6 +5865,48 @@
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ο αριθμός ασφαλείας με τον/την %1$@ άλλαξε. Ίσως θέλεις να τον επιβεβαιώσεις.";
+
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Συμβουλές ασφαλείας";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "Αν κάποιος που δεν γνωρίζεις στείλει μηνύματα σχετικά με κρυπτονόμισμα (όπως Bitcoin) ή μια οικονομική ευκαιρία, πρόσεξε—είναι πιθανό να πρόκειται για spam.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "Απάτες κρυπτονομισμάτων ή χρημάτων";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Να προσέχεις με τις επιχειρήσεις ή τις κυβερνητικές υπηρεσίες που επικοινωνούν μαζί σου. Τα μηνύματα που αφορούν φορολογικές υπηρεσίες, ταχυμεταφορείς και πολλά άλλα μπορεί να είναι spam.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Ψεύτικες επιχειρήσεις και ιδρύματα";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Έλεγξε αυτό το αίτημα με προσοχή. Καμία από τις επαφές σου ή τα άτομα με τα οποία συνομιλείς δεν είναι σε αυτή την ομάδα. Ορίστε μερικά πράγματα που πρέπει να προσέξεις:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "Συμβουλές ασφαλείας";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Να προσέχεις όταν δέχεσαι αιτήματα μηνυμάτων από άτομα που δεν γνωρίζεις. Να προσέχεις για:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Να προσέχεις για μηνύματα από άτομα που δεν γνωρίζεις και τα οποία περιέχουν συνδέσμους για ιστότοπους. Μην επισκέπτεσαι συνδέσμους από άτομα που δεν εμπιστεύεσαι.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Μηνύματα με συνδέσμους";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Οι spammer συχνά ξεκινούν με ένα απλό μήνυμα όπως «Γεια» για να σε προσελκύσουν. Εάν απαντήσεις, μπορεί να το συνεχίσουν.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Ασαφή ή άσχετα μηνύματα";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Σκάναρε τον κωδικό QR στη συσκευή του άλλου χρήστη.";
@@ -6062,7 +6239,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Αλλαγή αριθμού";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Πρόκειται να αλλάξεις τον αριθμό σου από τον %1$@ στον %2$@.\n\nΠριν συνεχίσεις, παρακαλώ επιβεβαίωσε πως ο παρακάτω αριθμός είναι σωστός.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Πρόκειται να αλλάξεις τον αριθμό τηλεφώνου σου από %1$@ σε %2$@.\n\nΠριν συνεχίσεις, παρακαλώ επιβεβαίωσε πως ο παρακάτω αριθμός είναι σωστός.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Κωδικός χώρας";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Για να αλλάξεις αυτή τη ρύθμιση, όρισε την επιλογή \"Ποιος μπορεί να δει τον αριθμό μου\" σε \"Κανείς\".";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Ποιος μπορεί να με βρει με τον αριθμό μου";
 
@@ -6848,7 +7031,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Κλείδωμα εγγραφής";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Να απαιτείται το PIN Signal σου για να εγγραφτεί ο αριθμός τηλεφώνου σου ξανά στο Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Να απαιτείται το PIN Signal σου για να εγγραφεί ο αριθμός τηλεφώνου σου ξανά στο Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Δείκτες πληκτρολόγησης";
@@ -7253,7 +7436,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Έχεις αποδεχτεί ένα αίτημα μηνύματος";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Τα έχεις στις επαφές της συσκευής σου";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Τα έχεις στις επαφές του συστήματός σου";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Οι επαφές σου μπορούν να δουν το όνομα και τη φωτογραφία σου, και μπορούν να δουν δημοσιεύσεις στην Ιστορία σου, εκτός αν την κρύψεις από αυτούς.";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Αναφορές προβολής ανενεργές";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Το id συνδρομητή αντιγράφτηκε στο πρόχειρο";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Το id δωρητή αντιγράφτηκε στο πρόχειρο";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ο αριθμός ασφαλείας με τον/την %1$@ ταιριάζει. Μπορείς να σημειώσεις αυτή την επαφή ως επιβεβαιωμένη.";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "Κωδικοί QR και σύνδεσμοι";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Ο αριθμός τηλεφώνου σου δεν είναι πλέον ορατός στις συνομιλίες. Εάν ο αριθμός σου είναι αποθηκευμένος στις επαφές ενός φίλου, θα εξακολουθεί να τον βλέπει.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Απόρρητο αριθμού τηλεφώνου";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "Νέοι τρόποι σύνδεσης";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Οι χρήστες μπορούν πλέον να σου στέλνουν μήνυμα χρησιμοποιώντας το προαιρετικό όνομα χρήστη σου, ώστε να μη χρειάζεται να δώσεις τον αριθμό τηλεφώνου σου. Τα ονόματα χρήστη δεν είναι ορατά στο προφίλ σου.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Ονόματα χρηστών";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Επαναφορά";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Εάν επαναφέρεις τον κωδικό QR σου, ο υπάρχων κωδικός QR και ο σύνδεσμός σου δεν θα λειτουργούν πλέον.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Εάν επαναφέρεις τον κωδικό QR και τον σύνδεσμό σου, ο υπάρχων κωδικός QR και ο σύνδεσμός σου δεν θα λειτουργούν πλέον.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Έχει γίνει επαναφορά του κωδικού QR και του συνδέσμου σου και έχει δημιουργηθεί ένας νέος κωδικός QR και ένας νέος σύνδεσμος.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Μοιράσου";
@@ -7745,19 +7931,19 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Έχει γίνει επαναφορά του κωδικού QR και του συνδέσμου σου και το όνομα χρήστη σου είναι %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Τα όνομα χρήστη δεν μπορεί να αρχίζει με αριθμό.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Τα όνομα χρήστη δεν μπορεί να αρχίζει με αριθμό";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Η αλλαγή του ονόματος χρήστη σου θα επαναφέρει τον υπάρχοντα κωδικό QR και τον σύνδεσμό σου. Είσαι σίγουρος/η;";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Τα ονόματα χρήστη επιτρέπουν σε άλλους χρήστες να σου στείλουν μηνύματα χωρίς τον αριθμό τηλεφώνου σου. Είναι συνδεδεμένα με ένα σετ ψηφίων ώστε να διατηρούν απόρρητη τη διεύθυνσή σου. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Τα ονόματα χρήστη συνδυάζονται πάντα με ένα σύνολο αριθμών. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Διάλεξε όνομα χρήστη";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Τα ονόματα χρήστη μπορούν να περιέχουν μόνο λατινικούς χαρακτήρες a-z, νούμερα 0-9 και την κάτω παύλα _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Τα ονόματα χρήστη μπορούν να περιέχουν μόνο λατινικούς χαρακτήρες a-z, νούμερα 0-9 και την κάτω παύλα _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Μη έγκυρο όνομα χρήστη, γράψε τουλάχιστον 2 ψηφία";
@@ -7769,7 +7955,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Τι είναι αυτός ο αριθμός;";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Αυτό το όνομα χρήστη δεν είναι διαθέσιμο.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Αυτό το όνομα χρήστη δεν είναι διαθέσιμο";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Προσπάθησες πάρα πολλές φορές, δοκίμασε ξανά αργότερα";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Όνομα χρήστη";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Όνομα χρήστη";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Τα ονόματα χρήστη πρέπει να ξεκινούν με τουλάχιστον %1$@ χαρακτήρες.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Τα ονόματα χρήστη δεν μπορούν να τελειώνουν σε 00. Δοκίμασε ένα άλλο ψηφίο μεταξύ 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Αυτός ο αριθμός δεν μπορεί να είναι 00. Γράψε ένα ψηφίο μεταξύ 1–9";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Τα ονόματα χρήστη μπορούν να ενημερωθούν μόνο όταν υπάρχει σύνδεση στο διαδίκτυο.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Το όνομα συσκευής δεν μπορεί να είναι κενό";

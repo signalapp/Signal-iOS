@@ -88,7 +88,7 @@ extension DonateViewController {
             }
 
             public var paymentRequest: OneTimePaymentRequest {
-                if let pendingIDEALOneTimeDonation {
+                if pendingIDEALOneTimeDonation != nil {
                     return .awaitingIDEALAuthorization
                 }
 

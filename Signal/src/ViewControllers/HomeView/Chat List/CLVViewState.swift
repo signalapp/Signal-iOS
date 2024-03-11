@@ -24,7 +24,8 @@ class CLVViewState {
 
     // MARK: - Views
 
-    let searchBar = OWSSearchBar()
+    private(set) lazy var searchController = UISearchController(searchResultsController: searchResultsController)
+    var searchBar: UISearchBar { searchController.searchBar }
     let searchResultsController = ConversationSearchViewController()
     let reminderViews = CLVReminderViews()
     let settingsButtonCreator = ChatListSettingsButtonState()
@@ -35,6 +36,8 @@ class CLVViewState {
     let chatListMode: ChatListMode
 
     var shouldBeUpdatingView = false
+
+    var shouldFocusSearchOnAppear = false
 
     var isViewVisible = false
     var hasEverAppeared = false
@@ -78,7 +81,7 @@ extension ChatListViewController {
     // MARK: - Views
 
     var tableView: CLVTableView { tableDataSource.tableView }
-    var searchBar: OWSSearchBar { viewState.searchBar }
+    var searchBar: UISearchBar { viewState.searchBar }
     var searchResultsController: ConversationSearchViewController { viewState.searchResultsController }
 
     // MARK: - State

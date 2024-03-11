@@ -19,7 +19,7 @@ class AuthorMergeObserver: RecipientMergeObserver {
             // This is only adding/removing a PNI, so there's nothing to do.
             return
         }
-        guard let aciString = recipient.aciString, let phoneNumber = recipient.phoneNumber else {
+        guard let aciString = recipient.aciString, let phoneNumber = recipient.phoneNumber?.stringValue else {
             return
         }
         guard authorMergeHelper.shouldCleanUp(phoneNumber: phoneNumber, tx: tx) else {
@@ -41,9 +41,13 @@ class AuthorMergeObserver: RecipientMergeObserver {
         // the association is broken if and when some other ACI claims the number.
         // If it doesn't finish, things won't break, but they will require a slower
         // blocking migration instead.
-        if mergedRecipient.newRecipient.aciString != nil, let phoneNumber = mergedRecipient.newRecipient.phoneNumber {
-            authorMergeHelper.maybeJustLearnedAci(for: phoneNumber, tx: tx)
+        guard
+            mergedRecipient.newRecipient.aciString != nil,
+            let phoneNumber = mergedRecipient.newRecipient.phoneNumber?.stringValue
+        else {
+            return
         }
+        authorMergeHelper.maybeJustLearnedAci(for: phoneNumber, tx: tx)
     }
 
     private func populateMissingAcis(phoneNumber: String, aciString: String, tx: DBWriteTransaction) {

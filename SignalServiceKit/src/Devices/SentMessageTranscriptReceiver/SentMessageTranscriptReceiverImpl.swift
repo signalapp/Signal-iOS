@@ -9,7 +9,6 @@ import LibSignalClient
 public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
     private let attachmentDownloads: Shims.AttachmentDownloads
-    private let attachmentStore: AttachmentStore
     private let disappearingMessagesJob: Shims.DisappearingMessagesJob
     private let earlyMessageManager: Shims.EarlyMessageManager
     private let groupManager: Shims.GroupManager
@@ -17,11 +16,11 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private let paymentsHelper: Shims.PaymentsHelper
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let tsAccountManager: TSAccountManager
+    private let tsResourceManager: TSResourceManager
     private let viewOnceMessages: Shims.ViewOnceMessages
 
     public init(
         attachmentDownloads: Shims.AttachmentDownloads,
-        attachmentStore: AttachmentStore,
         disappearingMessagesJob: Shims.DisappearingMessagesJob,
         earlyMessageManager: Shims.EarlyMessageManager,
         groupManager: Shims.GroupManager,
@@ -29,10 +28,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         paymentsHelper: Shims.PaymentsHelper,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         tsAccountManager: TSAccountManager,
+        tsResourceManager: TSResourceManager,
         viewOnceMessages: Shims.ViewOnceMessages
     ) {
         self.attachmentDownloads = attachmentDownloads
-        self.attachmentStore = attachmentStore
         self.disappearingMessagesJob = disappearingMessagesJob
         self.earlyMessageManager = earlyMessageManager
         self.groupManager = groupManager
@@ -40,6 +39,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         self.paymentsHelper = paymentsHelper
         self.signalProtocolStoreManager = signalProtocolStoreManager
         self.tsAccountManager = tsAccountManager
+        self.tsResourceManager = tsResourceManager
         self.viewOnceMessages = viewOnceMessages
     }
 
@@ -175,7 +175,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
         // But since outgoingMessage is partially built and doesn't have the attachments yet, we check
         // for attachments explicitly.
-        let outgoingMessageHasContent = outgoingMessage.hasRenderableContent()
+        let hasRenderableContent = interactionStore.messageHasRenderableContent(outgoingMessage, tx: tx)
+        let outgoingMessageHasContent = hasRenderableContent
             || messageParams.attachmentPointerProtos.isEmpty.negated
         if !outgoingMessageHasContent && !outgoingMessage.isViewOnceMessage {
             switch messageParams.target {
@@ -207,16 +208,13 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // The sender may have resent the message. If so, we should swap it in place of the placeholder
             interactionStore.insertOrReplacePlaceholder(for: outgoingMessage, from: localIdentifiers.aciAddress, tx: tx)
 
-            let attachmentPointers = TSAttachmentPointer.attachmentPointers(
-                fromProtos: messageParams.attachmentPointerProtos,
-                albumMessage: outgoingMessage
+            tsResourceManager.createBodyAttachmentPointers(
+                from: messageParams.attachmentPointerProtos,
+                message: outgoingMessage,
+                tx: tx
             )
-            for pointer in attachmentPointers {
-                attachmentStore.anyInsert(pointer, tx: tx)
-            }
-            interactionStore.addBodyAttachments(attachmentPointers, to: outgoingMessage, tx: tx)
         }
-        owsAssertDebug(outgoingMessage.hasRenderableContent())
+        owsAssertDebug(hasRenderableContent)
 
         interactionStore.updateRecipientsFromNonLocalDevice(
             outgoingMessage,

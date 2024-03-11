@@ -608,13 +608,53 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d участник группы имеет похожее имя.</string>
+			<string>%1$d участник группы имеет одинаковое имя.</string>
 			<key>few</key>
-			<string>%1$d участника группы имеют похожие имена.</string>
+			<string>%1$d участника группы имеют одинаковое имя.</string>
 			<key>many</key>
-			<string>%1$d участников группы имеют похожие имена.</string>
+			<string>%1$d участников группы имеют одинаковое имя. Проверить участников</string>
 			<key>other</key>
-			<string>%1$d участника группы имеют похожие имена.</string>
+			<string>%1$d участника группы имеют одинаковое имя.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>В этой группе был обнаружен %1$d конфликт имён.</string>
+			<key>few</key>
+			<string>В этой группе было обнаружено %1$d конфликта имён.</string>
+			<key>many</key>
+			<string>В этой группе было обнаружено %1$d конфликтов имён.</string>
+			<key>other</key>
+			<string>В этой группе было обнаружено %1$d конфликта имён.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d участник</string>
+			<key>few</key>
+			<string>%1$d участника</string>
+			<key>many</key>
+			<string>%1$d участников</string>
+			<key>other</key>
+			<string>%1$d участника</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -628,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d участник группы имеет похожее имя. Просмотрите участников ниже и, если необходимо, примите меры.</string>
+			<string>В этой группе был обнаружен %1$d конфликт имён. Ознакомьтесь с приведёнными ниже участниками или примите меры.</string>
 			<key>few</key>
-			<string>%1$d участника группы имеют похожие имена. Просмотрите участников ниже и, если необходимо, примите меры.</string>
+			<string>В этой группе было обнаружено %1$d конфликта имён. Ознакомьтесь с приведёнными ниже участниками или примите меры.</string>
 			<key>many</key>
-			<string>%1$d участников группы имеют похожие имена. Просмотрите участников ниже и, если необходимо, примите меры.</string>
+			<string>В этой группе было обнаружено %1$d конфликтов имён. Ознакомьтесь с приведёнными ниже участниками или примите меры.</string>
 			<key>other</key>
-			<string>%1$d участника группы имеют похожие имена. Просмотрите участников ниже и, если необходимо, примите меры.</string>
+			<string>В этой группе было обнаружено %1$d конфликта имён. Ознакомьтесь с приведёнными ниже участниками или примите меры.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -1515,6 +1555,26 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; просмотров</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; просмотра</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Имя пользователя должно содержать как минимум %1$d символ</string>
+			<key>few</key>
+			<string>Имя пользователя должно содержать как минимум %1$d символа</string>
+			<key>many</key>
+			<string>Имя пользователя должно содержать как минимум %1$d символов</string>
+			<key>other</key>
+			<string>Имя пользователя должно содержать как минимум %1$d символа</string>
 		</dict>
 	</dict>
 </dict>

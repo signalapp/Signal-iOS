@@ -102,6 +102,15 @@ public extension TSThread {
     func hasPendingMessageRequest(transaction: SDSAnyReadTransaction) -> Bool {
         return ThreadFinder().hasPendingMessageRequest(thread: self, transaction: transaction)
     }
+
+    @nonobjc
+    func isSystemContact(contactsManager: ContactManager, tx: SDSAnyReadTransaction) -> Bool {
+        guard let contactThread = self as? TSContactThread else { return false }
+        return contactsManager.fetchSignalAccount(
+            for: contactThread.contactAddress,
+            transaction: tx
+        ) != nil
+    }
 }
 
 // MARK: -

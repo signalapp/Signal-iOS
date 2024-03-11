@@ -64,6 +64,34 @@ enum TimeGatedBatch {
         }
     }
 
+    /// Processes all elements in batches bound by time, asynchronously.
+    ///
+    /// - SeeAlso
+    /// ``TimeGatedBatch/processAll(db:yieldTxAfter:processBatch)``. This method
+    /// is an `async` variant of that method; see its docs for more details.
+    static func processAllAsync(
+        db: DB,
+        yieldTxAfter maximumDuration: TimeInterval = 0.5,
+        processBatch: @escaping (DBWriteTransaction) throws -> Int
+    ) async rethrows -> Int {
+        var itemCount = 0
+        while true {
+            let (txItemCount, mightHaveMore) = try await db.awaitableWrite { tx in
+                let startTime = CACurrentMediaTime()
+                return try processSome(
+                    yieldDeadline: startTime + maximumDuration,
+                    processBatch: processBatch,
+                    tx: tx
+                )
+            }
+            itemCount += txItemCount
+            guard mightHaveMore else {
+                break
+            }
+        }
+        return itemCount
+    }
+
     /// Processes all elements in batches bound by time.
     ///
     /// This method invokes `processBatch` repeatedly & in a tight loop. It
@@ -88,7 +116,11 @@ enum TimeGatedBatch {
         while true {
             let (txItemCount, mightHaveMore) = try db.write { tx in
                 let startTime = CACurrentMediaTime()
-                return try processSome(yieldDeadline: startTime + maximumDuration, processBatch: processBatch, tx: tx)
+                return try processSome(
+                    yieldDeadline: startTime + maximumDuration,
+                    processBatch: processBatch,
+                    tx: tx
+                )
             }
             itemCount += txItemCount
             guard mightHaveMore else {

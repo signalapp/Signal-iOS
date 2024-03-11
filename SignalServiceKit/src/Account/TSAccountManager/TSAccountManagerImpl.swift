@@ -189,7 +189,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     public func initializeLocalIdentifiers(
         e164: E164,
         aci: Aci,
-        pni: Pni?,
+        pni: Pni,
         deviceId: UInt32,
         serverAuthToken: String,
         tx: DBWriteTransaction
@@ -204,9 +204,9 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
 
             let oldPni = Pni.parseFrom(pniString: kvStore.getString(Keys.localPni, transaction: tx))
-            Self.regStateLogger.info("local pni \(oldPni?.logString ?? "nil") -> \(pni?.logString ?? "nil")")
+            Self.regStateLogger.info("local pni \(oldPni?.logString ?? "nil") -> \(pni)")
             // Encoded without the "PNI:" prefix for backwards compatibility.
-            kvStore.setString(pni?.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
+            kvStore.setString(pni.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
 
             Self.regStateLogger.info("device id is primary? \(deviceId == OWSDevice.primaryDeviceId)")
             kvStore.setUInt32(deviceId, key: Keys.deviceId, transaction: tx)
@@ -227,7 +227,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     public func changeLocalNumber(
         newE164: E164,
         aci: Aci,
-        pni: Pni?,
+        pni: Pni,
         tx: DBWriteTransaction
     ) {
         mutateWithLock(tx: tx) {
@@ -236,13 +236,13 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             kvStore.setString(newE164.stringValue, key: Keys.localPhoneNumber, transaction: tx)
 
             let oldAci = kvStore.getString(Keys.localAci, transaction: tx)
-            Self.regStateLogger.info("local aci \(oldAci ?? "nil") -> \(aci.serviceIdUppercaseString)")
+            Self.regStateLogger.info("local aci \(oldAci ?? "nil") -> \(aci)")
             kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
 
             let oldPni = kvStore.getString(Keys.localPni, transaction: tx)
-            Self.regStateLogger.info("local pni \(oldPni ?? "nil") -> \(pni?.rawUUID.uuidString ?? "nil")")
+            Self.regStateLogger.info("local pni \(oldPni ?? "nil") -> \(pni)")
             // Encoded without the "PNI:" prefix for backwards compatibility.
-            kvStore.setString(pni?.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
+            kvStore.setString(pni.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
         }
     }
 

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Contacts
 import Foundation
 import LibSignalClient
 import SignalCoreKit
@@ -11,176 +12,150 @@ import SignalServiceKit
 // MARK: - OWSContactsMangerSwiftValues
 
 class OWSContactsManagerSwiftValues {
-
+    fileprivate let avatarBlurringCache = LowTrustCache()
+    fileprivate let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
+    fileprivate let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: AtomicLock())
+    fileprivate let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>([:], lock: AtomicLock())
     fileprivate var systemContactsCache: SystemContactsCache?
+    fileprivate let unknownThreadWarningCache = LowTrustCache()
 
+    fileprivate let intersectionQueue = DispatchQueue(label: "org.signal.contacts.intersection")
+    fileprivate let skipContactAvatarBlurByServiceIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
+    fileprivate let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
     fileprivate let systemContactsDataProvider = AtomicOptional<SystemContactsDataProvider>(nil)
-
-    fileprivate var primaryDeviceSystemContactsDataProvider: PrimaryDeviceSystemContactsDataProvider? {
-        systemContactsDataProvider.get() as? PrimaryDeviceSystemContactsDataProvider
-    }
 
     fileprivate let usernameLookupManager: UsernameLookupManager
 
     init(usernameLookupManager: UsernameLookupManager) {
         self.usernameLookupManager = usernameLookupManager
     }
+
+    fileprivate var primaryDeviceSystemContactsDataProvider: PrimaryDeviceSystemContactsDataProvider? {
+        systemContactsDataProvider.get() as? PrimaryDeviceSystemContactsDataProvider
+    }
 }
 
-// TODO: Should we use these caches in NSE?
-private extension OWSContactsManager {
-    static let skipContactAvatarBlurByServiceIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
-    static let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
+// MARK: -
 
-    // MARK: - Low Trust
+private class SystemContactsCache {
+    let unsortedSignalAccounts = AtomicOptional<[SignalAccount]>(nil)
+    let contactsMaps = AtomicOptional<ContactsMaps>(nil)
+}
 
-    private enum LowTrustType {
-        case avatarBlurring
-        case unknownThreadWarning
+// MARK: -
 
-        var checkForTrustedGroupMembers: Bool {
-            self == .unknownThreadWarning
-        }
+private class LowTrustCache {
+    let contactCache = AtomicSet<ServiceId>()
+    let groupCache = AtomicSet<Data>()
 
-        var cache: LowTrustCache {
-            switch self {
-            case .avatarBlurring:
-                return OWSContactsManager.avatarBlurringCache
-            case .unknownThreadWarning:
-                return OWSContactsManager.unknownThreadWarningCache
-            }
-        }
+    func contains(groupThread: TSGroupThread) -> Bool {
+        groupCache.contains(groupThread.groupId)
     }
 
-    private struct LowTrustCache {
-        let contactCache = AtomicSet<ServiceId>()
-        let groupCache = AtomicSet<Data>()
-
-        func contains(groupThread: TSGroupThread) -> Bool {
-            groupCache.contains(groupThread.groupId)
-        }
-
-        func contains(contactThread: TSContactThread) -> Bool {
-            contains(address: contactThread.contactAddress)
-        }
-
-        func contains(address: SignalServiceAddress) -> Bool {
-            guard let serviceId = address.serviceId else {
-                return false
-            }
-            return contactCache.contains(serviceId)
-        }
-
-        func add(groupThread: TSGroupThread) {
-            groupCache.insert(groupThread.groupId)
-        }
-
-        func add(contactThread: TSContactThread) {
-            add(address: contactThread.contactAddress)
-        }
-
-        func add(address: SignalServiceAddress) {
-            guard let serviceId = address.serviceId else {
-                return
-            }
-            contactCache.insert(serviceId)
-        }
+    func contains(contactThread: TSContactThread) -> Bool {
+        contains(address: contactThread.contactAddress)
     }
 
-    private static let unknownThreadWarningCache = LowTrustCache()
-    private static let avatarBlurringCache = LowTrustCache()
+    func contains(address: SignalServiceAddress) -> Bool {
+        guard let serviceId = address.serviceId else {
+            return false
+        }
+        return contactCache.contains(serviceId)
+    }
 
-    private func isLowTrustThread(_ thread: TSThread, lowTrustType: LowTrustType, transaction tx: SDSAnyReadTransaction) -> Bool {
+    func add(groupThread: TSGroupThread) {
+        groupCache.insert(groupThread.groupId)
+    }
+
+    func add(contactThread: TSContactThread) {
+        add(address: contactThread.contactAddress)
+    }
+
+    func add(address: SignalServiceAddress) {
+        guard let serviceId = address.serviceId else {
+            return
+        }
+        contactCache.insert(serviceId)
+    }
+}
+
+// MARK: -
+
+extension OWSContactsManager: ContactManager {
+
+    // MARK: Low Trust
+
+    private func isLowTrustThread(_ thread: TSThread, lowTrustCache: LowTrustCache, tx: SDSAnyReadTransaction) -> Bool {
         if let contactThread = thread as? TSContactThread {
-            return isLowTrustContact(contactThread: contactThread, lowTrustType: lowTrustType, tx: tx)
+            return isLowTrustContact(contactThread: contactThread, lowTrustCache: lowTrustCache, tx: tx)
         } else if let groupThread = thread as? TSGroupThread {
-            return isLowTrustGroup(groupThread: groupThread, lowTrustType: lowTrustType, tx: tx)
+            return isLowTrustGroup(groupThread: groupThread, lowTrustCache: lowTrustCache, tx: tx)
         } else {
             owsFailDebug("Invalid thread.")
             return false
         }
     }
 
-    private func isLowTrustContact(address: SignalServiceAddress, lowTrustType: LowTrustType, transaction tx: SDSAnyReadTransaction) -> Bool {
-        let cache = lowTrustType.cache
-        if cache.contains(address: address) {
+    private func isLowTrustContact(address: SignalServiceAddress, lowTrustCache: LowTrustCache, tx: SDSAnyReadTransaction) -> Bool {
+        if lowTrustCache.contains(address: address) {
             return false
         }
         guard let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) else {
-            cache.add(address: address)
+            lowTrustCache.add(address: address)
             return false
         }
-        return isLowTrustContact(contactThread: contactThread, lowTrustType: lowTrustType, tx: tx)
+        return isLowTrustContact(contactThread: contactThread, lowTrustCache: lowTrustCache, tx: tx)
     }
 
-    private func isLowTrustContact(contactThread: TSContactThread, lowTrustType: LowTrustType, tx: SDSAnyReadTransaction) -> Bool {
-        let cache = lowTrustType.cache
+    private func isLowTrustContact(contactThread: TSContactThread, lowTrustCache: LowTrustCache, tx: SDSAnyReadTransaction) -> Bool {
         let address = contactThread.contactAddress
-        if cache.contains(address: address) {
+        if lowTrustCache.contains(address: address) {
             return false
         }
         if !contactThread.hasPendingMessageRequest(transaction: tx) {
-            cache.add(address: address)
+            lowTrustCache.add(address: address)
             return false
         }
         // ...and not in a whitelisted group with the locar user.
         if isInWhitelistedGroupWithLocalUser(otherAddress: address, tx: tx) {
-            cache.add(address: address)
+            lowTrustCache.add(address: address)
             return false
         }
         // We can skip avatar blurring if the user has explicitly waived the blurring.
         if
-            lowTrustType == .avatarBlurring,
+            lowTrustCache === swiftValues.avatarBlurringCache,
             let storeKey = address.serviceId?.serviceIdUppercaseString,
-            Self.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx)
+            swiftValues.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx)
         {
-            cache.add(address: address)
+            lowTrustCache.add(address: address)
             return false
         }
         return true
     }
 
-    private func isLowTrustGroup(groupThread: TSGroupThread, lowTrustType: LowTrustType, tx: SDSAnyReadTransaction) -> Bool {
-        let cache = lowTrustType.cache
-        let groupId = groupThread.groupId
-        if cache.contains(groupThread: groupThread) {
-            return false
-        }
-        if nil == groupThread.groupModel.avatarHash {
-            // DO NOT add to the cache.
+    private func isLowTrustGroup(groupThread: TSGroupThread, lowTrustCache: LowTrustCache, tx: SDSAnyReadTransaction) -> Bool {
+        if lowTrustCache.contains(groupThread: groupThread) {
             return false
         }
         if !groupThread.hasPendingMessageRequest(transaction: tx) {
-            cache.add(groupThread: groupThread)
-            return false
-        }
-        // We can skip avatar blurring if the user has explicitly waived the blurring.
-        if
-            lowTrustType == .avatarBlurring,
-            Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString, defaultValue: false, transaction: tx)
-        {
-            cache.add(groupThread: groupThread)
+            lowTrustCache.add(groupThread: groupThread)
             return false
         }
         // We can skip "unknown thread warnings" if a group has members which are trusted.
-        if lowTrustType.checkForTrustedGroupMembers, hasWhitelistedGroupMember(groupThread: groupThread, tx: tx) {
-            cache.add(groupThread: groupThread)
+        if lowTrustCache === swiftValues.unknownThreadWarningCache, hasWhitelistedGroupMember(groupThread: groupThread, tx: tx) {
+            lowTrustCache.add(groupThread: groupThread)
             return false
         }
         return true
     }
 
-    // MARK: -
-
-    private static let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>()
-
     private func isInWhitelistedGroupWithLocalUser(otherAddress: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
-        let cache = Self.isInWhitelistedGroupWithLocalUserCache
+        let cache = swiftValues.isInWhitelistedGroupWithLocalUserCache
         if let cacheKey = otherAddress.serviceId, let cachedValue = cache[cacheKey] {
             return cachedValue
         }
         let result: Bool = {
-            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
+            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
                 owsFailDebug("Missing localAddress.")
                 return false
             }
@@ -207,10 +182,8 @@ private extension OWSContactsManager {
         return result
     }
 
-    private static let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>()
-
     private func hasWhitelistedGroupMember(groupThread: TSGroupThread, tx: SDSAnyReadTransaction) -> Bool {
-        let cache = Self.hasWhitelistedGroupMemberCache
+        let cache = swiftValues.hasWhitelistedGroupMemberCache
         let cacheKey = groupThread.groupId
         if let cachedValue = cache[cacheKey] {
             return cachedValue
@@ -226,53 +199,65 @@ private extension OWSContactsManager {
         cache[cacheKey] = result
         return result
     }
-}
 
-// MARK: -
-
-public extension OWSContactsManager {
-
-    // MARK: - Low Trust Thread Warnings
-
-    func shouldShowUnknownThreadWarning(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        isLowTrustThread(thread, lowTrustType: .unknownThreadWarning, transaction: transaction)
+    public func shouldShowUnknownThreadWarning(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        isLowTrustThread(thread, lowTrustCache: swiftValues.unknownThreadWarningCache, tx: transaction)
     }
 
     // MARK: - Avatar Blurring
 
-    func shouldBlurAvatar(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        isLowTrustThread(thread, lowTrustType: .avatarBlurring, transaction: transaction)
+    public func shouldBlurContactAvatar(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
+        isLowTrustContact(address: address, lowTrustCache: swiftValues.avatarBlurringCache, tx: transaction)
     }
 
-    func shouldBlurContactAvatar(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        isLowTrustContact(address: address, lowTrustType: .avatarBlurring, transaction: transaction)
+    public func shouldBlurContactAvatar(contactThread: TSContactThread, transaction: SDSAnyReadTransaction) -> Bool {
+        isLowTrustContact(contactThread: contactThread, lowTrustCache: swiftValues.avatarBlurringCache, tx: transaction)
     }
 
-    func shouldBlurContactAvatar(contactThread: TSContactThread, transaction: SDSAnyReadTransaction) -> Bool {
-        isLowTrustContact(contactThread: contactThread, lowTrustType: .avatarBlurring, tx: transaction)
+    public func shouldBlurGroupAvatar(groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) -> Bool {
+        if nil == groupThread.groupModel.avatarHash {
+            // DO NOT add to the cache.
+            return false
+        }
+
+        if !isLowTrustGroup(
+            groupThread: groupThread,
+            lowTrustCache: swiftValues.avatarBlurringCache,
+            tx: transaction
+        ) {
+            return false
+        }
+
+        // We can skip avatar blurring if the user has explicitly waived the blurring.
+        if swiftValues.skipGroupAvatarBlurByGroupIdStore.getBool(
+            groupThread.groupId.hexadecimalString,
+            defaultValue: false,
+            transaction: transaction)
+        {
+            swiftValues.avatarBlurringCache.add(groupThread: groupThread)
+            return false
+        }
+
+        return true
     }
 
-    func shouldBlurGroupAvatar(groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) -> Bool {
-        isLowTrustGroup(groupThread: groupThread, lowTrustType: .avatarBlurring, tx: transaction)
-    }
+    public static let skipContactAvatarBlurDidChange = NSNotification.Name("skipContactAvatarBlurDidChange")
+    public static let skipContactAvatarBlurAddressKey = "skipContactAvatarBlurAddressKey"
+    public static let skipGroupAvatarBlurDidChange = NSNotification.Name("skipGroupAvatarBlurDidChange")
+    public static let skipGroupAvatarBlurGroupUniqueIdKey = "skipGroupAvatarBlurGroupUniqueIdKey"
 
-    static let skipContactAvatarBlurDidChange = NSNotification.Name("skipContactAvatarBlurDidChange")
-    static let skipContactAvatarBlurAddressKey = "skipContactAvatarBlurAddressKey"
-    static let skipGroupAvatarBlurDidChange = NSNotification.Name("skipGroupAvatarBlurDidChange")
-    static let skipGroupAvatarBlurGroupUniqueIdKey = "skipGroupAvatarBlurGroupUniqueIdKey"
-
-    func doNotBlurContactAvatar(address: SignalServiceAddress, transaction tx: SDSAnyWriteTransaction) {
+    public func doNotBlurContactAvatar(address: SignalServiceAddress, transaction tx: SDSAnyWriteTransaction) {
         guard let serviceId = address.serviceId else {
             owsFailDebug("Missing ServiceId for user.")
             return
         }
         let storeKey = serviceId.serviceIdUppercaseString
-        let shouldSkipBlur = Self.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx)
+        let shouldSkipBlur = swiftValues.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx)
         guard !shouldSkipBlur else {
             owsFailDebug("Value did not change.")
             return
         }
-        Self.skipContactAvatarBlurByServiceIdStore.setBool(true, key: storeKey, transaction: tx)
+        swiftValues.skipContactAvatarBlurByServiceIdStore.setBool(true, key: storeKey, transaction: tx)
         if let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) {
             databaseStorage.touch(thread: contactThread, shouldReindex: false, transaction: tx)
         }
@@ -287,18 +272,22 @@ public extension OWSContactsManager {
         }
     }
 
-    func doNotBlurGroupAvatar(groupThread: TSGroupThread, transaction: SDSAnyWriteTransaction) {
+    public func doNotBlurGroupAvatar(groupThread: TSGroupThread, transaction: SDSAnyWriteTransaction) {
         let groupId = groupThread.groupId
         let groupUniqueId = groupThread.uniqueId
-        guard !Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString,
-                                                              defaultValue: false,
-                                                              transaction: transaction) else {
+        guard !swiftValues.skipGroupAvatarBlurByGroupIdStore.getBool(
+            groupId.hexadecimalString,
+            defaultValue: false,
+            transaction: transaction
+        ) else {
             owsFailDebug("Value did not change.")
             return
         }
-        Self.skipGroupAvatarBlurByGroupIdStore.setBool(true,
-                                                       key: groupId.hexadecimalString,
-                                                       transaction: transaction)
+        swiftValues.skipGroupAvatarBlurByGroupIdStore.setBool(
+            true,
+            key: groupId.hexadecimalString,
+            transaction: transaction
+        )
         databaseStorage.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
 
         transaction.addAsyncCompletionOffMain {
@@ -319,93 +308,8 @@ public extension OWSContactsManager {
         }
     }
 
-    // MARK: -
+    // MARK: - Avatars
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    func _sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-        sortSignalServiceAddresses(addresses, transaction: transaction)
-    }
-
-    // MARK: -
-
-    func shortestDisplayName(
-        forGroupMember groupMember: SignalServiceAddress,
-        inGroup groupModel: TSGroupModel,
-        transaction: SDSAnyReadTransaction
-    ) -> String {
-
-        let fullName = displayName(for: groupMember, transaction: transaction)
-        let shortName = shortDisplayName(for: groupMember, transaction: transaction)
-        guard shortName != fullName else { return fullName }
-
-        // Try to return just the short name unless the group contains another
-        // member with the same short name.
-
-        for otherMember in groupModel.groupMembership.fullMembers {
-            guard otherMember != groupMember else { continue }
-
-            // Use the full name if the member's short name matches
-            // another member's full or short name.
-            let otherFullName = displayName(for: otherMember, transaction: transaction)
-            guard otherFullName != shortName else { return fullName }
-
-            let otherShortName = shortDisplayName(for: otherMember, transaction: transaction)
-            guard otherShortName != shortName else { return fullName }
-        }
-
-        return shortName
-    }
-}
-
-// MARK: -
-
-public struct SortableAddress: Equatable, Comparable {
-    public let address: SignalServiceAddress
-    public let comparableName: String
-    private let comparableAddress: String
-
-    init(address: SignalServiceAddress, comparableName: String) {
-        self.address = address
-        self.comparableName = comparableName.lowercased()
-        self.comparableAddress = address.stringForDisplay
-    }
-
-    // MARK: - Equatable
-
-    public static func == (lhs: SortableAddress, rhs: SortableAddress) -> Bool {
-        return (
-            lhs.comparableName == rhs.comparableName
-            && lhs.comparableAddress == rhs.comparableAddress
-        )
-    }
-
-    // MARK: - Comparable
-
-    public static func < (lhs: SortableAddress, rhs: SortableAddress) -> Bool {
-        // We want to sort E164 phone numbers _after_ names.
-        switch (lhs.comparableName.hasPrefix("+"), rhs.comparableName.hasPrefix("+")) {
-        case (true, true), (false, false):
-            break
-        case (true, false):
-            return false
-        case (false, true):
-            return true
-        }
-
-        if lhs.comparableName != rhs.comparableName {
-            return lhs.comparableName < rhs.comparableName
-        }
-
-        return lhs.comparableAddress < rhs.comparableAddress
-    }
-}
-
-// MARK: -
-
-extension OWSContactsManager {
-
-    @objc
     public func avatarImage(forAddress address: SignalServiceAddress?,
                             shouldValidate: Bool,
                             transaction: SDSAnyReadTransaction) -> UIImage? {
@@ -421,7 +325,6 @@ extension OWSContactsManager {
         return image
     }
 
-    @objc
     public func avatarImageData(forAddress address: SignalServiceAddress?,
                                 shouldValidate: Bool,
                                 transaction: SDSAnyReadTransaction) -> Data? {
@@ -448,9 +351,11 @@ extension OWSContactsManager {
         }
     }
 
-    fileprivate func profileAvatarImageData(forAddress address: SignalServiceAddress?,
-                                            shouldValidate: Bool,
-                                            transaction: SDSAnyReadTransaction) -> Data? {
+    private func profileAvatarImageData(
+        forAddress address: SignalServiceAddress?,
+        shouldValidate: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> Data? {
         func validateIfNecessary(_ imageData: Data) -> Data? {
             guard shouldValidate else {
                 return imageData
@@ -476,9 +381,11 @@ extension OWSContactsManager {
         return nil
     }
 
-    fileprivate func systemContactOrSyncedImageData(forAddress address: SignalServiceAddress?,
-                                                    shouldValidate: Bool,
-                                                    transaction: SDSAnyReadTransaction) -> Data? {
+    private func systemContactOrSyncedImageData(
+        forAddress address: SignalServiceAddress?,
+        shouldValidate: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> Data? {
         func validateIfNecessary(_ imageData: Data) -> Data? {
             guard shouldValidate else {
                 return imageData
@@ -505,7 +412,7 @@ extension OWSContactsManager {
             let phoneNumber = address.phoneNumber,
             let contact = contact(forPhoneNumber: phoneNumber, transaction: transaction),
             let cnContactId = contact.cnContactId,
-            let avatarData = self.avatarData(forCNContactId: cnContactId),
+            let avatarData = self.avatarData(for: cnContactId),
             let validData = validateIfNecessary(avatarData)
         {
             return validData
@@ -515,7 +422,7 @@ extension OWSContactsManager {
         if let signalAccount = self.fetchSignalAccount(for: address, transaction: transaction) {
             if let contact = signalAccount.contact,
                let cnContactId = contact.cnContactId,
-               let avatarData = self.avatarData(forCNContactId: cnContactId),
+               let avatarData = self.avatarData(for: cnContactId),
                let validData = validateIfNecessary(avatarData) {
                 return validData
             }
@@ -526,24 +433,16 @@ extension OWSContactsManager {
         }
         return nil
     }
-}
 
-// MARK: - Internals
+    // MARK: - Intersection
 
-extension OWSContactsManager {
-    // TODO: It would be preferable to figure out some way to use ReverseDispatchQueue.
-    @objc
-    static let intersectionQueue = DispatchQueue(label: "org.signal.contacts.intersection")
-    @objc
-    var intersectionQueue: DispatchQueue { Self.intersectionQueue }
-
-    private static func buildContactAvatarHash(contact: Contact) -> Data? {
+    private func buildContactAvatarHash(contact: Contact) -> Data? {
         return autoreleasepool {
             guard let cnContactId: String = contact.cnContactId else {
                 owsFailDebug("Missing cnContactId.")
                 return nil
             }
-            guard let contactAvatarData = Self.contactsManager.avatarData(forCNContactId: cnContactId) else {
+            guard let contactAvatarData = avatarData(for: cnContactId) else {
                 return nil
             }
             guard let contactAvatarHash = Cryptography.computeSHA256Digest(contactAvatarData) else {
@@ -561,7 +460,7 @@ extension OWSContactsManager {
         var signalAccounts = [SignalAccount]()
         var seenServiceIds = Set<ServiceId>()
         for contact in systemContacts {
-            var signalRecipients = contact.systemContactRecipients(tx: transaction)
+            var signalRecipients = contact.discoverableRecipients(tx: transaction)
             // TODO: Confirm ordering.
             signalRecipients.sort { $0.address.compare($1.address) == .orderedAscending }
             let relatedAddresses = signalRecipients.map { $0.address }
@@ -578,12 +477,12 @@ extension OWSContactsManager {
                     for: signalRecipient.address,
                     relatedAddresses: relatedAddresses
                 )
-                let contactAvatarHash = Self.buildContactAvatarHash(contact: contact)
+                let contactAvatarHash = buildContactAvatarHash(contact: contact)
                 let signalAccount = SignalAccount(
                     contact: contact,
                     contactAvatarHash: contactAvatarHash,
                     multipleAccountLabelText: multipleAccountLabelText,
-                    recipientPhoneNumber: signalRecipient.phoneNumber,
+                    recipientPhoneNumber: signalRecipient.phoneNumber?.stringValue,
                     recipientServiceId: recipientServiceId
                 )
                 signalAccounts.append(signalAccount)
@@ -592,8 +491,8 @@ extension OWSContactsManager {
         return signalAccounts.stableSort()
     }
 
-    fileprivate func buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts localSystemContacts: [Contact]) {
-        assertOnQueue(intersectionQueue)
+    private func buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts localSystemContacts: [Contact]) {
+        assertOnQueue(swiftValues.intersectionQueue)
 
         let (oldSignalAccounts, newSignalAccounts) = databaseStorage.read { transaction in
             let oldSignalAccounts = SignalAccount.anyFetchAll(transaction: transaction)
@@ -674,6 +573,12 @@ extension OWSContactsManager {
                 newSignalAccount?.anyInsert(transaction: tx)
 
                 touchContactThread(for: newSignalAccount ?? oldSignalAccount)
+
+                updatePhoneNumberVisibilityIfNeeded(
+                    oldSignalAccount: oldSignalAccount,
+                    newSignalAccount: newSignalAccount,
+                    tx: tx.asV2Write
+                )
             }
 
             Logger.info("Updated \(signalAccountChanges.count) SignalAccounts; now have \(newSignalAccountsMap.count) total")
@@ -781,6 +686,29 @@ extension OWSContactsManager {
         storageServiceManager.recordPendingUpdates(updatedAddresses: Array(addressesToUpdateInStorageService))
     }
 
+    private func updatePhoneNumberVisibilityIfNeeded(
+        oldSignalAccount: SignalAccount?,
+        newSignalAccount: SignalAccount?,
+        tx: DBWriteTransaction
+    ) {
+        let aciToUpdate = SignalAccount.aciForPhoneNumberVisibilityUpdate(
+            oldAccount: oldSignalAccount,
+            newAccount: newSignalAccount
+        )
+        guard let aciToUpdate else {
+            return
+        }
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aciToUpdate, transaction: tx)
+        guard let recipient else {
+            return
+        }
+        // Tell the cache to refresh its state for this recipient. It will check
+        // whether or not the number should be visible based on this state and the
+        // state of system contacts.
+        signalServiceAddressCache.updateRecipient(recipient, tx: tx)
+    }
+
     func didUpdateSignalAccounts(transaction: SDSAnyWriteTransaction) {
         transaction.addTransactionFinalizationBlock(forKey: "OWSContactsManager.didUpdateSignalAccounts") { _ in
             self.didUpdateSignalAccounts(shouldClearCache: true, shouldNotify: true)
@@ -795,11 +723,7 @@ extension OWSContactsManager {
             NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerSignalAccountsDidChange, object: nil)
         }
     }
-}
 
-// MARK: - Intersection
-
-extension OWSContactsManager {
     private enum Constants {
         static let nextFullIntersectionDate = "OWSContactsManagerKeyNextFullIntersectionDate2"
         static let lastKnownContactPhoneNumbers = "OWSContactsManagerKeyLastKnownContactPhoneNumbers"
@@ -808,7 +732,7 @@ extension OWSContactsManager {
 
     @objc
     func updateContacts(_ addressBookContacts: [Contact]?, isUserRequested: Bool) {
-        intersectionQueue.async { self._updateContacts(addressBookContacts, isUserRequested: isUserRequested) }
+        swiftValues.intersectionQueue.async { self._updateContacts(addressBookContacts, isUserRequested: isUserRequested) }
     }
 
     private func _updateContacts(_ addressBookContacts: [Contact]?, isUserRequested: Bool) {
@@ -818,13 +742,13 @@ extension OWSContactsManager {
             setContactsMaps(contactsMaps, localNumber: localNumber, transaction: tx)
             return (localNumber, contactsMaps)
         }
-        cnContactCache.removeAllObjects()
+        swiftValues.cnContactCache.removeAllObjects()
 
         NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerContactsDidChange, object: nil)
 
         intersectContacts(
             addressBookContacts, localNumber: localNumber, isUserRequested: isUserRequested
-        ).done(on: intersectionQueue) {
+        ).done(on: swiftValues.intersectionQueue) {
             self.buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts: contactsMaps.allContacts)
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Couldn't intersect contacts: \(error)")
@@ -902,7 +826,7 @@ extension OWSContactsManager {
         }
 
         let intersectionPromise = intersectContacts(phoneNumbersToIntersect, retryDelaySeconds: 1)
-        return intersectionPromise.done(on: intersectionQueue) { intersectedRecipients in
+        return intersectionPromise.done(on: swiftValues.intersectionQueue) { intersectedRecipients in
             Self.databaseStorage.write { tx in
                 self.migrateDidIntersectAddressBookIfNeeded(tx: tx)
                 self.postJoinNotificationsIfNeeded(
@@ -962,13 +886,13 @@ extension OWSContactsManager {
             return
         }
         for signalRecipient in intersectedRecipients {
-            guard let phoneNumber = signalRecipient.phoneNumber else {
+            guard let phoneNumber = signalRecipient.phoneNumber, phoneNumber.isDiscoverable else {
                 continue  // Can't happen.
             }
-            guard addressBookPhoneNumbers.contains(phoneNumber) else {
+            guard addressBookPhoneNumbers.contains(phoneNumber.stringValue) else {
                 continue  // Not in the address book -- no notification.
             }
-            guard phoneNumberRegistrationStatus[phoneNumber] != true else {
+            guard phoneNumberRegistrationStatus[phoneNumber.stringValue] != true else {
                 continue  // They were already registered -- no notification.
             }
             NewAccountDiscovery.postNotification(for: signalRecipient, tx: tx)
@@ -988,9 +912,12 @@ extension OWSContactsManager {
         let recipientHidingManager = DependenciesBridge.shared.recipientHidingManager
         for hiddenRecipient in recipientHidingManager.hiddenRecipients(tx: tx) {
             guard let phoneNumber = hiddenRecipient.phoneNumber else {
-                continue // Intersecting with contacts by phone number
+                continue // We can't unhide because of the address book w/o a phone number.
             }
-            guard addressBookPhoneNumbers.contains(phoneNumber) else {
+            guard phoneNumber.isDiscoverable else {
+                continue // Not discoverable -- no unhiding.
+            }
+            guard addressBookPhoneNumbers.contains(phoneNumber.stringValue) else {
                 continue  // Not in the address book -- no unhiding.
             }
             DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
@@ -1060,11 +987,6 @@ extension OWSContactsManager {
             }
         }
     }
-}
-
-// MARK: -
-
-public extension OWSContactsManager {
 
     private static let unknownAddressFetchDateMap = AtomicDictionary<Aci, Date>()
 
@@ -1086,27 +1008,9 @@ public extension OWSContactsManager {
 
         bulkProfileFetch.fetchProfile(address: address)
     }
-}
 
-// MARK: -
+    // MARK: - System Contacts
 
-public extension Array where Element == SignalAccount {
-    func stableSort() -> [SignalAccount] {
-        // Use an arbitrary sort but ensure the ordering is stable.
-        self.sorted { (left, right) in
-            left.recipientAddress.sortKey < right.recipientAddress.sortKey
-        }
-    }
-}
-
-// MARK: System Contacts
-
-private class SystemContactsCache {
-    let unsortedSignalAccounts = AtomicOptional<[SignalAccount]>(nil)
-    let contactsMaps = AtomicOptional<ContactsMaps>(nil)
-}
-
-extension OWSContactsManager {
     @objc
     func setUpSystemContacts() {
         updateSystemContactsDataProvider()
@@ -1170,18 +1074,6 @@ extension OWSContactsManager {
         }
     }
 
-    @objc
-    public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
-        if let cachedValue = swiftValues.systemContactsCache?.contactsMaps.get() {
-            return cachedValue.phoneNumberToContactMap[phoneNumber]
-        }
-        guard let dataProvider = swiftValues.systemContactsDataProvider.get() else {
-            owsFailDebug("Can't access contacts until registration is finished.")
-            return nil
-        }
-        return dataProvider.fetchSystemContact(for: phoneNumber, transaction: transaction)
-    }
-
     private func buildContactsMaps(
         using dataProvider: SystemContactsDataProvider,
         transaction: SDSAnyReadTransaction
@@ -1205,6 +1097,36 @@ extension OWSContactsManager {
         )
     }
 
+    public func cnContact(withId cnContactId: String?) -> CNContact? {
+        guard let cnContactId else {
+            return nil
+        }
+        if let cnContact = swiftValues.cnContactCache[cnContactId] {
+            return cnContact
+        }
+        let cnContact = systemContactsFetcher.fetchCNContact(contactId: cnContactId)
+        if let cnContact {
+            swiftValues.cnContactCache[cnContactId] = cnContact
+        }
+        return cnContact
+    }
+
+    @objc
+    public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
+        if let cachedValue = swiftValues.systemContactsCache?.contactsMaps.get() {
+            return cachedValue.phoneNumberToContactMap[phoneNumber]
+        }
+        guard let dataProvider = swiftValues.systemContactsDataProvider.get() else {
+            owsFailDebug("Can't access contacts until registration is finished.")
+            return nil
+        }
+        return dataProvider.fetchSystemContact(for: phoneNumber, transaction: transaction)
+    }
+
+    public func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
+        return contact(forPhoneNumber: phoneNumber, transaction: transaction) != nil
+    }
+
     private func fetchUnsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
         SignalAccount.anyFetchAll(transaction: transaction)
     }
@@ -1218,31 +1140,31 @@ extension OWSContactsManager {
         swiftValues.systemContactsCache?.unsortedSignalAccounts.set(uncachedValue)
         return uncachedValue
     }
-}
 
-// MARK: - Display Names
+    // MARK: - Display Names
 
-extension OWSContactsManager {
     private func displayNamesRefinery(
         for addresses: [SignalServiceAddress],
         transaction: SDSAnyReadTransaction
-    ) -> Refinery<SignalServiceAddress, String> {
-        return .init(addresses).refine { addresses in
+    ) -> Refinery<SignalServiceAddress, DisplayName> {
+        return .init(addresses).refine { addresses -> [DisplayName?] in
             // Prefer a saved name from system contacts, if available.
-            systemContactNames(for: addresses, tx: transaction)
-        }.refine { addresses in
-            profileManager.fullNames(for: Array(addresses), tx: transaction)
-        }.refine { addresses in
-            phoneNumbers(for: Array(addresses)).lazy.map { $0?.nilIfEmpty }
-        }.refine { addresses -> [String?] in
-            swiftValues.usernameLookupManager.fetchUsernames(
+            return systemContactNames(for: addresses, tx: transaction)
+                .map { $0.map { .systemContactName($0) } }
+        }.refine { addresses -> [DisplayName?] in
+            return profileManager.fetchUserProfiles(for: Array(addresses), tx: transaction)
+                .map { $0?.nameComponents.map { .profileName($0) } }
+        }.refine { addresses -> [DisplayName?] in
+            return addresses.map { $0.e164.map { .phoneNumber($0) } }
+        }.refine { addresses -> [DisplayName?] in
+            return swiftValues.usernameLookupManager.fetchUsernames(
                 forAddresses: addresses,
                 transaction: transaction.asV2Read
-            )
+            ).map { $0.map { .username($0) } }
         }.refine { addresses in
             return addresses.lazy.map {
                 self.fetchProfile(forUnknownAddress: $0)
-                return Self.unknownUserLabel
+                return .unknown
             }
         }
     }
@@ -1250,102 +1172,122 @@ extension OWSContactsManager {
     public func displayNamesByAddress(
         for addresses: [SignalServiceAddress],
         transaction: SDSAnyReadTransaction
-    ) -> [SignalServiceAddress: String] {
+    ) -> [SignalServiceAddress: DisplayName] {
         Dictionary(displayNamesRefinery(for: addresses, transaction: transaction))
     }
 
-    @objc(objc_displayNamesForAddresses:transaction:)
-    func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
-        displayNamesRefinery(for: addresses, transaction: transaction).values.map { $0! }
+    public func displayNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [DisplayName] {
+        displayNamesRefinery(for: addresses, transaction: tx).values.map { $0! }
     }
 
-    func phoneNumbers(for addresses: [SignalServiceAddress]) -> [String?] {
-        return addresses.map { E164($0.phoneNumber)?.stringValue }
+    @available(swift, obsoleted: 1.0)
+    @objc
+    func _displayNameString(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String {
+        return displayName(for: address, tx: tx).resolvedValue()
     }
 
-    func fetchSignalAccounts(
-        for addresses: some Sequence<SignalServiceAddress>,
-        transaction: SDSAnyReadTransaction
-    ) -> [SignalAccount?] {
+    @available(swift, obsoleted: 1.0)
+    @objc
+    func _shortDisplayNameString(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String {
+        return displayName(for: address, tx: tx).resolvedValue(useShortNameIfAvailable: true)
+    }
+
+    private func systemContactNames(for addresses: some Sequence<SignalServiceAddress>, tx: SDSAnyReadTransaction) -> [DisplayName.SystemContactName?] {
         let phoneNumbers = addresses.map { $0.phoneNumber }
-        var compactedResult = modelReadCaches.signalAccountReadCache.getSignalAccounts(
-            phoneNumbers: phoneNumbers.compacted(),
-            transaction: transaction
-        ).makeIterator()
+        var compactedResult = systemContactNames(for: phoneNumbers.compacted(), tx: tx).makeIterator()
         return phoneNumbers.map { $0 != nil ? compactedResult.next()! : nil }
     }
 
-    @objc
-    func _systemContactName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String? {
-        return systemContactNames(for: AnySequence([address]), tx: tx)[0]
+    public func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease {
+        return modelReadCaches.signalAccountReadCache.leaseCacheSize(cacheSize)
     }
 
-    func systemContactNames(for addresses: AnySequence<SignalServiceAddress>, tx: SDSAnyReadTransaction) -> [String?] {
-        return fetchSignalAccounts(for: addresses, transaction: tx).map { $0?.fullName }
+    public func fetchSignalAccounts(
+        for phoneNumbers: [String],
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalAccount?] {
+        return modelReadCaches.signalAccountReadCache.getSignalAccounts(
+            phoneNumbers: phoneNumbers,
+            transaction: transaction
+        )
     }
 
-    @objc
-    public static var unknownUserLabel: String {
-        return OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
-    }
-}
-
-private extension SignalAccount {
-    var fullName: String? {
-        // Name may be either the nickname or the full name of the contact
-        guard let fullName = contactPreferredDisplayName() else {
-            return nil
-        }
-        guard let label = multipleAccountLabelText.nilIfEmpty else {
+    public func shortestDisplayName(
+        forGroupMember groupMember: SignalServiceAddress,
+        inGroup groupModel: TSGroupModel,
+        transaction: SDSAnyReadTransaction
+    ) -> String {
+        let displayName = self.displayName(for: groupMember, tx: transaction)
+        let fullName = displayName.resolvedValue()
+        let shortName = displayName.resolvedValue(useShortNameIfAvailable: true)
+        guard fullName != shortName else {
             return fullName
         }
-        return "\(fullName) (\(label))"
+
+        // Try to return just the short name unless the group contains another
+        // member with the same short name.
+
+        for otherMember in groupModel.groupMembership.fullMembers {
+            guard otherMember != groupMember else { continue }
+
+            // Use the full name if the member's short name matches
+            // another member's full or short name.
+            let otherDisplayName = self.displayName(for: otherMember, tx: transaction)
+            guard otherDisplayName.resolvedValue() != shortName else { return fullName }
+            guard otherDisplayName.resolvedValue(useShortNameIfAvailable: true) != shortName else { return fullName }
+        }
+
+        return shortName
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    func _sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        sortSignalServiceAddresses(addresses, transaction: transaction)
     }
 }
 
-// MARK: - ContactsManagerProtocol
+// MARK: - ContactManager
 
-extension ContactsManagerProtocol {
-    public func nameForAddress(_ address: SignalServiceAddress,
-                               localUserDisplayMode: LocalUserDisplayMode,
-                               short: Bool,
-                               transaction: SDSAnyReadTransaction) -> NSAttributedString {
-        let name: String
-        if address.isLocalAddress {
-            switch localUserDisplayMode {
-            case .noteToSelf:
-                name = MessageStrings.noteToSelf
-            case .asLocalUser:
-                name = CommonStrings.you
-            case .asUser:
-                if short {
-                    name = shortDisplayName(for: address, transaction: transaction)
-                } else {
-                    name = displayName(for: address, transaction: transaction)
+extension ContactManager {
+    public func nameForAddress(
+        _ address: SignalServiceAddress,
+        localUserDisplayMode: LocalUserDisplayMode,
+        short: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> NSAttributedString {
+        return { () -> String in
+            if address.isLocalAddress {
+                switch localUserDisplayMode {
+                case .noteToSelf:
+                    return MessageStrings.noteToSelf
+                case .asLocalUser:
+                    return CommonStrings.you
+                case .asUser:
+                    break
                 }
             }
-        } else {
-            if short {
-                name = shortDisplayName(for: address, transaction: transaction)
-            } else {
-                name = displayName(for: address, transaction: transaction)
-            }
-        }
-        return name.asAttributedString
+            let displayName = self.displayName(for: address, tx: transaction)
+            return displayName.resolvedValue(useShortNameIfAvailable: short)
+        }().asAttributedString
     }
 
     public func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
+        return displayName(for: thread, tx: transaction)?.resolvedValue() ?? ""
+    }
+
+    public func displayName(for thread: TSThread, tx: SDSAnyReadTransaction) -> ThreadDisplayName? {
         if thread.isNoteToSelf {
-            return MessageStrings.noteToSelf
+            return .noteToSelf
         }
         switch thread {
         case let thread as TSContactThread:
-            return displayName(for: thread.contactAddress, transaction: transaction)
+            return .contactThread(displayName(for: thread.contactAddress, tx: tx))
         case let thread as TSGroupThread:
-            return thread.groupNameOrDefault
+            return .groupThread(thread.groupNameOrDefault)
         default:
             owsFailDebug("Unexpected thread type: \(type(of: thread))")
-            return ""
+            return nil
         }
     }
 
@@ -1353,19 +1295,52 @@ extension ContactsManagerProtocol {
         _ addresses: some Sequence<SignalServiceAddress>,
         transaction: SDSAnyReadTransaction
     ) -> [SignalServiceAddress] {
-        return sortedSortableAddresses(for: addresses, tx: transaction).map { $0.address }
+        return sortedComparableNames(for: addresses, tx: transaction).map { $0.address }
     }
 
-    public func sortedSortableAddresses(
+    public func sortedComparableNames(
         for addresses: some Sequence<SignalServiceAddress>,
         tx: SDSAnyReadTransaction
-    ) -> [SortableAddress] {
-        let sortableAddresses = addresses.map { address in
-            return SortableAddress(
+    ) -> [ComparableDisplayName] {
+        let addresses = Array(addresses)
+        let displayNames = self.displayNames(for: addresses, tx: tx)
+        let config = DisplayName.ComparableValue.Config.current()
+        return zip(addresses, displayNames).map { (address, displayName) in
+            return ComparableDisplayName(
                 address: address,
-                comparableName: comparableName(for: address, transaction: tx)
+                displayName: displayName,
+                config: config
             )
+        }.sorted(by: <)
+    }
+}
+
+// MARK: - SignalAccount
+
+public extension Array where Element == SignalAccount {
+    func stableSort() -> [SignalAccount] {
+        // Use an arbitrary sort but ensure the ordering is stable.
+        self.sorted { (left, right) in
+            left.recipientAddress.sortKey < right.recipientAddress.sortKey
         }
-        return sortableAddresses.sorted()
+    }
+}
+
+// MARK: - ThreadDisplayName
+
+public enum ThreadDisplayName {
+    case noteToSelf
+    case contactThread(DisplayName)
+    case groupThread(String)
+
+    public func resolvedValue() -> String {
+        switch self {
+        case .noteToSelf:
+            return MessageStrings.noteToSelf
+        case .contactThread(let displayName):
+            return displayName.resolvedValue()
+        case .groupThread(let groupName):
+            return groupName
+        }
     }
 }

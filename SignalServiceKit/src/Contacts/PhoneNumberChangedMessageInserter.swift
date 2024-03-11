@@ -33,8 +33,8 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
         }
         guard
             let aci = mergedRecipient.newRecipient.aci,
-            let oldPhoneNumber = mergedRecipient.oldRecipient?.phoneNumber,
-            let newPhoneNumber = E164(mergedRecipient.newRecipient.phoneNumber),
+            let oldPhoneNumber = mergedRecipient.oldRecipient?.phoneNumber?.stringValue,
+            let newPhoneNumber = E164(mergedRecipient.newRecipient.phoneNumber?.stringValue),
             oldPhoneNumber != newPhoneNumber.stringValue
         else {
             // Don't insert change number messages unless we've *changed* from an old

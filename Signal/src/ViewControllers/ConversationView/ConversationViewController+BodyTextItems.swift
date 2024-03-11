@@ -226,33 +226,30 @@ extension ConversationViewController {
     //   * tap - action sheet with call.
     //   * long press - show phone number + call PSTN / facetime audio / facetime video / send messages / add to contacts / copy
     private func didLongPressPhoneNumber(dataItem: TextCheckingDataItem) {
-        guard let snippet = dataItem.snippet.strippedOrNil,
-              let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: snippet),
-              let e164 = phoneNumber.toE164().strippedOrNil else {
+        guard
+            let snippet = dataItem.snippet.strippedOrNil,
+            let phoneNumberObj = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: snippet),
+            let phoneNumber = phoneNumberObj.toE164().strippedOrNil
+        else {
             owsFailDebug("Invalid phone number.")
             UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
             return
         }
-        let address = SignalServiceAddress(phoneNumber: e164)
 
-        func isRegistered() -> Bool {
-            if address.isLocalAddress {
-                return true
-            }
-            if databaseStorage.read(block: { SignalRecipient.isRegistered(address: address, tx: $0) }) {
-                return true
-            }
-            return false
+        let recipient = databaseStorage.read { tx in
+            let recipientManager = DependenciesBridge.shared.recipientManager
+            return recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber, tx: tx.asV2Read)
         }
 
-        if isRegistered() {
-            showMemberActionSheet(forAddress: address, withHapticFeedback: false)
+        if let recipient, recipient.isRegistered {
+            showMemberActionSheet(forAddress: recipient.address, withHapticFeedback: false)
             return
         }
 
-        let actionSheet = ActionSheetController(title: e164)
+        let actionSheet = ActionSheetController(title: phoneNumber)
+        let blockedAddress = SignalServiceAddress(phoneNumber: phoneNumber)
         let isBlocked = databaseStorage.read {
-            blockingManager.isAddressBlocked(address, transaction: $0)
+            blockingManager.isAddressBlocked(blockedAddress, transaction: $0)
         }
 
         if isBlocked {
@@ -264,7 +261,7 @@ extension ConversationViewController {
                 ) { [weak self] _ in
                     guard let self = self else { return }
                     BlockListUIUtils.showUnblockAddressActionSheet(
-                        address,
+                        blockedAddress,
                         from: self,
                         completion: nil
                     )
@@ -272,59 +269,72 @@ extension ConversationViewController {
 
         } else {
             // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
-            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_CALL",
-                                                                             comment: "Label for button to call a phone number."),
-                                                    accessibilityIdentifier: "phone_number_call",
-                                                    style: .default) { _ in
-                guard let url = URL(string: "tel:" + e164) else {
-                    owsFailDebug("Invalid phone number.")
-                    return
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "MESSAGE_ACTION_PHONE_NUMBER_CALL",
+                    comment: "Label for button to call a phone number."
+                ),
+                style: .default) { _ in
+                    guard let url = URL(string: "tel:" + phoneNumber) else {
+                        owsFailDebug("Invalid phone number.")
+                        return
+                    }
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 }
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            })
+            )
             // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/SMSLinks/SMSLinks.html
-            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_SMS",
-                                                                             comment: "Label for button to send a text message a phone number."),
-                                                    accessibilityIdentifier: "phone_number_text_message",
-                                                    style: .default) { _ in
-                guard let url = URL(string: "sms:" + e164) else {
-                    owsFailDebug("Invalid phone number.")
-                    return
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "MESSAGE_ACTION_PHONE_NUMBER_SMS",
+                    comment: "Label for button to send a text message a phone number."
+                ),
+                style: .default) { _ in
+                    guard let url = URL(string: "sms:" + phoneNumber) else {
+                        owsFailDebug("Invalid phone number.")
+                        return
+                    }
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 }
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            })
+            )
             // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/FacetimeLinks/FacetimeLinks.html
-            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO",
-                                                                             comment: "Label for button to make a FaceTime video call to a phone number."),
-                                                    accessibilityIdentifier: "phone_number_facetime_video",
-                                                    style: .default) { _ in
-                guard let url = URL(string: "facetime:" + e164) else {
-                    owsFailDebug("Invalid phone number.")
-                    return
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO",
+                    comment: "Label for button to make a FaceTime video call to a phone number."
+                ),
+                style: .default) { _ in
+                    guard let url = URL(string: "facetime:" + phoneNumber) else {
+                        owsFailDebug("Invalid phone number.")
+                        return
+                    }
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 }
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            })
-            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO",
-                                                                             comment: "Label for button to make a FaceTime audio call to a phone number."),
-                                                    accessibilityIdentifier: "phone_number_facetime_audio",
-                                                    style: .default) { _ in
-                guard let url = URL(string: "facetime-audio:" + e164) else {
-                    owsFailDebug("Invalid phone number.")
-                    return
+            )
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO",
+                    comment: "Label for button to make a FaceTime audio call to a phone number."
+                ),
+                style: .default) { _ in
+                    guard let url = URL(string: "facetime-audio:" + phoneNumber) else {
+                        owsFailDebug("Invalid phone number.")
+                        return
+                    }
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 }
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            })
+            )
             // TODO: We could show an "add to contact" action for this phone number.
             //       Ideally we could detect whether this phone number is already in a system contact.
             // TODO: We could show an "share" action for this phone number.
         }
 
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.copyButton,
-                                                accessibilityIdentifier: "phone_number_copy",
-                                                style: .default) { _ in
-            UIPasteboard.general.string = dataItem.snippet
-            // TODO: Show toast?
-        })
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.copyButton,
+            style: .default) { _ in
+                UIPasteboard.general.string = dataItem.snippet
+                // TODO: Show toast?
+            }
+        )
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
 

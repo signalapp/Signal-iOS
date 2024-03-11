@@ -3777,10 +3777,15 @@ public class RegistrationCoordinatorTest: XCTestCase {
             case .registering:
                 return .registration(.initialRegistration(.init(
                     previouslyEnteredE164: previouslyEnteredE164,
-                    validationError: validationError
+                    validationError: validationError,
+                    canExitRegistration: true
                 )))
             case .reRegistering(let params):
-                return .registration(.reregistration(.init(e164: params.e164, validationError: validationError)))
+                return .registration(.reregistration(.init(
+                    e164: params.e164,
+                    validationError: validationError,
+                    canExitRegistration: true
+                )))
             case .changingNumber(let changeNumberParams):
                 switch validationError {
                 case .none:

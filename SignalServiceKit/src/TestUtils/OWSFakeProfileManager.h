@@ -9,8 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef TESTABLE_BUILD
 
+@class OWSUserProfile;
+
 @interface OWSFakeProfileManager : NSObject <ProfileManagerProtocol>
-@property (nullable, nonatomic, copy) NSDictionary<SignalServiceAddress *, NSString *> *fakeDisplayNames;
+@property (nullable, nonatomic, copy) NSDictionary<SignalServiceAddress *, OWSUserProfile *> *fakeUserProfiles;
 
 @property (nonatomic) NSMutableDictionary<SignalServiceAddress *, NSNumber *> *stubbedStoriesCapabilitiesMap;
 

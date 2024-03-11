@@ -28,22 +28,22 @@ public protocol DBChangeDelegate: AnyObject {
 public protocol DB {
     // MARK: - Async Methods
 
-    func asyncRead(
+    func asyncRead<T>(
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBReadTransaction) -> Void,
+        block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: (() -> Void)?
+        completion: ((T) -> Void)?
     )
 
-    func asyncWrite(
+    func asyncWrite<T>(
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) -> Void,
+        block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: (() -> Void)?
+        completion: ((T) -> Void)?
     )
 
     // MARK: - Awaitable Methods
@@ -106,24 +106,24 @@ public protocol DB {
 extension DB {
     // MARK: - Async Methods
 
-    public func asyncRead(
+    public func asyncRead<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBReadTransaction) -> Void,
+        block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue = .main,
-        completion: (() -> Void)? = nil
+        completion: ((T) -> Void)? = nil
     ) {
         asyncRead(file: file, function: function, line: line, block: block, completionQueue: completionQueue, completion: completion)
     }
 
-    public func asyncWrite(
+    public func asyncWrite<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (DBWriteTransaction) -> Void,
+        block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue = .main,
-        completion: (() -> Void)? = nil
+        completion: ((T) -> Void)? = nil
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completionQueue: completionQueue, completion: completion)
     }

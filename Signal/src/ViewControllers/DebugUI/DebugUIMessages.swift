@@ -4,6 +4,7 @@
 //
 
 import CoreServices
+import LibSignalClient
 import SignalCoreKit
 import SignalMessaging
 import SignalServiceKit
@@ -3258,8 +3259,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             } else if let contactThread = thread as? TSContactThread {
                 return contactThread.contactAddress
             } else {
-                owsFailDebug("Unknown thread type")
-                return SignalServiceAddress(phoneNumber: "unknown-source-id")
+                owsFail("Unknown thread type")
             }
         }()
 
@@ -3301,7 +3301,14 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let members = uuidMembers + [DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress]
         let groupName = "UUID Group"
 
-        _ = GroupManager.localCreateNewGroup(members: members, name: groupName, disappearingMessageToken: .disabledToken, shouldSendMessage: true)
+        Task {
+            _ = try? await GroupManager.localCreateNewGroup(
+                members: members,
+                name: groupName,
+                disappearingMessageToken: .disabledToken,
+                shouldSendMessage: true
+            )
+        }
     }
 
     // MARK: Fake Threads & Messages
@@ -3471,9 +3478,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         // Try to use an arbitrary member of the current thread that isn't
         // ourselves as the sender.
-        // This might be an "empty" group with no other members.  If so, use a fake
-        // sender id.
-        let address = thread.recipientAddressesWithSneakyTransaction.first ?? SignalServiceAddress(phoneNumber: "+12345678901")
+        let address = thread.recipientAddressesWithSneakyTransaction.first!
 
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setType(.ciphertext)
@@ -3641,23 +3646,26 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             }
         }
 
-        let groupName = randomShortText()
-        createRandomGroupWithName(groupName, member: recipientAddress, completion: completion)
+        Task {
+            let groupName = randomShortText()
+            await createRandomGroupWithName(groupName, member: recipientAddress, completion: completion)
+        }
     }
 
     private static func createRandomGroupWithName(
         _ groupName: String,
         member: SignalServiceAddress,
         completion: @escaping (TSGroupThread) -> Void
-    ) {
+    ) async {
         let members = [ member, DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress ]
-        GroupManager.localCreateNewGroup(
-            members: members,
-            disappearingMessageToken: .disabledToken,
-            shouldSendMessage: true
-        ).done { groupThread in
+        do {
+            let groupThread = try await GroupManager.localCreateNewGroup(
+                members: members,
+                disappearingMessageToken: .disabledToken,
+                shouldSendMessage: true
+            )
             completion(groupThread)
-        }.catch { error in
+        } catch {
             owsFailDebug("Error: \(error)")
         }
     }
@@ -3691,8 +3699,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     transaction: transaction
                 )
 
-                let member = SignalServiceAddress(phoneNumber: "+1323555555")
-                createRandomGroupWithName(string, member: member, completion: { _ in })
+                let member = SignalServiceAddress(Aci(fromUUID: UUID()))
+                Task {
+                    await createRandomGroupWithName(string, member: member, completion: { _ in })
+                }
             }
         }
     }
@@ -3716,8 +3726,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     transaction: transaction
                 )
 
-                let member = SignalServiceAddress(phoneNumber: "+1323555555")
-                createRandomGroupWithName(string, member: member, completion: { _ in })
+                let member = SignalServiceAddress(Aci(fromUUID: UUID()))
+                Task {
+                    await createRandomGroupWithName(string, member: member, completion: { _ in })
+                }
             }
         }
     }
@@ -3739,8 +3751,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     transaction: transaction
                 )
 
-                let member = SignalServiceAddress(phoneNumber: "+1323555555")
-                createRandomGroupWithName(string, member: member, completion: { _ in })
+                let member = SignalServiceAddress(Aci(fromUUID: UUID()))
+                Task {
+                    await createRandomGroupWithName(string, member: member, completion: { _ in })
+                }
             }
         }
     }
@@ -3983,10 +3997,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         albumMessage: TSMessage,
         transaction: SDSAnyWriteTransaction
     ) {
-        albumMessage.addBodyAttachments([attachment], transaction: transaction)
-        if let attachmentStream = attachment as? TSAttachmentStream {
-            MediaGalleryManager.didInsert(attachmentStream: attachmentStream, transaction: transaction)
-        }
+        // This doesn't work anymore. deal with it.
     }
 
     private static func actionLabelForHasCaption(

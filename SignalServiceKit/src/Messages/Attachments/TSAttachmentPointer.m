@@ -66,9 +66,8 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
         _state = TSAttachmentPointerStateFailed;
     }
 
-    if (_pointerType == TSAttachmentPointerTypeUnknown) {
-        _pointerType = TSAttachmentPointerTypeIncoming;
-    }
+    // Put a meaningless value into the meaningless field
+    _pointerType = 0;
 
     return self;
 }
@@ -108,7 +107,8 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
 
     _digest = digest;
     _state = TSAttachmentPointerStateEnqueued;
-    _pointerType = TSAttachmentPointerTypeIncoming;
+    // Put a meaningless value into the meaningless field
+    _pointerType = 0;
     _mediaSize = mediaSize;
 
     return self;
@@ -139,7 +139,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
-                     pointerType:(TSAttachmentPointerType)pointerType
+                     pointerType:(NSUInteger)pointerType
                            state:(TSAttachmentPointerState)state
 {
     self = [super initWithGrdbId:grdbId

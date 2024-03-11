@@ -40,7 +40,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
     private var schedulers: Schedulers { DependenciesBridge.shared.schedulers }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
-    private var logger: PrefixedLogger { CallRecordLogger.shared }
+    private let logger = GroupCallPeekLogger.shared
 
     public let groupCallPeekClient: GroupCallPeekClient
     public var httpClient: SignalRingRTC.HTTPClient { groupCallPeekClient.httpClient }
@@ -140,7 +140,8 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         triggerEventTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
-        let currentCallId: UInt64? = peekInfo.eraId.map { callIdFromEra($0) }
+        let currentEraId: String? = peekInfo.eraId
+        let currentCallId: UInt64? = currentEraId.map { callIdFromEra($0) }
 
         // Clean up any unended group calls that don't match the currently
         // in-progress call.
@@ -151,6 +152,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         )
 
         guard
+            let currentEraId,
             let currentCallId,
             let creatorAci = peekInfo.creator.map({ Aci(fromUUID: $0) }),
             let groupThreadRowId = groupThread.sqliteRowId
@@ -201,6 +203,8 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         switch interactionToUpdate {
         case .found(let interactionToUpdate):
             let wasOldMessageEmpty = interactionToUpdate.joinedMemberUuids?.count == 0 && !interactionToUpdate.hasEnded
+
+            logger.info("Updating group call interaction for thread \(groupThread.uniqueId), eraId \(currentEraId). Joined member count: \(joinedMemberAcis.count)")
 
             self.interactionStore.updateGroupCallInteractionAcis(
                 groupCallInteraction: interactionToUpdate,

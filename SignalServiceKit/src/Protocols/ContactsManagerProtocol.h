@@ -18,9 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ContactsManagerProtocol <NSObject>
 
-/// Get the ``SignalAccount`` backed by the given address, if any.
-- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
-                                             transaction:(SDSAnyReadTransaction *)transaction;
 /// The name representing this address.
 ///
 /// This will be the first of the following that exists for this address:
@@ -29,10 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Username
 /// - Phone number
 /// - "Unknown"
-- (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
-
-- (NSArray<NSString *> *)displayNamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                      transaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)displayNameStringForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction;
 
 /// Returns the user's nickname / first name, if supported by the name's locale.
 /// If we don't know the user's name components, falls back to displayNameForAddress:
@@ -45,32 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///     * Family Name Only
 ///     * Prefer Nicknames
 ///     * Full Names Only
-- (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
-                             transaction:(SDSAnyReadTransaction *)transaction;
-
-- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
-                                                  transaction:(SDSAnyReadTransaction *)transaction;
-
-- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber
-                           transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(isSystemContact(phoneNumber:transaction:));
+- (NSString *)shortDisplayNameStringForAddress:(SignalServiceAddress *)address
+                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSArray<SignalServiceAddress *> *)sortSignalServiceAddressesObjC:(NSArray<SignalServiceAddress *> *)addresses
                                                         transaction:(SDSAnyReadTransaction *)transaction;
-
-- (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
-
-- (nullable NSString *)systemContactNameForAddress:(SignalServiceAddress *)address
-                                       transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(systemContactName(for:tx:));
-
-- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size;
-
-#pragma mark - CNContacts
-
-- (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId;
-- (nullable NSData *)avatarDataForCNContactId:(nullable NSString *)contactId;
-- (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId;
 
 @end
 

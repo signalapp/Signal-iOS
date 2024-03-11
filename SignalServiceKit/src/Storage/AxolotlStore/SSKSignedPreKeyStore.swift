@@ -24,25 +24,6 @@ extension SSKSignedPreKeyStore {
             generatedAt: Date()
         )
     }
-
-    func storeSignedPreKeyAsAcceptedAndCurrent(
-        signedPreKeyId: Int32,
-        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        signedPreKeyRecord.markAsAcceptedByService()
-
-        storeSignedPreKey(
-            signedPreKeyId,
-            signedPreKeyRecord: signedPreKeyRecord,
-            transaction: transaction
-        )
-
-        setCurrentSignedPrekeyId(
-            signedPreKeyId,
-            transaction: transaction
-        )
-    }
 }
 
 extension SSKSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {

@@ -60,9 +60,10 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     // MARK: -
 
     struct JoinedMember {
-        let address: SignalServiceAddress
+        let aci: Aci
         let displayName: String
-        let comparableName: String
+        let comparableName: DisplayName.ComparableValue
+        let lastResortSortKey: Int
         let isAudioMuted: Bool?
         let isVideoMuted: Bool?
         let isPresenting: Bool?
@@ -71,46 +72,48 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     private var sortedMembers = [JoinedMember]()
     func updateMembers() {
         let unsortedMembers: [JoinedMember] = databaseStorage.read { transaction in
-            var members = [JoinedMember]()
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+                return []
+            }
 
+            var members = [JoinedMember]()
+            let config: DisplayName.ComparableValue.Config = .current()
             if self.call.groupCall.localDeviceState.joinState == .joined {
                 members += self.call.groupCall.remoteDeviceStates.values.map { member in
-                    let displayName: String
-                    let comparableName: String
-                    if member.address.isLocalAddress {
-                        displayName = OWSLocalizedString(
+                    let resolvedName: String
+                    let comparableName: DisplayName.ComparableValue
+                    if member.aci == localIdentifiers.aci {
+                        resolvedName = OWSLocalizedString(
                             "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                             comment: "Text describing the local user in the group call members sheet when connected from another device."
                         )
-                        comparableName = displayName
+                        comparableName = .nameValue(resolvedName)
                     } else {
-                        displayName = self.contactsManager.displayName(for: member.address, transaction: transaction)
-                        comparableName = self.contactsManager.comparableName(for: member.address, transaction: transaction)
+                        let displayName = self.contactsManager.displayName(for: member.address, tx: transaction)
+                        resolvedName = displayName.resolvedValue(config: config.displayNameConfig)
+                        comparableName = displayName.comparableValue(config: config)
                     }
 
                     return JoinedMember(
-                        address: member.address,
-                        displayName: displayName,
+                        aci: member.aci,
+                        displayName: resolvedName,
                         comparableName: comparableName,
+                        lastResortSortKey: Int(member.demuxId),
                         isAudioMuted: member.audioMuted,
                         isVideoMuted: member.videoMuted,
                         isPresenting: member.presenting
                     )
                 }
 
-                guard let localAddress = DependenciesBridge.shared.tsAccountManager
-                    .localIdentifiersWithMaybeSneakyTransaction?.aciAddress
-                else {
-                    return members
-                }
-
                 let displayName = CommonStrings.you
-                let comparableName = displayName
+                let comparableName: DisplayName.ComparableValue = .nameValue(displayName)
 
                 members.append(JoinedMember(
-                    address: localAddress,
+                    aci: localIdentifiers.aci,
                     displayName: displayName,
                     comparableName: comparableName,
+                    lastResortSortKey: 0,
                     isAudioMuted: self.call.groupCall.isOutgoingAudioMuted,
                     isVideoMuted: self.call.groupCall.isOutgoingVideoMuted,
                     isPresenting: false
@@ -119,14 +122,14 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                 // If we're not yet in the call, `remoteDeviceStates` will not exist.
                 // We can get the list of joined members still, provided we are connected.
                 members += self.call.groupCall.peekInfo?.joinedMembers.map { aciUuid in
-                    let address = SignalServiceAddress(Aci(fromUUID: aciUuid))
-                    let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
-                    let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
-
+                    let aci = Aci(fromUUID: aciUuid)
+                    let address = SignalServiceAddress(aci)
+                    let displayName = self.contactsManager.displayName(for: address, tx: transaction)
                     return JoinedMember(
-                        address: address,
-                        displayName: displayName,
-                        comparableName: comparableName,
+                        aci: aci,
+                        displayName: displayName.resolvedValue(config: config.displayNameConfig),
+                        comparableName: displayName.comparableValue(config: config),
+                        lastResortSortKey: 0,
                         isAudioMuted: nil,
                         isVideoMuted: nil,
                         isPresenting: nil
@@ -137,7 +140,16 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
             return members
         }
 
-        sortedMembers = unsortedMembers.sorted { $0.comparableName.caseInsensitiveCompare($1.comparableName) == .orderedAscending }
+        sortedMembers = unsortedMembers.sorted {
+            let nameComparison = $0.comparableName.isLessThanOrNilIfEqual($0.comparableName)
+            if let nameComparison {
+                return nameComparison
+            }
+            if $0.aci != $1.aci {
+                return $0.aci.serviceIdString < $1.aci.serviceIdString
+            }
+            return $0.lastResortSortKey < $1.lastResortSortKey
+        }
 
         tableView.reloadData()
     }
@@ -309,7 +321,7 @@ private class GroupCallMemberCell: UITableViewCell {
 
         nameLabel.text = item.displayName
         avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .address(item.address)
+            config.dataSource = .address(SignalServiceAddress(item.aci))
         }
     }
 }

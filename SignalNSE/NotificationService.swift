@@ -69,7 +69,7 @@ class NotificationService: UNNotificationServiceExtension {
     // MARK: -
 
     // This method is thread-safe.
-    func completeSilently(timeHasExpired: Bool = false, badgeValue: UInt? = nil, logger: NSELogger) {
+    func completeSilently(timeHasExpired: Bool = false, badgeCount: BadgeCount? = nil, logger: NSELogger) {
         defer { logger.flush() }
 
         guard let contentHandler = contentHandler.swap(nil) else {
@@ -79,7 +79,7 @@ class NotificationService: UNNotificationServiceExtension {
         Self.nseDidComplete()
 
         let content = UNMutableNotificationContent()
-        content.badge = badgeValue.map { NSNumber(value: $0) }
+        content.badge = badgeCount.map { NSNumber(value: $0.unreadTotalCount) }
 
         if timeHasExpired {
             contentHandler(content)
@@ -236,10 +236,11 @@ class NotificationService: UNNotificationServiceExtension {
             SignalProxy.stopRelayServer()
             globalEnvironment.processingMessageCounter.decrementOrZero()
             // If we're completing normally, try to update the badge on the app icon.
-            let badgeValue = Self.databaseStorage.read { tx in
-                InteractionFinder.unreadCountInAllThreads(transaction: tx)
+            let badgeCount: BadgeCount = Self.databaseStorage.read { tx in
+                return DependenciesBridge.shared.badgeCountFetcher
+                    .fetchBadgeCount(tx: tx.asV2Read)
             }
-            self?.completeSilently(badgeValue: badgeValue, logger: logger)
+            self?.completeSilently(badgeCount: badgeCount, logger: logger)
         }.catch(on: DispatchQueue.global()) { error in
             logger.error("Error: \(error)")
         }

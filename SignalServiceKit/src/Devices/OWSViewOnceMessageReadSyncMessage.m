@@ -43,7 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (_senderAddress == nil) {
-        _senderAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:[coder decodeObjectForKey:@"senderId"]];
+        NSString *phoneNumber = [coder decodeObjectForKey:@"senderId"];
+        _senderAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
         OWSAssertDebug(_senderAddress.isValid);
     }
 

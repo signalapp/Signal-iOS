@@ -488,9 +488,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d grup üyesi benzer bir isme sahip.</string>
+			<string>%1$d grup üyesi aynı ada sahip.</string>
 			<key>other</key>
-			<string>%1$d grup üyesi benzer isimlere sahip.</string>
+			<string>%1$d grup üyesi aynı ada sahip.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Bu grupta %1$d ad çakışması bulundu.</string>
+			<key>other</key>
+			<string>Bu grupta %1$d ad çakışması bulundu.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Üye</string>
+			<key>other</key>
+			<string>%1$d Üye</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d grup üyesi benzer bir isme sahip, aşağıdaki üyeleri gözden geçir veya başka bir işlem seç.</string>
+			<string>Bu grupta %1$d ad çakışması bulundu. Aşağıdaki üyeleri incele veya işlem yapmayı seç.</string>
 			<key>other</key>
-			<string>%1$d grup üyesi benzer isme sahip, aşağıdaki üyeleri gözden geçir veya başka bir işlem seç.</string>
+			<string>Bu grupta %1$d ad çakışması bulundu. Aşağıdaki üyeleri incele veya işlem yapmayı seç.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -520,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d grup üyesi aynı isme sahip, aşağıdaki üyeleri gözden geçir veya başka bir işlem seç.</string>
+			<string>%1$d grup üyesi aynı ada sahip. Aşağıdaki üyeyi gözden geçir veya başka bir işlem seç.</string>
 			<key>other</key>
-			<string>%1$d grup üyesi aynı isme sahip, aşağıdaki üyeleri gözden geçir veya başka bir işlem seç.</string>
+			<string>%1$d grup üyesi aynı ada sahip. Aşağıdaki üyeleri gözden geçir veya başka bir işlem seç.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -904,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tüm Signal Bağlantıları · %1$d Görüntüleyen</string>
+			<string>Tüm Signal Kişileri· %1$d Görüntüleyen</string>
 			<key>other</key>
-			<string>Tüm Signal Bağlantıları · %1$d Görüntüleyen</string>
+			<string>Tüm Signal Kişileri · %1$d Görüntüleyen</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -920,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tüm Signal Bağlantıları · %1$d Kişi Hariç Tutuldu</string>
+			<string>Tüm Signal Kişileri · %1$d Kişi Hariç Tutuldu</string>
 			<key>other</key>
-			<string>Tüm Signal Bağlantıları · %1$d Kişi Hariç Tutuldu</string>
+			<string>Tüm Signal Kişileri · %1$d Kişi Hariç Tutuldu</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; görüntüleme</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; görüntüleme</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Kullanıcı adları en az %1$d karakterle başlamalıdır</string>
+			<key>other</key>
+			<string>Kullanıcı adları en az %1$d karakterle başlamalıdır</string>
 		</dict>
 	</dict>
 </dict>

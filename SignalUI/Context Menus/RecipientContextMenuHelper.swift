@@ -7,6 +7,17 @@ import LibSignalClient
 import SignalMessaging
 import SignalServiceKit
 
+public protocol RecipientContextMenuHelperDelegate: AnyObject {
+    func additionalActions(for address: SignalServiceAddress) -> [UIAction]
+    func additionalActions(for groupThread: TSGroupThread) -> [UIAction]
+}
+public extension RecipientContextMenuHelperDelegate {
+    func additionalActions(for address: SignalServiceAddress) -> [UIAction] {
+        []
+    }
+    func additionalActions(for groupThread: TSGroupThread) -> [UIAction] { [] }
+}
+
 class RecipientContextMenuHelper {
 
     private let databaseStorage: SDSDatabaseStorage
@@ -14,11 +25,13 @@ class RecipientContextMenuHelper {
     // TODO: When BlockingManager is protocolized, this should be the protocol type.
     private let blockingManager: BlockingManager
     private let accountManager: TSAccountManager
-    private let contactsManager: ContactsManagerProtocol
+    private let contactsManager: any ContactManager
 
     /// The view controller from which to present action
     /// sheets and toasts.
     private weak var fromViewController: UIViewController?
+
+    weak var delegate: (any RecipientContextMenuHelperDelegate)?
 
     /// Initializer. This helper must be retained for as
     /// long as context menu display should be possible.
@@ -27,8 +40,9 @@ class RecipientContextMenuHelper {
         blockingManager: BlockingManager,
         recipientHidingManager: RecipientHidingManager,
         accountManager: TSAccountManager,
-        contactsManager: ContactsManagerProtocol,
-        fromViewController: UIViewController
+        contactsManager: any ContactManager,
+        fromViewController: UIViewController,
+        delegate: (any RecipientContextMenuHelperDelegate)? = nil
     ) {
         self.databaseStorage = databaseStorage
         self.blockingManager = blockingManager
@@ -36,6 +50,7 @@ class RecipientContextMenuHelper {
         self.accountManager = accountManager
         self.contactsManager = contactsManager
         self.fromViewController = fromViewController
+        self.delegate = delegate
     }
 
     /// Returns the `UIContextMenuActionProvider` used to configure
@@ -61,12 +76,79 @@ class RecipientContextMenuHelper {
                 /// which point this should no longer return nil.
                 return nil
             }
-            return UIMenu(children: [
+            let additionalActions = self.delegate?.additionalActions(for: address) ?? []
+            return UIMenu(children: additionalActions + [
                 self.removeAction(address: address, fromViewController: fromViewController),
                 self.blockAction(address: address, fromViewController: fromViewController)
             ])
         }
     }
+
+    func actionProvider(groupThread: TSGroupThread) -> UIContextMenuActionProvider {
+        { [weak self] _ in
+            guard
+                let self,
+                let fromViewController = self.fromViewController
+            else {
+                return nil
+            }
+            let additionalActions = self.delegate?.additionalActions(for: groupThread) ?? []
+            return UIMenu(children: additionalActions + [
+                self.blockAction(thread: groupThread, fromViewController: fromViewController),
+            ])
+        }
+    }
+
+    // MARK: Block
+
+    private var blockActionTitle: String {
+        OWSLocalizedString(
+            "RECIPIENT_CONTEXT_MENU_BLOCK_TITLE",
+            comment: "The title for a context menu item that blocks a recipient from your recipient picker list."
+        )
+    }
+
+    /// Returns context menu action for blocking a recipient.
+    ///
+    /// - Parameter address: Address of the recipient.
+    /// - Parameter fromViewController: The view controller from which to present the action sheet.
+    ///
+    /// - Returns: A Block UIAction.
+    private func blockAction(
+        address: SignalServiceAddress,
+        fromViewController: UIViewController
+    ) -> UIAction {
+        UIAction(
+            title: blockActionTitle,
+            image: UIImage(named: "block"),
+            attributes: .destructive
+        ) { _ in
+            BlockListUIUtils.showBlockAddressActionSheet(
+                address,
+                from: fromViewController,
+                completion: nil
+            )
+        }
+    }
+
+    private func blockAction(
+        thread: TSThread,
+        fromViewController: UIViewController
+    ) -> UIAction {
+        UIAction(
+            title: blockActionTitle,
+            image: UIImage(named: "block"),
+            attributes: .destructive
+        ) { _ in
+            BlockListUIUtils.showBlockThreadActionSheet(
+                thread,
+                from: fromViewController,
+                completion: nil
+            )
+        }
+    }
+
+    // MARK: Remove contact
 
     /// Returns context menu action for hiding a recipient.
     ///
@@ -109,33 +191,6 @@ class RecipientContextMenuHelper {
         }
     }
 
-    /// Returns context menu action for blocking a recipient.
-    ///
-    /// - Parameter address: Address of the recipient.
-    /// - Parameter fromViewController: The view controller from which to present the action sheet.
-    ///
-    /// - Returns: A Block UIAction.
-    private func blockAction(
-        address: SignalServiceAddress,
-        fromViewController: UIViewController
-    ) -> UIAction {
-        let title = OWSLocalizedString(
-            "RECIPIENT_CONTEXT_MENU_BLOCK_TITLE",
-            comment: "The title for a context menu item that blocks a recipient from your recipient picker list."
-        )
-        return UIAction(
-            title: title,
-            image: UIImage(named: "block"),
-            attributes: .destructive
-        ) { _ in
-            BlockListUIUtils.showBlockAddressActionSheet(
-                address,
-                from: fromViewController,
-                completion: nil
-            )
-        }
-    }
-
     private enum Constants {
         static let toastInset = 8.0
     }
@@ -155,10 +210,8 @@ class RecipientContextMenuHelper {
         }
         let (localAddress, recipientDisplayName) = databaseStorage.read { tx in
             let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
-            let recipientDisplayName = contactsManager.displayName(
-                for: address,
-                transaction: tx
-            ).formattedForActionSheetTitle()
+            let recipientDisplayName = contactsManager.displayName(for: address, tx: tx)
+                .resolvedValue().formattedForActionSheetTitle()
             return (localAddress, recipientDisplayName)
         }
         guard
@@ -247,10 +300,8 @@ class RecipientContextMenuHelper {
             recipientDisplayName
         ) = databaseStorage.read { tx in
             let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
-            let recipientDisplayName = contactsManager.displayName(
-                for: address,
-                transaction: tx
-            ).formattedForActionSheetTitle()
+            let recipientDisplayName = contactsManager.displayName(for: address, tx: tx)
+                .resolvedValue().formattedForActionSheetTitle()
             return (
                 accountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true,
                 localAddress,

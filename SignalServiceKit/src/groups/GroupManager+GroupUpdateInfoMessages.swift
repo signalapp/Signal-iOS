@@ -11,6 +11,7 @@ extension GroupManager {
     /// Inserts an info message into the given thread for a new group.
     public static func insertGroupUpdateInfoMessageForNewGroup(
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupThread: TSGroupThread,
         groupModel: TSGroupModel,
         disappearingMessageToken: DisappearingMessageToken,
@@ -19,6 +20,7 @@ extension GroupManager {
     ) {
         DependenciesBridge.shared.groupUpdateInfoMessageInserter.insertGroupUpdateInfoMessageForNewGroup(
             localIdentifiers: localIdentifiers,
+            spamReportingMetadata: spamReportingMetadata,
             groupThread: groupThread,
             groupModel: groupModel,
             disappearingMessageToken: disappearingMessageToken,
@@ -42,10 +44,12 @@ extension GroupManager {
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
     ) {
         DependenciesBridge.shared.groupUpdateInfoMessageInserter.insertGroupUpdateInfoMessage(
             localIdentifiers: localIdentifiers,
+            spamReportingMetadata: spamReportingMetadata,
             groupThread: groupThread,
             oldGroupModel: oldGroupModel,
             newGroupModel: newGroupModel,

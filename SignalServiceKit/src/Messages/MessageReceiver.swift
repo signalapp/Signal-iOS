@@ -405,7 +405,7 @@ public final class MessageReceiver: Dependencies {
                     } else {
                         // If we observe a linked device sending our profile key to another user,
                         // we can infer that that user belongs in our profile whitelist.
-                        let destinationAddress = SignalServiceAddress(
+                        let destinationAddress = SignalServiceAddress.legacyAddress(
                             serviceIdString: sent.destinationServiceID,
                             phoneNumber: sent.destinationE164
                         )
@@ -611,6 +611,33 @@ public final class MessageReceiver: Dependencies {
                     syncMessageTimestamp: decryptedEnvelope.timestamp,
                     tx: tx.asV2Write
                 )
+        } else if let callLogEvent = syncMessage.callLogEvent {
+            guard
+                callLogEvent.hasTimestamp,
+                SDS.fitsInInt64(callLogEvent.timestamp),
+                callLogEvent.hasType,
+                let callLogEventType = callLogEvent.type
+            else {
+                CallRecordLogger.shared.warn("Failed to parse incoming call log event protobuf!")
+                return
+            }
+
+            switch callLogEventType {
+            case .cleared:
+                SSKEnvironment.shared.callRecordDeleteAllJobQueueRef
+                    .addJob(
+                        sendDeleteAllSyncMessage: false,
+                        deleteAllBeforeTimestamp: callLogEvent.timestamp,
+                        tx: tx
+                    )
+            case .markedAsRead:
+                DependenciesBridge.shared.callRecordMissedCallManager
+                    .markUnreadCallsAsRead(
+                        beforeTimestamp: callLogEvent.timestamp,
+                        sendMarkedAsReadSyncMessage: false,
+                        tx: tx.asV2Write
+                    )
+            }
         } else if let pniChangeNumber = syncMessage.pniChangeNumber {
             let pniProcessor = DependenciesBridge.shared.incomingPniChangeNumberProcessor
             pniProcessor.processIncomingPniChangePhoneNumber(
@@ -1020,7 +1047,7 @@ public final class MessageReceiver: Dependencies {
         // built and doesn't have the attachments yet, we check for attachments
         // explicitly. Story replies cannot have attachments, so we can bail on
         // them here immediately.
-        guard message.hasRenderableContent() || (!dataMessage.attachments.isEmpty && !message.isStoryReply) else {
+        guard message.hasRenderableContent(tx: tx) || (!dataMessage.attachments.isEmpty && !message.isStoryReply) else {
             Logger.warn("Ignoring empty: \(messageDescription)")
             return nil
         }
@@ -1039,18 +1066,13 @@ public final class MessageReceiver: Dependencies {
         // it. For example, we may have marked the thread as visible.
         thread.anyReload(transaction: tx)
 
-        let attachmentPointers = TSAttachmentPointer.attachmentPointers(
-            fromProtos: dataMessage.attachments,
-            albumMessage: message
+        DependenciesBridge.shared.tsResourceManager.createBodyAttachmentPointers(
+            from: dataMessage.attachments,
+            message: message,
+            tx: tx.asV2Write
         )
-        if !attachmentPointers.isEmpty {
-            for attachmentPointer in attachmentPointers {
-                attachmentPointer.anyInsert(transaction: tx)
-            }
-            message.addBodyAttachments(attachmentPointers, transaction: tx)
-        }
 
-        owsAssertDebug(message.hasRenderableContent())
+        owsAssertDebug(message.hasRenderableContent(tx: tx))
 
         earlyMessageManager.applyPendingMessages(for: message, transaction: tx)
 
@@ -1981,6 +2003,9 @@ extension SSKProtoSyncMessage {
         }
         if callEvent != nil {
             return "CallDispositionEvent"
+        }
+        if callLogEvent != nil {
+            return "CallLogEvent"
         }
         if pniChangeNumber != nil {
             return "PniChangeNumber"

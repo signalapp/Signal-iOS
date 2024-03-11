@@ -32,7 +32,7 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
             comment: "Title on the screen where you choose who you're going to donate on behalf of."
         )
 
-        recipientPicker.allowsAddByPhoneNumber = false
+        recipientPicker.allowsAddByAddress = false
         recipientPicker.shouldHideLocalRecipient = true
         recipientPicker.groupsToShow = .noGroups
         recipientPicker.delegate = self
@@ -56,7 +56,7 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
     }
 }
 
-extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
+extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
 
     private static func getRecipientAddress(_ recipient: PickedRecipient) -> SignalServiceAddress? {
         guard let address = recipient.address, address.isValid, !address.isLocalAddress else {

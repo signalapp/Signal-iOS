@@ -12,12 +12,12 @@ public class OWSFingerprintBuilder {
         public let fingerprint: OWSFingerprint
     }
 
-    private let contactsManager: ContactsManagerProtocol
+    private let contactsManager: any ContactManager
     private let identityManager: OWSIdentityManager
     private let tsAccountManager: TSAccountManager
 
     public init(
-        contactsManager: ContactsManagerProtocol,
+        contactsManager: any ContactManager,
         identityManager: OWSIdentityManager,
         tsAccountManager: TSAccountManager
     ) {
@@ -44,7 +44,7 @@ public class OWSFingerprintBuilder {
         }
         let myAci = localIdentifiers.aci
 
-        let theirName = contactsManager.displayName(for: SignalServiceAddress(theirAci), transaction: tx)
+        let theirName = contactsManager.displayName(for: SignalServiceAddress(theirAci), tx: tx).resolvedValue()
 
         let aciFingerprint = OWSFingerprint(
             myAci: myAci,

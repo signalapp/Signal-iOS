@@ -9,29 +9,21 @@ import SignalCoreKit
 #if TESTABLE_BUILD
 
 extension OWSFakeProfileManager: ProfileManager {
-    public func fullNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [String?] {
-        if let fakeDisplayNames {
-            return addresses.map { fakeDisplayNames[$0] }
-        } else {
-            return Array(repeating: "some fake profile name", count: addresses.count)
-        }
-    }
-
     public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         return Promise(error: OWSGenericError("Not supported."))
     }
 
+    public func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        return addresses.map { fakeUserProfiles?[$0] }
+    }
+
     public func updateProfile(
         address: SignalServiceAddress,
-        givenName: String?,
-        familyName: String?,
-        bio: String?,
-        bioEmoji: String?,
-        remoteAvatarUrlPath: String?,
-        localAvatarFileUrl: URL?,
+        decryptedProfile: DecryptedProfile?,
+        avatarUrlPath: OptionalChange<String?>,
+        avatarFileName: OptionalChange<String?>,
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
-        isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction

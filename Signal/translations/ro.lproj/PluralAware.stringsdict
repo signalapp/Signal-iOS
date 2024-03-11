@@ -548,11 +548,47 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membru al grupului are un nume similar.</string>
+			<string>%1$d membru al grupului are același nume.</string>
 			<key>few</key>
-			<string>%1$d membri ai grupului au nume similare.</string>
+			<string>%1$d membri ai grupului au același nume.</string>
 			<key>other</key>
-			<string>%1$d de membri ai grupului au nume similare.</string>
+			<string>%1$d de membri ai grupului au același nume.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d suprapunere de nume a fost găsită în acest grup.</string>
+			<key>few</key>
+			<string>%1$d suprapuneri de nume au fost găsite în acest grup.</string>
+			<key>other</key>
+			<string>%1$d de suprapuneri de nume au fost găsite în acest grup.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d membru</string>
+			<key>few</key>
+			<string>%1$d membri</string>
+			<key>other</key>
+			<string>%1$d de membri</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -566,11 +602,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membru al grupului are nume similare, examinează membri mai jos sau ia măsuri.</string>
+			<string>%1$d conflict de nume a fost găsit în acest grup. Examinează membrii de mai jos sau alege să acționezi.</string>
 			<key>few</key>
-			<string>%1$d membri ai grupului au nume similare, examinează membri mai jos sau ia măsuri.</string>
+			<string>%1$d conflicte de nume au fost găsite în acest grup. Examinează membrii de mai jos sau alege să acționezi.</string>
 			<key>other</key>
-			<string>%1$d de membri ai grupului au nume similare, examinează membri mai jos sau ia măsuri.</string>
+			<string>%1$d de conflicte de nume au fost găsite în acest grup. Examinează membrii de mai jos sau alege să acționezi.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -584,11 +620,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membru al grupului are același nume, examinează membrul mai jos sau ia măsuri.</string>
+			<string>%1$d membru al grupului are același nume. Revizuiește membrul de mai jos sau ia măsuri.</string>
 			<key>few</key>
-			<string>%1$d membri ai grupului au același nume, examinează membri mai jos sau ia măsuri.</string>
+			<string>%1$d membri ai grupului au același nume. Revizuiește membrii de mai jos sau ia măsuri.</string>
 			<key>other</key>
-			<string>%1$d de membri ai grupului au același nume, examinează membri mai jos sau ia măsuri.</string>
+			<string>%1$d de membri ai grupului au același nume. Revizuiește membrii de mai jos sau ia măsuri.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1363,6 +1399,24 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vizualizări</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; de vizualizări</string>
+		</dict>
+	</dict>
+	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Numele de utilizator trebuie să înceapă cu cel puțin %1$d caracter</string>
+			<key>few</key>
+			<string>Numele de utilizator trebuie să înceapă cu cel puțin %1$d caractere</string>
+			<key>other</key>
+			<string>Numele de utilizator trebuie să înceapă cu cel puțin %1$d de caractere</string>
 		</dict>
 	</dict>
 </dict>

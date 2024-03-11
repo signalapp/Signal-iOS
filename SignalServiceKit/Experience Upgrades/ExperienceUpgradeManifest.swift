@@ -519,10 +519,6 @@ extension ExperienceUpgradeManifest {
     }
 
     private static func checkPreconditionsForCreateUsernameReminder(transaction: SDSAnyReadTransaction) -> Bool {
-        guard FeatureFlags.usernames else {
-            return false
-        }
-
         guard
             DependenciesBridge.shared.localUsernameManager.usernameState(
                 tx: transaction.asV2Read
@@ -561,12 +557,9 @@ extension ExperienceUpgradeManifest {
     // MARK: Remote megaphone preconditions
 
     private static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel, tx: SDSAnyReadTransaction) -> Bool {
-        guard
-            AppVersionImpl.shared.compare(
-                megaphone.manifest.minAppVersion,
-                with: AppVersionImpl.shared.currentAppVersion4
-            ) != .orderedDescending
-        else {
+        let minimumVersion = AppVersionNumber(megaphone.manifest.minAppVersion)
+        let currentVersion = AppVersionNumber(AppVersionImpl.shared.currentAppVersion)
+        guard currentVersion >= minimumVersion else {
             return false
         }
 

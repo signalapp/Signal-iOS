@@ -614,8 +614,15 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
                 blurHashImageView.autoPinEdgesToSuperviewEdges()
             }
         case .text(let attachment):
+            let preloadedAttachment = databaseStorage.read { tx in
+                return PreloadedTextAttachment.from(
+                    attachment,
+                    storyMessage: presentingMessage,
+                    tx: tx
+                )
+            }
             storyView = TextAttachmentView(
-                attachment: attachment,
+                attachment: preloadedAttachment,
                 interactionIdentifier: .fromStoryMessage(presentingMessage),
                 spoilerState: spoilerState
             ).asThumbnailView()

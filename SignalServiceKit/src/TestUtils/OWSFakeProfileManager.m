@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *localFullName;
 @property (nonatomic, nullable) NSData *localProfileAvatarData;
 @property (nonatomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *localProfileBadgeInfo;
-@property (nonatomic) BOOL localProfileIsPniCapable;
 
 @end
 
@@ -119,15 +118,6 @@ NS_ASSUME_NONNULL_BEGIN
                               transaction:(SDSAnyReadTransaction *)transaction
 {
     return @"some fake profile name";
-}
-
-- (nullable NSPersonNameComponents *)nameComponentsForProfileWithAddress:(SignalServiceAddress *)address
-                                                             transaction:(SDSAnyReadTransaction *)transaction
-{
-    NSPersonNameComponents *components = [NSPersonNameComponents new];
-    components.givenName = @"fake given name";
-    components.familyName = @"fake family name";
-    return components;
 }
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address

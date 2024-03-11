@@ -6,7 +6,6 @@
 import Foundation
 import SignalCoreKit
 
-@objc
 public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     // MARK: - OWSURLSessionProtocol conformance
@@ -64,7 +63,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     // that can be are declared so here. Objc callers must use this implementation
     // directly and not touch the protocol.
 
-    @objc
     public static var defaultSecurityPolicy: OWSHTTPSecurityPolicy {
         OWSHTTPSecurityPolicy.systemDefault()
     }
@@ -117,7 +115,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         _ = self.delegateBox
     }
 
-    @objc
     convenience public init(
         securityPolicy: OWSHTTPSecurityPolicy,
         configuration: URLSessionConfiguration
@@ -225,7 +222,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
     }
 
-    @objc
     @available(swift, obsoleted: 1.0)
     func dataTask(_ urlString: String,
                   method: HTTPMethod,
@@ -497,7 +493,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         // Then apply any custom headers for the request
         httpHeaders.addHeaderMap(rawRequest.allHTTPHeaderFields, overwriteOnConflict: true)
 
-        if rawRequest.canUseAuth,
+        if !rawRequest.isUDRequest,
            rawRequest.shouldHaveAuthorizationHeaders {
             owsAssertDebug(nil != rawRequest.authUsername?.nilIfEmpty)
             owsAssertDebug(nil != rawRequest.authPassword?.nilIfEmpty)
@@ -561,7 +557,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         Logger.verbose("Making request: \(rawRequest.description)")
 
         return firstly(on: DispatchQueue.global()) { () throws -> Promise<HTTPResponse> in
-            urlSession.uploadTaskPromise(request: request, data: requestBody)
+            urlSession.uploadTaskPromise(request: request, data: requestBody, progress: nil)
         }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> HTTPResponse in
             Logger.info("Success: \(rawRequest.description)")
             return response

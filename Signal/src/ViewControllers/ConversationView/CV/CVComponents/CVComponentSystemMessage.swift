@@ -460,10 +460,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             let selectionState = componentDelegate.selectionState
             if selectionState.hasAnySelection(interaction: interaction) {
                 selectionView.isSelected = false
-                selectionState.remove(interaction: interaction, selectionType: .allContent)
+                selectionState.remove(interaction: interaction, hasRenderableContent: true, selectionType: .allContent)
             } else {
                 selectionView.isSelected = true
-                selectionState.add(interaction: interaction, selectionType: .allContent)
+                selectionState.add(interaction: interaction, hasRenderableContent: true, selectionType: .allContent)
             }
             // Suppress other tap handling during selection mode.
             return true
@@ -693,7 +693,7 @@ extension CVComponentSystemMessage {
             return errorMessage.previewText(transaction: transaction)
         } else if let verificationMessage = interaction as? OWSVerificationStateChangeMessage {
             let isVerified = verificationMessage.verificationState == .verified
-            let displayName = contactsManager.displayName(for: verificationMessage.recipientAddress, transaction: transaction)
+            let displayName = contactsManager.displayName(for: verificationMessage.recipientAddress, tx: transaction).resolvedValue()
             let format = (isVerified
                             ? (verificationMessage.isLocalChange
                                 ? OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
@@ -811,6 +811,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.merge16)
             case .sessionSwitchover:
                 return Theme.iconImage(.info16)
+            case .reportedSpam:
+                return Theme.iconImage(.spam)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -980,37 +982,6 @@ extension CVComponentSystemMessage {
             .disappearingMessagesDisabledByOtherUser,
             .disappearingMessagesDisabledByUnknownUser:
             return Theme.iconName(.timerDisabled16)
-        }
-    }
-
-    // MARK: - Unknown Thread Warning
-
-    static func buildUnknownThreadWarningState(interaction: TSInteraction,
-                                               threadViewModel: ThreadViewModel,
-                                               transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
-
-        if threadViewModel.isGroupThread {
-            let title = OWSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
-                                          comment: "Indicator warning about an unknown group thread.")
-
-            let labelText = NSMutableAttributedString()
-            labelText.appendTemplatedImage(named: Theme.iconName(.info16),
-                                           font: Self.textLabelFont,
-                                           heightReference: ImageAttachmentHeightReference.lineHeight)
-            labelText.append("  ", attributes: [:])
-            labelText.append(title, attributes: [:])
-
-            let action = Action(title: CommonStrings.learnMore,
-                                accessibilityIdentifier: "unknown_thread_warning",
-                                action: .didTapUnknownThreadWarningGroup)
-            return buildComponentState(title: labelText, action: action)
-        } else {
-            let title = OWSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
-                                          comment: "Indicator warning about an unknown contact thread.")
-            let action = Action(title: CommonStrings.learnMore,
-                                accessibilityIdentifier: "unknown_thread_warning",
-                                action: .didTapUnknownThreadWarningContact)
-            return buildComponentState(title: title.attributedString(), action: action)
         }
     }
 
@@ -1194,7 +1165,10 @@ extension CVComponentSystemMessage {
             guard let profileChangeNewNameComponents = infoMessage.profileChangeNewNameComponents else {
                 return nil
             }
-            let systemContactName = contactsManager.systemContactName(for: profileChangeAddress, tx: transaction)
+            guard let profileChangePhoneNumber = profileChangeAddress.phoneNumber else {
+                return nil
+            }
+            let systemContactName = contactsManager.systemContactName(for: profileChangePhoneNumber, tx: transaction)
             guard let systemContactName else {
                 return nil
             }
@@ -1203,7 +1177,7 @@ extension CVComponentSystemMessage {
 
             // Only show the button if the address book contact's name is different
             // than the profile name.
-            guard systemContactName != newProfileName else {
+            guard systemContactName.resolvedValue() != newProfileName else {
                 return nil
             }
 
@@ -1294,6 +1268,12 @@ extension CVComponentSystemMessage {
             )
         case .sessionSwitchover:
             return nil
+        case .reportedSpam:
+            return CVMessageAction(
+                title: CommonStrings.learnMore,
+                accessibilityIdentifier: "learn_more",
+                action: .didTapReportSpamLearnMore
+            )
         }
     }
 

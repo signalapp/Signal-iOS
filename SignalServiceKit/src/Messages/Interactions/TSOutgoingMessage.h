@@ -13,6 +13,11 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @class OWSOutgoingSyncMessage;
 @class SignalServiceAddress;
 
+typedef NS_CLOSED_ENUM(NSUInteger, OutgoingGroupProtoResult) {
+    OutgoingGroupProtoResult_AddedWithoutGroupAvatar,
+    OutgoingGroupProtoResult_Error
+};
+
 typedef NS_CLOSED_ENUM(NSInteger, TSOutgoingMessageState) {
     // The message is either:
     // a) Enqueued for sending.
@@ -245,6 +250,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
  */
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
                                                           transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable SSKProtoDataMessage *)buildDataMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  * Should this message be synced to the users other registered devices? This is

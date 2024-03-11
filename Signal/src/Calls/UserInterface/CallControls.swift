@@ -338,7 +338,14 @@ private class CallControlsViewModel {
     }
 
     var flipCameraButtonIsHidden: Bool {
-        return call.isOutgoingVideoMuted
+        let isLocalMemberViewFullScreen: Bool
+        switch call.mode {
+        case .individual(let call):
+            isLocalMemberViewFullScreen = [.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.state)
+        case .group(let call):
+            isLocalMemberViewFullScreen = call.localDeviceState.joinState != .joined || call.remoteDeviceStates.isEmpty
+        }
+        return call.isOutgoingVideoMuted || (FeatureFlags.useCallMemberComposableViewsForLocalUser && !isLocalMemberViewFullScreen)
     }
 
     var joinButtonIsHidden: Bool {

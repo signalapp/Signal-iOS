@@ -403,13 +403,17 @@ static void ClearOldTemporaryDirectoriesSync(void)
 //       since file protection may prevent it from succeeding in the background.
 void ClearOldTemporaryDirectories(void)
 {
+    static dispatch_queue_t serialQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        serialQueue = dispatch_queue_create("org.signal.clean-tmp",
+            dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0));
+    });
     // We use the lowest priority queue for this, and wait N seconds
     // to avoid interfering with app startup.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)),
-        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),
-        ^{
-            ClearOldTemporaryDirectoriesSync();
-        });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), serialQueue, ^{
+        ClearOldTemporaryDirectoriesSync();
+    });
 }
 
 NS_ASSUME_NONNULL_END

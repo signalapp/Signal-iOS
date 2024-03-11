@@ -89,8 +89,7 @@ extension ChatListViewController {
             }
             if
                 self.chatListMode == .inbox,
-                let tabController = self.tabBarController as? HomeTabBarController,
-                tabController.isTabBarEnabled
+                let tabController = self.tabBarController as? HomeTabBarController
             {
                 tabController.setTabBarHidden(true, animated: true, duration: 0.1) { _ in
                     animateToolbar()
@@ -201,8 +200,7 @@ extension ChatListViewController {
                 self?.viewState.multiSelectState.toolbar = nil
                 if
                     self?.chatListMode == .inbox,
-                    let tabController = self?.tabBarController as? HomeTabBarController,
-                    tabController.isTabBarEnabled
+                    let tabController = self?.tabBarController as? HomeTabBarController
                 {
                     tabController.setTabBarHidden(false, animated: true, duration: 0.1)
                 }

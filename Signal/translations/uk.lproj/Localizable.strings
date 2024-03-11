@@ -433,9 +433,6 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
-/* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Зображення";
-
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Фото";
 
@@ -817,6 +814,78 @@
 /* Title for the calls list view. */
 "CALLS_LIST_TITLE" = "Виклики";
 
+/* Label for an entry in the Calls Tab describing a call as incoming. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "Вхідний";
+
+/* Label for an entry in the Calls Tab describing a call as missed. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_MISSED" = "Пропущений";
+
+/* Label for an entry in the Calls Tab describing a call as outgoing. */
+"CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Вихідний";
+
+/* Title for a button allowing the user to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Очистити";
+
+/* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Ця дія назавжди видалить усю історію викликів.";
+
+/* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Очистити історію викликів?";
+
+/* Title for a long-press context menu action to delete a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_DELETE_CALL_ACTION_TITLE" = "Видалити";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'all calls'; i.e., 'unfiltered'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_ALL" = "Усі";
+
+/* An option in a segmented control in the Calls Tab allowing the user to select the filter option 'missed calls'. */
+"CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "Пропущені";
+
+/* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Відкрити чат";
+
+/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Приєднатися до аудіовиклику";
+
+/* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Приєднатися";
+
+/* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Приєднатися до відеовиклику";
+
+/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Немає пропущених викликів";
+
+/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Немає нещодавніх викликів";
+
+/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Почніть із дзвінка другу";
+
+/* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Повернутися до виклику";
+
+/* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
+"CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Повернутися";
+
+/* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "За запитом «%1$@» нічого не знайдено";
+
+/* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Вибрати";
+
+/* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
+"CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Вибрати";
+
+/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Аудіовиклик";
+
+/* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Відеовиклик";
+
+/* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Інформація";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Зробіть фото, а потім надішліть";
 
@@ -1000,6 +1069,9 @@
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Пошук за іменем користувача";
 
+/* Button to open settings from an empty compose-screen contact picker. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "До налаштувань";
+
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Щоб побачити, хто з ваших контактів користується Signal, надайте програмі доступ до контактів у налаштуваннях iOS.";
 
@@ -1027,8 +1099,17 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязати новий пристрій";
 
+/* Indicates that the user has blocked the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Користувача %1$@ заблоковано";
+
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ є у ваших системних контактах";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ є в контактах вашого пристрою";
+
+/* Indicates that the user has no messages with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Ти й %1$@ не маєте повідомлень";
+
+/* Indicates that the user has a pending request with the other account. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Активний запит на повідомлення";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Контакт Signal";
@@ -1286,16 +1367,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Додати до наявного контакту";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Додати до системних контактів";
-
-/* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Адміністратори";
-
-/* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Всі";
-
-/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Вимкнено";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Додати до контактів пристрою";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Оберіть, хто може редагувати ім'я групи, фото, опис та час видалення повідомлень.";
@@ -1309,17 +1381,29 @@
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Значки";
 
-/* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Ви більше не отримуватимете повідомлень чи оновлень від цього користувача.";
-
-/* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Ви більше не отримуватимете повідомлень чи оновлень з цієї групи.";
-
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Заблокувати групу";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Заблокувати користувача";
+
+/* A label indicating that a call was an incoming audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Вхідний аудіовиклик";
+
+/* A label indicating that a call was an incoming video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Вхідний відеовиклик";
+
+/* A label indicating that a call was an missed audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Пропущений аудіовиклик";
+
+/* A label indicating that a call was an missed video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Пропущений відеовиклик";
+
+/* A label indicating that a call was an outgoing audio call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Вихідний аудіовиклик";
+
+/* A label indicating that a call was an outgoing video call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Вихідний відеовиклик";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Редагувати";
@@ -1426,6 +1510,9 @@
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Видалити %1$@ з групи?";
 
+/* Label for 'report spam' action in conversation settings view. */
+"CONVERSATION_SETTINGS_REPORT_SPAM" = "Повідомити про спам";
+
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Видалити як адміністратора";
 
@@ -1490,7 +1577,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Виберіть код країни";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Представляємо конфіденційність номера телефону, додаткові імена користувачів і посилання.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Запроваджуємо конфіденційність номера телефону, посилання й можливість створити ім'я користувача.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "Нові способи додавання контактів";
@@ -1697,7 +1784,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Видалити";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Цю людину буде видалено з ваших системних контактів. Ви не бачитиме її під час пошуку. Якщо в майбутньому вона вам напише, ви отримаєте запит на повідомлення.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Цю людину буде видалено з ваших контактів пристрою. Ви не бачитиме її під час пошуку. Якщо в майбутньому вона вам напише, ви отримаєте запит на повідомлення.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Видалити контакт і вилучити його з вашого списку?";
@@ -1880,7 +1967,7 @@
 "DISAPPEARING_MESSAGES_WEEKS" = "тижні";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Відхилити";
+"DISMISS_BUTTON_TEXT" = "Закрити";
 
 /* Dismiss context menu accessibility label */
 "DISMISS_CONTEXT_MENU" = "Прибрати контекстне меню";
@@ -2036,7 +2123,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Підтримайте Signal, зробивши донат за друзів чи родичів, які користуються застосунком. Вони зможуть розказати іншим про підтримку, відобразивши в профілі значок.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Донат для друга";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Донат за друга";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Оберіть отримувача";
@@ -2111,7 +2198,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ підтримує Signal донатом від вашого імені! Розкажіть іншим про підтримку, відобразивши в профілі значок.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Конфіденційні повідомлення. Без реклами, трекерів і стеження.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Конфіденційні повідомлення. Без реклами, відстежування й нагляду.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal працює за рахунок пожертв, тобто для нас ваша конфіденційність є головною. Ми створюємо Signal для – не для ваших даних і не для нашого прибутку.";
@@ -2171,7 +2258,7 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "Задонатити";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Конфіденційні повідомлення, які фінансуються лише вами. Без реклами, трекерів і компромісу. Підтримайте Signal донатом.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Конфіденційний обмін повідомленнями можливий — завдяки вашим коштам. Без реклами, відстежування й поступок. Підтримайте Signal донатом.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Дізнатись більше";
@@ -2246,7 +2333,7 @@
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ одноразово";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
-"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Задонатити для друга";
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Зробити донат за друга";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Зробити внесок для Signal";
@@ -2327,7 +2414,7 @@
 "EMAIL_INVITE_BODY" = "Привіт,\n\nОстаннім часом я користуюсь Signal, щоб усі чати на моєму iPhone залишались приватними. Хотів би бачити його встановленим і на твоєму пристрої, щоб бути впевненими, що лише ми вдвох маємо доступ до наших повідомлень та дзвінків.\n\nSignal доступний для iPhone та Android. Завантажувати тут: %1$@\n\nSignal працює як твій поточний месенджер. Ми можемо: відправити фото та відео, дзвонити один одному та створювати групові дзвінки. А найкраще те, що ніхто окрім нас цього не бачитиме чи чутиме, навіть творці Signal!\n\nБільше про Open Whisper Systems — людей, які створюють Signal, тут: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Перейдемо до Signal";
+"EMAIL_INVITE_SUBJECT" = "Пора переходити в Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_MESSAGE" = "На вашому пристрої не налаштовано та з нього не можна відправити електронну пошту. Щоб відправити запит на підтримку, налаштуйте електронну пошту на своєму пристрої, або напишіть на support@signal.org";
@@ -2438,7 +2525,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Помилка завантаження додатку.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Attachment upload failed.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Не вдалося завантажити вкладення.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Повідомлення від %1$@ не вдалось доставити";
@@ -2545,6 +2632,18 @@
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Як знайти дані свого рахунку";
 
+/* A footer below the username text field describing what should be entered */
+"FIND_BY_USERNAME_FOOTER" = "Введіть ім'я користувача, включно з крапкою і набором цифр.";
+
+/* A placeholder value for the text field for finding an account by their username */
+"FIND_BY_USERNAME_PLACEHOLDER" = "Ім'я користувача";
+
+/* A button below the username text field which opens a username QR code scanner */
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+
+/* Title for the view for finding accounts by their username */
+"FIND_BY_USERNAME_TITLE" = "Пошук за іменем користувача";
+
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Верифікувати";
 
@@ -2591,7 +2690,7 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Нове повідомлення!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Розпочнімо";
+"GET_STARTED_BANNER_TITLE" = "Для початку";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Вигляд";
@@ -3085,12 +3184,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Учасники";
 
-/* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Натисніть для перегляду";
-
-/* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Учасник";
-
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Перегляд учасників";
 
@@ -3520,11 +3613,20 @@
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Ви надіслали користувачу %1$@ запит на активацію Платежів.";
 
+/* Shown when a user reports a conversation as spam. */
+"INFO_MESSAGE_REPORTED_SPAM" = "Повідомлено про спам";
+
+/* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Ви повідомили Signal, що ця людина може надсилати спам. Signal ніколи не бачить вмісту чатів.";
+
+/* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Про спам повідомлено";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ змінив номер телефону.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ змінює номер телефону.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ тепер в Signal!";
@@ -3561,6 +3663,9 @@
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Запросити друзів у Signal";
+
+/* Header label above a section for more options for adding contacts */
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Більше";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Пошук";
@@ -3674,10 +3779,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Попередній перегляд посилань";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Керування системними контактами більше не доступне на iPad. Щоб додати контакти Signal до ваших системних контактів, відкрийте Signal на телефоні.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Керування контактами пристрою більше не доступне на iPad. Щоб додати контакти Signal до ваших контактів пристрою, відкрийте Signal на телефоні.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Керування системними контактами більше не підтримується на iPad. Цей пристрій синхронізуватиме усі зміни вашого списку контактів із Signal на вашому телефоні.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Керування контактами пристрою більше не підтримується на iPad. Цей пристрій синхронізуватиме всі зміни вашого списку контактів із Signal на вашому телефоні.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Подробиці";
@@ -3964,7 +4069,7 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Заблокувати і видалити";
 
-/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+/* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Повідомити про спам і заблокувати";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
@@ -3998,16 +4103,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Видалити та покинути групу?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Уважно проглядайте запити. Signal знайшов іншого користувача з цим ім'ям.";
-
-/* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Серед ваших контактів";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Ця людина має таке ж ім'я, як і ваш інший контакт";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Якщо ви не впевнені, від кого надійшов запит, перегляньте контакти нижче та прийміть рішення.";
-
-/* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Запит";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Переглянути запит";
@@ -4015,8 +4114,17 @@
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Оновити контакт";
 
-/* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Переглянути запит";
+/* Action sheet message to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal буде повідомлено, що ця людина може надсилати спам. Signal ніколи не бачить вмісту чатів.";
+
+/* Action sheet title to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Повідомити про спам?";
+
+/* Action sheet action to confirm reporting a conversation as spam via a message request. */
+"MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "Повідомити про спам";
+
+/* String indicating that spam has been reported. */
+"MESSAGE_REQUEST_SPAM_REPORTED" = "Повідомлено про спам.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Позначено як спам і заблоковано.";
@@ -4059,6 +4167,9 @@
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Дозволити користувачу %1$@ надсилати вам повідомлення та ділитись ім'ям і фото з цим користувачем? Раніше ви вилучили цей контакт.";
+
+/* incoming message request button text which reports a conversation as spam */
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Повідомити…";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Розблокувати";
@@ -4213,8 +4324,8 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Торкніться, щоб додати";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Нещодавно змінив ім'я профілю з %1$@ на %2$@.";
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ змінює своє ім'я профілю з %2$@ на %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Пропустити";
@@ -4231,8 +4342,29 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi та стільникові дані";
 
+/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Аудіовиклик";
+
+/* Accessibility hint describing the action of the new call button on the Calls Tab */
+"NEW_CALL_HINT" = "Виберіть контакт або групу, щоб почати новий виклик.";
+
+/* Accessibility label for the new call button on the Calls Tab */
+"NEW_CALL_LABEL" = "Новий виклик";
+
+/* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "Написати";
+
+/* Title for the contact picker that allows new calls to be started */
+"NEW_CALL_TITLE" = "Новий дзвінок";
+
+/* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Відеовиклик";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Знайти за номером телефону";
+
+/* A label for the cell that lets you add a new member by their username */
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Пошук за іменем користувача";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Нова група";
@@ -4273,11 +4405,8 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Оберіть групу";
 
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Пошук";
-
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Знайти користувача";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Знайти за номером телефону";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Дайте сторі назву";
@@ -4324,6 +4453,9 @@
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Знайти контакти за номером телефону";
 
+/* Label for a button that lets users search for contacts by username */
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Знайти контакти за іменем користувача";
+
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Спільних груп немає";
 
@@ -4331,7 +4463,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Інших спільних груп немає.";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Примітка для себе";
+"NOTE_TO_SELF" = "Нотатник";
 
 /* Body for a notification representing a message request. */
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Запит на повідомлення";
@@ -4430,7 +4562,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Прив'язати iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Натискання \"Зареєструвати iPad\" дозволить вам створити абсолютно новий обліковий запис Signal або перенести на цей iPad існуючу. Це відключить Signal на будь-якому іншому пристрої, де він зареєстрований на той же номер телефону в даний момент.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Натискання «Зареєструвати iPad» дозволить вам створити абсолютно новий акаунт Signal або перенести на цей iPad наявний. Це відключить Signal на будь-якому іншому пристрої, де він зареєстрований на той же номер телефону.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Натискання «Прив'язати iPhone» дозволить вам прив'язати ваш телефон до наявного облікового запису. Прив'язка вашого телефону зазвичай не рекомендується та обмежить деяку функціональність, наприклад, дзвінки.";
@@ -4442,7 +4574,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Прив'язати iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Реєстрація даного iPad відключить Signal на будь-якому іншому пристрої, де він зареєстрований на той же номер телефону.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Реєстрація цього iPad відключить Signal на будь-якому іншому пристрої, де він зареєстрований на той же номер телефону.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Прив'язка вашого iPhone не рекомендована і обмежить основну функціональність.";
@@ -4469,7 +4601,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Будь ласка, зачекайте декілька хвилин перед наступною спробою. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Хибний мобільний номер. Будь ласка, введіть дійсний номер телефону щоб зареєструватись.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Хибний номер телефону. Будь ласка, введіть дійсний номер телефону щоб зареєструватись.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "У вас закінчилися спроби введення PIN-коду, але ви все одно можете отримати доступ до свого облікового запису Signal, створивши новий PIN-код. Для вашої конфіденційності та безпеки ваш обліковий запис буде відновлена без будь-якої збереженої інформації профілю або налаштувань.";
@@ -4970,10 +5102,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Ніхто";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Your phone number will not be visible to anyone unless they have it saved in their phone’s contacts.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Ваш номер телефону не зможе бачити ніхто, окрім людей, які вже зберегли його у своїх контактах.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Your phone number will not be visible to anyone.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Ніхто не зможе бачити ваш номер телефону.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5282,10 +5414,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Про (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "У %1$@ ім'я профілю змінено з %2$@ на %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ змінює своє ім'я профілю з %2$@ на %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "У %1$@ ім'я профілю змінено на %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ змінює своє ім'я профілю на %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Ваше ім'я";
@@ -5346,6 +5478,9 @@
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
 "PROFILE_VIEW_USERNAME_DESCRIPTION" = "Ім'я користувача, QR-код і посилання не відображаються у вашому профілі. Діліться імʼям користувача тільки з людьми, яким ви довіряєте.";
+
+/* Footer below the usernames section of the profile settings when a username has not been set. */
+"PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Тепер люди можуть писати вам, знаючи ваше ім'я користувача. Його можна створити в разі потреби не повідомляти свого номера телефону.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Проксі адреса";
@@ -5636,7 +5771,7 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Хибний номер телефону";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Код підтвердження буде надіслано на цей номер. Ви вірно його вказали вище?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Код підтвердження буде надіслано на цей номер телефону. Ви вірно його вказали вище?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Підтвердження номеру: %1$@";
@@ -5657,7 +5792,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Відхилити";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Номер, який ви намагаєтеся зареєструвати, вже зареєстровано на іншому сервері, вилучіть реєстрацію звідти та спробуйте знову.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Номер телефону, який ви намагаєтеся зареєструвати, вже зареєстровано на іншому сервері, вилучіть реєстрацію звідти та спробуйте знову.";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Виправити";
@@ -5730,6 +5865,48 @@
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ваш код безпеки із %1$@ змінився. Можливо, його слід підтвердити.";
+
+/* Title for Safety Tips button in thread details. */
+"SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Поради щодо безпеки";
+
+/* Message contents for the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_BODY" = "Якщо незнайома людина пише вам про криптовалюту (наприклад, біткойн) або якісь можливості заробітку, будьте пильні. Найімовірніше, це спам.";
+
+/* Message title describing the crypto safety tip. */
+"SAFETY_TIPS_CRYPTO_TITLE" = "Шахрайство з криптовалютою або грошима";
+
+/* Message contents for the safety tip concerning fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Будьте обачні, якщо до вас звертається якась компанія або державна установа. Повідомлення від податкових органів, кур'єрів тощо можуть виявитися спамом.";
+
+/* Message title describing the safety tip about unknown or fake businesses. */
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Фіктивні компанії та організації";
+
+/* Message describing safety tips for group conversations. */
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Уважно перегляньте цей запит. Ніхто з ваших контактів і учасників ваших чатів не входить до цієї групи. Зверніть особливу увагу на таке:";
+
+/* Title for Safety Tips education screen. */
+"SAFETY_TIPS_HEADER_TITLE" = "Поради щодо безпеки";
+
+/* Message describing safety tips for 1:1 conversations. */
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Будьте обережні, приймаючи запити на обмін повідомленнями від незнайомих людей. Звертайте увагу на таке:";
+
+/* Message contents for the unknown links in messages safety tip. */
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "З обережністю ставтеся до повідомлень від незнайомців, у яких вони надсилають посилання на вебсайти. Не переходьте за посиланнями від людей, яким не довіряєте.";
+
+/* Message title describing the safety tip about unknown links in messages. */
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Повідомлення з посиланнями";
+
+/* Button that will show the next safety tip. */
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+
+/* Button that will show the previous safety tip. */
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+
+/* Message contents for the vague message safety tip. */
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Щоб привернути увагу, спамери часто починають з простих повідомлень на кшталт «Привіт». Відповідь лише заохотить їх продовжити.";
+
+/* Message title describing the safety tip about vague messages. */
+"SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Повідомлення загального або недоречного змісту";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Відскануйте QR-код на пристрої вашого контакту.";
@@ -5972,7 +6149,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Якщо увімкнено, Signal намагатиметься обійти цензуру. Не вмикайте цю функцію, якщо ви не в місці, де Signal заблоковано.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Обхід цензури було активовано враховуючи номер мобільного цього акаунта.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Обхід цензури було активовано враховуючи номер телефону цього акаунта.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Ви вручну відключили обхід цензури.";
@@ -6020,10 +6197,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Значок застосунку";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "За можливості відображати системні фото контактів.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "За можливості відображати фото контактів пристрою.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Використовувати системні фото контактів";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Використовувати фото контактів пристрою";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Тема";
@@ -6062,7 +6239,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Змінити номер";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Ви збираєтесь змінити свій номер телефона з %1$@ на %2$@.\n\nПеред продовженням підтвердіть, будь ласка, що нижчевказаний номер телефону вірний.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Ви збираєтеся змінити свій номер телефона з %1$@ на %2$@.\n\nПеред продовженням переконайтеся, що нижчевказаний номер телефону вірний.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Код країни";
@@ -6724,6 +6901,12 @@
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Щоб змінити це налаштування, виберіть «Ніхто» для параметра «Хто може бачити мій номер».";
 
+/* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+
+/* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Хто може знайти мене за номером телефону";
 
@@ -7253,13 +7436,13 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Схвалили запит на повідомлення";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Вони є у ваших контактах";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Вони є в контактах вашого пристрою";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваші контакти можуть бачити ваше ім'я та фото, а також публікації у розділі «Мої сторіз», якщо ви їх не приховали.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Контакти Signal</bold> – це люди, яким ви вирішили довіряти одним із таких способів:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Контакти Signal</bold> — це люди, яким ви вирішили довіряти одним із таких способів:";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "Сторіз";
@@ -7291,8 +7474,8 @@
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Перегляди не відображаються";
 
-/* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID підписника скопійовано до буфера обміну";
+/* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID пожертвувача скопійовано в буфер обміну";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваші коди безпеки із %1$@ збігаються. Ви можете підтвердити цей контакт.";
@@ -7466,7 +7649,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Учасник у %1$@,%2$@, та у %3$lu інших групах";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Ви можете додавати нотатки для себе у цьому чаті. Якщо у вас є прив'язані пристрої — нотатки будуть синхронізовані.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "У цьому чаті ви можете робити для себе нотатки. Якщо ваш акаунт має зв'язані пристрої, нові нотатки буде синхронізовано.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Є учасником «%1$@»";
@@ -7652,7 +7835,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR-коди й посилання";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer visible in chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Ваш номер телефону більше не показується в чатах. Але його все одно буде видно тим, хто має ваш номер у своєму списку контактів.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Конфіденційність номера телефону";
@@ -7664,7 +7847,7 @@
 "USERNAME_EDUCATION_TITLE" = "Нові способи додавання контактів";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username so you don’t have to give out your phone number. Usernames aren’t visible on your profile.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Тепер люди можуть писати вам, знаючи ваше ім'я користувача. Його можна створити в разі потреби не повідомляти свого номера телефону. Ім'я користувача не відображається у вашому профілі.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "Імена користувачів";
@@ -7676,7 +7859,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Колір";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Діліться QR-кодом і посиланням лише з людьми, яким ви довіряєте. Якщо ви поділитесь, користувач зможе побачити ваше ім'я в застосунку і розпочати з вами чат.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Діліться QR-кодом і посиланням лише з людьми, яким ви довіряєте. Якщо ви поділитесь, користувач зможе побачити ваше ім'я користувача і розпочати з вами чат.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-код і посилання не встановлено. Перевірте підключення до мережі і спробуйте знову.";
@@ -7685,7 +7868,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Скинути";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Якщо скинути QR-код, поточні QR-код і посилання більше не працюватимуть.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Якщо скинути QR-код і посилання, поточні QR-код і посилання більше не працюватимуть.";
+
+/* Text presenting an action sheet notifying the user their QR code and link were reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "Ваші QR-код і посилання було скинуто. Натомість було створено нові.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Поділитися";
@@ -7745,19 +7931,19 @@
 "USERNAME_RESET_SUCCESSFUL_TOAST" = "Ваш QR-код і посилання було скинуто. Ваше ім’я користувача: %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Ім'я користувача не може починатися з цифри.";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Ім'я користувача не може починатись із цифри";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Якщо змінити ім'я користувача, поточні QR-код і посилання буде скинуто. Змінити ім'я?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Завдяки імені користувача вам зможуть писати люди, які не знають вашого номеру телефону. Поряд з іменем є кілька цифр, які захищають конфіденційність вашої адреси. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Імена користувачів завжди поєднуються з кількома цифрами. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Виберіть ім’я користувача";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Ім'я користувача може містити лише a-z, 0-9 і _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Ім'я користувача може містити лише a-z, 0-9, та _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Недійсне ім'я користувача, введіть мінімум 2 цифри";
@@ -7769,7 +7955,10 @@
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Що означають ці цифри?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Це ім'я користувача недоступне.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Це ім'я користувача недоступне";
+
+/* An error message shown when the user has attempted too many username reservations. */
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Забагато спроб. Краще спробувати знову пізніше.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Ім'я користувача";
@@ -7777,11 +7966,11 @@
 /* The title for the username selection view. */
 "USERNAME_SELECTION_TITLE" = "Ім'я користувача";
 
-/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Ім'я користувача має містити принаймні %1$@ символи.";
-
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Ім'я користувача не може закінчуватися цифрами 00. Спробуйте цифру від 1 до 9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Номер не може бути 00. Введіть цифру від 1 до 9";
+
+/* An error message indicating that a usernames-related requeset failed because of a network error. */
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Ім'я користувача можна оновити лише за наявності підключення до інтернету.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Ім'я пристрою не може бути порожнім";

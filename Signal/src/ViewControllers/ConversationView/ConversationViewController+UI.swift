@@ -211,9 +211,10 @@ extension ConversationViewController {
 
             subtitleText.appendTemplatedImage(named: "check-extra-small", font: subtitleFont)
             subtitleText.append(iconSpacer, attributes: attributes)
-            subtitleText.append(OWSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-                                                  comment: "Badge indicating that the user is verified."),
-                                attributes: attributes)
+            subtitleText.append(
+                SafetyNumberStrings.verified,
+                attributes: attributes
+            )
         }
 
         headerView.attributedSubtitle = subtitleText

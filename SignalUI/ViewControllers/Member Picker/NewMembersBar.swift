@@ -9,9 +9,7 @@ import SignalServiceKit
 public struct NewMember {
     public let recipient: PickedRecipient
     public let address: SignalServiceAddress
-    public let displayName: String
     public let shortName: String
-    public let comparableName: String
 }
 
 // MARK: -

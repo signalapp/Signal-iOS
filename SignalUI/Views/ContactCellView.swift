@@ -71,9 +71,7 @@ public class ContactCellConfiguration: NSObject {
         let text = NSMutableAttributedString()
         text.appendTemplatedImage(named: "check-extra-small", font: ContactCellView.subtitleFont)
         text.append(" ", attributes: [:])
-        text.append(OWSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-                                      comment: "Badge indicating that the user is verified."),
-                    attributes: [:])
+        text.append(SafetyNumberStrings.verified, attributes: [:])
         self.attributedSubtitle = text
     }
 }

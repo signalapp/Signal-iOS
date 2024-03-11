@@ -115,7 +115,7 @@ class GroupCallMemberView: UIView, CallMemberView_GroupBridge {
 }
 
 class GroupCallLocalMemberView: GroupCallMemberView {
-    let videoView = LocalVideoView(shouldUseAutolayout: false)
+    let videoView = LocalVideoView(shouldUseAutoLayout: false)
 
     let videoOffIndicatorImage = UIImageView()
 
@@ -402,7 +402,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
                 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                 comment: "Text describing the local user in the group call members sheet when connected from another device.")
         } else {
-            displayName = databaseStorage.read { tx in self.contactsManager.displayName(for: address, transaction: tx) }
+            displayName = databaseStorage.read { tx in self.contactsManager.displayName(for: address, tx: tx).resolvedValue() }
         }
 
         let blockFormat = OWSLocalizedString(
@@ -436,7 +436,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 }
 
 extension RemoteDeviceState {
-    var address: SignalServiceAddress {
-        return SignalServiceAddress(Aci(fromUUID: userId))
-    }
+    var aci: Aci { Aci(fromUUID: userId) }
+    var address: SignalServiceAddress { SignalServiceAddress(aci) }
 }

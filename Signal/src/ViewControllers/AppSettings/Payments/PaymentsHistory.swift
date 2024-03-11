@@ -147,7 +147,7 @@ class PaymentsHistoryDataSource: Dependencies {
                 if paymentModel.isUnidentified {
                     displayName = PaymentsViewUtils.buildUnidentifiedTransactionString(paymentModel: paymentModel)
                 } else if let senderOrRecipientAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
-                    displayName = Self.contactsManager.displayName(for: SignalServiceAddress(senderOrRecipientAci), transaction: transaction)
+                    displayName = Self.contactsManager.displayName(for: SignalServiceAddress(senderOrRecipientAci), tx: transaction).resolvedValue()
                 } else if paymentModel.isOutgoingTransfer {
                     displayName = OWSLocalizedString("PAYMENTS_TRANSFER_OUT_PAYMENT",
                                                     comment: "Label for 'transfer out' payments.")

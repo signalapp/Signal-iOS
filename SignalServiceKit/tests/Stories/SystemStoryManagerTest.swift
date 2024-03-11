@@ -23,11 +23,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
         scheduler = TestScheduler()
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: UUID()),
-                    pni: .init(fromUUID: UUID()),
-                    e164: .init("+17875550101")!
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }

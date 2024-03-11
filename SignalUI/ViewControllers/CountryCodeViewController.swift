@@ -30,7 +30,10 @@ public class CountryCodeViewController: OWSTableViewController2 {
 
         // Configure searchBar() before super.viewDidLoad().
         searchBar.delegate = self
-        searchBar.placeholder = OWSLocalizedString("SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", comment: "")
+        searchBar.placeholder = OWSLocalizedString(
+            "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
+            comment: "Placeholder text indicating the user can search for contacts by name or phone number."
+        )
         searchBar.sizeToFit()
 
         let searchBarWrapper = UIStackView()

@@ -17,26 +17,94 @@ public extension TSMessage {
 
     // MARK: - Attachments
 
+    @objc
+    func bodyAttachmentIds(transaction: SDSAnyReadTransaction) -> [String] {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyAttachments(for: self, tx: transaction.asV2Read)
+            .map(\.resourceId.bridgeUniqueId)
+    }
+
+    @objc
+    func hasBodyAttachments(transaction: SDSAnyReadTransaction) -> Bool {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyAttachments(for: self, tx: transaction.asV2Read)
+            .isEmpty.negated
+    }
+
+    @objc
+    func bodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyAttachments(for: self, tx: transaction.asV2Read)
+            .fetchAll(tx: transaction).map(\.bridge)
+    }
+
+    @objc
+    func hasMediaAttachments(transaction: SDSAnyReadTransaction) -> Bool {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyMediaAttachments(for: self, tx: transaction.asV2Read)
+            .isEmpty.negated
+    }
+
+    @objc
+    func mediaAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
+        return DependenciesBridge.shared.tsResourceStore
+            .bodyMediaAttachments(for: self, tx: transaction.asV2Read)
+            .fetchAll(tx: transaction).map(\.bridge)
+    }
+
+    @objc
+    func oversizeTextAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
+        return DependenciesBridge.shared.tsResourceStore
+            .oversizeTextAttachment(for: self, tx: transaction.asV2Read)?
+            .fetch(tx: transaction)?.bridge
+    }
+
+    @objc
+    func allAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
+        return DependenciesBridge.shared.tsResourceStore
+            .allAttachments(for: self, tx: transaction.asV2Read)
+            .fetchAll(tx: transaction).map(\.bridge)
+    }
+
+    // Returns ids for all attachments, including message ("body") attachments,
+    // quoted reply thumbnails, contact share avatars, link preview images, etc.
+    @objc
+    func allAttachmentIds(transaction: SDSAnyReadTransaction) -> [String] {
+        return DependenciesBridge.shared.tsResourceStore
+            .allAttachments(for: self, tx: transaction.asV2Read)
+            .map(\.resourceId.bridgeUniqueId)
+    }
+
+    /// The raw body contains placeholders for things like mentions and is not user friendly.
+    /// If you want a constant string representing the body of this message, this is it.
+    @objc(rawBodyWithTransaction:)
+    func rawBody(transaction: SDSAnyReadTransaction) -> String? {
+        if let oversizeText = self.oversizeTextAttachment(transaction: transaction)?.asResourceStream()?.decryptedLongText() {
+            return oversizeText
+        }
+        return self.body?.nilIfEmpty
+    }
+
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = allAttachments(with: transaction)
+        let attachments: [TSAttachment] = allAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.failed]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = allAttachments(with: transaction)
+        let attachments: [TSAttachment] = allAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.failed, .pendingMessageRequest, .pendingManualDownload]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func failedBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = bodyAttachments(with: transaction)
+        let attachments: [TSAttachment] = bodyAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.failed]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func pendingBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = bodyAttachments(with: transaction)
+        let attachments: [TSAttachment] = bodyAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.pendingMessageRequest, .pendingManualDownload]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
@@ -52,6 +120,62 @@ public extension TSMessage {
             }
             return attachmentPointer
         }
+    }
+
+    // MARK: Attachment Deletes
+
+    @objc
+    func removeBodyMediaAttachments(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .bodyAttachment,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeOversizeTextAttachment(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .oversizeText,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeLinkPreviewAttachment(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .linkPreview,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeStickerAttachment(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .sticker,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeContactShareAvatarAttachment(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .contactAvatar,
+            tx: tx.asV2Write
+        )
+    }
+
+    @objc
+    func removeAllAttachments(tx: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(
+            from: self,
+            with: .allTypes,
+            tx: tx.asV2Write
+        )
     }
 
     // MARK: - Mentions
@@ -322,9 +446,9 @@ public extension TSMessage {
     @objc(previewTextForGiftBadgeWithTransaction:)
     func previewTextForGiftBadge(transaction: SDSAnyReadTransaction) -> String {
         if let incomingMessage = self as? TSIncomingMessage {
-            let senderShortName = contactsManager.shortDisplayName(
-                for: incomingMessage.authorAddress, transaction: transaction
-            )
+            let senderShortName = contactsManager.displayName(
+                for: incomingMessage.authorAddress, tx: transaction
+            ).resolvedValue(useShortNameIfAvailable: true)
             let format = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING",
                 comment: "A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}."
@@ -334,9 +458,9 @@ public extension TSMessage {
             let recipientShortName: String
             let recipients = outgoingMessage.recipientAddresses()
             if let recipient = recipients.first, recipients.count == 1 {
-                recipientShortName = contactsManager.shortDisplayName(
-                    for: recipient, transaction: transaction
-                )
+                recipientShortName = contactsManager.displayName(
+                    for: recipient, tx: transaction
+                ).resolvedValue(useShortNameIfAvailable: true)
             } else {
                 owsFailDebug("[Gifting] Expected exactly 1 recipient but got \(recipients.count)")
                 recipientShortName = OWSLocalizedString(
@@ -451,21 +575,21 @@ public extension TSMessage {
             )
         }
 
-        let bodyDescription = self.rawBody(with: tx)
+        let bodyDescription = self.rawBody(transaction: tx)
         if
             bodyDescription == nil,
             let storyReactionEmoji,
             storyReactionEmoji.isEmpty.negated
         {
             if let storyAuthorAddress, storyAuthorAddress.isLocalAddress.negated {
-                let storyAuthorName = self.contactsManager.shortDisplayName(for: storyAuthorAddress, transaction: tx)
+                let storyAuthorName = self.contactsManager.displayName(for: storyAuthorAddress, tx: tx)
                 return .storyReactionEmoji(String(
                     format: OWSLocalizedString(
                         "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT",
                         comment: "inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}"
                     ),
                     storyReactionEmoji,
-                    storyAuthorName
+                    storyAuthorName.resolvedValue(useShortNameIfAvailable: true)
                 ))
             } else {
                 return .storyReactionEmoji(String(
@@ -478,7 +602,7 @@ public extension TSMessage {
             }
         }
 
-        let mediaAttachment = self.mediaAttachments(with: tx).first
+        let mediaAttachment = self.mediaAttachments(transaction: tx).first
         let attachmentEmoji = mediaAttachment?.emoji(forContainingMessage: self, transaction: tx)
         let attachmentDescription = mediaAttachment?.previewText(forContainingMessage: self, transaction: tx)
 

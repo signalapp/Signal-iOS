@@ -204,7 +204,7 @@ public extension GroupsV2Impl {
                             let recordUpdater = StorageServiceGroupV2RecordUpdater(
                                 authedAccount: account,
                                 blockingManager: blockingManager,
-                                groupsV2: groupsV2Swift,
+                                groupsV2: groupsV2,
                                 profileManager: profileManager
                             )
                             _ = recordUpdater.mergeRecord(groupRecord, transaction: transaction)
@@ -238,6 +238,7 @@ public extension GroupsV2Impl {
                 let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
                 firstly {
                     self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupContextInfo.groupId,
+                                                                  spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                                                                   groupSecretParamsData: groupContextInfo.groupSecretParamsData,
                                                                   groupUpdateMode: groupUpdateMode)
                 }.done { _ in

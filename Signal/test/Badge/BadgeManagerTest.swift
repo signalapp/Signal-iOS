@@ -11,8 +11,8 @@ import XCTest
 class BadgeManagerTest: XCTestCase {
     private class MockBadgeObserver: BadgeObserver {
         var badgeValues = [UInt]()
-        func didUpdateBadgeValue(_ badgeManager: BadgeManager, badgeValue: UInt) {
-            badgeValues.append(badgeValue)
+        func didUpdateBadgeCount(_ badgeManager: BadgeManager, badgeCount: BadgeCount) {
+            badgeValues.append(badgeCount.unreadChatCount)
         }
     }
 
@@ -22,7 +22,7 @@ class BadgeManagerTest: XCTestCase {
         let badgeManager = BadgeManager(
             mainScheduler: scheduler,
             serialScheduler: scheduler,
-            fetchBadgeValue: {
+            fetchIntBadgeValue: {
                 fetchCount += 1
                 return fetchCount
             }
@@ -53,7 +53,7 @@ class BadgeManagerTest: XCTestCase {
         let badgeManager = BadgeManager(
             mainScheduler: mainScheduler,
             serialScheduler: serialScheduler,
-            fetchBadgeValue: {
+            fetchIntBadgeValue: {
                 fetchCount += 1
                 return fetchCount
             }
@@ -74,5 +74,19 @@ class BadgeManagerTest: XCTestCase {
 
         XCTAssertEqual(observer.badgeValues, [1, 2, 3])
         XCTAssertEqual(fetchCount, 3)
+    }
+}
+
+private extension BadgeManager {
+    convenience init(
+        mainScheduler: Scheduler,
+        serialScheduler: Scheduler,
+        fetchIntBadgeValue: @escaping () -> UInt
+    ) {
+        self.init(
+            mainScheduler: mainScheduler,
+            serialScheduler: serialScheduler,
+            fetchBadgeCountBlock: { BadgeCount(unreadChatCount: fetchIntBadgeValue(), unreadCallsCount: 0) }
+        )
     }
 }
