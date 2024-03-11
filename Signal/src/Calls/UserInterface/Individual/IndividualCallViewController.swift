@@ -814,7 +814,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
         // Update local video
         localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
-            view.layer.cornerRadius = isRenderingLocalVanityVideo ? 0 : 10
+            view.layer.cornerRadius = isRenderingLocalVanityVideo ? 0 : CallMemberView.Constants.defaultPipCornerRadius
         }
         updateLocalVideoLayout()
 

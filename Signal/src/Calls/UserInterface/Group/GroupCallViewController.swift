@@ -124,6 +124,10 @@ class GroupCallViewController: UIViewController {
             callMemberView.animatableLocalMemberViewDelegate = self
         }
 
+        if let callMemberView = self.localMemberView as? CallMemberView {
+            callMemberView.animatableLocalMemberViewDelegate = self
+        }
+
         call.addObserverAndSyncState(observer: self)
 
         videoGrid.memberViewErrorPresenter = self

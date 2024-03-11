@@ -50,7 +50,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         isFullScreen: Bool = false,
         remoteGroupMemberDeviceState: RemoteDeviceState?
     ) {
-        layer.cornerRadius = isFullScreen ? 0 : 10
+        layer.cornerRadius = isFullScreen ? 0 : CallMemberView.Constants.defaultPipCornerRadius
         clipsToBounds = true
         switch type {
         case .local:
