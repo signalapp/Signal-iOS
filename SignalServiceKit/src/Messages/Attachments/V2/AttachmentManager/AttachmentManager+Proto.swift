@@ -72,7 +72,7 @@ extension AttachmentManager {
             reference.sourceMediaSizePixels.map(setMediaSizePixels(_:))
         }
         builder.setKey(pointer.attachment.encryptionKey)
-        pointer.attachment.protoDigest.map(builder.setDigest(_:))
+        pointer.attachment.encryptedFileSha256Digest.map(builder.setDigest(_:))
 
         pointer.attachment.blurHash.map(builder.setBlurHash(_:))
 

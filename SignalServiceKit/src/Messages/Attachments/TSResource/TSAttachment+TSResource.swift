@@ -40,7 +40,7 @@ extension TSAttachment: TSResource {
         return nil
     }
 
-    public var protoDigest: Data? {
+    public var encryptedFileSha256Digest: Data? {
         return (self as? TSAttachmentPointer)?.digest
     }
 

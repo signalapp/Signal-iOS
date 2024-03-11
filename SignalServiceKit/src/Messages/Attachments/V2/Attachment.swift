@@ -90,9 +90,18 @@ public class Attachment {
     public let localRelativeFilePathThumbnail: String?
 
     /// File digest info.
-    /// Generated locally for outgoing attachments, included in message payload for incoming.
-    /// May be null if restored from a backup, or for legacy outgoing attachments.
-    public let protoDigest: Data?
+    ///
+    /// SHA256Hash(iv + cyphertext + hmac),
+    /// (iv + cyphertext + hmac) is the thing we actually upload to the CDN server, which uses
+    /// the ``encryptionKey`` field.
+    ///
+    /// Generated locally/validated for downloaded attachments.
+    /// For undownloaded attachments, taken off the service proto. If validation fails when
+    /// downloading, the download is rejected.
+    ///
+    /// May be null if restored from a backup, or for legacy attachments. In this case, validation
+    /// should be ignored.
+    public let encryptedFileSha256Digest: Data?
 
     private init(
         id: Int64!,

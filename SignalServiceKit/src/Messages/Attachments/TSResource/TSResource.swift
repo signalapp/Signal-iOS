@@ -23,9 +23,12 @@ public protocol TSResource {
     var unenecryptedResourceByteCount: UInt32? { get }
     var encryptedResourceByteCount: UInt32? { get }
 
-    /// Digest info from the attachment sender; used for optional validation
-    /// if available, but not neccessary in general.
-    var protoDigest: Data? { get }
+    /// File digest info.
+    /// SHA256Hash(iv + cyphertext + hmac)
+    ///
+    /// May be null if restored from a backup, or for legacy attachments. In this case, validation
+    /// should be ignored.
+    var encryptedFileSha256Digest: Data? { get }
 
     // f.k.a. contentType
     var mimeType: String { get }

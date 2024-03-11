@@ -95,7 +95,7 @@ extension AttachmentStream: TSResource {
 
     public var encryptedResourceByteCount: UInt32? { attachment.encryptedByteCount }
 
-    public var protoDigest: Data? { attachment.protoDigest }
+    public var encryptedFileSha256Digest: Data? { attachment.encryptedFileSha256Digest }
 
     public var mimeType: String { attachment.mimeType }
 
