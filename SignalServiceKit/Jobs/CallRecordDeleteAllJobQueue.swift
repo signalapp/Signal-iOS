@@ -163,6 +163,11 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
         beforeTimestamp: UInt64,
         tx: DBWriteTransaction
     ) -> Int {
+        /// The passed timestamp will be the timestamp of the most-recent call
+        /// when the user initiated the delete-all action. So as to ensure we
+        /// delete that most-recent call, we'll shim the timestamp forward.
+        let beforeTimestamp = beforeTimestamp + 1
+
         guard let cursor = callRecordQuerier.fetchCursor(
             ordering: .descendingBefore(timestamp: beforeTimestamp),
             tx: tx

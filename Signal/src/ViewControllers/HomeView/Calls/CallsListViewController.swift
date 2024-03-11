@@ -330,13 +330,30 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             proceedTitle: Strings.deleteAllCallsButtonTitle,
             proceedStyle: .destructive
         ) { _ in
+            /// Delete-all should use the timestamp of the most-recent call, at
+            /// the time the action was initiated, as the timestamp we delete
+            /// before (and include in the outgoing sync message).
+            ///
+            /// If we don't have a most-recent call there's no point in
+            /// doing a delete anyway.
+            ///
+            /// We also want to be sure we get the absolute most-recent call,
+            /// rather than the most recent call matching our UI state – if the
+            /// user does delete-all while filtering to Missed, we still want to
+            /// actually delete all.
             self.deps.db.asyncWrite { tx in
+                guard
+                    let mostRecentCallRecord = try? self.deps.callRecordQuerier.fetchCursor(
+                        ordering: .descending, tx: tx.asV2Read
+                    )?.next()
+                else { return }
+
                 /// This will ultimately post "call records deleted"
                 /// notifications that this view is listening to, so we don't
                 /// need to do any manual UI updates.
                 self.deps.callRecordDeleteAllJobQueue.addJob(
                     sendDeleteAllSyncMessage: true,
-                    deleteAllBeforeTimestamp: Date().ows_millisecondsSince1970,
+                    deleteAllBeforeTimestamp: mostRecentCallRecord.callBeganTimestamp,
                     tx: tx
                 )
             }
@@ -686,15 +703,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                         )
                     },
                     fetchCallRecordBlock: { callRecordId, tx -> CallRecord? in
-                        switch capturedDeps.callRecordStore.fetch(
+                        return capturedDeps.callRecordStore.fetch(
                             callRecordId: callRecordId,
                             tx: SDSDB.shimOnlyBridge(tx)
-                        ) {
-                        case .matchFound(let freshCallRecord):
-                            return freshCallRecord
-                        case .matchNotFound, .matchDeleted:
-                            return nil
-                        }
+                        ).unwrapped
                     }
                 )
 
@@ -1236,12 +1248,23 @@ private extension CallRecordStore {
     func fetch(
         callRecordId: CallRecord.ID,
         tx: SDSAnyReadTransaction
-    ) -> CallRecordStoreMaybeDeletedFetchResult {
+    ) -> CallRecordStore.MaybeDeletedFetchResult {
         return fetch(
             callId: callRecordId.callId,
             threadRowId: callRecordId.threadRowId,
             tx: tx.asV2Read
         )
+    }
+}
+
+private extension CallRecordStore.MaybeDeletedFetchResult {
+    var unwrapped: CallRecord? {
+        switch self {
+        case .matchFound(let callRecord):
+            return callRecord
+        case .matchDeleted, .matchNotFound:
+            return nil
+        }
     }
 }
 
@@ -1542,15 +1565,9 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             }
 
             let callRecordsToDelete = callRecordIdsToDelete.compactMap { callRecordId -> CallRecord? in
-                switch self.deps.callRecordStore.fetch(
-                    callRecordId: callRecordId,
-                    tx: tx
-                ) {
-                case .matchFound(let callRecord):
-                    return callRecord
-                case .matchDeleted, .matchNotFound:
-                    return nil
-                }
+                return self.deps.callRecordStore.fetch(
+                    callRecordId: callRecordId, tx: tx
+                ).unwrapped
             }
 
             /// Deleting these call records will trigger a ``CallRecordStoreNotification``,
