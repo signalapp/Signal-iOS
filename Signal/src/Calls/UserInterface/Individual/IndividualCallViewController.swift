@@ -43,6 +43,19 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         delegate: self
     )
 
+    /// When the local member view (which is displayed picture-in-picture) is
+    /// tapped, it expands. If the frame is expanded, its enlarged frame is
+    /// stored here. If the pip is not in the expanded state, this value is nil.
+    private var expandedPipFrame: CGRect?
+
+    /// Whether the local member view pip has an animation currently in progress.
+    private var isPipAnimationInProgress = false
+
+    /// Whether a relayout needs to occur after the pip animation completes.
+    /// This is true when we suspended an attempted relayout triggered during
+    /// the pip animation.
+    private var shouldRelayoutAfterPipAnimationCompletes = false
+
     // MARK: - Gradient Views
 
     private lazy var topGradientView: UIView = {
@@ -151,13 +164,17 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         self.thread = TSContactThread.getOrCreateThread(contactAddress: call.individualCall.remoteAddress)
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
-            remoteMemberView = CallMemberView(type: .remoteInIndividual)
+            let type = CallMemberView.MemberType.remoteInIndividual
+            let videoView = CallMemberVideoView(type: type)
+            remoteMemberView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
         } else {
             remoteMemberView = RemoteVideoView()
         }
 
         if FeatureFlags.useCallMemberComposableViewsForLocalUser {
-            self.localVideoView = CallMemberView(type: .local)
+            let type = CallMemberView.MemberType.local
+            let videoView = CallMemberVideoView(type: type)
+            localVideoView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
         } else {
             let localVideoView = LocalVideoView(shouldUseAutoLayout: false)
             localVideoView.captureSession = call.videoCaptureController.captureSession
@@ -165,6 +182,10 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         }
 
         super.init()
+
+        if let callMemberView = self.localVideoView as? CallMemberView {
+            callMemberView.animatableLocalMemberViewDelegate = self
+        }
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateOrientationForPhone),
@@ -175,8 +196,12 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     deinit {
         // These views might be in the return to call PIP's hierarchy,
         // we want to remove them so they are free'd when the call ends
-        remoteMemberView.removeFromSuperview()
-        localVideoView.removeFromSuperview()
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            view.removeFromSuperview()
+        }
+        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            view.removeFromSuperview()
+        }
     }
 
     // MARK: - View Lifecycle
@@ -312,17 +337,20 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     }
 
     func createVideoViews() {
-        remoteMemberView.isUserInteractionEnabled = false
-        remoteMemberView.isHidden = true
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { aView in
+            aView.isUserInteractionEnabled = false
+            aView.isHidden = true
+            view.addSubview(aView)
+        }
         remoteMemberView.isGroupCall = false
-        view.addSubview(remoteMemberView)
 
-        // We want the local video view to use the aspect ratio of the screen, so we change it to "aspect fill".
-        localVideoView.contentMode = .scaleAspectFill
-        localVideoView.clipsToBounds = true
-        localVideoView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "localVideoView")
-        localVideoView.isHidden = true
-        view.addSubview(localVideoView)
+        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { aView in
+            // We want the local video view to use the aspect ratio of the screen, so we change it to "aspect fill".
+            aView.contentMode = .scaleAspectFill
+            aView.clipsToBounds = true
+            aView.isHidden = true
+            view.addSubview(aView)
+        }
     }
 
     func createContactViews() {
@@ -362,7 +390,11 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         topGradientView.addSubview(callStatusLabel)
 
         contactAvatarContainerView.addSubview(contactAvatarView)
-        view.insertSubview(contactAvatarContainerView, belowSubview: localVideoView)
+        if let videoView = localVideoView.associatedCallMemberVideoView {
+            view.insertSubview(contactAvatarContainerView, belowSubview: videoView)
+        } else {
+            view.insertSubview(contactAvatarContainerView, belowSubview: localVideoView)
+        }
 
         backButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "leaveCallViewButton")
         contactNameLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactNameLabel")
@@ -471,7 +503,9 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         callStatusLabel.setContentHuggingVerticalHigh()
         callStatusLabel.setCompressionResistanceHigh()
 
-        remoteMemberView.autoPinEdgesToSuperviewEdges()
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            view.autoPinEdgesToSuperviewEdges()
+        }
 
         contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarMargin)
         contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -avatarMargin)
@@ -489,7 +523,9 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     }
 
     internal func updateRemoteVideoLayout() {
-        remoteMemberView.isHidden = !self.hasRemoteVideoTrack
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            view.isHidden = !self.hasRemoteVideoTrack
+        }
         updateCallUI()
     }
 
@@ -521,6 +557,15 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     private var previousOrigin: CGPoint!
     private func updateLocalVideoLayout() {
+        guard !isPipAnimationInProgress else {
+            // Wait for the pip to reach its new size before re-laying out.
+            // Otherwise the pip snaps back to its size at the start of the
+            // animation, effectively undoing it. When the animation is
+            // complete, we'll call `updateLocalVideoLayout`.
+            self.shouldRelayoutAfterPipAnimationCompletes = true
+            return
+        }
+
         localVideoView.configure(
             call: call,
             isFullScreen: isRenderingLocalVanityVideo,
@@ -535,16 +580,20 @@ class IndividualCallViewController: OWSViewController, CallObserver {
             view.bringSubviewToFront(topGradientView)
             view.bringSubviewToFront(bottomContainerView)
             view.layoutIfNeeded()
-            localVideoView.frame = view.frame
+            localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { aView in
+                aView.frame = view.frame
+            }
             return
         }
 
         guard !localVideoView.isHidden else { return }
 
-        view.bringSubviewToFront(localVideoView)
+        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { aView in
+            view.bringSubviewToFront(aView)
+        }
         view.bringSubviewToFront(callControlsConfirmationToastContainerView)
 
-        let pipSize = ReturnToCallViewController.pipSize
+        let pipSize = CallMemberView.pipSize(expandedPipFrame: self.expandedPipFrame, remoteDeviceCount: 1)
         let lastBoundingRect = lastLocalVideoBoundingRect
         let boundingRect = localVideoBoundingRect
 
@@ -566,25 +615,44 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         let newFrame = CGRect(origin: previousOrigin, size: pipSize).pinnedToVerticalEdge(of: localVideoBoundingRect)
         previousOrigin = newFrame.origin
 
-        UIView.animate(withDuration: 0.25) { self.localVideoView.frame = newFrame }
+        UIView.animate(withDuration: 0.25) {
+            self.localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                view.frame = newFrame
+            }
+        }
     }
 
     private var startingTranslation: CGPoint?
     @objc
     private func handleLocalVideoPan(sender: UIPanGestureRecognizer) {
+        guard !isPipAnimationInProgress else {
+            /// `localVideoView` and its `associatedCallMemberVideoView`
+            /// can get disaligned if we attempt to perform this pan
+            /// before the expand/contract animation completes.
+            return
+        }
         switch sender.state {
         case .began, .changed:
             let translation = sender.translation(in: localVideoView)
             sender.setTranslation(.zero, in: localVideoView)
 
-            localVideoView.frame.origin.y += translation.y
-            localVideoView.frame.origin.x += translation.x
+            localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                view.frame.origin.y += translation.y
+                view.frame.origin.x += translation.x
+            }
         case .ended, .cancelled, .failed:
             localVideoView.animateDecelerationToVerticalEdge(
                 withDuration: 0.35,
                 velocity: sender.velocity(in: localVideoView),
                 boundingRect: localVideoBoundingRect
             ) { _ in self.previousOrigin = self.localVideoView.frame.origin }
+            if let videoView = localVideoView.associatedCallMemberVideoView {
+                videoView.animateDecelerationToVerticalEdge(
+                    withDuration: 0.35,
+                    velocity: sender.velocity(in: videoView),
+                    boundingRect: localVideoBoundingRect
+                ) { _ in }
+            }
         default:
             break
         }
@@ -697,7 +765,9 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         // Marquee scrolling is distracting during a video call, disable it.
         contactNameLabel.labelize = call.individualCall.hasLocalVideo
 
-        localVideoView.isHidden = !call.individualCall.hasLocalVideo
+        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            view.isHidden = !call.individualCall.hasLocalVideo
+        }
 
         updateRemoteVideoTrack(
             remoteVideoTrack: call.individualCall.isRemoteVideoEnabled ? call.individualCall.remoteVideoTrack : nil
@@ -743,7 +813,9 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         }
 
         // Update local video
-        localVideoView.layer.cornerRadius = isRenderingLocalVanityVideo ? 0 : 8
+        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            view.layer.cornerRadius = isRenderingLocalVanityVideo ? 0 : 10
+        }
         updateLocalVideoLayout()
 
         // Update remote video
@@ -1067,10 +1139,14 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
             return owsFailDebug("failed to snapshot pip")
         }
 
-        view.insertSubview(remoteMemberView, aboveSubview: blurView)
-        remoteMemberView.autoPinEdgesToSuperviewEdges()
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { aView in
+            view.insertSubview(aView, aboveSubview: blurView)
+            aView.autoPinEdgesToSuperviewEdges()
+        }
 
-        view.insertSubview(localVideoView, aboveSubview: contactAvatarContainerView)
+        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { aView in
+            view.insertSubview(aView, aboveSubview: contactAvatarContainerView)
+        }
 
         updateLocalVideoLayout()
 
@@ -1113,5 +1189,37 @@ extension IndividualCallViewController: CallControlsDelegate {
 
     func didPressHangup() {
         dismissIfPossible(shouldDelay: false)
+    }
+}
+
+extension IndividualCallViewController: AnimatableLocalMemberViewDelegate {
+    var enclosingBounds: CGRect {
+        return self.view.bounds
+    }
+
+    var remoteDeviceCount: Int {
+        return 1
+    }
+
+    func animatableLocalMemberViewDidCompleteExpandAnimation(_ localMemberView: CallMemberView) {
+        self.expandedPipFrame = localMemberView.frame
+        self.isPipAnimationInProgress = false
+        if self.shouldRelayoutAfterPipAnimationCompletes {
+            updateLocalVideoLayout()
+            self.shouldRelayoutAfterPipAnimationCompletes = false
+        }
+    }
+
+    func animatableLocalMemberViewDidCompleteShrinkAnimation(_ localMemberView: CallMemberView) {
+        self.expandedPipFrame = nil
+        self.isPipAnimationInProgress = false
+        if self.shouldRelayoutAfterPipAnimationCompletes {
+            updateLocalVideoLayout()
+            self.shouldRelayoutAfterPipAnimationCompletes = false
+        }
+    }
+
+    func animatableLocalMemberViewWillBeginAnimation(_ localMemberView: CallMemberView) {
+        self.isPipAnimationInProgress = true
     }
 }

@@ -93,6 +93,10 @@ class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
 
     // MARK: - CallMemberView_IndividualLocalBridge
 
+    var associatedCallMemberVideoView: CallMemberVideoView? { return nil }
+    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = false, apply: (UIView) -> Void) {
+        apply(self)
+    }
     func configure(call: SignalCall, isFullScreen: Bool, memberType: CallMemberView.MemberType) {}
 }
 

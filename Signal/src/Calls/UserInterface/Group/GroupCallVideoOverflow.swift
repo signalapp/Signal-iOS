@@ -229,14 +229,18 @@ class GroupCallVideoOverflowCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
-            memberView = CallMemberView(type: .remoteInGroup(nil, .videoOverflow))
+            let type = CallMemberView.MemberType.remoteInGroup(nil, .videoOverflow)
+            let videoView = CallMemberVideoView(type: type)
+            memberView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
         } else {
             memberView = GroupCallRemoteMemberView(context: .videoOverflow)
         }
         super.init(frame: frame)
 
-        contentView.addSubview(memberView)
-        memberView.autoPinEdgesToSuperviewEdges()
+        memberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { view in
+            contentView.addSubview(view)
+            view.autoPinEdgesToSuperviewEdges()
+        }
 
         contentView.layer.cornerRadius = 10
         contentView.clipsToBounds = true

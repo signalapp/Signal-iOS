@@ -109,8 +109,12 @@ class GroupCallMemberView: UIView, CallMemberView_GroupBridge {
     // Protocol methods used while migrating from `GroupCallMemberView`
     // to unified `CallMemberView`.
 
+    var associatedCallMemberVideoView: CallMemberVideoView? { return nil }
     var isCallMinimized: Bool = false
     func cleanupVideoViews() { /* Implemented by subclass if applicable */ }
+    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = false, apply: (UIView) -> Void) {
+        apply(self)
+    }
     func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext) { /* Implemented by subclass if applicable */ }
     func clearConfiguration() { /* Implemented by subclass if applicable */ }
 }

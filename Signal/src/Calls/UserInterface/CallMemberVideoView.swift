@@ -12,6 +12,7 @@ import SignalRingRTC
 class CallMemberVideoView: UIView, CallMemberComposableView {
     init(type: CallMemberView.MemberType) {
         super.init(frame: .zero)
+        backgroundColor = .ows_gray90
         switch type {
         case .local:
             let localVideoView = LocalVideoView(shouldUseAutoLayout: true)
@@ -46,6 +47,8 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         isFullScreen: Bool = false,
         memberType: CallMemberView.MemberType
     ) {
+        layer.cornerRadius = isFullScreen ? 0 : 10
+        clipsToBounds = true
         switch memberType {
         case .local:
             self.isHidden = call.isOutgoingVideoMuted

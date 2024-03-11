@@ -77,18 +77,37 @@ class GroupCallViewController: UIViewController {
     private static let didUserSwipeToSpeakerViewKey = "didUserSwipeToSpeakerView"
     private static let didUserSwipeToScreenShareKey = "didUserSwipeToScreenShare"
 
+    /// When the local member view (which is displayed picture-in-picture) is
+    /// tapped, it expands. If the frame is expanded, its enlarged frame is
+    /// stored here. If the pip is not in the expanded state, this value is nil.
+    private var expandedPipFrame: CGRect?
+
+    /// Whether the local member view pip has an animation currently in progress.
+    private var isPipAnimationInProgress = false
+
+    /// Whether a relayout needs to occur after the pip animation completes.
+    /// This is true when we suspended an attempted relayout triggered during
+    /// the pip animation.
+    private var shouldRelayoutAfterPipAnimationCompletes = false
+    private var postAnimationUpdateMemberViewFramesSize: CGSize?
+    private var postAnimationUpdateMemberViewFramesControlsAreHidden: Bool?
+
     init(call: SignalCall) {
         // TODO: Eventually unify UI for group and individual calls
         owsAssertDebug(call.isGroupCall)
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
-            speakerView = CallMemberView(type: .remoteInGroup(nil, .speaker))
+            let type = CallMemberView.MemberType.remoteInGroup(nil, .speaker)
+            let videoView = CallMemberVideoView(type: type)
+            speakerView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
         } else {
             speakerView = GroupCallRemoteMemberView(context: .speaker)
         }
 
         if FeatureFlags.useCallMemberComposableViewsForLocalUser {
-            localMemberView = CallMemberView(type: .local)
+            let type = CallMemberView.MemberType.local
+            let videoView = CallMemberVideoView(type: type)
+            localMemberView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
         } else {
             localMemberView = GroupCallLocalMemberView()
         }
@@ -96,6 +115,10 @@ class GroupCallViewController: UIViewController {
         self.call = call
 
         super.init(nibName: nil, bundle: nil)
+
+        if let callMemberView = self.localMemberView as? CallMemberView {
+            callMemberView.animatableLocalMemberViewDelegate = self
+        }
 
         call.addObserverAndSyncState(observer: self)
 
@@ -384,7 +407,7 @@ class GroupCallViewController: UIViewController {
     }
 
     func updateVideoOverflowTrailingConstraint() {
-        var trailingConstraintConstant = -(GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4)
+        var trailingConstraintConstant = -(GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.inherentPipSize.aspectRatio + 4)
         if view.width + trailingConstraintConstant > videoOverflow.contentSize.width {
             trailingConstraintConstant += 16
         }
@@ -393,6 +416,17 @@ class GroupCallViewController: UIViewController {
     }
 
     private func updateMemberViewFrames(size: CGSize? = nil, controlsAreHidden: Bool) {
+        guard !isPipAnimationInProgress else {
+            // Wait for the pip to reach its new size before re-laying out.
+            // Otherwise the pip snaps back to its size at the start of the
+            // animation, effectively undoing it. When the animation is
+            // complete, we'll call `updateMemberViewFrames`.
+            self.shouldRelayoutAfterPipAnimationCompletes = true
+            self.postAnimationUpdateMemberViewFramesSize = size
+            self.postAnimationUpdateMemberViewFramesControlsAreHidden = controlsAreHidden
+            return
+        }
+
         view.layoutIfNeeded()
 
         let size = size ?? view.frame.size
@@ -403,44 +437,68 @@ class GroupCallViewController: UIViewController {
 
         updateVideoOverflowTrailingConstraint()
 
-        localMemberView.removeFromSuperview()
-        speakerView.removeFromSuperview()
+        localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            view.removeFromSuperview()
+        }
 
+        speakerView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            view.removeFromSuperview()
+        }
         switch groupCall.localDeviceState.joinState {
         case .joined:
             if groupCall.remoteDeviceStates.count > 0 {
-                speakerPage.addSubview(speakerView)
-                speakerView.autoPinEdgesToSuperviewEdges()
+                speakerView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { view in
+                    speakerPage.addSubview(view)
+                    view.autoPinEdgesToSuperviewEdges()
+                }
 
-                view.insertSubview(localMemberView, belowSubview: callControlsConfirmationToastContainerView)
+                localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { aView in
+                    view.insertSubview(aView, belowSubview: callControlsConfirmationToastContainerView)
+                }
 
+                let pipSize = CallMemberView.pipSize(
+                    expandedPipFrame: self.expandedPipFrame,
+                    remoteDeviceCount: groupCall.remoteDeviceStates.count
+                )
                 if groupCall.remoteDeviceStates.count > 1 {
-                    let pipWidth = GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio
-                    let pipHeight = GroupCallVideoOverflow.itemHeight
-                    localMemberView.frame = CGRect(
-                        x: size.width - pipWidth - 16,
-                        y: videoOverflow.frame.origin.y,
-                        width: pipWidth,
-                        height: pipHeight
-                    )
+                    let y: CGFloat
+                    if nil != expandedPipFrame {
+                        // Necessary because when the pip is expanded, the
+                        // pip height will not follow along with that of
+                        // the video overflow, which is tiny.
+                        y = yMax - pipSize.height
+                    } else {
+                        y = videoOverflow.frame.origin.y
+                    }
+                    localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                        view.frame = CGRect(
+                            x: size.width - pipSize.width - 16,
+                            y: y,
+                            width: pipSize.width,
+                            height: pipSize.height
+                        )
+                    }
                 } else {
-                    let pipWidth = ReturnToCallViewController.pipSize.width
-                    let pipHeight = ReturnToCallViewController.pipSize.height
-
-                    localMemberView.frame = CGRect(
-                        x: size.width - pipWidth - 16,
-                        y: yMax - pipHeight,
-                        width: pipWidth,
-                        height: pipHeight
-                    )
+                    localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                        view.frame = CGRect(
+                            x: size.width - pipSize.width - 16,
+                            y: yMax - pipSize.height,
+                            width: pipSize.width,
+                            height: pipSize.height
+                        )
+                    }
                 }
             } else {
-                speakerPage.addSubview(localMemberView)
-                localMemberView.frame = CGRect(origin: .zero, size: size)
+                localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                    speakerPage.addSubview(view)
+                    view.frame = CGRect(origin: .zero, size: size)
+                }
             }
         case .notJoined, .joining, .pending:
-            speakerPage.addSubview(localMemberView)
-            localMemberView.frame = CGRect(origin: .zero, size: size)
+            localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                speakerPage.addSubview(view)
+                view.frame = CGRect(origin: .zero, size: size)
+            }
         }
     }
 
@@ -1051,5 +1109,49 @@ extension GroupCallViewController: CallMemberErrorPresenter {
         let actionSheet = ActionSheetController(title: title, message: message, theme: .translucentDark)
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))
         presentActionSheet(actionSheet)
+    }
+}
+
+extension GroupCallViewController: AnimatableLocalMemberViewDelegate {
+    var enclosingBounds: CGRect {
+        return self.view.bounds
+    }
+
+    var remoteDeviceCount: Int {
+        return call.groupCall.remoteDeviceStates.count
+    }
+
+    func animatableLocalMemberViewDidCompleteExpandAnimation(_ localMemberView: CallMemberView) {
+        self.expandedPipFrame = localMemberView.frame
+        self.isPipAnimationInProgress = false
+        performRetroactiveUiUpdateIfNecessary()
+    }
+
+    func animatableLocalMemberViewDidCompleteShrinkAnimation(_ localMemberView: CallMemberView) {
+        self.expandedPipFrame = nil
+        self.isPipAnimationInProgress = false
+        performRetroactiveUiUpdateIfNecessary()
+    }
+
+    private func performRetroactiveUiUpdateIfNecessary() {
+        if self.shouldRelayoutAfterPipAnimationCompletes {
+            if
+                let postAnimationUpdateMemberViewFramesSize,
+                let postAnimationUpdateMemberViewFramesControlsAreHidden
+            {
+                updateMemberViewFrames(
+                    size: postAnimationUpdateMemberViewFramesSize,
+                    controlsAreHidden: postAnimationUpdateMemberViewFramesControlsAreHidden
+                )
+                self.postAnimationUpdateMemberViewFramesSize = nil
+                self.postAnimationUpdateMemberViewFramesControlsAreHidden = nil
+            }
+
+            self.shouldRelayoutAfterPipAnimationCompletes = false
+        }
+    }
+
+    func animatableLocalMemberViewWillBeginAnimation(_ localMemberView: CallMemberView) {
+        self.isPipAnimationInProgress = true
     }
 }

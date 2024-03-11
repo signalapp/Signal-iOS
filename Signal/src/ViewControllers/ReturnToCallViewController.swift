@@ -19,7 +19,7 @@ public protocol CallViewControllerWindowReference: AnyObject {
 
 public class ReturnToCallViewController: UIViewController {
 
-    public static var pipSize: CGSize {
+    public static var inherentPipSize: CGSize {
         let nineBySixteen = CGSize(width: 90, height: 160)
         let fourByThree = CGSize(width: 272, height: 204)
         let threeByFour = CGSize(width: 204, height: 272)
@@ -140,11 +140,11 @@ public class ReturnToCallViewController: UIViewController {
     // MARK: -
 
     private func updateLocalVideoFrame() {
-        let localVideoSize = CGSizeScale(Self.pipSize, 0.3)
+        let localVideoSize = CGSizeScale(Self.inherentPipSize, 0.3)
         callViewController?.localVideoViewReference.frame = CGRect(
             origin: CGPoint(
-                x: Self.pipSize.width - 6 - localVideoSize.width,
-                y: Self.pipSize.height - 6 - localVideoSize.height
+                x: Self.inherentPipSize.width - 6 - localVideoSize.width,
+                y: Self.inherentPipSize.height - 6 - localVideoSize.height
             ),
             size: localVideoSize
         )
@@ -168,7 +168,7 @@ public class ReturnToCallViewController: UIViewController {
             snapshot.alpha = 0
             window.frame = CGRect(
                 origin: previousOrigin,
-                size: Self.pipSize
+                size: Self.inherentPipSize
             ).pinnedToVerticalEdge(of: self.pipBoundingRect)
             window.layoutIfNeeded()
         }) { _ in
@@ -217,7 +217,7 @@ public class ReturnToCallViewController: UIViewController {
         let origin = frameBeforeAdjustingForKeyboard?.origin ?? window.frame.origin
         let newFrame = CGRect(
             origin: origin,
-            size: Self.pipSize
+            size: Self.inherentPipSize
         ).pinnedToVerticalEdge(of: pipBoundingRect)
 
         UIView.animate(withDuration: animationDuration ?? 0.25, delay: 0, options: animationCurve.asAnimationOptions) {
