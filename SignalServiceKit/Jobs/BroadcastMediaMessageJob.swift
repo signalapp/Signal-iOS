@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-
 public class BroadcastMediaMessageJobQueue {
     private let jobQueueRunner: JobQueueRunner<
         JobRecordFinderImpl<BroadcastMediaMessageJobRecord>,
@@ -21,7 +19,7 @@ public class BroadcastMediaMessageJobQueue {
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
 
-    func start(appContext: AppContext) {
+    public func start(appContext: AppContext) {
         if appContext.isNSE { return }
         jobQueueRunner.start(shouldRestartExistingJobs: appContext.isMainApp)
     }

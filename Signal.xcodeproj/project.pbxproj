@@ -1067,6 +1067,7 @@
 		724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5B23C6644B001651FC /* GroupV2Params.swift */; };
 		724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */; };
 		724D47BD2B97C5B9001BE973 /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
+		725464EC2B9F6EB900EABFD2 /* BroadcastMediaMessageJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -1401,7 +1402,6 @@
 		88EF42E525F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EF42E425F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift */; };
 		88EFF4F825AD1F0D000FAFBA /* ForwardMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */; };
 		88EFF4FC25AD4230000FAFBA /* SharingThreadPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EFF4FB25AD4230000FAFBA /* SharingThreadPickerViewController.swift */; };
-		88F15F9A25AD4AE0008ABD47 /* BroadcastMediaMessageJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */; };
 		88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */; };
 		88F5D78A2880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */; };
 		88F5D78C2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */; };
@@ -9026,6 +9026,7 @@
 		D9668B30291B033800665298 /* Jobs */ = {
 			isa = PBXGroup;
 			children = (
+				4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */,
 				D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */,
 				F9C5CB19289453B200548EEE /* JobQueue.swift */,
 				5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */,
@@ -9038,7 +9039,6 @@
 		D9668B32291B038D00665298 /* Jobs */ = {
 			isa = PBXGroup;
 			children = (
-				4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */,
 				4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */,
 				4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */,
 				886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */,
@@ -12389,7 +12389,6 @@
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
 				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
-				88F15F9A25AD4AE0008ABD47 /* BroadcastMediaMessageJob.swift in Sources */,
 				500FE490288615BA00FA090C /* CachedBadge.swift in Sources */,
 				5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */,
 				342FFE832721D4B6000AC89F /* ContactsMaps.swift in Sources */,
@@ -13262,6 +13261,7 @@
 				F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */,
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
 				668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */,
+				725464EC2B9F6EB900EABFD2 /* BroadcastMediaMessageJob.swift in Sources */,
 				D9AE0ACB29162C160063488B /* BroadcastMediaMessageJobRecord.swift in Sources */,
 				F9C5CE39289453B400548EEE /* BulkProfileFetch.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
