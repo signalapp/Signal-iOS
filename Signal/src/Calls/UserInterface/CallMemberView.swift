@@ -7,6 +7,7 @@ import Foundation
 import LibSignalClient
 import SignalMessaging
 import SignalRingRTC
+import SignalServiceKit
 import SignalUI
 
 enum CallMemberVisualContext: Equatable {
@@ -17,7 +18,7 @@ protocol CallMemberComposableView: UIView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool,
-        memberType: CallMemberView.MemberType
+        remoteGroupMemberDeviceState: RemoteDeviceState?
     )
     func rotateForPhoneOrientation(_ rotationAngle: CGFloat)
     func updateDimensions()
@@ -38,7 +39,6 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
     /// somewhat of an architectural hack, `CallMemberView` still manages updates an 
     /// animations of `_associatedCallMemberVideoView`.
     private let _associatedCallMemberVideoView: CallMemberVideoView
-
     private var composableViews = [CallMemberComposableView]()
 
     private let type: MemberType
@@ -56,10 +56,9 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         associatedCallMemberVideoView: CallMemberVideoView
     ) {
         self.type = type
-
         self.callMemberCameraOffView = CallMemberCameraOffView(type: type)
-        self.callMemberWaitingAndErrorView = CallMemberWaitingAndErrorView()
-        self.callMemberChromeOverlayView = CallMemberChromeOverlayView()
+        self.callMemberWaitingAndErrorView = CallMemberWaitingAndErrorView(type: type)
+        self.callMemberChromeOverlayView = CallMemberChromeOverlayView(type: type)
 
         self._associatedCallMemberVideoView = associatedCallMemberVideoView
 
@@ -127,25 +126,29 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
 
     enum MemberType {
         case local
-        case remoteInGroup(RemoteDeviceState?, CallMemberVisualContext)
+        case remoteInGroup(CallMemberVisualContext)
         case remoteInIndividual
     }
 
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: MemberType
+        remoteGroupMemberDeviceState: RemoteDeviceState? = nil
     ) {
         self.call = call
         self.shouldAllowTapHandling = !isFullScreen
-        switch memberType {
+        switch self.type {
         case .local:
+            owsAssertDebug(remoteGroupMemberDeviceState == nil, "RemoteDeviceStates are only applicable to remote members in group calls!")
             layer.shadowOffset = .zero
             layer.shadowOpacity = 0.25
             layer.shadowRadius = 4
             layer.cornerRadius = isFullScreen ? 0 : Constants.defaultPipCornerRadius
-        case .remoteInGroup(_, _),
-             .remoteInIndividual:
+        case .remoteInGroup(_):
+            owsAssertDebug(remoteGroupMemberDeviceState != nil, "RemoteDeviceState must be given for remote members in group calls!")
+            self.isUserInteractionEnabled = false
+        case .remoteInIndividual:
+            owsAssertDebug(remoteGroupMemberDeviceState == nil, "RemoteDeviceStates are only applicable to group calls!")
             self.isUserInteractionEnabled = false
         }
 
@@ -153,7 +156,7 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
             view.configure(
                 call: call,
                 isFullScreen: isFullScreen,
-                memberType: memberType
+                remoteGroupMemberDeviceState: remoteGroupMemberDeviceState
             )
         }
     }
@@ -274,7 +277,6 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
 // MARK: - Local View Gesture Handling
 
 extension CallMemberView: UIGestureRecognizerDelegate {
-
     private func callMemberVideoViewAnchorPoint(for nearestCorner: Corner) -> CGPoint {
         switch nearestCorner {
         case .upperLeft:
@@ -383,7 +385,7 @@ extension CallMemberView: UIGestureRecognizerDelegate {
         switch self.type {
         case .local:
             animatePip(fromFrame: self.frame, isExpanding: !self.isPipExpanded)
-        case .remoteInGroup(_, _),
+        case .remoteInGroup(_),
              .remoteInIndividual:
             return
         }
@@ -558,7 +560,7 @@ extension CallMemberView: UIGestureRecognizerDelegate {
                 }
             }
             return nearestCorner
-        case .remoteInGroup(_, _), .remoteInIndividual:
+        case .remoteInGroup(_), .remoteInIndividual:
             // Pip in group calls is fixed in lower right corner.
             return .lowerRight
         }
@@ -650,7 +652,7 @@ protocol CallMemberView_IndividualRemoteBridge: UIView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool,
-        memberType: CallMemberView.MemberType
+        remoteGroupMemberDeviceState: RemoteDeviceState?
     )
 }
 
@@ -660,6 +662,6 @@ protocol CallMemberView_IndividualLocalBridge: UIView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool,
-        memberType: CallMemberView.MemberType
+        remoteGroupMemberDeviceState: RemoteDeviceState?
     )
 }

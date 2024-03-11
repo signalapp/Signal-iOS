@@ -10,7 +10,10 @@ import SignalServiceKit
 import SignalRingRTC
 
 class CallMemberVideoView: UIView, CallMemberComposableView {
+    private let type: CallMemberView.MemberType
+
     init(type: CallMemberView.MemberType) {
+        self.type = type
         super.init(frame: .zero)
         backgroundColor = .ows_gray90
         switch type {
@@ -20,7 +23,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
             localVideoView.contentMode = .scaleAspectFill
             localVideoView.autoPinEdgesToSuperviewEdges()
             self.callViewWrapper = .local(localVideoView)
-        case .remoteInGroup(_, _), .remoteInIndividual:
+        case .remoteInGroup(_), .remoteInIndividual:
             break
         }
     }
@@ -45,11 +48,11 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: CallMemberView.MemberType
+        remoteGroupMemberDeviceState: RemoteDeviceState?
     ) {
         layer.cornerRadius = isFullScreen ? 0 : 10
         clipsToBounds = true
-        switch memberType {
+        switch type {
         case .local:
             self.isHidden = call.isOutgoingVideoMuted
             if case let .local(videoView) = callViewWrapper {
@@ -57,13 +60,13 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
             } else {
                 owsFailDebug("This should not be called when we're dealing with a remote video!")
             }
-        case .remoteInGroup(let remoteDeviceState, let context):
-            guard let remoteDeviceState else { return }
-            if remoteDeviceState.mediaKeysReceived, remoteDeviceState.videoTrack != nil {
-                self.isHidden = (remoteDeviceState.videoMuted == true)
+        case .remoteInGroup(let context):
+            guard let remoteGroupMemberDeviceState else { return }
+            if remoteGroupMemberDeviceState.mediaKeysReceived, remoteGroupMemberDeviceState.videoTrack != nil {
+                self.isHidden = (remoteGroupMemberDeviceState.videoMuted == true)
             }
             if !self.isHidden {
-                configureRemoteVideo(device: remoteDeviceState, context: context)
+                configureRemoteVideo(device: remoteGroupMemberDeviceState, context: context)
             }
         case .remoteInIndividual:
             self.isHidden = !call.individualCall.isRemoteVideoEnabled

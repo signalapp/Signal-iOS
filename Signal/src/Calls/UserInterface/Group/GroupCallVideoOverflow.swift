@@ -229,7 +229,7 @@ class GroupCallVideoOverflowCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
-            let type = CallMemberView.MemberType.remoteInGroup(nil, .videoOverflow)
+            let type = CallMemberView.MemberType.remoteInGroup(.videoOverflow)
             let videoView = CallMemberVideoView(type: type)
             memberView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
         } else {
@@ -248,7 +248,7 @@ class GroupCallVideoOverflowCell: UICollectionViewCell {
 
     func configure(call: SignalCall, device: RemoteDeviceState) {
         if let memberView = memberView as? CallMemberView {
-            memberView.configure(call: call, memberType: .remoteInGroup(device, .videoOverflow))
+            memberView.configure(call: call, remoteGroupMemberDeviceState: device)
         } else if let memberView = memberView as? GroupCallRemoteMemberView {
             memberView.configure(call: call, device: device)
         }

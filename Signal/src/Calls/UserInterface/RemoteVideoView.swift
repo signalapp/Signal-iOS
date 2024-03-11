@@ -4,6 +4,7 @@
 //
 
 import MetalKit
+import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 import WebRTC
@@ -199,6 +200,6 @@ extension RemoteVideoView: RTCVideoRenderer {
     func configure(
         call: SignalCall,
         isFullScreen: Bool,
-        memberType: CallMemberView.MemberType
+        remoteGroupMemberDeviceState: RemoteDeviceState? = nil
     ) {}
 }

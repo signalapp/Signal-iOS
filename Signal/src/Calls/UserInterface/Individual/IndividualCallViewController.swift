@@ -569,7 +569,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         localVideoView.configure(
             call: call,
             isFullScreen: isRenderingLocalVanityVideo,
-            memberType: .local
+            remoteGroupMemberDeviceState: nil
         )
 
         guard localVideoView.superview == view else { return }
@@ -822,7 +822,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         remoteMemberView.configure(
             call: call,
             isFullScreen: true,
-            memberType: .remoteInIndividual
+            remoteGroupMemberDeviceState: nil
         )
 
         // Dismiss Handling

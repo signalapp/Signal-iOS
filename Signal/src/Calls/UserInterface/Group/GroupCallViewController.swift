@@ -97,7 +97,7 @@ class GroupCallViewController: UIViewController {
         owsAssertDebug(call.isGroupCall)
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
-            let type = CallMemberView.MemberType.remoteInGroup(nil, .speaker)
+            let type = CallMemberView.MemberType.remoteInGroup(.speaker)
             let videoView = CallMemberVideoView(type: type)
             speakerView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
         } else {
@@ -115,6 +115,10 @@ class GroupCallViewController: UIViewController {
         self.call = call
 
         super.init(nibName: nil, bundle: nil)
+
+        if let callMemberView = self.localMemberView as? CallMemberView {
+            callMemberView.animatableLocalMemberViewDelegate = self
+        }
 
         if let callMemberView = self.localMemberView as? CallMemberView {
             callMemberView.animatableLocalMemberViewDelegate = self
@@ -567,8 +571,7 @@ class GroupCallViewController: UIViewController {
         if let localMemberView = localMemberView as? CallMemberView {
             localMemberView.configure(
                 call: call,
-                isFullScreen: isFullScreen,
-                memberType: .local
+                isFullScreen: isFullScreen
             )
         } else if let localMemberView = localMemberView as? GroupCallLocalMemberView {
             localMemberView.configure(call: call, isFullScreen: isFullScreen)
@@ -578,7 +581,7 @@ class GroupCallViewController: UIViewController {
             if let speakerView = speakerView as? CallMemberView {
                 speakerView.configure(
                     call: call,
-                    memberType: .remoteInGroup(speakerState, .speaker)
+                    remoteGroupMemberDeviceState: speakerState
                 )
             } else if let speakerView = speakerView as? GroupCallRemoteMemberView {
                 speakerView.configure(call: call, device: speakerState)

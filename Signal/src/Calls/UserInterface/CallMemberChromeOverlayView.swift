@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     private let muteIndicatorImage = UIImageView()
@@ -19,7 +20,10 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         return width > 200 && UIDevice.current.isIPad ? 20 : 16
     }
 
-    init() {
+    private var type: CallMemberView.MemberType
+
+    init(type: CallMemberView.MemberType) {
+        self.type = type
         super.init(frame: .zero)
         muteIndicatorImage.isHidden = true
         muteIndicatorImage.setTemplateImageName("mic-slash-fill-28", tintColor: .ows_white)
@@ -50,13 +54,13 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: CallMemberView.MemberType
+        remoteGroupMemberDeviceState: RemoteDeviceState?
     ) {
-        switch memberType {
+        switch type {
         case .local:
             muteIndicatorImage.isHidden = !call.isOutgoingAudioMuted || isFullScreen
-        case .remoteInGroup(let remoteDeviceState, let context):
-            muteIndicatorImage.isHidden = context == .speaker || remoteDeviceState?.audioMuted != true || isFullScreen
+        case .remoteInGroup(let context):
+            muteIndicatorImage.isHidden = context == .speaker || remoteGroupMemberDeviceState?.audioMuted != true || isFullScreen
         case .remoteInIndividual:
             muteIndicatorImage.isHidden = true
         }

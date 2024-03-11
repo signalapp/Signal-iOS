@@ -21,7 +21,10 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     private var detailedNoVideoIndicatorView: UIStackView?
     private var noVideoIndicatorImageView: UIImageView?
 
+    private let type: CallMemberView.MemberType
+
     init(type: CallMemberView.MemberType) {
+        self.type = type
         super.init(frame: .zero)
 
         let overlayView = UIView()
@@ -59,7 +62,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
                 self.detailedNoVideoIndicatorView = self.createDetailedVideoOffIndicatorView()
                 self.noVideoIndicatorImageView = self.createVideoOffIndicatorImageView()
             }
-        case .remoteInIndividual, .remoteInGroup(_, _):
+        case .remoteInIndividual, .remoteInGroup(_):
             self.avatarView = ConversationAvatarView(localUserDisplayMode: .asUser, badged: false)
         }
     }
@@ -68,10 +71,10 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: CallMemberView.MemberType
+        remoteGroupMemberDeviceState: RemoteDeviceState?
     ) {
         if !hasConfiguredOnce {
-            self.createOptionalViews(type: memberType, call: call)
+            self.createOptionalViews(type: type, call: call)
             if let avatarView {
                 self.addSubview(avatarView)
                 avatarView.autoCenterInSuperview()
@@ -93,13 +96,13 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
             hasConfiguredOnce = true
         }
 
-        switch memberType {
+        switch type {
         case .local:
             self.isHidden = !call.isOutgoingVideoMuted
         case .remoteInIndividual:
             self.isHidden = call.individualCall.isRemoteVideoEnabled
-        case .remoteInGroup(let remoteDeviceState, _):
-            if let videoMuted = remoteDeviceState?.videoMuted {
+        case .remoteInGroup(_):
+            if let videoMuted = remoteGroupMemberDeviceState?.videoMuted {
                 self.isHidden = !videoMuted
             } else {
                 self.isHidden = true
@@ -118,7 +121,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
 
         let backgroundAvatarImage: UIImage?
         var backgroundColor: UIColor?
-        switch memberType {
+        switch type {
         case .local:
             databaseStorage.read { tx in
                 guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
@@ -132,9 +135,9 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
                 backgroundColor = AvatarTheme.forAddress(localAddress).backgroundColor
             }
             backgroundAvatarImage = profileManager.localProfileAvatarImage()
-        case .remoteInGroup(let remoteDeviceState, _):
-            guard let remoteDeviceState else { return }
-            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: remoteDeviceState.address)
+        case .remoteInGroup(_):
+            guard let remoteGroupMemberDeviceState else { return }
+            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: remoteGroupMemberDeviceState.address)
             backgroundAvatarImage = image
             backgroundColor = color
         case .remoteInIndividual:

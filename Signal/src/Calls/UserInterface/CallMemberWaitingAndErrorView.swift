@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalRingRTC
 import SignalServiceKit
 
 /// Only used for group calls currently; adjust if individual calls come to need it.
@@ -21,6 +22,8 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
 
     private var deferredReconfigTimer: Timer?
 
+    private let type: CallMemberView.MemberType
+
     var isCallMinimized: Bool = false {
         didSet {
             // Currently only updated for the speaker view, since that's the only visible cell
@@ -30,7 +33,8 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
         }
     }
 
-    init() {
+    init(type: CallMemberView.MemberType) {
+        self.type = type
         super.init(frame: .zero)
         self.addSubview(errorView)
         self.addSubview(spinner)
@@ -43,30 +47,30 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: CallMemberView.MemberType
+        remoteGroupMemberDeviceState: RemoteDeviceState?
     ) {
-        switch memberType {
+        switch type {
         case .local, .remoteInIndividual:
             owsFailDebug("CallMemberWaitingAndErrorView should not be in the view hierarchy!")
-        case .remoteInGroup(let remoteDeviceState, let context):
+        case .remoteInGroup(_):
             deferredReconfigTimer?.invalidate()
 
-            guard let remoteDeviceState else { return }
+            guard let remoteGroupMemberDeviceState else { return }
             let isRemoteDeviceBlocked = databaseStorage.read { tx in
-                return blockingManager.isAddressBlocked(remoteDeviceState.address, transaction: tx)
+                return blockingManager.isAddressBlocked(remoteGroupMemberDeviceState.address, transaction: tx)
             }
 
             let errorDeferralInterval: TimeInterval = 5.0
-            let addedDate = Date(millisecondsSince1970: remoteDeviceState.addedTime)
+            let addedDate = Date(millisecondsSince1970: remoteGroupMemberDeviceState.addedTime)
             let connectionDuration = -addedDate.timeIntervalSinceNow
 
-            if !remoteDeviceState.mediaKeysReceived, !isRemoteDeviceBlocked, connectionDuration < errorDeferralInterval {
+            if !remoteGroupMemberDeviceState.mediaKeysReceived, !isRemoteDeviceBlocked, connectionDuration < errorDeferralInterval {
                 // No media keys, but that's expected since we just joined the call.
                 // Schedule a timer to re-check and show a spinner in the meantime
                 spinner.isHidden = false
                 if !spinner.isAnimating { spinner.startAnimating() }
 
-                let configuredDemuxId = remoteDeviceState.demuxId
+                let configuredDemuxId = remoteGroupMemberDeviceState.demuxId
                 let scheduledInterval = errorDeferralInterval - connectionDuration
                 deferredReconfigTimer = Timer.scheduledTimer(
                     withTimeInterval: scheduledInterval,
@@ -76,12 +80,12 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                     guard call.isGroupCall, let groupCall = call.groupCall else { return }
                     guard let updatedState = groupCall.remoteDeviceStates.values
                             .first(where: { $0.demuxId == configuredDemuxId }) else { return }
-                    self.configure(call: call, memberType: .remoteInGroup(updatedState, context))
+                    self.configure(call: call, remoteGroupMemberDeviceState: updatedState)
                 })
-            } else if !remoteDeviceState.mediaKeysReceived {
+            } else if !remoteGroupMemberDeviceState.mediaKeysReceived {
                 // No media keys. Display error view
                 errorView.isHidden = false
-                configureErrorView(for: remoteDeviceState.address, isBlocked: isRemoteDeviceBlocked)
+                configureErrorView(for: remoteGroupMemberDeviceState.address, isBlocked: isRemoteDeviceBlocked)
             } else {
                 spinner.isHidden = true
                 errorView.isHidden = true
