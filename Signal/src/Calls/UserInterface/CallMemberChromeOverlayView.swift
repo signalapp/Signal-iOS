@@ -22,14 +22,20 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         layoutGuideConstraints.append(layoutGuide.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -inset))
         NSLayoutConstraint.activate(layoutGuideConstraints)
 
-        muteIndicatorImage.isHidden = true
+        muteIndicatorCircleView.isHidden = true
+        muteIndicatorCircleView.backgroundColor = .ows_blackAlpha70
+        let muteIndicatorImage = UIImageView()
         muteIndicatorImage.setTemplateImageName("mic-slash-fill-28", tintColor: .ows_white)
-        addSubview(muteIndicatorImage)
-        self.muteHeightConstraint = muteIndicatorImage.autoSetDimension(.height, toSize: muteHeight)
+        muteIndicatorCircleView.addSubview(muteIndicatorImage)
+        addSubview(muteIndicatorCircleView)
+        muteIndicatorCircleView.autoSetDimension(.height, toSize: Constants.muteImageCircleDimension)
+        muteIndicatorCircleView.autoMatch(.width, to: .height, of: muteIndicatorCircleView)
+        muteIndicatorImage.autoSetDimension(.height, toSize: Constants.muteImageDimension)
         muteIndicatorImage.autoMatch(.width, to: .height, of: muteIndicatorImage)
+        muteIndicatorImage.autoCenterInSuperview()
         NSLayoutConstraint.activate([
-            muteIndicatorImage.leadingAnchor.constraint(equalTo: self.layoutGuide.leadingAnchor),
-            muteIndicatorImage.bottomAnchor.constraint(equalTo: self.layoutGuide.bottomAnchor)
+            muteIndicatorCircleView.leadingAnchor.constraint(equalTo: self.layoutGuide.leadingAnchor),
+            muteIndicatorCircleView.bottomAnchor.constraint(equalTo: self.layoutGuide.bottomAnchor)
         ])
 
         switch type {
@@ -47,10 +53,9 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
 
     func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
         /// TODO: Add support for rotating other elements too.
-        self.muteIndicatorImage.transform = CGAffineTransform(rotationAngle: rotationAngle)
+        self.muteIndicatorCircleView.transform = CGAffineTransform(rotationAngle: rotationAngle)
         updateFlipCameraButton()
         updateLayoutGuideConstraints()
-        updateMuteIndicatorSize()
     }
 
     func configure(
@@ -70,11 +75,10 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     func updateDimensions() {
         updateFlipCameraButton()
         updateLayoutGuideConstraints()
-        updateMuteIndicatorSize()
     }
 
     func clearConfiguration() {
-        muteIndicatorImage.isHidden = true
+        muteIndicatorCircleView.isHidden = true
     }
 
     // MARK: - General Layout
@@ -89,12 +93,12 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         fileprivate static let mediumPipMinWidth: CGFloat = 72
         fileprivate static let expandedPipInset: CGFloat = 8
         fileprivate static let normalPipInset: CGFloat = 6
-        fileprivate static let smallMuteDimension: CGFloat = 16
-        fileprivate static let bigMuteDimension: CGFloat = 20
         fileprivate static let flipCameraButtonDimensionWhenPipExpanded: CGFloat = 48
         fileprivate static let flipCameraButtonDimensionWhenPipNormal: CGFloat = 28
         fileprivate static let flipCameraImageDimensionWhenPipExpanded: CGFloat = 24
         fileprivate static let flipCameraImageDimensionWhenPipNormal: CGFloat = 16
+        fileprivate static let muteImageDimension: CGFloat = 16
+        fileprivate static let muteImageCircleDimension: CGFloat = 28
     }
 
     private var inset: CGFloat {
@@ -110,15 +114,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     // MARK: - Mute Button
 
     private let muteIndicatorImage = UIImageView()
-    private var muteHeightConstraint: NSLayoutConstraint?
-
-    private var muteHeight: CGFloat {
-        return width > 200 && UIDevice.current.isIPad ? Constants.bigMuteDimension : Constants.smallMuteDimension
-    }
-
-    private func updateMuteIndicatorSize() {
-        self.muteHeightConstraint?.constant = muteHeight
-    }
+    private let muteIndicatorCircleView = CircleView()
 
     private func updateMuteIndicatorHiddenState(
         call: SignalCall,
