@@ -14,7 +14,7 @@ public struct ProvisionMessage {
     public let aciIdentityKeyPair: ECKeyPair
     public let pniIdentityKeyPair: ECKeyPair
     public let profileKey: OWSAES256Key
-    public let masterKey: Data?
+    public let masterKey: Data
     public let areReadReceiptsEnabled: Bool?
     public let primaryUserAgent: String?
     public let provisioningCode: String
@@ -140,10 +140,9 @@ public class ProvisioningCipher {
             return pni
         }()
 
-        // TODO: eventually this will become required, at which point
-        // we should throw an invalidProvisionMessage error if it is
-        // not present.
-        let masterKey: Data? = proto.masterKey
+        guard let masterKey = proto.masterKey else {
+            throw ProvisioningError.invalidProvisionMessage("missing master key from provisioning message")
+        }
 
         return ProvisionMessage(
             aci: aci,

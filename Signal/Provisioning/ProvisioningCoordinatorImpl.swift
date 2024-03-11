@@ -199,14 +199,12 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 authedAccount: authedDevice.authedAccount,
                 tx: tx
             )
-            if let masterKey = provisionMessage.masterKey {
-                self.svr.storeSyncedMasterKey(
-                    data: masterKey,
-                    authedDevice: .implicit,
-                    updateStorageService: false,
-                    transaction: tx
-                )
-            }
+            self.svr.storeSyncedMasterKey(
+                data: provisionMessage.masterKey,
+                authedDevice: .implicit,
+                updateStorageService: false,
+                transaction: tx
+            )
 
             if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
                 self.receiptManager.setAreReadReceiptsEnabled(
@@ -252,18 +250,15 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         }
 
         return await performNecessarySyncsAndRestores(
-            authedDevice: authedDevice,
-            hasMasterKeyInProvisioningMessage: provisionMessage.masterKey != nil
+            authedDevice: authedDevice
         )
     }
 
     private func performNecessarySyncsAndRestores(
-        authedDevice: AuthedDevice,
-        hasMasterKeyInProvisioningMessage: Bool
+        authedDevice: AuthedDevice
     ) async -> CompleteProvisioningResult {
         async let storageServiceRestore: Void = self.performInitialStorageServiceRestore(
-            authedDevice: authedDevice,
-            hasMasterKeyInProvisioningMessage: hasMasterKeyInProvisioningMessage
+            authedDevice: authedDevice
         )
         async let contactSync: Void = self.performInitialContactSync()
         do {
@@ -275,24 +270,8 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     }
 
     private func performInitialStorageServiceRestore(
-        authedDevice: AuthedDevice,
-        hasMasterKeyInProvisioningMessage: Bool
+        authedDevice: AuthedDevice
     ) async throws {
-        if !hasMasterKeyInProvisioningMessage {
-            // If we didn't get a master key in the provisioning message, we have
-            // to request to sync one now.
-            // TODO: 90 days after all primaries include the master key in every
-            // provisioning message, we can make it non-optional and remove this
-            // branch entirely.
-            async let syncDidComplete: Void = NotificationCenter.default.observeOnce(.syncManagerKeysSyncDidComplete)
-
-            async let requestKeys: Void = self.db.awaitableWrite { tx in
-                self.syncManager.sendKeysSyncRequestMessage(tx: tx)
-            }
-
-            _ = await (syncDidComplete, requestKeys)
-        }
-
         try await self.storageServiceManager
             .restoreOrCreateManifestIfNecessary(authedDevice: authedDevice)
             .timeout(seconds: 60, substituteValue: ())
