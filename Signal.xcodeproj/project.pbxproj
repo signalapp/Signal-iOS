@@ -2546,27 +2546,6 @@
 			remoteGlobalIDString = 342FFE8727245850000AC89F;
 			remoteInfo = SignalNSE;
 		};
-		342FFE9F272459F8000AC89F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 453518911FC63DBF00210559;
-			remoteInfo = SignalMessaging;
-		};
-		34480B391FD0950000BC14EF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 453518911FC63DBF00210559;
-			remoteInfo = SignalMessaging;
-		};
-		3478506D1FD9CFF4007B8332 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 453518911FC63DBF00210559;
-			remoteInfo = SignalMessaging;
-		};
 		34A954B3271A471300B05242 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
@@ -2588,13 +2567,6 @@
 			remoteGlobalIDString = 34A954A7271A471200B05242;
 			remoteInfo = SignalUI;
 		};
-		34A954CC271B4C3A00B05242 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 453518911FC63DBF00210559;
-			remoteInfo = SignalMessaging;
-		};
 		34A954D0271B4D3C00B05242 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
@@ -2609,26 +2581,47 @@
 			remoteGlobalIDString = 453518671FC635DD00210559;
 			remoteInfo = SignalShareExtension;
 		};
-		453518971FC63DBF00210559 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 453518911FC63DBF00210559;
-			remoteInfo = SignalMessaging;
-		};
-		4C10B18123176D250099396B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 453518911FC63DBF00210559;
-			remoteInfo = SignalMessaging;
-		};
 		4C10B18323176D250099396B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D221A088169C9E5E00537ABF;
 			remoteInfo = Signal;
+		};
+		725465652BA03FEF00EABFD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9C5C896289451B900548EEE;
+			remoteInfo = SignalServiceKit;
+		};
+		725465672BA03FF800EABFD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9C5C896289451B900548EEE;
+			remoteInfo = SignalServiceKit;
+		};
+		725465692BA03FFF00EABFD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9C5C896289451B900548EEE;
+			remoteInfo = SignalServiceKit;
+		};
+		7254656B2BA0401700EABFD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9C5C896289451B900548EEE;
+			remoteInfo = SignalServiceKit;
+		};
+		7254656D2BA0401E00EABFD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9C5C896289451B900548EEE;
+			remoteInfo = SignalServiceKit;
 		};
 		B6AFCEBA19A93DA60098CFCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -11065,7 +11058,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				342FFEA0272459F8000AC89F /* PBXTargetDependency */,
+				7254656C2BA0401700EABFD2 /* PBXTargetDependency */,
 			);
 			name = SignalNSE;
 			productName = SignalNSE;
@@ -11085,7 +11078,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				34A954CD271B4C3A00B05242 /* PBXTargetDependency */,
+				7254656E2BA0401E00EABFD2 /* PBXTargetDependency */,
 			);
 			name = SignalUI;
 			productName = SignalUI;
@@ -11124,8 +11117,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				725465682BA03FF800EABFD2 /* PBXTargetDependency */,
 				34A954D1271B4D3C00B05242 /* PBXTargetDependency */,
-				34480B3A1FD0950000BC14EF /* PBXTargetDependency */,
 			);
 			name = SignalShareExtension;
 			productName = SignalShareExtension;
@@ -11165,7 +11158,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				4C10B18023176D250099396B /* PBXTargetDependency */,
+				725465662BA03FEF00EABFD2 /* PBXTargetDependency */,
 				4C10B18223176D250099396B /* PBXTargetDependency */,
 			);
 			name = SignalPerformanceTests;
@@ -11190,7 +11183,6 @@
 			);
 			dependencies = (
 				453518711FC635DD00210559 /* PBXTargetDependency */,
-				453518981FC63DBF00210559 /* PBXTargetDependency */,
 				34A954BC271A471300B05242 /* PBXTargetDependency */,
 				342FFE8E27245851000AC89F /* PBXTargetDependency */,
 				F9C5C8A9289451B900548EEE /* PBXTargetDependency */,
@@ -11213,7 +11205,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				3478506E1FD9CFF4007B8332 /* PBXTargetDependency */,
+				7254656A2BA03FFF00EABFD2 /* PBXTargetDependency */,
 				B6AFCEBB19A93DA60098CFCB /* PBXTargetDependency */,
 			);
 			name = SignalTests;
@@ -14270,22 +14262,6 @@
 			target = 342FFE8727245850000AC89F /* SignalNSE */;
 			targetProxy = 342FFE8D27245851000AC89F /* PBXContainerItemProxy */;
 		};
-		342FFEA0272459F8000AC89F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			platformFilter = ios;
-			target = 453518911FC63DBF00210559 /* SignalMessaging */;
-			targetProxy = 342FFE9F272459F8000AC89F /* PBXContainerItemProxy */;
-		};
-		34480B3A1FD0950000BC14EF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 453518911FC63DBF00210559 /* SignalMessaging */;
-			targetProxy = 34480B391FD0950000BC14EF /* PBXContainerItemProxy */;
-		};
-		3478506E1FD9CFF4007B8332 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 453518911FC63DBF00210559 /* SignalMessaging */;
-			targetProxy = 3478506D1FD9CFF4007B8332 /* PBXContainerItemProxy */;
-		};
 		34A954B4271A471300B05242 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 34A954A7271A471200B05242 /* SignalUI */;
@@ -14301,11 +14277,6 @@
 			target = 34A954A7271A471200B05242 /* SignalUI */;
 			targetProxy = 34A954BB271A471300B05242 /* PBXContainerItemProxy */;
 		};
-		34A954CD271B4C3A00B05242 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 453518911FC63DBF00210559 /* SignalMessaging */;
-			targetProxy = 34A954CC271B4C3A00B05242 /* PBXContainerItemProxy */;
-		};
 		34A954D1271B4D3C00B05242 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 34A954A7271A471200B05242 /* SignalUI */;
@@ -14316,20 +14287,35 @@
 			target = 453518671FC635DD00210559 /* SignalShareExtension */;
 			targetProxy = 453518701FC635DD00210559 /* PBXContainerItemProxy */;
 		};
-		453518981FC63DBF00210559 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 453518911FC63DBF00210559 /* SignalMessaging */;
-			targetProxy = 453518971FC63DBF00210559 /* PBXContainerItemProxy */;
-		};
-		4C10B18023176D250099396B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 453518911FC63DBF00210559 /* SignalMessaging */;
-			targetProxy = 4C10B18123176D250099396B /* PBXContainerItemProxy */;
-		};
 		4C10B18223176D250099396B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D221A088169C9E5E00537ABF /* Signal */;
 			targetProxy = 4C10B18323176D250099396B /* PBXContainerItemProxy */;
+		};
+		725465662BA03FEF00EABFD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9C5C896289451B900548EEE /* SignalServiceKit */;
+			targetProxy = 725465652BA03FEF00EABFD2 /* PBXContainerItemProxy */;
+		};
+		725465682BA03FF800EABFD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9C5C896289451B900548EEE /* SignalServiceKit */;
+			targetProxy = 725465672BA03FF800EABFD2 /* PBXContainerItemProxy */;
+		};
+		7254656A2BA03FFF00EABFD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9C5C896289451B900548EEE /* SignalServiceKit */;
+			targetProxy = 725465692BA03FFF00EABFD2 /* PBXContainerItemProxy */;
+		};
+		7254656C2BA0401700EABFD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9C5C896289451B900548EEE /* SignalServiceKit */;
+			targetProxy = 7254656B2BA0401700EABFD2 /* PBXContainerItemProxy */;
+		};
+		7254656E2BA0401E00EABFD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9C5C896289451B900548EEE /* SignalServiceKit */;
+			targetProxy = 7254656D2BA0401E00EABFD2 /* PBXContainerItemProxy */;
 		};
 		B6AFCEBB19A93DA60098CFCB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
