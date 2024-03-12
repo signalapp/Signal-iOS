@@ -188,7 +188,8 @@ private struct ServerChallengePayload: Decodable {
     let options: [Options]
 
     enum Options: String, Decodable {
-        case recaptcha
+        case recaptcha // deprecated for removal in 90 days
+        case captcha
         case pushChallenge
         case unrecognized
 
@@ -243,7 +244,7 @@ extension SpamChallengeResolver {
                 }
                 self.recheckChallenges()
 
-            } else if payload.options.contains(.recaptcha) {
+            } else if payload.options.contains(.captcha) || payload.options.contains(.recaptcha) {
                 Logger.info("Registering captcha challenge")
 
                 let challenge = CaptchaChallenge(tokenIn: payload.token, expiry: retryAfter)

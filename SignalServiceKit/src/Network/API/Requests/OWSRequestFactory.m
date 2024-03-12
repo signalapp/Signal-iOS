@@ -374,7 +374,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/challenge"]
                               method:@"PUT"
-                          parameters:@{ @"type" : @"recaptcha", @"token" : serverToken, @"captcha" : captchaToken }];
+                          parameters:@{ @"type" : @"captcha", @"token" : serverToken, @"captcha" : captchaToken }];
 }
 
 @end
