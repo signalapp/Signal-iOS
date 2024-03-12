@@ -614,7 +614,6 @@
 		5033D46529D65099007FEADA /* ThreadAssociatedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46429D65098007FEADA /* ThreadAssociatedDataStore.swift */; };
 		5033D46729D76BD0007FEADA /* LocalIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46629D76BD0007FEADA /* LocalIdentifiers.swift */; };
 		5033D46929D7951F007FEADA /* MainAppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46829D7951F007FEADA /* MainAppContext.swift */; };
-		5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46A29DB9F17007FEADA /* AppSetup.swift */; };
 		5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46F29DCACEF007FEADA /* UrlOpener.swift */; };
 		5033D47329DCB3FF007FEADA /* UrlOpenerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D47229DCB3FF007FEADA /* UrlOpenerTest.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
@@ -1096,6 +1095,7 @@
 		725465612BA033E200EABFD2 /* AppNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0A23CEBF4400B0E74B /* AppNotifications.swift */; };
 		725465622BA0348600EABFD2 /* GroupCallPeekClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */; };
 		725465632BA0348600EABFD2 /* LightweightGroupCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */; };
+		725465642BA0369D00EABFD2 /* AppSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46A29DB9F17007FEADA /* AppSetup.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -5844,14 +5844,6 @@
 			path = ConversationView;
 			sourceTree = "<group>";
 		};
-		3461293F1FD1D74B00532771 /* environment */ = {
-			isa = PBXGroup;
-			children = (
-				5033D46A29DB9F17007FEADA /* AppSetup.swift */,
-			);
-			path = environment;
-			sourceTree = "<group>";
-		};
 		3471210D25ED5F850037CD1F /* Payments */ = {
 			isa = PBXGroup;
 			children = (
@@ -6606,7 +6598,6 @@
 		453518931FC63DBF00210559 /* SignalMessaging */ = {
 			isa = PBXGroup;
 			children = (
-				3461293F1FD1D74B00532771 /* environment */,
 				453518951FC63DBF00210559 /* Info.plist */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
@@ -7789,6 +7780,7 @@
 		72C905882B9A275C00E586B8 /* Environment */ = {
 			isa = PBXGroup;
 			children = (
+				5033D46A29DB9F17007FEADA /* AppSetup.swift */,
 				4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */,
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
 				7634F08C2A21963600BB93D5 /* Sounds.swift */,
@@ -12324,7 +12316,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13096,6 +13087,7 @@
 				F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */,
 				725465612BA033E200EABFD2 /* AppNotifications.swift in Sources */,
 				F9C5CE52289453B400548EEE /* AppReadiness.swift in Sources */,
+				725465642BA0369D00EABFD2 /* AppSetup.swift in Sources */,
 				F972180628DE37A200113D9F /* AppVersion.swift in Sources */,
 				F9C5CE0A289453B400548EEE /* Array+SSK.swift in Sources */,
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
