@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 import LibSignalClient
 
 // Represents a proposed set of changes to a group.

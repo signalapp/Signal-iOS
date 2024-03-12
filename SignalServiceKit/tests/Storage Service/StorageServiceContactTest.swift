@@ -5,9 +5,7 @@
 
 import LibSignalClient
 import XCTest
-import SignalServiceKit
-
-@testable import SignalMessaging
+@testable import SignalServiceKit
 
 class StorageServiceContactTest: XCTestCase {
     func testRegistrationStatus() throws {

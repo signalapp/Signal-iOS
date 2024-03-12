@@ -7,7 +7,6 @@ import Contacts
 import Foundation
 import LibSignalClient
 import SignalCoreKit
-import SignalServiceKit
 
 enum ContactSyncAttachmentBuilder {
     static func buildAttachmentFile(

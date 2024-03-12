@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalServiceKit
 import SwiftProtobuf
 
 public class StorageServiceManagerImpl: NSObject, StorageServiceManager {

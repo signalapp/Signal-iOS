@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 
 /**
  * Utility class to simplify the transition when we start handling a previously-unknown storage

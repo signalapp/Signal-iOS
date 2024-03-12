@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 import LibSignalClient
 
 public struct ChangedGroupModel {

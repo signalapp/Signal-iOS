@@ -6,7 +6,6 @@
 import Contacts
 import Foundation
 import LibSignalClient
-import SignalServiceKit
 
 extension Notification.Name {
     public static let syncManagerConfigurationSyncDidComplete = Notification.Name("OWSSyncManagerConfigurationSyncDidCompleteNotification")
@@ -20,7 +19,7 @@ public class OWSSyncManager: NSObject, SyncManagerProtocolObjc {
     }
     private var isRequestInFlight: Bool = false
 
-    init(default: Void) {
+    public init(default: Void) {
         super.init()
         SwiftSingletons.register(self)
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
@@ -648,7 +647,7 @@ public extension OWSSyncManager {
             return owsFailDebug("Missing thread")
         }
 
-        let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType, transaction: transaction)
+        let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType.rawValue, transaction: transaction)
         SSKEnvironment.shared.messageSenderJobQueueRef.add(message: syncRequestMessage.asPreparer, transaction: transaction)
     }
 }

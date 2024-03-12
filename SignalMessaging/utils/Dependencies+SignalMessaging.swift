@@ -19,32 +19,3 @@ public extension NSObject {
         SMEnvironment.shared.lightweightGroupCallManagerRef
     }
 }
-
-// MARK: - Obj-C Dependencies
-
-public extension Dependencies {
-
-    var groupsV2Impl: GroupsV2Impl {
-        groupsV2 as! GroupsV2Impl
-    }
-
-    static var groupsV2Impl: GroupsV2Impl {
-        groupsV2 as! GroupsV2Impl
-    }
-
-    var groupV2UpdatesImpl: GroupV2UpdatesImpl {
-        groupV2Updates as! GroupV2UpdatesImpl
-    }
-
-    static var groupV2UpdatesImpl: GroupV2UpdatesImpl {
-        groupV2Updates as! GroupV2UpdatesImpl
-    }
-}
-
-// MARK: -
-
-public extension OWSSyncManager {
-    static var shared: SyncManagerProtocol {
-        SSKEnvironment.shared.syncManagerRef
-    }
-}

@@ -940,6 +940,22 @@ public extension NSObject {
 
 public extension Dependencies {
 
+    var groupsV2Impl: GroupsV2Impl {
+        groupsV2 as! GroupsV2Impl
+    }
+
+    static var groupsV2Impl: GroupsV2Impl {
+        groupsV2 as! GroupsV2Impl
+    }
+
+    var groupV2UpdatesImpl: GroupV2UpdatesImpl {
+        groupV2Updates as! GroupV2UpdatesImpl
+    }
+
+    static var groupV2UpdatesImpl: GroupV2UpdatesImpl {
+        groupV2Updates as! GroupV2UpdatesImpl
+    }
+
     var smJobQueues: SignalMessagingJobQueues {
         SSKEnvironment.shared.smJobQueuesRef
     }
@@ -1126,5 +1142,13 @@ public extension OWSDisappearingMessagesJob {
 public extension PhoneNumberUtil {
     static var shared: PhoneNumberUtil {
         SSKEnvironment.shared.phoneNumberUtilRef
+    }
+}
+
+// MARK: -
+
+public extension OWSSyncManager {
+    static var shared: SyncManagerProtocol {
+        SSKEnvironment.shared.syncManagerRef
     }
 }

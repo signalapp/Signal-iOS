@@ -153,14 +153,11 @@
 		3406D32E25DD80D600885B14 /* payments_spinner.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32A25DD80D600885B14 /* payments_spinner.json */; };
 		3406D33125DD832800885B14 /* payments_spinner_info_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32F25DD832700885B14 /* payments_spinner_info_dark.json */; };
 		3406D33225DD832800885B14 /* payments_spinner_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D33025DD832800885B14 /* payments_spinner_dark.json */; };
-		340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */; };
-		340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */; };
 		340D900024FEE6A9007B5504 /* GroupInviteLinksUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
 		3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */; };
 		3415217525B0CB31009F177F /* CVAttachmentProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */; };
 		34156C8B25A3B3D000556182 /* paymentSpinner.json in Resources */ = {isa = PBXBuildFile; fileRef = 34156C8A25A3B3D000556182 /* paymentSpinner.json */; };
-		341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */; };
 		341D392925472F3B00996E7B /* CVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D392825472F3B00996E7B /* CVViewState.swift */; };
 		3420CF6D26327B1A00E7DCB0 /* CVBackgroundContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420CF6C26327B1A00E7DCB0 /* CVBackgroundContainer.swift */; };
 		3420CF6F2638A01A00E7DCB0 /* CVWallpaperBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420CF6E2638A01A00E7DCB0 /* CVWallpaperBlurView.swift */; };
@@ -224,7 +221,6 @@
 		3457794326828A9A00732869 /* ConversationCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457794226828A9A00732869 /* ConversationCollectionView.swift */; };
 		3457811B23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457811A23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift */; };
 		345AE2B62317048300DB6225 /* GRDBFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345AE2B52317048200DB6225 /* GRDBFinderTest.swift */; };
-		345DE96023ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */; };
 		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
 		34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463532E256EA525003C5428 /* ConversationViewTest.swift */; };
 		34635332257549F2003C5428 /* CVReactionCountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34635331257549F1003C5428 /* CVReactionCountsView.swift */; };
@@ -391,8 +387,6 @@
 		34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* SplashViewController.swift */; };
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
 		34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
-		34BB3C5E23C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */; };
-		34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */; };
 		34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */; };
 		34BB78B9272C51E800DA0D04 /* MobileCoinHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B8272C51E800DA0D04 /* MobileCoinHelperTests.swift */; };
 		34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85F220E883200857249 /* ImageEditorModelTest.swift */; };
@@ -431,7 +425,6 @@
 		34EB0E722629DC2B00B62DC3 /* MessageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */; };
 		34ED55A123D0D59700446E39 /* NSItemProvider+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */; };
 		34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */; };
-		34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */; };
 		34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1071F26D005340053EF4D /* BatchUpdate.swift */; };
 		34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1072126D045290053EF4D /* BatchUpdateTest.swift */; };
 		34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */; };
@@ -655,7 +648,6 @@
 		505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */; };
 		505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */; };
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
-		505C2EDB29974D2000C23FB2 /* StorageServiceContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */; };
 		506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */; };
 		506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */; };
 		506695E529C29C2F00B6D8D0 /* RecipientDatabaseTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E429C29C2F00B6D8D0 /* RecipientDatabaseTable.swift */; };
@@ -673,8 +665,6 @@
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
 		507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */; };
 		508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */; };
-		5096BE652AF3514800668F9F /* ContactSyncAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */; };
-		5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE682AF37A9900668F9F /* ContactOutputStream.swift */; };
 		509913BE2913274100F34F8E /* PhoneNumberFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */; };
 		509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */; };
 		50A1CE3A2A00931900730C40 /* DebugLogger+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */; };
@@ -774,7 +764,6 @@
 		6619A1C72B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1C62B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift */; };
 		6619A1C92B2CC536004B38FE /* RestoredSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1C82B2CC536004B38FE /* RestoredSentMessageTranscript.swift */; };
 		6619A1CB2B2D176E004B38FE /* MessageBackupContactAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1CA2B2D176E004B38FE /* MessageBackupContactAddress.swift */; };
-		6619A1CD2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */; };
 		662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */; };
 		662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */; };
 		662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */; };
@@ -1091,6 +1080,20 @@
 		7254654A2BA01FCC00EABFD2 /* Stripe+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */; };
 		7254654B2BA0268B00EABFD2 /* StripeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F992ACC328F8C9D900906038 /* StripeTest.swift */; };
 		7254654D2BA026AF00EABFD2 /* SystemContactsDataProviderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */; };
+		725465512BA0282D00EABFD2 /* GroupsV2ProfileKeyUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */; };
+		725465522BA0282D00EABFD2 /* GroupsV2Impl+RestoreGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */; };
+		725465532BA0282D00EABFD2 /* StorageService+GroupsV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */; };
+		725465542BA0282D00EABFD2 /* GroupsV2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */; };
+		725465552BA0282D00EABFD2 /* GroupV2UpdatesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */; };
+		725465562BA0282D00EABFD2 /* GroupsV2OutgoingChangesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */; };
+		725465572BA0282D00EABFD2 /* GroupsV2IncomingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */; };
+		725465582BA0283B00EABFD2 /* StorageServiceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2622F269E900966CC2 /* StorageServiceManagerImpl.swift */; };
+		725465592BA0283B00EABFD2 /* StorageServiceUnknownFieldMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */; };
+		7254655A2BA0283B00EABFD2 /* StorageServiceProto+Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */; };
+		7254655B2BA028C400EABFD2 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
+		7254655C2BA0293900EABFD2 /* ContactSyncAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */; };
+		7254655D2BA0294100EABFD2 /* ContactOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE682AF37A9900668F9F /* ContactOutputStream.swift */; };
+		7254655E2BA032A900EABFD2 /* StorageServiceContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -1279,7 +1282,6 @@
 		88588D1D252D5D3D00405414 /* CallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1C252D5D3D00405414 /* CallMemberView.swift */; };
 		88588D26252E59CE00405414 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D25252E59CE00405414 /* CallService.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessagePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessagePresenter.swift */; };
-		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		885F3D3128AC33E700FE8AFE /* ContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885F3D3028AC33E700FE8AFE /* ContextMenuButton.swift */; };
 		8862921028355B8000AA0C3B /* MyStoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */; };
 		886292122835606D00AA0C3B /* MyStoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886292112835606D00AA0C3B /* MyStoryCell.swift */; };
@@ -1414,8 +1416,6 @@
 		88DF819D28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819C28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift */; };
 		88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF81A028E1538000F8BA80 /* ProxyLinkSheetViewController.swift */; };
 		88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */; };
-		88E34F2722F269E900966CC2 /* StorageServiceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2622F269E900966CC2 /* StorageServiceManagerImpl.swift */; };
-		88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */; };
 		88E728FF25F0241100A2E4A4 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */; };
 		88E8BEF028D53C3700509CE2 /* indeterminate_spinner_20.json in Resources */ = {isa = PBXBuildFile; fileRef = 88E8BEEF28D53C3700509CE2 /* indeterminate_spinner_20.json */; };
 		88EF42E525F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EF42E425F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift */; };
@@ -5874,16 +5874,6 @@
 			path = environment;
 			sourceTree = "<group>";
 		};
-		346129A11FD1F09100532771 /* contacts */ = {
-			isa = PBXGroup;
-			children = (
-				5096BE682AF37A9900668F9F /* ContactOutputStream.swift */,
-				5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */,
-				885C354F2370DFD50004BA35 /* OWSSyncManager.swift */,
-			);
-			path = contacts;
-			sourceTree = "<group>";
-		};
 		3471210D25ED5F850037CD1F /* Payments */ = {
 			isa = PBXGroup;
 			children = (
@@ -6494,20 +6484,6 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
-		34BB3C5723C6644B001651FC /* groups */ = {
-			isa = PBXGroup;
-			children = (
-				341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */,
-				34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */,
-				34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */,
-				34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */,
-				345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */,
-				340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */,
-				340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */,
-			);
-			path = groups;
-			sourceTree = "<group>";
-		};
 		34BBC85E220E883200857249 /* ImageEditor */ = {
 			isa = PBXGroup;
 			children = (
@@ -6653,12 +6629,8 @@
 			isa = PBXGroup;
 			children = (
 				32525F9327C74AC50099E801 /* calls */,
-				346129A11FD1F09100532771 /* contacts */,
 				3461293F1FD1D74B00532771 /* environment */,
-				34BB3C5723C6644B001651FC /* groups */,
 				88D23D0823CEBF4400B0E74B /* Notifications */,
-				88E34F2522F269B600966CC2 /* Storage Service */,
-				F9C612B5284E46A300B2199A /* test */,
 				34480B471FD0A60200BC14EF /* utils */,
 				453518951FC63DBF00210559 /* Info.plist */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
@@ -6969,6 +6941,7 @@
 			isa = PBXGroup;
 			children = (
 				50B6BCB32AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift */,
+				503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -7799,6 +7772,14 @@
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 			);
 			path = Subscriptions;
+			sourceTree = "<group>";
+		};
+		7254655F2BA032C600EABFD2 /* Storage Service */ = {
+			isa = PBXGroup;
+			children = (
+				505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */,
+			);
+			path = "Storage Service";
 			sourceTree = "<group>";
 		};
 		7255A4C32B98D5A800E95368 /* Attachments */ = {
@@ -9764,6 +9745,7 @@
 				6673FF6A2978B5B900F96CFD /* SecureValueRecovery */,
 				F9C5CB98289453B200548EEE /* Security */,
 				F9C5CA2F289453B100548EEE /* Storage */,
+				88E34F2522F269B600966CC2 /* Storage Service */,
 				7255A4C52B98DA2200E95368 /* Stories */,
 				D91A39E62AE2F42000F57A61 /* Subscriptions */,
 				F9C5CB82289453B200548EEE /* TestUtils */,
@@ -9804,6 +9786,7 @@
 				66C2B1422A12E043008DDE72 /* SecureValueRecovery */,
 				F94261CB289B1B5300460798 /* Security */,
 				F94261D7289B1B5400460798 /* Storage */,
+				7254655F2BA032C600EABFD2 /* Storage Service */,
 				884BF73A28D37D5F00D94636 /* Stories */,
 				7254654E2BA026E700EABFD2 /* Subscriptions */,
 				F945FE4E2984820B00C835C7 /* TestUtils */,
@@ -10222,7 +10205,9 @@
 				F9C5C9E2289453B100548EEE /* Contact.h */,
 				F9C5C9CD289453B100548EEE /* Contact.m */,
 				F9C5C9FE289453B100548EEE /* Contact.swift */,
+				5096BE682AF37A9900668F9F /* ContactOutputStream.swift */,
 				342FFE822721D4B6000AC89F /* ContactsMaps.swift */,
+				5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */,
 				F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */,
 				502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */,
 				50A40ED22B88005A0060C5A5 /* DisplayName.swift */,
@@ -10235,6 +10220,7 @@
 				F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */,
 				F9C5C9F1289453B100548EEE /* OWSDisappearingMessagesConfiguration.m */,
 				F9C5C9F4289453B100548EEE /* OWSDisappearingMessagesConfiguration.swift */,
+				885C354F2370DFD50004BA35 /* OWSSyncManager.swift */,
 				F9C5C9F5289453B100548EEE /* PhoneNumber.h */,
 				F9C5C9D4289453B100548EEE /* PhoneNumber.m */,
 				5033D46229D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift */,
@@ -10885,6 +10871,11 @@
 				F9C5CBA4289453B200548EEE /* GroupMembership.swift */,
 				F9C5CBAA289453B200548EEE /* GroupsV2.swift */,
 				347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */,
+				341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */,
+				34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */,
+				34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */,
+				34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */,
+				345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */,
 				3456A73123D63EBE00947219 /* GroupsV2Protos.swift */,
 				34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */,
 				D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */,
@@ -10892,7 +10883,9 @@
 				662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */,
 				34BB3C5B23C6644B001651FC /* GroupV2Params.swift */,
 				34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */,
+				340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */,
 				F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */,
+				340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */,
 				D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */,
 				F9C5CBA6289453B200548EEE /* TSGroupModel.h */,
 				F9C5CBA8289453B200548EEE /* TSGroupModel.m */,
@@ -10901,15 +10894,6 @@
 			);
 			name = groups;
 			path = src/groups;
-			sourceTree = "<group>";
-		};
-		F9C612B5284E46A300B2199A /* test */ = {
-			isa = PBXGroup;
-			children = (
-				505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */,
-				503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */,
-			);
-			path = test;
 			sourceTree = "<group>";
 		};
 		F9C9610829A90FF4001E4A09 /* API */ = {
@@ -12364,23 +12348,10 @@
 			files = (
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
-				5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */,
-				5096BE652AF3514800668F9F /* ContactSyncAttachmentBuilder.swift in Sources */,
 				3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */,
 				D95777BC2B46452100CFE3AE /* GroupCallPeekClient.swift in Sources */,
-				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
-				34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */,
-				34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */,
-				34BB3C5E23C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift in Sources */,
-				345DE96023ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift in Sources */,
-				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
-				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,
 				7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */,
-				340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */,
-				88E34F2722F269E900966CC2 /* StorageServiceManagerImpl.swift in Sources */,
-				88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */,
-				6619A1CD2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -13124,7 +13095,6 @@
 				4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest.swift in Sources */,
 				F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */,
 				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
-				505C2EDB29974D2000C23FB2 /* StorageServiceContactTest.swift in Sources */,
 				8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */,
 				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
 				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
@@ -13254,8 +13224,10 @@
 				5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */,
 				66C2B1542A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift in Sources */,
 				506A99D42B86B39F00E3C753 /* ContactManager.swift in Sources */,
+				7254655D2BA0294100EABFD2 /* ContactOutputStream.swift in Sources */,
 				F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */,
 				7254651B2BA00F8D00EABFD2 /* ContactsMaps.swift in Sources */,
+				7254655C2BA0293900EABFD2 /* ContactSyncAttachmentBuilder.swift in Sources */,
 				F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */,
 				F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */,
 				F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */,
@@ -13365,8 +13337,13 @@
 				F9C5CC98289453B300548EEE /* GroupsProto.swift in Sources */,
 				F9C5CE78289453B400548EEE /* GroupsV2.swift in Sources */,
 				725465202BA016A200EABFD2 /* GroupsV2AvatarDownloadOperation.swift in Sources */,
+				725465522BA0282D00EABFD2 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
+				725465542BA0282D00EABFD2 /* GroupsV2Impl.swift in Sources */,
+				725465572BA0282D00EABFD2 /* GroupsV2IncomingChanges.swift in Sources */,
 				F9C5CDA1289453B400548EEE /* GroupsV2MessageJobFinder.swift in Sources */,
 				F9C5CDA2289453B400548EEE /* GroupsV2MessageProcessor.swift in Sources */,
+				725465562BA0282D00EABFD2 /* GroupsV2OutgoingChangesImpl.swift in Sources */,
+				725465512BA0282D00EABFD2 /* GroupsV2ProfileKeyUpdater.swift in Sources */,
 				724D47BA2B97C51D001BE973 /* GroupsV2Protos.swift in Sources */,
 				724D47BD2B97C5B9001BE973 /* GroupsV2Utils.swift in Sources */,
 				D99A0F6229F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift in Sources */,
@@ -13375,6 +13352,7 @@
 				667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */,
 				724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */,
 				724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */,
+				725465552BA0282D00EABFD2 /* GroupV2UpdatesImpl.swift in Sources */,
 				72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */,
 				F9C5CD94289453B300548EEE /* HTMLMetadata.swift in Sources */,
 				F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */,
@@ -13658,6 +13636,7 @@
 				F9C5CBB8289453B300548EEE /* OWSSyncContactsMessage.swift in Sources */,
 				F9C5CBC0289453B300548EEE /* OWSSyncFetchLatestMessage.m in Sources */,
 				F9C5CBBB289453B300548EEE /* OWSSyncKeysMessage.m in Sources */,
+				7254655B2BA028C400EABFD2 /* OWSSyncManager.swift in Sources */,
 				F9C5CBAF289453B300548EEE /* OWSSyncMessageRequestResponseMessage.m in Sources */,
 				F9C5CBB1289453B300548EEE /* OWSSyncRequestMessage.m in Sources */,
 				D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */,
@@ -13896,9 +13875,13 @@
 				F9C5CC17289453B300548EEE /* StickerPack.m in Sources */,
 				F9479EF8293D212C003B3503 /* StickerPackInfo.swift in Sources */,
 				F9C5CD30289453B300548EEE /* StorageCoordinator.m in Sources */,
+				725465532BA0282D00EABFD2 /* StorageService+GroupsV2.swift in Sources */,
 				F9C5CCA3289453B300548EEE /* StorageService.pb.swift in Sources */,
 				F9C5CDE4289453B400548EEE /* StorageService.swift in Sources */,
+				725465582BA0283B00EABFD2 /* StorageServiceManagerImpl.swift in Sources */,
+				7254655A2BA0283B00EABFD2 /* StorageServiceProto+Sync.swift in Sources */,
 				F9C5CC92289453B300548EEE /* StorageServiceProto.swift in Sources */,
+				725465592BA0283B00EABFD2 /* StorageServiceUnknownFieldMigrator.swift in Sources */,
 				667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */,
 				66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */,
 				F9C5CC59289453B300548EEE /* StoryFinder.swift in Sources */,
@@ -14269,6 +14252,7 @@
 				F9426270289B1B5500460798 /* SSKSwiftTests.swift in Sources */,
 				F942628D289B1B5600460798 /* StickerManagerTest.swift in Sources */,
 				F942628E289B1B5600460798 /* StickerPackInfoTest.swift in Sources */,
+				7254655E2BA032A900EABFD2 /* StorageServiceContactTest.swift in Sources */,
 				884BF73E28D37D5F00D94636 /* StoryManagerTest.swift in Sources */,
 				F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */,
 				7254654B2BA0268B00EABFD2 /* StripeTest.swift in Sources */,

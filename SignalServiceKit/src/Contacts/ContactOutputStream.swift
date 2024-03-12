@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalServiceKit
 
 final class ContactOutputStream: OWSChunkedOutputStream {
     func writeContact(

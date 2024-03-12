@@ -6,7 +6,6 @@
 import Foundation
 import LibSignalClient
 import SwiftProtobuf
-import SignalServiceKit
 
 // MARK: - Record Updater Protocol
 
