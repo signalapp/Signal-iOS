@@ -58,7 +58,7 @@ public enum SVR {
             case .storageServiceRecord(let identifier):
                 return "Item_\(identifier.data.base64EncodedString())"
             case .backupKey:
-                return "Backup"
+                return "20231003_Signal_Backups_GenerateBackupKey"
             }
         }
 

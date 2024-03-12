@@ -1479,6 +1479,8 @@
 		C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */; };
 		C1939F6F2A844E4D003BAEF0 /* SignalProtocolStoreMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */; };
 		C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */; };
+		C1A0F79D2B9F57340009DC0D /* MessageBackupKeyMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0F79C2B9F57340009DC0D /* MessageBackupKeyMaterial.swift */; };
+		C1A0F79F2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1CD0E362A6B0BC900307F1A /* SignalPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */; };
 		C1CD0E382A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E372A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift */; };
@@ -4262,6 +4264,8 @@
 		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
 		C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
 		C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStore.swift; sourceTree = "<group>"; };
+		C1A0F79C2B9F57340009DC0D /* MessageBackupKeyMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupKeyMaterial.swift; sourceTree = "<group>"; };
+		C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupKeyMaterialImpl.swift; sourceTree = "<group>"; };
 		C1BD5FA792ACABB4855877BD /* Pods-SignalUI.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.app store release.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.app store release.xcconfig"; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
 		C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalPreKeyStore.swift; sourceTree = "<group>"; };
@@ -5526,7 +5530,6 @@
 				55B305CB99EC1478F69D91CF /* Pods-SignalUITests.profiling.xcconfig */,
 				94A685625E25E6F3EE3CC812 /* Pods-SignalUITests.testable release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -7164,6 +7167,8 @@
 				66CD25572B0685CF00139E17 /* Archivers */,
 				66CD25732B08079C00139E17 /* FileStreams */,
 				66CD25902B0EC20800139E17 /* MessageBackupConstants.swift */,
+				C1A0F79C2B9F57340009DC0D /* MessageBackupKeyMaterial.swift */,
+				C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */,
 				665C0D5F2ADF57D000539A37 /* MessageBackupManager+Shims.swift */,
 				665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */,
 				665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */,
@@ -13290,6 +13295,8 @@
 				662590CD2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift in Sources */,
 				66CD258D2B0EB3A700139E17 /* MessageBackupInteractionArchiver.swift in Sources */,
 				662590CF2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift in Sources */,
+				C1A0F79D2B9F57340009DC0D /* MessageBackupKeyMaterial.swift in Sources */,
+				C1A0F79F2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift in Sources */,
 				66CD25792B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift in Sources */,
 				665C0D602ADF57D000539A37 /* MessageBackupManager+Shims.swift in Sources */,
 				665C0D5C2ADF538100539A37 /* MessageBackupManager.swift in Sources */,
