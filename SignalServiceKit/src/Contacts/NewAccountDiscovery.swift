@@ -5,7 +5,6 @@
 
 import Foundation
 import SignalCoreKit
-import SignalServiceKit
 
 public enum NewAccountDiscovery {
     public static func postNotification(for recipient: SignalRecipient, tx: SDSAnyWriteTransaction) {

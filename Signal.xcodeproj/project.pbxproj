@@ -564,7 +564,6 @@
 		4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5250D321E7C51900CE3D95 /* PhoneNumberValidatorTest.swift */; };
 		4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C63CBFF210A620B003AE45C /* SignalTSan.supp */; };
 		4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68FDAD2385F5A4002576B1 /* DebugUIDataStoreViewController.swift */; };
-		4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */; };
 		4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */; };
 		4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
 		4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */; };
@@ -1069,6 +1068,7 @@
 		725464EF2B9FAA9400EABFD2 /* OWSGroupSyncProcessingJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */; };
 		725464F62B9FAC7600EABFD2 /* CGPointExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */; };
 		725465162BA00BE400EABFD2 /* NameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9B29DF5CB100F9C072 /* NameResolver.swift */; };
+		725465172BA00CDB00EABFD2 /* NewAccountDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -5882,7 +5882,6 @@
 				5096BE682AF37A9900668F9F /* ContactOutputStream.swift */,
 				342FFE822721D4B6000AC89F /* ContactsMaps.swift */,
 				5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */,
-				4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */,
 				3498A0A524DC81E100CA492C /* OWSContactsManager.swift */,
 				885C354F2370DFD50004BA35 /* OWSSyncManager.swift */,
 				50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */,
@@ -10259,6 +10258,7 @@
 				5003BB42299F034D0037159B /* E164.swift */,
 				5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */,
 				50086B9B29DF5CB100F9C072 /* NameResolver.swift */,
+				4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */,
 				F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */,
 				F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */,
 				F9C5C9F1289453B100548EEE /* OWSDisappearingMessagesConfiguration.m */,
@@ -12407,7 +12407,6 @@
 				725464EE2B9FAA8800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */,
 				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
 				764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */,
-				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
 				3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */,
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,
 				3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */,
@@ -13565,6 +13564,7 @@
 				725465162BA00BE400EABFD2 /* NameResolver.swift in Sources */,
 				F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */,
 				F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */,
+				725465172BA00CDB00EABFD2 /* NewAccountDiscovery.swift in Sources */,
 				F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */,
 				72C9058A2B9A293300E586B8 /* NoopCallMessageHandler.swift in Sources */,
 				F9C5CE62289453B400548EEE /* NoopNotificationsManager.swift in Sources */,
