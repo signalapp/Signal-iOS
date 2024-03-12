@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-
 public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, PaymentsCurrencies {
 
     private var refreshEvent: RefreshEvent?

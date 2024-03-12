@@ -264,7 +264,6 @@
 		3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */; };
 		347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */; };
 		347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */; };
-		3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */; };
 		3478504C1FD7496D007B8332 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850561FD86544007B8332 /* SAEFailedViewController.swift */; };
 		34798A8725AF965300EC89B4 /* ProfileBioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34798A8625AF965300EC89B4 /* ProfileBioViewController.swift */; };
@@ -1070,6 +1069,7 @@
 		7254651B2BA00F8D00EABFD2 /* ContactsMaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE822721D4B6000AC89F /* ContactsMaps.swift */; };
 		7254651D2BA00FD200EABFD2 /* LocalUserDisplayMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */; };
 		7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FC7EEB265834F30046707A /* AvatarBuilder.swift */; };
+		7254651F2BA014FC00EABFD2 /* PaymentsCurrenciesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -5900,7 +5900,6 @@
 		3474C56526111605006723D2 /* Payments */ = {
 			isa = PBXGroup;
 			children = (
-				3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */,
 				3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */,
 			);
 			path = Payments;
@@ -10547,6 +10546,7 @@
 				F9C5CAAF289453B200548EEE /* PaymentFinder.swift */,
 				F9C5CAAC289453B200548EEE /* Payments+SSK.swift */,
 				F9C5CAA3289453B200548EEE /* PaymentsCurrencies.swift */,
+				3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */,
 				F9C5CAA0289453B200548EEE /* PaymentsEvents.swift */,
 				F9C5CAA7289453B200548EEE /* PaymentsHelper.swift */,
 				F9C5CAAA289453B200548EEE /* TSPaymentModel+SDS.swift */,
@@ -12401,7 +12401,6 @@
 				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
 				764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */,
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,
-				3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */,
 				3465F4DB27287859001663AF /* PaymentsHelperImpl.swift in Sources */,
 				D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */,
 				D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */,
@@ -13723,6 +13722,7 @@
 				F9C5CD89289453B300548EEE /* PaymentFinder.swift in Sources */,
 				F9C5CD86289453B300548EEE /* Payments+SSK.swift in Sources */,
 				F9C5CD7D289453B300548EEE /* PaymentsCurrencies.swift in Sources */,
+				7254651F2BA014FC00EABFD2 /* PaymentsCurrenciesImpl.swift in Sources */,
 				F9C5CD7A289453B300548EEE /* PaymentsEvents.swift in Sources */,
 				F9C5CD81289453B300548EEE /* PaymentsHelper.swift in Sources */,
 				F9C5CD78289453B300548EEE /* PendingReadReceiptRecord.swift in Sources */,
