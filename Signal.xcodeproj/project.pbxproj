@@ -598,7 +598,6 @@
 		500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */; };
 		5008672F2B91432F00E34B5F /* SearchableNameIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5008672E2B91432F00E34B5F /* SearchableNameIndexer.swift */; };
 		50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */; };
-		50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9B29DF5CB100F9C072 /* NameResolver.swift */; };
 		5008FEBC2B1811A0004E73FD /* JobQueueRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */; };
 		500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE042A4B68E200371F05 /* WallpaperStore.swift */; };
 		500AEE072A4DF48700371F05 /* ChatColorSettingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */; };
@@ -1069,6 +1068,7 @@
 		725464EE2B9FAA8800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
 		725464EF2B9FAA9400EABFD2 /* OWSGroupSyncProcessingJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */; };
 		725464F62B9FAC7600EABFD2 /* CGPointExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */; };
+		725465162BA00BE400EABFD2 /* NameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9B29DF5CB100F9C072 /* NameResolver.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -5882,7 +5882,6 @@
 				5096BE682AF37A9900668F9F /* ContactOutputStream.swift */,
 				342FFE822721D4B6000AC89F /* ContactsMaps.swift */,
 				5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */,
-				50086B9B29DF5CB100F9C072 /* NameResolver.swift */,
 				4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */,
 				3498A0A524DC81E100CA492C /* OWSContactsManager.swift */,
 				885C354F2370DFD50004BA35 /* OWSSyncManager.swift */,
@@ -10259,6 +10258,7 @@
 				50A40ED22B88005A0060C5A5 /* DisplayName.swift */,
 				5003BB42299F034D0037159B /* E164.swift */,
 				5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */,
+				50086B9B29DF5CB100F9C072 /* NameResolver.swift */,
 				F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */,
 				F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */,
 				F9C5C9F1289453B100548EEE /* OWSDisappearingMessagesConfiguration.m */,
@@ -12407,7 +12407,6 @@
 				725464EE2B9FAA8800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */,
 				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
 				764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */,
-				50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */,
 				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
 				3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */,
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,
@@ -13563,6 +13562,7 @@
 				D990CACA2B4CCB9D000A99A2 /* MockUsernameLinkManager.swift in Sources */,
 				D990CAC82B4CCB8F000A99A2 /* MockUsernameLookupManager.swift in Sources */,
 				F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */,
+				725465162BA00BE400EABFD2 /* NameResolver.swift in Sources */,
 				F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */,
 				F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */,
 				F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */,

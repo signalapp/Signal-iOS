@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 
 /// A transaction-scoped, address-to-user-visible-name resolver.
 ///
