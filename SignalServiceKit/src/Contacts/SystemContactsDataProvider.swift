@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 
 /// Provides data on system contacts.
 ///

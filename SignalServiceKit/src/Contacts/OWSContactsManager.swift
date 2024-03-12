@@ -7,7 +7,6 @@ import Contacts
 import Foundation
 import LibSignalClient
 import SignalCoreKit
-import SignalServiceKit
 
 extension Notification.Name {
     public static let OWSContactsManagerSignalAccountsDidChange = Notification.Name("OWSContactsManagerSignalAccountsDidChangeNotification")
@@ -29,7 +28,7 @@ public enum ContactAuthorizationForSharing {
 
 @objc
 public class OWSContactsManager: NSObject, ContactsManagerProtocol {
-    let isSetup: AtomicBool = AtomicBool(false, lock: .init())
+    public let isSetup: AtomicBool = AtomicBool(false, lock: .init())
     let swiftValues: OWSContactsManagerSwiftValues
     let systemContactsFetcher: SystemContactsFetcher
     let keyValueStore: SDSKeyValueStore
@@ -72,7 +71,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     /// Otherwise, it's value is undefined.
     public private(set) var hasLoadedSystemContacts: Bool = false
 
-    init(swiftValues: OWSContactsManagerSwiftValues) {
+    public init(swiftValues: OWSContactsManagerSwiftValues) {
         keyValueStore = SDSKeyValueStore(collection: "OWSContactsManagerCollection")
         systemContactsFetcher = SystemContactsFetcher()
         self.swiftValues = swiftValues
@@ -178,7 +177,7 @@ extension OWSContactsManager: SystemContactsFetcherDelegate {
 
 // MARK: - OWSContactsMangerSwiftValues
 
-class OWSContactsManagerSwiftValues {
+public class OWSContactsManagerSwiftValues {
     fileprivate let avatarBlurringCache = LowTrustCache()
     fileprivate let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
     fileprivate let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: AtomicLock())
@@ -193,7 +192,7 @@ class OWSContactsManagerSwiftValues {
 
     fileprivate let usernameLookupManager: UsernameLookupManager
 
-    init(usernameLookupManager: UsernameLookupManager) {
+    public init(usernameLookupManager: UsernameLookupManager) {
         self.usernameLookupManager = usernameLookupManager
     }
 
@@ -466,7 +465,7 @@ extension OWSContactsManager: ContactManager {
         }
     }
 
-    func blurAvatar(_ image: UIImage) -> UIImage? {
+    public func blurAvatar(_ image: UIImage) -> UIImage? {
         do {
             return try image.withGaussianBlur(radius: 16, resizeToMaxPixelDimension: 100)
         } catch {
@@ -876,7 +875,7 @@ extension OWSContactsManager: ContactManager {
         signalServiceAddressCache.updateRecipient(recipient, tx: tx)
     }
 
-    func didUpdateSignalAccounts(transaction: SDSAnyWriteTransaction) {
+    public func didUpdateSignalAccounts(transaction: SDSAnyWriteTransaction) {
         transaction.addTransactionFinalizationBlock(forKey: "OWSContactsManager.didUpdateSignalAccounts") { _ in
             self.didUpdateSignalAccounts(shouldClearCache: true, shouldNotify: true)
         }

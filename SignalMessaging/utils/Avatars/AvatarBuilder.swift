@@ -7,15 +7,6 @@ import Foundation
 import CommonCrypto
 import SignalServiceKit
 
-public enum LocalUserDisplayMode: UInt {
-    // We should use this value by default.
-    case asUser = 0
-    case noteToSelf
-    case asLocalUser
-}
-
-// MARK: -
-
 // AvatarBuilder has responsibility for building and caching contact and group avatars.
 //
 // It ensure that avatars update to reflect changes to any state that can affect avatars.

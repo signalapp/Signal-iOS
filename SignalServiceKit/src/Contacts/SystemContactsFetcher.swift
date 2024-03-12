@@ -6,7 +6,6 @@
 import Foundation
 import Contacts
 import ContactsUI
-import SignalServiceKit
 
 protocol ContactStoreAdaptee {
     var rawAuthorizationStatus: RawContactAuthorizationStatus { get }

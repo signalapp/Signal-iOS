@@ -5,9 +5,7 @@
 
 import Contacts
 import XCTest
-import SignalServiceKit
-
-@testable import SignalMessaging
+@testable import SignalServiceKit
 
 class SystemContactsDataProviderTest: SignalBaseTest {
 
