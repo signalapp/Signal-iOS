@@ -211,7 +211,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     if ([text isEqualToString:@""]) {
         return nil;
     }
-    NSString *regionCode = [[PhoneNumberUtil shared] getRegionCodeForCountryCode:@([callingCode integerValue])];
+    NSString *regionCode = [self.phoneNumberUtil getRegionCodeForCountryCode:@([callingCode integerValue])];
     if ([regionCode isEqual:NB_UNKNOWN_REGION]) {
         return [self tryParsePhoneNumberFromUserSpecifiedText:[callingCode stringByAppendingString:text]];
     }
@@ -557,11 +557,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 #pragma mark -
 
-- (NSURL *)toSystemDialerURL {
-    NSString *link = [NSString stringWithFormat:@"telprompt://%@", self.e164];
-    return [NSURL URLWithString:link];
-}
-
 - (NSString *)toE164 {
     return self.e164;
 }
@@ -572,7 +567,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 - (nullable NSString *)nationalNumber
 {
-    return [self.phoneNumberUtil nationalNumberFromPhoneNumber:self.nbPhoneNumber];
+    return [self.phoneNumberUtil nationalNumberWithPhoneNumber:self.nbPhoneNumber];
 }
 
 - (nullable NSString *)nationalNumberFormatted

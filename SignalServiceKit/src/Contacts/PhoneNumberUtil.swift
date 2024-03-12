@@ -5,6 +5,7 @@
 
 import Foundation
 import libPhoneNumber_iOS
+import SignalCoreKit
 
 @objc
 public class PhoneNumberUtilWrapper: NSObject {
@@ -165,36 +166,23 @@ fileprivate extension PhoneNumberUtilWrapper {
 
 // MARK: -
 
-@objc
 extension PhoneNumberUtil {
     private static let unfairLock = UnfairLock()
     private var unfairLock: UnfairLock { Self.unfairLock }
 
-    @objc(nationalNumberFromPhoneNumber:)
+    @objc
     public func nationalNumber(phoneNumber: NBPhoneNumber) -> String {
         return phoneNumberUtilWrapper.getNationalSignificantNumber(phoneNumber)
     }
 
-    @objc(callingCodeFromCountryCode:)
-    public static func callingCode(fromCountryCode countryCode: String) -> String? {
-        shared.callingCode(fromCountryCode: countryCode)
-    }
-
-    @objc(callingCodeFromCountryCode:)
     public func callingCode(fromCountryCode countryCode: String) -> String? {
         unfairLock.withLock {
             phoneNumberUtilWrapper.callingCode(fromCountryCode: countryCode)
         }
     }
 
-    @objc(countryCodesFromCallingCode:)
-    public static func countryCodes(fromCallingCode callingCode: String) -> [String] {
-        shared.countryCodes(fromCallingCode: callingCode)
-    }
-
     // Returns a list of country codes for a calling code in descending
     // order of population.
-    @objc(countryCodesFromCallingCode:)
     public func countryCodes(fromCallingCode callingCode: String) -> [String] {
         unfairLock.withLock {
             phoneNumberUtilWrapper.countryCodes(fromCallingCode: callingCode)
@@ -203,7 +191,7 @@ extension PhoneNumberUtil {
 
     /// Returns the most likely country code for a calling code based on population.
     /// If no country codes are found, returns the empty string.
-    @objc(probableCountryCodeForCallingCode:)
+    @objc
     public func probableCountryCode(forCallingCode callingCode: String) -> String {
         return countryCodes(fromCallingCode: callingCode).first ?? ""
     }
@@ -225,8 +213,8 @@ extension PhoneNumberUtil {
     }
 
     /// Get country codes from a search term.
-    @objc(countryCodesForSearchTerm:)
-    public class func countryCodes(forSearchTerm searchTerm: String?) -> [String] {
+    @objc
+    public func countryCodes(forSearchTerm searchTerm: String?) -> [String] {
         let cleanedSearch = (searchTerm ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
         let codes = NSLocale.isoCountryCodes.filter { countryCode in
@@ -237,24 +225,24 @@ extension PhoneNumberUtil {
             else {
                 return false
             }
-            let countryName = countryName(fromCountryCode: countryCode)
+            let countryName = Self.countryName(fromCountryCode: countryCode)
             return (
                 cleanedSearch.isEmpty ||
-                does(countryName, matchQuery: cleanedSearch) ||
-                does(countryCode, matchQuery: cleanedSearch) ||
+                Self.does(countryName, matchQuery: cleanedSearch) ||
+                Self.does(countryCode, matchQuery: cleanedSearch) ||
                 callingCode.contains(cleanedSearch)
             )
         }
 
         return codes.sorted { lhs, rhs in
-            let lhsCountry = countryName(fromCountryCode: lhs)
-            let rhsCountry = countryName(fromCountryCode: rhs)
+            let lhsCountry = Self.countryName(fromCountryCode: lhs)
+            let rhsCountry = Self.countryName(fromCountryCode: rhs)
             return lhsCountry.localizedCaseInsensitiveCompare(rhsCountry) == .orderedAscending
         }
     }
 
     /// Convert country code to country name.
-    @objc(countryNameFromCountryCode:)
+    @objc
     public class func countryName(fromCountryCode countryCode: String) -> String {
         lazy var unknownValue =  OWSLocalizedString(
             "UNKNOWN_VALUE",
@@ -280,12 +268,14 @@ extension PhoneNumberUtil {
         return unknownValue
     }
 
+    @objc
     public func format(_ phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
         try unfairLock.withLock {
             try phoneNumberUtilWrapper.format(phoneNumber: phoneNumber, numberFormat: numberFormat)
         }
     }
 
+    @objc
     public func parse(_ numberToParse: String, defaultRegion: String) throws -> NBPhoneNumber {
         try unfairLock.withLock {
             try phoneNumberUtilWrapper.parse(numberToParse, defaultRegion: defaultRegion)
@@ -298,24 +288,28 @@ extension PhoneNumberUtil {
         }
     }
 
+    @objc
     public func isPossibleNumber(_ number: NBPhoneNumber) -> Bool {
         unfairLock.withLock {
             phoneNumberUtilWrapper.isPossibleNumber(number)
         }
     }
 
+    @objc
     public func countryCodeByCarrier() -> String {
         unfairLock.withLock {
             phoneNumberUtilWrapper.countryCodeByCarrier()
         }
     }
 
+    @objc
     public func getRegionCodeForCountryCode(_ countryCallingCode: NSNumber) -> String? {
         unfairLock.withLock {
             phoneNumberUtilWrapper.getRegionCodeForCountryCode(countryCallingCode)
         }
     }
 
+    @objc
     public func isValidNumber(_ number: NBPhoneNumber) -> Bool {
         unfairLock.withLock {
             phoneNumberUtilWrapper.isValidNumber(number)

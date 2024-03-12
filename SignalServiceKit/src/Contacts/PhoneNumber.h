@@ -36,7 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
                                               withSpecifiedCountryCodeString:(NSString *)countryCodeString;
 + (NSString *)bestEffortLocalizedPhoneNumberWithE164:(NSString *)phoneNumber;
 
-- (NSURL *)toSystemDialerURL;
 - (NSString *)toE164;
 - (nullable NSNumber *)getCountryCode;
 @property (nonatomic, readonly, nullable) NSString *nationalNumber;

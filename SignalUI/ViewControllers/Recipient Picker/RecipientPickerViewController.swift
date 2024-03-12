@@ -1136,8 +1136,8 @@ struct PhoneNumberFinder {
 
     /// A list of all [+1, +20, ..., +N] known calling codes.
     static let validCallingCodes: [String] = {
-        Set(PhoneNumberUtil.countryCodes(forSearchTerm: nil).lazy.compactMap {
-            PhoneNumberUtil.callingCode(fromCountryCode: $0)
+        Set(NSObject.phoneNumberUtil.countryCodes(forSearchTerm: nil).lazy.compactMap {
+            NSObject.phoneNumberUtil.callingCode(fromCountryCode: $0)
         }).sorted()
     }()
 

@@ -58,7 +58,7 @@ public struct RegistrationCountryState: Equatable, Dependencies {
 
     public static func buildCountryStates(searchText: String?) -> [RegistrationCountryState] {
         let searchText = searchText?.strippedOrNil
-        let countryCodes: [String] = PhoneNumberUtil.countryCodes(forSearchTerm: searchText)
+        let countryCodes: [String] = NSObject.phoneNumberUtil.countryCodes(forSearchTerm: searchText)
         return RegistrationCountryState.buildCountryStates(countryCodes: countryCodes)
     }
 
@@ -68,7 +68,7 @@ public struct RegistrationCountryState: Equatable, Dependencies {
                 owsFailDebug("Invalid countryCode.")
                 return nil
             }
-            guard let callingCode = PhoneNumberUtil.callingCode(fromCountryCode: countryCode)?.strippedOrNil else {
+            guard let callingCode = NSObject.phoneNumberUtil.callingCode(fromCountryCode: countryCode)?.strippedOrNil else {
                 owsFailDebug("Invalid callingCode.")
                 return nil
             }
