@@ -123,11 +123,11 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     ) {
         switch type {
         case .local:
-            muteIndicatorImage.isHidden = !call.isOutgoingAudioMuted || isFullScreen
+            muteIndicatorCircleView.isHidden = !call.isOutgoingAudioMuted || isFullScreen
         case .remoteInGroup(let context):
-            muteIndicatorImage.isHidden = context == .speaker || remoteGroupMemberDeviceState?.audioMuted != true || isFullScreen
+            muteIndicatorCircleView.isHidden = context == .speaker || remoteGroupMemberDeviceState?.audioMuted != true || isFullScreen
         case .remoteInIndividual:
-            muteIndicatorImage.isHidden = true
+            muteIndicatorCircleView.isHidden = true
         }
     }
 
