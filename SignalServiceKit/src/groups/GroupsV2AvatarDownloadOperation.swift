@@ -4,9 +4,8 @@
 //
 
 import Foundation
-import SignalServiceKit
 
-class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
+public class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
 
     private let urlPath: String
     private let maxDownloadSize: UInt?
