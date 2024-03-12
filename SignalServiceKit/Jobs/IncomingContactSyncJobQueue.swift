@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-
 public extension Notification.Name {
     static let incomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")
 }
@@ -19,7 +17,7 @@ public class IncomingContactSyncJobQueue: NSObject {
         IncomingContactSyncJobRunnerFactory
     >
 
-    init(db: DB, reachabilityManager: SSKReachabilityManager) {
+    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: false,
             db: db,
@@ -30,7 +28,7 @@ public class IncomingContactSyncJobQueue: NSObject {
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
 
-    func start(appContext: AppContext) {
+    public func start(appContext: AppContext) {
         jobQueueRunner.start(shouldRestartExistingJobs: appContext.isMainApp)
     }
 
