@@ -137,12 +137,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessage builder];
 
+    BOOL shouldHaveProfileKey = NO;
+
     if (self.offerMessage) {
         [builder setOffer:self.offerMessage];
+        shouldHaveProfileKey = YES;
     }
 
     if (self.answerMessage) {
         [builder setAnswer:self.answerMessage];
+        shouldHaveProfileKey = YES;
     }
 
     if (self.iceUpdateMessages.count > 0) {
@@ -165,7 +169,9 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setDestinationDeviceID:self.destinationDeviceId.unsignedIntValue];
     }
 
-    [ProtoUtils addLocalProfileKeyIfNecessary:thread callMessageBuilder:builder transaction:transaction];
+    if (shouldHaveProfileKey) {
+        [ProtoUtils addLocalProfileKeyIfNecessary:thread callMessageBuilder:builder transaction:transaction];
+    }
 
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];

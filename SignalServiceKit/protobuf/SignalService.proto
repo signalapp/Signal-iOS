@@ -187,8 +187,6 @@ message CallMessage {
   repeated IceUpdate iceUpdate           = 3;
   reserved /* legacyHangup */              4;
   optional Busy      busy                = 5;
-  // Signal-iOS sends profile key with call messages
-  // for earlier discovery.
   optional bytes     profileKey          = 6;
   optional Hangup    hangup              = 7;
   reserved /* multiRing */                 8;

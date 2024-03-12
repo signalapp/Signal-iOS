@@ -735,8 +735,6 @@ struct SignalServiceProtos_CallMessage {
   /// Clears the value of `busy`. Subsequent reads from it will return its default value.
   mutating func clearBusy() {self._busy = nil}
 
-  /// Signal-iOS sends profile key with call messages
-  /// for earlier discovery.
   var profileKey: Data {
     get {return _profileKey ?? Data()}
     set {_profileKey = newValue}
