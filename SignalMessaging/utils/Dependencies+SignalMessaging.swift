@@ -11,14 +11,6 @@ import SignalServiceKit
 @objc
 public extension NSObject {
 
-    final var contactsManagerImpl: OWSContactsManager {
-        contactsManager as! OWSContactsManager
-    }
-
-    static var contactsManagerImpl: OWSContactsManager {
-        contactsManager as! OWSContactsManager
-    }
-
     var avatarBuilder: AvatarBuilder {
         SMEnvironment.shared.avatarBuilderRef
     }
@@ -47,14 +39,6 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-
-    var contactsManagerImpl: OWSContactsManager {
-        contactsManager as! OWSContactsManager
-    }
-
-    static var contactsManagerImpl: OWSContactsManager {
-        contactsManager as! OWSContactsManager
-    }
 
     var groupsV2Impl: GroupsV2Impl {
         groupsV2 as! GroupsV2Impl

@@ -863,6 +863,14 @@ public extension Dependencies {
 
 public extension NSObject {
 
+    final var contactsManagerImpl: OWSContactsManager {
+        contactsManager as! OWSContactsManager
+    }
+
+    static var contactsManagerImpl: OWSContactsManager {
+        contactsManager as! OWSContactsManager
+    }
+
     final var groupsV2: GroupsV2 {
         SSKEnvironment.shared.groupsV2Ref
     }
@@ -915,6 +923,14 @@ public extension NSObject {
 // MARK: - Swift-only Dependencies
 
 public extension Dependencies {
+
+    var contactsManagerImpl: OWSContactsManager {
+        contactsManager as! OWSContactsManager
+    }
+
+    static var contactsManagerImpl: OWSContactsManager {
+        contactsManager as! OWSContactsManager
+    }
 
     var preferences: Preferences {
         SSKEnvironment.shared.preferencesRef
