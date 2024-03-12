@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-
 public class SessionResetJobQueue {
     private let jobQueueRunner: JobQueueRunner<JobRecordFinderImpl<SessionResetJobRecord>, SessionResetJobRunnerFactory>
 
@@ -18,7 +16,7 @@ public class SessionResetJobQueue {
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
 
-    func start(appContext: AppContext) {
+    public func start(appContext: AppContext) {
         guard appContext.isMainApp else { return }
         jobQueueRunner.start(shouldRestartExistingJobs: true)
     }
