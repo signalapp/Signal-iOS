@@ -123,7 +123,7 @@ public class AppEnvironment: NSObject {
                 .startCleanupIfNecessary()
         }
 
-        // Hang certain singletons on SMEnvironment too.
-        SMEnvironment.shared.lightweightGroupCallManagerRef = callServiceRef
+        // Hang certain singletons on SSKEnvironment too.
+        SSKEnvironment.shared.lightweightGroupCallManagerRef = callServiceRef
     }
 }

@@ -226,9 +226,6 @@ public class AppSetup {
             messageSenderJobQueue: messageSenderJobQueue
         )
 
-        let smEnvironment = SMEnvironment()
-        SMEnvironment.setShared(smEnvironment)
-
         let sskEnvironment = SSKEnvironment(
             contactManager: contactManager,
             linkPreviewManager: linkPreviewManager,
@@ -305,7 +302,6 @@ public class AppSetup {
         return AppSetup.DatabaseContinuation(
             appContext: appContext,
             dependenciesBridge: dependenciesBridge,
-            smEnvironment: smEnvironment,
             sskEnvironment: sskEnvironment,
             backgroundTask: backgroundTask
         )
@@ -322,20 +318,17 @@ extension AppSetup {
     public class DatabaseContinuation {
         private let appContext: AppContext
         private let dependenciesBridge: DependenciesBridge
-        private let smEnvironment: SMEnvironment
         private let sskEnvironment: SSKEnvironment
         private let backgroundTask: OWSBackgroundTask
 
         fileprivate init(
             appContext: AppContext,
             dependenciesBridge: DependenciesBridge,
-            smEnvironment: SMEnvironment,
             sskEnvironment: SSKEnvironment,
             backgroundTask: OWSBackgroundTask
         ) {
             self.appContext = appContext
             self.dependenciesBridge = dependenciesBridge
-            self.smEnvironment = smEnvironment
             self.sskEnvironment = sskEnvironment
             self.backgroundTask = backgroundTask
         }

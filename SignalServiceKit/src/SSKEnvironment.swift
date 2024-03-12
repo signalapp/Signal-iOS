@@ -19,6 +19,9 @@ public class SSKEnvironment: NSObject {
         _shared = env
     }
 
+    // This property is configured after SSKEnvironment is created.
+    public var lightweightGroupCallManagerRef: LightweightGroupCallManager?
+
     #if TESTABLE_BUILD
     private(set) public var contactManagerRef: any ContactManager
     private(set) public var messageSenderRef: MessageSender

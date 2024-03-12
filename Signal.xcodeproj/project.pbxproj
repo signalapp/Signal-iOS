@@ -331,7 +331,6 @@
 		3497972025DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497971E25DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift */; };
 		3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497971F25DAA86100E99FA4 /* SendPaymentViewController.swift */; };
 		3497972325DAAE3800E99FA4 /* SendPaymentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497972225DAAE3800E99FA4 /* SendPaymentHelper.swift */; };
-		3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */; };
 		3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC882513896400B1F315 /* Dependencies+MainApp.swift */; };
 		3498AC902518E92B00B1F315 /* PaymentsHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */; };
 		3498AC912518E92B00B1F315 /* PaymentsHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */; };
@@ -1141,7 +1140,6 @@
 		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
 		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
 		7647A33C2A270348002EAC93 /* FingerprintScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */; };
-		7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7649813E2A2306DA00EC1287 /* SMEnvironment.swift */; };
 		764981452A23194F00EC1287 /* CVItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981442A23194F00EC1287 /* CVItemViewModel.swift */; };
 		764FE03F2A2EC2E2004D2804 /* UIViewController+Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */; };
 		764FE0412A2EF3A7004D2804 /* TextFieldFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */; };
@@ -2983,7 +2981,6 @@
 		3497971F25DAA86100E99FA4 /* SendPaymentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentViewController.swift; sourceTree = "<group>"; };
 		3497972225DAAE3800E99FA4 /* SendPaymentHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentHelper.swift; sourceTree = "<group>"; };
 		3498A0A524DC81E100CA492C /* OWSContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSContactsManager.swift; sourceTree = "<group>"; };
-		3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+SignalMessaging.swift"; sourceTree = "<group>"; };
 		3498AC882513896400B1F315 /* Dependencies+MainApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+MainApp.swift"; sourceTree = "<group>"; };
 		3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsHistoryViewController.swift; sourceTree = "<group>"; };
 		3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsHistory.swift; sourceTree = "<group>"; };
@@ -3865,7 +3862,6 @@
 		763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundMediaButton.swift; sourceTree = "<group>"; };
 		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
 		7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintScanViewController.swift; sourceTree = "<group>"; };
-		7649813E2A2306DA00EC1287 /* SMEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMEnvironment.swift; sourceTree = "<group>"; };
 		764981442A23194F00EC1287 /* CVItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVItemViewModel.swift; sourceTree = "<group>"; };
 		764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Permissions.swift"; sourceTree = "<group>"; };
 		764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFormatting.swift; sourceTree = "<group>"; };
@@ -5789,14 +5785,6 @@
 			path = utils;
 			sourceTree = "<group>";
 		};
-		34480B471FD0A60200BC14EF /* utils */ = {
-			isa = PBXGroup;
-			children = (
-				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
-			);
-			path = utils;
-			sourceTree = "<group>";
-		};
 		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
@@ -5860,7 +5848,6 @@
 			isa = PBXGroup;
 			children = (
 				5033D46A29DB9F17007FEADA /* AppSetup.swift */,
-				7649813E2A2306DA00EC1287 /* SMEnvironment.swift */,
 			);
 			path = environment;
 			sourceTree = "<group>";
@@ -6620,7 +6607,6 @@
 			isa = PBXGroup;
 			children = (
 				3461293F1FD1D74B00532771 /* environment */,
-				34480B471FD0A60200BC14EF /* utils */,
 				453518951FC63DBF00210559 /* Info.plist */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
@@ -12339,8 +12325,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
-				3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */,
-				7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
