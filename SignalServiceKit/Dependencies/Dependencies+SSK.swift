@@ -16,6 +16,14 @@ public protocol Dependencies {}
 @objc
 public extension NSObject {
 
+    final var profileManagerImpl: OWSProfileManager {
+        profileManager as! OWSProfileManager
+    }
+
+    static var profileManagerImpl: OWSProfileManager {
+        profileManager as! OWSProfileManager
+    }
+
     final var preferences: Preferences {
         SSKEnvironment.shared.preferencesRef
     }
@@ -962,6 +970,15 @@ public extension Dependencies {
 
     static var versionedProfilesSwift: VersionedProfilesSwift {
         SSKEnvironment.shared.versionedProfilesRef
+    }
+}
+
+// MARK: -
+
+@objc
+public extension OWSProfileManager {
+    static var shared: OWSProfileManager {
+        SSKEnvironment.shared.profileManagerRef as! OWSProfileManager
     }
 }
 

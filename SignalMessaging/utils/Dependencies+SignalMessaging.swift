@@ -11,14 +11,6 @@ import SignalServiceKit
 @objc
 public extension NSObject {
 
-    final var profileManagerImpl: OWSProfileManager {
-        profileManager as! OWSProfileManager
-    }
-
-    static var profileManagerImpl: OWSProfileManager {
-        profileManager as! OWSProfileManager
-    }
-
     final var contactsManagerImpl: OWSContactsManager {
         contactsManager as! OWSContactsManager
     }
@@ -94,15 +86,6 @@ public extension Dependencies {
 
     static var smJobQueues: SignalMessagingJobQueues {
         SMEnvironment.shared.smJobQueuesRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSProfileManager {
-    static var shared: OWSProfileManager {
-        SSKEnvironment.shared.profileManagerRef as! OWSProfileManager
     }
 }
 
