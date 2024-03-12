@@ -42,9 +42,9 @@ open Signal.xcworkspace
 ```
 
 In the TARGETS area of the General tab, change the Team drop down to
-your own. You will need to do that for all the listed targets, for ex. 
-Signal, SignalShareExtension, and SignalMessaging. You will need an Apple
-Developer account for this. 
+your own. You will need to do that for all the listed targets, for ex.
+Signal, SignalShareExtension, and SignalNSE. You will need an Apple
+Developer account for this.
 
 On the Capabilities tab, turn off Push Notifications, Apple Pay,
 Communication Notifications, and Data Protection, while keeping Background Modes

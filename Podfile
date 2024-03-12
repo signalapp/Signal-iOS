@@ -81,9 +81,6 @@ end
 
 # These extensions inherit all of the common pods
 
-target 'SignalMessaging' do
-end
-
 target 'SignalShareExtension' do
   ui_pods
 end
@@ -280,7 +277,6 @@ end
 def copy_acknowledgements
   targets = [
     'Signal',
-    'SignalMessaging',
     'SignalNSE',
     'SignalPerformanceTests',
     'SignalServiceKit',

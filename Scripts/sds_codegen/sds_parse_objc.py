@@ -615,7 +615,6 @@ def gather_module_headers(pods_dir_path):
 
     for project_name in (
         'SignalServiceKit',
-        'SignalMessaging',
         'Signal',
         ):
         src_dir_path = os.path.join(git_repo_path, project_name)
@@ -629,13 +628,10 @@ def gather_module_headers(pods_dir_path):
 
 def get_pch_include(file_path):
     ssk_path = os.path.join(git_repo_path, 'SignalServiceKit') + os.sep
-    sm_path = os.path.join(git_repo_path, 'SignalMessaging') + os.sep
     s_path = os.path.join(git_repo_path, 'Signal') + os.sep
     sae_path = os.path.join(git_repo_path, 'SignalShareExtension') + os.sep
     if file_path.startswith(ssk_path):
         return os.path.join(git_repo_path, "SignalServiceKit/SignalServiceKit-prefix.pch")
-    elif file_path.startswith(sm_path):
-        return os.path.join(git_repo_path, "SignalMessaging/SignalMessaging-Prefix.pch")
     elif file_path.startswith(s_path):
         return os.path.join(git_repo_path, "Signal/Signal-Prefix.pch")
     elif file_path.startswith(sae_path):
@@ -732,7 +728,6 @@ if __name__ == "__main__":
 
     header_include_paths = []
     header_include_paths.extend(find_header_include_paths('SignalServiceKit/src'))
-    header_include_paths.extend(find_header_include_paths('SignalMessaging'))
 
     # SDS code generation uses clang to parse the AST of Objective-C files.
     # We're parsing these files outside the context of an XCode workspace,

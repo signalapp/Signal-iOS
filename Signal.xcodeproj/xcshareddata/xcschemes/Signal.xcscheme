@@ -76,13 +76,6 @@
          </BuildableReference>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "453518911FC63DBF00210559"
-            BuildableName = "SignalMessaging.framework"
-            BlueprintName = "SignalMessaging"
-            ReferencedContainer = "container:Signal.xcodeproj">
-         </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
             BlueprintIdentifier = "F9C5C896289451B900548EEE"
             BuildableName = "SignalServiceKit.framework"
             BlueprintName = "SignalServiceKit"

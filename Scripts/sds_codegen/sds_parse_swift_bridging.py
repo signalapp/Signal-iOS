@@ -213,6 +213,4 @@ if __name__ == "__main__":
         process_dir(pods_dir_path, dirname, swift_bridging_path)
 
     process_dir(src_dir_path, 'SignalServiceKit', swift_bridging_path)
-    process_dir(src_dir_path, 'SignalMessaging', swift_bridging_path)
     process_dir(src_dir_path, 'Signal', swift_bridging_path)
-

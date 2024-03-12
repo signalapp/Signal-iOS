@@ -8,11 +8,10 @@ cd "$REPO_ROOT"
 
 SSK_DIR="SignalServiceKit"
 SAE_DIR="SignalShareExtension"
-SM_DIR="SignalMessaging"
 SUI_DIR="SignalUI"
 NSE_DIR="SignalNSE"
 
-TARGETS=(Signal "${SSK_DIR}" "${SAE_DIR}" "${SM_DIR}" "${NSE_DIR}" "${SUI_DIR}")
+TARGETS=(Signal "${SSK_DIR}" "${SAE_DIR}" "${NSE_DIR}" "${SUI_DIR}")
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
 

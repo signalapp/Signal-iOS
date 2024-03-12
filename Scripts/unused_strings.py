@@ -33,7 +33,6 @@ def parse_args():
             project_path,
             [
                 "Signal/src",
-                "SignalMessaging",
                 "SignalNSE",
                 "SignalServiceKit",
                 "SignalShareExtension",

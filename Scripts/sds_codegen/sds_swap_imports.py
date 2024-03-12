@@ -78,5 +78,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     search_path('Signal')
-    search_path('SignalMessaging')
     search_path('SignalServiceKit')
