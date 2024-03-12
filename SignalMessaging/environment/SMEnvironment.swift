@@ -28,17 +28,14 @@ public class SMEnvironment {
         _shared = environment
     }
 
-    public let avatarBuilderRef: AvatarBuilder
     public let smJobQueuesRef: SignalMessagingJobQueues
 
     // This property is configured after SMEnvironment is created.
     public var lightweightGroupCallManagerRef: LightweightGroupCallManager?
 
     public init(
-        avatarBuilder: AvatarBuilder,
         smJobQueues: SignalMessagingJobQueues
     ) {
-        avatarBuilderRef = avatarBuilder
         smJobQueuesRef = smJobQueues
 
         SwiftSingletons.register(self)

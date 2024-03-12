@@ -227,7 +227,6 @@ public class AppSetup {
         )
 
         let smEnvironment = SMEnvironment(
-            avatarBuilder: avatarBuilder,
             smJobQueues: smJobQueues
         )
         SMEnvironment.setShared(smEnvironment)
@@ -292,7 +291,8 @@ public class AppSetup {
             localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
             callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue,
             preferences: preferences,
-            proximityMonitoringManager: proximityMonitoringManager
+            proximityMonitoringManager: proximityMonitoringManager,
+            avatarBuilder: avatarBuilder
         )
         SSKEnvironment.setShared(sskEnvironment, isRunningTests: appContext.isRunningTests)
 

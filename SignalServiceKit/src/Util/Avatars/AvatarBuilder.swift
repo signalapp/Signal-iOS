@@ -5,7 +5,6 @@
 
 import Foundation
 import CommonCrypto
-import SignalServiceKit
 
 // AvatarBuilder has responsibility for building and caching contact and group avatars.
 //

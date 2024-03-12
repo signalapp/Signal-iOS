@@ -15,14 +15,12 @@ public class MockSMEnvironment: SMEnvironment {
     }
 
     private init() {
-        let avatarBuilder = AvatarBuilder()
         let smJobQueues = SignalMessagingJobQueues(
             db: DependenciesBridge.shared.db,
             reachabilityManager: SSKEnvironment.shared.reachabilityManagerRef
         )
 
         super.init(
-            avatarBuilder: avatarBuilder,
             smJobQueues: smJobQueues
         )
     }

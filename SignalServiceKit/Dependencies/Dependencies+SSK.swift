@@ -863,6 +863,14 @@ public extension Dependencies {
 
 public extension NSObject {
 
+    final var avatarBuilder: AvatarBuilder {
+        SSKEnvironment.shared.avatarBuilderRef
+    }
+
+    static var avatarBuilder: AvatarBuilder {
+        SSKEnvironment.shared.avatarBuilderRef
+    }
+
     final var contactsManagerImpl: OWSContactsManager {
         contactsManager as! OWSContactsManager
     }
@@ -923,6 +931,14 @@ public extension NSObject {
 // MARK: - Swift-only Dependencies
 
 public extension Dependencies {
+
+    var avatarBuilder: AvatarBuilder {
+        SSKEnvironment.shared.avatarBuilderRef
+    }
+
+    static var avatarBuilder: AvatarBuilder {
+        SSKEnvironment.shared.avatarBuilderRef
+    }
 
     var contactsManagerImpl: OWSContactsManager {
         contactsManager as! OWSContactsManager

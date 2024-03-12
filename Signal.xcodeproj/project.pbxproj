@@ -440,7 +440,6 @@
 		34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */; };
 		34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */; };
 		34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */; };
-		34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FC7EEB265834F30046707A /* AvatarBuilder.swift */; };
 		34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FCCA03264AEDFE00A63EDE /* CustomColorViewController.swift */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
@@ -1070,6 +1069,7 @@
 		7254651A2BA00F8100EABFD2 /* SystemContactsDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */; };
 		7254651B2BA00F8D00EABFD2 /* ContactsMaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE822721D4B6000AC89F /* ContactsMaps.swift */; };
 		7254651D2BA00FD200EABFD2 /* LocalUserDisplayMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */; };
+		7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FC7EEB265834F30046707A /* AvatarBuilder.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -5803,7 +5803,6 @@
 		34480B471FD0A60200BC14EF /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				883A7FD0269F640D00841DF9 /* Avatars */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
 			);
@@ -7776,6 +7775,7 @@
 		720547F12B9C8F5E00E2CF2F /* Avatars */ = {
 			isa = PBXGroup;
 			children = (
+				34FC7EEB265834F30046707A /* AvatarBuilder.swift */,
 				883A7FD1269F642F00841DF9 /* AvatarModel.swift */,
 				7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */,
 			);
@@ -8024,14 +8024,6 @@
 				8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */,
 				8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */,
 				883A7FC2269F4C0000841DF9 /* AvatarSettingsViewController.swift */,
-			);
-			path = Avatars;
-			sourceTree = "<group>";
-		};
-		883A7FD0269F640D00841DF9 /* Avatars */ = {
-			isa = PBXGroup;
-			children = (
-				34FC7EEB265834F30046707A /* AvatarBuilder.swift */,
 			);
 			path = Avatars;
 			sourceTree = "<group>";
@@ -12391,7 +12383,6 @@
 			files = (
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
-				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
 				500FE490288615BA00FA090C /* CachedBadge.swift in Sources */,
 				5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */,
 				5096BE652AF3514800668F9F /* ContactSyncAttachmentBuilder.swift in Sources */,
@@ -13241,6 +13232,7 @@
 				5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */,
 				50D2FC7D2AEB134C002E4589 /* AuthorMergeHelper.swift in Sources */,
 				500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */,
+				7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */,
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,
 				665C0D6C2AE0776700539A37 /* Backup.pb.swift in Sources */,

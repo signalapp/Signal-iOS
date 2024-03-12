@@ -11,14 +11,6 @@ import SignalServiceKit
 @objc
 public extension NSObject {
 
-    var avatarBuilder: AvatarBuilder {
-        SMEnvironment.shared.avatarBuilderRef
-    }
-
-    static var avatarBuilder: AvatarBuilder {
-        SMEnvironment.shared.avatarBuilderRef
-    }
-
     var lightweightGroupCallManager: LightweightGroupCallManager? {
         SMEnvironment.shared.lightweightGroupCallManagerRef
     }
@@ -54,14 +46,6 @@ public extension Dependencies {
 
     static var groupV2UpdatesImpl: GroupV2UpdatesImpl {
         groupV2Updates as! GroupV2UpdatesImpl
-    }
-
-    var avatarBuilder: AvatarBuilder {
-        SMEnvironment.shared.avatarBuilderRef
-    }
-
-    static var avatarBuilder: AvatarBuilder {
-        SMEnvironment.shared.avatarBuilderRef
     }
 
     var smJobQueues: SignalMessagingJobQueues {
