@@ -23,31 +23,23 @@ extension AttachmentManager {
 
         reference.sourceFilename.map(builder.setFileName(_:))
 
-        var flags: TSAttachmentType?
+        var flags: SSKProtoAttachmentPointerFlags?
         switch reference.owner {
         case .message(.bodyAttachment(let metadata)):
             (metadata.caption?.text).map(builder.setCaption(_:))
-            flags = metadata.flags
+            flags = metadata.renderingFlag.toProto()
         case .message(.quotedReply(let metadata)):
-            flags = metadata.flags
+            flags = metadata.renderingFlag.toProto()
         case .storyMessage(.media(let metadata)):
             (metadata.caption?.text).map(builder.setCaption(_:))
-            flags = metadata.isLoopingVideo ? .GIF : nil
+            flags = metadata.shouldLoop ? .gif : nil
         default:
             break
         }
 
-        switch flags {
-        case .voiceMessage:
-            builder.setFlags(UInt32(SSKProtoAttachmentPointerFlags.voiceMessage.rawValue))
-        case .borderless:
-            builder.setFlags(UInt32(SSKProtoAttachmentPointerFlags.borderless.rawValue))
-        case .GIF:
-            builder.setFlags(UInt32(SSKProtoAttachmentPointerFlags.gif.rawValue))
-
-        case .default, nil:
-            fallthrough
-        @unknown default:
+        if let flags {
+            builder.setFlags(UInt32(flags.rawValue))
+        } else {
             builder.setFlags(0)
         }
 

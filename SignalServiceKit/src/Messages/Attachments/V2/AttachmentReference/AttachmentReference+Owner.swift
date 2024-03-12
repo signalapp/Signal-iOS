@@ -71,7 +71,7 @@ extension AttachmentReference {
             public class BodyAttachmentMetadata: Metadata {
                 public var contentType: ContentType? { _contentType }
                 public var caption: MessageBody? { _caption }
-                public var flags: TSAttachmentType? { _flags }
+                public var renderingFlag: RenderingFlag { _renderingFlag }
                 public var index: UInt32 { _orderInOwner! }
 
                 override class var requiredFields: [AnyKeyPath] { [\Self._orderInOwner] }
@@ -79,7 +79,7 @@ extension AttachmentReference {
 
             public class QuotedReplyMetadata: Metadata {
                 public var contentType: ContentType? { _contentType }
-                public var flags: TSAttachmentType? { _flags }
+                public var renderingFlag: RenderingFlag { _renderingFlag }
             }
 
             public class StickerMetadata: Metadata {
@@ -105,7 +105,7 @@ extension AttachmentReference {
             public class MediaMetadata: Metadata {
                 public var contentType: ContentType? { _contentType }
                 public var caption: MessageBody? { _caption }
-                public var isLoopingVideo: Bool { _flags == .GIF }
+                public var shouldLoop: Bool { _renderingFlag == .shouldLoop }
             }
         }
 
@@ -130,13 +130,13 @@ extension AttachmentReference {
         /// Message body attachments only, but required in that case.
         fileprivate let _orderInOwner: UInt32?
 
-        /// Flags from the sender telling us what "kind" of attachment it is.
+        /// Flag from the sender giving us a hint for how it should be rendered.
         /// Used for:
         /// * message body attachments
         /// * quoted reply attachment
-        /// * story media, but only the "gif" case is respected.
+        /// * story media, but only the "shouldLoop" case is respected.
         /// Even in those cases the default value is allowed.
-        fileprivate let _flags: TSAttachmentType
+        fileprivate let _renderingFlag: RenderingFlag
 
         /// For message sources, the row id for the thread containing that message.
         /// Required for message sources.
@@ -184,7 +184,7 @@ extension AttachmentReference {
         public required init(
             ownerRowId: Int64,
             orderInOwner: UInt32?,
-            flags: TSAttachmentType,
+            renderingFlag: RenderingFlag,
             threadRowId: UInt64?,
             caption: MessageBody?,
             stickerPackId: Data?,
@@ -193,7 +193,7 @@ extension AttachmentReference {
         ) throws {
             self._ownerRowId = ownerRowId
             self._orderInOwner = orderInOwner
-            self._flags = flags
+            self._renderingFlag = renderingFlag
             self._threadRowId = threadRowId
             self._caption = caption
             self._stickerPackId = stickerPackId
@@ -216,7 +216,7 @@ extension AttachmentReference.Owner {
     internal static func validateAndBuild(
         ownerId: AttachmentReference.OwnerId,
         orderInOwner: UInt32?,
-        flags: TSAttachmentType,
+        renderingFlag: AttachmentReference.RenderingFlag,
         threadRowId: UInt64?,
         caption: String?,
         captionBodyRanges: MessageBodyRanges,
@@ -230,7 +230,7 @@ extension AttachmentReference.Owner {
             return try MetadataType.init(
                 ownerRowId: ownerId.rowId,
                 orderInOwner: orderInOwner,
-                flags: flags,
+                renderingFlag: renderingFlag,
                 threadRowId: threadRowId,
                 caption: captionBody,
                 stickerPackId: stickerPackId,

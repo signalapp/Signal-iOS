@@ -919,6 +919,7 @@
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
 		66CA4CE42B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE32B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift */; };
+		66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */; };
 		66CD25592B0685E000139E17 /* MessageBackupProtoArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25582B0685E000139E17 /* MessageBackupProtoArchiver.swift */; };
 		66CD25622B06948900139E17 /* MessageBackupRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25612B06948900139E17 /* MessageBackupRecipientArchiver.swift */; };
 		66CD25642B06949C00139E17 /* MessageBackupAccountDataArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25632B06949C00139E17 /* MessageBackupAccountDataArchiver.swift */; };
@@ -3714,6 +3715,7 @@
 		66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedStorySendDisplayController.swift; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
 		66CA4CE32B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentThumbnailQuality.swift; sourceTree = "<group>"; };
+		66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+RenderingFlag.swift"; sourceTree = "<group>"; };
 		66CD25582B0685E000139E17 /* MessageBackupProtoArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProtoArchiver.swift; sourceTree = "<group>"; };
 		66CD25612B06948900139E17 /* MessageBackupRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupRecipientArchiver.swift; sourceTree = "<group>"; };
 		66CD25632B06949C00139E17 /* MessageBackupAccountDataArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAccountDataArchiver.swift; sourceTree = "<group>"; };
@@ -7588,6 +7590,7 @@
 			children = (
 				66E1AD842B8FEDD000C56B7B /* TSResource */,
 				66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */,
+				66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */,
 				66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */,
 			);
 			path = AttachmentReference;
@@ -12996,6 +12999,7 @@
 				66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */,
 				66D7B9032B928AE10005C98B /* AttachmentManagerMock.swift in Sources */,
 				66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */,
+				66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */,
 				66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */,
 				66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */,
 				66D7B9192B97A02F0005C98B /* AttachmentStore+QuotedMessage.swift in Sources */,

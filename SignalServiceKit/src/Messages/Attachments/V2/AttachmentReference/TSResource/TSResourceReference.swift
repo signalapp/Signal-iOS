@@ -20,6 +20,9 @@ public protocol TSResourceReference {
     /// NOT the same as the file name on disk.
     var sourceFilename: String? { get }
 
+    /// Hint from the sender telling us how to render the attachment.
+    var renderingFlag: AttachmentReference.RenderingFlag { get }
+
     // NOTE: mimeType and contentType are deliberately excluded from
     // this protocol; they have wildly different meanings in v1 and v2
     // and are safe to use in entirely different circumstances.

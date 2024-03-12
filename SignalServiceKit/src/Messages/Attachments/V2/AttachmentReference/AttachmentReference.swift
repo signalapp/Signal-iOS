@@ -41,7 +41,7 @@ public class AttachmentReference {
         attachmentRowId: Int64,
         ownerRowId: Int64,
         orderInOwner: UInt32?,
-        flags: TSAttachmentType,
+        renderingFlag: RenderingFlag,
         threadRowId: UInt64?,
         caption: String?,
         captionBodyRanges: MessageBodyRanges,
@@ -60,7 +60,7 @@ public class AttachmentReference {
             let owner = Owner.validateAndBuild(
                 ownerId: ownerId,
                 orderInOwner: orderInOwner,
-                flags: flags,
+                renderingFlag: renderingFlag,
                 threadRowId: threadRowId,
                 caption: caption,
                 captionBodyRanges: captionBodyRanges,

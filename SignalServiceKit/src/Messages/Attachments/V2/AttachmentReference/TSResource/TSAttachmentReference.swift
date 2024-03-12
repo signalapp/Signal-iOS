@@ -43,4 +43,19 @@ public struct TSAttachmentReference: TSResourceReference {
     public var concreteType: ConcreteTSResourceReference { .legacy(self) }
 
     public var sourceFilename: String? { attachment?.sourceFilename }
+
+    public var renderingFlag: AttachmentReference.RenderingFlag {
+        switch attachment?.attachmentType {
+        case .voiceMessage:
+            return .voiceMessage
+        case .borderless:
+            return .borderless
+        case .GIF:
+            return .shouldLoop
+        case .default, nil:
+            fallthrough
+        @unknown default:
+            return .default
+        }
+    }
 }
