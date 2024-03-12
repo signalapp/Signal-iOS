@@ -5,7 +5,6 @@
 
 import Foundation
 import Intents
-import SignalServiceKit
 
 /// There are two primary components in our system notification integration:
 ///
