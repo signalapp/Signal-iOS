@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalMessaging
 import SignalServiceKit
 
 // ManualStackView (like ManualLayoutView) uses a CATransformLayer

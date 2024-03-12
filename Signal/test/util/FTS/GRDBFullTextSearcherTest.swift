@@ -8,7 +8,6 @@ import LibSignalClient
 import XCTest
 
 @testable import Signal
-@testable import SignalMessaging
 @testable import SignalServiceKit
 @testable import SignalUI
 

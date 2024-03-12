@@ -5,7 +5,6 @@
 
 import LibSignalClient
 import QuickLook
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

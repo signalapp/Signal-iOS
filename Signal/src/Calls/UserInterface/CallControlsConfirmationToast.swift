@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalMessaging
 import SignalServiceKit
 
 class CallControlsConfirmationToastView: UIView {

@@ -6,7 +6,6 @@
 import LibSignalClient
 import PassKit
 import QuickLook
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

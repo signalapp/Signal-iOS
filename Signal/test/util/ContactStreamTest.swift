@@ -7,7 +7,6 @@ import Contacts
 import LibSignalClient
 import XCTest
 
-@testable import SignalMessaging
 @testable import SignalServiceKit
 
 class ContactStreamTest: SignalBaseTest {

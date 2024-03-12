@@ -5,7 +5,6 @@
 
 import Lottie
 import PassKit
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

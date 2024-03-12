@@ -4,7 +4,6 @@
 //
 
 import BonMot
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

@@ -5,7 +5,6 @@
 
 import XCTest
 @testable import SignalServiceKit
-@testable import SignalMessaging
 @testable import SignalUI
 @testable import Signal
 @testable import MobileCoin

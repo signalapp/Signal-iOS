@@ -4,7 +4,6 @@
 //
 
 import SignalCoreKit
-import SignalMessaging
 import SignalRingRTC
 import SignalServiceKit
 

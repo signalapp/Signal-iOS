@@ -7,7 +7,6 @@ import BonMot
 import Foundation
 import Lottie
 import QuartzCore
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

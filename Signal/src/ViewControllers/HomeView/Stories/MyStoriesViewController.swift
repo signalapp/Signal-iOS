@@ -5,7 +5,6 @@
 
 import Foundation
 import PhotosUI
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 import UIKit

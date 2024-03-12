@@ -7,7 +7,6 @@ import Foundation
 import SignalRingRTC
 import WebRTC
 import SignalServiceKit
-import SignalMessaging
 import CallKit
 
 // MARK: - CallService

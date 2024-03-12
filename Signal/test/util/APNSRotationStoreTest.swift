@@ -4,7 +4,6 @@
 //
 
 import XCTest
-@testable import SignalMessaging
 @testable import SignalServiceKit
 
 final class APNSRotationStoreTest: SignalBaseTest {

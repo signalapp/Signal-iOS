@@ -5,7 +5,6 @@
 
 import Contacts
 import LibSignalClient
-import SignalMessaging
 import SignalServiceKit
 
 /// If we try and hide a recipient but fail because they correspond to

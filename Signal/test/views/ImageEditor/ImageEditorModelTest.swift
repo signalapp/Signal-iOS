@@ -5,7 +5,6 @@
 
 import XCTest
 @testable import Signal
-@testable import SignalMessaging
 @testable import SignalUI
 
 class ImageEditorModelTest: XCTestCase {

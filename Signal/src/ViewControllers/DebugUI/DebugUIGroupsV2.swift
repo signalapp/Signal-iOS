@@ -5,7 +5,6 @@
 
 import LibSignalClient
 import SignalServiceKit
-import SignalMessaging
 import SignalUI
 
 #if USE_DEBUG_UI

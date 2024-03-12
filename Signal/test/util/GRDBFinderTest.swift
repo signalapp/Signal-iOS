@@ -8,7 +8,6 @@ import XCTest
 
 @testable import SignalServiceKit
 @testable import Signal
-@testable import SignalMessaging
 
 class GRDBFinderTest: SignalBaseTest {
     override func setUp() {

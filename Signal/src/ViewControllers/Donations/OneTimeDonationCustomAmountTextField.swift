@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalMessaging
 import SignalServiceKit
 
 protocol OneTimeDonationCustomAmountTextFieldDelegate: AnyObject {

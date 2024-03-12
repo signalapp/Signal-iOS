@@ -6,7 +6,6 @@
 import AVFoundation
 import Photos
 import SignalCoreKit
-import SignalMessaging
 import SignalServiceKit
 
 extension UIViewController {

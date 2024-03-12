@@ -6,7 +6,6 @@
 import SignalCoreKit
 import SignalServiceKit
 import SignalUI
-import SignalMessaging
 
 public protocol DonationPaymentDetailsSelectIdealBankDelegate: AnyObject {
     func viewController(_ viewController: DonationPaymentDetailsSelectIdealBankViewController, didSelect iDEALBank: Stripe.PaymentMethod.IDEALBank)

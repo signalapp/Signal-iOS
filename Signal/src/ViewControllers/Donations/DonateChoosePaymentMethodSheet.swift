@@ -6,7 +6,6 @@
 import Foundation
 import SignalUI
 import SignalServiceKit
-import SignalMessaging
 
 class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
     enum DonationMode {

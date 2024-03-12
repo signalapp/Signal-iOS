@@ -6,7 +6,6 @@
 import Foundation
 import SignalServiceKit
 import SignalUI
-import SignalMessaging
 
 private enum OpenableUrl {
     case phoneNumberLink(URL)

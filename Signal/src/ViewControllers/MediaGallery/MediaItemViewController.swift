@@ -4,7 +4,6 @@
 //
 
 import CoreMedia
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 import YYImage

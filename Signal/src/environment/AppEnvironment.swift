@@ -4,7 +4,6 @@
 //
 
 import SignalServiceKit
-import SignalMessaging
 
 public class AppEnvironment: NSObject {
 

@@ -5,7 +5,6 @@
 
 import Foundation
 import SignalCoreKit
-import SignalMessaging
 import SignalServiceKit
 
 extension ProvisioningCoordinatorImpl {

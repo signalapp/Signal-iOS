@@ -6,7 +6,6 @@
 import Foundation
 import CallKit
 import SignalServiceKit
-import SignalMessaging
 import WebRTC
 import UIKit
 

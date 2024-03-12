@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalMessaging
 import SignalServiceKit
 
 extension TSInfoMessage.PersistableGroupUpdateItem {

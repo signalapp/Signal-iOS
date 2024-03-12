@@ -6,7 +6,6 @@
 import CoreServices
 import Intents
 import PureLayout
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

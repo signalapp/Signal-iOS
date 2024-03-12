@@ -7,7 +7,6 @@ import AVKit
 import Foundation
 import LibSignalClient
 import SignalCoreKit
-import SignalMessaging
 import SignalServiceKit
 import UIKit
 

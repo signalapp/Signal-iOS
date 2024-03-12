@@ -5,7 +5,6 @@
 
 import Foundation
 import SignalUI
-import SignalMessaging
 import SignalServiceKit
 
 class RequestAccountDataReportViewController: OWSTableViewController2 {

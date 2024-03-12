@@ -5,7 +5,6 @@
 
 import Foundation
 import SignalServiceKit
-import SignalMessaging
 
 class NSEContext: NSObject, AppContext {
     let isMainApp = false

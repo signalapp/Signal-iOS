@@ -5,7 +5,6 @@
 
 import Foundation
 import Lottie
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

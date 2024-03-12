@@ -4,7 +4,6 @@
 //
 
 import SignalServiceKit
-import SignalMessaging
 import SignalUI
 
 protocol LongTextViewDelegate: AnyObject {

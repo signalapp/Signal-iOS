@@ -5,7 +5,6 @@
 
 import Foundation
 import PassKit
-import SignalMessaging
 
 extension DonateViewController: PKPaymentAuthorizationControllerDelegate {
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {

@@ -5,7 +5,6 @@
 
 import Foundation
 import UIKit
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

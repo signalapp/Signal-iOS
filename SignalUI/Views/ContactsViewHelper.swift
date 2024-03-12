@@ -7,7 +7,6 @@ import Contacts
 import ContactsUI
 import LibSignalClient
 import SafariServices
-import SignalMessaging
 import SignalServiceKit
 
 @objc

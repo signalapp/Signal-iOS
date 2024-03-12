@@ -5,7 +5,6 @@
 
 import ContactsUI
 import SignalServiceKit
-import SignalMessaging
 import SignalUI
 
 public extension ConversationViewController {

@@ -5,7 +5,6 @@
 
 import Lottie
 import MobileCoin
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

@@ -4,7 +4,6 @@
 //
 
 import SignalServiceKit
-import SignalMessaging
 
 public protocol FindByPhoneNumberDelegate: AnyObject {
     func findByPhoneNumber(_ findByPhoneNumber: FindByPhoneNumberViewController,

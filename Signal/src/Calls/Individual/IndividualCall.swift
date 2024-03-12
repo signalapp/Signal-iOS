@@ -4,7 +4,6 @@
 //
 
 import AVFoundation
-import SignalMessaging
 import SignalServiceKit
 import SignalRingRTC
 import WebRTC

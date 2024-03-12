@@ -4,7 +4,6 @@
 //
 
 import YYImage
-import SignalMessaging
 import SignalServiceKit
 
 public protocol LinkPreviewViewDraftDelegate: AnyObject {

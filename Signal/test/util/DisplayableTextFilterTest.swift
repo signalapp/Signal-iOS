@@ -5,7 +5,6 @@
 
 import XCTest
 @testable import Signal
-@testable import SignalMessaging
 
 class DisplayableTextTest: XCTestCase {
     func testDisplayableText() {

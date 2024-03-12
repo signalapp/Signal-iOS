@@ -5,7 +5,6 @@
 
 import Foundation
 import SignalServiceKit
-import SignalMessaging
 import SignalUI
 
 class GifPickerNavigationViewController: OWSNavigationController {

@@ -6,7 +6,6 @@
 import XCTest
 @testable import SignalServiceKit
 @testable import Signal
-@testable import SignalMessaging
 
 class BatchUpdateTest: XCTestCase {
     func testScenario1() {

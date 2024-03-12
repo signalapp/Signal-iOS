@@ -8,7 +8,6 @@ import LibSignalClient
 import Lottie
 import PureLayout
 import SafariServices
-import SignalMessaging
 import SignalServiceKit
 import UIKit
 

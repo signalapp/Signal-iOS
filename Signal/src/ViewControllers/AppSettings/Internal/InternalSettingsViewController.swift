@@ -5,7 +5,6 @@
 
 import AVFoundation
 import SignalServiceKit
-import SignalMessaging
 import SignalUI
 
 class InternalSettingsViewController: OWSTableViewController2 {

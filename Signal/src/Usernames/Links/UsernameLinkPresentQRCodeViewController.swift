@@ -5,7 +5,6 @@
 
 import SignalCoreKit
 import SignalServiceKit
-import SignalMessaging
 import SignalUI
 
 class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {

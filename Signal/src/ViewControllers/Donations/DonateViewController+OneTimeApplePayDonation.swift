@@ -6,7 +6,6 @@
 import Foundation
 import PassKit
 import SignalCoreKit
-import SignalMessaging
 import SignalUI
 import SignalServiceKit
 

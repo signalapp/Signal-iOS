@@ -12,7 +12,6 @@ import Contacts
 import CoreLocation
 import CoreServices
 import MapKit
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

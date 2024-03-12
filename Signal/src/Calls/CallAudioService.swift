@@ -5,7 +5,6 @@
 
 import AVFoundation
 import AVKit
-import SignalMessaging
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI

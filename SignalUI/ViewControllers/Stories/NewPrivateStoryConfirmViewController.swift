@@ -5,7 +5,6 @@
 
 import Foundation
 import SafariServices
-import SignalMessaging
 import SignalServiceKit
 
 public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {

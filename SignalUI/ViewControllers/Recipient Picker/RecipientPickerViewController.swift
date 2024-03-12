@@ -5,7 +5,6 @@
 
 import Foundation
 import MessageUI
-import SignalMessaging
 import SignalServiceKit
 
 public class RecipientPickerViewController: OWSViewController, OWSNavigationChildController {

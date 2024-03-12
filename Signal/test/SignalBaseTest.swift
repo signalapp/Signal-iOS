@@ -5,7 +5,6 @@
 
 import XCTest
 
-@testable import SignalMessaging
 @testable import SignalServiceKit
 
 open class SignalBaseTest: XCTestCase {

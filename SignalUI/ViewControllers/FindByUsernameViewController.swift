@@ -4,7 +4,6 @@
 //
 
 import SignalServiceKit
-import SignalMessaging
 
 protocol FindByUsernameDelegate: AnyObject {
     func findByUsername(address: SignalServiceAddress)

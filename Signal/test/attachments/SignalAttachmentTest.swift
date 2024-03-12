@@ -5,7 +5,6 @@
 
 import XCTest
 import CoreServices
-@testable import SignalMessaging
 import SignalServiceKit
 
 class SignalAttachmentTest: SignalBaseTest {

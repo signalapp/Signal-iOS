@@ -4,7 +4,6 @@
 //
 
 import MobileCoin
-import SignalMessaging
 import SignalServiceKit
 
 @objc

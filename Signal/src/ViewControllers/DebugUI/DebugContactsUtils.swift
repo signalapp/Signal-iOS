@@ -4,7 +4,6 @@
 //
 
 import Contacts
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

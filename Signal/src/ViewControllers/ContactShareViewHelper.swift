@@ -5,7 +5,6 @@
 
 import ContactsUI
 import MessageUI
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

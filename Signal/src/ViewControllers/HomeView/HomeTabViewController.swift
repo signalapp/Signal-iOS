@@ -4,7 +4,6 @@
 //
 
 import SignalUI
-import SignalMessaging
 import SignalServiceKit
 
 protocol HomeTabViewController: UIViewController { }

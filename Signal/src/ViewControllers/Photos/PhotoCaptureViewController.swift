@@ -8,7 +8,6 @@ import Foundation
 import Lottie
 import Photos
 import UIKit
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 import LibSignalClient

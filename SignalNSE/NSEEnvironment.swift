@@ -5,7 +5,6 @@
 
 import Foundation
 import SignalServiceKit
-import SignalMessaging
 
 class NSEEnvironment: Dependencies {
     let appContext: NSEContext

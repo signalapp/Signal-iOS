@@ -6,7 +6,6 @@
 import Foundation
 import SignalRingRTC
 import SignalServiceKit
-import SignalMessaging
 import CallKit
 
 public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {

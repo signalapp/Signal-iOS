@@ -5,7 +5,6 @@
 
 import ContactsUI
 import LibSignalClient
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

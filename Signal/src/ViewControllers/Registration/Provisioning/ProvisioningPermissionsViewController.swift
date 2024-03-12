@@ -5,7 +5,6 @@
 
 import Contacts
 import Lottie
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

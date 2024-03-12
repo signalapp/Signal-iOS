@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalMessaging
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI

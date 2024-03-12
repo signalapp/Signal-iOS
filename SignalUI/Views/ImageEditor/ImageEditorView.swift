@@ -4,7 +4,6 @@
 //
 
 import SignalServiceKit
-import SignalMessaging
 
 protocol ImageEditorViewDelegate: AnyObject {
 

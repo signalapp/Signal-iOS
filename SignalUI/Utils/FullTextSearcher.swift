@@ -7,7 +7,6 @@ import BonMot
 import Foundation
 import LibSignalClient
 import SignalServiceKit
-import SignalMessaging
 
 public typealias MessageSortKey = UInt64
 

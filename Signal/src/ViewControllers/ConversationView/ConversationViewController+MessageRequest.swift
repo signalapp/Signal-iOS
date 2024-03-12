@@ -5,7 +5,6 @@
 
 import LibSignalClient
 import SafariServices
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

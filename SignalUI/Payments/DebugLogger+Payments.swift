@@ -5,7 +5,6 @@
 
 import Foundation
 import Logging
-import SignalMessaging
 import SignalServiceKit
 
 // NOTE: There are two separate classes with the name Logger

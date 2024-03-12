@@ -6,7 +6,6 @@
 import Foundation
 import XCTest
 
-@testable import SignalMessaging
 @testable import SignalServiceKit
 
 class ZkParamsMigratorTest: XCTestCase {

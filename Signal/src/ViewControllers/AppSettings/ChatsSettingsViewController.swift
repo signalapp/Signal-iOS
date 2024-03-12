@@ -4,7 +4,6 @@
 //
 
 import IntentsUI
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

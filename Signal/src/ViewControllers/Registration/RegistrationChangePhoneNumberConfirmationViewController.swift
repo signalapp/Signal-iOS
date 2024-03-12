@@ -6,7 +6,6 @@
 import Foundation
 import SignalServiceKit
 import UIKit
-import SignalMessaging
 import SignalUI
 
 // MARK: - RegistrationChangePhoneNumberConfirmationPresenter

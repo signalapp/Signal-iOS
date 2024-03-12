@@ -4,7 +4,6 @@
 //
 
 import UIKit
-import SignalMessaging
 import SignalServiceKit
 
 // MARK: - StickerPickerSheetDelegate

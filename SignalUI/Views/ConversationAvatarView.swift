@@ -6,7 +6,6 @@
 import GRDB
 import LibSignalClient
 import UIKit
-import SignalMessaging
 import SignalServiceKit
 
 // swiftlint:disable:next class_delegate_protocol

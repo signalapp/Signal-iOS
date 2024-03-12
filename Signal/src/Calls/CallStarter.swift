@@ -4,7 +4,6 @@
 //
 
 import SignalUI
-import SignalMessaging
 import SignalServiceKit
 
 /// A type that allows calls to be started with a given recipient after various

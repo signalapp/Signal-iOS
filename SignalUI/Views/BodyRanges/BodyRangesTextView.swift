@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalMessaging
 import SignalServiceKit
 
 public protocol BodyRangesTextViewDelegate: UITextViewDelegate {

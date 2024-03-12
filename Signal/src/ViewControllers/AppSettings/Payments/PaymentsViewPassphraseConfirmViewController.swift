@@ -4,7 +4,6 @@
 //
 
 import SignalUI
-import SignalMessaging
 import SignalServiceKit
 
 public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController2 {

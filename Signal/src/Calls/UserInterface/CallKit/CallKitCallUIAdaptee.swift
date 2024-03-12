@@ -5,7 +5,6 @@
 
 import AVFoundation
 import CallKit
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 

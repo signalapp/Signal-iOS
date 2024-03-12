@@ -5,7 +5,6 @@
 
 import Foundation
 import SignalServiceKit
-import SignalMessaging
 
 public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 

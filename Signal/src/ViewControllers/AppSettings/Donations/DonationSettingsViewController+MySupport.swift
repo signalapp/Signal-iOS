@@ -6,7 +6,6 @@
 import SafariServices
 
 import SignalServiceKit
-import SignalMessaging
 import SignalUI
 
 private enum MySupportErrorState {

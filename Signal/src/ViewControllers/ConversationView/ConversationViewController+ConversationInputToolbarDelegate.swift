@@ -5,7 +5,6 @@
 
 import CoreServices
 import Photos
-import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
