@@ -2639,7 +2639,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "Nome utente";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scansione codice QR";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "Cerca per nome utente";
@@ -5897,10 +5897,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messaggi con link";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Avanti";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Precedente";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Le persone che inviano spam spesso e volentieri iniziano le chat con un semplice \"ciao\" o messaggi molto generici. Se rispondi, attirerai la loro attenzione e cercheranno di truffarti in qualche modo.";
@@ -6902,10 +6902,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Per modificare questa opzione, imposta \"Chi può vedere il mio numero\" su \"Nessuna persona\".";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Se imposti l'opzione \"Chi può trovarmi tramite il mio numero di telefono\" su \"Nessuna persona\", diventerà più difficile trovarti su Signal.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Vuoi procedere comunque?";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Chi può trovarmi cercandomi con il mio numero";

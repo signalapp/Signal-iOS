@@ -2639,7 +2639,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "Nazwa użytkownika";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Skanuj kod QR";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "Znajdź po nazwie użytkownika";
@@ -5897,10 +5897,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Wiadomości z linkami";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Dalej";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Cofnij";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spamerzy często zaczynają od prostej, angażującej wiadomości, takiej jak „cześć”. Jeśli odpiszesz, mogą wciągnąć Cię w dalszą rozmowę.";
@@ -6902,10 +6902,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Aby zmienić to ustawienie, w sekcji Kto może zobaczyć mój numer wybierz opcję Nikt.";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Wybór opcji „Nikt” w ustawieniu „Kto może mnie znaleźć według numeru” utrudni innym znalezienie Cię w Signal.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Chcesz kontynuować?";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kto może mnie znaleźć po numerze telefonu";

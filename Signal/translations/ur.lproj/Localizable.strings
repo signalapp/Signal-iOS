@@ -2639,7 +2639,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "یوزر نیم";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "QR کوڈ سکین کریں";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "بلحاظ یوزر نیم تلاش کریں";
@@ -5897,10 +5897,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "لنکس والے میسجز";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "اگلا";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "پچھلا";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "اسپام کرنے والے افراد آپ کو مائل کرنے کے لیے اکثر \"ہائے\" جیسے عام میسجز سے آغاز کرتے ہیں۔ اگر آپ جواب دیں تو وہ آپ کو مزید مشغول کر سکتے ہیں۔";
@@ -6902,10 +6902,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "اس سیٹنگ کو تبدیل کرنے کے لیے، \"کون میرا نمبر دیکھ سکتا ہے\" کو \"کوئی بھی نہیں\" پر سیٹ کر دیں۔";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "\"مجھے  نمبر سے کون تلاش کر سکتا ہے\" کو \"کوئی نہیں\" پر سیٹ کرنے سے لوگوں کے لیے آپ کو Signal پر تلاش کرنا زیادہ مشکل ہو جائے گا۔";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "کیا واقعی ایسا چاہتے ہیں؟";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "کون مجھے میرے نمبر کے ذریعے تلاش کر سکتا ہے";

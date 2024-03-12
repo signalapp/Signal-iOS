@@ -1,1 +1,1 @@
-• If you're looking for a faster way to start a new chat, now you can quickly scan a username QR code from the "Find by Username" screen. 
+• เริ่มต้นแชทใหม่แบบทันใจ เพราะเราอัปเดตให้คุณสามารถสแกนคิวอาร์โค้ดของชื่อผู้ใช้ได้ทันทีจากในหน้า "ค้นหาด้วยชื่อผู้ใช้" 

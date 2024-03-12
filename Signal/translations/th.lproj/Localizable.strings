@@ -2639,7 +2639,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "ชื่อผู้ใช้";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "สแกนรหัส QR";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "ค้นหาด้วยชื่อผู้ใช้";
@@ -5897,10 +5897,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "ข้อความที่แนบลิงก์";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "ถัดไป";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "ก่อนหน้า";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "ผู้ส่งสแปมมักเริ่มต้นส่งข้อความด้วยคำทักทายทั่วไป เช่น “สวัสดี” เพื่อเรียกความสนใจของคุณ หากคุณตอบข้อความ คนพวกนั้นอาจชวนคุณพูดคุยต่อไปเรื่อยๆ";
@@ -6902,10 +6902,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "หากต้องการเปลี่ยนการตั้งค่านี้ ให้ไปที่หัวข้อ “คนที่สามารถเห็นหมายเลขโทรศัพท์ของฉัน” แล้วเลือก “ไม่อนุญาตให้ใครเห็น”";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "การตั้งค่า “คนที่สามารถใช้หมายเลขโทรศัพท์ค้นหาฉันได้” เป็น “ไม่อนุญาตให้ใครค้นหา” จะทำให้ผู้ใช้คนอื่นค้นหาคุณได้ยากขึ้นบน Signal";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "ต้องการดำเนินการต่อหรือไม่";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "คนที่สามารถใช้หมายเลขโทรศัพท์ค้นหาฉันได้";

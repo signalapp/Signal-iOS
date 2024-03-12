@@ -2639,7 +2639,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "Nutzername";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "QR-Code scannen";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "Nach Nutzernamen suchen";
@@ -3551,7 +3551,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Anhang konnte nicht ausgewählt werden.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Verbinden …";
+"IN_CALL_CONNECTING" = "verbindet …";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Auf anderem Gerät angenommen.";
@@ -3566,7 +3566,7 @@
 "IN_CALL_RECONNECTING" = "Neu verbinden …";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Klingeln …";
+"IN_CALL_RINGING" = "klingelt …";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Sprachanruf …";
@@ -5897,10 +5897,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Nachrichten mit Links";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Weiter";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Zurück";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammer beginnen oft mit einer einfachen Nachricht wie „Hallo“, um dich anzulocken. Wenn du antwortest, wirst du möglicherweise weiter kontaktiert.";
@@ -6902,10 +6902,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Um diese Einstellung zu ändern, setze »Wer kann meine Telefonnummer sehen« auf »Niemand«.";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Wenn du »Wer kann mich anhand der Telefonnummer finden?« auf »Niemand« setzt, wird es für andere schwieriger, dich auf Signal zu finden.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Bist du sicher?";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wer kann mich anhand der Telefonnummer finden";
