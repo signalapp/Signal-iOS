@@ -280,10 +280,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let databaseContinuation = AppSetup().start(
             appContext: CurrentAppContext(),
-            appVersion: AppVersionImpl.shared,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
-            webSocketFactory: WebSocketFactoryNative(),
             callMessageHandler: AppEnvironment.sharedCallMessageHandler,
             notificationPresenter: AppEnvironment.sharedNotificationPresenter
         )

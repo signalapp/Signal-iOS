@@ -133,10 +133,8 @@ class NSEEnvironment: Dependencies {
 
         let databaseContinuation = AppSetup().start(
             appContext: CurrentAppContext(),
-            appVersion: AppVersionImpl.shared,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
-            webSocketFactory: WebSocketFactoryNative(),
             callMessageHandler: NSECallMessageHandler(),
             notificationPresenter: NotificationPresenter()
         )

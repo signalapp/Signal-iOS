@@ -55,10 +55,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         let databaseContinuation = AppSetup().start(
             appContext: appContext,
-            appVersion: AppVersionImpl.shared,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
-            webSocketFactory: WebSocketFactoryNative(),
             callMessageHandler: NoopCallMessageHandler(),
             notificationPresenter: NoopNotificationsManager()
         )

@@ -8,7 +8,7 @@ import XCTest
 
 class MessageSenderJobQueueTest: SSKBaseTestSwift {
     private var fakeMessageSender: FakeMessageSender {
-        MockSSKEnvironment.shared.messageSender as! FakeMessageSender
+        SSKEnvironment.shared.messageSenderRef as! FakeMessageSender
     }
 
     // MARK: 
