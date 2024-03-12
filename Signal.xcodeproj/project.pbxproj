@@ -236,7 +236,6 @@
 		3465F4D727287677001663AF /* MobileCoinAPI+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4D227287675001663AF /* MobileCoinAPI+Configuration.swift */; };
 		3465F4D827287677001663AF /* PaymentsImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4D327287675001663AF /* PaymentsImpl.swift */; };
 		3465F4D927287677001663AF /* MobileCoinAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4D427287675001663AF /* MobileCoinAPI.swift */; };
-		3465F4DB27287859001663AF /* PaymentsHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */; };
 		3465F4DD2728812B001663AF /* Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DC2728812A001663AF /* Payments.swift */; };
 		34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 34661FB720C1C0D60056EDD6 /* message_sent.aiff */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
@@ -1072,6 +1071,7 @@
 		725465242BA017D500EABFD2 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
 		725465252BA017EF00EABFD2 /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
 		725465282BA01A3800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
+		7254652A2BA01B4800EABFD2 /* PaymentsHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -5896,14 +5896,6 @@
 			path = Payments;
 			sourceTree = "<group>";
 		};
-		3474C56526111605006723D2 /* Payments */ = {
-			isa = PBXGroup;
-			children = (
-				3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */,
-			);
-			path = Payments;
-			sourceTree = "<group>";
-		};
 		347C3818252CE69400F3D941 /* CV */ = {
 			isa = PBXGroup;
 			children = (
@@ -6668,7 +6660,6 @@
 				34BB3C5723C6644B001651FC /* groups */,
 				D9668B32291B038D00665298 /* Jobs */,
 				88D23D0823CEBF4400B0E74B /* Notifications */,
-				3474C56526111605006723D2 /* Payments */,
 				88E34F2522F269B600966CC2 /* Storage Service */,
 				F00385FB273F6388000B5ABD /* Subscriptions */,
 				F9C612B5284E46A300B2199A /* test */,
@@ -10547,6 +10538,7 @@
 				3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */,
 				F9C5CAA0289453B200548EEE /* PaymentsEvents.swift */,
 				F9C5CAA7289453B200548EEE /* PaymentsHelper.swift */,
+				3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */,
 				F9C5CAAA289453B200548EEE /* TSPaymentModel+SDS.swift */,
 				F9C5CAA2289453B200548EEE /* TSPaymentModel.h */,
 				F9C5CAAB289453B200548EEE /* TSPaymentModel.m */,
@@ -12399,7 +12391,6 @@
 				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
 				764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */,
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,
-				3465F4DB27287859001663AF /* PaymentsHelperImpl.swift in Sources */,
 				D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */,
 				D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */,
 				D938CD6029283402006FB16A /* Paypal.swift in Sources */,
@@ -13723,6 +13714,7 @@
 				7254651F2BA014FC00EABFD2 /* PaymentsCurrenciesImpl.swift in Sources */,
 				F9C5CD7A289453B300548EEE /* PaymentsEvents.swift in Sources */,
 				F9C5CD81289453B300548EEE /* PaymentsHelper.swift in Sources */,
+				7254652A2BA01B4800EABFD2 /* PaymentsHelperImpl.swift in Sources */,
 				F9C5CD78289453B300548EEE /* PendingReadReceiptRecord.swift in Sources */,
 				F9C5CE20289453B400548EEE /* PendingTasks.swift in Sources */,
 				F9C5CD56289453B300548EEE /* PendingViewedReceiptRecord.swift in Sources */,
