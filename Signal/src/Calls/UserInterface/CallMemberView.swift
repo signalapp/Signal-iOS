@@ -143,6 +143,11 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
             layer.shadowOpacity = 0.25
             layer.shadowRadius = 4
             layer.cornerRadius = isFullScreen ? 0 : Constants.defaultPipCornerRadius
+            // In the context of `isCallInPip`, the "pip" refers to when the entire call is in a pip
+            // (ie, minimized in the app). This is not to be confused with the local member view pip
+            // (ie, when the call is full screen and the local user is displayed in a pip).
+            // The following line disallows having a [local member] pip within a [call] pip.
+            self.isHidden = WindowManager.shared.isCallInPip
         case .remoteInGroup(_):
             owsAssertDebug(remoteGroupMemberDeviceState != nil, "RemoteDeviceState must be given for remote members in group calls!")
             self.isUserInteractionEnabled = false

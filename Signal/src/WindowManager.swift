@@ -326,6 +326,10 @@ class WindowManager {
 
         ensureWindowState()
     }
+
+    var isCallInPip: Bool {
+        return returnToCallViewController.isCallInPip
+    }
 }
 
 // This VC can become first responder

@@ -76,6 +76,10 @@ public class ReturnToCallViewController: UIViewController {
         callViewController = nil
     }
 
+    var isCallInPip: Bool {
+        return nil != self.callViewController
+    }
+
     private lazy var avatarView = ConversationAvatarView(
         sizeClass: .customDiameter(60),
         localUserDisplayMode: .asUser,
