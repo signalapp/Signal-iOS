@@ -863,6 +863,14 @@ public extension Dependencies {
 
 public extension NSObject {
 
+    final var smJobQueues: SignalMessagingJobQueues {
+        SSKEnvironment.shared.smJobQueuesRef
+    }
+
+    static var smJobQueues: SignalMessagingJobQueues {
+        SSKEnvironment.shared.smJobQueuesRef
+    }
+
     final var avatarBuilder: AvatarBuilder {
         SSKEnvironment.shared.avatarBuilderRef
     }
@@ -931,6 +939,14 @@ public extension NSObject {
 // MARK: - Swift-only Dependencies
 
 public extension Dependencies {
+
+    var smJobQueues: SignalMessagingJobQueues {
+        SSKEnvironment.shared.smJobQueuesRef
+    }
+
+    static var smJobQueues: SignalMessagingJobQueues {
+        SSKEnvironment.shared.smJobQueuesRef
+    }
 
     var avatarBuilder: AvatarBuilder {
         SSKEnvironment.shared.avatarBuilderRef

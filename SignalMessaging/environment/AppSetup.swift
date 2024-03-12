@@ -226,9 +226,7 @@ public class AppSetup {
             messageSenderJobQueue: messageSenderJobQueue
         )
 
-        let smEnvironment = SMEnvironment(
-            smJobQueues: smJobQueues
-        )
+        let smEnvironment = SMEnvironment()
         SMEnvironment.setShared(smEnvironment)
 
         let sskEnvironment = SSKEnvironment(
@@ -292,7 +290,8 @@ public class AppSetup {
             callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue,
             preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
-            avatarBuilder: avatarBuilder
+            avatarBuilder: avatarBuilder,
+            smJobQueues: smJobQueues
         )
         SSKEnvironment.setShared(sskEnvironment, isRunningTests: appContext.isRunningTests)
 
@@ -359,7 +358,6 @@ extension AppSetup.DatabaseContinuation {
             }
             databaseStorage.runGrdbSchemaMigrationsOnMainDatabase {
                 self.sskEnvironment.warmCaches()
-                self.smEnvironment.didLoadDatabase()
                 self.backgroundTask.end()
                 future.resolve(AppSetup.FinalContinuation(
                     dependenciesBridge: self.dependenciesBridge,

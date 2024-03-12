@@ -87,6 +87,7 @@ public class SSKEnvironment: NSObject {
     public let preferencesRef: Preferences
     public let proximityMonitoringManagerRef: OWSProximityMonitoringManager
     public let avatarBuilderRef: AvatarBuilder
+    public let smJobQueuesRef: SignalMessagingJobQueues
 
     private let appExpiryRef: AppExpiry
     private let aciSignalProtocolStoreRef: SignalProtocolStore
@@ -153,7 +154,8 @@ public class SSKEnvironment: NSObject {
         callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue,
         preferences: Preferences,
         proximityMonitoringManager: OWSProximityMonitoringManager,
-        avatarBuilder: AvatarBuilder
+        avatarBuilder: AvatarBuilder,
+        smJobQueues: SignalMessagingJobQueues
     ) {
         self.contactManagerRef = contactManager
         self.linkPreviewManagerRef = linkPreviewManager
@@ -216,6 +218,7 @@ public class SSKEnvironment: NSObject {
         self.preferencesRef = preferences
         self.proximityMonitoringManagerRef = proximityMonitoringManager
         self.avatarBuilderRef = avatarBuilder
+        self.smJobQueuesRef = smJobQueues
     }
 
     public func signalProtocolStoreRef(for identity: OWSIdentity) -> SignalProtocolStore {
@@ -250,6 +253,11 @@ public class SSKEnvironment: NSObject {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.localUserLeaveGroupJobQueueRef.start(appContext: CurrentAppContext())
             self.callRecordDeleteAllJobQueueRef.start(appContext: CurrentAppContext())
+            self.smJobQueuesRef.broadcastMediaMessageJobQueue.start(appContext: CurrentAppContext())
+            self.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: CurrentAppContext())
+            self.smJobQueuesRef.receiptCredentialJobQueue.start(appContext: CurrentAppContext())
+            self.smJobQueuesRef.sendGiftBadgeJobQueue.start(appContext: CurrentAppContext())
+            self.smJobQueuesRef.sessionResetJobQueue.start(appContext: CurrentAppContext())
         }
 
         NotificationCenter.default.post(name: SSKEnvironment.warmCachesNotification, object: nil)

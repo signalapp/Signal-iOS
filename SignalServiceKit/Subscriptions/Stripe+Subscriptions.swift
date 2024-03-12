@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 
 extension Stripe {
     /// Create a payment method entry with the Signal service for a subscription

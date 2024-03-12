@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 
 public extension ProfileBadgesSnapshot {
     static func current() -> ProfileBadgesSnapshot {

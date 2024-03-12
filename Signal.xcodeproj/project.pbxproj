@@ -595,7 +595,6 @@
 		500AEE072A4DF48700371F05 /* ChatColorSettingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */; };
 		500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */; };
 		500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */; };
-		500FE490288615BA00FA090C /* CachedBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE48E2886148800FA090C /* CachedBadge.swift */; };
 		500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */; };
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
 		50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */; };
@@ -1072,6 +1071,25 @@
 		725465252BA017EF00EABFD2 /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
 		725465282BA01A3800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
 		7254652A2BA01B4800EABFD2 /* PaymentsHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */; };
+		725465382BA01FAA00EABFD2 /* SignalMessagingJobQueues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */; };
+		725465392BA01FAA00EABFD2 /* SendGiftBadgeJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */; };
+		7254653A2BA01FAA00EABFD2 /* ReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */; };
+		7254653B2BA01FCC00EABFD2 /* PreparedGiftPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */; };
+		7254653C2BA01FCC00EABFD2 /* DonationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FD273F6388000B5ABD /* DonationUtilities.swift */; };
+		7254653D2BA01FCC00EABFD2 /* Stripe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FE273F6388000B5ABD /* Stripe.swift */; };
+		7254653E2BA01FCC00EABFD2 /* DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F7A2C2935A32F00012C64 /* DonationMode.swift */; };
+		7254653F2BA01FCC00EABFD2 /* CachedBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE48E2886148800FA090C /* CachedBadge.swift */; };
+		725465402BA01FCC00EABFD2 /* Paypal+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABF292C5A3900DDD37E /* Paypal+API.swift */; };
+		725465412BA01FCC00EABFD2 /* Stripe+PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */; };
+		725465422BA01FCC00EABFD2 /* Stripe+StripeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */; };
+		725465432BA01FCC00EABFD2 /* Paypal+WebAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */; };
+		725465442BA01FCC00EABFD2 /* Stripe+Subscriptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */; };
+		725465452BA01FCC00EABFD2 /* ProfileBadgesSnapshot+Constructors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */; };
+		725465462BA01FCC00EABFD2 /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
+		725465472BA01FCC00EABFD2 /* SubscriptionManager+DonationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */; };
+		725465482BA01FCC00EABFD2 /* Stripe+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */; };
+		725465492BA01FCC00EABFD2 /* SubscriptionManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C8276A760600A1099B /* SubscriptionManagerImpl.swift */; };
+		7254654A2BA01FCC00EABFD2 /* Stripe+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -1117,7 +1135,6 @@
 		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
 		7647A33C2A270348002EAC93 /* FingerprintScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */; };
 		7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7649813E2A2306DA00EC1287 /* SMEnvironment.swift */; };
-		764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981422A230F2C00EC1287 /* MockSMEnvironment.swift */; };
 		764981452A23194F00EC1287 /* CVItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981442A23194F00EC1287 /* CVItemViewModel.swift */; };
 		764FE03F2A2EC2E2004D2804 /* UIViewController+Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */; };
 		764FE0412A2EF3A7004D2804 /* TextFieldFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */; };
@@ -1274,8 +1291,6 @@
 		8868A089287F4514000E74A5 /* NewStorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8868A088287F4514000E74A5 /* NewStorySheet.swift */; };
 		8868A08A287F4551000E74A5 /* InteractiveSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */; };
 		8868A08C287F4F81000E74A5 /* OWSTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */; };
-		886A58CA276A760600A1099B /* SubscriptionManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C8276A760600A1099B /* SubscriptionManagerImpl.swift */; };
-		886A58CB276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */; };
 		886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */; };
 		886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */; };
 		886BB3D425BA0CA900079781 /* ColorAndWallpaperSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8A25B8B3CC0008C78A /* ColorAndWallpaperSettingsViewController.swift */; };
@@ -1475,7 +1490,6 @@
 		C1CD0E382A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E372A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift */; };
 		C1CD0E3A2A6B0D2700307F1A /* SignalSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */; };
 		C1CD0E402A6B37BF00307F1A /* SSKPreKeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */; };
-		C1D5836F2B03DFED00EE8FD9 /* Stripe+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */; };
 		C1D9B1532B7E949500D94595 /* SpamReportingUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */; };
 		C1D9B1552B7FA28200D94595 /* SafetyTipsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */; };
 		C1DB22C329C9F95500757380 /* EditManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DB22C229C9F95500757380 /* EditManager.swift */; };
@@ -1528,7 +1542,6 @@
 		D91AC9402B63393300814975 /* OWSGroupCallMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91AC93F2B63393300814975 /* OWSGroupCallMessage.swift */; };
 		D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */; };
 		D91F0B4F2B193A7A0086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */; };
-		D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F7A2C2935A32F00012C64 /* DonationMode.swift */; };
 		D925937A28B0497900D5D437 /* LocalUserLeaveGroupJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */; };
 		D925C7BB2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925C7BA2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift */; };
 		D925F5512983399D00158EE4 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F5502983399D00158EE4 /* CircleButton.swift */; };
@@ -1558,15 +1571,12 @@
 		D93830812A7065C7006CDCDE /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
 		D93830832A708E95006CDCDE /* UsernameChangeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */; };
 		D93830852A784210006CDCDE /* UsernameApiClientImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */; };
-		D938CD6029283402006FB16A /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
 		D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */; };
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
 		D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */; };
 		D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */; };
 		D941863C2ACE252D002FE2D3 /* CallRecordLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
-		D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */; };
-		D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABF292C5A3900DDD37E /* Paypal+API.swift */; };
 		D95777BC2B46452100CFE3AE /* GroupCallPeekClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */; };
 		D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */; };
 		D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */; };
@@ -1579,9 +1589,7 @@
 		D95C39EA296E108100A9DA23 /* UsernameSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */; };
 		D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
-		D9668B35291B088200665298 /* SignalMessagingJobQueues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
-		D96A94A92955270D004EA434 /* Stripe+Subscriptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */; };
 		D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96BE42D292EF04200E4FE1A /* PaypalButton.swift */; };
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
@@ -1603,7 +1611,6 @@
 		D979DA112B8D1B06000EEAB8 /* BadgeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DC42A1860EF00A00935 /* BadgeManager.swift */; };
 		D979DA132B8D1B65000EEAB8 /* BadgeManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DCD2A1BEBAE00A00935 /* BadgeManagerTest.swift */; };
 		D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */; };
-		D98300B22936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */; };
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
 		D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
@@ -1615,7 +1622,6 @@
 		D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */; };
 		D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */; };
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
-		D99554712AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */; };
 		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
 		D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */; };
 		D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */; };
@@ -1728,8 +1734,6 @@
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
 		E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */; };
-		F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FD273F6388000B5ABD /* DonationUtilities.swift */; };
-		F0038601273F6388000B5ABD /* Stripe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FE273F6388000B5ABD /* Stripe.swift */; };
 		F02564D8274EDF4600D7B48A /* BadgeIssueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */; };
 		F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */; };
 		F090C8202762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F090C81F2762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift */; };
@@ -1754,7 +1758,6 @@
 		F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */; };
 		F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */; };
 		F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A77129CB6F6F00EB6F68 /* AccountDataReportTest.swift */; };
-		F9189ABE2947D7C300CD8EF6 /* Stripe+StripeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */; };
 		F9189AC02947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9189ABF2947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift */; };
 		F9198485299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
@@ -1764,7 +1767,6 @@
 		F927478828CFE9B10056EAFE /* test-png.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478728CFE9B10056EAFE /* test-png.png */; };
 		F927478A28CFE9C60056EAFE /* test-png-with-metadata.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478928CFE9C60056EAFE /* test-png-with-metadata.png */; };
 		F927478B28CFEA680056EAFE /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
-		F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */; };
 		F92E4C74299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92E4C73299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift */; };
 		F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */; };
 		F93461B0291EB5E300366682 /* DonationPaymentDetailsViewController+FormState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461AF291EB5E300366682 /* DonationPaymentDetailsViewController+FormState.swift */; };
@@ -1902,10 +1904,8 @@
 		F97D10FB291C7FF900F0FFAA /* FakeCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */; };
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
 		F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */; };
-		F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */; };
 		F98ED2CE2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CD2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift */; };
 		F98ED2D02922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CF2922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift */; };
-		F98ED2D629255E92008483DC /* Stripe+PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */; };
 		F992ACC428F8C9D900906038 /* StripeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F992ACC328F8C9D900906038 /* StripeTest.swift */; };
 		F9952B2F29F1E59F00EA989E /* OsExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9952B2E29F1E59F00EA989E /* OsExpiry.swift */; };
 		F9952B3129F2D99500EA989E /* ExpirationNagViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */; };
@@ -1933,7 +1933,6 @@
 		F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4D28948656004E07B7 /* GTSR4.crt */; };
 		F9B368732977027E00CF1E6D /* DonationViewsUtil+Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B368722977027E00CF1E6D /* DonationViewsUtil+Paypal.swift */; };
 		F9B3A9292935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A9282935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift */; };
-		F9B3A92B2935472F0071EB95 /* Stripe+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */; };
 		F9B3A92D293553930071EB95 /* ASWebAuthenticationSession+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */; };
 		F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92E293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift */; };
 		F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */; };
@@ -3867,7 +3866,6 @@
 		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
 		7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintScanViewController.swift; sourceTree = "<group>"; };
 		7649813E2A2306DA00EC1287 /* SMEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMEnvironment.swift; sourceTree = "<group>"; };
-		764981422A230F2C00EC1287 /* MockSMEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSMEnvironment.swift; sourceTree = "<group>"; };
 		764981442A23194F00EC1287 /* CVItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVItemViewModel.swift; sourceTree = "<group>"; };
 		764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Permissions.swift"; sourceTree = "<group>"; };
 		764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFormatting.swift; sourceTree = "<group>"; };
@@ -6658,10 +6656,8 @@
 				346129A11FD1F09100532771 /* contacts */,
 				3461293F1FD1D74B00532771 /* environment */,
 				34BB3C5723C6644B001651FC /* groups */,
-				D9668B32291B038D00665298 /* Jobs */,
 				88D23D0823CEBF4400B0E74B /* Notifications */,
 				88E34F2522F269B600966CC2 /* Storage Service */,
-				F00385FB273F6388000B5ABD /* Subscriptions */,
 				F9C612B5284E46A300B2199A /* test */,
 				34480B471FD0A60200BC14EF /* utils */,
 				453518951FC63DBF00210559 /* Info.plist */,
@@ -8868,14 +8864,30 @@
 		D91A39E62AE2F42000F57A61 /* Subscriptions */ = {
 			isa = PBXGroup;
 			children = (
+				500FE48E2886148800FA090C /* CachedBadge.swift */,
+				D91F7A2C2935A32F00012C64 /* DonationMode.swift */,
 				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
 				D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */,
+				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
 				C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */,
+				D9517ABF292C5A3900DDD37E /* Paypal+API.swift */,
+				D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */,
+				D938CD5F29283402006FB16A /* Paypal.swift */,
+				F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */,
+				D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */,
 				D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */,
 				D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */,
 				D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */,
 				D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */,
+				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
+				C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */,
+				F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */,
+				F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */,
+				D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */,
+				F00385FE273F6388000B5ABD /* Stripe.swift */,
 				C1FB9B722B16495D00D51A3B /* SubscriptionLevel.swift */,
+				D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */,
+				886A58C8276A760600A1099B /* SubscriptionManagerImpl.swift */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -9011,16 +9023,9 @@
 				D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */,
 				F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */,
 				4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */,
-				45D231761DC7E8F10034FA89 /* SessionResetJob.swift */,
-			);
-			path = Jobs;
-			sourceTree = "<group>";
-		};
-		D9668B32291B038D00665298 /* Jobs */ = {
-			isa = PBXGroup;
-			children = (
 				886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */,
 				F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */,
+				45D231761DC7E8F10034FA89 /* SessionResetJob.swift */,
 				D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */,
 			);
 			path = Jobs;
@@ -9295,29 +9300,6 @@
 				E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */,
 			);
 			path = subscriptions;
-			sourceTree = "<group>";
-		};
-		F00385FB273F6388000B5ABD /* Subscriptions */ = {
-			isa = PBXGroup;
-			children = (
-				500FE48E2886148800FA090C /* CachedBadge.swift */,
-				D91F7A2C2935A32F00012C64 /* DonationMode.swift */,
-				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
-				D9517ABF292C5A3900DDD37E /* Paypal+API.swift */,
-				D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */,
-				D938CD5F29283402006FB16A /* Paypal.swift */,
-				F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */,
-				D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */,
-				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
-				C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */,
-				F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */,
-				F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */,
-				D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */,
-				F00385FE273F6388000B5ABD /* Stripe.swift */,
-				D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */,
-				886A58C8276A760600A1099B /* SubscriptionManagerImpl.swift */,
-			);
-			path = Subscriptions;
 			sourceTree = "<group>";
 		};
 		F0B872B4269CF01E00D26481 /* Context Menus */ = {
@@ -10915,7 +10897,6 @@
 		F9C612B5284E46A300B2199A /* test */ = {
 			isa = PBXGroup;
 			children = (
-				764981422A230F2C00EC1287 /* MockSMEnvironment.swift */,
 				505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */,
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 				503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */,
@@ -12375,12 +12356,9 @@
 			files = (
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
-				500FE490288615BA00FA090C /* CachedBadge.swift in Sources */,
 				5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */,
 				5096BE652AF3514800668F9F /* ContactSyncAttachmentBuilder.swift in Sources */,
 				3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */,
-				D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */,
-				F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */,
 				D95777BC2B46452100CFE3AE /* GroupCallPeekClient.swift in Sources */,
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */,
@@ -12389,29 +12367,12 @@
 				345DE96023ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift in Sources */,
 				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
-				764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */,
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,
-				D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */,
-				D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */,
-				D938CD6029283402006FB16A /* Paypal.swift in Sources */,
-				F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */,
-				D99554712AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift in Sources */,
-				886A58CB276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift in Sources */,
-				F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */,
-				D9668B35291B088200665298 /* SignalMessagingJobQueues.swift in Sources */,
 				7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */,
 				340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */,
 				88E34F2722F269E900966CC2 /* StorageServiceManagerImpl.swift in Sources */,
 				88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */,
 				6619A1CD2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift in Sources */,
-				F9B3A92B2935472F0071EB95 /* Stripe+3DSecure.swift in Sources */,
-				C1D5836F2B03DFED00EE8FD9 /* Stripe+IDEAL.swift in Sources */,
-				F98ED2D629255E92008483DC /* Stripe+PaymentMethod.swift in Sources */,
-				F9189ABE2947D7C300CD8EF6 /* Stripe+StripeError.swift in Sources */,
-				D96A94A92955270D004EA434 /* Stripe+Subscriptions.swift in Sources */,
-				F0038601273F6388000B5ABD /* Stripe.swift in Sources */,
-				D98300B22936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift in Sources */,
-				886A58CA276A760600A1099B /* SubscriptionManagerImpl.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -13238,6 +13199,7 @@
 				D9AE0ACB29162C160063488B /* BroadcastMediaMessageJobRecord.swift in Sources */,
 				F9C5CE39289453B400548EEE /* BulkProfileFetch.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
+				7254653F2BA01FCC00EABFD2 /* CachedBadge.swift in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
 				72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */,
 				D9C544292B8578B50036F274 /* CallRecord+CallStatus.swift in Sources */,
@@ -13334,10 +13296,12 @@
 				F9C5CDE8289453B400548EEE /* DispatchQueue+OWS.swift in Sources */,
 				6600F380298F27FE00B1EDB7 /* DispatchQueueSchedulers.swift in Sources */,
 				50A40ED32B88005A0060C5A5 /* DisplayName.swift in Sources */,
+				7254653E2BA01FCC00EABFD2 /* DonationMode.swift in Sources */,
 				D91A39E72AE2F44400F57A61 /* DonationPaymentMethod.swift in Sources */,
 				D91A39E92AE2F4C000F57A61 /* DonationPaymentProcessor.swift in Sources */,
 				F9C5CD7F289453B300548EEE /* DonationReceipt.swift in Sources */,
 				F9C5CD87289453B300548EEE /* DonationReceiptFinder.swift in Sources */,
+				7254653C2BA01FCC00EABFD2 /* DonationUtilities.swift in Sources */,
 				F9C5CC14289453B300548EEE /* DownloadStickerOperation.swift in Sources */,
 				F9C5CC18289453B300548EEE /* DownloadStickerPackOperation.swift in Sources */,
 				5003BB43299F034D0037159B /* E164.swift in Sources */,
@@ -13715,6 +13679,9 @@
 				F9C5CD7A289453B300548EEE /* PaymentsEvents.swift in Sources */,
 				F9C5CD81289453B300548EEE /* PaymentsHelper.swift in Sources */,
 				7254652A2BA01B4800EABFD2 /* PaymentsHelperImpl.swift in Sources */,
+				725465402BA01FCC00EABFD2 /* Paypal+API.swift in Sources */,
+				725465432BA01FCC00EABFD2 /* Paypal+WebAuthentication.swift in Sources */,
+				725465462BA01FCC00EABFD2 /* Paypal.swift in Sources */,
 				F9C5CD78289453B300548EEE /* PendingReadReceiptRecord.swift in Sources */,
 				F9C5CE20289453B400548EEE /* PendingTasks.swift in Sources */,
 				F9C5CD56289453B300548EEE /* PendingViewedReceiptRecord.swift in Sources */,
@@ -13749,6 +13716,8 @@
 				C1ED5CA12A72E3D5009AD3FC /* PreKeyTaskManager.swift in Sources */,
 				6659A0312A7C5B9700066AB7 /* PreKeyUploadBundle.swift in Sources */,
 				6681AB652B7AE53B0099D187 /* PreloadedTextAttachment.swift in Sources */,
+				7254653B2BA01FCC00EABFD2 /* PreparedGiftPayment.swift in Sources */,
+				725465452BA01FCC00EABFD2 /* ProfileBadgesSnapshot+Constructors.swift in Sources */,
 				D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */,
 				F9C5CE38289453B400548EEE /* ProfileFetcherJob.swift in Sources */,
 				503BD2892B44D666009624FC /* ProfileManager.swift in Sources */,
@@ -13774,6 +13743,7 @@
 				F9C5CC3D289453B300548EEE /* ReactionManager.swift in Sources */,
 				6605B9802B194A7900E8A68A /* ReactionStore.swift in Sources */,
 				F9C5CE14289453B400548EEE /* ReadyFlag.swift in Sources */,
+				7254653A2BA01FAA00EABFD2 /* ReceiptCredentialRedemptionJobQueue.swift in Sources */,
 				D9AE0AD32918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift in Sources */,
 				D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */,
 				D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */,
@@ -13841,6 +13811,7 @@
 				6691E7F72996EAD70032A68A /* SecureValueRecoveryMock.swift in Sources */,
 				6698FC1C2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift in Sources */,
 				F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */,
+				725465392BA01FAA00EABFD2 /* SendGiftBadgeJobQueue.swift in Sources */,
 				D9AE0AD5291877600063488B /* SendGiftBadgeJobRecord.swift in Sources */,
 				6619A1C52B2BA05C004B38FE /* SentMessageTranscript.swift in Sources */,
 				6619A1C12B2A8587004B38FE /* SentMessageTranscriptReceiver+Shims.swift in Sources */,
@@ -13868,6 +13839,7 @@
 				7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */,
 				F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */,
 				F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */,
+				725465382BA01FAA00EABFD2 /* SignalMessagingJobQueues.swift in Sources */,
 				C1CD0E362A6B0BC900307F1A /* SignalPreKeyStore.swift in Sources */,
 				F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */,
 				C1939F6F2A844E4D003BAEF0 /* SignalProtocolStoreMocks.swift in Sources */,
@@ -13929,10 +13901,18 @@
 				6659FA4F2B69B16F0036E7AF /* StoryMessageResource.swift in Sources */,
 				6619A1972B27CA5F004B38FE /* StoryStore.swift in Sources */,
 				F9C5CDDB289453B400548EEE /* String+SSK.swift in Sources */,
+				7254654A2BA01FCC00EABFD2 /* Stripe+3DSecure.swift in Sources */,
+				725465482BA01FCC00EABFD2 /* Stripe+IDEAL.swift in Sources */,
+				725465412BA01FCC00EABFD2 /* Stripe+PaymentMethod.swift in Sources */,
+				725465422BA01FCC00EABFD2 /* Stripe+StripeError.swift in Sources */,
+				725465442BA01FCC00EABFD2 /* Stripe+Subscriptions.swift in Sources */,
+				7254653D2BA01FCC00EABFD2 /* Stripe.swift in Sources */,
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,
 				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,
 				C1FB9B732B16495D00D51A3B /* SubscriptionLevel.swift in Sources */,
+				725465472BA01FCC00EABFD2 /* SubscriptionManager+DonationConfiguration.swift in Sources */,
 				F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */,
+				725465492BA01FCC00EABFD2 /* SubscriptionManagerImpl.swift in Sources */,
 				662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */,
 				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,
 				669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */,

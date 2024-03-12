@@ -4,8 +4,7 @@
 //
 
 import XCTest
-@testable import SignalMessaging
-import SignalServiceKit
+@testable import SignalServiceKit
 
 class SubscriptionChargeFailureTest: XCTestCase {
     typealias ChargeFailure = Subscription.ChargeFailure

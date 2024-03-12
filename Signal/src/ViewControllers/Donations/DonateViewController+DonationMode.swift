@@ -4,18 +4,18 @@
 //
 
 import Foundation
-import SignalMessaging
+import SignalServiceKit
 
 extension DonateViewController {
     /// Represents the modes by which a user can donate in this view. Not to be
-    /// confused with ``SignalMessaging.DonationMode``.
+    /// confused with ``SignalServiceKit.DonationMode``.
     enum DonateMode: Int {
         case oneTime
         case monthly
 
         /// Converts the donation mode (one-time or monthly) for this view to
         /// the view-agnostic donation mode.
-        var asDonationMode: SignalMessaging.DonationMode {
+        var asDonationMode: SignalServiceKit.DonationMode {
             switch self {
             case .oneTime: return .oneTime
             case .monthly: return .monthly

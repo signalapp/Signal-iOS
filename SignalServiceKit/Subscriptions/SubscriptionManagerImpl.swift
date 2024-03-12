@@ -6,7 +6,6 @@
 import Foundation
 import PassKit
 import LibSignalClient
-import SignalServiceKit
 
 public enum OneTimeBadgeLevel: Hashable {
     case boostBadge

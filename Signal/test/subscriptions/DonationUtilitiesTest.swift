@@ -4,7 +4,7 @@
 //
 
 import XCTest
-import SignalMessaging
+import SignalServiceKit
 
 final class DonationUtilitiesTest: XCTestCase {
     func testChooseDefaultCurrency() throws {

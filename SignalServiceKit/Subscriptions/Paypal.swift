@@ -5,6 +5,5 @@
 
 import AuthenticationServices
 import Foundation
-import SignalServiceKit
 
 public struct Paypal: Dependencies {}

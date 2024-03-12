@@ -6,7 +6,7 @@
 import Foundation
 import PassKit
 import SignalCoreKit
-import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 extension DonateViewController {

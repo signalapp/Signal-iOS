@@ -18,14 +18,6 @@ public extension NSObject {
     static var lightweightGroupCallManager: LightweightGroupCallManager? {
         SMEnvironment.shared.lightweightGroupCallManagerRef
     }
-
-    var smJobQueues: SignalMessagingJobQueues {
-        SMEnvironment.shared.smJobQueuesRef
-    }
-
-    static var smJobQueues: SignalMessagingJobQueues {
-        SMEnvironment.shared.smJobQueuesRef
-    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -46,14 +38,6 @@ public extension Dependencies {
 
     static var groupV2UpdatesImpl: GroupV2UpdatesImpl {
         groupV2Updates as! GroupV2UpdatesImpl
-    }
-
-    var smJobQueues: SignalMessagingJobQueues {
-        SMEnvironment.shared.smJobQueuesRef
-    }
-
-    static var smJobQueues: SignalMessagingJobQueues {
-        SMEnvironment.shared.smJobQueuesRef
     }
 }
 

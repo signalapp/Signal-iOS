@@ -4,6 +4,7 @@
 //
 
 import SignalCoreKit
+import SignalServiceKit
 import SignalUI
 import SignalMessaging
 

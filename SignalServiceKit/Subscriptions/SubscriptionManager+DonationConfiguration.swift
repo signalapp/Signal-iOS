@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-
 extension SubscriptionManagerImpl {
     /// Represents donation configuration information fetched from the service,
     /// such as preset donation levels and badge information.

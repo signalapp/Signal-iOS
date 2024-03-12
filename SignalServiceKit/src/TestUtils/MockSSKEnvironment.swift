@@ -211,6 +211,10 @@ public class MockSSKEnvironment: SSKEnvironment {
         let preferences = Preferences()
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
         let avatarBuilder = AvatarBuilder()
+        let smJobQueues = SignalMessagingJobQueues(
+            db: DependenciesBridge.shared.db,
+            reachabilityManager: reachabilityManager
+        )
 
         super.init(
             contactManager: contactManager,
@@ -273,7 +277,8 @@ public class MockSSKEnvironment: SSKEnvironment {
             callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue,
             preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
-            avatarBuilder: avatarBuilder
+            avatarBuilder: avatarBuilder,
+            smJobQueues: smJobQueues
         )
     }
 

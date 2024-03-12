@@ -799,7 +799,7 @@ extension DonationPaymentDetailsViewController: CreditOrDebitCardDonationFormVie
 extension DonationPaymentDetailsViewController: DonationPaymentDetailsSelectIdealBankDelegate {
     func viewController(
         _ viewController: DonationPaymentDetailsSelectIdealBankViewController,
-        didSelect IDEALBank: SignalMessaging.Stripe.PaymentMethod.IDEALBank
+        didSelect IDEALBank: SignalServiceKit.Stripe.PaymentMethod.IDEALBank
     ) {
         self.IDEALBank = IDEALBank
         let sections = [donationAmountSection] + formSections()

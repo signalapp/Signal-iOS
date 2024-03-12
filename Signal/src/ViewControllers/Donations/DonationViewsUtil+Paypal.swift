@@ -23,7 +23,7 @@ extension DonationViewsUtil {
                 canCancel: false
             ) { modal in
                 firstly {
-                    SignalMessaging.Paypal.createBoost(amount: amount, level: level)
+                    SignalServiceKit.Paypal.createBoost(amount: amount, level: level)
                 }.map(on: DispatchQueue.main) { approvalUrl in
                     modal.dismiss { future.resolve(approvalUrl) }
                 }.catch(on: DispatchQueue.main) { error in

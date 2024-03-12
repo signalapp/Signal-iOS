@@ -5,7 +5,6 @@
 
 import Foundation
 import PassKit
-import SignalServiceKit
 
 /// Stripe donations
 ///

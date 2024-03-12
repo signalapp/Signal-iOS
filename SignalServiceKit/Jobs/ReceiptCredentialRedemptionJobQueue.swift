@@ -5,7 +5,6 @@
 
 import LibSignalClient
 import SignalCoreKit
-import SignalServiceKit
 
 /// Manages "donation receipt credential" redemption.
 ///

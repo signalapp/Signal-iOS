@@ -5,7 +5,6 @@
 
 import GRDB
 import LibSignalClient
-import SignalServiceKit
 
 // MARK: - Job Queue
 

@@ -5,8 +5,7 @@
 
 import XCTest
 @testable import Signal
-@testable import SignalMessaging
-import SignalServiceKit
+@testable import SignalServiceKit
 
 class BadgeGiftingChooseBadgeViewControllerStateTest: XCTestCase {
     typealias State = BadgeGiftingChooseBadgeViewController.State
