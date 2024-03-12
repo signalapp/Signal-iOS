@@ -93,29 +93,28 @@ public class DonationUtilities: Dependencies {
         }()
 
         let isSEPAAvailable = {
+            if !TSConstants.isUsingProductionService {
+                return true
+            }
+
             guard RemoteConfig.sepaEnabledRegions.contains(e164: localNumber) else {
-                // Only enabled for specific regions
                 return false
             }
 
             switch donationMode {
             case .oneTime, .monthly:
-                if FeatureFlags.isPrerelease {
-                    // Always enabled for beta users
-                    return true
-                }
-
-                return RemoteConfig.canDonateWithSepa
+                return true
             case .gift:
                 return false
             }
         }()
 
         let isIDEALAvailable = {
-            guard
-                FeatureFlags.allowInternalIDEALDonations ||
-                RemoteConfig.idealEnabledRegions.contains(e164: localNumber)
-            else {
+            if !TSConstants.isUsingProductionService {
+                return true
+            }
+
+            guard RemoteConfig.idealEnabledRegions.contains(e164: localNumber) else {
                 return false
             }
 

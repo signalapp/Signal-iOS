@@ -181,10 +181,6 @@ public class RemoteConfig: NSObject {
         !isEnabled(.paypalMonthlyDonationKillSwitch)
     }
 
-    public static var canDonateWithSepa: Bool {
-        isEnabled(.canDonateWithSepa)
-    }
-
     public static var paypalDisabledRegions: PhoneNumberRegions {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.paypalDisabledRegions
@@ -473,7 +469,6 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
-    case canDonateWithSepa = "ios.canDonateWithSepa"
     case enableGifSearch = "global.gifSearch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
 
@@ -493,7 +488,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalMonthlyDonationKillSwitch: fallthrough
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
-        case .canDonateWithSepa: fallthrough
         case .enableGifSearch: fallthrough
         case .serviceExtensionFailureKillSwitch:
             return false
@@ -517,7 +511,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalMonthlyDonationKillSwitch: fallthrough
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
-        case .canDonateWithSepa: fallthrough
         case .enableGifSearch:
             return false
         }

@@ -72,8 +72,6 @@ public class FeatureFlags: NSObject {
 
     public static let isPrerelease = build.includes(.beta)
 
-    public static let allowInternalIDEALDonations = build.includes(.internal)
-
     public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = false
     public static let useCallMemberComposableViewsForRemoteUserInIndividualCalls = false
     public static let useCallMemberComposableViewsForLocalUser = false
