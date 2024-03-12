@@ -1068,6 +1068,7 @@
 		725464EC2B9F6EB900EABFD2 /* BroadcastMediaMessageJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */; };
 		725464EE2B9FAA8800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
 		725464EF2B9FAA9400EABFD2 /* OWSGroupSyncProcessingJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */; };
+		725464F62B9FAC7600EABFD2 /* CGPointExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -2508,7 +2509,6 @@
 		F9C5CE78289453B400548EEE /* GroupsV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBAA289453B200548EEE /* GroupsV2.swift */; };
 		F9C5CE79289453B400548EEE /* TSGroupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBAB289453B200548EEE /* TSGroupModel.swift */; };
 		F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */; };
-		F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */; };
 		F9C8CFCC2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFCB2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift */; };
 		F9C8CFD0293580D00094469C /* OWSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFCF293580D00094469C /* OWSTextField.swift */; };
 		F9C8CFD22936656E0094469C /* DonationPaymentDetailsViewController+FormFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFD12936656E0094469C /* DonationPaymentDetailsViewController+FormFieldView.swift */; };
@@ -9487,6 +9487,7 @@
 			isa = PBXGroup;
 			children = (
 				F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */,
+				F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */,
 				661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */,
 				F962B38B293F9F9F00765BD8 /* CRC32Test.swift */,
 				509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */,
@@ -10927,7 +10928,6 @@
 		F9C612B5284E46A300B2199A /* test */ = {
 			isa = PBXGroup;
 			children = (
-				F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */,
 				764981422A230F2C00EC1287 /* MockSMEnvironment.swift */,
 				505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */,
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
@@ -13138,7 +13138,6 @@
 				D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */,
 				D93108152B34B6BE006A034E /* CallRecordLoaderTest.swift in Sources */,
 				D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */,
-				F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
 				4C9D347B23679C25006A4307 /* ContactStreamTest.swift in Sources */,
 				4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */,
@@ -14161,6 +14160,7 @@
 				D979CC4E2AD4DECB006AAC49 /* CallRecordStatusTransitionManagerTest.swift in Sources */,
 				D979CC4D2AD4DECB006AAC49 /* CallRecordStoreTest.swift in Sources */,
 				D979CC572AD5E240006AAC49 /* CallRecordTest.swift in Sources */,
+				725464F62B9FAC7600EABFD2 /* CGPointExtensionsTest.swift in Sources */,
 				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
 				F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */,
