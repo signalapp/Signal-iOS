@@ -26,7 +26,6 @@
 		17EC850C29133CDB00319C82 /* CancelledGroupRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17EC850B29133CDB00319C82 /* CancelledGroupRing.swift */; };
 		23B9887F4A95010141FCF725 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E36B9FCE67E9FFDA471A085 /* Pods_SignalUI.framework */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
-		32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */; };
 		326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326DF2602739F4D90017B789 /* FeaturedBadgeViewController.swift */; };
 		327CF66825ACE7DD00DA0A6F /* GetStartedBannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */; };
 		328EF3DC25782A6A00D5C31D /* GroupCallSwipeToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */; };
@@ -1096,6 +1095,8 @@
 		7254655E2BA032A900EABFD2 /* StorageServiceContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */; };
 		725465602BA033E200EABFD2 /* UserNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0923CEBF4400B0E74B /* UserNotificationsPresenter.swift */; };
 		725465612BA033E200EABFD2 /* AppNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0A23CEBF4400B0E74B /* AppNotifications.swift */; };
+		725465622BA0348600EABFD2 /* GroupCallPeekClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */; };
+		725465632BA0348600EABFD2 /* LightweightGroupCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
@@ -1578,7 +1579,6 @@
 		D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */; };
 		D941863C2ACE252D002FE2D3 /* CallRecordLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
-		D95777BC2B46452100CFE3AE /* GroupCallPeekClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */; };
 		D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */; };
 		D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */; };
 		D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */; };
@@ -5552,15 +5552,6 @@
 			path = attachments;
 			sourceTree = "<group>";
 		};
-		32525F9327C74AC50099E801 /* calls */ = {
-			isa = PBXGroup;
-			children = (
-				D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */,
-				32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */,
-			);
-			path = calls;
-			sourceTree = "<group>";
-		};
 		32ECD08624BFBF5C00EDDED0 /* Help */ = {
 			isa = PBXGroup;
 			children = (
@@ -6628,7 +6619,6 @@
 		453518931FC63DBF00210559 /* SignalMessaging */ = {
 			isa = PBXGroup;
 			children = (
-				32525F9327C74AC50099E801 /* calls */,
 				3461293F1FD1D74B00532771 /* environment */,
 				34480B471FD0A60200BC14EF /* utils */,
 				453518951FC63DBF00210559 /* Info.plist */,
@@ -9590,6 +9580,8 @@
 				D9CA8AAD2B698B2400787167 /* DeletedCallRecord */,
 				D9AA379D2A86C9660088EFFB /* Group */,
 				D9AA379E2A86CA3F0088EFFB /* Individual */,
+				D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */,
+				32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */,
 				6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */,
 				D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */,
 				F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */,
@@ -12348,8 +12340,6 @@
 			files = (
 				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
 				3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */,
-				D95777BC2B46452100CFE3AE /* GroupCallPeekClient.swift in Sources */,
-				32525F9527C74B1A0099E801 /* LightweightGroupCallManager.swift in Sources */,
 				7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -13323,6 +13313,7 @@
 				F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */,
 				F9C5CE73289453B400548EEE /* GroupAccess.swift in Sources */,
 				D979CC592AD61641006AAC49 /* GroupCallInteractionFinder.swift in Sources */,
+				725465622BA0348600EABFD2 /* GroupCallPeekClient.swift in Sources */,
 				D979CC5B2AD61699006AAC49 /* GroupCallRecordManager.swift in Sources */,
 				D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */,
 				D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */,
@@ -13397,6 +13388,7 @@
 				F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */,
 				F9C5CD4C289453B300548EEE /* LegacySessionRecord.m in Sources */,
 				F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */,
+				725465632BA0348600EABFD2 /* LightweightGroupCallManager.swift in Sources */,
 				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
 				50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */,
 				F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */,

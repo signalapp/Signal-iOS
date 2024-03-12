@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalServiceKit
 import SignalRingRTC
 
 /// Responsible for updating group call state when we learn it may have changed.
