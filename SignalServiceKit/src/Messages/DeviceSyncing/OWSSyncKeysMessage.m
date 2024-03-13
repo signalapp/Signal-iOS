@@ -49,15 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
         keysBuilder.master = self.masterKey;
     }
 
-    NSError *error;
-    SSKProtoSyncMessageKeys *_Nullable keysProto = [keysBuilder buildAndReturnError:&error];
-    if (error || !keysProto) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
-        return nil;
-    }
-
     SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessage builder];
-    builder.keys = keysProto;
+    builder.keys = [keysBuilder buildInfallibly];
     return builder;
 }
 

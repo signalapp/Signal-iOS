@@ -364,25 +364,25 @@ class StoryManagerTest: SSKBaseTestSwift {
 
     static func makePrivateStory() throws -> SSKProtoStoryMessage {
         let storyMessageBuilder = SSKProtoStoryMessage.builder()
-        storyMessageBuilder.setFileAttachment(try makeImageAttachment())
+        storyMessageBuilder.setFileAttachment(makeImageAttachment())
         storyMessageBuilder.setProfileKey(Randomness.generateRandomBytes(32))
         return try storyMessageBuilder.build()
     }
 
-    static func makeImageAttachment() throws -> SSKProtoAttachmentPointer {
+    static func makeImageAttachment() -> SSKProtoAttachmentPointer {
         let builder = SSKProtoAttachmentPointer.builder()
         builder.setCdnID(1)
         builder.setKey(Randomness.generateRandomBytes(32))
         builder.setContentType(OWSMimeTypeImageJpeg)
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
     static func makeGroupStory() throws -> SSKProtoStoryMessage {
         let storyMessageBuilder = SSKProtoStoryMessage.builder()
-        storyMessageBuilder.setFileAttachment(try makeImageAttachment())
+        storyMessageBuilder.setFileAttachment(makeImageAttachment())
         storyMessageBuilder.setProfileKey(Randomness.generateRandomBytes(32))
 
-        let groupContext = try makeGroupContext()
+        let groupContext = makeGroupContext()
         let groupInfo = try makeGroupContextInfo(for: groupContext)
         (groupsV2 as! MockGroupsV2).groupV2ContextInfos[groupContext.masterKey!] = groupInfo
 
@@ -418,11 +418,11 @@ class StoryManagerTest: SSKBaseTestSwift {
         thread.anyInsert(transaction: transaction)
     }
 
-    static func makeGroupContext() throws -> SSKProtoGroupContextV2 {
+    static func makeGroupContext() -> SSKProtoGroupContextV2 {
         let builder = SSKProtoGroupContextV2.builder()
         builder.setMasterKey(Data())
         builder.setRevision(1)
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
     static func makeGroupContextInfo(for context: SSKProtoGroupContextV2) throws -> GroupV2ContextInfo {

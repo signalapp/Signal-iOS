@@ -443,7 +443,7 @@ public struct FakeService: Dependencies {
         receiptMessageBuilder.setTimestamp([timestamp])
 
         let contentBuilder = SSKProtoContent.builder()
-        contentBuilder.setReceiptMessage(try receiptMessageBuilder.build())
+        contentBuilder.setReceiptMessage(receiptMessageBuilder.buildInfallibly())
 
         return try contentBuilder.buildSerializedData()
     }

@@ -1146,15 +1146,15 @@ extension CallService: CallManagerDelegate {
                 withContactAddress: SignalServiceAddress(recipientAci),
                 transaction: transaction
             )
-        }.then(on: DispatchQueue.global()) { thread throws -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { thread -> Promise<Void> in
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
             opaqueBuilder.setUrgency(urgency.protobufValue)
 
-            return try Self.databaseStorage.write { transaction in
+            return Self.databaseStorage.write { transaction in
                 let callMessage = OWSOutgoingCallMessage(
                     thread: thread,
-                    opaqueMessage: try opaqueBuilder.build(),
+                    opaqueMessage: opaqueBuilder.buildInfallibly(),
                     transaction: transaction
                 )
 
@@ -1198,15 +1198,15 @@ extension CallService: CallManagerDelegate {
                 throw OWSAssertionError("tried to send call message to unknown group")
             }
             return thread
-        }.then(on: DispatchQueue.global()) { thread throws -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { thread -> Promise<Void> in
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
             opaqueBuilder.setUrgency(urgency.protobufValue)
 
-            return try Self.databaseStorage.write { transaction in
+            return Self.databaseStorage.write { transaction in
                 let callMessage = OWSOutgoingCallMessage(
                     thread: thread,
-                    opaqueMessage: try opaqueBuilder.build(),
+                    opaqueMessage: opaqueBuilder.buildInfallibly(),
                     transaction: transaction
                 )
 

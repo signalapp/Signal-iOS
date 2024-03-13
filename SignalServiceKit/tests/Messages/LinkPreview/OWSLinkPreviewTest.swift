@@ -24,7 +24,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         imageAttachmentBuilder.setCdnID(1)
         imageAttachmentBuilder.setKey(Randomness.generateRandomBytes(32))
         imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
-        previewBuilder.setImage(try! imageAttachmentBuilder.build())
+        previewBuilder.setImage(imageAttachmentBuilder.buildInfallibly())
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 
@@ -58,7 +58,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         imageAttachmentBuilder.setCdnID(1)
         imageAttachmentBuilder.setKey(Randomness.generateRandomBytes(32))
         imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
-        previewBuilder.setImage(try! imageAttachmentBuilder.build())
+        previewBuilder.setImage(imageAttachmentBuilder.buildInfallibly())
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 

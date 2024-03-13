@@ -1172,18 +1172,15 @@ public func serializedData() throws -> Data {
         writer.newline()
 
         # build() func
-        writer.add_objc()
-        writer.add('public func build() throws -> %s {' % self.swift_name)
-        writer.push_indent()
         if self.can_init_throw():
+            writer.add_objc()
+            writer.add('public func build() throws -> %s {' % self.swift_name)
+            writer.push_indent()
             writer.add('return try %s(proto)' % self.swift_name)
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
         else:
-            writer.add('return %s(proto)' % self.swift_name)
-        writer.pop_indent()
-        writer.add('}')
-        writer.newline()
-
-        if not self.can_init_throw():
             writer.add_objc()
             writer.add('public func buildInfallibly() -> %s {' % self.swift_name)
             writer.push_indent()

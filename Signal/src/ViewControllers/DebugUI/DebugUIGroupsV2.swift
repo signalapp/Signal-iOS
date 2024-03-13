@@ -177,7 +177,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("\(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -195,7 +195,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("\(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -212,7 +212,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("\(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -231,7 +231,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("\(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -250,7 +250,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("\(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -269,7 +269,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("\(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -284,7 +284,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 // Don't set revision.
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("\(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -299,7 +299,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("\(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -317,7 +317,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("\(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -334,7 +334,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("Valid gv2 message.")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -373,7 +373,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setGroupChange(changeActionsProtoData)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("Invalid embedded change actions proto: \(messages.count)")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)
@@ -390,7 +390,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 builder.setRevision(revision)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setGroupV2(builder.buildInfallibly())
                 dataBuilder.setRequiredProtocolVersion(0)
                 dataBuilder.setBody("Valid gv2 message.")
                 return Self.contentProtoData(forDataBuilder: dataBuilder)

@@ -1112,13 +1112,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
         }
     }
 
-    NSError *error;
-    SSKProtoAttachmentPointer *_Nullable attachmentProto = [builder buildAndReturnError:&error];
-    if (error || !attachmentProto) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
-        return nil;
-    }
-    return attachmentProto;
+    return [builder buildInfallibly];
 }
 
 @end

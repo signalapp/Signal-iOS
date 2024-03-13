@@ -53,15 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
     configurationBuilder.linkPreviews = self.sendLinkPreviews;
     configurationBuilder.provisioningVersion = OWSDeviceProvisionerConstant.provisioningVersion;
 
-    NSError *error;
-    SSKProtoSyncMessageConfiguration *_Nullable configurationProto = [configurationBuilder buildAndReturnError:&error];
-    if (error || !configurationProto) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
-        return nil;
-    }
-
     SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessage builder];
-    builder.configuration = configurationProto;
+    builder.configuration = [configurationBuilder buildInfallibly];
     return builder;
 }
 

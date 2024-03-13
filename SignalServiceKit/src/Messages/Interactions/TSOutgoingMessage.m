@@ -1021,14 +1021,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     if (self.giftBadge) {
         SSKProtoDataMessageGiftBadgeBuilder *giftBadgeBuilder = [SSKProtoDataMessageGiftBadge builder];
         [giftBadgeBuilder setReceiptCredentialPresentation:self.giftBadge.redemptionCredential];
-
-        NSError *error;
-        SSKProtoDataMessageGiftBadge *_Nullable giftBadgeProto = [giftBadgeBuilder buildAndReturnError:&error];
-        if (error || !giftBadgeProto) {
-            OWSFailDebug(@"Could not build gift badge protobuf: %@.", error);
-        } else {
-            [builder setGiftBadge:giftBadgeProto];
-        }
+        [builder setGiftBadge:[giftBadgeBuilder buildInfallibly]];
     }
 
     [builder setRequiredProtocolVersion:(uint32_t)requiredProtocolVersion];
@@ -1079,15 +1072,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         quotedAttachmentBuilder.contentType = thumbnailAttachment.mimeType;
         quotedAttachmentBuilder.fileName = thumbnailAttachment.sourceFilename;
         quotedAttachmentBuilder.thumbnail = [self buildProtoForQuotedReplyAttachmentWithTx:transaction];
-
-        NSError *error;
-        SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =
-            [quotedAttachmentBuilder buildAndReturnError:&error];
-        if (error || !quotedAttachmentMessage) {
-            OWSFailDebug(@"could not build protobuf: %@", error);
-            return nil;
-        }
-        [quoteBuilder addAttachments:quotedAttachmentMessage];
+        [quoteBuilder addAttachments:[quotedAttachmentBuilder buildInfallibly]];
         hasQuotedAttachment = YES;
     }
 

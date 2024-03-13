@@ -1366,11 +1366,6 @@ public class SSKProtoTextAttachmentGradientBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoTextAttachmentGradient {
-        return SSKProtoTextAttachmentGradient(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoTextAttachmentGradient {
         return SSKProtoTextAttachmentGradient(proto)
     }
@@ -3256,11 +3251,6 @@ public class SSKProtoCallMessageOpaqueBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoCallMessageOpaque {
-        return SSKProtoCallMessageOpaque(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoCallMessageOpaque {
         return SSKProtoCallMessageOpaque(proto)
     }
@@ -3779,11 +3769,6 @@ public class SSKProtoDataMessageQuoteQuotedAttachmentBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-        return SSKProtoDataMessageQuoteQuotedAttachment(proto)
     }
 
     @objc
@@ -4364,11 +4349,6 @@ public class SSKProtoDataMessageContactNameBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoDataMessageContactName {
-        return SSKProtoDataMessageContactName(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoDataMessageContactName {
         return SSKProtoDataMessageContactName(proto)
     }
@@ -4605,11 +4585,6 @@ public class SSKProtoDataMessageContactPhoneBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoDataMessageContactPhone {
-        return SSKProtoDataMessageContactPhone(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoDataMessageContactPhone {
         return SSKProtoDataMessageContactPhone(proto)
     }
@@ -4843,11 +4818,6 @@ public class SSKProtoDataMessageContactEmailBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoDataMessageContactEmail {
-        return SSKProtoDataMessageContactEmail(proto)
     }
 
     @objc
@@ -5240,11 +5210,6 @@ public class SSKProtoDataMessageContactPostalAddressBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoDataMessageContactPostalAddress {
-        return SSKProtoDataMessageContactPostalAddress(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoDataMessageContactPostalAddress {
         return SSKProtoDataMessageContactPostalAddress(proto)
     }
@@ -5412,11 +5377,6 @@ public class SSKProtoDataMessageContactAvatarBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoDataMessageContactAvatar {
-        return SSKProtoDataMessageContactAvatar(proto)
     }
 
     @objc
@@ -5681,11 +5641,6 @@ public class SSKProtoDataMessageContactBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoDataMessageContact {
-        return SSKProtoDataMessageContact(proto)
     }
 
     @objc
@@ -6454,11 +6409,6 @@ public class SSKProtoDataMessageGroupCallUpdateBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoDataMessageGroupCallUpdate {
-        return SSKProtoDataMessageGroupCallUpdate(proto)
     }
 
     @objc
@@ -7280,11 +7230,6 @@ public class SSKProtoDataMessagePaymentActivationBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoDataMessagePaymentActivation {
-        return SSKProtoDataMessagePaymentActivation(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoDataMessagePaymentActivation {
         return SSKProtoDataMessagePaymentActivation(proto)
     }
@@ -7634,11 +7579,6 @@ public class SSKProtoDataMessageStoryContextBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoDataMessageStoryContext {
-        return SSKProtoDataMessageStoryContext(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoDataMessageStoryContext {
         return SSKProtoDataMessageStoryContext(proto)
     }
@@ -7790,11 +7730,6 @@ public class SSKProtoDataMessageGiftBadgeBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoDataMessageGiftBadge {
-        return SSKProtoDataMessageGiftBadge(proto)
     }
 
     @objc
@@ -8587,11 +8522,6 @@ public class SSKProtoNullMessageBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoNullMessage {
-        return SSKProtoNullMessage(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoNullMessage {
         return SSKProtoNullMessage(proto)
     }
@@ -8786,11 +8716,6 @@ public class SSKProtoReceiptMessageBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoReceiptMessage {
-        return SSKProtoReceiptMessage(proto)
     }
 
     @objc
@@ -9053,11 +8978,6 @@ public class SSKProtoVerifiedBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoVerified {
-        return SSKProtoVerified(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoVerified {
         return SSKProtoVerified(proto)
     }
@@ -9226,11 +9146,6 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder: NSObject 
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoSyncMessageSentUnidentifiedDeliveryStatus {
-        return SSKProtoSyncMessageSentUnidentifiedDeliveryStatus(proto)
     }
 
     @objc
@@ -9418,11 +9333,6 @@ public class SSKProtoSyncMessageSentStoryMessageRecipientBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoSyncMessageSentStoryMessageRecipient {
-        return SSKProtoSyncMessageSentStoryMessageRecipient(proto)
     }
 
     @objc
@@ -10130,11 +10040,6 @@ public class SSKProtoSyncMessageBlockedBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoSyncMessageBlocked {
-        return SSKProtoSyncMessageBlocked(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoSyncMessageBlocked {
         return SSKProtoSyncMessageBlocked(proto)
     }
@@ -10319,11 +10224,6 @@ public class SSKProtoSyncMessageRequestBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoSyncMessageRequest {
-        return SSKProtoSyncMessageRequest(proto)
     }
 
     @objc
@@ -10891,11 +10791,6 @@ public class SSKProtoSyncMessageConfigurationBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoSyncMessageConfiguration {
-        return SSKProtoSyncMessageConfiguration(proto)
     }
 
     @objc
@@ -11490,11 +11385,6 @@ public class SSKProtoSyncMessageFetchLatestBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoSyncMessageFetchLatest {
-        return SSKProtoSyncMessageFetchLatest(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoSyncMessageFetchLatest {
         return SSKProtoSyncMessageFetchLatest(proto)
     }
@@ -11672,11 +11562,6 @@ public class SSKProtoSyncMessageKeysBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoSyncMessageKeys {
-        return SSKProtoSyncMessageKeys(proto)
     }
 
     @objc
@@ -11922,11 +11807,6 @@ public class SSKProtoSyncMessageMessageRequestResponseBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoSyncMessageMessageRequestResponse {
-        return SSKProtoSyncMessageMessageRequestResponse(proto)
     }
 
     @objc
@@ -12774,11 +12654,6 @@ public class SSKProtoSyncMessageCallEventBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoSyncMessageCallEvent {
-        return SSKProtoSyncMessageCallEvent(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoSyncMessageCallEvent {
         return SSKProtoSyncMessageCallEvent(proto)
     }
@@ -13036,11 +12911,6 @@ public class SSKProtoSyncMessagePniChangeNumberBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoSyncMessagePniChangeNumber {
-        return SSKProtoSyncMessagePniChangeNumber(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoSyncMessagePniChangeNumber {
         return SSKProtoSyncMessagePniChangeNumber(proto)
     }
@@ -13233,11 +13103,6 @@ public class SSKProtoSyncMessageCallLogEventBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoSyncMessageCallLogEvent {
-        return SSKProtoSyncMessageCallLogEvent(proto)
     }
 
     @objc
@@ -14285,11 +14150,6 @@ public class SSKProtoAttachmentPointerBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoAttachmentPointer {
-        return SSKProtoAttachmentPointer(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoAttachmentPointer {
         return SSKProtoAttachmentPointer(proto)
     }
@@ -14487,11 +14347,6 @@ public class SSKProtoGroupContextV2Builder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoGroupContextV2 {
-        return SSKProtoGroupContextV2(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoGroupContextV2 {
         return SSKProtoGroupContextV2(proto)
     }
@@ -14660,11 +14515,6 @@ public class SSKProtoContactDetailsAvatarBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoContactDetailsAvatar {
-        return SSKProtoContactDetailsAvatar(proto)
     }
 
     @objc
@@ -14938,11 +14788,6 @@ public class SSKProtoContactDetailsBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoContactDetails {
-        return SSKProtoContactDetails(proto)
     }
 
     @objc
@@ -15895,11 +15740,6 @@ public class SSKProtoDecryptionErrorMessageBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> SSKProtoDecryptionErrorMessage {
-        return SSKProtoDecryptionErrorMessage(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> SSKProtoDecryptionErrorMessage {
         return SSKProtoDecryptionErrorMessage(proto)
     }
@@ -16077,11 +15917,6 @@ public class SSKProtoPniSignatureMessageBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoPniSignatureMessage {
-        return SSKProtoPniSignatureMessage(proto)
     }
 
     @objc
@@ -16332,11 +16167,6 @@ public class SSKProtoBodyRangeBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoBodyRange {
-        return SSKProtoBodyRange(proto)
     }
 
     @objc

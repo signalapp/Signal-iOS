@@ -352,7 +352,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
                 }
                 var actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
                 actionBuilder.setTitle(encryptedData)
-                actionsBuilder.setModifyTitle(try actionBuilder.build())
+                actionsBuilder.setModifyTitle(actionBuilder.buildInfallibly())
                 didChange = true
             }
         }
@@ -370,7 +370,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
                 }
                 var actionBuilder = GroupsProtoGroupChangeActionsModifyDescriptionAction.builder()
                 actionBuilder.setDescriptionBytes(encryptedData)
-                actionsBuilder.setModifyDescription(try actionBuilder.build())
+                actionsBuilder.setModifyDescription(actionBuilder.buildInfallibly())
                 didChange = true
             }
         }
@@ -386,7 +386,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
                 } else {
                     // We're clearing the avatar.
                 }
-                actionsBuilder.setModifyAvatar(try actionBuilder.build())
+                actionsBuilder.setModifyAvatar(actionBuilder.buildInfallibly())
                 didChange = true
             }
         }
@@ -414,7 +414,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
                 if let inviteLinkPassword = newInviteLinkPassword {
                     actionBuilder.setInviteLinkPassword(inviteLinkPassword)
                 }
-                actionsBuilder.setModifyInviteLinkPassword(try actionBuilder.build())
+                actionsBuilder.setModifyInviteLinkPassword(actionBuilder.buildInfallibly())
                 didChange = true
             }
         }
@@ -820,7 +820,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
 
         Logger.info("Updating group.")
         return GroupsV2BuiltGroupChange(
-            proto: try actionsBuilder.build(),
+            proto: actionsBuilder.buildInfallibly(),
             groupUpdateMessageBehavior: groupUpdateMessageBehavior
         )
     }

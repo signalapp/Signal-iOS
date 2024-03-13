@@ -69,12 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
         nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];
     }
 
-    NSError *error;
-    SSKProtoNullMessage *_Nullable nullMessage = [nullMessageBuilder buildAndReturnError:&error];
-    if (error || !nullMessage) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
-        return nil;
-    }
+    SSKProtoNullMessage *nullMessage = [nullMessageBuilder buildInfallibly];
 
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
     contentBuilder.nullMessage = nullMessage;

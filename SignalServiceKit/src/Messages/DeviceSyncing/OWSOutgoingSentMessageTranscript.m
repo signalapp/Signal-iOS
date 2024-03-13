@@ -116,12 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
             [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus builder];
         [statusBuilder setDestinationServiceID:recipientAddress.serviceIdString];
         [statusBuilder setUnidentified:recipientState.wasSentByUD];
-        SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *_Nullable status =
-            [statusBuilder buildAndReturnError:&error];
-        if (error || !status) {
-            OWSFailDebug(@"Couldn't build UD status proto: %@", error);
-            continue;
-        }
+        SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *status = [statusBuilder buildInfallibly];
         [sentBuilder addUnidentifiedStatus:status];
     }
 

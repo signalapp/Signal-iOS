@@ -60,7 +60,7 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
             stream,
             objectId: MessageBackup.LocalRecipientId()
         ) { frameBuilder in
-            let selfRecipientProto = try selfRecipientBuilder.build()
+            let selfRecipientProto = selfRecipientBuilder.buildInfallibly()
             recipientBuilder.setSelfRecipient(selfRecipientProto)
             let recipientProto = try recipientBuilder.build()
             frameBuilder.setRecipient(recipientProto)

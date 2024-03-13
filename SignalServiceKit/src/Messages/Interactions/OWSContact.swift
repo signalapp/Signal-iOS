@@ -871,13 +871,7 @@ extension OWSContactPhoneNumber {
         }()
         builder.setType(type)
 
-        do {
-            let proto = try builder.build()
-            return proto
-        } catch {
-            Logger.error("could not build proto: \(error)")
-            return nil
-        }
+        return builder.buildInfallibly()
     }
 }
 
@@ -933,13 +927,7 @@ extension OWSContactEmail {
         }()
         builder.setType(type)
 
-        do {
-            let proto = try builder.build()
-            return proto
-        } catch {
-            Logger.error("could not build proto: \(error)")
-            return nil
-        }
+        return builder.buildInfallibly()
     }
 }
 
@@ -1036,13 +1024,7 @@ extension OWSContactAddress {
             builder.setCountry(value)
         }
 
-        do {
-            let proto = try builder.build()
-            return proto
-        } catch {
-            Logger.error("could not build proto: \(error)")
-            return nil
-        }
+        return builder.buildInfallibly()
     }
 }
 
@@ -1078,12 +1060,7 @@ extension OWSContact {
         }
         nameBuilder.setDisplayName(name.displayName)
 
-        do {
-            let nameProto = try nameBuilder.build()
-            contactBuilder.setName(nameProto)
-        } catch {
-            Logger.error("could not build proto: \(error)")
-        }
+        contactBuilder.setName(nameBuilder.buildInfallibly())
 
         contactBuilder.setNumber(phoneNumbers.compactMap({ $0.proto() }))
         contactBuilder.setEmail(emails.compactMap({ $0.proto() }))
@@ -1106,22 +1083,10 @@ extension OWSContact {
         {
             let avatarBuilder = SSKProtoDataMessageContactAvatar.builder()
             avatarBuilder.setAvatar(attachmentProto)
-
-            do {
-                let avatarProto = try avatarBuilder.build()
-                contactBuilder.setAvatar(avatarProto)
-            } catch {
-                Logger.error("could not build proto: \(error)")
-            }
+            contactBuilder.setAvatar(avatarBuilder.buildInfallibly())
         }
 
-        let contactProto: SSKProtoDataMessageContact
-        do {
-            contactProto = try contactBuilder.build()
-        } catch {
-            owsFailDebug("could not build proto: \(error)")
-            return nil
-        }
+        let contactProto = contactBuilder.buildInfallibly()
 
         guard !contactProto.number.isEmpty || !contactProto.email.isEmpty || !contactProto.address.isEmpty else {
             owsFailDebug("contact has neither phone, email or address.")

@@ -27,7 +27,7 @@ extension DeviceTransferService {
                     relativePath: try pathRelativeToAppSharedDirectory(file),
                     estimatedSize: size.uint64Value
                 )
-                return try fileBuilder.build()
+                return fileBuilder.buildInfallibly()
             }()
 
             let wal: DeviceTransferProtoFile = try {
@@ -41,7 +41,7 @@ extension DeviceTransferService {
                     relativePath: try pathRelativeToAppSharedDirectory(file),
                     estimatedSize: size.uint64Value
                 )
-                return try fileBuilder.build()
+                return fileBuilder.buildInfallibly()
             }()
 
             let databaseBuilder = DeviceTransferProtoDatabase.builder(
@@ -49,7 +49,7 @@ extension DeviceTransferService {
                 database: database,
                 wal: wal
             )
-            manifestBuilder.setDatabase(try databaseBuilder.build())
+            manifestBuilder.setDatabase(databaseBuilder.buildInfallibly())
         }
 
         // Attachments, Avatars, and Stickers
@@ -77,7 +77,7 @@ extension DeviceTransferService {
                 relativePath: try pathRelativeToAppSharedDirectory(file),
                 estimatedSize: size.uint64Value
             )
-            manifestBuilder.addFiles(try fileBuilder.build())
+            manifestBuilder.addFiles(fileBuilder.buildInfallibly())
         }
 
         // Standard Defaults
@@ -96,7 +96,7 @@ extension DeviceTransferService {
                     key: key,
                     encodedValue: encodedValue
                 )
-                manifestBuilder.addStandardDefaults(try defaultBuilder.build())
+                manifestBuilder.addStandardDefaults(defaultBuilder.buildInfallibly())
             }
         }
 
@@ -113,13 +113,13 @@ extension DeviceTransferService {
                     key: key,
                     encodedValue: encodedValue
                 )
-                manifestBuilder.addAppDefaults(try defaultBuilder.build())
+                manifestBuilder.addAppDefaults(defaultBuilder.buildInfallibly())
             }
         }
 
         manifestBuilder.setEstimatedTotalSize(estimatedTotalSize)
 
-        return try manifestBuilder.build()
+        return manifestBuilder.buildInfallibly()
     }
 
     func pathRelativeToAppSharedDirectory(_ path: String) throws -> String {

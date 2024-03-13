@@ -48,12 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     [blockedBuilder setAcis:_uuids];
     [blockedBuilder setGroupIds:_groupIds];
 
-    NSError *error;
-    SSKProtoSyncMessageBlocked *_Nullable blockedProto = [blockedBuilder buildAndReturnError:&error];
-    if (error || !blockedProto) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
-        return nil;
-    }
+    SSKProtoSyncMessageBlocked *blockedProto = [blockedBuilder buildInfallibly];
 
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     [syncMessageBuilder setBlocked:blockedProto];

@@ -151,19 +151,11 @@
 
 - (nullable SSKProtoContentBuilder *)nullMessageProtoBuilder
 {
-    NSError *_Nullable error = nil;
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
-
     SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
-    SSKProtoNullMessage *nullMessage = [nullMessageBuilder buildAndReturnError:&error];
+    SSKProtoNullMessage *nullMessage = [nullMessageBuilder buildInfallibly];
     [contentBuilder setNullMessage:nullMessage];
-
-    if (!contentBuilder || error) {
-        OWSFailDebug(@"Failed to build content builder %@", error);
-        return nil;
-    } else {
-        return contentBuilder;
-    }
+    return contentBuilder;
 }
 
 @end

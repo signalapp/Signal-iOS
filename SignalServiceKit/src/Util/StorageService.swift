@@ -119,9 +119,9 @@ public struct StorageService: Dependencies {
             return .init(data: Randomness.generateRandomBytes(identifierLength), type: type)
         }
 
-        public func buildRecord() throws -> StorageServiceProtoManifestRecordKey {
+        public func buildRecord() -> StorageServiceProtoManifestRecordKey {
             let builder = StorageServiceProtoManifestRecordKey.builder(data: data, type: type)
-            return try builder.build()
+            return builder.buildInfallibly()
         }
 
         public static func deduplicate(_ identifiers: [StorageIdentifier]) -> [StorageIdentifier] {
@@ -324,7 +324,7 @@ public struct StorageService: Dependencies {
                 version: manifest.version,
                 value: encryptedManifestData
             )
-            builder.setManifest(try manifestWrapperBuilder.build())
+            builder.setManifest(manifestWrapperBuilder.buildInfallibly())
 
             // Encrypt the new items
             builder.setInsertItem(try newItems.map { item in
@@ -344,7 +344,7 @@ public struct StorageService: Dependencies {
                     throw StorageError.itemEncryptionFailed(identifier: item.identifier)
                 }
                 let itemWrapperBuilder = StorageServiceProtoStorageItem.builder(key: item.identifier.data, value: encryptedItemData)
-                return try itemWrapperBuilder.build()
+                return itemWrapperBuilder.buildInfallibly()
             })
 
             // Flag the deleted keys

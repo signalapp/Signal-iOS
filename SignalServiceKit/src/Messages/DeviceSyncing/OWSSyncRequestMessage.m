@@ -49,15 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
             requestBuilder.type = requestType;
     }
 
-    NSError *error;
-    SSKProtoSyncMessageRequest *_Nullable messageRequest = [requestBuilder buildAndReturnError:&error];
-    if (error || !messageRequest) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
-        return nil;
-    }
-
     SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessage builder];
-    builder.request = messageRequest;
+    builder.request = [requestBuilder buildInfallibly];
     return builder;
 }
 

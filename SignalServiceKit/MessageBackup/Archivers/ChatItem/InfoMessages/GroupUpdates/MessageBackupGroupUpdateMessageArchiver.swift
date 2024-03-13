@@ -99,14 +99,7 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         }
 
         let directionlessDetails: BackupProtoChatItemDirectionlessMessageDetails
-        do {
-            directionlessDetails = try .builder().build()
-        } catch let error {
-            return .messageFailure([.protoSerializationError(
-                infoMessage.uniqueInteractionId,
-                error
-            )])
-        }
+        directionlessDetails = .builder().buildInfallibly()
 
         let details = Details(
             author: context.recipientContext.localRecipientId,

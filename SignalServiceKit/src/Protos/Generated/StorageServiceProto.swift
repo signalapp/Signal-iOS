@@ -174,10 +174,6 @@ public struct StorageServiceProtoStorageItemBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> StorageServiceProtoStorageItem {
-        return StorageServiceProtoStorageItem(proto)
-    }
-
     public func buildInfallibly() -> StorageServiceProtoStorageItem {
         return StorageServiceProtoStorageItem(proto)
     }
@@ -289,10 +285,6 @@ public struct StorageServiceProtoStorageItemsBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoStorageItems {
-        return StorageServiceProtoStorageItems(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoStorageItems {
@@ -425,10 +417,6 @@ public struct StorageServiceProtoStorageManifestBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> StorageServiceProtoStorageManifest {
-        return StorageServiceProtoStorageManifest(proto)
-    }
-
     public func buildInfallibly() -> StorageServiceProtoStorageManifest {
         return StorageServiceProtoStorageManifest(proto)
     }
@@ -536,10 +524,6 @@ public struct StorageServiceProtoReadOperationBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoReadOperation {
-        return StorageServiceProtoReadOperation(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoReadOperation {
@@ -703,10 +687,6 @@ public struct StorageServiceProtoWriteOperationBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoWriteOperation {
-        return StorageServiceProtoWriteOperation(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoWriteOperation {
@@ -904,10 +884,6 @@ public struct StorageServiceProtoManifestRecordKeyBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> StorageServiceProtoManifestRecordKey {
-        return StorageServiceProtoManifestRecordKey(proto)
-    }
-
     public func buildInfallibly() -> StorageServiceProtoManifestRecordKey {
         return StorageServiceProtoManifestRecordKey(proto)
     }
@@ -1049,10 +1025,6 @@ public struct StorageServiceProtoManifestRecordBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoManifestRecord {
-        return StorageServiceProtoManifestRecord(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoManifestRecord {
@@ -1210,10 +1182,6 @@ public struct StorageServiceProtoStorageRecordBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoStorageRecord {
-        return StorageServiceProtoStorageRecord(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoStorageRecord {
@@ -1752,10 +1720,6 @@ public struct StorageServiceProtoContactRecordBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> StorageServiceProtoContactRecord {
-        return StorageServiceProtoContactRecord(proto)
-    }
-
     public func buildInfallibly() -> StorageServiceProtoContactRecord {
         return StorageServiceProtoContactRecord(proto)
     }
@@ -1872,10 +1836,6 @@ public struct StorageServiceProtoGroupV1RecordBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoGroupV1Record {
-        return StorageServiceProtoGroupV1Record(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoGroupV1Record {
@@ -2169,10 +2129,6 @@ public struct StorageServiceProtoGroupV2RecordBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> StorageServiceProtoGroupV2Record {
-        return StorageServiceProtoGroupV2Record(proto)
-    }
-
     public func buildInfallibly() -> StorageServiceProtoGroupV2Record {
         return StorageServiceProtoGroupV2Record(proto)
     }
@@ -2313,10 +2269,6 @@ public struct StorageServiceProtoAccountRecordPinnedConversationContactBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoAccountRecordPinnedConversationContact {
-        return StorageServiceProtoAccountRecordPinnedConversationContact(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoAccountRecordPinnedConversationContact {
@@ -2470,10 +2422,6 @@ public struct StorageServiceProtoAccountRecordPinnedConversationBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> StorageServiceProtoAccountRecordPinnedConversation {
-        return StorageServiceProtoAccountRecordPinnedConversation(proto)
-    }
-
     public func buildInfallibly() -> StorageServiceProtoAccountRecordPinnedConversation {
         return StorageServiceProtoAccountRecordPinnedConversation(proto)
     }
@@ -2605,10 +2553,6 @@ public struct StorageServiceProtoAccountRecordPaymentsBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoAccountRecordPayments {
-        return StorageServiceProtoAccountRecordPayments(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoAccountRecordPayments {
@@ -2856,10 +2800,6 @@ public struct StorageServiceProtoAccountRecordUsernameLinkBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoAccountRecordUsernameLink {
-        return StorageServiceProtoAccountRecordUsernameLink(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoAccountRecordUsernameLink {
@@ -3570,10 +3510,6 @@ public struct StorageServiceProtoAccountRecordBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> StorageServiceProtoAccountRecord {
-        return StorageServiceProtoAccountRecord(proto)
-    }
-
     public func buildInfallibly() -> StorageServiceProtoAccountRecord {
         return StorageServiceProtoAccountRecord(proto)
     }
@@ -3769,10 +3705,6 @@ public struct StorageServiceProtoStoryDistributionListRecordBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> StorageServiceProtoStoryDistributionListRecord {
-        return StorageServiceProtoStoryDistributionListRecord(proto)
     }
 
     public func buildInfallibly() -> StorageServiceProtoStoryDistributionListRecord {

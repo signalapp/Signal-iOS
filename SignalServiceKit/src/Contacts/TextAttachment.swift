@@ -170,7 +170,7 @@ public struct TextAttachment: Codable, Equatable {
                 self.angle = try container.decode(UInt32.self, forKey: .angle)
             }
 
-            func buildProto() throws -> SSKProtoTextAttachmentGradient {
+            func buildProto() -> SSKProtoTextAttachmentGradient {
                 let builder = SSKProtoTextAttachmentGradient.builder()
                 if let startColor = colors.first {
                     builder.setStartColor(startColor)
@@ -181,7 +181,7 @@ public struct TextAttachment: Codable, Equatable {
                 builder.setColors(colors)
                 builder.setPositions(positions)
                 builder.setAngle(angle)
-                return try builder.build()
+                return builder.buildInfallibly()
             }
         }
     }
@@ -316,7 +316,7 @@ public struct TextAttachment: Codable, Equatable {
         case .color(let hex):
             builder.setColor(hex)
         case .gradient(let raw):
-            builder.setGradient(try raw.buildProto())
+            builder.setGradient(raw.buildProto())
         }
 
         if let preview = preview {

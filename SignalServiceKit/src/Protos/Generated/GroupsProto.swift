@@ -245,10 +245,6 @@ public struct GroupsProtoAvatarUploadAttributesBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoAvatarUploadAttributes {
-        return GroupsProtoAvatarUploadAttributes(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoAvatarUploadAttributes {
         return GroupsProtoAvatarUploadAttributes(proto)
     }
@@ -503,10 +499,6 @@ public struct GroupsProtoMemberBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoMember {
-        return GroupsProtoMember(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoMember {
         return GroupsProtoMember(proto)
     }
@@ -661,10 +653,6 @@ public struct GroupsProtoPendingMemberBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoPendingMember {
-        return GroupsProtoPendingMember(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoPendingMember {
@@ -846,10 +834,6 @@ public struct GroupsProtoRequestingMemberBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoRequestingMember {
-        return GroupsProtoRequestingMember(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoRequestingMember {
         return GroupsProtoRequestingMember(proto)
     }
@@ -981,10 +965,6 @@ public struct GroupsProtoBannedMemberBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoBannedMember {
-        return GroupsProtoBannedMember(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoBannedMember {
@@ -1216,10 +1196,6 @@ public struct GroupsProtoAccessControlBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoAccessControl {
-        return GroupsProtoAccessControl(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoAccessControl {
@@ -1575,10 +1551,6 @@ public struct GroupsProtoGroupBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroup {
-        return GroupsProtoGroup(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroup {
         return GroupsProtoGroup(proto)
     }
@@ -1712,10 +1684,6 @@ public struct GroupsProtoGroupChangeActionsAddMemberActionBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsAddMemberAction {
-        return GroupsProtoGroupChangeActionsAddMemberAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsAddMemberAction {
         return GroupsProtoGroupChangeActionsAddMemberAction(proto)
     }
@@ -1833,10 +1801,6 @@ public struct GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
-        return GroupsProtoGroupChangeActionsDeleteMemberAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsDeleteMemberAction {
@@ -1981,10 +1945,6 @@ public struct GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
-        return GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
@@ -2152,10 +2112,6 @@ public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
-        return GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
         return GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto)
     }
@@ -2275,10 +2231,6 @@ public struct GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
-        return GroupsProtoGroupChangeActionsAddPendingMemberAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
         return GroupsProtoGroupChangeActionsAddPendingMemberAction(proto)
     }
@@ -2396,10 +2348,6 @@ public struct GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
-        return GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
@@ -2565,10 +2513,6 @@ public struct GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
-        return GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
@@ -2759,10 +2703,6 @@ public struct GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyA
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction {
-        return GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction {
         return GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction(proto)
     }
@@ -2882,10 +2822,6 @@ public struct GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsAddRequestingMemberAction {
-        return GroupsProtoGroupChangeActionsAddRequestingMemberAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsAddRequestingMemberAction {
         return GroupsProtoGroupChangeActionsAddRequestingMemberAction(proto)
     }
@@ -3003,10 +2939,6 @@ public struct GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
-        return GroupsProtoGroupChangeActionsDeleteRequestingMemberAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
@@ -3153,10 +3085,6 @@ public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder 
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
-        return GroupsProtoGroupChangeActionsPromoteRequestingMemberAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
         return GroupsProtoGroupChangeActionsPromoteRequestingMemberAction(proto)
     }
@@ -3274,10 +3202,6 @@ public struct GroupsProtoGroupChangeActionsAddBannedMemberActionBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsAddBannedMemberAction {
-        return GroupsProtoGroupChangeActionsAddBannedMemberAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsAddBannedMemberAction {
@@ -3399,10 +3323,6 @@ public struct GroupsProtoGroupChangeActionsDeleteBannedMemberActionBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsDeleteBannedMemberAction {
-        return GroupsProtoGroupChangeActionsDeleteBannedMemberAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsDeleteBannedMemberAction {
         return GroupsProtoGroupChangeActionsDeleteBannedMemberAction(proto)
     }
@@ -3520,10 +3440,6 @@ public struct GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
-        return GroupsProtoGroupChangeActionsModifyTitleAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyTitleAction {
@@ -3645,10 +3561,6 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
-        return GroupsProtoGroupChangeActionsModifyAvatarAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAvatarAction {
         return GroupsProtoGroupChangeActionsModifyAvatarAction(proto)
     }
@@ -3766,10 +3678,6 @@ public struct GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
-        return GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
@@ -3893,10 +3801,6 @@ public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBu
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
-        return GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
         return GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto)
     }
@@ -4016,10 +3920,6 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilde
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
-        return GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
@@ -4143,10 +4043,6 @@ public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuild
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
-        return GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
         return GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto)
     }
@@ -4268,10 +4164,6 @@ public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlA
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction {
-        return GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction {
         return GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto)
     }
@@ -4389,10 +4281,6 @@ public struct GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
-        return GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
@@ -4514,10 +4402,6 @@ public struct GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyDescriptionAction {
-        return GroupsProtoGroupChangeActionsModifyDescriptionAction(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyDescriptionAction {
         return GroupsProtoGroupChangeActionsModifyDescriptionAction(proto)
     }
@@ -4626,10 +4510,6 @@ public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder 
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
-        return GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
@@ -5193,10 +5073,6 @@ public struct GroupsProtoGroupChangeActionsBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangeActions {
-        return GroupsProtoGroupChangeActions(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangeActions {
         return GroupsProtoGroupChangeActions(proto)
     }
@@ -5353,10 +5229,6 @@ public struct GroupsProtoGroupChangeBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChange {
-        return GroupsProtoGroupChange(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChange {
         return GroupsProtoGroupChange(proto)
     }
@@ -5499,10 +5371,6 @@ public struct GroupsProtoGroupChangesGroupChangeStateBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupChangesGroupChangeState {
-        return GroupsProtoGroupChangesGroupChangeState(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupChangesGroupChangeState {
         return GroupsProtoGroupChangesGroupChangeState(proto)
     }
@@ -5610,10 +5478,6 @@ public struct GroupsProtoGroupChangesBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupChanges {
-        return GroupsProtoGroupChanges(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupChanges {
@@ -5770,10 +5634,6 @@ public struct GroupsProtoGroupAttributeBlobBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupAttributeBlob {
-        return GroupsProtoGroupAttributeBlob(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupAttributeBlob {
         return GroupsProtoGroupAttributeBlob(proto)
     }
@@ -5914,10 +5774,6 @@ public struct GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
-        return GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
@@ -6063,10 +5919,6 @@ public struct GroupsProtoGroupInviteLinkBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupInviteLink {
-        return GroupsProtoGroupInviteLink(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupInviteLink {
@@ -6324,10 +6176,6 @@ public struct GroupsProtoGroupJoinInfoBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> GroupsProtoGroupJoinInfo {
-        return GroupsProtoGroupJoinInfo(proto)
-    }
-
     public func buildInfallibly() -> GroupsProtoGroupJoinInfo {
         return GroupsProtoGroupJoinInfo(proto)
     }
@@ -6445,10 +6293,6 @@ public struct GroupsProtoGroupExternalCredentialBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> GroupsProtoGroupExternalCredential {
-        return GroupsProtoGroupExternalCredential(proto)
     }
 
     public func buildInfallibly() -> GroupsProtoGroupExternalCredential {

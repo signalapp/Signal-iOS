@@ -424,7 +424,7 @@ class DeviceTransferService: NSObject {
         // forces the path to be that to its own local database.
         var protoBuilder = databaseFile.asBuilder()
         protoBuilder.setRelativePath(copyUrl.relativePath)
-        return try protoBuilder.build()
+        return protoBuilder.buildInfallibly()
     }
 
     static let doneMessage = "Transfer Complete".data(using: .utf8)!

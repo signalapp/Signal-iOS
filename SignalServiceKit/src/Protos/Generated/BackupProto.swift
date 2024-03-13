@@ -2642,11 +2642,6 @@ public class BackupProtoSelfRecipientBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoSelfRecipient {
-        return BackupProtoSelfRecipient(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoSelfRecipient {
         return BackupProtoSelfRecipient(proto)
     }
@@ -2772,11 +2767,6 @@ public class BackupProtoReleaseNotesBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoReleaseNotes {
-        return BackupProtoReleaseNotes(proto)
     }
 
     @objc
@@ -4419,11 +4409,6 @@ public class BackupProtoChatItemDirectionlessMessageDetailsBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoChatItemDirectionlessMessageDetails {
-        return BackupProtoChatItemDirectionlessMessageDetails(proto)
     }
 
     @objc
@@ -6104,11 +6089,6 @@ public class BackupProtoContactAttachmentNameBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoContactAttachmentName {
-        return BackupProtoContactAttachmentName(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoContactAttachmentName {
         return BackupProtoContactAttachmentName(proto)
     }
@@ -6348,11 +6328,6 @@ public class BackupProtoContactAttachmentPhoneBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoContactAttachmentPhone {
-        return BackupProtoContactAttachmentPhone(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoContactAttachmentPhone {
         return BackupProtoContactAttachmentPhone(proto)
     }
@@ -6589,11 +6564,6 @@ public class BackupProtoContactAttachmentEmailBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoContactAttachmentEmail {
-        return BackupProtoContactAttachmentEmail(proto)
     }
 
     @objc
@@ -6986,11 +6956,6 @@ public class BackupProtoContactAttachmentPostalAddressBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoContactAttachmentPostalAddress {
-        return BackupProtoContactAttachmentPostalAddress(proto)
     }
 
     @objc
@@ -8119,11 +8084,6 @@ public class BackupProtoRemoteDeletedMessageBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoRemoteDeletedMessage {
-        return BackupProtoRemoteDeletedMessage(proto)
     }
 
     @objc
@@ -10559,11 +10519,6 @@ public class BackupProtoBodyRangeBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoBodyRange {
-        return BackupProtoBodyRange(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoBodyRange {
         return BackupProtoBodyRange(proto)
     }
@@ -11452,11 +11407,6 @@ public class BackupProtoIndividualCallChatUpdateBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoIndividualCallChatUpdate {
-        return BackupProtoIndividualCallChatUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoIndividualCallChatUpdate {
         return BackupProtoIndividualCallChatUpdate(proto)
     }
@@ -11855,11 +11805,6 @@ public class BackupProtoSimpleChatUpdateBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoSimpleChatUpdate {
-        return BackupProtoSimpleChatUpdate(proto)
     }
 
     @objc
@@ -13933,11 +13878,6 @@ public class BackupProtoGenericGroupUpdateBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoGenericGroupUpdate {
-        return BackupProtoGenericGroupUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoGenericGroupUpdate {
         return BackupProtoGenericGroupUpdate(proto)
     }
@@ -14089,11 +14029,6 @@ public class BackupProtoGroupCreationUpdateBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoGroupCreationUpdate {
-        return BackupProtoGroupCreationUpdate(proto)
     }
 
     @objc
@@ -14274,11 +14209,6 @@ public class BackupProtoGroupNameUpdateBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoGroupNameUpdate {
-        return BackupProtoGroupNameUpdate(proto)
     }
 
     @objc
@@ -14639,11 +14569,6 @@ public class BackupProtoGroupDescriptionUpdateBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoGroupDescriptionUpdate {
-        return BackupProtoGroupDescriptionUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoGroupDescriptionUpdate {
         return BackupProtoGroupDescriptionUpdate(proto)
     }
@@ -14826,11 +14751,6 @@ public class BackupProtoGroupMembershipAccessLevelChangeUpdateBuilder: NSObject 
     }
 
     @objc
-    public func build() throws -> BackupProtoGroupMembershipAccessLevelChangeUpdate {
-        return BackupProtoGroupMembershipAccessLevelChangeUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoGroupMembershipAccessLevelChangeUpdate {
         return BackupProtoGroupMembershipAccessLevelChangeUpdate(proto)
     }
@@ -15010,11 +14930,6 @@ public class BackupProtoGroupAttributesAccessLevelChangeUpdateBuilder: NSObject 
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoGroupAttributesAccessLevelChangeUpdate {
-        return BackupProtoGroupAttributesAccessLevelChangeUpdate(proto)
     }
 
     @objc
@@ -15889,11 +15804,6 @@ public class BackupProtoSelfInvitedToGroupUpdateBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoSelfInvitedToGroupUpdate {
-        return BackupProtoSelfInvitedToGroupUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoSelfInvitedToGroupUpdate {
         return BackupProtoSelfInvitedToGroupUpdate(proto)
     }
@@ -16591,11 +16501,6 @@ public class BackupProtoGroupInvitationDeclinedUpdateBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoGroupInvitationDeclinedUpdate {
-        return BackupProtoGroupInvitationDeclinedUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoGroupInvitationDeclinedUpdate {
         return BackupProtoGroupInvitationDeclinedUpdate(proto)
     }
@@ -17133,11 +17038,6 @@ public class BackupProtoGroupSelfInvitationRevokedUpdateBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoGroupSelfInvitationRevokedUpdate {
-        return BackupProtoGroupSelfInvitationRevokedUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoGroupSelfInvitationRevokedUpdate {
         return BackupProtoGroupSelfInvitationRevokedUpdate(proto)
     }
@@ -17344,11 +17244,6 @@ public class BackupProtoGroupInvitationRevokedUpdateInviteeBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoGroupInvitationRevokedUpdateInvitee {
-        return BackupProtoGroupInvitationRevokedUpdateInvitee(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoGroupInvitationRevokedUpdateInvitee {
         return BackupProtoGroupInvitationRevokedUpdateInvitee(proto)
     }
@@ -17520,11 +17415,6 @@ public class BackupProtoGroupInvitationRevokedUpdateBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoGroupInvitationRevokedUpdate {
-        return BackupProtoGroupInvitationRevokedUpdate(proto)
     }
 
     @objc
@@ -18370,11 +18260,6 @@ public class BackupProtoGroupInviteLinkResetUpdateBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoGroupInviteLinkResetUpdate {
-        return BackupProtoGroupInviteLinkResetUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoGroupInviteLinkResetUpdate {
         return BackupProtoGroupInviteLinkResetUpdate(proto)
     }
@@ -18883,11 +18768,6 @@ public class BackupProtoGroupInviteLinkDisabledUpdateBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoGroupInviteLinkDisabledUpdate {
-        return BackupProtoGroupInviteLinkDisabledUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoGroupInviteLinkDisabledUpdate {
         return BackupProtoGroupInviteLinkDisabledUpdate(proto)
     }
@@ -19173,11 +19053,6 @@ public class BackupProtoGroupV2MigrationUpdateBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> BackupProtoGroupV2MigrationUpdate {
-        return BackupProtoGroupV2MigrationUpdate(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> BackupProtoGroupV2MigrationUpdate {
         return BackupProtoGroupV2MigrationUpdate(proto)
     }
@@ -19303,11 +19178,6 @@ public class BackupProtoGroupV2MigrationSelfInvitedUpdateBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> BackupProtoGroupV2MigrationSelfInvitedUpdate {
-        return BackupProtoGroupV2MigrationSelfInvitedUpdate(proto)
     }
 
     @objc

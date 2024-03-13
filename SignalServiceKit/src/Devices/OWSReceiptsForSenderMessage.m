@@ -99,7 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.recipientAddresses.count == 1);
     OWSAssertDebug(self.messageTimestamps.count > 0);
-    NSError *_Nullable error = nil;
 
     SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builder];
     [builder setType:self.receiptType];
@@ -107,12 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
         [builder addTimestamp:[messageTimestamp unsignedLongLongValue]];
     }
 
-    SSKProtoReceiptMessage *_Nullable receiptMessage = [builder buildAndReturnError:&error];
-    if (error || !receiptMessage) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
-        return nil;
-    }
-    return receiptMessage;
+    return [builder buildInfallibly];
 }
 
 #pragma mark - TSYapDatabaseObject overrides

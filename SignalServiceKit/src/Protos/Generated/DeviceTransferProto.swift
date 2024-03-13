@@ -136,10 +136,6 @@ public struct DeviceTransferProtoFileBuilder {
         proto.unknownFields = unknownFields
     }
 
-    public func build() throws -> DeviceTransferProtoFile {
-        return DeviceTransferProtoFile(proto)
-    }
-
     public func buildInfallibly() -> DeviceTransferProtoFile {
         return DeviceTransferProtoFile(proto)
     }
@@ -274,10 +270,6 @@ public struct DeviceTransferProtoDefaultBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> DeviceTransferProtoDefault {
-        return DeviceTransferProtoDefault(proto)
     }
 
     public func buildInfallibly() -> DeviceTransferProtoDefault {
@@ -432,10 +424,6 @@ public struct DeviceTransferProtoDatabaseBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> DeviceTransferProtoDatabase {
-        return DeviceTransferProtoDatabase(proto)
     }
 
     public func buildInfallibly() -> DeviceTransferProtoDatabase {
@@ -636,10 +624,6 @@ public struct DeviceTransferProtoManifestBuilder {
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    public func build() throws -> DeviceTransferProtoManifest {
-        return DeviceTransferProtoManifest(proto)
     }
 
     public func buildInfallibly() -> DeviceTransferProtoManifest {

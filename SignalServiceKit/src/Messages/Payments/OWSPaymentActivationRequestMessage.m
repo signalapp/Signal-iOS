@@ -25,15 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoDataMessagePaymentActivationBuilder *activationBuilder = [SSKProtoDataMessagePaymentActivation builder];
     [activationBuilder setType:SSKProtoDataMessagePaymentActivationTypeRequest];
-    NSError *error;
-    SSKProtoDataMessagePaymentActivation *activation = [activationBuilder buildAndReturnError:&error];
-    if (error || !activation) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
-        return nil;
-    }
+    SSKProtoDataMessagePaymentActivation *activation = [activationBuilder buildInfallibly];
 
     SSKProtoDataMessagePaymentBuilder *paymentBuilder = [SSKProtoDataMessagePayment builder];
     [paymentBuilder setActivation:activation];
+    NSError *error;
     SSKProtoDataMessagePayment *payment = [paymentBuilder buildAndReturnError:&error];
     if (error || !payment) {
         OWSFailDebug(@"could not build protobuf: %@", error);

@@ -188,11 +188,6 @@ public class KeyBackupProtoRequestBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> KeyBackupProtoRequest {
-        return KeyBackupProtoRequest(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> KeyBackupProtoRequest {
         return KeyBackupProtoRequest(proto)
     }
@@ -393,11 +388,6 @@ public class KeyBackupProtoResponseBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> KeyBackupProtoResponse {
-        return KeyBackupProtoResponse(proto)
     }
 
     @objc
@@ -693,11 +683,6 @@ public class KeyBackupProtoBackupRequestBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> KeyBackupProtoBackupRequest {
-        return KeyBackupProtoBackupRequest(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> KeyBackupProtoBackupRequest {
         return KeyBackupProtoBackupRequest(proto)
     }
@@ -902,11 +887,6 @@ public class KeyBackupProtoBackupResponseBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> KeyBackupProtoBackupResponse {
-        return KeyBackupProtoBackupResponse(proto)
     }
 
     @objc
@@ -1156,11 +1136,6 @@ public class KeyBackupProtoRestoreRequestBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> KeyBackupProtoRestoreRequest {
-        return KeyBackupProtoRestoreRequest(proto)
     }
 
     @objc
@@ -1420,11 +1395,6 @@ public class KeyBackupProtoRestoreResponseBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> KeyBackupProtoRestoreResponse {
-        return KeyBackupProtoRestoreResponse(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> KeyBackupProtoRestoreResponse {
         return KeyBackupProtoRestoreResponse(proto)
     }
@@ -1605,11 +1575,6 @@ public class KeyBackupProtoDeleteRequestBuilder: NSObject {
     }
 
     @objc
-    public func build() throws -> KeyBackupProtoDeleteRequest {
-        return KeyBackupProtoDeleteRequest(proto)
-    }
-
-    @objc
     public func buildInfallibly() -> KeyBackupProtoDeleteRequest {
         return KeyBackupProtoDeleteRequest(proto)
     }
@@ -1735,11 +1700,6 @@ public class KeyBackupProtoDeleteResponseBuilder: NSObject {
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> KeyBackupProtoDeleteResponse {
-        return KeyBackupProtoDeleteResponse(proto)
     }
 
     @objc

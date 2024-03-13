@@ -715,13 +715,7 @@ class StorageServiceOperation: OWSOperation {
         // Bump the manifest version
         state.manifestVersion += 1
 
-        let manifest: StorageServiceProtoManifestRecord
-        do {
-            manifest = try buildManifestRecord(manifestVersion: state.manifestVersion,
-                                               identifiers: state.allIdentifiers)
-        } catch {
-            return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
-        }
+        let manifest = buildManifestRecord(manifestVersion: state.manifestVersion, identifiers: state.allIdentifiers)
 
         Logger.info(
             """
@@ -764,12 +758,12 @@ class StorageServiceOperation: OWSOperation {
     private func buildManifestRecord(
         manifestVersion: UInt64,
         identifiers identifiersParam: [StorageService.StorageIdentifier]
-    ) throws -> StorageServiceProtoManifestRecord {
+    ) -> StorageServiceProtoManifestRecord {
         let identifiers = StorageService.StorageIdentifier.deduplicate(identifiersParam)
         var manifestBuilder = StorageServiceProtoManifestRecord.builder(version: manifestVersion)
-        manifestBuilder.setKeys(try identifiers.map { try $0.buildRecord() })
+        manifestBuilder.setKeys(identifiers.map { $0.buildRecord() })
         manifestBuilder.setSourceDevice(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)
-        return try manifestBuilder.build()
+        return manifestBuilder.buildInfallibly()
     }
 
     // MARK: - Restore
@@ -924,13 +918,8 @@ class StorageServiceOperation: OWSOperation {
             }
         }
 
-        let manifest: StorageServiceProtoManifestRecord
-        do {
-            let identifiers = allItems.map { $0.identifier }
-            manifest = try buildManifestRecord(manifestVersion: state.manifestVersion, identifiers: identifiers)
-        } catch {
-            return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
-        }
+        let identifiers = allItems.map { $0.identifier }
+        let manifest = buildManifestRecord(manifestVersion: state.manifestVersion, identifiers: identifiers)
 
         Logger.info("Creating a new manifest with manifest version: \(version). Total keys: \(allItems.count)")
 

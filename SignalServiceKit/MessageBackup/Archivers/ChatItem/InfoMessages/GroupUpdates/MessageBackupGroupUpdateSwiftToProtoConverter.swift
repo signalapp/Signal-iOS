@@ -14,13 +14,13 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
 
     private static func buildEmptyRevokedInvitees(
         count: UInt
-    ) throws -> [BackupProtoGroupInvitationRevokedUpdateInvitee] {
+    ) -> [BackupProtoGroupInvitationRevokedUpdateInvitee] {
         // All the invitees are empty; only their count matters.
         var invitees = [BackupProtoGroupInvitationRevokedUpdateInvitee]()
         for _ in 0..<count {
-            let invitee = try BackupProtoGroupInvitationRevokedUpdateInvitee
+            let invitee = BackupProtoGroupInvitationRevokedUpdateInvitee
                 .builder()
-                .build()
+                .buildInfallibly()
             invitees.append(invitee)
         }
         return invitees
@@ -107,7 +107,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setUpdaterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGenericGroupUpdate(_:) }
             )
         case .genericUpdateByOtherUser(let updaterAci):
@@ -116,13 +116,13 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setUpdaterAci(aciData(updaterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGenericGroupUpdate(_:) }
             )
         case .genericUpdateByUnknownUser:
             setUpdate(
                 BackupProtoGenericGroupUpdate.builder(),
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGenericGroupUpdate(_:) }
             )
         case .createdByLocalUser:
@@ -131,7 +131,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setUpdaterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupCreationUpdate(_:) }
             )
         case .createdByOtherUser(let updaterAci):
@@ -140,13 +140,13 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setUpdaterAci(aciData(updaterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupCreationUpdate(_:) }
             )
         case .createdByUnknownUser:
             setUpdate(
                 BackupProtoGroupCreationUpdate.builder(),
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupCreationUpdate(_:) }
             )
         case .inviteFriendsToNewlyCreatedGroup:
@@ -157,13 +157,13 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
         case .wasMigrated:
             setUpdate(
                 BackupProtoGroupV2MigrationUpdate.builder(),
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupV2MigrationUpdate(_:) }
             )
         case .localUserInvitedAfterMigration:
             setUpdate(
                 BackupProtoGroupV2MigrationSelfInvitedUpdate.builder(),
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupV2MigrationSelfInvitedUpdate(_:) }
             )
         case .otherUsersInvitedAfterMigration(let count):
@@ -189,7 +189,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     $0.setNewGroupName(newGroupName)
                     $0.setUpdaterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupNameUpdate(_:) }
             )
         case .nameChangedByOtherUser(let updaterAci, let newGroupName):
@@ -199,7 +199,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     $0.setNewGroupName(newGroupName)
                     $0.setUpdaterAci(aciData(updaterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupNameUpdate(_:) }
             )
         case .nameChangedByUnknownUser(let newGroupName):
@@ -208,7 +208,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setNewGroupName(newGroupName)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupNameUpdate(_:) }
             )
         case .nameRemovedByLocalUser:
@@ -218,7 +218,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     // nil group name means removed.
                     $0.setUpdaterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupNameUpdate(_:) }
             )
         case .nameRemovedByOtherUser(let updaterAci):
@@ -228,7 +228,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     // nil group name means removed.
                     $0.setUpdaterAci(aciData(updaterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupNameUpdate(_:) }
             )
         case .nameRemovedByUnknownUser:
@@ -236,7 +236,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 BackupProtoGroupNameUpdate.builder(),
                 // nil group name means removed, updater unknown.
                 // nothing to set.
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupNameUpdate(_:) }
             )
         case .avatarChangedByLocalUser:
@@ -294,7 +294,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     $0.setNewDescription(newDescription)
                     $0.setUpdaterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupDescriptionUpdate(_:) }
             )
         case .descriptionChangedByOtherUser(let updaterAci, let newDescription):
@@ -304,7 +304,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     $0.setNewDescription(newDescription)
                     $0.setUpdaterAci(aciData(updaterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupDescriptionUpdate(_:) }
             )
         case .descriptionChangedByUnknownUser(let newDescription):
@@ -313,7 +313,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setNewDescription(newDescription)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupDescriptionUpdate(_:) }
             )
         case .descriptionRemovedByLocalUser:
@@ -323,7 +323,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     // nil group description means removed.
                     $0.setUpdaterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupDescriptionUpdate(_:) }
             )
         case .descriptionRemovedByOtherUser(let updaterAci):
@@ -333,7 +333,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     // nil group name means removed.
                     $0.setUpdaterAci(aciData(updaterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupDescriptionUpdate(_:) }
             )
         case .descriptionRemovedByUnknownUser:
@@ -341,7 +341,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 BackupProtoGroupDescriptionUpdate.builder(),
                 // nil group description means removed, updater unknown.
                 // nothing to set.
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupDescriptionUpdate(_:) }
             )
         case .membersAccessChangedByLocalUser(let newAccess):
@@ -351,7 +351,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     $0.setUpdaterAci(localAciData)
                     $0.setAccessLevel(newAccess.backupAccessLevel)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupMembershipAccessLevelChangeUpdate(_:) }
             )
         case .membersAccessChangedByOtherUser(let updaterAci, let newAccess):
@@ -361,7 +361,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     $0.setUpdaterAci(aciData(updaterAci))
                     $0.setAccessLevel(newAccess.backupAccessLevel)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupMembershipAccessLevelChangeUpdate(_:) }
             )
         case .membersAccessChangedByUnknownUser(let newAccess):
@@ -370,7 +370,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setAccessLevel(newAccess.backupAccessLevel)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupMembershipAccessLevelChangeUpdate(_:) }
             )
         case .attributesAccessChangedByLocalUser(let newAccess):
@@ -380,7 +380,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     $0.setUpdaterAci(localAciData)
                     $0.setAccessLevel(newAccess.backupAccessLevel)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupAttributesAccessLevelChangeUpdate(_:) }
             )
         case .attributesAccessChangedByOtherUser(let updaterAci, let newAccess):
@@ -390,7 +390,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     $0.setUpdaterAci(aciData(updaterAci))
                     $0.setAccessLevel(newAccess.backupAccessLevel)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupAttributesAccessLevelChangeUpdate }
             )
         case .attributesAccessChangedByUnknownUser(let newAccess):
@@ -399,7 +399,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setAccessLevel(newAccess.backupAccessLevel)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupAttributesAccessLevelChangeUpdate }
             )
         case .announcementOnlyEnabledByLocalUser:
@@ -653,7 +653,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setInviterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setSelfInvitedToGroupUpdate(_:) }
             )
         case .localUserWasInvitedByOtherUser(let updaterAci):
@@ -662,13 +662,13 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setInviterAci(aciData(updaterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setSelfInvitedToGroupUpdate(_:) }
             )
         case .localUserWasInvitedByUnknownUser:
             setUpdate(
                 BackupProtoSelfInvitedToGroupUpdate.builder(),
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setSelfInvitedToGroupUpdate(_:) }
             )
         case .otherUserWasInvitedByLocalUser(let inviteeServiceId):
@@ -859,7 +859,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     $0.setInviteeAci(localAciData)
                     $0.setInviterAci(aciData(inviterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationDeclinedUpdate(_:) }
             )
         case .localUserDeclinedInviteFromUnknownUser:
@@ -868,7 +868,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setInviteeAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationDeclinedUpdate(_:) }
             )
         case .otherUserDeclinedInviteFromLocalUser(let invitee):
@@ -885,7 +885,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     }
                     $0.setInviterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationDeclinedUpdate(_:) }
             )
         case .otherUserDeclinedInviteFromInviter(let invitee, let inviterAci):
@@ -902,7 +902,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                     }
                     $0.setInviterAci(aciData(inviterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationDeclinedUpdate(_:) }
             )
         case .otherUserDeclinedInviteFromUnknownUser(let invitee):
@@ -918,7 +918,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                         $0.setInviteeAci(aciData(aci.codableUuid))
                     }
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationDeclinedUpdate(_:) }
             )
         case .unnamedUserDeclinedInviteFromInviter(let inviterAci):
@@ -927,13 +927,13 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setInviterAci(aciData(inviterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationDeclinedUpdate(_:) }
             )
         case .unnamedUserDeclinedInviteFromUnknownUser:
             setUpdate(
                 BackupProtoGroupInvitationDeclinedUpdate.builder(),
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationDeclinedUpdate(_:) }
             )
         case .localUserInviteRevoked(let revokerAci):
@@ -942,13 +942,13 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setRevokerAci(aciData(revokerAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupSelfInvitationRevokedUpdate(_:) }
             )
         case .localUserInviteRevokedByUnknownUser:
             setUpdate(
                 BackupProtoGroupSelfInvitationRevokedUpdate.builder(),
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupSelfInvitationRevokedUpdate(_:) }
             )
         case .otherUserInviteRevokedByLocalUser(let invitee):
@@ -960,74 +960,49 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 inviteeBuilder.setInviteePni(pniData(pni))
             }
             // Note: on iOS we don't keep who the inviter was.
-            let invitee: BackupProtoGroupInvitationRevokedUpdateInvitee
-            do {
-                invitee = try inviteeBuilder.build()
-            } catch let error {
-                protoBuildError = error
-                break
-            }
-
+            let invitee = inviteeBuilder.buildInfallibly()
             setUpdate(
                 BackupProtoGroupInvitationRevokedUpdate.builder(),
                 setOptionalFields: {
                     $0.setUpdaterAci(localAciData)
                     $0.setInvitees([invitee])
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationRevokedUpdate(_:) }
             )
         case .unnamedUserInvitesWereRevokedByLocalUser(let count):
             // All the invitees are empty; only their count matters.
-            let invitees: [BackupProtoGroupInvitationRevokedUpdateInvitee]
-            do {
-                invitees = try buildEmptyRevokedInvitees(count: count)
-            } catch let error {
-                protoBuildError = error
-                break
-            }
+            let invitees = buildEmptyRevokedInvitees(count: count)
             setUpdate(
                 BackupProtoGroupInvitationRevokedUpdate.builder(),
                 setOptionalFields: {
                     $0.setUpdaterAci(localAciData)
                     $0.setInvitees(invitees)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationRevokedUpdate(_:) }
             )
         case .unnamedUserInvitesWereRevokedByOtherUser(let updaterAci, let count):
             // All the invitees are empty; only their count matters.
-            let invitees: [BackupProtoGroupInvitationRevokedUpdateInvitee]
-            do {
-                invitees = try buildEmptyRevokedInvitees(count: count)
-            } catch let error {
-                protoBuildError = error
-                break
-            }
+            let invitees = buildEmptyRevokedInvitees(count: count)
             setUpdate(
                 BackupProtoGroupInvitationRevokedUpdate.builder(),
                 setOptionalFields: {
                     $0.setUpdaterAci(aciData(updaterAci))
                     $0.setInvitees(invitees)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationRevokedUpdate(_:) }
             )
         case .unnamedUserInvitesWereRevokedByUnknownUser(let count):
             // All the invitees are empty; only their count matters.
-            let invitees: [BackupProtoGroupInvitationRevokedUpdateInvitee]
-            do {
-                invitees = try buildEmptyRevokedInvitees(count: count)
-            } catch let error {
-                protoBuildError = error
-                break
-            }
+            let invitees = buildEmptyRevokedInvitees(count: count)
             setUpdate(
                 BackupProtoGroupInvitationRevokedUpdate.builder(),
                 setOptionalFields: {
                     $0.setInvitees(invitees)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInvitationRevokedUpdate(_:) }
             )
         case .localUserRequestedToJoin:
@@ -1230,7 +1205,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setUpdaterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInviteLinkResetUpdate(_:) }
             )
         case .inviteLinkResetByOtherUser(let updaterAci):
@@ -1239,13 +1214,13 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setUpdaterAci(aciData(updaterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInviteLinkResetUpdate(_:) }
             )
         case .inviteLinkResetByUnknownUser:
             setUpdate(
                 BackupProtoGroupInviteLinkResetUpdate.builder(),
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInviteLinkResetUpdate(_:) }
             )
         case .inviteLinkEnabledWithoutApprovalByLocalUser:
@@ -1314,7 +1289,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setUpdaterAci(localAciData)
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInviteLinkDisabledUpdate(_:) }
             )
         case .inviteLinkDisabledByOtherUser(let updaterAci):
@@ -1323,13 +1298,13 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 setOptionalFields: {
                     $0.setUpdaterAci(aciData(updaterAci))
                 },
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInviteLinkDisabledUpdate(_:) }
             )
         case .inviteLinkDisabledByUnknownUser:
             setUpdate(
                 BackupProtoGroupInviteLinkDisabledUpdate.builder(),
-                build: { $0.build },
+                build: { $0.buildInfallibly },
                 set: { $0.setGroupInviteLinkDisabledUpdate(_:) }
             )
         case .inviteLinkApprovalDisabledByLocalUser:

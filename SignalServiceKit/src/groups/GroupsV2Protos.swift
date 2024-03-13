@@ -68,7 +68,7 @@ public class GroupsV2Protos {
             groupV2Params: groupV2Params
         )
         builder.setPresentation(presentationData)
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
     public class func buildBannedMemberProto(aci: Aci, groupV2Params: GroupV2Params) throws -> GroupsProtoBannedMember {

@@ -61,13 +61,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
         verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:paddingBytesLength];
     }
 
-    NSError *error;
-    SSKProtoVerified *_Nullable verifiedProto = [verifiedBuilder buildAndReturnError:&error];
-    if (error || !verifiedProto) {
-        OWSCFailDebug(@"%@ could not build protobuf: %@", @"[BuildVerifiedProtoWithRecipientId]", error);
-        return nil;
-    }
-    return verifiedProto;
+    return [verifiedBuilder buildInfallibly];
 }
 
 NSUInteger const RecipientIdentitySchemaVersion = 1;

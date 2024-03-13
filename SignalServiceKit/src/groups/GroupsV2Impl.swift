@@ -1684,7 +1684,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         contentsV1Builder.setInviteLinkPassword(inviteLinkPassword)
 
         var builder = GroupsProtoGroupInviteLink.builder()
-        builder.setContents(GroupsProtoGroupInviteLinkOneOfContents.contentsV1(try contentsV1Builder.build()))
+        builder.setContents(GroupsProtoGroupInviteLinkOneOfContents.contentsV1(contentsV1Builder.buildInfallibly()))
         let protoData = try builder.buildSerializedData()
 
         let protoBase64Url = protoData.asBase64Url
@@ -2171,17 +2171,17 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                                            role: role.asProtoRole,
                                                                            groupV2Params: groupV2Params))
-                actionsBuilder.addAddMembers(try actionBuilder.build())
+                actionsBuilder.addAddMembers(actionBuilder.buildInfallibly())
             case .administrator:
                 var actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
                 actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                                                      groupV2Params: groupV2Params))
-                actionsBuilder.addAddRequestingMembers(try actionBuilder.build())
+                actionsBuilder.addAddRequestingMembers(actionBuilder.buildInfallibly())
             default:
                 throw OWSAssertionError("Invalid addFromInviteLinkAccess.")
             }
 
-            return try actionsBuilder.build()
+            return actionsBuilder.buildInfallibly()
         }
     }
 
@@ -2332,9 +2332,9 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             var actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
             let userId = try groupV2Params.userId(for: localAci)
             actionBuilder.setDeletedUserID(userId)
-            actionsBuilder.addDeleteRequestingMembers(try actionBuilder.build())
+            actionsBuilder.addDeleteRequestingMembers(actionBuilder.buildInfallibly())
 
-            return try actionsBuilder.build()
+            return actionsBuilder.buildInfallibly()
         }
     }
 

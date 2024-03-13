@@ -178,14 +178,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                     bodyRangeProtoBuilder.setStyle(.monospace)
                 }
             }
-            do {
-                let bodyRangeProto = try bodyRangeProtoBuilder.build()
-                textBuilder.addBodyRanges(bodyRangeProto)
-            } catch let error {
-                // TODO: should these failures fail the whole message?
-                // For now, just ignore the one body range and keep going.
-                partialErrors.append(.protoSerializationError(interactionUniqueId, error))
-            }
+            textBuilder.addBodyRanges(bodyRangeProtoBuilder.buildInfallibly())
         }
         do {
             let textProto = try textBuilder.build()
