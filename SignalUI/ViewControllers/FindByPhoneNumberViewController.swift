@@ -63,7 +63,6 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
             ),
             attributes: [
                 .font: UIFont.dynamicTypeBodyClamped,
-                .foregroundColor: Theme.secondaryTextAndIconColor,
             ]
         )
     }
@@ -191,7 +190,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
 
     private func applyTheme() {
         countryRowTitleLabel.attributedText = countryTitle
-        countryCodeLabel.textColor = Theme.secondaryTextAndIconColor
+        countryCodeLabel.textColor = .placeholderText
         phoneNumberRowTitleLabel.attributedText = phoneNumberTitle
         phoneNumberTextField.attributedPlaceholder = phoneNumberPlaceholder
         phoneNumberTextField.textColor = Theme.primaryTextColor

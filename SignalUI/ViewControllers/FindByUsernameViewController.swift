@@ -100,7 +100,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
                         comment: "A button below the username text field which opens a username QR code scanner"
                     )
                 ]).styled(
-                    with: .font(font),
+                    with: .font(font.medium()),
                     .color(Theme.primaryTextColor)
                 )
                 button.setAttributedTitle(title, for: .normal)
@@ -108,7 +108,8 @@ public class FindByUsernameViewController: OWSTableViewController2 {
                 button.dimsWhenHighlighted = true
                 button.contentEdgeInsets = .init(hMargin: 16, vMargin: 6)
                 cell.addSubview(button)
-                button.autoPinVerticalEdges(toEdgesOf: cell)
+                button.autoPinEdge(toSuperviewMargin: .top)
+                button.autoPinEdge(toSuperviewMargin: .bottom)
                 button.autoCenterInSuperviewMargins()
                 button.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
                 button.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
