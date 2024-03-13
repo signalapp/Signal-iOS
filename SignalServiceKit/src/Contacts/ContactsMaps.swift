@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 
 @objc
 public class ContactsMaps: NSObject {
