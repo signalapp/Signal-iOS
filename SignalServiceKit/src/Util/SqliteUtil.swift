@@ -118,7 +118,11 @@ public enum SqliteUtil {
             Logger.info("PRAGMA quick_check: ok")
             return .ok
         } else {
+            #if DEBUG
+            Logger.error("PRAGMA quick_check failed (\(firstQuickCheckLine ?? "<nil>"))")
+            #else
             Logger.error("PRAGMA quick_check failed (failure redacted)")
+            #endif
             return .notOk
         }
     }
