@@ -1,1 +1,3 @@
-• If you're looking for a faster way to start a new chat, now you can quickly scan a username QR code from the "Find by Username" screen. 
+• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+
+• We also updated Signal's in-app camera to support scanning username QR codes.
