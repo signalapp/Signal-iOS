@@ -388,11 +388,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     [super anyDidInsertWithTransaction:transaction];
 
+    [self _anyDidInsertWithTx:transaction];
+
     [self ensurePerConversationExpirationWithTransaction:transaction];
 
     [self touchStoryMessageIfNecessaryWithReplyCountIncrement:ReplyCountIncrementNewReplyAdded transaction:transaction];
-
-    [self _anyDidInsertWithTx:transaction];
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -410,11 +410,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     [super anyDidUpdateWithTransaction:transaction];
 
+    [self _anyDidUpdateWithTx:transaction];
+
     [self ensurePerConversationExpirationWithTransaction:transaction];
 
     [self touchStoryMessageIfNecessaryWithReplyCountIncrement:ReplyCountIncrementNoIncrement transaction:transaction];
-
-    [self _anyDidUpdateWithTx:transaction];
 }
 
 - (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -460,6 +460,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     [super anyDidRemoveWithTransaction:transaction];
 
+    [self _anyDidRemoveWithTx:transaction];
+
     if ([self hasBodyAttachmentsWithTransaction:transaction]) {
         [MediaGalleryManager recordTimestampForRemovedMessage:self transaction:transaction];
     }
@@ -471,8 +473,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self removeAllMentionsWithTransaction:transaction];
 
     [self touchStoryMessageIfNecessaryWithReplyCountIncrement:ReplyCountIncrementReplyDeleted transaction:transaction];
-
-    [self _anyDidRemoveWithTx:transaction];
 }
 
 - (void)removeAllMentionsWithTransaction:(SDSAnyWriteTransaction *)transaction
