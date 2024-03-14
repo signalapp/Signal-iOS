@@ -823,6 +823,9 @@
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
 "CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Ausgehend";
 
+/* Title for a row in the Calls Tab that represents multiple calls that have been coalesced together. Embeds {{ a title describing the coalesced calls }}, {{ the number of coalesced calls }}. */
+"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
+
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Leeren";
 
@@ -1112,7 +1115,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Ausstehende Unterhaltungsanfrage";
 
 /* A label indicating a user is a signal connection. */
-"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-Verbindung";
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-Kontakt";
 
 /* The title for a contact 'about' sheet. */
 "CONTACT_ABOUT_SHEET_TITLE" = "Info";
@@ -2639,7 +2642,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "Nutzername";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "QR-Code scannen";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "Nach Nutzernamen suchen";
@@ -3551,7 +3554,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Anhang konnte nicht ausgewählt werden.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Verbinden …";
+"IN_CALL_CONNECTING" = "verbindet …";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Auf anderem Gerät angenommen.";
@@ -3566,7 +3569,7 @@
 "IN_CALL_RECONNECTING" = "Neu verbinden …";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Klingeln …";
+"IN_CALL_RINGING" = "klingelt …";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Sprachanruf …";
@@ -3779,7 +3782,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link-Vorschau";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Die Verwaltung von Telefonkontakten ist auf dem iPad nicht mehr verfügbar. Um Signal-Verbindungen zu deinen Telefonkontakten hinzuzufügen, öffne Signal auf deinem Mobiltelefon.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Die Verwaltung von Telefonkontakten ist auf dem iPad nicht mehr verfügbar. Um Signal-Kontakte zu deinen Telefonkontakten hinzuzufügen, öffne Signal auf deinem Mobiltelefon.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Die Verwaltung von Telefonkontakten wird auf dem iPad nicht mehr unterstützt. Dieses Gerät wird weiterhin alle Änderungen an deiner Kontaktliste von Signal auf deinem Mobiltelefon synchronisieren.";
@@ -3875,7 +3878,7 @@
 "MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Hier werden die Sprachnachrichten und Audiodateien angezeigt, die du sendest und empfängst";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "Kein Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "Keine Audio-Dateien";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "Keine Medieninhalte";
@@ -4301,7 +4304,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alle außer …";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alle Signal-Verbindungen";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alle Signal-Kontakte";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Nur teilen mit …";
@@ -4324,7 +4327,7 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Zum Hinzufügen antippen";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ hat kürzlich den Profilnamen von %2$@ zu %3$@ geändert";
 
 /* A button to skip a view. */
@@ -5152,6 +5155,15 @@
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Kamera konnte nicht konfiguriert werden.";
 
+/* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+
+/* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+
+/* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video zu lang.";
 
@@ -5897,10 +5909,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Nachrichten mit Links";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Weiter";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Zurück";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammer beginnen oft mit einer einfachen Nachricht wie „Hallo“, um dich anzulocken. Wenn du antwortest, wirst du möglicherweise weiter kontaktiert.";
@@ -6902,10 +6914,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Um diese Einstellung zu ändern, setze »Wer kann meine Telefonnummer sehen« auf »Niemand«.";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Wenn du »Wer kann mich anhand der Telefonnummer finden?« auf »Niemand« setzt, wird es für andere schwieriger, dich auf Signal zu finden.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Bist du sicher?";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wer kann mich anhand der Telefonnummer finden";
@@ -7442,19 +7454,19 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Deine Verbindungen können deinen Namen und dein Foto sowie Beiträge unter »Meine Story« sehen, es sei denn, du verbirgst sie vor ihnen.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal-Verbindungen</bold> sind Personen, denen du vertraust, entweder durch:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal-Kontakte</bold> sind Personen, denen du vertraust, entweder durch:";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "Storys";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Wähle aus, welche deiner Signal-Verbindungen deine Story sehen können. Änderungen wirken sich nicht auf bereits gesendete Storys aus.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Wähle aus, welche deiner Signal-Kontakte deine Story sehen können. Änderungen wirken sich nicht auf bereits gesendete Storys aus.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Wer kann diese Story sehen?";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Lege fest, welche Signal-Verbindungen deine Story sehen können. Du kannst dies jederzeit in den Datenschutzeinstellungen ändern.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Lege fest, welche Signal-Kontakte deine Story sehen können. Du kannst dies jederzeit in den Datenschutzeinstellungen ändern.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "An Storys gesendete Videos werden auf %1$d-Sekunden-Clips gekürzt und als mehrere Storys verschickt.";

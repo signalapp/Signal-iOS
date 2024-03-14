@@ -23,10 +23,10 @@
 "ACCESSIBILITY_LABEL_MEDIA" = "Медіа";
 
 /* Accessibility label for stickers. */
-"ACCESSIBILITY_LABEL_STICKER" = "Наліпка";
+"ACCESSIBILITY_LABEL_STICKER" = "Стікер";
 
 /* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
-"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Стікер, схожий на емодзі %1$@";
+"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Стікер, схожий на емоджі «%1$@»";
 
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Голосове повідомлення";
@@ -822,6 +822,9 @@
 
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
 "CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Вихідний";
+
+/* Title for a row in the Calls Tab that represents multiple calls that have been coalesced together. Embeds {{ a title describing the coalesced calls }}, {{ the number of coalesced calls }}. */
+"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Очистити";
@@ -2051,7 +2054,7 @@
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Донат очікує на авторизацію";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "Ви маєте донат, що очікує на розгляд";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "Ваш попередній донат ще не надійшов";
 
 /* Title for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. */
 "DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Сума завелика";
@@ -2087,7 +2090,7 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "Не вдалось обробити донат";
 
 /* Title for a sheet explaining that a donation via bank payment is pending. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Донат очікує на розгляд";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Ваш донат ще не надійшов";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
 "DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Ваш разовий донат очікує на розгляд. Ви зможете відобразити значок «%1$@» у профілі, коли донат буде отримано.\n\nЗазвичай обробка банківських переказів займає 1 робочий день.";
@@ -2285,7 +2288,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Ваш банківський переказ очікується. Зазвичай обробка банківських переказів займає 1 робочий день.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Донат очікує на розгляд";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Ваш донат ще не надійшов";
 
 /* Message shown in a sheet explaining that the user's donation has failed because payment failed. Embeds {{ a specific, already-localized string describing the payment failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "З обробкою донату виникла проблема. %1$@";
@@ -2315,7 +2318,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Щомісячний донат скасовано";
 
 /* A label describing a donation payment that was made via bank transfer, which is still processing and has not completed. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "Донат очікує на розгляд";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "Ваш донат ще не надійшов";
 
 /* A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed. */
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Донат обробляється…";
@@ -2639,7 +2642,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "Ім'я користувача";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Сканувати QR-код";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "Пошук за іменем користувача";
@@ -3641,7 +3644,7 @@
 "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER" = "Повідомлення";
 
 /* accessibility label for the button which shows the sticker picker */
-"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Наліпки";
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Стікери";
 
 /* accessibility hint for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Торкніться двічі та утримуйте для запису. Відпустіть, щоб відправити, чи потягніть у бік, щоб скасувати. Торкніться двічі та потягніть угору, щоб записувати без утримування.";
@@ -3719,7 +3722,7 @@
 "KEY_COMMAND_SETTINGS" = "Налаштування";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Показати наліпки";
+"KEY_COMMAND_STICKERS" = "Показати стікери";
 
 /* A keyboard command to unarchive the current conversation. */
 "KEY_COMMAND_UNARCHIVE" = "Розархівувати чат";
@@ -4175,7 +4178,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Розблокувати";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Відмінити запрос";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Відкликати запит";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Скасувати ваш запит на приєднання до цієї групи?";
@@ -4324,7 +4327,7 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Торкніться, щоб додати";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ змінює своє ім'я профілю з %2$@ на %3$@";
 
 /* A button to skip a view. */
@@ -5152,6 +5155,15 @@
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Не вдалося настроїти камеру.";
 
+/* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+
+/* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+
+/* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Відео задовге.";
 
@@ -5897,10 +5909,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Повідомлення з посиланнями";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Далі";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Назад";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Щоб привернути увагу, спамери часто починають з простих повідомлень на кшталт «Привіт». Відповідь лише заохотить їх продовжити.";
@@ -6902,10 +6914,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Щоб змінити це налаштування, виберіть «Ніхто» для параметра «Хто може бачити мій номер».";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Якщо обрати варіант «Ніхто» для параметра «Хто може знайти мене за номером телефону», людям буде складніше знайти вас у Signal.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Ви впевнені?";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Хто може знайти мене за номером телефону";
@@ -7157,25 +7169,25 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Стікери від Художників Signal";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Отримані Вами Стікери";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Отримані cтікери";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Не вдалося завантажити деякі набори стікерів";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Встановлені наліпки";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Встановлені стікери";
 
 /* Label indicating that one or more known sticker packs is loading. */
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Завантаження…";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Встановлені наліпки відсутні";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Немає встановлених стікерів";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Наліпки від вхідних дзвінків з'являться тут";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Стікери від вхідних дзвінків з'являться тут";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "Наліпки";
+"STICKERS_MANAGE_VIEW_TITLE" = "Стікери";
 
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Пакунок наліпок";
@@ -7607,7 +7619,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "У цій групі немає контактів. Переглядайте запити уважно.";
 
 /* Tap to Replace Emoji string for reaction configuration */
-"TAP_REPLACE_EMOJI" = "Торкніться, щоб замінити смайлик";
+"TAP_REPLACE_EMOJI" = "Торкніться, щоб замінити емоджі";
 
 /* Option in selected text edit menu to make text bold */
 "TEXT_MENU_BOLD" = "Жирний";
@@ -8027,7 +8039,7 @@
 "VIEW_STORY" = "Переглянути сторі";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Проведіть щоб відмінити";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Проведіть для скасування";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Голосове Повідомлення";

@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Позивамо: %2$@, %3$@ и још %1$d особа…</string>
+			<string>Позивамо: %2$@, %3$@ и још %1$d особу…</string>
 			<key>other</key>
 			<string>Позивамо: %2$@, %3$@ и још њих %1$d…</string>
 		</dict>
@@ -456,9 +456,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal ће позвати: %2$@, %3$@ и још %1$d особа</string>
+			<string>Signal ће позвати кориснике %2$@, %3$@ и још %1$d особу</string>
 			<key>other</key>
-			<string>Signal ће позвати: %2$@, %3$@ и још њих %1$d</string>
+			<string>Signal ће позвати кориснике %2$@, %3$@ и још њих %1$d</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Једног члана није било могуће додати у нову групу и тај члан је уклоњен.</string>
+			<string>Додавање %1$d члана у нову групу није успело и тај члан је уклоњен.</string>
 			<key>other</key>
-			<string>Њих %1$d није било могуће додати у нову групу и ти чланови су уклоњени.</string>
+			<string>Додавање њих %1$d у нову групу није успело и ти чланови су уклоњени.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -712,9 +712,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Једног члана није било могуће додати у нову групу и тај члан је добио позивницу да се придружи.</string>
+			<string>Додавање %1$d члана у нову групу није успело и тај члан је добио позивницу да се придружи.</string>
 			<key>other</key>
-			<string>Њих %1$d није било могуће додати у нову групу и ти чланови су добили позивницу да се придруже.</string>
+			<string>Додавање њих %1$d у нову групу није успело и ти чланови су добили позивницу да се придруже.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

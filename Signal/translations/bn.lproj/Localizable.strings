@@ -823,6 +823,9 @@
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
 "CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "আউটগোয়িং কল";
 
+/* Title for a row in the Calls Tab that represents multiple calls that have been coalesced together. Embeds {{ a title describing the coalesced calls }}, {{ the number of coalesced calls }}. */
+"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
+
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "মুছে ফেলুন";
 
@@ -2639,7 +2642,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "ব্যবহারকারীর নাম";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "QR কোড স্ক্যান করুন";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "ব্যবহারকারীর নাম দিয়ে খুঁজুন";
@@ -4324,7 +4327,7 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "যোগ করতে ট্যাপ করুন";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ সম্প্রতি তার নাম %2$@ থেকে %3$@-এ পরিবর্তন করেছেন।";
 
 /* A button to skip a view. */
@@ -5152,6 +5155,15 @@
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "ক্যামেরা কনফিগার করতে ব্যর্থ।";
 
+/* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+
+/* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+
+/* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "ভিডিওর আকার অনেক বড়।";
 
@@ -5897,10 +5909,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "লিংক সহ মেসেজ";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "পরবর্তী";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "পূর্ববর্তী";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "স্প্যামাররা প্রায়শই আপনাকে আকর্ষণ করার জন্য \"হাই\"-এর মতো একটি সাধারণ মেসেজ দিয়ে কথা শুরু করেন। আপনি উত্তর দিলে তারা আপনাকে আরো জড়িয়ে ফেলতে পারেন।";
@@ -6902,10 +6914,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "এই সেটিংসটি পরিবর্তন করতে, \"কে আমার নম্বর দেখতে পারবেন\" তা \"কেউই নয়\"-তে সেট করুন।";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "\"কারা আমাকে নম্বরের মাধ্যমে খুঁজে পেতে পারেন\"-এ \"কেউ নয়\" সেট করা হলে তা আপনাকে Signal-এ খুঁজে পাওয়া অন্যদের কাছে কঠিন করে তুলবে।";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "আপনি কি নিশ্চিত?";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "নম্বরের মাধ্যমে কে আমাকে খুঁজে পাবেন";

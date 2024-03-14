@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Contact aan de groep “%2$@” toevoegen?</string>
+			<string>Contact aan de groep ‘%2$@’ toevoegen?</string>
 			<key>other</key>
-			<string>%1$d contacten aan de groep “%2$@” toevoegen?</string>
+			<string>%1$d contacten aan de groep ‘%2$@’ toevoegen?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -1096,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Groepsuitnodiging van “%2$@” intrekken?</string>
+			<string>Groepsuitnodiging van ‘%2$@’ intrekken?</string>
 			<key>other</key>
-			<string>%1$d uitnodigingen van “%2$@” intrekken?</string>
+			<string>%1$d uitnodigingen van ‘%2$@’ intrekken?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

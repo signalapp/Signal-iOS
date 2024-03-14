@@ -98,7 +98,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Aan groep toevoegen?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "“%1$@” aan de groep “%2$@” toevoegen?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "‘%1$@’ aan de groep ‘%2$@’ toevoegen?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Persoon toevoegen";
@@ -107,10 +107,10 @@
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "Is al een groepslid";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ is al een lid van de groep “%2$@”";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ is al een lid van de groep ‘%2$@’";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ is aan de groep “%2$@” toegevoegd";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ is aan de groep ‘%2$@’ toegevoegd";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "Aan een groep toevoegen";
@@ -822,6 +822,9 @@
 
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
 "CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Uitgaand";
+
+/* Title for a row in the Calls Tab that represents multiple calls that have been coalesced together. Embeds {{ a title describing the coalesced calls }}, {{ the number of coalesced calls }}. */
+"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Wissen";
@@ -1640,7 +1643,7 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Diagnostische test voor database uitvoeren?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Delen van je berichtgeschiedenis kunnen beschadigd zijn. Dit heeft geen gevolgen voor de veiligheid van je account of berichten. Tik op 'Doorgaan' om je gegevens te herstellen.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Delen van je berichtgeschiedenis kunnen beschadigd zijn. Dit heeft geen gevolgen voor de veiligheid van je account of berichten. Tik op ‘Doorgaan’ om je gegevens te herstellen.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Probleem met ophalen van gegevens.";
@@ -2639,7 +2642,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "Gebruikersnaam";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "QR-code scannen";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "Zoeken op gebruikersnaam";
@@ -3302,7 +3305,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Groepsverhaal verwijderen";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Weet je zeker dat je \"%1$@\" wilt verwijderen?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Weet je zeker dat je ‘%1$@’ wilt verwijderen?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Leden van de groepschat %1$@ kunnen dit verhaal bekijken en erop antwoorden. Je kunt het lidmaatschap voor deze chat updaten in de groep.";
@@ -3317,7 +3320,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED" = "De groepsafbeelding is verwijderd.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Jij hebt de groepsafbeelding verwijderd.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Je hebt de groepsafbeelding verwijderd.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsafbeelding verwijderd.";
@@ -3326,7 +3329,7 @@
 "GROUP_UPDATED_AVATAR_UPDATED" = "De groepsafbeelding is aangepast.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Jij hebt de groepsafbeelding aangepast.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Je hebt de groepsafbeelding aangepast.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsafbeelding aangepast.";
@@ -3365,10 +3368,10 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de naam van de groep verwijderd.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de naam van de groep gewijzigd naar “%1$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de naam van de groep gewijzigd naar ‘%1$@’.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de naam van de groep gewijzigd naar “%2$@”.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de naam van de groep gewijzigd naar ‘%2$@’.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "De naam van de groep is vanaf nu ‘%1$@’.";
@@ -3737,7 +3740,7 @@
 "LEAVE_GROUP_FAILED" = "Het verlaten van de groep is mislukt omdat er iets is misgegaan.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "'Verouderde groepen' zijn groepen die functies zoals @vermeldingen en beheerders niet ondersteunen. De meeste verouderde groepen zijn automatisch of handmatig geüpgraded naar 'Nieuwe groepen'. Vanwege een lange periode van inactiviteit kan deze groep niet meer worden geüpgraded.\n\nOm door te gaan met deze chat, moet je een nieuwe groep maken.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "‘Verouderde groepen’ zijn groepen die functies zoals @vermeldingen en beheerders niet ondersteunen. De meeste verouderde groepen zijn automatisch of handmatig geüpgraded naar ‘Nieuwe groepen’. Vanwege een lange periode van inactiviteit kan deze groep niet meer worden geüpgraded.\n\nOm door te gaan met deze chat, moet je een nieuwe groep maken.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
 "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Verouderde groepen";
@@ -3812,13 +3815,13 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Open op beide apparaten de Instellingen app";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Schakel “Lokaal netwerk” in";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Schakel ‘Lokaal netwerk’ in";
 
 /* Second step for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Zoek Signal in de lijst";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Schakel “Lokale netwerktoegang” in";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Schakel ‘Lokale netwerktoegang’ in";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Zoek op naam of adres";
@@ -4304,7 +4307,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alle Signal-contacten";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Deel alleen met…";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Alleen delen met…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Mijn verhalen";
@@ -4324,7 +4327,7 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Tik om toe te voegen";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ heeft recent diens profielnaam gewijzigd van %2$@ naar %3$@";
 
 /* A button to skip a view. */
@@ -5009,7 +5012,7 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Aan groep toevoegen?";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "“%1$@” toevoegen aan de groep?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "‘%1$@’ toevoegen aan de groep?";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Verzoek afwijzen";
@@ -5024,25 +5027,25 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Er zijn geen uitnodigingen om weer te geven.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "“%1$@” toegevoegd.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "‘%1$@’ toegevoegd.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Zie lidmaatschapsverzoeken";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "“%1$@” afgewezen.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "‘%1$@’ afgewezen.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Uitnodiging intrekken";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Uitnodiging voor de groep “%1$@” intrekken?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Uitnodiging voor de groep ‘%1$@’ intrekken?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Profielinformatie van personen die zijn uitgenodigd voor de groep wordt niet weergegeven. Als een genodigde er voor kiest de uitnodiging te accepteren, dan zullen op dat moment diens profielnaam, -foto en -omschrijving zichtbaar worden voor de groep. Deze personen zullen nog geen groepsberichten ontvangen, totdat ze de uitnodiging hebben geaccepteerd.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen in deze lijst proberen via de groepslink lid te worden van “%1$@”.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen in deze lijst proberen via de groepslink lid te worden van ‘%1$@’.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Ongeldige uitnodigingen";
@@ -5151,6 +5154,15 @@
 
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Afstemmen met camera mislukt.";
+
+/* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+
+/* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+
+/* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video te lang.";
@@ -5369,7 +5381,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Aangepast verhaal verwijderen";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Weet je zeker dat je \"%1$@\" wilt verwijderen? Updates gedeeld in dit verhaal worden ook verwijderd.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Weet je zeker dat je ‘%1$@’ wilt verwijderen? Updates gedeeld in dit verhaal worden ook verwijderd.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Verwijderen";
@@ -5414,10 +5426,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Over mij (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ heeft diens profielnaam van “%2$@” naar “%3$@” gewijzigd.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ heeft diens profielnaam van ‘%2$@’ naar ‘%3$@’ gewijzigd.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ heeft diens profielnaam naar “%2$@” gewijzigd.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ heeft diens profielnaam naar ‘%2$@’ gewijzigd.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Je naam";
@@ -5438,7 +5450,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Nu oplossen";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Hiermee wordt je gebruikersnaam verwijderd en worden je QR-code en link uitgeschakeld. “%1$@” kan hierna door anderen worden geclaimd. Weet je het zeker?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Hiermee wordt je gebruikersnaam verwijderd en worden je QR-code en link uitgeschakeld. ‘%1$@’ kan hierna door anderen worden geclaimd. Weet je het zeker?";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Gebruikersnaam verwijderen";
@@ -5576,7 +5588,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reageerde met %1$@ op je sticker";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reageerde met %1$@ op “%2$@”";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reageerde met %1$@ op ‘%2$@’";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reageerde met %1$@ op je video";
@@ -5897,10 +5909,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Berichten met links";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Volgende";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Vorige";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammers beginnen vaak met een eenvoudig bericht als “Hallo” om je te lokken. Als je reageert, proberen ze je aan de praat te houden.";
@@ -6182,13 +6194,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Foutopsporingslogs";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "De app-naam “Signal” is zichtbaar op het beginscherm, in meldingen en in de appbibliotheek.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "De app-naam ‘Signal’ is zichtbaar op het beginscherm, in meldingen en in de appbibliotheek.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "De app-naam “Signal” kun je verbergen op het beginscherm door de app naar het dock onderaan het beginscherm te verplaatsen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "De app-naam ‘Signal’ kun je verbergen op het beginscherm door de app naar het dock onderaan het beginscherm te verplaatsen.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "De app-naam “Signal” is zichtbaar op het beginscherm, in meldingen en in de appbibliotheek.";
+"SETTINGS_APP_ICON_FOOTER" = "De app-naam ‘Signal’ is zichtbaar op het beginscherm, in meldingen en in de appbibliotheek.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "App-pictogram";
@@ -6638,7 +6650,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transactiegegevens, waaronder het bedrag en het tijdstip van de transactie, zijn onderdeel van het kasboek van MobileCoin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Er worden “samenvoegingskosten” in rekening gebracht wanneer de munten die je bezit niet kunnen worden samengevoegd tot de nieuwe gewenste betaling. Door deze samenvoeging kun je toch betalingen blijven verzenden.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Er worden ‘samenvoegingskosten’ in rekening gebracht wanneer de munten die je bezit niet kunnen worden samengevoegd tot de nieuwe gewenste betaling. Door deze samenvoeging kun je toch betalingen blijven verzenden.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Je hebt niet genoeg MOB om deze betaling te kunnen plaatsen. Je huidige krediet is %1$@.";
@@ -6902,10 +6914,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Om deze instelling te wijzigen, stel ‘Wie kan mijn nummer zien’ in op ‘Niemand’.";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Als je ‘Wie kan mij via mijn nummer vinden’ instelt op ‘Niemand’, wordt het moeilijker voor mensen om je te vinden op Signal.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Weet je het zeker?";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wie kan mij via mijn nummer vinden";
@@ -6989,7 +7001,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Verberg Signal in de lijst van recent geopende apps";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Signal-oproepen weergeven in de “Recentelijk”-lijst in de iOS-telefoonapp.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Signal-oproepen weergeven in de ‘Recentelijk’-lijst in de iOS-telefoonapp.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Geluiden";
@@ -7403,7 +7415,7 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Dit verhaal kon niet naar iedereen worden verstuurd. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Deel alleen met…";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Alleen delen met…";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Iedereen behalve…";
@@ -7778,7 +7790,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "Dit apparaat zal niet langer in staat zijn berichten te sturen en te ontvangen als het is ontkoppeld.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "“%1$@” ontkoppelen?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "‘%1$@’ ontkoppelen?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "Dit apparaat is niet meer gekoppeld. Koppel Signal opnieuw met je telefoon om door te gaan met berichten sturen.";
@@ -8036,7 +8048,7 @@
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Tik en houd vast om een audiobericht op te nemen.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Voltooi de installatie op Signal-desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Voltooi de installatie op Signal Desktop.";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
 "WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Kleurverloop met %1$@ en %2$@";

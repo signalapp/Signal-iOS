@@ -823,6 +823,9 @@
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
 "CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Sortant";
 
+/* Title for a row in the Calls Tab that represents multiple calls that have been coalesced together. Embeds {{ a title describing the coalesced calls }}, {{ the number of coalesced calls }}. */
+"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
+
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Supprimer";
 
@@ -2639,7 +2642,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "Nom d’utilisateur";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scanner le code QR";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "Rechercher par nom d’utilisateur";
@@ -3860,7 +3863,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Ajouter un message";
 
 /* Shown in place of message input text in media editor when 'View Once' is on. */
-"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Afficher les contenus éphémères";
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Média à vue unique";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Supprimer le filtre";
@@ -4043,7 +4046,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Téléversement";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Visualisé par";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Vu par";
 
 /* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
 "MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "Jamais";
@@ -4226,7 +4229,7 @@
 "MESSAGE_STATUS_UPLOADING" = "Téléversement…";
 
 /* status message for viewed messages */
-"MESSAGE_STATUS_VIEWED" = "Visualisé";
+"MESSAGE_STATUS_VIEWED" = "Vu";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%1$@ n’est plus marqué comme confirmé. Touchez pour plus d’options.";
@@ -4324,7 +4327,7 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Appuyez pour ajouter";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ a récemment changé son nom de profil de %2$@ à %3$@";
 
 /* A button to skip a view. */
@@ -5075,7 +5078,7 @@
 "PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Visualiser la vidéo";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Visualisé";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Vu";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Tout le monde";
@@ -5151,6 +5154,15 @@
 
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Échec de configuration de l’appareil photo";
+
+/* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+
+/* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+
+/* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Vidéo trop longue.";
@@ -5897,10 +5909,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages contenant des liens";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Suivant";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Précédent";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Pour attirer votre attention, les spammeurs commencent souvent par un simple « Salut » par exemple. Si vous répondez, ils risquent de continuer la conversation.";
@@ -6902,10 +6914,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Pour changer ce paramètre, réglez l’option « Qui peut voir mon numéro » sur « Personne ».";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Si vous définissez le paramètre « Qui peut me trouver grâce à mon numéro de téléphone » sur « Personne », les autres utilisateurs auront plus de difficulté à vous trouver sur Signal.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Voulez-vous vraiment continuer ?";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Qui peut me retrouver grâce à mon numéro de téléphone";
@@ -8012,7 +8024,7 @@
 "VIEW_CONTACT_BUTTON" = "Voir les Contacts";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Vous avez déjà visualisé ce message";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Vous avez déjà lu ce message";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Touchez ici pour faire disparaître ce message après consultation.";

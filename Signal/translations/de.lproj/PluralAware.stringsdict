@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Gruppenmitglied hat den gleichen Namen. Prüfe die folgenden Mitglieder oder handle entsprechend.</string>
+			<string>%1$d Gruppenmitglied hat denselben Namen. Prüfe die folgenden Mitglieder und handle gegebenenfalls.</string>
 			<key>other</key>
-			<string>%1$d Gruppenmitglieder haben den gleichen Namen. Prüfe die folgenden Mitglieder und handle gegebenenfalls.</string>
+			<string>%1$d Gruppenmitglieder haben denselben Namen. Prüfe die folgenden Mitglieder und handle gegebenenfalls.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-Verbindungen · %1$d Betrachter</string>
+			<string>Alle Signal-Kontakte · %1$d Betrachter</string>
 			<key>other</key>
-			<string>Alle Signal-Verbindungen · %1$d Betrachter</string>
+			<string>Alle Signal-Kontakte · %1$d Betrachter</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-Verbindungen · %1$d ausgenommen</string>
+			<string>Alle Signal-Kontakte · %1$d ausgenommen</string>
 			<key>other</key>
-			<string>Alle Signal-Verbindungen · %1$d ausgenommen</string>
+			<string>Alle Signal-Kontakte · %1$d ausgenommen</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>

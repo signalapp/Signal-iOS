@@ -143,10 +143,10 @@
 "ALERT_SAVE" = "Sábháil";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Níl aon ghrúpaí i bpáirt agat leis an duine seo. Athbhreithnigh iarratais go cúramach roimh a nglacadh chun teachtaireachtaí nach bhfuil uait a sheachaint.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Níl aon bhaill i bpáirt agat leis an ngrúpa seo. Athbhreithnigh iarratais go cúramach roimh a nglacadh chun teachtaireachtaí nach bhfuil uait a sheachaint.";
 
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
@@ -822,6 +822,9 @@
 
 /* Label for an entry in the Calls Tab describing a call as outgoing. */
 "CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "Amach";
+
+/* Title for a row in the Calls Tab that represents multiple calls that have been coalesced together. Embeds {{ a title describing the coalesced calls }}, {{ the number of coalesced calls }}. */
+"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Glan";
@@ -2639,7 +2642,7 @@
 "FIND_BY_USERNAME_PLACEHOLDER" = "Ainm úsáideora";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan QR Code";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Scan Cód QR";
 
 /* Title for the view for finding accounts by their username */
 "FIND_BY_USERNAME_TITLE" = "Aimsigh de réir Ainm Úsáideora";
@@ -2855,13 +2858,13 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Tá athrú ar uimhir sábháilteachta ag rannpháirtí a chuaigh isteach sa ghlao. Tapáil chun féachaint uirthi.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Svaidhpeáil le hamharc ar chomhroinnt scáileáin";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Svaidhpeáil suas le hamhairc a athrú";
 
 /* Tooltip highlighting group calls. */
 "GROUP_CALL_START_TOOLTIP" = "Cnag anseo chun tús a chur le grúpghlao";
@@ -3101,7 +3104,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Comhroinn trí Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Is féidir le haon duine leis an nasc seo amharc ar ainm agus baill an ghrúpa seo agus iarraidh ar dhul isteach ann. Comhroinn le daoine a bhfuil muinín agat astu é.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Group Link";
@@ -3185,7 +3188,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Baill";
 
 /* A title string for a view that allows a user to review name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Review Members";
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Athbhreithnigh Baill";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
@@ -3443,10 +3446,10 @@
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Amharc ar Iarratas";
 
 /* Label for button that lets the user view the requests to join the group. */
-"GROUPS_VIEW_REQUESTS_BUTTON" = "View Requests";
+"GROUPS_VIEW_REQUESTS_BUTTON" = "Amharc ar Iarratais";
 
 /* Help item allowing the user to file a support request */
 "HELP_CONTACT_US" = "Déan teagmháil linn";
@@ -3956,7 +3959,7 @@
 "MESSAGE_ACTION_LINK_OPEN_PROXY" = "Oscail Seachfhreastalaí Signal";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Amharc ar Phacáiste Greamán";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_PAYMENT_DETAILS" = "Sonraí na híocaíochta";
@@ -4043,7 +4046,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Á huaslódáil";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Amharctha ag";
 
 /* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
 "MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "Choíche";
@@ -4061,7 +4064,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "Message Details";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "Réamhamharc ar Theachtaireacht";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Cuir bac";
@@ -4106,10 +4109,10 @@
 "MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Tá an t-ainm céanna ar an duine seo agus atá ar theagmhálaí eile";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Mura bhfuil tú cinnte faoin duine a sheol an t-iarratas, déan athbhreithniú ar na teagmhálaithe thíos agus déan beart.";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Review Request";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Athbhreithnigh Iarratas";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Nuashonraigh an teagmhálaí";
@@ -4226,7 +4229,7 @@
 "MESSAGE_STATUS_UPLOADING" = "Uaslódáil…";
 
 /* status message for viewed messages */
-"MESSAGE_STATUS_VIEWED" = "Feicthe";
+"MESSAGE_STATUS_VIEWED" = "Amharcadh air";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "Níl %1$@ marcáilte deimhnithe a thuilleadh. Tapáil chun roghanna a fheiceáil.";
@@ -4324,7 +4327,7 @@
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Tapáil chun cur leis";
 
-/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "D'athraigh %1$@ ainm próifíle ó %2$@ go %3$@ le déanaí";
 
 /* A button to skip a view. */
@@ -5057,25 +5060,25 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Tharla earráid agus teachtaireacht isteach á próiseáil";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Meáin aonuaire";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Meáin amhairc aonuaire";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Meáin";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Grianghraf aonuaire";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Grianghraf amhairc aonuaire";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Físeán aonuaire";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Físeán amhairc aonuaire";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Féach ar an nGrianghraf";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Amharc ar an nGrianghraf";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Féach ar an bhFíseán";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Amharc ar an bhFíseán";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Feicthe";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Amharcadh air";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
@@ -5151,6 +5154,15 @@
 
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Níorbh fhéidir an ceamara a shocrú.";
+
+/* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+
+/* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+
+/* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Físeán ró-fhada.";
@@ -5897,10 +5909,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Teachtaireachtaí le naisc";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Next";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Ar Aghaidh";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Previous";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Roimhe";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Is minic a thosaíonn seoltóirí turscair le teachtaireacht shimplí cosúil le “Haigh” chun tú a mhealladh isteach. Má fhreagraíonn tú, féadfaidh siad dul i dteagmháil leat tuilleadh.";
@@ -6290,7 +6302,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Glaonna";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Déantar glórphoist, meáin amharc aonuaire, agus greamáin (faoi 100kb) a uath-íoslódáil.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Déantar glórphoist, meáin amhairc aonuaire, agus greamáin (faoi 100kb) a uath-íoslódáil i gcónaí.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
@@ -6365,10 +6377,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Téarmaí Úsáide ⁊ Polasaí Príobháideachais";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Gin Réamhamharcanna ar Naisc";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Aisghabh réamhamharcanna ar naisc díreach ó láithreáin gréasáin do na teachtaireachtaí a sheolann tú.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Choíche";
@@ -6428,7 +6440,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Cuir i ngníomh é";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "Amharc ar Théarmaí MobileCoin";
 
 /* Label for 'add money' view in the payment settings. */
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
@@ -6875,7 +6887,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "View Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Amharc ar Fhrása Athshlánaithe";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Recovery Phrase";
@@ -6902,10 +6914,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Leis an socrú sin a athrú, socraigh \"Daoine atá in ann m'uimhir a fheiceáil\" go \"Duine ar bith\".";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Setting “Who can find me by number” to “Nobody” will make it harder for people to find you on Signal.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Má shocraítear \"Na daoine atá in ann mé a aimsiú le m'uimhir\" ag \"Duine ar bith\", beidh sé níos deacra ag daoine thú a aimsiú ar Signal.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Are You Sure?";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "An bhfuil tú cinnte?";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Na Daoine ar Féidir leo mé a Aimsiú le hUimhir Ghutháin";
@@ -7601,10 +7613,10 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %1$@ when you message them.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Níl aon ghrúpaí i bpáirt ann. Athbhreithnigh iarratais go cúramach.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Níl aon teagmhálaithe sa ghrúpa seo. Athbhreithnigh iarratais go cúramach.";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Tap to replace an emoji";
@@ -7994,7 +8006,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Athraíodh an stádas deimhnithe.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Taispeáin an Uimhir Shábháilteachta";
+"VERIFY_PRIVACY" = "Amharc ar an Uimhir Shábháilteachta";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Déan Athbhreithniú ar Uimhreacha Sábháilteachta";
