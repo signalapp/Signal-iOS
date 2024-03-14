@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
+final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
     private var mockCallRecordDeleteManager: MockCallRecordDeleteManager!
     private var mockGroupCallRecordManager: MockGroupCallRecordManager!
@@ -19,7 +19,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
     private var mockThreadStore: MockThreadStore!
 
     private var mockDB = MockDB()
-    private var incomingSyncMessageManager: CallRecordIncomingSyncMessageManagerImpl!
+    private var incomingSyncMessageManager: IncomingCallEventSyncMessageManagerImpl!
 
     override func setUp() {
         mockCallRecordStore = MockCallRecordStore()
@@ -38,7 +38,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             XCTFail("Shouldn't be deleting!")
         }
 
-        incomingSyncMessageManager = CallRecordIncomingSyncMessageManagerImpl(
+        incomingSyncMessageManager = IncomingCallEventSyncMessageManagerImpl(
             callRecordStore: mockCallRecordStore,
             callRecordDeleteManager: mockCallRecordDeleteManager,
             groupCallRecordManager: mockGroupCallRecordManager,
@@ -62,7 +62,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             defer { mockCallRecordStore.fetchMock = nil }
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .individual(contactServiceId: contactServiceId),
                     callId: callId.adjacent,
                     callTimestamp: .maxRandom,
@@ -84,7 +84,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             }
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .individual(contactServiceId: contactServiceId),
                     callId: callId,
                     callTimestamp: .maxRandom,
@@ -108,7 +108,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             }
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .individual(contactServiceId: contactServiceId),
                     callId: callId.adjacent,
                     callTimestamp: .maxRandom,
@@ -137,7 +137,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             defer { mockCallRecordStore.fetchMock = nil }
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: groupId),
                     callId: existingCallRecord.callId.adjacent,
                     callTimestamp: .maxRandom,
@@ -159,7 +159,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             }
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: groupId),
                     callId: existingCallRecord.callId,
                     callTimestamp: .maxRandom,
@@ -183,7 +183,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             }
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: groupId),
                     callId: existingCallRecord.callId.adjacent,
                     callTimestamp: .maxRandom,
@@ -249,7 +249,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .individual(contactServiceId: contactServiceId),
                     callId: callId,
                     callTimestamp: .maxRandom,
@@ -288,7 +288,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .individual(contactServiceId: contactServiceId),
                     callId: callId,
                     callTimestamp: .maxRandom,
@@ -328,7 +328,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .individual(contactServiceId: contactServiceId),
                     callId: .maxRandom,
                     callTimestamp: .maxRandom,
@@ -396,7 +396,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// A first sync message should get us to the joined state.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: groupId),
                     callId: existingCallRecord.callId,
                     callTimestamp: existingCallRecord.callBeganTimestamp - 5,
@@ -412,7 +412,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// A second sync message keeps us in the joined state.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: groupId),
                     callId: existingCallRecord.callId,
                     callTimestamp: existingCallRecord.callBeganTimestamp - 5,
@@ -447,7 +447,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating a ringing-missed record makes it ringing-accepted.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: missedGroupId),
                     callId: missedCallRecord.callId,
                     callTimestamp: missedCallRecord.callBeganTimestamp - 5,
@@ -463,7 +463,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating a ringing-declined record makes it ringing-accepted.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: declinedGroupId),
                     callId: declinedCallRecord.callId,
                     callTimestamp: declinedCallRecord.callBeganTimestamp - 5,
@@ -479,7 +479,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating an already rining-accepted record doesn't change the state.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: declinedGroupId),
                     callId: declinedCallRecord.callId,
                     callTimestamp: declinedCallRecord.callBeganTimestamp - 5,
@@ -514,7 +514,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating a generic record makes it ringing-declined.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: genericGroupId),
                     callId: genericCallRecord.callId,
                     callTimestamp: genericCallRecord.callBeganTimestamp - 5,
@@ -530,7 +530,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating a ringing-missed record makes it ringing-declined.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: missedGroupId),
                     callId: missedCallRecord.callId,
                     callTimestamp: missedCallRecord.callBeganTimestamp - 5,
@@ -546,7 +546,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating an already-declined record keeps it declined.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: missedGroupId),
                     callId: missedCallRecord.callId,
                     callTimestamp: missedCallRecord.callBeganTimestamp - 5,
@@ -581,7 +581,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating a joined record makes it ringing-accepted.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: joinedGroupId),
                     callId: joinedCallRecord.callId,
                     callTimestamp: joinedCallRecord.callBeganTimestamp - 5,
@@ -597,7 +597,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating a ringing-accepted record keeps it ringing-accepted.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: acceptedGroupId),
                     callId: acceptedCallRecord.callId,
                     callTimestamp: acceptedCallRecord.callBeganTimestamp - 5,
@@ -633,7 +633,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating a generic record reassigns the direction and status.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: genericGroupId),
                     callId: genericCallRecord.callId,
                     callTimestamp: genericCallRecord.callBeganTimestamp - 5,
@@ -649,7 +649,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// Updating a joined record reassigns the direction and status.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: joinedGroupId),
                     callId: joinedCallRecord.callId,
                     callTimestamp: joinedCallRecord.callBeganTimestamp - 5,
@@ -681,7 +681,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: groupId),
                     callId: callRecord.callId,
                     callTimestamp: callRecord.callBeganTimestamp - 5,
@@ -706,7 +706,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                incomingSyncMessage: IncomingCallEventSyncMessageParams(
                     conversationType: .group(groupId: Data()),
                     callId: .maxRandom,
                     callTimestamp: .maxRandom,
@@ -728,11 +728,11 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
         func simulateIncoming(
             direction: CallRecord.CallDirection,
-            event: CallRecordIncomingSyncMessageParams.CallEvent
+            event: IncomingCallEventSyncMessageParams.CallEvent
         ) {
             mockDB.write { tx in
                 incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
-                    incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    incomingSyncMessage: IncomingCallEventSyncMessageParams(
                         conversationType: .group(groupId: groupThread.groupId),
                         callId: .maxRandom,
                         callTimestamp: .maxRandom,
@@ -875,7 +875,7 @@ private class MockIndividualCallRecordManager: IndividualCallRecordManager {
 
 // MARK: MarkAsReadShims
 
-private class MockMarkAsReadShims: CallRecordIncomingSyncMessageManagerImpl.Shims.MarkAsRead {
+private class MockMarkAsReadShims: IncomingCallEventSyncMessageManagerImpl.Shims.MarkAsRead {
     var markedAsReadCount = 0
     func markThingsAsReadForIncomingSyncMessage(
         callInteraction: TSInteraction & OWSReadTracking,

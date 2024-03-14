@@ -5,15 +5,15 @@
 
 import LibSignalClient
 
-protocol CallRecordIncomingSyncMessageManager {
+protocol IncomingCallEventSyncMessageManager {
     func createOrUpdateRecordForIncomingSyncMessage(
-        incomingSyncMessage: CallRecordIncomingSyncMessageParams,
+        incomingSyncMessage: IncomingCallEventSyncMessageParams,
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     )
 }
 
-final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMessageManager {
+final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessageManager {
     private let callRecordStore: CallRecordStore
     private let callRecordDeleteManager: CallRecordDeleteManager
     private let groupCallRecordManager: GroupCallRecordManager
@@ -44,7 +44,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
     }
 
     public func createOrUpdateRecordForIncomingSyncMessage(
-        incomingSyncMessage syncMessage: CallRecordIncomingSyncMessageParams,
+        incomingSyncMessage syncMessage: IncomingCallEventSyncMessageParams,
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
@@ -285,7 +285,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
 
 // MARK: - Deleting calls
 
-private extension CallRecordIncomingSyncMessageManagerImpl {
+private extension IncomingCallEventSyncMessageManagerImpl {
     func deleteCallRecordForIncomingSyncMessage(
         callId: UInt64,
         threadRowId: Int64,
@@ -320,7 +320,7 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
 
 // MARK: - Individual call
 
-private extension CallRecordIncomingSyncMessageManagerImpl {
+private extension IncomingCallEventSyncMessageManagerImpl {
     func updateIndividualCallRecordForIncomingSyncMessage(
         existingCallRecord: CallRecord,
         existingCallInteraction: TSCall,
@@ -400,7 +400,7 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
 
 // MARK: - Group calls
 
-private extension CallRecordIncomingSyncMessageManagerImpl {
+private extension IncomingCallEventSyncMessageManagerImpl {
     func updateGroupCallRecordForIncomingSyncMessage(
         existingCallRecord: CallRecord,
         existingCallInteraction: OWSGroupCallMessage,
@@ -471,7 +471,7 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
 
 // MARK: -
 
-private extension CallRecordIncomingSyncMessageManagerImpl {
+private extension IncomingCallEventSyncMessageManagerImpl {
     func markThingsAsReadForIncomingSyncMessage(
         callInteraction: TSInteraction & OWSReadTracking,
         thread: TSThread,
@@ -525,17 +525,17 @@ private extension CallRecord.CallType {
 
 // MARK: - Shims
 
-extension CallRecordIncomingSyncMessageManagerImpl {
+extension IncomingCallEventSyncMessageManagerImpl {
     enum Shims {
-        typealias MarkAsRead = _CallRecordIncomingSyncMessageManagerImpl_MarkAsRead
+        typealias MarkAsRead = _IncomingCallEventSyncMessageManagerImpl_MarkAsRead
     }
 
     enum ShimsImpl {
-        typealias MarkAsRead = _CallRecordIncomingSyncMessageManagerImpl_MarkAsReadImpl
+        typealias MarkAsRead = _IncomingCallEventSyncMessageManagerImpl_MarkAsReadImpl
     }
 }
 
-protocol _CallRecordIncomingSyncMessageManagerImpl_MarkAsRead {
+protocol _IncomingCallEventSyncMessageManagerImpl_MarkAsRead {
     /// Mark a grab-bag of things as read for the given interaction, in response
     /// to an incoming call event sync message.
     func markThingsAsReadForIncomingSyncMessage(
@@ -546,7 +546,7 @@ protocol _CallRecordIncomingSyncMessageManagerImpl_MarkAsRead {
     )
 }
 
-final class _CallRecordIncomingSyncMessageManagerImpl_MarkAsReadImpl: _CallRecordIncomingSyncMessageManagerImpl_MarkAsRead {
+final class _IncomingCallEventSyncMessageManagerImpl_MarkAsReadImpl: _IncomingCallEventSyncMessageManagerImpl_MarkAsRead {
     private let notificationPresenter: NotificationsProtocol
 
     init(notificationPresenter: NotificationsProtocol) {

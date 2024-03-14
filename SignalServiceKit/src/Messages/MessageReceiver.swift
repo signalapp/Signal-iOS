@@ -598,14 +598,14 @@ public final class MessageReceiver: Dependencies {
                 outgoingPayment, messageTimestamp: request.serverDeliveryTimestamp, transaction: tx
             )
         } else if let callEvent = syncMessage.callEvent {
-            guard let incomingSyncMessageParams = try? CallRecordIncomingSyncMessageParams.parse(
+            guard let incomingSyncMessageParams = try? IncomingCallEventSyncMessageParams.parse(
                 callEventProto: callEvent
             ) else {
                 CallRecordLogger.shared.warn("Failed to parse incoming call event protobuf!")
                 return
             }
 
-            DependenciesBridge.shared.callRecordIncomingSyncMessageManager
+            DependenciesBridge.shared.incomingCallEventSyncMessageManager
                 .createOrUpdateRecordForIncomingSyncMessage(
                     incomingSyncMessage: incomingSyncMessageParams,
                     syncMessageTimestamp: decryptedEnvelope.timestamp,

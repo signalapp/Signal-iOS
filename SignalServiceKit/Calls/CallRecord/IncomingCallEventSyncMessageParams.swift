@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-public struct CallRecordIncomingSyncMessageParams {
+public struct IncomingCallEventSyncMessageParams {
     enum ConversationType {
         case individual(contactServiceId: ServiceId)
         case group(groupId: Data)
@@ -101,7 +101,7 @@ public struct CallRecordIncomingSyncMessageParams {
             conversationType = .group(groupId: protoConversationId)
         }
 
-        return CallRecordIncomingSyncMessageParams(
+        return IncomingCallEventSyncMessageParams(
             conversationType: conversationType,
             callId: callId,
             callTimestamp: callTimestamp,

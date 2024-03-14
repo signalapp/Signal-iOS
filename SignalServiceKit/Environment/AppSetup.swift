@@ -316,12 +316,6 @@ public class AppSetup {
             signalServiceAddressCache: signalServiceAddressCache
         )
 
-        let outgoingSyncMessageManager = CallRecordOutgoingSyncMessageManagerImpl(
-            databaseStorage: databaseStorage,
-            messageSenderJobQueue: messageSenderJobQueue,
-            recipientDatabaseTable: recipientDatabaseTable
-        )
-
         let deletedCallRecordStore = DeletedCallRecordStoreImpl()
         let deletedCallRecordCleanupManager = DeletedCallRecordCleanupManagerImpl(
             dateProvider: dateProvider,
@@ -333,40 +327,43 @@ public class AppSetup {
             deletedCallRecordStore: deletedCallRecordStore,
             schedulers: schedulers
         )
-        let callRecordDeleteManager = CallRecordDeleteManagerImpl(
+        let callRecordOutgoingSyncMessageManager = CallRecordOutgoingSyncMessageManagerImpl(
+            databaseStorage: databaseStorage,
+            messageSenderJobQueue: messageSenderJobQueue,
+            recipientDatabaseTable: recipientDatabaseTable
+        )
+        let groupCallRecordManager = GroupCallRecordManagerImpl(
             callRecordStore: callRecordStore,
-            callRecordOutgoingSyncMessageManager: outgoingSyncMessageManager,
-            deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
-            deletedCallRecordStore: deletedCallRecordStore,
             interactionStore: interactionStore,
-            threadStore: threadStore
+            outgoingSyncMessageManager: callRecordOutgoingSyncMessageManager
+        )
+        let individualCallRecordManager = IndividualCallRecordManagerImpl(
+            callRecordStore: callRecordStore,
+            interactionStore: interactionStore,
+            outgoingSyncMessageManager: callRecordOutgoingSyncMessageManager
         )
         let callRecordQuerier = CallRecordQuerierImpl()
-
         let callRecordMissedCallManager = CallRecordMissedCallManagerImpl(
             callRecordQuerier: callRecordQuerier,
             callRecordStore: callRecordStore,
             messageSenderJobQueue: messageSenderJobQueue,
             threadStore: threadStore
         )
-
-        let groupCallRecordManager = GroupCallRecordManagerImpl(
+        let callRecordDeleteManager = CallRecordDeleteManagerImpl(
             callRecordStore: callRecordStore,
+            callRecordOutgoingSyncMessageManager: callRecordOutgoingSyncMessageManager,
+            deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
+            deletedCallRecordStore: deletedCallRecordStore,
             interactionStore: interactionStore,
-            outgoingSyncMessageManager: outgoingSyncMessageManager
+            threadStore: threadStore
         )
-        let individualCallRecordManager = IndividualCallRecordManagerImpl(
-            callRecordStore: callRecordStore,
-            interactionStore: interactionStore,
-            outgoingSyncMessageManager: outgoingSyncMessageManager
-        )
-        let callRecordIncomingSyncMessageManager = CallRecordIncomingSyncMessageManagerImpl(
+        let incomingCallEventSyncMessageManager = IncomingCallEventSyncMessageManagerImpl(
             callRecordStore: callRecordStore,
             callRecordDeleteManager: callRecordDeleteManager,
             groupCallRecordManager: groupCallRecordManager,
             individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore,
-            markAsReadShims: CallRecordIncomingSyncMessageManagerImpl.ShimsImpl.MarkAsRead(
+            markAsReadShims: IncomingCallEventSyncMessageManagerImpl.ShimsImpl.MarkAsRead(
                 notificationPresenter: notificationPresenter
             ),
             recipientDatabaseTable: recipientDatabaseTable,
@@ -633,7 +630,6 @@ public class AppSetup {
             authorMergeHelper: authorMergeHelper,
             badgeCountFetcher: badgeCountFetcher,
             callRecordDeleteManager: callRecordDeleteManager,
-            callRecordIncomingSyncMessageManager: callRecordIncomingSyncMessageManager,
             callRecordMissedCallManager: callRecordMissedCallManager,
             callRecordQuerier: callRecordQuerier,
             callRecordStore: callRecordStore,
@@ -651,6 +647,7 @@ public class AppSetup {
             groupMemberUpdater: groupMemberUpdater,
             groupUpdateInfoMessageInserter: groupUpdateInfoMessageInserter,
             identityManager: identityManager,
+            incomingCallEventSyncMessageManager: incomingCallEventSyncMessageManager,
             incomingPniChangeNumberProcessor: incomingPniChangeNumberProcessor,
             individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore,

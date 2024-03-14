@@ -1590,11 +1590,11 @@
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
 		D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */; };
-		D979CC272AD3933B006AAC49 /* CallRecordIncomingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC202AD3933B006AAC49 /* CallRecordIncomingSyncMessageManager.swift */; };
+		D979CC272AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */; };
 		D979CC282AD3933B006AAC49 /* ThreadStore+CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */; };
 		D979CC292AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC222AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift */; };
 		D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */; };
-		D979CC2C2AD3933B006AAC49 /* CallRecordIncomingSyncMessageParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC252AD3933B006AAC49 /* CallRecordIncomingSyncMessageParams.swift */; };
+		D979CC2C2AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC252AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift */; };
 		D979CC3A2AD3964E006AAC49 /* Numbers+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC392AD3964E006AAC49 /* Numbers+Random.swift */; };
 		D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC472AD4DECA006AAC49 /* IndividualCallRecordManagerTest.swift */; };
 		D979CC4D2AD4DECB006AAC49 /* CallRecordStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC482AD4DECA006AAC49 /* CallRecordStoreTest.swift */; };
@@ -4383,11 +4383,11 @@
 		D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManagerTest.swift; sourceTree = "<group>"; };
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
 		D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallRecordManager.swift; sourceTree = "<group>"; };
-		D979CC202AD3933B006AAC49 /* CallRecordIncomingSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordIncomingSyncMessageManager.swift; sourceTree = "<group>"; };
+		D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingCallEventSyncMessageManager.swift; sourceTree = "<group>"; };
 		D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ThreadStore+CallRecord.swift"; sourceTree = "<group>"; };
 		D979CC222AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordOutgoingSyncMessageManager.swift; sourceTree = "<group>"; };
 		D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "InteractionStore+CallRecord.swift"; sourceTree = "<group>"; };
-		D979CC252AD3933B006AAC49 /* CallRecordIncomingSyncMessageParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordIncomingSyncMessageParams.swift; sourceTree = "<group>"; };
+		D979CC252AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingCallEventSyncMessageParams.swift; sourceTree = "<group>"; };
 		D979CC392AD3964E006AAC49 /* Numbers+Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Numbers+Random.swift"; sourceTree = "<group>"; };
 		D979CC472AD4DECA006AAC49 /* IndividualCallRecordManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallRecordManagerTest.swift; sourceTree = "<group>"; };
 		D979CC482AD4DECA006AAC49 /* CallRecordStoreTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordStoreTest.swift; sourceTree = "<group>"; };
@@ -8846,8 +8846,6 @@
 				D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */,
 				D9E7C8742B9A3FD1005BD3B9 /* CallRecordCursor.swift */,
 				D9CA8AB62B6AE77200787167 /* CallRecordDeleteManager.swift */,
-				D979CC202AD3933B006AAC49 /* CallRecordIncomingSyncMessageManager.swift */,
-				D979CC252AD3933B006AAC49 /* CallRecordIncomingSyncMessageParams.swift */,
 				D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */,
 				D9C5442A2B8578F30036F274 /* CallRecordMissedCallManager.swift */,
 				D979CC222AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift */,
@@ -8856,6 +8854,8 @@
 				D91AC92F2B5F31BB00814975 /* CallRecordStoreNotification.swift */,
 				D979CC5A2AD61699006AAC49 /* GroupCallRecordManager.swift */,
 				D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */,
+				D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */,
+				D979CC252AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift */,
 				D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */,
 				D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */,
 				D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */,
@@ -13047,8 +13047,6 @@
 				D9DB37F92B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift in Sources */,
 				D9DB37FB2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift in Sources */,
 				D9CA8AB72B6AE77200787167 /* CallRecordDeleteManager.swift in Sources */,
-				D979CC272AD3933B006AAC49 /* CallRecordIncomingSyncMessageManager.swift in Sources */,
-				D979CC2C2AD3933B006AAC49 /* CallRecordIncomingSyncMessageParams.swift in Sources */,
 				D941863C2ACE252D002FE2D3 /* CallRecordLogger.swift in Sources */,
 				D9C5442B2B8578F30036F274 /* CallRecordMissedCallManager.swift in Sources */,
 				D979CC292AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift in Sources */,
@@ -13220,6 +13218,8 @@
 				F9C5CDB4289453B400548EEE /* HTTPUtils.swift in Sources */,
 				66FC637C29DF8FF200F00DAC /* HydratedMessageBody.swift in Sources */,
 				F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */,
+				D979CC272AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift in Sources */,
+				D979CC2C2AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift in Sources */,
 				725465282BA01A3800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */,
 				D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */,
 				F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */,

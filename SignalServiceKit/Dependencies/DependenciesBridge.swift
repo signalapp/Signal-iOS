@@ -47,7 +47,6 @@ public class DependenciesBridge {
     public let authorMergeHelper: AuthorMergeHelper
     public let badgeCountFetcher: BadgeCountFetcher
     public let callRecordDeleteManager: CallRecordDeleteManager
-    let callRecordIncomingSyncMessageManager: CallRecordIncomingSyncMessageManager
     public let callRecordMissedCallManager: CallRecordMissedCallManager
     public let callRecordQuerier: CallRecordQuerier
     public let callRecordStore: CallRecordStore
@@ -65,6 +64,7 @@ public class DependenciesBridge {
     public let groupMemberUpdater: GroupMemberUpdater
     public let groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter
     public let identityManager: OWSIdentityManager
+    let incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager
     public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
     public let individualCallRecordManager: IndividualCallRecordManager
     public let interactionStore: InteractionStore
@@ -123,7 +123,6 @@ public class DependenciesBridge {
         authorMergeHelper: AuthorMergeHelper,
         badgeCountFetcher: BadgeCountFetcher,
         callRecordDeleteManager: CallRecordDeleteManager,
-        callRecordIncomingSyncMessageManager: CallRecordIncomingSyncMessageManager,
         callRecordMissedCallManager: CallRecordMissedCallManager,
         callRecordQuerier: CallRecordQuerier,
         callRecordStore: CallRecordStore,
@@ -141,6 +140,7 @@ public class DependenciesBridge {
         groupMemberUpdater: GroupMemberUpdater,
         groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter,
         identityManager: OWSIdentityManager,
+        incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager,
         incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: InteractionStore,
@@ -198,7 +198,6 @@ public class DependenciesBridge {
         self.authorMergeHelper = authorMergeHelper
         self.badgeCountFetcher = badgeCountFetcher
         self.callRecordDeleteManager = callRecordDeleteManager
-        self.callRecordIncomingSyncMessageManager = callRecordIncomingSyncMessageManager
         self.callRecordMissedCallManager = callRecordMissedCallManager
         self.callRecordQuerier = callRecordQuerier
         self.callRecordStore = callRecordStore
@@ -216,6 +215,7 @@ public class DependenciesBridge {
         self.groupMemberUpdater = groupMemberUpdater
         self.groupUpdateInfoMessageInserter = groupUpdateInfoMessageInserter
         self.identityManager = identityManager
+        self.incomingCallEventSyncMessageManager = incomingCallEventSyncMessageManager
         self.incomingPniChangeNumberProcessor = incomingPniChangeNumberProcessor
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
