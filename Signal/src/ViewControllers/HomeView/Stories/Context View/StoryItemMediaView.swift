@@ -278,7 +278,7 @@ class StoryItemMediaView: UIView {
             size: CGSize(square: 60)
         )
         guard downloadHitRegion.contains(gesture.location(in: self)) else { return false }
-        guard let promise = item.startAttachmentDownloadIfNecessary() else {
+        guard let promise = item.startAttachmentDownloadIfNecessary(priority: .userInitiated) else {
             return false
         }
         promise.observe(on: DispatchQueue.main) { [weak self] _ in
@@ -1067,7 +1067,7 @@ extension StoryItem {
     // MARK: - Downloading
 
     @discardableResult
-    func startAttachmentDownloadIfNecessary() -> Promise<Void>? {
+    func startAttachmentDownloadIfNecessary(priority: AttachmentDownloadPriority = .default) -> Promise<Void>? {
         guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.attachment.state) else {
             return nil
         }
@@ -1075,6 +1075,7 @@ extension StoryItem {
         return databaseStorage.write { tx in
             return DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
                 message,
+                priority: priority,
                 tx: tx.asV2Write
             )
         }
