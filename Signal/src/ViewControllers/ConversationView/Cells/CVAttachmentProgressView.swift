@@ -285,7 +285,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
             case .pendingMessageRequest, .pendingManualDownload:
                 stateView.state = .tapToDownload
             case .enqueued, .downloading:
-                updateDownloadProgress()
+                updateDownloadProgress(nil)
 
                 NotificationCenter.default.addObserver(
                     self,
@@ -308,16 +308,12 @@ public class CVAttachmentProgressView: ManualLayoutView {
         guard attachmentId == self.attachmentId else {
             return
         }
-        updateDownloadProgress()
+        let progress = notification.userInfo?[TSResourceDownloads.attachmentDownloadProgressKey] as? CGFloat
+        updateDownloadProgress(progress)
     }
 
-    private func updateDownloadProgress() {
+    private func updateDownloadProgress(_ progress: CGFloat?) {
         AssertIsOnMainThread()
-
-        let progress = databaseStorage.read { tx in
-            return DependenciesBridge.shared.tsResourceDownloadManager
-                .downloadProgress(for: attachmentId, tx: tx.asV2Read)
-        }
 
         guard let progress else {
             Logger.warn("No progress for attachment.")
