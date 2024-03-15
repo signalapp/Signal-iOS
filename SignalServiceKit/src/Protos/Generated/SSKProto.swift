@@ -12682,6 +12682,244 @@ extension SSKProtoSyncMessageCallEventBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageCallLogEventType
+
+@objc
+public enum SSKProtoSyncMessageCallLogEventType: Int32 {
+    case cleared = 0
+    case markedAsRead = 1
+}
+
+private func SSKProtoSyncMessageCallLogEventTypeWrap(_ value: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum) -> SSKProtoSyncMessageCallLogEventType {
+    switch value {
+    case .cleared: return .cleared
+    case .markedAsRead: return .markedAsRead
+    }
+}
+
+private func SSKProtoSyncMessageCallLogEventTypeUnwrap(_ value: SSKProtoSyncMessageCallLogEventType) -> SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum {
+    switch value {
+    case .cleared: return .cleared
+    case .markedAsRead: return .markedAsRead
+    }
+}
+
+// MARK: - SSKProtoSyncMessageCallLogEvent
+
+@objc
+public class SSKProtoSyncMessageCallLogEvent: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.CallLogEvent
+
+    public var type: SSKProtoSyncMessageCallLogEventType? {
+        guard hasType else {
+            return nil
+        }
+        return SSKProtoSyncMessageCallLogEventTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedType: SSKProtoSyncMessageCallLogEventType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: CallLogEvent.type.")
+        }
+        return SSKProtoSyncMessageCallLogEventTypeWrap(proto.type)
+    }
+    @objc
+    public var hasType: Bool {
+        return proto.hasType
+    }
+
+    @objc
+    public var timestamp: UInt64 {
+        return proto.timestamp
+    }
+    @objc
+    public var hasTimestamp: Bool {
+        return proto.hasTimestamp
+    }
+
+    @objc
+    public var conversationID: Data? {
+        guard hasConversationID else {
+            return nil
+        }
+        return proto.conversationID
+    }
+    @objc
+    public var hasConversationID: Bool {
+        return proto.hasConversationID
+    }
+
+    @objc
+    public var callID: UInt64 {
+        return proto.callID
+    }
+    @objc
+    public var hasCallID: Bool {
+        return proto.hasCallID
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.CallLogEvent) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.CallLogEvent(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.CallLogEvent) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageCallLogEvent {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageCallLogEventBuilder {
+        return SSKProtoSyncMessageCallLogEventBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageCallLogEventBuilder {
+        let builder = SSKProtoSyncMessageCallLogEventBuilder()
+        if let _value = type {
+            builder.setType(_value)
+        }
+        if hasTimestamp {
+            builder.setTimestamp(timestamp)
+        }
+        if let _value = conversationID {
+            builder.setConversationID(_value)
+        }
+        if hasCallID {
+            builder.setCallID(callID)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageCallLogEventBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.CallLogEvent()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func setType(_ valueParam: SSKProtoSyncMessageCallLogEventType) {
+        proto.type = SSKProtoSyncMessageCallLogEventTypeUnwrap(valueParam)
+    }
+
+    @objc
+    public func setTimestamp(_ valueParam: UInt64) {
+        proto.timestamp = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setConversationID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.conversationID = valueParam
+    }
+
+    public func setConversationID(_ valueParam: Data) {
+        proto.conversationID = valueParam
+    }
+
+    @objc
+    public func setCallID(_ valueParam: UInt64) {
+        proto.callID = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageCallLogEvent {
+        return SSKProtoSyncMessageCallLogEvent(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageCallLogEvent(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageCallLogEvent {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageCallLogEventBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageCallLogEvent? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessagePniChangeNumber
 
 @objc
@@ -12933,201 +13171,6 @@ extension SSKProtoSyncMessagePniChangeNumber {
 extension SSKProtoSyncMessagePniChangeNumberBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessagePniChangeNumber? {
-        return self.buildInfallibly()
-    }
-}
-
-#endif
-
-// MARK: - SSKProtoSyncMessageCallLogEventType
-
-@objc
-public enum SSKProtoSyncMessageCallLogEventType: Int32 {
-    case cleared = 0
-    case markedAsRead = 1
-}
-
-private func SSKProtoSyncMessageCallLogEventTypeWrap(_ value: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum) -> SSKProtoSyncMessageCallLogEventType {
-    switch value {
-    case .cleared: return .cleared
-    case .markedAsRead: return .markedAsRead
-    }
-}
-
-private func SSKProtoSyncMessageCallLogEventTypeUnwrap(_ value: SSKProtoSyncMessageCallLogEventType) -> SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum {
-    switch value {
-    case .cleared: return .cleared
-    case .markedAsRead: return .markedAsRead
-    }
-}
-
-// MARK: - SSKProtoSyncMessageCallLogEvent
-
-@objc
-public class SSKProtoSyncMessageCallLogEvent: NSObject, Codable, NSSecureCoding {
-
-    fileprivate let proto: SignalServiceProtos_SyncMessage.CallLogEvent
-
-    public var type: SSKProtoSyncMessageCallLogEventType? {
-        guard hasType else {
-            return nil
-        }
-        return SSKProtoSyncMessageCallLogEventTypeWrap(proto.type)
-    }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    @objc
-    public var unwrappedType: SSKProtoSyncMessageCallLogEventType {
-        if !hasType {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: CallLogEvent.type.")
-        }
-        return SSKProtoSyncMessageCallLogEventTypeWrap(proto.type)
-    }
-    @objc
-    public var hasType: Bool {
-        return proto.hasType
-    }
-
-    @objc
-    public var timestamp: UInt64 {
-        return proto.timestamp
-    }
-    @objc
-    public var hasTimestamp: Bool {
-        return proto.hasTimestamp
-    }
-
-    public var hasUnknownFields: Bool {
-        return !proto.unknownFields.data.isEmpty
-    }
-    public var unknownFields: SwiftProtobuf.UnknownStorage? {
-        guard hasUnknownFields else { return nil }
-        return proto.unknownFields
-    }
-
-    private init(proto: SignalServiceProtos_SyncMessage.CallLogEvent) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc
-    public convenience init(serializedData: Data) throws {
-        let proto = try SignalServiceProtos_SyncMessage.CallLogEvent(serializedData: serializedData)
-        self.init(proto)
-    }
-
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.CallLogEvent) {
-        self.init(proto: proto)
-    }
-
-    public required convenience init(from decoder: Swift.Decoder) throws {
-        let singleValueContainer = try decoder.singleValueContainer()
-        let serializedData = try singleValueContainer.decode(Data.self)
-        try self.init(serializedData: serializedData)
-    }
-    public func encode(to encoder: Swift.Encoder) throws {
-        var singleValueContainer = encoder.singleValueContainer()
-        try singleValueContainer.encode(try serializedData())
-    }
-
-    public static var supportsSecureCoding: Bool { true }
-
-    public required convenience init?(coder: NSCoder) {
-        guard let serializedData = coder.decodeData() else { return nil }
-        do {
-            try self.init(serializedData: serializedData)
-        } catch {
-            owsFailDebug("Failed to decode serialized data \(error)")
-            return nil
-        }
-    }
-
-    public func encode(with coder: NSCoder) {
-        do {
-            coder.encode(try serializedData())
-        } catch {
-            owsFailDebug("Failed to encode serialized data \(error)")
-        }
-    }
-
-    @objc
-    public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-extension SSKProtoSyncMessageCallLogEvent {
-    @objc
-    public static func builder() -> SSKProtoSyncMessageCallLogEventBuilder {
-        return SSKProtoSyncMessageCallLogEventBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> SSKProtoSyncMessageCallLogEventBuilder {
-        let builder = SSKProtoSyncMessageCallLogEventBuilder()
-        if let _value = type {
-            builder.setType(_value)
-        }
-        if hasTimestamp {
-            builder.setTimestamp(timestamp)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-}
-
-@objc
-public class SSKProtoSyncMessageCallLogEventBuilder: NSObject {
-
-    private var proto = SignalServiceProtos_SyncMessage.CallLogEvent()
-
-    @objc
-    fileprivate override init() {}
-
-    @objc
-    public func setType(_ valueParam: SSKProtoSyncMessageCallLogEventType) {
-        proto.type = SSKProtoSyncMessageCallLogEventTypeUnwrap(valueParam)
-    }
-
-    @objc
-    public func setTimestamp(_ valueParam: UInt64) {
-        proto.timestamp = valueParam
-    }
-
-    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-        proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func buildInfallibly() -> SSKProtoSyncMessageCallLogEvent {
-        return SSKProtoSyncMessageCallLogEvent(proto)
-    }
-
-    @objc
-    public func buildSerializedData() throws -> Data {
-        return try SSKProtoSyncMessageCallLogEvent(proto).serializedData()
-    }
-}
-
-#if TESTABLE_BUILD
-
-extension SSKProtoSyncMessageCallLogEvent {
-    @objc
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SSKProtoSyncMessageCallLogEventBuilder {
-    @objc
-    public func buildIgnoringErrors() -> SSKProtoSyncMessageCallLogEvent? {
         return self.buildInfallibly()
     }
 }

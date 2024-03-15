@@ -3421,6 +3421,9 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// Data identifying a conversation. The service ID for 1:1, the group ID for
+    /// group, or the room ID for an ad-hoc call. See also
+    /// `CallLogEvent/conversationId`. 
     var conversationID: Data {
       get {return _conversationID ?? Data()}
       set {_conversationID = newValue}
@@ -3430,6 +3433,8 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `conversationID`. Subsequent reads from it will return its default value.
     mutating func clearConversationID() {self._conversationID = nil}
 
+    /// An identifier for a call. Generated directly for 1:1, or derived from
+    /// the era ID for group and ad-hoc calls. See also `CallLogEvent/callId`. 
     var callID: UInt64 {
       get {return _callID ?? 0}
       set {_callID = newValue}
@@ -3580,6 +3585,88 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _event: SignalServiceProtos_SyncMessage.CallEvent.Event? = nil
   }
 
+  struct CallLogEvent {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var type: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum {
+      get {return _type ?? .cleared}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var timestamp: UInt64 {
+      get {return _timestamp ?? 0}
+      set {_timestamp = newValue}
+    }
+    /// Returns true if `timestamp` has been explicitly set.
+    var hasTimestamp: Bool {return self._timestamp != nil}
+    /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
+    mutating func clearTimestamp() {self._timestamp = nil}
+
+    /// Data identifying a conversation. The service ID for 1:1, the group ID for
+    /// group, or the room ID for an ad-hoc call. See also
+    /// `CallEvent/conversationId`. 
+    var conversationID: Data {
+      get {return _conversationID ?? Data()}
+      set {_conversationID = newValue}
+    }
+    /// Returns true if `conversationID` has been explicitly set.
+    var hasConversationID: Bool {return self._conversationID != nil}
+    /// Clears the value of `conversationID`. Subsequent reads from it will return its default value.
+    mutating func clearConversationID() {self._conversationID = nil}
+
+    /// An identifier for a call. Generated directly for 1:1, or derived from
+    /// the era ID for group and ad-hoc calls. See also `CallEvent/callId`. 
+    var callID: UInt64 {
+      get {return _callID ?? 0}
+      set {_callID = newValue}
+    }
+    /// Returns true if `callID` has been explicitly set.
+    var hasCallID: Bool {return self._callID != nil}
+    /// Clears the value of `callID`. Subsequent reads from it will return its default value.
+    mutating func clearCallID() {self._callID = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case cleared // = 0
+      case markedAsRead // = 1
+
+      init() {
+        self = .cleared
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .cleared
+        case 1: self = .markedAsRead
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .cleared: return 0
+        case .markedAsRead: return 1
+        }
+      }
+
+    }
+
+    init() {}
+
+    fileprivate var _type: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum? = nil
+    fileprivate var _timestamp: UInt64? = nil
+    fileprivate var _conversationID: Data? = nil
+    fileprivate var _callID: UInt64? = nil
+  }
+
   struct PniChangeNumber {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -3642,63 +3729,6 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _lastResortKyberPreKey: Data? = nil
     fileprivate var _registrationID: UInt32? = nil
     fileprivate var _newE164: String? = nil
-  }
-
-  struct CallLogEvent {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var type: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum {
-      get {return _type ?? .cleared}
-      set {_type = newValue}
-    }
-    /// Returns true if `type` has been explicitly set.
-    var hasType: Bool {return self._type != nil}
-    /// Clears the value of `type`. Subsequent reads from it will return its default value.
-    mutating func clearType() {self._type = nil}
-
-    var timestamp: UInt64 {
-      get {return _timestamp ?? 0}
-      set {_timestamp = newValue}
-    }
-    /// Returns true if `timestamp` has been explicitly set.
-    var hasTimestamp: Bool {return self._timestamp != nil}
-    /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
-    mutating func clearTimestamp() {self._timestamp = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    enum TypeEnum: SwiftProtobuf.Enum {
-      typealias RawValue = Int
-      case cleared // = 0
-      case markedAsRead // = 1
-
-      init() {
-        self = .cleared
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .cleared
-        case 1: self = .markedAsRead
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .cleared: return 0
-        case .markedAsRead: return 1
-        }
-      }
-
-    }
-
-    init() {}
-
-    fileprivate var _type: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum? = nil
-    fileprivate var _timestamp: UInt64? = nil
   }
 
   init() {}
@@ -4517,9 +4547,9 @@ extension SignalServiceProtos_SyncMessage.CallEvent: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.Direction: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.Event: @unchecked Sendable {}
-extension SignalServiceProtos_SyncMessage.PniChangeNumber: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallLogEvent: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.PniChangeNumber: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer.Flags: @unchecked Sendable {}
 extension SignalServiceProtos_GroupContextV2: @unchecked Sendable {}
@@ -8192,6 +8222,67 @@ extension SignalServiceProtos_SyncMessage.CallEvent.Event: SwiftProtobuf._ProtoN
   ]
 }
 
+extension SignalServiceProtos_SyncMessage.CallLogEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallLogEvent"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "type"),
+    2: .same(proto: "timestamp"),
+    3: .same(proto: "conversationId"),
+    4: .same(proto: "callId"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._conversationID) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self._callID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._timestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._conversationID {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._callID {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.CallLogEvent, rhs: SignalServiceProtos_SyncMessage.CallLogEvent) -> Bool {
+    if lhs._type != rhs._type {return false}
+    if lhs._timestamp != rhs._timestamp {return false}
+    if lhs._conversationID != rhs._conversationID {return false}
+    if lhs._callID != rhs._callID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "CLEARED"),
+    1: .same(proto: "MARKED_AS_READ"),
+  ]
+}
+
 extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".PniChangeNumber"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -8250,55 +8341,6 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
-}
-
-extension SignalServiceProtos_SyncMessage.CallLogEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallLogEvent"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "type"),
-    2: .same(proto: "timestamp"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
-      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._type {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._timestamp {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
-    } }()
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SignalServiceProtos_SyncMessage.CallLogEvent, rhs: SignalServiceProtos_SyncMessage.CallLogEvent) -> Bool {
-    if lhs._type != rhs._type {return false}
-    if lhs._timestamp != rhs._timestamp {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "CLEARED"),
-    1: .same(proto: "MARKED_AS_READ"),
-  ]
 }
 
 extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
