@@ -74,7 +74,7 @@ public class FeatureFlags: NSObject {
 
     public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = false
     public static let useCallMemberComposableViewsForRemoteUserInIndividualCalls = false
-    public static let useCallMemberComposableViewsForLocalUser = false
+    public static let useCallMemberComposableViewsForLocalUser = build.includes(.internal)
 
     @objc
     public static var notificationServiceExtension: Bool {
