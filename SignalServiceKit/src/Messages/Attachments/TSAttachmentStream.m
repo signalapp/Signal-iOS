@@ -617,12 +617,6 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
     return [NSData dataWithContentsOfFile:self.originalFilePath];
 }
 
-+ (BOOL)hasThumbnailForMimeType:(NSString *)contentType
-{
-    return ([MIMETypeUtil isVideo:contentType] || [MIMETypeUtil isImage:contentType] ||
-        [MIMETypeUtil isMaybeAnimated:contentType]);
-}
-
 - (nullable UIImage *)videoStillImage
 {
     NSError *error;

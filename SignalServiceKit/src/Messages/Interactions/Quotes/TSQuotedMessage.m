@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachmentStream.uniqueId);
     OWSAssertDebug(attachmentStream.contentType);
 
-    if ([TSAttachmentStream hasThumbnailForMimeType:attachmentStream.contentType]) {
+    if ([MIMETypeUtil canMakeThumbnail:attachmentStream.contentType]) {
         return [self initWithAttachmentId:attachmentStream.uniqueId
                                    ofType:OWSAttachmentInfoReferenceOriginalForSend
                               contentType:attachmentStream.contentType
@@ -375,7 +375,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (firstAttachmentProto) {
         TSAttachment *toQuote = [self quotedAttachmentFromOriginalMessage:quotedMessage transaction:transaction];
-        BOOL shouldThumbnail = [TSAttachmentStream hasThumbnailForMimeType:toQuote.contentType];
+        BOOL shouldThumbnail = [MIMETypeUtil canMakeThumbnail:toQuote.contentType];
 
         if ([toQuote isKindOfClass:[TSAttachmentStream class]] && shouldThumbnail) {
             // We found an attachment stream on the original message! Use it as our quoted attachment

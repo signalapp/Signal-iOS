@@ -141,8 +141,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 
 - (NSArray<NSString *> *)allSecondaryFilePaths;
 
-+ (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
-
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
 

@@ -342,6 +342,12 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return NO;
 }
 
++ (BOOL)canMakeThumbnail:(NSString *)mimeType
+{
+    return (
+        [MIMETypeUtil isVideo:mimeType] || [MIMETypeUtil isImage:mimeType] || [MIMETypeUtil isMaybeAnimated:mimeType]);
+}
+
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
                                   ofMIMEType:(NSString *)contentType
                               sourceFilename:(nullable NSString *)sourceFilename
