@@ -5,6 +5,9 @@
 
 import LibSignalClient
 
+/// Handles incoming `CallEvent` sync messages.
+///
+/// - SeeAlso ``IncomingCallEventSyncMessageParams``
 protocol IncomingCallEventSyncMessageManager {
     func createOrUpdateRecordForIncomingSyncMessage(
         incomingSyncMessage: IncomingCallEventSyncMessageParams,

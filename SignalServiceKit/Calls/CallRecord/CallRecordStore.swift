@@ -17,6 +17,15 @@ public enum CallRecordStoreMaybeDeletedFetchResult {
     /// The fetch found that no matching record exists, nor was a matching
     /// record deleted.
     case matchNotFound
+
+    public var unwrapped: CallRecord? {
+        switch self {
+        case .matchFound(let callRecord):
+            return callRecord
+        case .matchDeleted, .matchNotFound:
+            return nil
+        }
+    }
 }
 
 /// Performs SQL operations related to a single ``CallRecord``.

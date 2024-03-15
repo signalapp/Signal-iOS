@@ -361,6 +361,12 @@ public class AppSetup {
             interactionStore: interactionStore,
             threadStore: threadStore
         )
+        let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
+            callRecordDeleteManager: callRecordDeleteManager,
+            callRecordQuerier: callRecordQuerier,
+            db: db,
+            messageSenderJobQueue: messageSenderJobQueue
+        )
         let incomingCallEventSyncMessageManager = IncomingCallEventSyncMessageManagerImpl(
             callRecordStore: callRecordStore,
             callRecordDeleteManager: callRecordDeleteManager,
@@ -370,6 +376,15 @@ public class AppSetup {
             markAsReadShims: IncomingCallEventSyncMessageManagerImpl.ShimsImpl.MarkAsRead(
                 notificationPresenter: notificationPresenter
             ),
+            recipientDatabaseTable: recipientDatabaseTable,
+            threadStore: threadStore
+        )
+        let incomingCallLogEventSyncMessageManager = IncomingCallLogEventSyncMessageManagerImpl(
+            callRecordStore: callRecordStore,
+            deleteAllCallsJobQueue: IncomingCallLogEventSyncMessageManagerImpl.Wrappers.DeleteAllCallsJobQueue(
+                callRecordDeleteAllJobQueue
+            ),
+            missedCallManager: callRecordMissedCallManager,
             recipientDatabaseTable: recipientDatabaseTable,
             threadStore: threadStore
         )
@@ -652,6 +667,7 @@ public class AppSetup {
             groupUpdateInfoMessageInserter: groupUpdateInfoMessageInserter,
             identityManager: identityManager,
             incomingCallEventSyncMessageManager: incomingCallEventSyncMessageManager,
+            incomingCallLogEventSyncMessageManager: incomingCallLogEventSyncMessageManager,
             incomingPniChangeNumberProcessor: incomingPniChangeNumberProcessor,
             individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore,
@@ -763,12 +779,6 @@ public class AppSetup {
         let localUserLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue(
             db: db,
             reachabilityManager: reachabilityManager
-        )
-        let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
-            callRecordDeleteManager: callRecordDeleteManager,
-            callRecordQuerier: callRecordQuerier,
-            db: db,
-            messageSenderJobQueue: messageSenderJobQueue
         )
 
         let sskEnvironment = SSKEnvironment(

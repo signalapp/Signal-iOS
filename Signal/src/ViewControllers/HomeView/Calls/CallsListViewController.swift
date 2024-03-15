@@ -1256,17 +1256,6 @@ private extension CallRecordStore {
     }
 }
 
-private extension CallRecordStore.MaybeDeletedFetchResult {
-    var unwrapped: CallRecord? {
-        switch self {
-        case .matchFound(let callRecord):
-            return callRecord
-        case .matchDeleted, .matchNotFound:
-            return nil
-        }
-    }
-}
-
 // MARK: UITableViewDelegate
 
 extension CallsListViewController: UITableViewDelegate {

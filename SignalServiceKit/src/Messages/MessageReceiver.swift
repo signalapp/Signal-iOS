@@ -598,7 +598,7 @@ public final class MessageReceiver: Dependencies {
                 outgoingPayment, messageTimestamp: request.serverDeliveryTimestamp, transaction: tx
             )
         } else if let callEvent = syncMessage.callEvent {
-            guard let incomingSyncMessageParams = try? IncomingCallEventSyncMessageParams.parse(
+            guard let incomingCallEvent = try? IncomingCallEventSyncMessageParams.parse(
                 callEventProto: callEvent
             ) else {
                 CallRecordLogger.shared.warn("Failed to parse incoming call event protobuf!")
@@ -607,37 +607,25 @@ public final class MessageReceiver: Dependencies {
 
             DependenciesBridge.shared.incomingCallEventSyncMessageManager
                 .createOrUpdateRecordForIncomingSyncMessage(
-                    incomingSyncMessage: incomingSyncMessageParams,
+                    incomingSyncMessage: incomingCallEvent,
                     syncMessageTimestamp: decryptedEnvelope.timestamp,
                     tx: tx.asV2Write
                 )
         } else if let callLogEvent = syncMessage.callLogEvent {
             guard
-                callLogEvent.hasTimestamp,
-                SDS.fitsInInt64(callLogEvent.timestamp),
-                callLogEvent.hasType,
-                let callLogEventType = callLogEvent.type
+                let incomingCallLogEvent = try? IncomingCallLogEventSyncMessageParams.parse(
+                    callLogEvent: callLogEvent
+                )
             else {
                 CallRecordLogger.shared.warn("Failed to parse incoming call log event protobuf!")
                 return
             }
 
-            switch callLogEventType {
-            case .cleared:
-                SSKEnvironment.shared.callRecordDeleteAllJobQueueRef
-                    .addJob(
-                        sendDeleteAllSyncMessage: false,
-                        deleteAllBeforeTimestamp: callLogEvent.timestamp,
-                        tx: tx
-                    )
-            case .markedAsRead:
-                DependenciesBridge.shared.callRecordMissedCallManager
-                    .markUnreadCallsAsRead(
-                        beforeTimestamp: callLogEvent.timestamp,
-                        sendMarkedAsReadSyncMessage: false,
-                        tx: tx.asV2Write
-                    )
-            }
+            DependenciesBridge.shared.incomingCallLogEventSyncMessageManager
+                .handleIncomingSyncMessage(
+                    incomingSyncMessage: incomingCallLogEvent,
+                    tx: tx.asV2Write
+                )
         } else if let pniChangeNumber = syncMessage.pniChangeNumber {
             let pniProcessor = DependenciesBridge.shared.incomingPniChangeNumberProcessor
             pniProcessor.processIncomingPniChangePhoneNumber(

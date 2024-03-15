@@ -1574,6 +1574,9 @@
 		D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */; };
 		D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */; };
 		D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */; };
+		D958C6792B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958C6782B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift */; };
+		D958C67B2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958C67A2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift */; };
+		D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958C67C2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift */; };
 		D958E2AD2B57168A00EE9831 /* DebugUICallsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958E2AC2B57168A00EE9831 /* DebugUICallsTab.swift */; };
 		D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958E2AE2B58696700EE9831 /* ConsumableMockGuarantee.swift */; };
 		D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95A79A72AB125D80013DB00 /* CallRecordStore.swift */; };
@@ -4362,6 +4365,9 @@
 		D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingingCleanupManager.swift; sourceTree = "<group>"; };
 		D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
 		D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
+		D958C6782B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallLogEventSyncMessageManager.swift; sourceTree = "<group>"; };
+		D958C67A2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallLogEventSyncMessageParams.swift; sourceTree = "<group>"; };
+		D958C67C2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallLogEventSyncMessageManagerTest.swift; sourceTree = "<group>"; };
 		D958E2AC2B57168A00EE9831 /* DebugUICallsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUICallsTab.swift; sourceTree = "<group>"; };
 		D958E2AE2B58696700EE9831 /* ConsumableMockGuarantee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsumableMockGuarantee.swift; sourceTree = "<group>"; };
 		D95A79A72AB125D80013DB00 /* CallRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordStore.swift; sourceTree = "<group>"; };
@@ -8847,6 +8853,8 @@
 				D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */,
 				D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */,
 				D979CC252AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift */,
+				D958C6782B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift */,
+				D958C67A2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift */,
 				D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */,
 				D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */,
 				D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */,
@@ -8931,6 +8939,7 @@
 				D979CC562AD5E240006AAC49 /* CallRecordTest.swift */,
 				D979CC5C2AD616A4006AAC49 /* GroupCallRecordManagerTest.swift */,
 				D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */,
+				D958C67C2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift */,
 				D979CC472AD4DECA006AAC49 /* IndividualCallRecordManagerTest.swift */,
 			);
 			path = CallRecord;
@@ -13210,7 +13219,12 @@
 				66FC637C29DF8FF200F00DAC /* HydratedMessageBody.swift in Sources */,
 				F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */,
 				D979CC272AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift in Sources */,
+				D979CC272AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift in Sources */,
 				D979CC2C2AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift in Sources */,
+				D979CC2C2AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift in Sources */,
+				D958C6792B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift in Sources */,
+				D958C67B2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift in Sources */,
+				725465282BA01A3800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */,
 				725465282BA01A3800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */,
 				D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */,
 				F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */,
@@ -14004,6 +14018,7 @@
 				5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,
+				D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */,
 				D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
 				5000CA312B1F97EE00BB8EFF /* JobQueueRunnerTest.swift in Sources */,

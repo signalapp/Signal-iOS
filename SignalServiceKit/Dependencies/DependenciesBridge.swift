@@ -65,6 +65,7 @@ public class DependenciesBridge {
     public let groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter
     public let identityManager: OWSIdentityManager
     let incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager
+    let incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager
     public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
     public let individualCallRecordManager: IndividualCallRecordManager
     public let interactionStore: InteractionStore
@@ -141,6 +142,7 @@ public class DependenciesBridge {
         groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter,
         identityManager: OWSIdentityManager,
         incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager,
+        incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager,
         incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: InteractionStore,
@@ -216,6 +218,7 @@ public class DependenciesBridge {
         self.groupUpdateInfoMessageInserter = groupUpdateInfoMessageInserter
         self.identityManager = identityManager
         self.incomingCallEventSyncMessageManager = incomingCallEventSyncMessageManager
+        self.incomingCallLogEventSyncMessageManager = incomingCallLogEventSyncMessageManager
         self.incomingPniChangeNumberProcessor = incomingPniChangeNumberProcessor
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore

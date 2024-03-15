@@ -5,6 +5,13 @@
 
 import LibSignalClient
 
+/// Represents parameters describing an incoming `CallEvent` sync message.
+///
+/// `CallEvent` sync messages are used to communicate events that relate to a
+/// particular call.
+///
+/// - SeeAlso ``IncomingCallEventSyncMessageManager``
+/// - SeeAlso ``IncomingCallLogEventSyncMessageParams``
 public struct IncomingCallEventSyncMessageParams {
     enum ConversationType {
         case individual(contactServiceId: ServiceId)
