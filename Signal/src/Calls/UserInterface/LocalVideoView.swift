@@ -11,8 +11,6 @@ import WebRTC
 class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
     private let localVideoCapturePreview = RTCCameraPreviewView()
 
-    private let shouldUseAutoLayout: Bool
-
     var captureSession: AVCaptureSession? {
         get { localVideoCapturePreview.captureSession }
         set { localVideoCapturePreview.captureSession = newValue }
@@ -22,14 +20,10 @@ class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
         didSet { localVideoCapturePreview.contentMode = contentMode }
     }
 
-    init(shouldUseAutoLayout: Bool) {
-        self.shouldUseAutoLayout = shouldUseAutoLayout
+    init() {
         super.init(frame: .zero)
 
         addSubview(localVideoCapturePreview)
-        if shouldUseAutoLayout {
-            localVideoCapturePreview.autoPinEdgesToSuperviewEdges()
-        }
 
         if Platform.isSimulator {
             backgroundColor = .brown
@@ -49,20 +43,14 @@ class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
 
     override var frame: CGRect {
         didSet {
-            if !shouldUseAutoLayout {
-                updateLocalVideoOrientation()
-            }
+            updateLocalVideoOrientation()
         }
     }
 
     @objc
     private func updateLocalVideoOrientation() {
         defer {
-            if shouldUseAutoLayout {
-                setNeedsUpdateConstraints()
-            } else {
-                localVideoCapturePreview.frame = bounds
-            }
+            localVideoCapturePreview.frame = bounds
         }
 
         // iPad supports rotating this view controller directly,

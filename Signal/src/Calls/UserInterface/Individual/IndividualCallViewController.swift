@@ -175,7 +175,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
             let videoView = CallMemberVideoView(type: type)
             localVideoView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
         } else {
-            let localVideoView = LocalVideoView(shouldUseAutoLayout: false)
+            let localVideoView = LocalVideoView()
             localVideoView.captureSession = call.videoCaptureController.captureSession
             self.localVideoView = localVideoView
         }

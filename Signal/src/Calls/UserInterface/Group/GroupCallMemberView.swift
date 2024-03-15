@@ -119,7 +119,7 @@ class GroupCallMemberView: UIView, CallMemberView_GroupBridge {
 }
 
 class GroupCallLocalMemberView: GroupCallMemberView {
-    let videoView = LocalVideoView(shouldUseAutoLayout: false)
+    let videoView = LocalVideoView()
 
     let videoOffIndicatorImage = UIImageView()
 

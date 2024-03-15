@@ -17,10 +17,9 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         backgroundColor = .ows_gray90
         switch type {
         case .local:
-            let localVideoView = LocalVideoView(shouldUseAutoLayout: true)
+            let localVideoView = LocalVideoView()
             self.addSubview(localVideoView)
             localVideoView.contentMode = .scaleAspectFill
-            localVideoView.autoPinEdgesToSuperviewEdges()
             self.callViewWrapper = .local(localVideoView)
         case .remoteInGroup(_), .remoteInIndividual:
             break
@@ -110,9 +109,21 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         remoteVideoView.isScreenShare = device.sharingScreen == true
     }
 
-    func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
-        /// TODO: Add support for rotating.
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        switch callViewWrapper {
+        case .local(let localVideoView):
+            // Video rotations get funky when we use autolayout
+            // for `localVideoView`.
+            localVideoView.frame = bounds
+        default:
+            // There do not seem to be issues with remote member
+            // views getting updated.
+            break
+        }
     }
+
+    func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {}
 
     func updateDimensions() {}
 
