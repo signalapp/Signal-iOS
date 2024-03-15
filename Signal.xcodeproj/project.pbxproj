@@ -917,6 +917,8 @@
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
 		66CA4CE42B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE32B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift */; };
 		66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */; };
+		66CA4CE92B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE72B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift */; };
+		66CA4CEA2B9FDBF8009A5ED8 /* TSResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE82B9FDBF8009A5ED8 /* TSResourceManager.swift */; };
 		66CD25592B0685E000139E17 /* MessageBackupProtoArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25582B0685E000139E17 /* MessageBackupProtoArchiver.swift */; };
 		66CD25622B06948900139E17 /* MessageBackupRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25612B06948900139E17 /* MessageBackupRecipientArchiver.swift */; };
 		66CD25642B06949C00139E17 /* MessageBackupAccountDataArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25632B06949C00139E17 /* MessageBackupAccountDataArchiver.swift */; };
@@ -986,8 +988,6 @@
 		66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */; };
 		66E1AD872B8FEE1300C56B7B /* TSAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD862B8FEE1300C56B7B /* TSAttachmentReference.swift */; };
 		66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD882B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift */; };
-		66E1AD922B9133AD00C56B7B /* TSResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD912B9133AD00C56B7B /* TSResourceManager.swift */; };
-		66E1AD942B91344E00C56B7B /* TSResourceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD932B91344E00C56B7B /* TSResourceManagerImpl.swift */; };
 		66E1AD962B91437B00C56B7B /* TSAttachmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD952B91437B00C56B7B /* TSAttachmentManager.swift */; };
 		66E1AD982B91444600C56B7B /* TSResourceManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD972B91444600C56B7B /* TSResourceManagerMock.swift */; };
 		66E1AD9A2B91499700C56B7B /* TSResourceUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD992B91499700C56B7B /* TSResourceUploadStore.swift */; };
@@ -3710,6 +3710,8 @@
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
 		66CA4CE32B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentThumbnailQuality.swift; sourceTree = "<group>"; };
 		66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+RenderingFlag.swift"; sourceTree = "<group>"; };
+		66CA4CE72B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSResourceManagerImpl.swift; sourceTree = "<group>"; };
+		66CA4CE82B9FDBF8009A5ED8 /* TSResourceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSResourceManager.swift; sourceTree = "<group>"; };
 		66CD25582B0685E000139E17 /* MessageBackupProtoArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProtoArchiver.swift; sourceTree = "<group>"; };
 		66CD25612B06948900139E17 /* MessageBackupRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupRecipientArchiver.swift; sourceTree = "<group>"; };
 		66CD25632B06949C00139E17 /* MessageBackupAccountDataArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAccountDataArchiver.swift; sourceTree = "<group>"; };
@@ -3779,8 +3781,6 @@
 		66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+Owner.swift"; sourceTree = "<group>"; };
 		66E1AD862B8FEE1300C56B7B /* TSAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentReference.swift; sourceTree = "<group>"; };
 		66E1AD882B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+TSResourceReference.swift"; sourceTree = "<group>"; };
-		66E1AD912B9133AD00C56B7B /* TSResourceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TSResourceManager.swift; path = SignalServiceKit/src/Messages/Attachments/V2/AttachmentStore/TSResourceManager.swift; sourceTree = SOURCE_ROOT; };
-		66E1AD932B91344E00C56B7B /* TSResourceManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TSResourceManagerImpl.swift; path = SignalServiceKit/src/Messages/Attachments/V2/AttachmentStore/TSResourceManagerImpl.swift; sourceTree = SOURCE_ROOT; };
 		66E1AD952B91437B00C56B7B /* TSAttachmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentManager.swift; sourceTree = "<group>"; };
 		66E1AD972B91444600C56B7B /* TSResourceManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceManagerMock.swift; sourceTree = "<group>"; };
 		66E1AD992B91499700C56B7B /* TSResourceUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceUploadStore.swift; sourceTree = "<group>"; };
@@ -7644,8 +7644,8 @@
 			isa = PBXGroup;
 			children = (
 				66E1AD952B91437B00C56B7B /* TSAttachmentManager.swift */,
-				66E1AD912B9133AD00C56B7B /* TSResourceManager.swift */,
-				66E1AD932B91344E00C56B7B /* TSResourceManagerImpl.swift */,
+				66CA4CE82B9FDBF8009A5ED8 /* TSResourceManager.swift */,
+				66CA4CE72B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift */,
 				66E1AD972B91444600C56B7B /* TSResourceManagerMock.swift */,
 			);
 			path = TSResource;
@@ -13880,8 +13880,8 @@
 				66D7B9392B99466F0005C98B /* TSResourceDownloadManagerImpl.swift in Sources */,
 				66BED7E82B9B992800236BAD /* TSResourceDownloadManagerMock.swift in Sources */,
 				66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */,
-				66E1AD922B9133AD00C56B7B /* TSResourceManager.swift in Sources */,
-				66E1AD942B91344E00C56B7B /* TSResourceManagerImpl.swift in Sources */,
+				66CA4CEA2B9FDBF8009A5ED8 /* TSResourceManager.swift in Sources */,
+				66CA4CE92B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift in Sources */,
 				66E1AD982B91444600C56B7B /* TSResourceManagerMock.swift in Sources */,
 				66C102F62B61E3D700B47EC2 /* TSResourcePointer.swift in Sources */,
 				66E1AD572B8D59B000C56B7B /* TSResourceReference.swift in Sources */,
