@@ -505,65 +505,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Attachment (not necessarily with a thumbnail)
 
-- (id<QuotedMessageAttachmentHelper>)attachmentHelper
+- (nullable OWSAttachmentInfo *)attachmentInfo
 {
-    return [QuotedMessageAttachmentHelperFactory helperFor:self.quotedAttachment];
-}
-
-- (nullable QuotedThumbnailAttachmentMetadata *)
-    fetchThumbnailAttachmentMetadataForParentMessage:(TSMessage *)message
-                                         transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.attachmentHelper thumbnailAttachmentMetadataWithParentMessage:message tx:transaction];
-}
-
-- (nullable NSString *)fetchThumbnailAttachmentIdForParentMessage:(id)message
-                                                      transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [[self.attachmentHelper thumbnailAttachmentMetadataWithParentMessage:message
-                                                                             tx:transaction] thumbnailAttachmentId];
-}
-
-- (nullable DisplayableQuotedThumbnailAttachment *)
-    displayableThumbnailAttachmentForMetadata:(QuotedThumbnailAttachmentMetadata *)metadata
-                                parentMessage:(TSMessage *)message
-                                  transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.attachmentHelper displayableThumbnailAttachmentWithMetadata:metadata
-                                                               parentMessage:message
-                                                                          tx:transaction];
-}
-
-- (nullable NSString *)attachmentPointerIdForDownloadingWithParentMessage:(TSMessage *)message
-                                                              transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.attachmentHelper attachmentPointerIdForDownloadingWithParentMessage:message tx:transaction];
-}
-
-- (void)setDownloadedAttachmentStream:(TSAttachmentStream *)attachmentStream
-                        parentMessage:(TSMessage *)message
-                          transaction:(SDSAnyWriteTransaction *)transaction
-{
-    // Slightly confusing; this method delegates to the helper because behavior depends
-    // on the attachment type and helper.
-    // Legacy attachments route back to `setLegacyThumbnailAttachmentStream` below.
-    // v2 attachments will instead update the AttachmentReferences table, not anything on TSQuotedMessage.
-    [self.attachmentHelper setDownloadedAttachmentStreamWithAttachmentStream:attachmentStream
-                                                               parentMessage:message
-                                                                          tx:transaction];
+    return _quotedAttachment;
 }
 
 - (void)setLegacyThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
     self.quotedAttachment.attachmentType = OWSAttachmentInfoReferenceThumbnail;
     self.quotedAttachment.rawAttachmentId = attachmentStream.uniqueId;
-}
-
-- (nullable TSAttachmentStream *)createThumbnailAndUpdateMessageIfNecessaryWithParentMessage:(TSMessage *)message
-                                                                                 transaction:(SDSAnyWriteTransaction *)
-                                                                                                 transaction
-{
-    return [self.attachmentHelper createThumbnailAndUpdateMessageIfNecessaryWithParentMessage:message tx:transaction];
 }
 
 @end

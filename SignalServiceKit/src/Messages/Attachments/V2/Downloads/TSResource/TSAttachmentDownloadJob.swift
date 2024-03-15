@@ -228,10 +228,9 @@ extension TSAttachmentDownloadManager {
             }
 
             if
-                let attachmentPointerId = message.quotedMessage?.attachmentPointerIdForDownloading(
-                    withParentMessage: message,
-                    transaction: tx
-                )
+                let info = message.quotedMessage?.attachmentInfo(),
+                info.attachmentType == .untrustedPointer,
+                let attachmentPointerId = info.attachmentId?.nilIfEmpty
             {
                 // We know the id is for a pointer; don't bother validating it.
                 if let existingPromise = existingPromises[attachmentPointerId] {

@@ -45,7 +45,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         var ids = Set<TSResourceId>()
 
         return (self.bodyAttachments(for: message, tx: tx) + [
-            self.quotedMessageThumbnailAttachment(for: message, tx: tx),
+            self.quotedThumbnailAttachment(for: message, tx: tx),
             self.contactShareAvatarAttachment(for: message, tx: tx),
             self.linkPreviewAttachment(for: message, tx: tx),
             self.stickerAttachment(for: message, tx: tx)
@@ -126,15 +126,6 @@ public class TSResourceStoreImpl: TSResourceStore {
             }
             return TSAttachmentReference(uniqueId: attachment.uniqueId, attachment: attachment)
         }
-    }
-
-    public func quotedMessageThumbnailAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
-        // TODO: merge this with QuotedMessageAttachmentHelper
-        let id = message.quotedMessage?.fetchThumbnailAttachmentId(
-            forParentMessage: message,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-        return legacyReference(uniqueId: id, tx: tx)
     }
 
     public func contactShareAvatarAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {

@@ -151,7 +151,11 @@ public class AppSetup {
         )
 
         let tsResourceStore = TSResourceStoreImpl(attachmentStore: attachmentStore)
-        let tsResourceManager = TSResourceManagerImpl(attachmentManager: attachmentManager)
+        let tsResourceManager = TSResourceManagerImpl(
+            attachmentManager: attachmentManager,
+            attachmentStore: attachmentStore,
+            tsResourceStore: tsResourceStore
+        )
         let attachmentDownloadManager = AttachmentDownloadManagerImpl()
         let tsResourceDownloadManager = TSResourceDownloadManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,

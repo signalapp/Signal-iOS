@@ -47,11 +47,6 @@ public class TSResourceStoreMock: TSResourceStore {
         return ref
     }
 
-    public func quotedMessageThumbnailAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
-        // TODO
-        return nil
-    }
-
     public func contactShareAvatarAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
         // TODO
         return nil

@@ -34,4 +34,27 @@ extension AttachmentStore {
             return nil
         }
     }
+
+    public func quotedAttachmentReference(
+            for message: TSMessage,
+            tx: DBReadTransaction
+    ) -> QuotedMessageAttachmentReference? {
+        guard let info = message.quotedMessage?.attachmentInfo() else {
+            return nil
+        }
+        return quotedAttachmentReference(from: info, parentMessage: message, tx: tx)
+    }
+
+    public func quotedThumbnailAttachment(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSResourceReference? {
+        let ref = self.quotedAttachmentReference(for: message, tx: tx)
+        switch ref {
+        case .thumbnail(let thumbnail):
+            return thumbnail.attachmentRef
+        case .stub, nil:
+            return nil
+        }
+    }
 }

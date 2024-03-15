@@ -40,11 +40,6 @@ public protocol TSResourceStore {
         tx: DBReadTransaction
     ) -> TSResourceReference?
 
-    func quotedMessageThumbnailAttachment(
-        for message: TSMessage,
-        tx: DBReadTransaction
-    ) -> TSResourceReference?
-
     func contactShareAvatarAttachment(
         for message: TSMessage,
         tx: DBReadTransaction
@@ -81,10 +76,33 @@ public protocol TSResourceStore {
 
 extension TSResourceStore {
 
-    func fetch(
+    public func fetch(
         _ id: TSResourceId,
         tx: DBReadTransaction
     ) -> TSResource? {
         return fetch([id], tx: tx).first
+    }
+
+    public func quotedAttachmentReference(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSQuotedMessageResourceReference? {
+        guard let info = message.quotedMessage?.attachmentInfo() else {
+            return nil
+        }
+        return quotedAttachmentReference(from: info, parentMessage: message, tx: tx)
+    }
+
+    public func quotedThumbnailAttachment(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSResourceReference? {
+        let ref = self.quotedAttachmentReference(for: message, tx: tx)
+        switch ref {
+        case .thumbnail(let thumbnail):
+            return thumbnail.attachmentRef
+        case .stub, nil:
+            return nil
+        }
     }
 }

@@ -154,17 +154,67 @@ public class QuotedReplyModel: NSObject {
             return nil
         }
 
-        let attachmentMetadata = quotedMessage.fetchThumbnailAttachmentMetadata(
-            forParentMessage: message,
-            transaction: transaction
+        let attachmentReference = DependenciesBridge.shared.tsResourceStore.quotedAttachmentReference(
+            for: message,
+            tx: transaction.asV2Read
         )
-        let displayableThumbnail: DisplayableQuotedThumbnailAttachment? = attachmentMetadata.map {
-            quotedMessage.displayableThumbnailAttachment(
-                for: $0,
-                parentMessage: message,
-                transaction: transaction
+        let mimeType: String?
+        let contentType: TSResourceContentType?
+        let sourceFilename: String?
+        let renderingFlag: AttachmentReference.RenderingFlag?
+        let canTapToDownload: Bool
+        let thumbnailImage: UIImage?
+        switch attachmentReference {
+        case nil:
+            mimeType = nil
+            contentType = nil
+            sourceFilename = nil
+            renderingFlag = nil
+            canTapToDownload = false
+            thumbnailImage = nil
+        case .stub(let stub):
+            mimeType = stub.mimeType
+            contentType = nil
+            sourceFilename = stub.sourceFilename
+            renderingFlag = nil
+            canTapToDownload = false
+            thumbnailImage = nil
+        case .thumbnail(let thumbnail):
+            mimeType = thumbnail.mimeType
+            sourceFilename = thumbnail.sourceFilename
+            renderingFlag = thumbnail.attachmentRef.renderingFlag
+
+            // Fetch the full attachment.
+            let thumbnailAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
+                thumbnail.attachmentRef.resourceId,
+                tx: transaction.asV2Read
             )
-        } ?? nil
+            if
+                let thumbnailAttachment,
+                let image = DependenciesBridge.shared.tsResourceManager.thumbnailImage(
+                    thumbnail: thumbnail,
+                    attachment: thumbnailAttachment,
+                    parentMessage: message,
+                    tx: transaction.asV2Read
+                )
+            {
+                contentType = thumbnailAttachment.asResourceStream()?.cachedContentType
+                thumbnailImage = image
+                canTapToDownload = false
+            } else if thumbnailAttachment?.asTransitTierPointer() != nil {
+                if let blurHash = thumbnailAttachment?.resourceBlurHash {
+                    thumbnailImage = BlurHash.image(for: blurHash)
+                } else {
+                    thumbnailImage = nil
+                }
+                contentType = thumbnailAttachment?.asResourceStream()?.cachedContentType
+                canTapToDownload = true
+            } else {
+                contentType = nil
+                thumbnailImage = nil
+                canTapToDownload = false
+            }
+        }
 
         var body: String? = quotedMessage.body
         var bodyRanges: MessageBodyRanges? = quotedMessage.bodyRanges
@@ -188,12 +238,12 @@ public class QuotedReplyModel: NSObject {
             bodySource: quotedMessage.bodySource,
             body: body,
             bodyRanges: bodyRanges,
-            thumbnailImage: displayableThumbnail?.thumbnailImage,
-            mimeType: attachmentMetadata?.mimeType,
-            contentType: nil,
-            sourceFilename: attachmentMetadata?.sourceFilename,
-            attachmentType: displayableThumbnail?.attachmentType,
-            canTapToDownload: displayableThumbnail?.failedAttachmentPointer != nil,
+            thumbnailImage: thumbnailImage,
+            mimeType: mimeType,
+            contentType: contentType,
+            sourceFilename: sourceFilename,
+            attachmentType: renderingFlag?.tsAttachmentType,
+            canTapToDownload: canTapToDownload,
             isGiftBadge: quotedMessage.isGiftBadge,
             isPayment: isPayment
         )

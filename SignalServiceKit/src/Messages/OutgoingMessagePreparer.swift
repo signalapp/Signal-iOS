@@ -102,13 +102,22 @@ public class OutgoingMessagePreparer: NSObject {
 
         attachmentIds.append(contentsOf: message.bodyAttachmentIds(transaction: tx))
 
-        if message.quotedMessage?.fetchThumbnailAttachmentId(forParentMessage: message, transaction: tx) != nil {
-            // We need to update the message record here to reflect the new attachments we may create.
-            let thumbnail = message.quotedMessage?.createThumbnailAndUpdateMessageIfNecessary(
-                withParentMessage: message,
-                transaction: tx
-            )
-            thumbnail.map { attachmentIds.append($0.uniqueId) }
+        // TODO: this whole class will be exclusive to v1 attachments, and will have no need to go through TSResource.
+        let quotedReplyRef = DependenciesBridge.shared.tsResourceStore.quotedAttachmentReference(for: message, tx: tx.asV2Read)
+        switch quotedReplyRef {
+        case .thumbnail:
+            if
+                let quotedMessage = message.quotedMessage,
+                let thumbnail = DependenciesBridge.shared.tsResourceManager.createThumbnailAndUpdateMessageIfNecessary(
+                    quotedMessage: quotedMessage,
+                    parentMessage: message,
+                    tx: tx.asV2Write
+                )
+            {
+                attachmentIds.append(thumbnail.resourceId.bridgeUniqueId)
+            }
+        case .stub, nil:
+            break
         }
 
         if let contactShare = message.contactShare, contactShare.avatarAttachmentId != nil {

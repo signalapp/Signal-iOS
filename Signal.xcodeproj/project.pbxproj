@@ -874,9 +874,6 @@
 		669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */; };
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
-		669FAE0E2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE0D2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift */; };
-		669FAE102B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE0F2B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift */; };
-		669FAE122B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */; };
 		669FAE152B75968D009EE2FE /* TSAttachmentDownloadJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE142B75968D009EE2FE /* TSAttachmentDownloadJob.swift */; };
 		669FAE182B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */; };
 		669FAE1B2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */; };
@@ -3669,9 +3666,6 @@
 		669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemStoryManager.swift; sourceTree = "<group>"; };
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
-		669FAE0D2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedMessageAttachmentHelper.swift; sourceTree = "<group>"; };
-		669FAE0F2B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyQuotedMessageAttachmentHelper.swift; sourceTree = "<group>"; };
-		669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedMessageAttachmentHelperImpl.swift; sourceTree = "<group>"; };
 		669FAE142B75968D009EE2FE /* TSAttachmentDownloadJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentDownloadJob.swift; sourceTree = "<group>"; };
 		669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSLinkPreview+Attachment.swift"; sourceTree = "<group>"; };
 		669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLinkPreviewSerializationTest.swift; sourceTree = "<group>"; };
@@ -7284,9 +7278,6 @@
 		669FAE0C2B744BA4009EE2FE /* Quotes */ = {
 			isa = PBXGroup;
 			children = (
-				669FAE0F2B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift */,
-				669FAE0D2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift */,
-				669FAE112B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift */,
 				F9C5C90F289453B100548EEE /* TSQuotedMessage.h */,
 				F9C5C8F0289453B100548EEE /* TSQuotedMessage.m */,
 			);
@@ -13253,7 +13244,6 @@
 				D9AE0ADB29188A170063488B /* LegacyMessageDecryptJobRecord.swift in Sources */,
 				F9C5CDA4289453B400548EEE /* LegacyMessageJobFinder.swift in Sources */,
 				F9C5CD44289453B300548EEE /* LegacyMessageKeys.m in Sources */,
-				669FAE102B745072009EE2FE /* LegacyQuotedMessageAttachmentHelper.swift in Sources */,
 				F9C5CD40289453B300548EEE /* LegacyReceivingChain.m in Sources */,
 				F9C5CD3E289453B300548EEE /* LegacyRootKey.m in Sources */,
 				F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */,
@@ -13584,8 +13574,6 @@
 				720547F72B9C98C600E2CF2F /* ProximityMonitoringManager.swift in Sources */,
 				503B47222AF0569B00978266 /* PublicKey.swift in Sources */,
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
-				669FAE0E2B744CAD009EE2FE /* QuotedMessageAttachmentHelper.swift in Sources */,
-				669FAE122B7450D9009EE2FE /* QuotedMessageAttachmentHelperImpl.swift in Sources */,
 				66D7B9132B979C3A0005C98B /* QuotedMessageAttachmentReference+TSResource.swift in Sources */,
 				66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */,
 				F9C5CD95289453B300548EEE /* ReachabilityManager.swift in Sources */,

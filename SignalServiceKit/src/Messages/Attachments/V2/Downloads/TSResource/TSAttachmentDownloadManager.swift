@@ -1009,19 +1009,14 @@ public extension TSAttachmentDownloadManager {
                 Logger.warn("Missing message.")
                 return
             }
-            guard
-                let thumbnailAttachmentPointerId = message.quotedMessage?.fetchThumbnailAttachmentId(
-                    forParentMessage: message,
-                    transaction: transaction
-                )
-            else {
-                return
+            message.anyUpdateMessage(transaction: transaction) { refetchedMessage in
+                guard let quotedMessage = refetchedMessage.quotedMessage else {
+                    return
+                }
+                // We update the same reference the message has, so when this closure exits and the
+                // message is rewritten to disk it will be rewritten with the updated quotedMessage.
+                quotedMessage.setLegacyThumbnailAttachmentStream(attachmentStream)
             }
-            message.quotedMessage?.setDownloadedAttachmentStream(
-                attachmentStream,
-                parentMessage: message,
-                transaction: transaction
-            )
         }
     }
 

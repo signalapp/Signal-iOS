@@ -8,11 +8,19 @@ import Foundation
 public class TSResourceManagerImpl: TSResourceManager {
 
     private let attachmentManager: AttachmentManagerImpl
+    private let attachmentStore: AttachmentStore
     private let tsAttachmentManager: TSAttachmentManager
+    private let tsResourceStore: TSResourceStore
 
-    public init(attachmentManager: AttachmentManagerImpl) {
+    public init(
+        attachmentManager: AttachmentManagerImpl,
+        attachmentStore: AttachmentStore,
+        tsResourceStore: TSResourceStore
+    ) {
         self.attachmentManager = attachmentManager
+        self.attachmentStore = attachmentStore
         self.tsAttachmentManager = TSAttachmentManager()
+        self.tsResourceStore = tsResourceStore
     }
 
     // MARK: - Protos
@@ -157,14 +165,14 @@ public class TSResourceManagerImpl: TSResourceManager {
 
         if
             types.contains(.quotedReply),
-            // TODO: move this into this class
-            let thumbnailAttachmentId = message.quotedMessage?.fetchThumbnailAttachmentId(
-                forParentMessage: message,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
+            let quoteAttachmentInfo = message.quotedMessage?.attachmentInfo()
         {
             Logger.verbose("Removing quoted reply attachment.")
-            tsAttachmentManager.removeAttachment(attachmentId: thumbnailAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
+            if quoteAttachmentInfo.attachmentType == OWSAttachmentInfoReference.V2 {
+                v2Owners.append(.quotedReplyAttachment)
+            } else if let id = quoteAttachmentInfo.attachmentId {
+                tsAttachmentManager.removeAttachment(attachmentId: id, tx: SDSDB.shimOnlyBridge(tx))
+            }
         }
 
         if
@@ -185,6 +193,68 @@ public class TSResourceManagerImpl: TSResourceManager {
             attachmentManager.removeAllAttachments(
                 from: v2Owners.map { $0.with(ownerId: messageRowId) },
                 tx: tx
+            )
+        }
+    }
+
+    // MARK: - Quoted reply thumbnails
+
+    public func createThumbnailAndUpdateMessageIfNecessary(
+        quotedMessage: TSQuotedMessage,
+        parentMessage: TSMessage,
+        tx: DBWriteTransaction
+    ) -> TSResourceStream? {
+        switch quotedMessage.attachmentInfo()?.attachmentType {
+        case nil:
+            return nil
+        case .V2:
+            guard let messageRowId = parentMessage.sqliteRowId else {
+                owsFailDebug("Clonign thumbnail attachment from un-inserted message.")
+                return nil
+            }
+            let attachment = attachmentStore.fetchFirst(owner: .quotedReplyAttachment(messageRowId: messageRowId), tx: tx)
+
+            // If its a stream, its the thumbnail (we do cloning and resizing at download time).
+            // If its not a stream, that's because its undownloaded and we should return nil.
+            return attachment?.asStream()
+        case
+                .unset,
+                .originalForSend,
+                .original,
+                .thumbnail,
+                .untrustedPointer:
+            fallthrough
+        @unknown default:
+            return tsAttachmentManager.createThumbnailAndUpdateMessageIfNecessary(
+                parentMessage: parentMessage,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
+        }
+    }
+
+    public func thumbnailImage(
+        thumbnail: TSQuotedMessageResourceReference.Thumbnail,
+        attachment: TSResource,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> UIImage? {
+        switch attachment.concreteType {
+        case .v2(let attachment):
+            guard let stream = attachment.asStream() else {
+                return nil
+            }
+            // If it is an attachment stream, it should already be pointing at the resized
+            // thumbnail image, no copying needed.
+            return stream.thumbnailImageSync(quality: .small)
+        case .legacy(let tsAttachment):
+            guard let info = parentMessage.quotedMessage?.attachmentInfo() else {
+                return nil
+            }
+            return tsAttachmentManager.thumbnailImage(
+                attachment: tsAttachment,
+                info: info,
+                parentMessage: parentMessage,
+                tx: SDSDB.shimOnlyBridge(tx)
             )
         }
     }

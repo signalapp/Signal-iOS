@@ -323,9 +323,45 @@ extension TSOutgoingMessage {
     }
 
     @objc
-    func buildProtoForQuotedReplyAttachment(tx: SDSAnyReadTransaction) -> SSKProtoAttachmentPointer? {
-        let reference = DependenciesBridge.shared.tsResourceStore.quotedMessageThumbnailAttachment(for: self, tx: tx.asV2Read)
-        return buildProtosForSending([reference].compacted(), tx: tx.asV2Read).first
+    func buildQuotedMessageAttachmentProto(
+        tx: SDSAnyReadTransaction
+    ) -> SSKProtoDataMessageQuoteQuotedAttachment? {
+        guard
+            let reference = DependenciesBridge.shared.tsResourceStore
+                .quotedAttachmentReference(for: self, tx: tx.asV2Read)
+        else {
+            return nil
+        }
+        let builder = SSKProtoDataMessageQuoteQuotedAttachment.builder()
+        let mimeType: String?
+        let sourceFilename: String?
+        switch reference {
+        case .thumbnail(let thumbnail):
+            mimeType = thumbnail.mimeType
+            sourceFilename = thumbnail.sourceFilename
+
+            if
+                let attachment = DependenciesBridge.shared.tsResourceStore.fetch(
+                    thumbnail.attachmentRef.resourceId,
+                    tx: tx.asV2Read
+                ),
+                let pointer = attachment.asTransitTierPointer(),
+                let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+                    from: thumbnail.attachmentRef,
+                    pointer: pointer
+                )
+            {
+                builder.setThumbnail(attachmentProto)
+            }
+        case .stub(let stub):
+            mimeType = stub.mimeType
+            sourceFilename = stub.sourceFilename
+        }
+
+        mimeType.map(builder.setContentType(_:))
+        sourceFilename.map(builder.setFileName(_:))
+
+        return builder.buildInfallibly()
     }
 
     private func buildProtosForSending(

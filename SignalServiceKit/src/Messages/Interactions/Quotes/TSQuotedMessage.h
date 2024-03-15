@@ -83,32 +83,9 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
 #pragma mark - Attachments
 
-- (id<QuotedMessageAttachmentHelper>)attachmentHelper;
-
-- (nullable NSString *)fetchThumbnailAttachmentIdForParentMessage:(TSMessage *)message
-                                                      transaction:(SDSAnyReadTransaction *)transaction;
-
-- (nullable QuotedThumbnailAttachmentMetadata *)
-    fetchThumbnailAttachmentMetadataForParentMessage:(TSMessage *)message
-                                         transaction:(SDSAnyReadTransaction *)transaction;
-
-- (nullable DisplayableQuotedThumbnailAttachment *)
-    displayableThumbnailAttachmentForMetadata:(QuotedThumbnailAttachmentMetadata *)metadata
-                                parentMessage:(TSMessage *)message
-                                  transaction:(SDSAnyReadTransaction *)transaction;
-
-- (nullable NSString *)attachmentPointerIdForDownloadingWithParentMessage:(TSMessage *)message
-                                                              transaction:(SDSAnyReadTransaction *)transaction;
-
-- (void)setDownloadedAttachmentStream:(TSAttachmentStream *)attachmentStream
-                        parentMessage:(TSMessage *)message
-                          transaction:(SDSAnyWriteTransaction *)transaction;
+- (nullable OWSAttachmentInfo *)attachmentInfo;
 
 - (void)setLegacyThumbnailAttachmentStream:(TSAttachment *)thumbnailAttachmentStream;
-
-- (nullable TSAttachmentStream *)createThumbnailAndUpdateMessageIfNecessaryWithParentMessage:(TSMessage *)message
-                                                                                 transaction:(SDSAnyWriteTransaction *)
-                                                                                                 transaction;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

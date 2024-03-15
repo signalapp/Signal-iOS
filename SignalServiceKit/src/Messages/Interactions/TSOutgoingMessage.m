@@ -1064,15 +1064,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
     }
 
-    QuotedThumbnailAttachmentMetadata *_Nullable thumbnailAttachment =
-        [quotedMessage fetchThumbnailAttachmentMetadataForParentMessage:self transaction:transaction];
-    if (thumbnailAttachment) {
-        SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
-            [SSKProtoDataMessageQuoteQuotedAttachment builder];
-        quotedAttachmentBuilder.contentType = thumbnailAttachment.mimeType;
-        quotedAttachmentBuilder.fileName = thumbnailAttachment.sourceFilename;
-        quotedAttachmentBuilder.thumbnail = [self buildProtoForQuotedReplyAttachmentWithTx:transaction];
-        [quoteBuilder addAttachments:[quotedAttachmentBuilder buildInfallibly]];
+    SSKProtoDataMessageQuoteQuotedAttachment *attachmentProto =
+        [self buildQuotedMessageAttachmentProtoWithTx:transaction];
+    if (attachmentProto) {
+        [quoteBuilder addAttachments:attachmentProto];
         hasQuotedAttachment = YES;
     }
 

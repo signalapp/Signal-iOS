@@ -28,7 +28,7 @@ extension AttachmentReference: TSResourceReference {
 
 extension AttachmentReference.RenderingFlag {
 
-    var tsAttachmentType: TSAttachmentType {
+    public var tsAttachmentType: TSAttachmentType {
         switch self {
         case .default:
             return .default

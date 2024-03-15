@@ -41,6 +41,23 @@ public class TSResourceManagerMock: TSResourceManager {
     ) {
         // Do nothing
     }
+
+    public func createThumbnailAndUpdateMessageIfNecessary(
+        quotedMessage: TSQuotedMessage,
+        parentMessage: TSMessage,
+        tx: DBWriteTransaction
+    ) -> TSResourceStream? {
+        return nil
+    }
+
+    public func thumbnailImage(
+        thumbnail: TSQuotedMessageResourceReference.Thumbnail,
+        attachment: TSResource,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> UIImage? {
+        return nil
+    }
 }
 
 #endif
