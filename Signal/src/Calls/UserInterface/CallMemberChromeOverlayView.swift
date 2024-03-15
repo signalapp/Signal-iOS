@@ -142,24 +142,6 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         return circleView
     }()
 
-    private var isLocalMemberViewFullScreen: Bool {
-        guard let call else { return false }
-        switch type {
-        case .remoteInIndividual,
-             .remoteInGroup(_):
-            owsFailDebug("isLocalMemberViewFullScreen should not be called for remote member views!")
-            return false
-        case .local:
-            break
-        }
-        switch call.mode {
-        case .individual(let call):
-            return [.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.state)
-        case .group(let call):
-            return call.localDeviceState.joinState != .joined || call.remoteDeviceStates.isEmpty
-        }
-    }
-
     private lazy var flipCameraImageView = {
         let imageView = UIImageView(image: UIImage(named: "switch-camera-28"))
         imageView.isUserInteractionEnabled = false
@@ -187,6 +169,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         button.accessibilityLabel = flipCameraButtonAccessibilityLabel
         button.addTarget(self, action: #selector(didPressFlipCamera), for: .touchUpInside)
         flipCameraCircleView.backgroundColor = .ows_blackAlpha70
+        button.isHidden = true
         return button
     }()
 
@@ -214,7 +197,13 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             return
         }
         guard let call else { return }
-        if width >= Constants.expandedPipMinWidth {
+        if width > CallMemberView.Constants.enlargedPipWidthIpadLandscape {
+            // This is the widest width the pip can be. If we're wider, it
+            // means that the local user is fullscreen (or animating from
+            // fullscreen down to th pip) and therefore should
+            // not show the flip camera button.
+            self.flipCameraButton.isHidden = true
+        } else if width >= Constants.expandedPipMinWidth {
             // Pip is expanded or at its regular size for iPad in certain cases.
             self.flipCameraButton.isEnabled = true
             flipCameraCircleView.backgroundColor = .ows_whiteAlpha40
@@ -222,7 +211,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             self.flipCameraImageWidthConstraint?.constant = Constants.flipCameraImageDimensionWhenPipExpanded
             animateFlipCameraButtonAlphaIfNecessary(
                 call: call,
-                newIsHidden: isLocalMemberViewFullScreen || call.isOutgoingVideoMuted
+                newIsHidden: call.isOutgoingVideoMuted
             )
         } else if width >= Constants.mediumPipMinWidth {
             flipCameraButton.isEnabled = false
@@ -231,7 +220,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             self.flipCameraImageWidthConstraint?.constant = Constants.flipCameraImageDimensionWhenPipNormal
             animateFlipCameraButtonAlphaIfNecessary(
                 call: call,
-                newIsHidden: isLocalMemberViewFullScreen || call.isOutgoingVideoMuted
+                newIsHidden: call.isOutgoingVideoMuted
             )
         } else {
             animateFlipCameraButtonAlphaIfNecessary(

@@ -400,7 +400,7 @@ extension CallMemberView: UIGestureRecognizerDelegate {
     enum Constants {
         static let enlargedPipWidth: CGFloat = 170
         fileprivate static let enlargedPipHeight: CGFloat = 300
-        fileprivate static let enlargedPipWidthIpadLandscape: CGFloat = 272
+        static let enlargedPipWidthIpadLandscape: CGFloat = 272
         fileprivate static let enlargedPipHeightIpadLandscape: CGFloat = 204
         fileprivate static let enlargedPipWidthIpadPortrait: CGFloat = 204
         fileprivate static let enlargedPipHeightIpadPortrait: CGFloat = 272
