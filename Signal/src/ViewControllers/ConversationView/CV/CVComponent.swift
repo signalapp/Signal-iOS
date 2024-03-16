@@ -34,6 +34,11 @@ public protocol CVComponent: AnyObject {
                               componentView: CVComponentView,
                               renderItem: CVRenderItem) -> CVLongPressHandler?
 
+    func findDoubleTapHandler(sender: UIGestureRecognizer,
+                              componentDelegate: CVComponentDelegate,
+                              componentView: CVComponentView,
+                              renderItem: CVRenderItem) -> CVDoubleTapHandler?
+
     func findPanHandler(sender: UIPanGestureRecognizer,
                         componentDelegate: CVComponentDelegate,
                         componentView: CVComponentView,
@@ -116,6 +121,14 @@ public class CVComponentBase: NSObject {
                                      componentView: CVComponentView,
                                      renderItem: CVRenderItem) -> CVLongPressHandler? {
         Logger.verbose("Ignoring long press.")
+        return nil
+    }
+
+    public func findDoubleTapHandler(sender: UIGestureRecognizer,
+                                     componentDelegate: CVComponentDelegate,
+                                     componentView: CVComponentView,
+                                     renderItem: CVRenderItem) -> CVDoubleTapHandler? {
+        Logger.verbose("Ignoring double tap.")
         return nil
     }
 

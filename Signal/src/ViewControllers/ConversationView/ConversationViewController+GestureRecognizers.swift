@@ -20,6 +20,10 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         collectionViewLongPressGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewLongPressGestureRecognizer)
 
+        collectionViewDoubleTapGestureRecognizer.addTarget(self, action: #selector(handleDoubleTapGesture))
+        collectionViewDoubleTapGestureRecognizer.delegate = self
+        collectionView.addGestureRecognizer(collectionViewDoubleTapGestureRecognizer)
+
         collectionViewContextMenuGestureRecognizer.addTarget(self, action: #selector(handleLongPressGesture))
         collectionViewContextMenuGestureRecognizer.minimumPressDuration = 0.2
         collectionViewContextMenuGestureRecognizer.delegate = self
@@ -40,6 +44,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
 
         collectionViewTapGestureRecognizer.require(toFail: collectionViewPanGestureRecognizer)
         collectionViewTapGestureRecognizer.require(toFail: collectionViewLongPressGestureRecognizer)
+        collectionViewTapGestureRecognizer.require(toFail: collectionViewDoubleTapGestureRecognizer)
 
         // Allow panning with trackpad
         if #available(iOS 13.4, *) { collectionViewPanGestureRecognizer.allowedScrollTypesMask = .continuous }
@@ -85,8 +90,8 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
 
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         // Support standard long press recognizing for body text cases, and context menu long press recognizing for everything else
-        let currentIsLongPressOrTap = (gestureRecognizer == collectionViewLongPressGestureRecognizer || gestureRecognizer == collectionViewContextMenuGestureRecognizer || gestureRecognizer == collectionViewTapGestureRecognizer)
-        let otherIsLongPressOrTap = (otherGestureRecognizer == collectionViewLongPressGestureRecognizer || otherGestureRecognizer == collectionViewContextMenuGestureRecognizer || otherGestureRecognizer == collectionViewTapGestureRecognizer)
+        let currentIsLongPressOrTap = (gestureRecognizer == collectionViewLongPressGestureRecognizer || gestureRecognizer == collectionViewContextMenuGestureRecognizer || gestureRecognizer == collectionViewTapGestureRecognizer || gestureRecognizer == collectionViewDoubleTapGestureRecognizer)
+        let otherIsLongPressOrTap = (otherGestureRecognizer == collectionViewLongPressGestureRecognizer || otherGestureRecognizer == collectionViewContextMenuGestureRecognizer || otherGestureRecognizer == collectionViewTapGestureRecognizer || otherGestureRecognizer == collectionViewDoubleTapGestureRecognizer)
         return currentIsLongPressOrTap && otherIsLongPressOrTap
     }
 
@@ -175,6 +180,17 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
     }
 
     @objc
+    func handleDoubleTapGesture(_ sender: UITapGestureRecognizer) {
+        guard sender.state == .recognized,
+              let cell = findCell(forGesture: sender),
+              let doubleTapHandler = findDoubleTapHandler(sender: sender) else {
+            return
+        }
+
+        doubleTapHandler.handleDoubleTap(cell: cell)
+    }
+
+    @objc
     func handleSecondaryClickGesture(_ sender: UITapGestureRecognizer) {
         guard let cell = findCell(forGesture: sender) else {
             return
@@ -201,6 +217,13 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
             longPressHandler.startGesture(cell: cell)
         }
         return longPressHandler
+    }
+
+    private func findDoubleTapHandler(sender: UITapGestureRecognizer) -> CVDoubleTapHandler? {
+        guard let cell = findCell(forGesture: sender) else {
+            return nil
+        }
+        return cell.findDoubleTapHandler(sender: sender, componentDelegate: componentDelegate)
     }
 
     // MARK: - VoiceOver Custom Actions
@@ -411,6 +434,68 @@ public struct CVLongPressHandler {
             owsFailDebug("Unexpected state.")
         @unknown default:
             owsFailDebug("Invalid state.")
+        }
+    }
+}
+
+// MARK: -
+
+public struct CVDoubleTapHandler {
+    private weak var delegate: CVComponentDelegate?
+    let renderItem: CVRenderItem
+    let itemViewModel: CVItemViewModelImpl
+
+    enum GestureLocation {
+        case `default`
+        case media
+        case sticker
+        case quotedReply
+        case systemMessage
+        case paymentMessage
+        case bodyText(item: CVTextLabel.Item)
+    }
+    let gestureLocation: GestureLocation
+
+    init(delegate: CVComponentDelegate,
+         renderItem: CVRenderItem,
+         gestureLocation: GestureLocation) {
+        self.delegate = delegate
+        self.renderItem = renderItem
+        self.gestureLocation = gestureLocation
+
+        // TODO: shouldAutoUpdate?
+        self.itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+    }
+
+    func handleDoubleTap(cell: CVCell) {
+        guard let delegate = self.delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+
+        let shouldAllowReply = delegate.shouldAllowReplyForItem(itemViewModel)
+
+        switch gestureLocation {
+        case .`default`:
+            delegate.didDoubleTapTextViewItem(cell, itemViewModel: itemViewModel, shouldAllowReply: shouldAllowReply)
+        case .media:
+            delegate.didDoubleTapMediaViewItem(cell,
+                                               itemViewModel: itemViewModel,
+                                               shouldAllowReply: shouldAllowReply)
+        case .sticker:
+            delegate.didDoubleTapSticker(cell,
+                                         itemViewModel: itemViewModel,
+                                         shouldAllowReply: shouldAllowReply)
+        case .quotedReply:
+            delegate.didDoubleTapQuote(cell,
+                                       itemViewModel: itemViewModel,
+                                       shouldAllowReply: shouldAllowReply)
+        case .systemMessage:
+            delegate.didDoubleTapSystemMessage(cell, itemViewModel: itemViewModel)
+        case .paymentMessage:
+            delegate.didDoubleTapPaymentMessage(cell, itemViewModel: itemViewModel, shouldAllowReply: shouldAllowReply)
+        case .bodyText:
+            break
         }
     }
 }

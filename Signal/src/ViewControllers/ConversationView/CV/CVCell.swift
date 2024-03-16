@@ -334,6 +334,21 @@ public extension CVRootComponentHost {
                                                              renderItem: renderItem)
     }
 
+    func findDoubleTapHandler(sender: UIGestureRecognizer, componentDelegate: CVComponentDelegate) -> CVDoubleTapHandler? {
+        guard let renderItem = renderItem else {
+            owsFailDebug("Missing renderItem.")
+            return nil
+        }
+        guard let componentView = componentView else {
+            owsFailDebug("Missing componentView.")
+            return nil
+        }
+        return renderItem.rootComponent.findDoubleTapHandler(sender: sender,
+                                                             componentDelegate: componentDelegate,
+                                                             componentView: componentView,
+                                                             renderItem: renderItem)
+    }
+
     func findPanHandler(sender: UIPanGestureRecognizer,
                         componentDelegate: CVComponentDelegate,
                         messageSwipeActionState: CVMessageSwipeActionState) -> CVPanHandler? {

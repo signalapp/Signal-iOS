@@ -113,6 +113,63 @@ extension ConversationViewController: CVComponentDelegate {
         collectionViewActiveContextMenuInteraction?.initiatingGestureRecognizerDidEnd()
     }
 
+    // MARK: - Double Tap
+
+    public func didDoubleTapTextViewItem(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {
+        AssertIsOnMainThread()
+
+        let messageActions = MessageActions.textActions(itemViewModel: itemViewModel,
+                                                        shouldAllowReply: shouldAllowReply,
+                                                        delegate: self)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
+    }
+
+    public func didDoubleTapMediaViewItem(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {
+        AssertIsOnMainThread()
+
+        let messageActions = MessageActions.mediaActions(itemViewModel: itemViewModel,
+                                                         shouldAllowReply: shouldAllowReply,
+                                                         delegate: self)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
+    }
+
+    public func didDoubleTapQuote(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {
+        AssertIsOnMainThread()
+
+        let messageActions = MessageActions.quotedMessageActions(itemViewModel: itemViewModel,
+                                                                 shouldAllowReply: shouldAllowReply,
+                                                                 delegate: self)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
+    }
+
+    public func didDoubleTapSystemMessage(_ cell: CVCell, itemViewModel: CVItemViewModelImpl) {
+        AssertIsOnMainThread()
+
+        let messageActions = MessageActions.infoMessageActions(itemViewModel: itemViewModel,
+                                                               delegate: self)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
+    }
+
+    public func didDoubleTapSticker(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {
+        AssertIsOnMainThread()
+
+        let messageActions = MessageActions.mediaActions(itemViewModel: itemViewModel,
+                                                         shouldAllowReply: shouldAllowReply,
+                                                         delegate: self)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
+    }
+
+    public func didDoubleTapPaymentMessage(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {
+        AssertIsOnMainThread()
+
+        let messageActions = MessageActions.paymentActions(
+            itemViewModel: itemViewModel,
+            shouldAllowReply: shouldAllowReply,
+            delegate: self
+        )
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
+    }
+
     // MARK: -
 
     public func didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {

@@ -1035,6 +1035,20 @@ extension MessageDetailViewController: CVComponentDelegate {
     // TODO:
     func didCancelLongPress(_ itemViewModel: CVItemViewModelImpl) {}
 
+    // MARK: - Double Tap
+
+    func didDoubleTapTextViewItem(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {}
+
+    func didDoubleTapMediaViewItem(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {}
+
+    func didDoubleTapQuote(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {}
+
+    func didDoubleTapSystemMessage(_ cell: CVCell, itemViewModel: CVItemViewModelImpl) {}
+
+    func didDoubleTapSticker(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {}
+
+    func didDoubleTapPaymentMessage(_ cell: CVCell, itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool) {}
+
     // MARK: -
 
     // TODO:

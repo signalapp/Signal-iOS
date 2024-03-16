@@ -1734,6 +1734,51 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                   gestureLocation: .`default`)
     }
 
+    public override func findDoubleTapHandler(sender: UIGestureRecognizer,
+                                              componentDelegate: CVComponentDelegate,
+                                              componentView: CVComponentView,
+                                              renderItem: CVRenderItem) -> CVDoubleTapHandler? {
+
+        guard let componentView = componentView as? CVComponentViewMessage else {
+            owsFailDebug("Unexpected componentView.")
+            return nil
+        }
+
+        if let componentAndView = findActiveComponentAndView(key: .bodyText,
+                                                             messageView: componentView,
+                                                             ignoreMissing: true),
+           let handler = componentAndView.component.findDoubleTapHandler(sender: sender,
+                                                                         componentDelegate: componentDelegate,
+                                                                         componentView: componentAndView.componentView,
+                                                                         renderItem: renderItem) {
+            return handler
+        }
+
+        let doubleTapKeys: [CVComponentKey: CVDoubleTapHandler.GestureLocation] = [
+            .sticker: .sticker,
+            .bodyMedia: .media,
+            .audioAttachment: .media,
+            .genericAttachment: .media,
+            .quotedReply: .quotedReply,
+            .paymentAttachment: .paymentMessage
+            // TODO: linkPreview?
+        ]
+        // Recognize the correct message type when tapping next to the message itself
+        let hotArea = UIEdgeInsets(hMargin: -.greatestFiniteMagnitude, vMargin: 0)
+        for (key, gestureLocation) in doubleTapKeys {
+            if let subcomponentView = componentView.subcomponentView(key: key),
+               subcomponentView.rootView.containsGestureLocation(sender, hotAreaInsets: hotArea) {
+                return CVDoubleTapHandler(delegate: componentDelegate,
+                                          renderItem: renderItem,
+                                          gestureLocation: gestureLocation)
+            }
+        }
+
+        return CVDoubleTapHandler(delegate: componentDelegate,
+                                  renderItem: renderItem,
+                                  gestureLocation: .`default`)
+    }
+
     // For a configured & active cell, this will return the list of
     // currently active subcomponents & their corresponding subcomponent
     // views. This can be used for gesture dispatch, etc.
