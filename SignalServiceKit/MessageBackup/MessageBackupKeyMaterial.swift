@@ -10,6 +10,7 @@ enum MessageBackupKeyMaterialError: Error {
     case invalidKeyInfo
     case missingMasterKey
     case notRegistered
+    case invalidEncryptionKey
 }
 
 public protocol MessageBackupKeyMaterial {
@@ -19,6 +20,6 @@ public protocol MessageBackupKeyMaterial {
     /// to create the anonymous credentials for interacting with server stored backups
     func backupID(tx: DBReadTransaction) throws -> Data
 
-    /// Backup encryption material derived from the backup master key and the backupID
-    func encryptionData(tx: DBReadTransaction) throws -> Data
+    /// Builds an encrypting StreamTransform object derived from the backup master key and the backupID
+    func createEncryptingStreamTransform(tx: DBReadTransaction) throws -> EncryptingStreamTransform
 }

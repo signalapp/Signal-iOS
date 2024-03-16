@@ -608,7 +608,9 @@ public class AppSetup {
                 threadStore: threadStore,
                 tsAccountManager: tsAccountManager
             ),
-            streamProvider: MessageBackupProtoStreamProviderImpl(),
+            streamProvider: MessageBackupProtoStreamProviderImpl(
+                backupKeyMaterial: MessageBackupKeyMaterialImpl(svr: svr, tsAccountManager: tsAccountManager)
+            ),
             tsAccountManager: tsAccountManager
         )
 

@@ -39,24 +39,20 @@ public protocol MessageBackupProtoOutputStream {
     func closeFileStream() -> URL
 }
 
-internal class MessageBackupProtoOutputStreamImpl: OWSChunkedOutputStream, MessageBackupProtoOutputStream {
+internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStream {
 
-    private var outputStream: OutputStream
-    private var streamRunloop: RunLoop
+    private var outputStream: OutputStreamable
     private var outputStreamDelegate: StreamDelegate
     private var fileUrl: URL
 
     internal init(
-        outputStream: OutputStream,
-        streamRunloop: RunLoop,
+        outputStream: OutputStreamable,
         outputStreamDelegate: StreamDelegate,
         fileURL: URL
     ) {
         self.outputStream = outputStream
-        self.streamRunloop = streamRunloop
         self.outputStreamDelegate = outputStreamDelegate
         self.fileUrl = fileURL
-        super.init(outputStream: outputStream)
     }
 
     internal func writeHeader(_ header: BackupProtoBackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {
@@ -66,10 +62,8 @@ internal class MessageBackupProtoOutputStreamImpl: OWSChunkedOutputStream, Messa
         } catch {
             return .protoSerializationError(error)
         }
-        let byteLength = UInt32(bytes.count)
         do {
-            try writeVariableLengthUInt32(byteLength)
-            try writeData(bytes)
+            try outputStream.write(data: bytes)
         } catch {
             return .fileIOError(error)
         }
@@ -83,10 +77,8 @@ internal class MessageBackupProtoOutputStreamImpl: OWSChunkedOutputStream, Messa
         } catch {
             return .protoSerializationError(error)
         }
-        let byteLength = UInt32(bytes.count)
         do {
-            try writeVariableLengthUInt32(byteLength)
-            try writeData(bytes)
+            try outputStream.write(data: bytes)
         } catch {
             return .fileIOError(error)
         }
@@ -94,8 +86,7 @@ internal class MessageBackupProtoOutputStreamImpl: OWSChunkedOutputStream, Messa
     }
 
     public func closeFileStream() -> URL {
-        outputStream.remove(from: streamRunloop, forMode: .default)
-        outputStream.close()
+        try? outputStream.close()
         return fileUrl
     }
 }

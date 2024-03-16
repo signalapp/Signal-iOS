@@ -33,7 +33,7 @@ public protocol MessageBackupProtoStreamProvider {
 
     /// Open an output stream to write a backup to a file on disk.
     /// The caller becomes the owner of the stream, and is responsible for closing it once finished.
-    func openOutputFileStream() -> MessageBackup.OpenProtoOutputStreamResult
+    func openOutputFileStream(tx: DBReadTransaction) -> MessageBackup.OpenProtoOutputStreamResult
 
     /// Open an input stream to read a backup from a file on disk.
     /// The caller becomes the owner of the stream, and is responsible for closing it once finished.
@@ -42,12 +42,15 @@ public protocol MessageBackupProtoStreamProvider {
 
 public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvider {
 
-    public init() {}
+    let backupKeyMaterial: MessageBackupKeyMaterial
+    public init(backupKeyMaterial: MessageBackupKeyMaterial) {
+        self.backupKeyMaterial = backupKeyMaterial
+    }
 
-    public func openOutputFileStream() -> MessageBackup.OpenProtoOutputStreamResult {
+    public func openOutputFileStream(tx: DBReadTransaction) -> MessageBackup.OpenProtoOutputStreamResult {
         let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
-            return .unableToOpenFileStream
+           return .unableToOpenFileStream
         }
         let outputStreamDelegate = StreamDelegate()
         outputStream.delegate = outputStreamDelegate
@@ -58,13 +61,26 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
             return .unableToOpenFileStream
         }
 
-        let messageBackupOutputStream = MessageBackupProtoOutputStreamImpl(
-            outputStream: outputStream,
-            streamRunloop: streamRunloop,
-            outputStreamDelegate: outputStreamDelegate,
-            fileURL: fileUrl
-        )
-        return .success(messageBackupOutputStream)
+        do {
+            let transformingOutputStream = TransformingOutputStream(
+                transforms: [
+                    ChunkedStreamTransform(),
+                    try GzipStreamTransform(),
+                    try backupKeyMaterial.createEncryptingStreamTransform(tx: tx)
+                ],
+                outputStream: outputStream,
+                runLoop: streamRunloop
+            )
+
+            let messageBackupOutputStream = MessageBackupProtoOutputStreamImpl(
+                outputStream: transformingOutputStream,
+                outputStreamDelegate: outputStreamDelegate,
+                fileURL: fileUrl
+            )
+            return .success(messageBackupOutputStream)
+        } catch {
+            return .unableToOpenFileStream
+        }
     }
 
     public func openInputFileStream(fileURL: URL) -> MessageBackup.OpenProtoInputStreamResult {

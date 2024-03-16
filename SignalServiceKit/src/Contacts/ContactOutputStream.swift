@@ -5,7 +5,15 @@
 
 import LibSignalClient
 
-final class ContactOutputStream: OWSChunkedOutputStream {
+final class ContactOutputStream {
+
+    let chunkedOutputTransform = ChunkedStreamTransform()
+    let outputStream: OutputStream
+
+    init(outputStream: OutputStream) {
+        self.outputStream = outputStream
+    }
+
     func writeContact(
         aci: Aci?,
         phoneNumber: E164?,
@@ -50,15 +58,14 @@ final class ContactOutputStream: OWSChunkedOutputStream {
 
         let contactData: Data
         do {
-            contactData = try contactBuilder.buildSerializedData()
+            contactData = try chunkedOutputTransform.transform(data: contactBuilder.buildSerializedData())
         } catch {
             owsFailDebug("Couldn't serialize protobuf: \(error)")
             return // Eat the error and silently drop this entry.
         }
-        try writeVariableLengthUInt32(UInt32(contactData.count))
-        try writeData(contactData)
+        try outputStream.write(data: contactData)
         if let avatarJpegData {
-            try writeData(avatarJpegData)
+            try outputStream.write(data: avatarJpegData)
         }
     }
 }

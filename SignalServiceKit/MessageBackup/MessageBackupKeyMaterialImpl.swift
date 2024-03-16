@@ -44,7 +44,7 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         return Data(keyBytes)
     }
 
-    public func encryptionData(tx: DBReadTransaction) throws -> Data {
+    public func createEncryptingStreamTransform(tx: DBReadTransaction) throws -> EncryptingStreamTransform {
         guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
             throw MessageBackupKeyMaterialError.missingMasterKey
         }
@@ -61,6 +61,14 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             info: infoData
         )
 
-        return Data(keyBytes)
+        guard keyBytes.count == 80 else {
+            throw MessageBackupKeyMaterialError.invalidEncryptionKey
+        }
+
+        return try EncryptingStreamTransform(
+            iv: Data(Array(keyBytes[64..<80])),
+            encryptionKey: Data(Array(keyBytes[32..<64])),
+            hmacKey: Data(Array(keyBytes[0..<32]))
+        )
     }
 }

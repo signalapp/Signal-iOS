@@ -44,7 +44,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSBlockedPhoneNumbersMessage.h>
 #import <SignalServiceKit/OWSCallMessageHandler.h>
 #import <SignalServiceKit/OWSCensorshipConfiguration.h>
-#import <SignalServiceKit/OWSChunkedOutputStream.h>
 #import <SignalServiceKit/OWSCountryMetadata.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>

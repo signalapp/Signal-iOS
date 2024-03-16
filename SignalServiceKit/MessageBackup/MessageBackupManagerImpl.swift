@@ -74,7 +74,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     private func _createBackup(tx: DBWriteTransaction) throws -> URL {
         let stream: MessageBackupProtoOutputStream
-        switch streamProvider.openOutputFileStream() {
+        switch streamProvider.openOutputFileStream(tx: tx) {
         case .success(let streamResult):
             stream = streamResult
         case .unableToOpenFileStream:
