@@ -66,7 +66,7 @@ public protocol CallRecordDeleteManager {
 
 final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
     private let callRecordStore: CallRecordStore
-    private let callRecordOutgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager
+    private let outgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager
     private let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
     private let deletedCallRecordStore: DeletedCallRecordStore
     private let interactionStore: InteractionStore
@@ -74,14 +74,14 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
 
     init(
         callRecordStore: CallRecordStore,
-        callRecordOutgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager,
+        outgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager,
         deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager,
         deletedCallRecordStore: DeletedCallRecordStore,
         interactionStore: InteractionStore,
         threadStore: ThreadStore
     ) {
         self.callRecordStore = callRecordStore
-        self.callRecordOutgoingSyncMessageManager = callRecordOutgoingSyncMessageManager
+        self.outgoingCallEventSyncMessageManager = outgoingCallEventSyncMessageManager
         self.deletedCallRecordCleanupManager = deletedCallRecordCleanupManager
         self.deletedCallRecordStore = deletedCallRecordStore
         self.interactionStore = interactionStore
@@ -193,14 +193,14 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
                 }
 
                 if let contactThread = thread as? TSContactThread {
-                    callRecordOutgoingSyncMessageManager.sendSyncMessage(
+                    outgoingCallEventSyncMessageManager.sendSyncMessage(
                         contactThread: contactThread,
                         callRecord: callRecord,
                         callEvent: .callDeleted,
                         tx: tx
                     )
                 } else if let groupThread = thread as? TSGroupThread {
-                    callRecordOutgoingSyncMessageManager.sendSyncMessage(
+                    outgoingCallEventSyncMessageManager.sendSyncMessage(
                         groupThread: groupThread,
                         callRecord: callRecord,
                         callEvent: .callDeleted,

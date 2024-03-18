@@ -10,7 +10,7 @@ import XCTest
 final class IndividualCallRecordManagerTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
     private var mockInteractionStore: MockInteractionStore!
-    private var mockOutgoingSyncMessageManager: MockCallRecordOutgoingSyncMessageManager!
+    private var mockOutgoingSyncMessageManager: MockOutgoingCallEventSyncMessageManager!
 
     private var mockDB: MockDB!
     private var individualCallRecordManager: SnoopingIndividualCallRecordManagerImpl!
@@ -19,7 +19,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockCallRecordStore = MockCallRecordStore()
         mockInteractionStore = MockInteractionStore()
         mockOutgoingSyncMessageManager = {
-            let mock = MockCallRecordOutgoingSyncMessageManager()
+            let mock = MockOutgoingCallEventSyncMessageManager()
             mock.expectedCallEvent = .callUpdated
             return mock
         }()

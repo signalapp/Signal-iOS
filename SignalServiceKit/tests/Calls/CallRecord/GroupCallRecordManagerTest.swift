@@ -11,7 +11,7 @@ import LibSignalClient
 final class GroupCallRecordManagerTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
     private var mockInteractionStore: MockInteractionStore!
-    private var mockOutgoingSyncMessageManager: MockCallRecordOutgoingSyncMessageManager!
+    private var mockOutgoingSyncMessageManager: MockOutgoingCallEventSyncMessageManager!
 
     private var mockDB: MockDB!
     private var snoopingGroupCallRecordManager: SnoopingGroupCallRecordManagerImpl!
@@ -21,7 +21,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         mockCallRecordStore = MockCallRecordStore()
         mockInteractionStore = MockInteractionStore()
         mockOutgoingSyncMessageManager = {
-            let mock = MockCallRecordOutgoingSyncMessageManager()
+            let mock = MockOutgoingCallEventSyncMessageManager()
             mock.expectedCallEvent = .callUpdated
             return mock
         }()

@@ -104,7 +104,7 @@ public extension GroupCallRecordManager {
 public class GroupCallRecordManagerImpl: GroupCallRecordManager {
     private let callRecordStore: CallRecordStore
     private let interactionStore: InteractionStore
-    private let outgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager
+    private let outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager
     private let statusTransitionManager: GroupCallRecordStatusTransitionManager
 
     private var logger: CallRecordLogger { .shared }
@@ -112,7 +112,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
     init(
         callRecordStore: CallRecordStore,
         interactionStore: InteractionStore,
-        outgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager
+        outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager
     ) {
         self.callRecordStore = callRecordStore
         self.interactionStore = interactionStore

@@ -9,7 +9,7 @@ import XCTest
 
 final class CallRecordDeleteManagerTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
-    private var mockCallRecordOutgoingSyncMessageManager: MockCallRecordOutgoingSyncMessageManager!
+    private var mockOutgoingCallEventSyncMessageManager: MockOutgoingCallEventSyncMessageManager!
     private var mockDB: MockDB!
     private var mockDeletedCallRecordCleanupManager: MockDeletedCallRecordCleanupManager!
     private var mockDeletedCallRecordStore: MockDeletedCallRecordStore!
@@ -21,8 +21,8 @@ final class CallRecordDeleteManagerTest: XCTestCase {
     override func setUp() {
         mockDB = MockDB()
         mockCallRecordStore = MockCallRecordStore()
-        mockCallRecordOutgoingSyncMessageManager = {
-            let mock = MockCallRecordOutgoingSyncMessageManager()
+        mockOutgoingCallEventSyncMessageManager = {
+            let mock = MockOutgoingCallEventSyncMessageManager()
             mock.expectedCallEvent = .callDeleted
             return mock
         }()
@@ -33,7 +33,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
 
         deleteManager = CallRecordDeleteManagerImpl(
             callRecordStore: mockCallRecordStore,
-            callRecordOutgoingSyncMessageManager: mockCallRecordOutgoingSyncMessageManager,
+            outgoingCallEventSyncMessageManager: mockOutgoingCallEventSyncMessageManager,
             deletedCallRecordCleanupManager: mockDeletedCallRecordCleanupManager,
             deletedCallRecordStore: mockDeletedCallRecordStore,
             interactionStore: mockInteractionStore,
@@ -90,7 +90,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
         insertCallRecord(interaction: groupCallInteraction2, thread: groupThread2, isGroup: true)
 
         XCTAssertEqual(mockCallRecordStore.callRecords.count, 4)
-        XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 0)
+        XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 0)
         XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 0)
         XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 0)
         XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 4)
@@ -102,7 +102,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
                 tx: tx
             )
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 3)
-            XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 0)
+            XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 0)
             XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 1)
             XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 1)
             XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 4)
@@ -113,7 +113,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
                 tx: tx
             )
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 2)
-            XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 1)
+            XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 1)
             XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 2)
             XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 2)
             XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 4)
@@ -124,7 +124,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
                 tx: tx
             )
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 1)
-            XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 1)
+            XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 1)
             XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 3)
             XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 3)
             XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 4)
@@ -135,7 +135,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
                 tx: tx
             )
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 0)
-            XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 2)
+            XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 2)
             XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 4)
             XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 4)
             XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 4)
@@ -165,7 +165,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
         )
 
         XCTAssertEqual(mockCallRecordStore.callRecords.count, 3)
-        XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 0)
+        XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 0)
         XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 0)
         XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 0)
         XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 3)
@@ -178,7 +178,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
             )
 
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 1)
-            XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 2)
+            XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 2)
             XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 1)
             XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 2)
             XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 1)
@@ -190,7 +190,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
             )
 
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 0)
-            XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 2)
+            XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 2)
             XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 2)
             XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 3)
             XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 0)
@@ -198,14 +198,14 @@ final class CallRecordDeleteManagerTest: XCTestCase {
     }
 
     func testMarkCallAsDeleted() {
-        XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 0)
+        XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 0)
         XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 0)
         XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 0)
 
         mockDB.write { tx in
             deleteManager.markCallAsDeleted(callId: .maxRandom, threadRowId: .maxRandom, tx: tx)
 
-            XCTAssertEqual(mockCallRecordOutgoingSyncMessageManager.syncMessageSendCount, 0)
+            XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 0)
             XCTAssertEqual(mockDeletedCallRecordCleanupManager.cleanupStartCount, 1)
             XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 1)
         }

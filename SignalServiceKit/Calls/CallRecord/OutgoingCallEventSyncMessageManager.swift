@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-enum CallRecordOutgoingSyncMessageConversationId {
+enum OutgoingCallEventSyncMessageConversationId {
     case oneToOne(contactServiceId: ServiceId)
     case group(groupId: Data)
 
@@ -19,14 +19,14 @@ enum CallRecordOutgoingSyncMessageConversationId {
     }
 }
 
-enum CallRecordOutgoingSyncMessageCallEvent {
+enum OutgoingCallEventSyncMessageEvent {
     case callUpdated
     case callDeleted
 }
 
-protocol CallRecordOutgoingSyncMessageManager {
-    typealias ConversationId = CallRecordOutgoingSyncMessageConversationId
-    typealias CallEvent = CallRecordOutgoingSyncMessageCallEvent
+protocol OutgoingCallEventSyncMessageManager {
+    typealias ConversationId = OutgoingCallEventSyncMessageConversationId
+    typealias CallEvent = OutgoingCallEventSyncMessageEvent
 
     /// Send a sync message with the state on the given call record.
     ///
@@ -48,7 +48,7 @@ protocol CallRecordOutgoingSyncMessageManager {
     )
 }
 
-extension CallRecordOutgoingSyncMessageManager {
+extension OutgoingCallEventSyncMessageManager {
     func sendSyncMessage(
         groupThread: TSGroupThread,
         callRecord: CallRecord,
@@ -66,7 +66,7 @@ extension CallRecordOutgoingSyncMessageManager {
     }
 }
 
-final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMessageManager {
+final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessageManager {
     private let databaseStorage: SDSDatabaseStorage
     private let messageSenderJobQueue: MessageSenderJobQueue
     private let recipientDatabaseTable: RecipientDatabaseTable

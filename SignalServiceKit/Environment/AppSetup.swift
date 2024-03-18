@@ -331,7 +331,7 @@ public class AppSetup {
             deletedCallRecordStore: deletedCallRecordStore,
             schedulers: schedulers
         )
-        let callRecordOutgoingSyncMessageManager = CallRecordOutgoingSyncMessageManagerImpl(
+        let outgoingCallEventSyncMessageManager = OutgoingCallEventSyncMessageManagerImpl(
             databaseStorage: databaseStorage,
             messageSenderJobQueue: messageSenderJobQueue,
             recipientDatabaseTable: recipientDatabaseTable
@@ -339,12 +339,12 @@ public class AppSetup {
         let groupCallRecordManager = GroupCallRecordManagerImpl(
             callRecordStore: callRecordStore,
             interactionStore: interactionStore,
-            outgoingSyncMessageManager: callRecordOutgoingSyncMessageManager
+            outgoingSyncMessageManager: outgoingCallEventSyncMessageManager
         )
         let individualCallRecordManager = IndividualCallRecordManagerImpl(
             callRecordStore: callRecordStore,
             interactionStore: interactionStore,
-            outgoingSyncMessageManager: callRecordOutgoingSyncMessageManager
+            outgoingSyncMessageManager: outgoingCallEventSyncMessageManager
         )
         let callRecordQuerier = CallRecordQuerierImpl()
         let callRecordMissedCallManager = CallRecordMissedCallManagerImpl(
@@ -355,7 +355,7 @@ public class AppSetup {
         )
         let callRecordDeleteManager = CallRecordDeleteManagerImpl(
             callRecordStore: callRecordStore,
-            callRecordOutgoingSyncMessageManager: callRecordOutgoingSyncMessageManager,
+            outgoingCallEventSyncMessageManager: outgoingCallEventSyncMessageManager,
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,
             interactionStore: interactionStore,

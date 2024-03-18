@@ -53,7 +53,7 @@ public protocol IndividualCallRecordManager {
 public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
     private let callRecordStore: CallRecordStore
     private let interactionStore: InteractionStore
-    private let outgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager
+    private let outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager
     private let statusTransitionManager: IndividualCallRecordStatusTransitionManager
 
     private var logger: PrefixedLogger { CallRecordLogger.shared }
@@ -61,7 +61,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
     init(
         callRecordStore: CallRecordStore,
         interactionStore: InteractionStore,
-        outgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager
+        outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager
     ) {
         self.callRecordStore = callRecordStore
         self.interactionStore = interactionStore

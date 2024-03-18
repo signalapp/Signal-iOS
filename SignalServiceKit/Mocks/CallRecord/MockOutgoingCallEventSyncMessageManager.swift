@@ -7,12 +7,12 @@ import SignalCoreKit
 
 #if TESTABLE_BUILD
 
-class MockCallRecordOutgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager {
+class MockOutgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager {
     var expectedCallEvent: CallEvent?
     var syncMessageSendCount: UInt = 0
 
     func sendSyncMessage(
-        conversationId: CallRecordOutgoingSyncMessageConversationId,
+        conversationId: ConversationId,
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,
