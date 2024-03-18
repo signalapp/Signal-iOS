@@ -111,7 +111,7 @@ public extension Contact {
         var userTextPhoneNumbers: [String] = []
         var phoneNumberNameMap: [String: String] = [:]
         var parsedPhoneNumbers: [PhoneNumber] = []
-        if let parsedPhoneNumber = PhoneNumber(fromE164: phoneNumber) {
+        if let parsedPhoneNumber = Self.phoneNumberUtil.parseE164(phoneNumber) {
             userTextPhoneNumbers.append(phoneNumber)
             parsedPhoneNumbers.append(parsedPhoneNumber)
             phoneNumberNameMap[parsedPhoneNumber.toE164()] = phoneNumberLabel

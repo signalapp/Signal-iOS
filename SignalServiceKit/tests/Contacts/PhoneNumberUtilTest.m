@@ -8,18 +8,11 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface PhoneNumberUtilTest : XCTestCase
-@property (nonatomic, readonly) PhoneNumberUtil *phoneNumberUtilRef;
 @end
 
 #pragma mark -
 
 @implementation PhoneNumberUtilTest
-
-- (void)setUp
-{
-    [super setUp];
-    _phoneNumberUtilRef = [[PhoneNumberUtil alloc] init];
-}
 
 - (void)testTranslateCursorPosition
 {
@@ -142,45 +135,6 @@
         XCTAssertEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@"ZZZ"], @"ZZZ");
     }
     XCTAssertNotEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@""], @"");
-}
-
-- (void)testCountryCodesForSearchTerm
-{
-    // Empty search.
-    XCTAssertGreaterThan([self.phoneNumberUtilRef countryCodesForSearchTerm:nil].count, (NSUInteger)30);
-    XCTAssertGreaterThan([self.phoneNumberUtilRef countryCodesForSearchTerm:@""].count, (NSUInteger)30);
-    XCTAssertGreaterThan([self.phoneNumberUtilRef countryCodesForSearchTerm:@" "].count, (NSUInteger)30);
-
-    // Searches with no results.
-    XCTAssertEqual([self.phoneNumberUtilRef countryCodesForSearchTerm:@" . "].count, (NSUInteger)0);
-    XCTAssertEqual([self.phoneNumberUtilRef countryCodesForSearchTerm:@" XXXXX "].count, (NSUInteger)0);
-    XCTAssertEqual([self.phoneNumberUtilRef countryCodesForSearchTerm:@" ! "].count, (NSUInteger)0);
-
-    // Search by country code.
-    XCTAssertEqualObjects([self.phoneNumberUtilRef countryCodesForSearchTerm:@"GB"], (@[ @"GB" ]));
-    XCTAssertEqualObjects([self.phoneNumberUtilRef countryCodesForSearchTerm:@"gb"], (@[ @"GB" ]));
-    XCTAssertEqualObjects([self.phoneNumberUtilRef countryCodesForSearchTerm:@"GB "], (@[ @"GB" ]));
-    XCTAssertEqualObjects([self.phoneNumberUtilRef countryCodesForSearchTerm:@" GB"], (@[ @"GB" ]));
-    XCTAssertTrue([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" G"] containsObject:@"GB"]);
-    XCTAssertFalse([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" B"] containsObject:@"GB"]);
-
-    // Search by country name.
-    XCTAssertEqualObjects([self.phoneNumberUtilRef countryCodesForSearchTerm:@"united kingdom"], (@[ @"GB" ]));
-    XCTAssertEqualObjects([self.phoneNumberUtilRef countryCodesForSearchTerm:@" UNITED KINGDOM "], (@[ @"GB" ]));
-    XCTAssertEqualObjects([self.phoneNumberUtilRef countryCodesForSearchTerm:@" UNITED KING "], (@[ @"GB" ]));
-    XCTAssertEqualObjects([self.phoneNumberUtilRef countryCodesForSearchTerm:@" UNI KING "], (@[ @"GB" ]));
-    XCTAssertEqualObjects([self.phoneNumberUtilRef countryCodesForSearchTerm:@" u k "], (@[ @"GB" ]));
-    XCTAssertTrue([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" u"] containsObject:@"GB"]);
-    XCTAssertTrue([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" k"] containsObject:@"GB"]);
-    XCTAssertFalse([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" m"] containsObject:@"GB"]);
-
-    // Search by calling code.
-    XCTAssertTrue([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" +44 "] containsObject:@"GB"]);
-    XCTAssertTrue([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" 44 "] containsObject:@"GB"]);
-    XCTAssertTrue([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" +4 "] containsObject:@"GB"]);
-    XCTAssertTrue([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" 4 "] containsObject:@"GB"]);
-    XCTAssertFalse([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" +123 "] containsObject:@"GB"]);
-    XCTAssertFalse([[self.phoneNumberUtilRef countryCodesForSearchTerm:@" +444 "] containsObject:@"GB"]);
 }
 
 @end

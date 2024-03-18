@@ -339,7 +339,7 @@ private class ChangePhoneNumberValueViews: NSObject {
     fileprivate let type: `Type`
 
     public init(e164: E164?, type: `Type`) {
-        if let e164, let number = RegistrationPhoneNumber(e164: e164) {
+        if let e164, let number = RegistrationPhoneNumberParser(phoneNumberUtil: Self.phoneNumberUtil).parseE164(e164) {
             self.phoneNumber = number
         } else {
             self.phoneNumber = RegistrationPhoneNumber(countryState: .defaultValue, nationalNumber: "")
@@ -457,8 +457,8 @@ private class ChangePhoneNumberValueViews: NSObject {
         }
 
         guard
-            let phoneNumber = PhoneNumber.tryParsePhoneNumber(
-                fromUserSpecifiedText: phoneNumberWithoutCallingCode,
+            let phoneNumber = phoneNumberUtil.parsePhoneNumber(
+                userSpecifiedText: phoneNumberWithoutCallingCode,
                 callingCode: callingCode
             ),
             let e164String = phoneNumber.toE164().strippedOrNil,

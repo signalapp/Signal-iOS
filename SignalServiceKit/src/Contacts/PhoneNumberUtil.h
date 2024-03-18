@@ -7,12 +7,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class PhoneNumberUtilWrapper;
+@class PhoneNumberUtilSwiftValues;
 
 @interface PhoneNumberUtil : NSObject
 
-// This property should only be accessed by Swift.
-@property (nonatomic, readonly) PhoneNumberUtilWrapper *phoneNumberUtilWrapper;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithSwiftValues:(PhoneNumberUtilSwiftValues *)swiftValues NS_DESIGNATED_INITIALIZER;
+
+@property (nonatomic, readonly) PhoneNumberUtilSwiftValues *swiftValues;
 
 + (NSUInteger)translateCursorPosition:(NSUInteger)offset
                                  from:(NSString *)source

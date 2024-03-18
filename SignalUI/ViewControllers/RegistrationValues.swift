@@ -15,9 +15,7 @@ public struct RegistrationCountryState: Equatable, Dependencies {
     // e.g. FR
     public let countryCode: String
 
-    public init(countryName: String,
-                callingCode: String,
-                countryCode: String) {
+    public init(countryName: String, callingCode: String, countryCode: String) {
         self.countryName = countryName
         self.callingCode = callingCode
         self.countryCode = countryCode
@@ -26,7 +24,7 @@ public struct RegistrationCountryState: Equatable, Dependencies {
     public static var defaultValue: RegistrationCountryState {
         AssertIsOnMainThread()
 
-        var countryCode: String = PhoneNumber.defaultCountryCode()
+        var countryCode: String = PhoneNumberUtil.defaultCountryCode()
         if
             let lastRegisteredCountryCode = RegistrationValues.lastRegisteredCountryCode(),
             !lastRegisteredCountryCode.isEmpty
@@ -81,9 +79,11 @@ public struct RegistrationCountryState: Equatable, Dependencies {
                 return nil
             }
 
-            return RegistrationCountryState(countryName: countryName,
-                                          callingCode: callingCode,
-                                          countryCode: countryCode)
+            return RegistrationCountryState(
+                countryName: countryName,
+                callingCode: callingCode,
+                countryCode: countryCode
+            )
         }
     }
 }
@@ -100,17 +100,24 @@ public struct RegistrationPhoneNumber {
         self.nationalNumber = nationalNumber
         self.e164 = E164("\(countryState.callingCode)\(nationalNumber)")
     }
+}
 
-    public init?(e164: E164) {
+public class RegistrationPhoneNumberParser {
+    private let phoneNumberUtil: PhoneNumberUtil
+
+    public init(phoneNumberUtil: PhoneNumberUtil) {
+        self.phoneNumberUtil = phoneNumberUtil
+    }
+
+    public func parseE164(_ phoneNumber: E164) -> RegistrationPhoneNumber? {
         guard
-            let countryState = RegistrationCountryState.countryState(forE164: e164.stringValue),
-            let nationalNumber = PhoneNumber(fromE164: e164.stringValue)?.nationalNumber
+            let countryState = RegistrationCountryState.countryState(forE164: phoneNumber.stringValue),
+            let phoneNumber = phoneNumberUtil.parseE164(phoneNumber)
         else {
             return nil
         }
-        self.countryState = countryState
-        self.nationalNumber = nationalNumber
-        self.e164 = e164
+        let nationalNumber = phoneNumberUtil.nationalNumber(for: phoneNumber)
+        return RegistrationPhoneNumber(countryState: countryState, nationalNumber: nationalNumber)
     }
 }
 

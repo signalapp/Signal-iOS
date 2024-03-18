@@ -1131,30 +1131,9 @@ extension RecipientPickerViewController {
 // MARK: - Find by Number
 
 struct PhoneNumberFinder {
-    var localNumber: String?
-    var contactDiscoveryManager: ContactDiscoveryManager
-
-    /// A list of all [+1, +20, ..., +N] known calling codes.
-    static let validCallingCodes: [String] = {
-        Set(NSObject.phoneNumberUtil.countryCodes(forSearchTerm: nil).lazy.compactMap {
-            NSObject.phoneNumberUtil.callingCode(fromCountryCode: $0)
-        }).sorted()
-    }()
-
-    /// Extracts the calling code (e.g., "+1") from an e164.
-    ///
-    /// Calling codes are defined such that only one prefix match should be
-    /// possible. For example, "+1" is a valid prefix, but "+12" and "+123"
-    /// aren't; if a number starts with "+1", the calling code is "+1".
-    /// Similarly, "+351" and "+352" are valid prefixes, but "+35" isn't.
-    ///
-    /// - Returns:
-    ///     The calling code (starting with "+") if the provided e164 starts
-    ///     with a valid calling code.
-    private static func callingCode(for e164: String) -> String? {
-        owsAssertDebug(e164.hasPrefix("+"))
-        return validCallingCodes.first { e164.hasPrefix($0) }
-    }
+    let localNumber: String?
+    let contactDiscoveryManager: ContactDiscoveryManager
+    let phoneNumberUtil: PhoneNumberUtil
 
     enum SearchResult {
         /// This e164 has already been validated by libPhoneNumber.
@@ -1204,9 +1183,9 @@ struct PhoneNumberFinder {
 
         // Check for valid libPhoneNumber results.
         let uniqueResults = OrderedSet(
-            PhoneNumber.tryParsePhoneNumbers(
-                fromUserSpecifiedText: searchText,
-                clientPhoneNumber: localNumber ?? ""
+            phoneNumberUtil.parsePhoneNumbers(
+                userSpecifiedText: searchText,
+                localPhoneNumber: localNumber ?? ""
             ).lazy.compactMap { self.validE164(from: $0) }
         )
         if !uniqueResults.isEmpty {
@@ -1228,8 +1207,11 @@ struct PhoneNumberFinder {
         let potentialE164: String
         if filteredValue.hasPrefix("+") {
             potentialE164 = filteredValue
-        } else if let localNumber, let callingCode = Self.callingCode(for: localNumber) {
-            potentialE164 = callingCode + filteredValue
+        } else if
+            let localNumber,
+            let callingCode = phoneNumberUtil.parseE164(localNumber)?.getCountryCode()?.intValue
+        {
+            potentialE164 = "+\(callingCode)\(filteredValue)"
         } else {
             owsFailDebug("No localNumber")
             return nil
@@ -1259,14 +1241,7 @@ struct PhoneNumberFinder {
     }
 
     private func validE164(from phoneNumber: PhoneNumber) -> String? {
-        let e164 = phoneNumber.toE164()
-        guard let callingCode = Self.callingCode(for: e164) else {
-            return nil
-        }
-        guard (1...15).contains(e164.count - callingCode.count) else {
-            return nil
-        }
-        return e164
+        return E164(phoneNumber.toE164())?.stringValue
     }
 
     enum LookupResult {
@@ -1288,7 +1263,7 @@ struct PhoneNumberFinder {
             validE164ToLookUp = validE164
         case .maybeValid(maybeValidE164: let maybeValidE164):
             guard
-                let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: maybeValidE164),
+                let phoneNumber = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: maybeValidE164),
                 let validE164 = validE164(from: phoneNumber)
             else {
                 return .value(.notValid(invalidE164: maybeValidE164))
@@ -1321,7 +1296,8 @@ extension RecipientPickerViewController {
     ) -> OWSTableSection? {
         let phoneNumberFinder = PhoneNumberFinder(
             localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
-            contactDiscoveryManager: contactDiscoveryManager
+            contactDiscoveryManager: contactDiscoveryManager,
+            phoneNumberUtil: phoneNumberUtil
         )
         var phoneNumberResults = phoneNumberFinder.parseResults(for: searchResults.searchText)
         // Don't show phone numbers that are visible in other sections.

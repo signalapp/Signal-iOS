@@ -351,7 +351,7 @@ public class RemoteConfig: NSObject {
 
         guard
             let localPhoneNumber,
-            let localCountryCode = PhoneNumber(fromE164: localPhoneNumber)?.getCountryCode()?.stringValue
+            let localCountryCode = phoneNumberUtil.parseE164(localPhoneNumber)?.getCountryCode()?.stringValue
         else {
             owsFailDebug("Invalid local number")
             return nil

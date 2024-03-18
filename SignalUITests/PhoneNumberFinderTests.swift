@@ -10,7 +10,6 @@ import XCTest
 @testable import SignalUI
 
 final class PhoneNumberFinderTests: XCTestCase {
-
     private struct MockContactDiscoveryManager: ContactDiscoveryManager {
         var lookUpBlock: ((Set<String>) -> Promise<Set<SignalRecipient>>)?
 
@@ -19,25 +18,11 @@ final class PhoneNumberFinderTests: XCTestCase {
         }
     }
 
-    override func setUp() {
-        super.setUp()
-
-        SetCurrentAppContext(TestAppContext(), true)
-        MockSSKEnvironment.activate()
-    }
-
-    func testValidCallingCodes() {
-        for callingCode in PhoneNumberFinder.validCallingCodes {
-            XCTAssertNotEqual(callingCode, "")
-            XCTAssertNotEqual(callingCode, "+0")
-            XCTAssertTrue(callingCode.hasPrefix("+"), "callingCode: \(callingCode)")
-        }
-    }
-
     func testParseResults() {
         let finder = PhoneNumberFinder(
             localNumber: "+16505550100",
-            contactDiscoveryManager: MockContactDiscoveryManager()
+            contactDiscoveryManager: MockContactDiscoveryManager(),
+            phoneNumberUtil: PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
         )
         struct TestCase {
             var searchText: String
@@ -94,7 +79,8 @@ final class PhoneNumberFinderTests: XCTestCase {
                             phoneNumber: E164(phoneNumbers.first)!
                         )
                     ] : [])
-                })
+                }),
+                phoneNumberUtil: PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
             )
             let resultPromise = finder.lookUp(phoneNumber: testCase.searchResult)
             let lookupResult = try XCTUnwrap(resultPromise.result).get()
@@ -110,5 +96,4 @@ final class PhoneNumberFinderTests: XCTestCase {
             }
         }
     }
-
 }

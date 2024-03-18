@@ -203,7 +203,7 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
         if
             textField.text.isEmptyOrNil,
             let fulle164 = E164(replacementString.removeCharacters(characterSet: CharacterSet(charactersIn: " -()"))),
-            let phoneNumber = RegistrationPhoneNumber(e164: fulle164)
+            let phoneNumber = RegistrationPhoneNumberParser(phoneNumberUtil: phoneNumberUtil).parseE164(fulle164)
         {
             // If we got a full e164, it was probably from system autofill.
             // Split out the country code portion.

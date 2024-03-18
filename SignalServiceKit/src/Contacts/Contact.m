@@ -185,8 +185,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Force unwrap.
     NSString *localNumber = localIdentifiers.phoneNumber;
     for (NSString *phoneNumberString in userTextPhoneNumbers) {
-        for (PhoneNumber *phoneNumber in [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:phoneNumberString
-                                                                              clientPhoneNumber:localNumber]) {
+        NSArray<PhoneNumber *> *phoneNumbers =
+            [self.phoneNumberUtil parsePhoneNumbersWithUserSpecifiedText:phoneNumberString
+                                                        localPhoneNumber:localNumber];
+        for (PhoneNumber *phoneNumber in phoneNumbers) {
             [parsedPhoneNumbers addObject:phoneNumber];
             NSString *phoneNumberName = phoneNumberNameMap[phoneNumberString];
             if (phoneNumberName) {
@@ -351,7 +353,8 @@ NS_ASSUME_NONNULL_BEGIN
             // Skip phone number if "unparsed" form is a duplicate.
             continue;
         }
-        PhoneNumber *_Nullable parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:labeledPhoneNumber.value.stringValue];
+        PhoneNumber *_Nullable parsedPhoneNumber =
+            [self.phoneNumberUtil parsePhoneNumberWithUserSpecifiedText:labeledPhoneNumber.value.stringValue];
         if (parsedPhoneNumber && [existingParsedPhoneNumberSet containsObject:parsedPhoneNumber]) {
             // Skip phone number if "parsed" form is a duplicate.
             continue;

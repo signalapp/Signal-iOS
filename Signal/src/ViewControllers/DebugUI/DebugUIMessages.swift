@@ -3316,7 +3316,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         DebugContactsUtils.createRandomContacts(threadQuantity) { contact, index, stop in
             guard
                 let phoneNumberText = contact.phoneNumbers.first?.value.stringValue,
-                let e164 = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: phoneNumberText)?.toE164()
+                let e164 = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumberText)?.toE164()
             else {
                 owsFailDebug("Invalid phone number")
                 return

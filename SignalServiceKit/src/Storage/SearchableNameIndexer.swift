@@ -323,13 +323,14 @@ extension SignalRecipient: IndexableName {
                 return nil
             }
 
-            guard let phoneNumberObj = SignalServiceKit.PhoneNumber(fromE164: phoneNumber) else {
-                owsFailDebug("unexpected unparsable recipientId: \(phoneNumber)")
+            guard let phoneNumberObj = phoneNumberUtil.parseE164(phoneNumber) else {
+                owsFailDebug("couldn't parse phoneNumber: \(phoneNumber)")
                 return nil
             }
 
-            guard let digitScalars = phoneNumberObj.nationalNumberFormatted?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
-                owsFailDebug("unexpected unparsable recipientId: \(phoneNumber)")
+            let nationalNumber = phoneNumberUtil.formattedNationalNumber(for: phoneNumberObj)
+            guard let digitScalars = nationalNumber?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
+                owsFailDebug("couldn't parse phoneNumber: \(phoneNumber)")
                 return nil
             }
 

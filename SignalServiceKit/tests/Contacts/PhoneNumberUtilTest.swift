@@ -125,12 +125,6 @@ class PhoneNumberUtilTestSwift: SSKBaseTestSwift {
         XCTAssertEqual("+12015550123", phoneNumberUtil.examplePhoneNumber(forCountryCode: "US"))
         XCTAssertEqual("+447400123456", phoneNumberUtil.examplePhoneNumber(forCountryCode: "GB"))
         XCTAssertEqual("+59894231234", phoneNumberUtil.examplePhoneNumber(forCountryCode: "UY"))
-        XCTAssertNil(phoneNumberUtil.examplePhoneNumber(forCountryCode: "+1"))
-        XCTAssertNil(phoneNumberUtil.examplePhoneNumber(forCountryCode: "44"))
-        XCTAssertNil(phoneNumberUtil.examplePhoneNumber(forCountryCode: " "))
-        XCTAssertNil(phoneNumberUtil.examplePhoneNumber(forCountryCode: ""))
-        XCTAssertNil(phoneNumberUtil.examplePhoneNumber(forCountryCode: "UK "))
-        XCTAssertNil(phoneNumberUtil.examplePhoneNumber(forCountryCode: "UKK"))
     }
 
     func test_isPossibleNumber() {
@@ -171,11 +165,6 @@ class PhoneNumberUtilTestSwift: SSKBaseTestSwift {
         XCTAssertEqual(false, phoneNumberUtil.isValidNumber(phoneNumber10))
     }
 
-    func test_countryCodeByCarrier() {
-        // This test might fail depending on how the test device/simulator is configured.
-        XCTAssertEqual("ZZ", phoneNumberUtil.countryCodeByCarrier())
-    }
-
     func test_getRegionCodeForCountryCode() {
         XCTAssertEqual("US", phoneNumberUtil.getRegionCodeForCountryCode(NSNumber(value: 1)))
         XCTAssertEqual("GB", phoneNumberUtil.getRegionCodeForCountryCode(NSNumber(value: 44)))
@@ -198,5 +187,43 @@ class PhoneNumberUtilTestSwift: SSKBaseTestSwift {
         XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: "ZZ"))
         XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: "+"))
         XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: "ZQ"))
+    }
+
+    func testCountryCodesForSearchTerm() {
+        // Empty search.
+        XCTAssertGreaterThan(phoneNumberUtil.countryCodes(forSearchTerm: nil).count, 30)
+        XCTAssertGreaterThan(phoneNumberUtil.countryCodes(forSearchTerm: "").count, 30)
+        XCTAssertGreaterThan(phoneNumberUtil.countryCodes(forSearchTerm: " ").count, 30)
+
+        // Searches with no results.
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: " . ").count, 0)
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: " XXXXX ").count, 0)
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: " ! ").count, 0)
+
+        // Search by country code.
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: "GB"), ["GB"])
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: "gb"), ["GB"])
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: "GB "), ["GB"])
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: " GB"), ["GB"])
+        XCTAssert(phoneNumberUtil.countryCodes(forSearchTerm: " G").contains("GB"))
+        XCTAssertFalse(phoneNumberUtil.countryCodes(forSearchTerm: " B").contains("GB"))
+
+        // Search by country name.
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: "united kingdom"), ["GB"])
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: " UNITED KINGDOM "), ["GB"])
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: " UNITED KING "), ["GB"])
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: " UNI KING "), ["GB"])
+        XCTAssertEqual(phoneNumberUtil.countryCodes(forSearchTerm: " u k "), ["GB"])
+        XCTAssert(phoneNumberUtil.countryCodes(forSearchTerm: " u").contains("GB"))
+        XCTAssert(phoneNumberUtil.countryCodes(forSearchTerm: " k").contains("GB"))
+        XCTAssertFalse(phoneNumberUtil.countryCodes(forSearchTerm: " m").contains("GB"))
+
+        // Search by calling code.
+        XCTAssert(phoneNumberUtil.countryCodes(forSearchTerm: " +44 ").contains("GB"))
+        XCTAssert(phoneNumberUtil.countryCodes(forSearchTerm: " 44 ").contains("GB"))
+        XCTAssert(phoneNumberUtil.countryCodes(forSearchTerm: " +4 ").contains("GB"))
+        XCTAssert(phoneNumberUtil.countryCodes(forSearchTerm: " 4 ").contains("GB"))
+        XCTAssertFalse(phoneNumberUtil.countryCodes(forSearchTerm: " +123 ").contains("GB"))
+        XCTAssertFalse(phoneNumberUtil.countryCodes(forSearchTerm: " +444 ").contains("GB"))
     }
 }

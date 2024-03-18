@@ -227,7 +227,7 @@ extension ConversationViewController {
     private func didLongPressPhoneNumber(dataItem: TextCheckingDataItem) {
         guard
             let snippet = dataItem.snippet.strippedOrNil,
-            let phoneNumberObj = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: snippet),
+            let phoneNumberObj = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: snippet),
             let phoneNumber = phoneNumberObj.toE164().strippedOrNil
         else {
             owsFailDebug("Invalid phone number.")

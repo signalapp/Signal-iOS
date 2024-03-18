@@ -8,11 +8,17 @@ import XCTest
 @testable import Signal
 @testable import SignalServiceKit
 
-class PhoneNumberValidatorTest: SignalBaseTest {
+class PhoneNumberValidatorTest: XCTestCase {
+    private var phoneNumberUtilRef: PhoneNumberUtil!
+
+    override func setUp() {
+        super.setUp()
+        phoneNumberUtilRef = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
+    }
 
     func assertValid(e164: String, file: StaticString = #file, line: UInt = #line) {
         let validator = PhoneNumberValidator()
-        guard let phoneNumber = PhoneNumber(fromE164: e164) else {
+        guard let phoneNumber = phoneNumberUtilRef.parseE164(e164) else {
             XCTFail("unparsable phone number", file: file, line: line)
             return
         }
@@ -22,7 +28,7 @@ class PhoneNumberValidatorTest: SignalBaseTest {
 
     func assertInvalid(e164: String, file: StaticString = #file, line: UInt = #line) {
         let validator = PhoneNumberValidator()
-        guard let phoneNumber = PhoneNumber(fromUserSpecifiedText: e164) else {
+        guard let phoneNumber = phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: e164) else {
             // number wasn't even parsable
             return
         }

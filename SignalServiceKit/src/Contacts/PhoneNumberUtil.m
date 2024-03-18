@@ -12,11 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation PhoneNumberUtil
 
-- (instancetype)init {
+- (instancetype)initWithSwiftValues:(PhoneNumberUtilSwiftValues *)swiftValues
+{
     self = [super init];
 
     if (self) {
-        _phoneNumberUtilWrapper = [PhoneNumberUtilWrapper new];
+        _swiftValues = swiftValues;
     }
 
     OWSSingletonAssert();

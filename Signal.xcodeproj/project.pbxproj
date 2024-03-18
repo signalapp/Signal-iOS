@@ -1826,7 +1826,6 @@
 		F942627A289B1B5600460798 /* OWSRecipientIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942620F289B1B5500460798 /* OWSRecipientIdentityTest.swift */; };
 		F942627E289B1B5600460798 /* SignalRecipientTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426213289B1B5500460798 /* SignalRecipientTest.swift */; };
 		F942627F289B1B5600460798 /* TSThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426214289B1B5500460798 /* TSThreadTest.m */; };
-		F9426280289B1B5600460798 /* PhoneNumberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426215289B1B5500460798 /* PhoneNumberTest.m */; };
 		F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426218289B1B5500460798 /* BlockingManagerTests.swift */; };
 		F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942621E289B1B5500460798 /* TestProtocolRunnerTest.swift */; };
 		F9426289289B1B5600460798 /* TSOutgoingMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426220289B1B5500460798 /* TSOutgoingMessageTest.swift */; };
@@ -4644,7 +4643,6 @@
 		F942620F289B1B5500460798 /* OWSRecipientIdentityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSRecipientIdentityTest.swift; sourceTree = "<group>"; };
 		F9426213289B1B5500460798 /* SignalRecipientTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipientTest.swift; sourceTree = "<group>"; };
 		F9426214289B1B5500460798 /* TSThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSThreadTest.m; sourceTree = "<group>"; };
-		F9426215289B1B5500460798 /* PhoneNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberTest.m; sourceTree = "<group>"; };
 		F9426218289B1B5500460798 /* BlockingManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingManagerTests.swift; sourceTree = "<group>"; };
 		F942621E289B1B5500460798 /* TestProtocolRunnerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestProtocolRunnerTest.swift; sourceTree = "<group>"; };
 		F9426220289B1B5500460798 /* TSOutgoingMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageTest.swift; sourceTree = "<group>"; };
@@ -9435,7 +9433,6 @@
 				50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */,
 				F942620F289B1B5500460798 /* OWSRecipientIdentityTest.swift */,
 				50468F2A29EE19C300948E02 /* PhoneNumberChangedMessageInserterTest.swift */,
-				F9426215289B1B5500460798 /* PhoneNumberTest.m */,
 				F9426209289B1B5500460798 /* PhoneNumberTest.swift */,
 				F9426207289B1B5500460798 /* PhoneNumberUtilTest.m */,
 				F942620C289B1B5500460798 /* PhoneNumberUtilTest.swift */,
@@ -14096,7 +14093,6 @@
 				50468F2529EDD46500948E02 /* ParamParserTest.swift in Sources */,
 				50468F2B29EE19C300948E02 /* PhoneNumberChangedMessageInserterTest.swift in Sources */,
 				F9CAC7852919B5A400EEC1DE /* PhoneNumberRegionsTest.swift in Sources */,
-				F9426280289B1B5600460798 /* PhoneNumberTest.m in Sources */,
 				F9426274289B1B5500460798 /* PhoneNumberTest.swift in Sources */,
 				F9426272289B1B5500460798 /* PhoneNumberUtilTest.m in Sources */,
 				F9426277289B1B5600460798 /* PhoneNumberUtilTest.swift in Sources */,

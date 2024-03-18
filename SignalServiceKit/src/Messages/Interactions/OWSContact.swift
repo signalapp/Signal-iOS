@@ -65,9 +65,9 @@ public class OWSContactPhoneNumber: MTLModel, OWSContactField {
     }
 
     public var e164: String? {
-        var parsedPhoneNumber = PhoneNumber(fromE164: phoneNumber)
+        var parsedPhoneNumber = phoneNumberUtil.parseE164(phoneNumber)
         if parsedPhoneNumber == nil {
-            parsedPhoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: phoneNumber)
+            parsedPhoneNumber = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumber)
         }
         return parsedPhoneNumber?.toE164()
     }
@@ -593,10 +593,10 @@ public class OWSContact: MTLModel {
         }
 
         let e164PhoneNumbers: [String] = phoneNumbers.compactMap { phoneNumber in
-            if let parsedPhoneNumber = PhoneNumber(fromE164: phoneNumber.phoneNumber) {
+            if let parsedPhoneNumber = phoneNumberUtil.parseE164(phoneNumber.phoneNumber) {
                 return parsedPhoneNumber.toE164()
             }
-            if let parsedPhoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: phoneNumber.phoneNumber) {
+            if let parsedPhoneNumber = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumber.phoneNumber) {
                 return parsedPhoneNumber.toE164()
             }
             return nil
@@ -616,10 +616,10 @@ extension OWSContactPhoneNumber {
         // Make a best effort to parse the phone number to e164.
         let unparsedPhoneNumber = cnLabeledValue.value.stringValue
         let parsedPhoneNumber: String = {
-            if let phoneNumber = PhoneNumber(fromE164: unparsedPhoneNumber) {
+            if let phoneNumber = Self.phoneNumberUtil.parseE164(unparsedPhoneNumber) {
                 return phoneNumber.toE164()
             }
-            if let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: unparsedPhoneNumber) {
+            if let phoneNumber = Self.phoneNumberUtil.parsePhoneNumber(userSpecifiedText: unparsedPhoneNumber) {
                 return phoneNumber.toE164()
             }
             return unparsedPhoneNumber

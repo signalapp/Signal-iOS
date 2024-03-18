@@ -208,9 +208,9 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         guard let userSpecifiedText = phoneNumberTextField.text else {
             return nil
         }
-        let possiblePhoneNumbers = PhoneNumber.tryParsePhoneNumbers(
-            fromUserSpecifiedText: callingCode + userSpecifiedText,
-            clientPhoneNumber: localNumber
+        let possiblePhoneNumbers = phoneNumberUtil.parsePhoneNumbers(
+            userSpecifiedText: callingCode + userSpecifiedText,
+            localPhoneNumber: localNumber
         )
         let possibleValidPhoneNumbers = possiblePhoneNumbers.map { $0.toE164() }.filter { !$0.isEmpty }
 
@@ -300,10 +300,10 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
         var callingCodeInt: Int?
         var countryCode: String?
 
-        if let localE164 = PhoneNumber(fromE164: localNumber), let localCountryCode = localE164.getCountryCode()?.intValue {
+        if let localE164 = phoneNumberUtil.parseE164(localNumber), let localCountryCode = localE164.getCountryCode()?.intValue {
             callingCodeInt = localCountryCode
         } else {
-            callingCodeInt = phoneNumberUtil.getCountryCode(forRegion: PhoneNumber.defaultCountryCode()).intValue
+            callingCodeInt = phoneNumberUtil.getCountryCode(forRegion: PhoneNumberUtil.defaultCountryCode()).intValue
         }
 
         var callingCode: String?

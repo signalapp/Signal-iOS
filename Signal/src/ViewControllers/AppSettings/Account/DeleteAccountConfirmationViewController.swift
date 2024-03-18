@@ -354,9 +354,9 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         guard let phoneNumberText = phoneNumberTextField.text else { return false }
 
         let possiblePhoneNumber = callingCode + phoneNumberText
-        let possibleNumbers = PhoneNumber.tryParsePhoneNumbers(
-            fromUserSpecifiedText: possiblePhoneNumber,
-            clientPhoneNumber: localNumber
+        let possibleNumbers = phoneNumberUtil.parsePhoneNumbers(
+            userSpecifiedText: possiblePhoneNumber,
+            localPhoneNumber: localNumber
         ).map { $0.toE164() }
 
         return possibleNumbers.contains(localNumber)
@@ -383,11 +383,11 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
         var callingCodeInt: Int?
         var countryCode: String?
 
-        if let localE164 = PhoneNumber(fromE164: localNumber), let localCountryCode = localE164.getCountryCode()?.intValue {
+        if let localE164 = phoneNumberUtil.parseE164(localNumber), let localCountryCode = localE164.getCountryCode()?.intValue {
             callingCodeInt = localCountryCode
         } else {
             callingCodeInt = phoneNumberUtil.getCountryCode(
-                forRegion: PhoneNumber.defaultCountryCode()
+                forRegion: PhoneNumberUtil.defaultCountryCode()
             ).intValue
         }
 

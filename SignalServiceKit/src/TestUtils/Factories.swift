@@ -597,7 +597,15 @@ public class AttachmentStreamFactory: NSObject, Factory {
 }
 
 public class ContactFactory {
-    public init() { }
+    private let phoneNumberUtil: PhoneNumberUtil
+
+    public convenience init() {
+        self.init(phoneNumberUtil: NSObject.phoneNumberUtil)
+    }
+
+    public init(phoneNumberUtil: PhoneNumberUtil) {
+        self.phoneNumberUtil = phoneNumberUtil
+    }
 
     public func build() throws -> Contact {
 
@@ -605,7 +613,11 @@ public class ContactFactory {
         var phoneNumberNameMap: [String: String] = [:]
         var parsedPhoneNumbers: [PhoneNumber] = []
         for (userText, label) in userTextPhoneNumberAndLabelBuilder() {
-            for parsedPhoneNumber in PhoneNumber.tryParsePhoneNumbers(fromUserSpecifiedText: userText, clientPhoneNumber: localClientPhonenumber) {
+            let phoneNumbers = phoneNumberUtil.parsePhoneNumbers(
+                userSpecifiedText: userText,
+                localPhoneNumber: localClientPhoneNumber
+            )
+            for parsedPhoneNumber in phoneNumbers {
                 parsedPhoneNumbers.append(parsedPhoneNumber)
                 phoneNumberNameMap[parsedPhoneNumber.toE164()] = label
                 userTextPhoneNumbers.append(userText)
@@ -624,7 +636,7 @@ public class ContactFactory {
                        emails: emailsBuilder())
     }
 
-    public var localClientPhonenumber: String = "+13235551234"
+    public var localClientPhoneNumber: String = "+13235551234"
 
     public var uniqueIdBuilder: () -> String = {
         return UUID().uuidString

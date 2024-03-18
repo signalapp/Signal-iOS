@@ -759,7 +759,7 @@ public class AppSetup {
         let messagePipelineSupervisor = MessagePipelineSupervisor()
         let paymentsCurrencies = testDependencies?.paymentsCurrencies ?? PaymentsCurrenciesImpl()
         let spamChallengeResolver = SpamChallengeResolver()
-        let phoneNumberUtil = PhoneNumberUtil()
+        let phoneNumberUtil = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
         let legacyChangePhoneNumber = LegacyChangePhoneNumber()
         let subscriptionManager = testDependencies?.subscriptionManager ?? SubscriptionManagerImpl()
         let systemStoryManager = testDependencies?.systemStoryManager ?? SystemStoryManager()

@@ -46,7 +46,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     }
 
     private static func isValidPhoneNumberForPayments_fixedAllowlist(_ e164: String) -> Bool {
-        guard let phoneNumber = PhoneNumber(fromE164: e164) else {
+        guard let phoneNumber = phoneNumberUtil.parseE164(e164) else {
             owsFailDebug("Could not parse phone number: \(e164).")
             return false
         }
