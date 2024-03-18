@@ -717,18 +717,6 @@ extension OWSContactsManager: ContactManager {
 
         // Update cached SignalAccounts on disk
         databaseStorage.write { tx in
-            func touchContactThread(for signalAccount: SignalAccount?) {
-                guard
-                    let signalAccount,
-                    let contactThread = ContactThreadFinder()
-                        .contactThread(for: signalAccount.recipientAddress, tx: tx),
-                    contactThread.shouldThreadBeVisible
-                else {
-                    return
-                }
-                databaseStorage.touch(thread: contactThread, shouldReindex: true, transaction: tx)
-            }
-
             for (signalAccountToRemove, signalAccountToInsert) in signalAccountChanges {
                 let oldSignalAccount = signalAccountToRemove.flatMap {
                     SignalAccount.anyFetch(uniqueId: $0.uniqueId, transaction: tx)
@@ -737,8 +725,6 @@ extension OWSContactsManager: ContactManager {
 
                 oldSignalAccount?.anyRemove(transaction: tx)
                 newSignalAccount?.anyInsert(transaction: tx)
-
-                touchContactThread(for: newSignalAccount ?? oldSignalAccount)
 
                 updatePhoneNumberVisibilityIfNeeded(
                     oldSignalAccount: oldSignalAccount,
