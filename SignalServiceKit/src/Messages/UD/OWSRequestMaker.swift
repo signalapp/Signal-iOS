@@ -63,9 +63,6 @@ public final class RequestMaker: Dependencies {
         /// This RequestMaker is used when fetching profiles, so it shouldn't kick
         /// off additional profile fetches when errors occur.
         static let isProfileFetch = Options(rawValue: 1 << 1)
-
-        /// This request can't be sent over a web socket, so don't bother trying.
-        static let skipWebSocket = Options(rawValue: 1 << 2)
     }
 
     private let label: String
@@ -111,8 +108,7 @@ public final class RequestMaker: Dependencies {
         } else {
             let webSocketType: OWSWebSocketType = (isUDRequest ? .unidentified : .identified)
             shouldUseWebsocket = (
-                !options.contains(.skipWebSocket)
-                && OWSWebSocket.canAppUseSocketsToMakeRequests
+                OWSWebSocket.canAppUseSocketsToMakeRequests
                 && DependenciesBridge.shared.socketManager.canMakeRequests(webSocketType: webSocketType)
             )
         }

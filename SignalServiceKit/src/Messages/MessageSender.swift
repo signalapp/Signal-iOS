@@ -156,9 +156,7 @@ public class MessageSender: Dependencies {
             // TODO: (PreKey Cleanup)
             udAccess: isStoryMessage ? nil : udAccess,
             authedAccount: .implicit(),
-            // The v2/keys endpoint isn't supported via web sockets, so don't try and
-            // send pre key requests via the web socket.
-            options: [.skipWebSocket]
+            options: []
         )
 
         do {
