@@ -6,7 +6,7 @@
 #import "SSKBaseTestObjC.h"
 #import <SignalServiceKit/FunctionalUtil.h>
 
-@interface FunctionalUtilTest : SSKBaseTestObjC
+@interface FunctionalUtilTest : XCTestCase
 
 @end
 
