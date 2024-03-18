@@ -26,8 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 
 
-- (BOOL)shouldAffectUnreadCounts;
-
 /**
  * Used both for *responding* to a remote read receipt and in response to the local user's activity.
  */

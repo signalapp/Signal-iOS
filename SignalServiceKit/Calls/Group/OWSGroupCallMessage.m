@@ -113,11 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
     return 0;
 }
 
-- (BOOL)shouldAffectUnreadCounts
-{
-    return YES;
-}
-
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance

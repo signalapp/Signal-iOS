@@ -296,11 +296,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return 0;
 }
 
-- (BOOL)shouldAffectUnreadCounts
-{
-    return NO;
-}
-
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance

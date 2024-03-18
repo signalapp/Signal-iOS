@@ -399,37 +399,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 
 #pragma mark - OWSReadTracking
 
-- (BOOL)shouldAffectUnreadCounts
-{
-    switch (self.messageType) {
-        case TSInfoMessageTypeSessionDidEnd:
-        case TSInfoMessageUserNotRegistered:
-        case TSInfoMessageTypeUnsupportedMessage:
-        case TSInfoMessageTypeGroupUpdate:
-        case TSInfoMessageTypeGroupQuit:
-        case TSInfoMessageTypeDisappearingMessagesUpdate:
-        case TSInfoMessageAddToContactsOffer:
-        case TSInfoMessageVerificationStateChange:
-        case TSInfoMessageAddUserToProfileWhitelistOffer:
-        case TSInfoMessageAddGroupToProfileWhitelistOffer:
-        case TSInfoMessageUnknownProtocolVersion:
-        case TSInfoMessageSyncedThread:
-        case TSInfoMessageProfileUpdate:
-        case TSInfoMessagePhoneNumberChange:
-        case TSInfoMessageRecipientHidden:
-        case TSInfoMessagePaymentsActivationRequest:
-        case TSInfoMessagePaymentsActivated:
-        case TSInfoMessageThreadMerge:
-        case TSInfoMessageSessionSwitchover:
-        case TSInfoMessageReportedSpam:
-            return NO;
-        case TSInfoMessageUserJoinedSignal:
-            // In the conversation list, we want conversations with an unread "new user" notification to
-            // be badged and bolded, like they received a message.
-            return YES;
-    }
-}
-
 - (uint64_t)expireStartedAt
 {
     return 0;

@@ -190,11 +190,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     }
 }
 
-- (BOOL)shouldAffectUnreadCounts
-{
-    return YES;
-}
-
 - (void)debugonly_markAsReadNowWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // In various tests and debug UI we often want to make messages as already read.
