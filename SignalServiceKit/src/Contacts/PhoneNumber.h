@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)bestEffortLocalizedPhoneNumberWithE164:(NSString *)phoneNumber;
 
 - (NSString *)toE164;
-- (nullable NSNumber *)getCountryCode;
+- (nullable NSNumber *)getCallingCode;
 - (BOOL)isValid;
 
 - (NSComparisonResult)compare:(PhoneNumber *)other;

@@ -174,19 +174,19 @@ class PhoneNumberUtilTestSwift: SSKBaseTestSwift {
         XCTAssertEqual("ZZ", phoneNumberUtil.getRegionCodeForCountryCode(NSNumber(value: -1)))
     }
 
-    func test_getCountryCodeForRegion() {
-        XCTAssertEqual(NSNumber(value: 1), phoneNumberUtil.getCountryCode(forRegion: "US"))
-        XCTAssertEqual(NSNumber(value: 44), phoneNumberUtil.getCountryCode(forRegion: "GB"))
-        XCTAssertEqual(NSNumber(value: 598), phoneNumberUtil.getCountryCode(forRegion: "UY"))
+    func test_getCallingCodeForRegion() {
+        XCTAssertEqual(NSNumber(value: 1), phoneNumberUtil.getCallingCode(forRegion: "US"))
+        XCTAssertEqual(NSNumber(value: 44), phoneNumberUtil.getCallingCode(forRegion: "GB"))
+        XCTAssertEqual(NSNumber(value: 598), phoneNumberUtil.getCallingCode(forRegion: "UY"))
         // Invalid regions.
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: "UK"))
-        XCTAssertEqual(NSNumber(value: 1), phoneNumberUtil.getCountryCode(forRegion: "US "))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: " "))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: ""))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: "+1"))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: "ZZ"))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: "+"))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCountryCode(forRegion: "ZQ"))
+        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCallingCode(forRegion: "UK"))
+        XCTAssertEqual(NSNumber(value: 1), phoneNumberUtil.getCallingCode(forRegion: "US "))
+        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCallingCode(forRegion: " "))
+        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCallingCode(forRegion: ""))
+        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCallingCode(forRegion: "+1"))
+        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCallingCode(forRegion: "ZZ"))
+        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCallingCode(forRegion: "+"))
+        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtil.getCallingCode(forRegion: "ZQ"))
     }
 
     func testCountryCodesForSearchTerm() {

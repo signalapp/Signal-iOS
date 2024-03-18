@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-public enum ValidatedPhoneCountryCodes: UInt {
+public enum ValidatedCallingCode: UInt {
     case unitedStates = 1
     case brazil = 55
 }
@@ -14,16 +14,16 @@ public enum ValidatedPhoneCountryCodes: UInt {
 public class PhoneNumberValidator: NSObject {
 
     public func isValidForRegistration(phoneNumber: PhoneNumber) -> Bool {
-        guard let countryCode = phoneNumber.getCountryCode() else {
+        guard let callingCode = phoneNumber.getCallingCode() else {
             return false
         }
 
-        guard let validatedCountryCode = ValidatedPhoneCountryCodes(rawValue: countryCode.uintValue) else {
+        guard let validatedCallingCode = ValidatedCallingCode(rawValue: callingCode.uintValue) else {
             // no extra validation for this country
             return true
         }
 
-        switch validatedCountryCode {
+        switch validatedCallingCode {
         case .brazil:
             return isValidForBrazilRegistration(phoneNumber: phoneNumber)
         case .unitedStates:

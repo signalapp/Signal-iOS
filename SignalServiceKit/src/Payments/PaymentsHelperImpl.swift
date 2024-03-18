@@ -50,11 +50,11 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             owsFailDebug("Could not parse phone number: \(e164).")
             return false
         }
-        guard let nsCountryCode = phoneNumber.getCountryCode() else {
-            owsFailDebug("Missing countryCode: \(e164).")
+        guard let callingCode = phoneNumber.getCallingCode() else {
+            owsFailDebug("Missing callingCode: \(e164).")
             return false
         }
-        let validCountryCodes: [Int] = [
+        let validCallingCodes: [Int] = [
             // France
             33,
             // Switzerland
@@ -64,7 +64,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             // Germany
             49
         ]
-        return validCountryCodes.contains(nsCountryCode.intValue)
+        return validCallingCodes.contains(callingCode.intValue)
     }
 
     internal static func isValidPhoneNumberForPayments_remoteConfigBlocklist(

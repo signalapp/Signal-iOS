@@ -68,9 +68,8 @@ extension PhoneNumberUtil {
             return "+1"
         }
 
-        let countryCallingCode = getCountryCode(forRegion: countryCode)
-        let callingCode = COUNTRY_CODE_PREFIX + "\(countryCallingCode.intValue)"
-        return callingCode
+        let callingCode = getCallingCode(forRegion: countryCode)
+        return COUNTRY_CODE_PREFIX + "\(callingCode.intValue)"
     }
 
     @objc
@@ -156,7 +155,7 @@ extension PhoneNumberUtil {
         return swiftValues.nbPhoneNumberUtil.isValidNumber(number)
     }
 
-    public func getCountryCode(forRegion regionCode: String) -> NSNumber {
+    public func getCallingCode(forRegion regionCode: String) -> NSNumber {
         return swiftValues.nbPhoneNumberUtil.getCountryCode(forRegion: regionCode)
     }
 
@@ -386,7 +385,7 @@ extension PhoneNumberUtil {
         // "calling code" (i.e. 44 in +44123123).  Within SSK we use "country code"
         // (and sometimes "region code") to refer to a country's ISO 2-letter code
         // (ISO 3166-1 alpha-2).
-        guard let callingCodeForLocalNumber = parseE164(localPhoneNumber)?.getCountryCode() else {
+        guard let callingCodeForLocalNumber = parseE164(localPhoneNumber)?.getCallingCode() else {
             owsFailDebug("callingCodeForLocalNumber is missing")
             return results
         }
@@ -520,7 +519,7 @@ extension PhoneNumberUtil {
             return countryCode
         }
         let countryCode: String? = {
-            guard let callingCode = parseE164(phoneNumber)?.getCountryCode() else {
+            guard let callingCode = parseE164(phoneNumber)?.getCallingCode() else {
                 return nil
             }
             return probableCountryCode(forCallingCode: "+\(callingCode)").nilIfEmpty

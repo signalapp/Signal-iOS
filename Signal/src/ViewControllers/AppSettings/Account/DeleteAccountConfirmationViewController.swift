@@ -383,10 +383,10 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
         var callingCodeInt: Int?
         var countryCode: String?
 
-        if let localE164 = phoneNumberUtil.parseE164(localNumber), let localCountryCode = localE164.getCountryCode()?.intValue {
-            callingCodeInt = localCountryCode
+        if let localE164 = phoneNumberUtil.parseE164(localNumber), let localCallingCode = localE164.getCallingCode()?.intValue {
+            callingCodeInt = localCallingCode
         } else {
-            callingCodeInt = phoneNumberUtil.getCountryCode(
+            callingCodeInt = phoneNumberUtil.getCallingCode(
                 forRegion: PhoneNumberUtil.defaultCountryCode()
             ).intValue
         }

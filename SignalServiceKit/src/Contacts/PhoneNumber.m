@@ -91,20 +91,20 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         OWSLogWarn(@"could not parse phone number.");
         return phoneNumber;
     }
-    NSNumber *_Nullable countryCode = [parsedPhoneNumber getCountryCode];
-    if (!countryCode) {
-        OWSLogWarn(@"parsed phone number has no country code.");
+    NSNumber *_Nullable callingCode = [parsedPhoneNumber getCallingCode];
+    if (!callingCode) {
+        OWSLogWarn(@"parsed phone number has no calling code.");
         return phoneNumber;
     }
-    NSString *countryCodeString = [NSString stringWithFormat:@"%d", countryCode.intValue];
-    if (countryCodeString.length < 1) {
+    NSString *callingCodeString = [NSString stringWithFormat:@"%d", callingCode.intValue];
+    if (callingCodeString.length < 1) {
         OWSLogWarn(@"invalid country code.");
         return phoneNumber;
     }
     NSString *_Nullable formattedPhoneNumber =
         [self bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber
-                                                     withSpecifiedRegionCode:countryCodeString];
-    if (!countryCode) {
+                                                     withSpecifiedRegionCode:callingCodeString];
+    if (!callingCode) {
         OWSLogWarn(@"could not format phone number.");
         return phoneNumber;
     }
@@ -122,7 +122,8 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return self.e164;
 }
 
-- (nullable NSNumber *)getCountryCode {
+- (nullable NSNumber *)getCallingCode
+{
     return self.nbPhoneNumber.countryCode;
 }
 

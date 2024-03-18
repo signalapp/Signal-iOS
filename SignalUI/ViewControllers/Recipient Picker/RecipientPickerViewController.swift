@@ -1209,7 +1209,7 @@ struct PhoneNumberFinder {
             potentialE164 = filteredValue
         } else if
             let localNumber,
-            let callingCode = phoneNumberUtil.parseE164(localNumber)?.getCountryCode()?.intValue
+            let callingCode = phoneNumberUtil.parseE164(localNumber)?.getCallingCode()?.intValue
         {
             potentialE164 = "+\(callingCode)\(filteredValue)"
         } else {

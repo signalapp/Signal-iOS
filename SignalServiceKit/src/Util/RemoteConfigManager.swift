@@ -337,27 +337,27 @@ public class RemoteConfig: NSObject {
         // "*" country code that any unspecified country codes should use. If
         // neither the local country code or the wildcard is specified, we assume
         // the value is not set.
-        let countryCodeToValueMap = csvString
+        let callingCodeToValueMap = csvString
             .components(separatedBy: ",")
             .reduce(into: [String: String]()) { result, value in
                 let components = value.components(separatedBy: ":")
                 guard components.count == 2 else { return owsFailDebug("Invalid \(csvDescription) value \(value)") }
-                let countryCode = components[0]
+                let callingCode = components[0]
                 let countryValue = components[1]
-                result[countryCode] = countryValue
+                result[callingCode] = countryValue
             }
 
-        guard !countryCodeToValueMap.isEmpty else { return nil }
+        guard !callingCodeToValueMap.isEmpty else { return nil }
 
         guard
             let localPhoneNumber,
-            let localCountryCode = phoneNumberUtil.parseE164(localPhoneNumber)?.getCountryCode()?.stringValue
+            let localCallingCode = phoneNumberUtil.parseE164(localPhoneNumber)?.getCallingCode()?.stringValue
         else {
             owsFailDebug("Invalid local number")
             return nil
         }
 
-        return countryCodeToValueMap[localCountryCode] ?? countryCodeToValueMap["*"]
+        return callingCodeToValueMap[localCallingCode] ?? callingCodeToValueMap["*"]
     }
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64, localAci: Aci) -> Bool {
