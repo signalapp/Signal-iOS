@@ -341,7 +341,6 @@ public class MessageProcessor: NSObject {
         }
 
         let startTime = CACurrentMediaTime()
-        Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s). (memoryUsage: \(LocalDevice.memoryUsageString)")
 
         var processedEnvelopesCount = 0
         databaseStorage.write { tx in
@@ -373,8 +372,9 @@ public class MessageProcessor: NSObject {
             processedEnvelopesCount += batchEnvelopes.count - remainingEnvelopes.count
         }
         pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopesCount)
-        let duration = CACurrentMediaTime() - startTime
-        Logger.info(String(format: "Processed %.0d envelopes in %0.2fms -> %.2f envelopes per second", batchEnvelopes.count, duration * 1000, duration > 0 ? Double(batchEnvelopes.count) / duration : 0))
+        let endTime = CACurrentMediaTime()
+        let formattedDuration = String(format: "%.1f", (endTime - startTime) * 1000)
+        Logger.info("Processed \(processedEnvelopesCount) envelopes (of \(pendingEnvelopesCount) total) in \(formattedDuration)ms")
         return true
     }
 
@@ -863,9 +863,6 @@ private class PendingEnvelopes {
             let oldCount = pendingEnvelopes.count
             pendingEnvelopes.removeFirst(processedEnvelopesCount)
             let newCount = pendingEnvelopes.count
-            if DebugFlags.internalLogging {
-                Logger.info("\(oldCount) -> \(newCount)")
-            }
         }
     }
 
@@ -885,10 +882,6 @@ private class PendingEnvelopes {
             }
             pendingEnvelopes.append(receivedEnvelope)
 
-            let newCount = pendingEnvelopes.count
-            if DebugFlags.internalLogging {
-                Logger.info("\(oldCount) -> \(newCount)")
-            }
             return .enqueued
         }
     }
