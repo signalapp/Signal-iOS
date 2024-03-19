@@ -13,17 +13,20 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
     private static let workQueue: DispatchQueue = .sharedUserInitiated
 
     private let attachmentManager: TSResourceManager
+    private let attachmentStore: TSResourceStore
     private let db: DB
     private let groupsV2: Shims.GroupsV2
     private let sskPreferences: Shims.SSKPreferences
 
     public init(
         attachmentManager: TSResourceManager,
+        attachmentStore: TSResourceStore,
         db: DB,
         groupsV2: Shims.GroupsV2,
         sskPreferences: Shims.SSKPreferences
     ) {
         self.attachmentManager = attachmentManager
+        self.attachmentStore = attachmentStore
         self.db = db
         self.groupsV2 = groupsV2
         self.sskPreferences = sskPreferences
@@ -90,6 +93,38 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
             throw LinkPreviewError.invalidPreview
         }
         return try buildValidatedLinkPreview(proto: proto, tx: tx)
+    }
+
+    public func buildProtoForSending(
+        _ linkPreview: OWSLinkPreview,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoPreview {
+        let attachmentRef = attachmentStore.linkPreviewAttachment(
+            for: parentMessage,
+            tx: tx
+        )
+        return try buildProtoForSending(
+            linkPreview,
+            previewAttachmentRef: attachmentRef,
+            tx: tx
+        )
+    }
+
+    public func buildProtoForSending(
+        _ linkPreview: OWSLinkPreview,
+        parentStoryMessage: StoryMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoPreview {
+        let attachmentRef = attachmentStore.linkPreviewAttachment(
+            for: parentStoryMessage,
+            tx: tx
+        )
+        return try buildProtoForSending(
+            linkPreview,
+            previewAttachmentRef: attachmentRef,
+            tx: tx
+        )
     }
 
     // MARK: - Private
@@ -268,6 +303,47 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
         } else {
             return .withoutFinalizer(buildLinkPreview(nil))
         }
+    }
+
+    // MARK: - Private, generating outgoing proto
+
+    private func buildProtoForSending(
+        _ linkPreview: OWSLinkPreview,
+        previewAttachmentRef: TSResourceReference?,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoPreview {
+        guard let urlString = linkPreview.urlString else {
+            Logger.error("Preview does not have url.")
+            throw LinkPreviewError.invalidPreview
+        }
+
+        let builder = SSKProtoPreview.builder(url: urlString)
+
+        if let title = linkPreview.title {
+            builder.setTitle(title)
+        }
+
+        if let previewDescription = linkPreview.previewDescription {
+            builder.setPreviewDescription(previewDescription)
+        }
+
+        if
+            let previewAttachmentRef,
+            let attachment = attachmentStore.fetch(previewAttachmentRef.resourceId, tx: tx),
+            let pointer = attachment.asTransitTierPointer(),
+            let attachmentProto = attachmentManager.buildProtoForSending(
+                from: previewAttachmentRef,
+                pointer: pointer
+            )
+        {
+            builder.setImage(attachmentProto)
+        }
+
+        if let date = linkPreview.date {
+            builder.setDate(date.ows_millisecondsSince1970)
+        }
+
+        return try builder.build()
     }
 
     // MARK: - Private, Constants

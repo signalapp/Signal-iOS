@@ -33,6 +33,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         mockDB = MockDB()
         linkPreviewManager = LinkPreviewManagerImpl(
             attachmentManager: TSResourceManagerMock(),
+            attachmentStore: TSResourceStoreMock(),
             db: mockDB,
             groupsV2: LinkPreviewManagerImpl.Wrappers.GroupsV2(GroupsV2Impl()),
             sskPreferences: MockSSKPreferences()

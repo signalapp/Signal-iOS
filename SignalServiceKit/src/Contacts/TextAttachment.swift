@@ -282,6 +282,7 @@ public struct TextAttachment: Codable, Equatable {
     }
 
     public func buildProto(
+        parentStoryMessage: StoryMessage,
         bodyRangeHandler: ([SSKProtoBodyRange]) -> Void,
         transaction: SDSAnyReadTransaction
     ) throws -> SSKProtoTextAttachment {
@@ -319,7 +320,12 @@ public struct TextAttachment: Codable, Equatable {
         }
 
         if let preview = preview {
-            builder.setPreview(try preview.buildProto(transaction: transaction))
+            let previewProto = try DependenciesBridge.shared.linkPreviewManager.buildProtoForSending(
+                preview,
+                parentStoryMessage: parentStoryMessage,
+                tx: transaction.asV2Read
+            )
+            builder.setPreview(previewProto)
         }
 
         return try builder.build()

@@ -40,6 +40,22 @@ public class MockLinkPreviewManager: LinkPreviewManager {
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())
     }
+
+    public func buildProtoForSending(
+        _ linkPreview: OWSLinkPreview,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoPreview {
+        return SSKProtoPreview.builder(url: linkPreview.urlString!).buildIgnoringErrors()!
+    }
+
+    public func buildProtoForSending(
+        _ linkPreview: OWSLinkPreview,
+        parentStoryMessage: StoryMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoPreview {
+        return SSKProtoPreview.builder(url: linkPreview.urlString!).buildIgnoringErrors()!
+    }
 }
 
 #endif

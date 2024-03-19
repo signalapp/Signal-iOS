@@ -146,6 +146,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
             builder.setBodyRanges(resource.captionProtoBodyRanges())
         case .text(let attachment):
             guard let attachmentProto = try? attachment.buildProto(
+                parentStoryMessage: storyMessage,
                 bodyRangeHandler: builder.setBodyRanges(_:),
                 transaction: transaction
             ) else {

@@ -239,6 +239,7 @@ public class AppSetup {
 
         let linkPreviewManager = LinkPreviewManagerImpl(
             attachmentManager: tsResourceManager,
+            attachmentStore: tsResourceStore,
             db: db,
             groupsV2: LinkPreviewManagerImpl.Wrappers.GroupsV2(groupsV2),
             sskPreferences: LinkPreviewManagerImpl.Wrappers.SSKPreferences()

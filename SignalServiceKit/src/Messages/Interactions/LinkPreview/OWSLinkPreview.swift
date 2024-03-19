@@ -189,33 +189,6 @@ public class OWSLinkPreview: MTLModel, Codable {
         return linkPreview
     }
 
-    public func buildProto(transaction: SDSAnyReadTransaction) throws -> SSKProtoPreview {
-        guard let urlString = urlString else {
-            Logger.error("Preview does not have url.")
-            throw LinkPreviewError.invalidPreview
-        }
-
-        let builder = SSKProtoPreview.builder(url: urlString)
-
-        if let title = title {
-            builder.setTitle(title)
-        }
-
-        if let previewDescription = previewDescription {
-            builder.setPreviewDescription(previewDescription)
-        }
-
-        if let attachmentProto = buildProtoAttachmentPointer(tx: transaction) {
-            builder.setImage(attachmentProto)
-        }
-
-        if let date = date {
-            builder.setDate(date.ows_millisecondsSince1970)
-        }
-
-        return try builder.build()
-    }
-
     public var displayDomain: String? {
         urlString.flatMap(URL.init(string: )).flatMap(LinkPreviewHelper.displayDomain(forUrl:))
     }

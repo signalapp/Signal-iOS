@@ -966,25 +966,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // Link Preview
     if (self.linkPreview) {
-        SSKProtoPreviewBuilder *previewBuilder = [SSKProtoPreview builderWithUrl:self.linkPreview.urlString];
-        if (self.linkPreview.title.length > 0) {
-            [previewBuilder setTitle:self.linkPreview.title];
-        }
-        SSKProtoAttachmentPointer *_Nullable attachmentProto =
-            [self buildProtoForLinkPreviewAttachmentWithTx:transaction];
-        if (attachmentProto) {
-            [previewBuilder setImage:attachmentProto];
-        }
-        if (self.linkPreview.date) {
-            uint64_t interval = [self.linkPreview.date ows_millisecondsSince1970];
-            [previewBuilder setDate:interval];
-        }
-        if (self.linkPreview.previewDescription) {
-            [previewBuilder setPreviewDescription:self.linkPreview.previewDescription];
-        }
-
         NSError *error;
-        SSKProtoPreview *_Nullable previewProto = [previewBuilder buildAndReturnError:&error];
+        SSKProtoPreview *_Nullable previewProto = [self buildLinkPreviewProtoWithLinkPreview:self.linkPreview
+                                                                                          tx:transaction
+                                                                                       error:&error];
         if (error || !previewProto) {
             OWSFailDebug(@"Could not build link preview protobuf: %@.", error);
         } else {

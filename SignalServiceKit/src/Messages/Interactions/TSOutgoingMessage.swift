@@ -311,9 +311,15 @@ extension TSOutgoingMessage {
     }
 
     @objc
-    func buildProtoForLinkPreviewAttachment(tx: SDSAnyReadTransaction) -> SSKProtoAttachmentPointer? {
-        let reference = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(for: self, tx: tx.asV2Read)
-        return buildProtosForSending([reference].compacted(), tx: tx.asV2Read).first
+    func buildLinkPreviewProto(
+        linkPreview: OWSLinkPreview,
+        tx: SDSAnyReadTransaction
+    ) throws -> SSKProtoPreview {
+        return try DependenciesBridge.shared.linkPreviewManager.buildProtoForSending(
+            linkPreview,
+            parentMessage: self,
+            tx: tx.asV2Read
+        )
     }
 
     @objc

@@ -21,4 +21,16 @@ public protocol LinkPreviewManager {
         from proto: SSKProtoPreview,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
+
+    func buildProtoForSending(
+        _ linkPreview: OWSLinkPreview,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoPreview
+
+    func buildProtoForSending(
+        _ linkPreview: OWSLinkPreview,
+        parentStoryMessage: StoryMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoPreview
 }
