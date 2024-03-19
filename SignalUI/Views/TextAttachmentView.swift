@@ -700,7 +700,11 @@ open class TextAttachmentView: UIView {
             previewVStack.addArrangedSubview(footerLabel)
 
             var footerText: String
-            if let displayDomain = OWSLinkPreviewManager.displayDomain(forUrl: linkPreview.urlString) {
+            if
+                let urlString = linkPreview.urlString,
+                let url = URL(string: urlString),
+                let displayDomain = LinkPreviewHelper.displayDomain(forUrl: url)
+            {
                 footerText = displayDomain.lowercased()
             } else {
                 footerText = OWSLocalizedString(

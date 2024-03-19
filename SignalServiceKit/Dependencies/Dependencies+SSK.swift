@@ -66,14 +66,6 @@ public extension NSObject {
         SSKEnvironment.shared.disappearingMessagesJobRef
     }
 
-    final var linkPreviewManager: OWSLinkPreviewManager {
-        SSKEnvironment.shared.linkPreviewManagerRef
-    }
-
-    static var linkPreviewManager: OWSLinkPreviewManager {
-        SSKEnvironment.shared.linkPreviewManagerRef
-    }
-
     final var messageFetcherJob: MessageFetcherJob {
         SSKEnvironment.shared.messageFetcherJobRef
     }
@@ -490,14 +482,6 @@ public extension Dependencies {
 
     static var groupV2UpdatesObjc: GroupV2Updates {
         SSKEnvironment.shared.groupV2UpdatesRef
-    }
-
-    var linkPreviewManager: OWSLinkPreviewManager {
-        SSKEnvironment.shared.linkPreviewManagerRef
-    }
-
-    static var linkPreviewManager: OWSLinkPreviewManager {
-        SSKEnvironment.shared.linkPreviewManagerRef
     }
 
     var messageFetcherJob: MessageFetcherJob {

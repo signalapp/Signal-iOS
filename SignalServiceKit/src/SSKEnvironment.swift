@@ -36,7 +36,6 @@ public class SSKEnvironment: NSObject {
     public let groupsV2Ref: GroupsV2
     #endif
 
-    public let linkPreviewManagerRef: OWSLinkPreviewManager
     public let pendingReceiptRecorderRef: PendingReceiptRecorder
     public let profileManagerRef: ProfileManager
     public let messageReceiverRef: MessageReceiver
@@ -98,7 +97,6 @@ public class SSKEnvironment: NSObject {
 
     public init(
         contactManager: any ContactManager,
-        linkPreviewManager: OWSLinkPreviewManager,
         messageSender: MessageSender,
         pendingReceiptRecorder: PendingReceiptRecorder,
         profileManager: ProfileManager,
@@ -161,7 +159,6 @@ public class SSKEnvironment: NSObject {
         smJobQueues: SignalMessagingJobQueues
     ) {
         self.contactManagerRef = contactManager
-        self.linkPreviewManagerRef = linkPreviewManager
         self.messageSenderRef = messageSender
         self.pendingReceiptRecorderRef = pendingReceiptRecorder
         self.profileManagerRef = profileManager

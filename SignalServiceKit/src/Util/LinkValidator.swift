@@ -79,7 +79,14 @@ public enum LinkValidator {
                 }
             }
             guard parsedUrl.absoluteString.isEmpty.negated else { return }
-            guard parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: String(entireMessage.text[matchedRange])) else { return }
+            guard
+                LinkPreviewHelper.isPermittedLinkPreviewUrl(
+                    parsedUrl,
+                    parsedFrom: String(entireMessage.text[matchedRange])
+                )
+            else {
+                return
+            }
             result = parsedUrl
             stop.pointee = true
         }

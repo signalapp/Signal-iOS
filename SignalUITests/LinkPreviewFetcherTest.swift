@@ -8,19 +8,6 @@ import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 
-private class MockLinkPreviewManager: LinkPreviewManager {
-    var areLinkPreviewsEnabledWithSneakyTransaction = true
-
-    var fetchedURLs = [URL]()
-
-    var fetchLinkPreviewBlock: ((URL) -> Promise<OWSLinkPreviewDraft>)?
-
-    func fetchLinkPreview(for url: URL) -> Promise<OWSLinkPreviewDraft> {
-        fetchedURLs.append(url)
-        return fetchLinkPreviewBlock!(url)
-    }
-}
-
 private extension LinkPreviewFetcher.State {
     var isNone: Bool {
         if case .none = self {
@@ -52,10 +39,12 @@ class LinkPreviewFetcherTest: XCTestCase {
 
     private var mockLinkPreviewManager: MockLinkPreviewManager!
     private var testScheduler: TestScheduler!
+    private var mockDB: MockDB!
 
     override func setUp() {
         super.setUp()
 
+        mockDB = MockDB()
         mockLinkPreviewManager = MockLinkPreviewManager()
         testScheduler = TestScheduler()
         testScheduler.start()
@@ -63,6 +52,7 @@ class LinkPreviewFetcherTest: XCTestCase {
 
     func testUpdateLoaded() throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
+            db: mockDB,
             linkPreviewManager: mockLinkPreviewManager,
             schedulers: TestSchedulers(scheduler: testScheduler)
         )
@@ -116,6 +106,7 @@ class LinkPreviewFetcherTest: XCTestCase {
 
     func testUpdateLoading() throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
+            db: mockDB,
             linkPreviewManager: mockLinkPreviewManager,
             schedulers: TestSchedulers(scheduler: testScheduler)
         )
@@ -144,6 +135,7 @@ class LinkPreviewFetcherTest: XCTestCase {
 
     func testUpdateObsolete() throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
+            db: mockDB,
             linkPreviewManager: mockLinkPreviewManager,
             schedulers: TestSchedulers(scheduler: testScheduler)
         )
@@ -175,6 +167,7 @@ class LinkPreviewFetcherTest: XCTestCase {
 
     func testUpdatePrependScheme() {
         let linkPreviewFetcher = LinkPreviewFetcher(
+            db: mockDB,
             linkPreviewManager: mockLinkPreviewManager,
             schedulers: TestSchedulers(scheduler: testScheduler)
         )
@@ -201,6 +194,7 @@ class LinkPreviewFetcherTest: XCTestCase {
 
     func testOnStateChange() throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
+            db: mockDB,
             linkPreviewManager: mockLinkPreviewManager,
             schedulers: TestSchedulers(scheduler: testScheduler)
         )
@@ -241,6 +235,7 @@ class LinkPreviewFetcherTest: XCTestCase {
 
     func testDisable() throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
+            db: mockDB,
             linkPreviewManager: mockLinkPreviewManager,
             schedulers: TestSchedulers(scheduler: testScheduler)
         )
@@ -294,10 +289,11 @@ class LinkPreviewFetcherTest: XCTestCase {
     }
 
     func testOnlyParseIfEnabled() throws {
-        mockLinkPreviewManager.areLinkPreviewsEnabledWithSneakyTransaction = false
+        mockLinkPreviewManager.areLinkPreviewsEnabledMock = false
 
         do {
             let linkPreviewFetcher = LinkPreviewFetcher(
+                db: mockDB,
                 linkPreviewManager: mockLinkPreviewManager,
                 schedulers: TestSchedulers(scheduler: testScheduler),
                 onlyParseIfEnabled: true
@@ -308,6 +304,7 @@ class LinkPreviewFetcherTest: XCTestCase {
         }
         do {
             let linkPreviewFetcher = LinkPreviewFetcher(
+                db: mockDB,
                 linkPreviewManager: mockLinkPreviewManager,
                 schedulers: TestSchedulers(scheduler: testScheduler),
                 onlyParseIfEnabled: false
@@ -329,6 +326,7 @@ class LinkPreviewFetcherTest: XCTestCase {
         }
 
         let linkPreviewFetcher = LinkPreviewFetcher(
+            db: mockDB,
             linkPreviewManager: mockLinkPreviewManager,
             schedulers: TestSchedulers(scheduler: testScheduler),
             onlyParseIfEnabled: true

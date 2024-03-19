@@ -619,6 +619,12 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let linkPreviewManager = LinkPreviewManagerImpl(
+            db: db,
+            groupsV2: LinkPreviewManagerImpl.Wrappers.GroupsV2(groupsV2),
+            sskPreferences: LinkPreviewManagerImpl.Wrappers.SSKPreferences()
+        )
+
         let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
 
         // TODO: Move this into ProfileFetcherJob.
@@ -682,6 +688,7 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             learnMyOwnPniManager: learnMyOwnPniManager,
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
+            linkPreviewManager: linkPreviewManager,
             localProfileChecker: localProfileChecker,
             localUsernameManager: localUsernameManager,
             masterKeySyncManager: masterKeySyncManager,
@@ -735,7 +742,6 @@ public class AppSetup {
             reachabilityManager: reachabilityManager
         )
 
-        let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = testDependencies?.pendingReceiptRecorder ?? MessageRequestPendingReceipts()
         let messageReceiver = MessageReceiver()
         let remoteConfigManager = testDependencies?.remoteConfigManager ?? RemoteConfigManagerImpl(
@@ -791,7 +797,6 @@ public class AppSetup {
 
         let sskEnvironment = SSKEnvironment(
             contactManager: contactManager,
-            linkPreviewManager: linkPreviewManager,
             messageSender: messageSender,
             pendingReceiptRecorder: pendingReceiptRecorder,
             profileManager: profileManager,

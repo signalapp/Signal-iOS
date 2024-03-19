@@ -52,7 +52,8 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     required public init(messageBody: MessageBody) {
         self.initialMessageBody = messageBody
         self.linkPreviewFetcher = LinkPreviewFetcher(
-            linkPreviewManager: Self.linkPreviewManager,
+            db: DependenciesBridge.shared.db,
+            linkPreviewManager: DependenciesBridge.shared.linkPreviewManager,
             schedulers: DependenciesBridge.shared.schedulers
         )
 

@@ -12,8 +12,29 @@ func XCTAssertMatch(expectedPattern: String, actualText: String, file: StaticStr
     XCTAssert(regex.hasMatch(input: actualText), "\(actualText) did not match pattern \(expectedPattern)", file: file, line: line)
 }
 
+class MockSSKPreferences: LinkPreviewManagerImpl.Shims.SSKPreferences {
+
+    init() {}
+
+    func areLinkPreviewsEnabled(tx: DBReadTransaction) -> Bool {
+        return true
+    }
+}
+
 class OWSLinkPreviewTest: SSKBaseTestSwift {
     let shouldRunNetworkTests = false
+
+    var linkPreviewManager: LinkPreviewManagerImpl!
+
+    override func setUp() {
+        super.setUp()
+
+        linkPreviewManager = LinkPreviewManagerImpl(
+            db: MockDB(),
+            groupsV2: LinkPreviewManagerImpl.Wrappers.GroupsV2(GroupsV2Impl()),
+            sskPreferences: MockSSKPreferences()
+        )
+    }
 
     func testBuildValidatedLinkPreview_TitleAndImage() {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"

@@ -698,6 +698,11 @@
 		50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F86FC32AFEFEC20045F58B /* TimeGatedBatch.swift */; };
 		50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F9460F2AD768AF002EF293 /* MockIdentityManager.swift */; };
 		616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */; };
+		6600BB182BA3A04C0005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB172BA3A04C0005A035 /* LinkPreviewManager.swift */; };
+		6600BB1A2BA3A0930005A035 /* LinkPreviewManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManagerImpl.swift */; };
+		6600BB1D2BA3ABDD0005A035 /* MockLinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB1C2BA3ABDD0005A035 /* MockLinkPreviewManager.swift */; };
+		6600BB1F2BA3AD350005A035 /* LinkPreviewManagerImpl+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB1E2BA3AD350005A035 /* LinkPreviewManagerImpl+Shims.swift */; };
+		6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */; };
 		6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */; };
 		6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */; };
 		6600F351298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */; };
@@ -3496,6 +3501,11 @@
 		5ECB75F96A467861ED52A1AF /* Pods_SignalPerformanceTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalPerformanceTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F85041386A219C9710EAB41 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		65703441A3D2C7FE670E65ED /* Pods-SignalServiceKit.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.profiling.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.profiling.xcconfig"; sourceTree = "<group>"; };
+		6600BB172BA3A04C0005A035 /* LinkPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewManager.swift; sourceTree = "<group>"; };
+		6600BB192BA3A0930005A035 /* LinkPreviewManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewManagerImpl.swift; sourceTree = "<group>"; };
+		6600BB1C2BA3ABDD0005A035 /* MockLinkPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLinkPreviewManager.swift; sourceTree = "<group>"; };
+		6600BB1E2BA3AD350005A035 /* LinkPreviewManagerImpl+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LinkPreviewManagerImpl+Shims.swift"; sourceTree = "<group>"; };
+		6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewHelper.swift; sourceTree = "<group>"; };
 		6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownEnumCodable.swift; sourceTree = "<group>"; };
 		6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownEnumCodableTest.swift; sourceTree = "<group>"; };
 		6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactoryTest.swift; sourceTree = "<group>"; };
@@ -6928,6 +6938,18 @@
 			path = Badge;
 			sourceTree = "<group>";
 		};
+		6600BB1B2BA3ABCC0005A035 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */,
+				6600BB172BA3A04C0005A035 /* LinkPreviewManager.swift */,
+				6600BB1E2BA3AD350005A035 /* LinkPreviewManagerImpl+Shims.swift */,
+				6600BB192BA3A0930005A035 /* LinkPreviewManagerImpl.swift */,
+				6600BB1C2BA3ABDD0005A035 /* MockLinkPreviewManager.swift */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
 		6600F352298C8FBB00B1EDB7 /* Registration */ = {
 			isa = PBXGroup;
 			children = (
@@ -7310,6 +7332,7 @@
 		669FAE162B7A8DA4009EE2FE /* LinkPreview */ = {
 			isa = PBXGroup;
 			children = (
+				6600BB1B2BA3ABCC0005A035 /* Manager */,
 				669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */,
 				F9C5C8E3289453B100548EEE /* OWSLinkPreview.swift */,
 			);
@@ -13298,6 +13321,10 @@
 				F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */,
 				725465632BA0348600EABFD2 /* LightweightGroupCallManager.swift in Sources */,
 				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
+				6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */,
+				6600BB182BA3A04C0005A035 /* LinkPreviewManager.swift in Sources */,
+				6600BB1F2BA3AD350005A035 /* LinkPreviewManagerImpl+Shims.swift in Sources */,
+				6600BB1A2BA3A0930005A035 /* LinkPreviewManagerImpl.swift in Sources */,
 				50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */,
 				F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */,
 				F9C5CDE7289453B400548EEE /* Locale+SSK.swift in Sources */,
@@ -13378,6 +13405,7 @@
 				D9C42C312B6C60FE0086B142 /* MockDeletedCallRecordCleanupManager.swift in Sources */,
 				D91AC9382B62F5D700814975 /* MockDeletedCallRecordStore.swift in Sources */,
 				50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */,
+				6600BB1D2BA3ABDD0005A035 /* MockLinkPreviewManager.swift in Sources */,
 				D990CAC92B4CCB97000A99A2 /* MockLocalUsernameManager.swift in Sources */,
 				D91AC93C2B62F7C200814975 /* MockOutgoingCallEventSyncMessageManager.swift in Sources */,
 				664657372AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift in Sources */,

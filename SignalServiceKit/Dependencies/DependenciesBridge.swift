@@ -73,6 +73,7 @@ public class DependenciesBridge {
     public let keyValueStoreFactory: KeyValueStoreFactory
     public let learnMyOwnPniManager: LearnMyOwnPniManager
     public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
+    public let linkPreviewManager: LinkPreviewManager
     let localProfileChecker: LocalProfileChecker
     public let localUsernameManager: LocalUsernameManager
     public let masterKeySyncManager: MasterKeySyncManager
@@ -151,6 +152,7 @@ public class DependenciesBridge {
         keyValueStoreFactory: KeyValueStoreFactory,
         learnMyOwnPniManager: LearnMyOwnPniManager,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
+        linkPreviewManager: LinkPreviewManager,
         localProfileChecker: LocalProfileChecker,
         localUsernameManager: LocalUsernameManager,
         masterKeySyncManager: MasterKeySyncManager,
@@ -228,6 +230,7 @@ public class DependenciesBridge {
         self.keyValueStoreFactory = keyValueStoreFactory
         self.learnMyOwnPniManager = learnMyOwnPniManager
         self.linkedDevicePniKeyManager = linkedDevicePniKeyManager
+        self.linkPreviewManager = linkPreviewManager
         self.localProfileChecker = localProfileChecker
         self.localUsernameManager = localUsernameManager
         self.masterKeySyncManager = masterKeySyncManager

@@ -19,7 +19,8 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     init(_ linkPreview: OWSLinkPreviewDraft?) {
         self.linkPreviewFetcher = LinkPreviewFetcher(
-            linkPreviewManager: Self.linkPreviewManager,
+            db: DependenciesBridge.shared.db,
+            linkPreviewManager: DependenciesBridge.shared.linkPreviewManager,
             schedulers: DependenciesBridge.shared.schedulers,
             onlyParseIfEnabled: false,
             linkPreviewDraft: linkPreview

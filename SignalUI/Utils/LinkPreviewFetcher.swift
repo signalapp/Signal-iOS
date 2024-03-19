@@ -9,16 +9,19 @@ import SignalServiceKit
 
 public class LinkPreviewFetcher {
 
+    private let db: DB
     private let linkPreviewManager: LinkPreviewManager
     private let schedulers: Schedulers
     private let onlyParseIfEnabled: Bool
 
     public init(
+        db: DB,
         linkPreviewManager: LinkPreviewManager,
         schedulers: Schedulers,
         onlyParseIfEnabled: Bool = true,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil
     ) {
+        self.db = db
         self.linkPreviewManager = linkPreviewManager
         self.schedulers = schedulers
         self.onlyParseIfEnabled = onlyParseIfEnabled
@@ -145,7 +148,13 @@ public class LinkPreviewFetcher {
             return nil
         }
 
-        if onlyParseIfEnabled, !linkPreviewManager.areLinkPreviewsEnabledWithSneakyTransaction {
+        let areLinkPreviewsEnabled: () -> Bool = {
+            return self.db.read { tx in
+                self.linkPreviewManager.areLinkPreviewsEnabled(tx: tx)
+            }
+        }
+
+        if onlyParseIfEnabled, !areLinkPreviewsEnabled() {
             return nil
         }
 
