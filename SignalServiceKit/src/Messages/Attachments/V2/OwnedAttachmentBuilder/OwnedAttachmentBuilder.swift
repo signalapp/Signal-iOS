@@ -5,6 +5,20 @@
 
 import Foundation
 
+/// Wraps the two "modes" of creating attachments: legacy and v2.
+///
+/// Legacy attachments must be created before their owning messages; their IDs
+/// get added to the owning message and therefore must be created first.
+/// V2 attachments must be created after their owning messages; we establish
+/// a separate relationship between owner id and attachment on AttachmentReference.
+/// This class abstracts this away; you create an instance before creating the owner,
+/// then "finalize" the instance after, and when the actual database writes happen
+/// depends on the underlying v1/v2 implementation.
+///
+/// Once v1 is migrated and removed from the codebase entirely, we can also remove
+/// this abstraction, though we don't strictly need to do so immediately. In a v2-only
+/// world, callsites just invoke directly the things that would have been handled
+/// by "finalize".
 public class OwnedAttachmentBuilder<InfoType> {
 
     // MARK: - API
