@@ -47,8 +47,8 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTestSwift {
         XCTAssertEqual(syncMessage.callEvent.eventType, .accepted)
         XCTAssertEqual(syncMessage.callEvent.timestamp, 98765)
         XCTAssertEqual(
-            syncMessage.callEvent.conversationId,
-            UUID(uuidString: "F9A2CF64-8456-4478-ADB5-3380DEDAE622")!.data
+            syncMessage.callEvent.conversationId.asData,
+            Data(Aci.parseFrom(aciString: "F9A2CF64-8456-4478-ADB5-3380DEDAE622")!.serviceIdBinary)
         )
     }
 
@@ -72,7 +72,7 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTestSwift {
                 thread: ContactThreadFactory().create(transaction: tx),
                 event: OutgoingCallEvent(
                     timestamp: 98765,
-                    conversationId: UUID().data,
+                    conversationId: .individual(contactServiceId: Aci.randomForTesting()),
                     callId: 12345,
                     callType: .video,
                     eventDirection: .outgoing,
@@ -117,8 +117,8 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTestSwift {
             deserializedSyncMessage.callEvent.timestamp
         )
         XCTAssertEqual(
-            syncMessage.callEvent.conversationId,
-            deserializedSyncMessage.callEvent.conversationId
+            syncMessage.callEvent.conversationId.asData,
+            deserializedSyncMessage.callEvent.conversationId.asData
         )
     }
 }

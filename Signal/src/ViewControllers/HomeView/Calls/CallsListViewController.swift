@@ -352,7 +352,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 /// need to do any manual UI updates.
                 self.deps.callRecordDeleteAllJobQueue.addJob(
                     sendDeleteAllSyncMessage: true,
-                    deleteAllBeforeTimestamp: mostRecentCallRecord.callBeganTimestamp,
+                    deleteAllBefore: .callRecord(mostRecentCallRecord),
                     tx: tx
                 )
             }

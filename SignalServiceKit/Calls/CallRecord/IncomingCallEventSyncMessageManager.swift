@@ -56,12 +56,12 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
         let callType: CallRecord.CallType = syncMessage.callType
         let callTimestamp: UInt64 = syncMessage.callTimestamp
 
-        let syncMessageConversationType = syncMessage.conversationType
+        let syncMessageConversationId = syncMessage.conversationId
         let syncMessageEvent = syncMessage.callEvent
 
         let logger = CallRecordLogger.shared.suffixed(with: "\(callDirection), \(syncMessageEvent)")
 
-        switch syncMessageConversationType {
+        switch syncMessageConversationId {
         case let .individual(contactServiceId):
             guard
                 let contactThread = fetchThread(contactServiceId: contactServiceId, tx: tx),

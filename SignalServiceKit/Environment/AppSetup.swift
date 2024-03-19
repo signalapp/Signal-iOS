@@ -364,6 +364,7 @@ public class AppSetup {
             callRecordQuerier: callRecordQuerier,
             callRecordStore: callRecordStore,
             messageSenderJobQueue: messageSenderJobQueue,
+            recipientDatabaseTable: recipientDatabaseTable,
             threadStore: threadStore
         )
         let callRecordDeleteManager = CallRecordDeleteManagerImpl(
@@ -377,8 +378,11 @@ public class AppSetup {
         let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
             callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
+            callRecordStore: callRecordStore,
             db: db,
-            messageSenderJobQueue: messageSenderJobQueue
+            messageSenderJobQueue: messageSenderJobQueue,
+            recipientDatabaseTable: recipientDatabaseTable,
+            threadStore: threadStore
         )
         let incomingCallEventSyncMessageManager = IncomingCallEventSyncMessageManagerImpl(
             callRecordStore: callRecordStore,

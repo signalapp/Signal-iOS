@@ -9,6 +9,8 @@ import SignalCoreKit
 /// communicate to our linked devices.
 @objc(OutgoingCallEvent)
 class OutgoingCallEvent: NSObject, NSCoding {
+    typealias ConversationId = CallSyncMessageConversationId
+
     enum CallType: UInt {
         case audio
         case video
@@ -27,8 +29,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
     }
 
     let timestamp: UInt64
-    let conversationId: Data
-
+    let conversationId: ConversationId
     let callId: UInt64
     let callType: CallType
     let eventDirection: EventDirection
@@ -36,7 +37,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
 
     init(
         timestamp: UInt64,
-        conversationId: Data,
+        conversationId: ConversationId,
         callId: UInt64,
         callType: CallType,
         eventDirection: EventDirection,
@@ -63,7 +64,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
 
     func encode(with coder: NSCoder) {
         coder.encode(NSNumber(value: timestamp), forKey: Keys.timestamp)
-        coder.encode(conversationId as NSData, forKey: Keys.conversationId)
+        coder.encode(conversationId.asData as NSData, forKey: Keys.conversationId)
         coder.encode(NSNumber(value: callId), forKey: Keys.callId)
         coder.encode(NSNumber(value: callType.rawValue), forKey: Keys.callType)
         coder.encode(NSNumber(value: eventDirection.rawValue), forKey: Keys.eventDirection)
@@ -73,7 +74,9 @@ class OutgoingCallEvent: NSObject, NSCoding {
     required init?(coder: NSCoder) {
         guard
             let timestamp = coder.decodeObject(of: NSNumber.self, forKey: Keys.timestamp) as? UInt64,
-            let conversationId = coder.decodeObject(of: NSData.self, forKey: Keys.conversationId),
+            let conversationId: ConversationId = coder.decodeObject(
+                of: NSData.self, forKey: Keys.conversationId
+            ).flatMap({ .from(data: $0 as Data) }),
             let callId = coder.decodeObject(of: NSNumber.self, forKey: Keys.callId) as? UInt64,
             let callTypeRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.callType) as? UInt,
             let callType = CallType(rawValue: callTypeRaw),
@@ -87,7 +90,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
         }
 
         self.timestamp = timestamp
-        self.conversationId = conversationId as Data
+        self.conversationId = conversationId
         self.callId = callId
         self.callType = callType
         self.eventDirection = eventDirection
@@ -99,6 +102,8 @@ class OutgoingCallEvent: NSObject, NSCoding {
 ///
 /// Indicates to linked devices that a call has changed state. For example, that
 /// we accepted a ringing call on this device.
+///
+/// - SeeAlso ``IncomingCallEventSyncMessageManager``
 @objc(OutgoingCallEventSyncMessage)
 public class OutgoingCallEventSyncMessage: OWSOutgoingSyncMessage {
 
@@ -141,7 +146,7 @@ public class OutgoingCallEventSyncMessage: OWSOutgoingSyncMessage {
         callEventBuilder.setDirection(callEvent.eventDirection.protoValue)
         callEventBuilder.setEvent(callEvent.eventType.protoValue)
         callEventBuilder.setTimestamp(callEvent.timestamp)
-        callEventBuilder.setConversationID(callEvent.conversationId)
+        callEventBuilder.setConversationID(callEvent.conversationId.asData)
 
         let builder = SSKProtoSyncMessage.builder()
         builder.setCallEvent(callEventBuilder.buildInfallibly())

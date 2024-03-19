@@ -30,17 +30,20 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     private let callRecordQuerier: CallRecordQuerier
     private let callRecordStore: CallRecordStore
     private let messageSenderJobQueue: MessageSenderJobQueue
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let threadStore: ThreadStore
 
     init(
         callRecordQuerier: CallRecordQuerier,
         callRecordStore: CallRecordStore,
         messageSenderJobQueue: MessageSenderJobQueue,
+        recipientDatabaseTable: RecipientDatabaseTable,
         threadStore: ThreadStore
     ) {
         self.callRecordQuerier = callRecordQuerier
         self.callRecordStore = callRecordStore
         self.messageSenderJobQueue = messageSenderJobQueue
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.threadStore = threadStore
     }
 
@@ -142,15 +145,23 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
             return
         }
 
-        guard let localThread = threadStore.getOrCreateLocalThread(tx: tx) else {
-            return
-        }
+        guard
+            let localThread = threadStore.getOrCreateLocalThread(tx: tx),
+            let conversationId: OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId = mostRecentCall
+                .conversationId(
+                    threadStore: threadStore,
+                    recipientDatabaseTable: recipientDatabaseTable,
+                    tx: tx
+                )
+        else { return }
 
         let sdsTx = SDSDB.shimOnlyBridge(tx)
 
         let outgoingCallLogEventSyncMessage = OutgoingCallLogEventSyncMessage(
             callLogEvent: OutgoingCallLogEventSyncMessage.CallLogEvent(
                 eventType: .markedAsRead,
+                callId: mostRecentCall.callId,
+                conversationId: conversationId,
                 timestamp: mostRecentCall.callBeganTimestamp
             ),
             thread: localThread,

@@ -22,13 +22,10 @@ struct IncomingCallLogEventSyncMessageParams {
     }
 
     struct CallIdentifiers {
-        enum Conversation {
-            case individual(serviceId: ServiceId)
-            case group(groupId: Data)
-        }
+        typealias ConversationId = CallSyncMessageConversationId
 
         let callId: UInt64
-        let conversation: Conversation
+        let conversationId: ConversationId
     }
 
     let eventType: EventType
@@ -67,23 +64,17 @@ struct IncomingCallLogEventSyncMessageParams {
         /// call this sync message is referencing.
         let callIdentifiers: CallIdentifiers? = try {
             guard
-                let conversationId = callLogEvent.conversationID,
+                let protoConversationId = callLogEvent.conversationID,
                 callLogEvent.hasCallID
             else { return nil }
 
-            let conversation = try { () throws -> CallIdentifiers.Conversation in
-                if let serviceId = try? ServiceId.parseFrom(serviceIdBinary: conversationId) {
-                    return .individual(serviceId: serviceId)
-                } else if GroupManager.isV2GroupId(conversationId) {
-                    return .group(groupId: conversationId)
-                }
-
-                throw ParseError.missingOrInvalidParams
-            }()
+            guard let conversationId = CallIdentifiers.ConversationId.from(
+                data: protoConversationId
+            ) else { throw ParseError.missingOrInvalidParams }
 
             return CallIdentifiers(
                 callId: callLogEvent.callID,
-                conversation: conversation
+                conversationId: conversationId
             )
         }()
 

@@ -63,7 +63,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .cleared,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: callId,
-                conversation: .group(groupId: thread.groupId)
+                conversationId: .group(groupId: thread.groupId)
             ),
             anchorTimestamp: timestamp + 1
         ))
@@ -82,7 +82,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .cleared,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: .maxRandom,
-                conversation: .group(groupId: Data())
+                conversationId: .group(groupId: Data())
             ),
             anchorTimestamp: timestamp
         ))
@@ -117,7 +117,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .markedAsRead,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: callId,
-                conversation: .group(groupId: thread.groupId)
+                conversationId: .group(groupId: thread.groupId)
             ),
             anchorTimestamp: timestamp + 1
         ))
@@ -136,7 +136,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .markedAsRead,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: .maxRandom,
-                conversation: .group(groupId: Data())
+                conversationId: .group(groupId: Data())
             ),
             anchorTimestamp: timestamp
         ))
@@ -185,7 +185,12 @@ private class MockMissedCallManager: CallRecordMissedCallManager {
 
 private class MockDeleteAllCallsJobQueue: IncomingCallLogEventSyncMessageManagerImpl.Shims.DeleteAllCallsJobQueue {
     var deleteAllCallsMock: ((_ beforeTimestamp: UInt64) -> Void)!
-    func deleteAllCalls(beforeTimestamp: UInt64, tx: DBWriteTransaction) {
-        deleteAllCallsMock(beforeTimestamp)
+    func deleteAllCalls(before: CallRecordDeleteAllJobQueue.DeleteAllBeforeOptions, tx: DBWriteTransaction) {
+        switch before {
+        case .callRecord(let callRecord):
+            deleteAllCallsMock(callRecord.callBeganTimestamp)
+        case .timestamp(let timestamp):
+            deleteAllCallsMock(timestamp)
+        }
     }
 }

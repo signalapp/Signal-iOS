@@ -13,10 +13,7 @@ import LibSignalClient
 /// - SeeAlso ``IncomingCallEventSyncMessageManager``
 /// - SeeAlso ``IncomingCallLogEventSyncMessageParams``
 public struct IncomingCallEventSyncMessageParams {
-    enum ConversationType {
-        case individual(contactServiceId: ServiceId)
-        case group(groupId: Data)
-    }
+    typealias ConversationId = CallSyncMessageConversationId
 
     enum CallEvent {
         case accepted
@@ -33,8 +30,7 @@ public struct IncomingCallEventSyncMessageParams {
         }
     }
 
-    let conversationType: ConversationType
-
+    let conversationId: ConversationId
     let callId: UInt64
     let callTimestamp: UInt64
 
@@ -43,15 +39,14 @@ public struct IncomingCallEventSyncMessageParams {
     let callDirection: CallRecord.CallDirection
 
     init(
-        conversationType: ConversationType,
+        conversationId: ConversationId,
         callId: UInt64,
         callTimestamp: UInt64,
         callEvent: CallEvent,
         callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection
     ) {
-        self.conversationType = conversationType
-
+        self.conversationId = conversationId
         self.callId = callId
         self.callTimestamp = callTimestamp
 
@@ -84,32 +79,16 @@ public struct IncomingCallEventSyncMessageParams {
             throw ParseError.missingOrInvalidParameters
         }
 
+        guard let conversationId = ConversationId.from(data: protoConversationId) else {
+            logger.warn("Failed to parse conversation ID!")
+            throw ParseError.missingOrInvalidParameters
+        }
+
         let callId = callEventProto.callID
         let callTimestamp = callEventProto.timestamp
 
-        let conversationType: ConversationType
-
-        switch callType {
-        case .audioCall, .videoCall:
-            guard let contactServiceId = try? ServiceId.parseFrom(
-                serviceIdBinary: protoConversationId
-            ) else {
-                logger.warn("1:1 call event sync message with invalid contact service ID!")
-                throw ParseError.missingOrInvalidParameters
-            }
-
-            conversationType = .individual(contactServiceId: contactServiceId)
-        case .groupCall:
-            guard GroupManager.isV2GroupId(protoConversationId) else {
-                logger.warn("Group call event sync message with invalid conversation ID!")
-                throw ParseError.missingOrInvalidParameters
-            }
-
-            conversationType = .group(groupId: protoConversationId)
-        }
-
         return IncomingCallEventSyncMessageParams(
-            conversationType: conversationType,
+            conversationId: conversationId,
             callId: callId,
             callTimestamp: callTimestamp,
             callEvent: callEvent,

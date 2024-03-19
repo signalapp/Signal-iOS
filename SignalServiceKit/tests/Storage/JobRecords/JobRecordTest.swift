@@ -555,13 +555,39 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
         (
             CallRecordDeleteAllJobRecord(
                 sendDeleteAllSyncMessage: true,
+                deleteAllBeforeCallId: nil,
+                deleteAllBeforeConversationId: nil,
                 deleteAllBeforeTimestamp: 1234,
                 exclusiveProcessIdentifier: "blorp",
                 failureCount: 19,
                 status: .ready
             ),
             Data(base64Encoded: "eyJzdXBlciI6eyJsYWJlbCI6IkNhbGxSZWNvcmREZWxldGVBbGwiLCJ1bmlxdWVJZCI6IjM5ODlDQ0E0LThDMUQtNDNGQy05NUMwLUMzRjU5ODUwQUUyRiIsImV4Y2x1c2l2ZVByb2Nlc3NJZGVudGlmaWVyIjoiYmxvcnAiLCJmYWlsdXJlQ291bnQiOjE5LCJyZWNvcmRUeXBlIjoxMDAsInN0YXR1cyI6MX0sIkNSREFKUl9zZW5kRGVsZXRlQWxsU3luY01lc3NhZ2UiOnRydWUsIkNSREFKUl9kZWxldGVBbGxCZWZvcmVUaW1lc3RhbXAiOjEyMzR9")!
-        )
+        ),
+        (
+            CallRecordDeleteAllJobRecord(
+                sendDeleteAllSyncMessage: true,
+                deleteAllBeforeCallId: 6789,
+                deleteAllBeforeConversationId: .individual(contactServiceId: Aci.constantForTesting("E84A2412-09CB-4EFB-9B1D-3BEB65C14481")),
+                deleteAllBeforeTimestamp: 1234,
+                exclusiveProcessIdentifier: "blorp",
+                failureCount: 19,
+                status: .ready
+            ),
+            Data(base64Encoded: "eyJDUkRBSlJfZGVsZXRlQWxsQmVmb3JlQ29udmVyc2F0aW9uSWQiOiI2RW9rRWduTFR2dWJIVHZyWmNGRWdRPT0iLCJDUkRBSlJfZGVsZXRlQWxsQmVmb3JlVGltZXN0YW1wIjoxMjM0LCJDUkRBSlJfZGVsZXRlQWxsQmVmb3JlQ2FsbElkIjoiNjc4OSIsInN1cGVyIjp7ImxhYmVsIjoiQ2FsbFJlY29yZERlbGV0ZUFsbCIsInN0YXR1cyI6MSwiZXhjbHVzaXZlUHJvY2Vzc0lkZW50aWZpZXIiOiJibG9ycCIsInJlY29yZFR5cGUiOjEwMCwiZmFpbHVyZUNvdW50IjoxOSwidW5pcXVlSWQiOiJDNTg1MjdCNS1DNkM4LTRDQ0ItQjhGRS1BQTk2NkE3N0U4RjAifSwiQ1JEQUpSX3NlbmREZWxldGVBbGxTeW5jTWVzc2FnZSI6dHJ1ZX0=")!
+        ),
+        (
+            CallRecordDeleteAllJobRecord(
+                sendDeleteAllSyncMessage: true,
+                deleteAllBeforeCallId: 6789,
+                deleteAllBeforeConversationId: .group(groupId: Data(repeating: 5, count: 32)),
+                deleteAllBeforeTimestamp: 1234,
+                exclusiveProcessIdentifier: "blorp",
+                failureCount: 19,
+                status: .ready
+            ),
+            Data(base64Encoded: "eyJzdXBlciI6eyJmYWlsdXJlQ291bnQiOjE5LCJyZWNvcmRUeXBlIjoxMDAsImxhYmVsIjoiQ2FsbFJlY29yZERlbGV0ZUFsbCIsInVuaXF1ZUlkIjoiOUMyMDc3NzctRkI5Ri00NjNELTlCMzEtMDhBMUIzMUU0QzMzIiwic3RhdHVzIjoxLCJleGNsdXNpdmVQcm9jZXNzSWRlbnRpZmllciI6ImJsb3JwIn0sIkNSREFKUl9zZW5kRGVsZXRlQWxsU3luY01lc3NhZ2UiOnRydWUsIkNSREFKUl9kZWxldGVBbGxCZWZvcmVUaW1lc3RhbXAiOjEyMzQsIkNSREFKUl9kZWxldGVBbGxCZWZvcmVDYWxsSWQiOiI2Nzg5IiwiQ1JEQUpSX2RlbGV0ZUFsbEJlZm9yZUNvbnZlcnNhdGlvbklkIjoiQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVT0ifQ==")!
+        ),
     ]
 
     func validate(against: CallRecordDeleteAllJobRecord) throws {

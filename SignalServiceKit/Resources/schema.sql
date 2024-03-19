@@ -283,6 +283,8 @@ CREATE
             ,"shouldSuppressPaymentAlreadyRedeemed" BOOLEAN
             ,"CRDAJR_sendDeleteAllSyncMessage" BOOLEAN
             ,"CRDAJR_deleteAllBeforeTimestamp" INTEGER
+            ,"CRDAJR_deleteAllBeforeCallId" TEXT
+            ,"CRDAJR_deleteAllBeforeConversationId" BLOB
         )
 ;
 

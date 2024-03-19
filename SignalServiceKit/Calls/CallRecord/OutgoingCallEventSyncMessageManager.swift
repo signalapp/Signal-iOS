@@ -5,27 +5,13 @@
 
 import LibSignalClient
 
-enum OutgoingCallEventSyncMessageConversationId {
-    case oneToOne(contactServiceId: ServiceId)
-    case group(groupId: Data)
-
-    var asData: Data {
-        switch self {
-        case .oneToOne(let contactServiceId):
-            return Data(contactServiceId.serviceIdBinary)
-        case .group(let groupId):
-            return groupId
-        }
-    }
-}
-
 enum OutgoingCallEventSyncMessageEvent {
     case callUpdated
     case callDeleted
 }
 
 protocol OutgoingCallEventSyncMessageManager {
-    typealias ConversationId = OutgoingCallEventSyncMessageConversationId
+    typealias ConversationId = CallSyncMessageConversationId
     typealias CallEvent = OutgoingCallEventSyncMessageEvent
 
     /// Send a sync message with the state on the given call record.
@@ -89,7 +75,9 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
         callEvent: CallEvent,
         tx: DBWriteTransaction
     ) {
-        guard let contactServiceId = recipientDatabaseTable.fetchServiceId(for: contactThread, tx: tx) else {
+        guard let contactServiceId = recipientDatabaseTable.fetchServiceId(
+            contactThread: contactThread, tx: tx
+        ) else {
             owsFailBeta("Missing contact service ID - how did we get here?")
             return
         }
@@ -108,7 +96,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
         // with it for now.
 
         sendSyncMessage(
-            conversationId: .oneToOne(contactServiceId: contactServiceId),
+            conversationId: .individual(contactServiceId: contactServiceId),
             callRecord: callRecord,
             callEvent: callEvent,
             callEventTimestamp: callRecord.callBeganTimestamp,
@@ -136,7 +124,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
 
         let outgoingCallEvent = OutgoingCallEvent(
             timestamp: callEventTimestamp,
-            conversationId: conversationId.asData,
+            conversationId: conversationId,
             callId: callRecord.callId,
             callType: OutgoingCallEvent.CallType(callRecord.callType),
             eventDirection: OutgoingCallEvent.EventDirection(callRecord.callDirection),

@@ -105,13 +105,11 @@ final class CallRecordStoreTest: XCTestCase {
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ).unwrapped
         }
-
         XCTAssertTrue(callRecord.matches(fetchedByCallId))
 
         let fetchedByInteractionRowId = inMemoryDB.read { tx in
             callRecordStore.fetch(interactionRowId: callRecord.interactionRowId, db: InMemoryDB.shimOnlyBridge(tx).db)!
         }
-
         XCTAssertTrue(callRecord.matches(fetchedByInteractionRowId))
     }
 

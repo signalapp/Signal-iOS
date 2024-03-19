@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+import SignalCoreKit
+
 /// Manages durable jobs for deleting all ``CallRecord``s.
 ///
 /// This is a special action distinct from deleting a single ``CallRecord``, or
@@ -12,23 +15,37 @@
 ///
 /// - SeeAlso ``CallRecordDeleteManager``
 public class CallRecordDeleteAllJobQueue {
+    public enum DeleteAllBeforeOptions {
+        case callRecord(CallRecord)
+        case timestamp(UInt64)
+    }
+
     private let jobRunnerFactory: CallRecordDeleteAllJobRunnerFactory
     private let jobQueueRunner: JobQueueRunner<
         JobRecordFinderImpl<CallRecordDeleteAllJobRecord>,
         CallRecordDeleteAllJobRunnerFactory
     >
 
+    private let recipientDatabaseTable: RecipientDatabaseTable
+    private let threadStore: ThreadStore
+
     public init(
         callRecordDeleteManager: CallRecordDeleteManager,
         callRecordQuerier: CallRecordQuerier,
+        callRecordStore: CallRecordStore,
         db: DB,
-        messageSenderJobQueue: MessageSenderJobQueue
+        messageSenderJobQueue: MessageSenderJobQueue,
+        recipientDatabaseTable: RecipientDatabaseTable,
+        threadStore: ThreadStore
     ) {
         self.jobRunnerFactory = CallRecordDeleteAllJobRunnerFactory(
             callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
+            callRecordStore: callRecordStore,
             db: db,
-            messageSenderJobQueue: messageSenderJobQueue
+            messageSenderJobQueue: messageSenderJobQueue,
+            recipientDatabaseTable: recipientDatabaseTable,
+            threadStore: threadStore
         )
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: false,
@@ -36,6 +53,9 @@ public class CallRecordDeleteAllJobQueue {
             jobFinder: JobRecordFinderImpl(db: db),
             jobRunnerFactory: self.jobRunnerFactory
         )
+
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.threadStore = threadStore
     }
 
     func start(appContext: AppContext) {
@@ -51,13 +71,37 @@ public class CallRecordDeleteAllJobQueue {
     /// The timestamp before which to delete all call records.
     public func addJob(
         sendDeleteAllSyncMessage: Bool,
-        deleteAllBeforeTimestamp: UInt64,
+        deleteAllBefore: DeleteAllBeforeOptions,
         tx: SDSAnyWriteTransaction
     ) {
-        let jobRecord = CallRecordDeleteAllJobRecord(
-            sendDeleteAllSyncMessage: sendDeleteAllSyncMessage,
-            deleteAllBeforeTimestamp: deleteAllBeforeTimestamp
-        )
+        let jobRecord: CallRecordDeleteAllJobRecord
+
+        switch deleteAllBefore {
+        case .callRecord(let callRecord):
+            guard
+                let conversationId: CallRecordDeleteAllJobRecord.ConversationId = callRecord
+                    .conversationId(
+                        threadStore: threadStore,
+                        recipientDatabaseTable: recipientDatabaseTable,
+                        tx: tx.asV2Read
+                    )
+            else { return }
+
+            jobRecord = CallRecordDeleteAllJobRecord(
+                sendDeleteAllSyncMessage: sendDeleteAllSyncMessage,
+                deleteAllBeforeCallId: callRecord.callId,
+                deleteAllBeforeConversationId: conversationId,
+                deleteAllBeforeTimestamp: callRecord.callBeganTimestamp
+            )
+        case .timestamp(let timestamp):
+            jobRecord = CallRecordDeleteAllJobRecord(
+                sendDeleteAllSyncMessage: sendDeleteAllSyncMessage,
+                deleteAllBeforeCallId: nil,
+                deleteAllBeforeConversationId: nil,
+                deleteAllBeforeTimestamp: timestamp
+            )
+        }
+
         jobRecord.anyInsert(transaction: tx)
 
         tx.addSyncCompletion {
@@ -80,19 +124,28 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 
     private let callRecordDeleteManager: CallRecordDeleteManager
     private let callRecordQuerier: CallRecordQuerier
+    private let callRecordStore: CallRecordStore
     private let db: DB
     private let messageSenderJobQueue: MessageSenderJobQueue
+    private let recipientDatabaseTable: RecipientDatabaseTable
+    private let threadStore: ThreadStore
 
     init(
         callRecordDeleteManager: CallRecordDeleteManager,
         callRecordQuerier: CallRecordQuerier,
+        callRecordStore: CallRecordStore,
         db: DB,
-        messageSenderJobQueue: MessageSenderJobQueue
+        messageSenderJobQueue: MessageSenderJobQueue,
+        recipientDatabaseTable: RecipientDatabaseTable,
+        threadStore: ThreadStore
     ) {
         self.callRecordDeleteManager = callRecordDeleteManager
         self.callRecordQuerier = callRecordQuerier
+        self.callRecordStore = callRecordStore
         self.db = db
         self.messageSenderJobQueue = messageSenderJobQueue
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.threadStore = threadStore
     }
 
     // MARK: -
@@ -125,11 +178,38 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
     private func _runJobAttempt(
         _ jobRecord: CallRecordDeleteAllJobRecord
     ) async throws {
-        logger.info("Attempting to delete all call records before \(jobRecord.deleteAllBeforeTimestamp).")
+        let deleteBeforeTimestamp: UInt64 = {
+            /// We'll prefer the timestamp on the call record if we have it.
+            /// They should be identical in the 99.999% case, but there's a
+            /// chance something updated the call's timestamp since this job
+            /// record was created; and either way the goal is to use an actual
+            /// call as the boundary for the delete-all rather than an arbitrary
+            /// timestamp if possible.
+            guard
+                let callId = jobRecord.deleteAllBeforeCallId,
+                let conversationId = jobRecord.deleteAllBeforeConversationId,
+                let referencedCallRecord: CallRecord = db.read(block: { tx -> CallRecord? in
+                    return .hydrate(
+                        callId: callId,
+                        conversationId: conversationId,
+                        callRecordStore: callRecordStore,
+                        recipientDatabaseTable: recipientDatabaseTable,
+                        threadStore: threadStore,
+                        tx: tx
+                    )
+                })
+            else {
+                return jobRecord.deleteAllBeforeTimestamp
+            }
+
+            return referencedCallRecord.callBeganTimestamp
+        }()
+
+        logger.info("Attempting to delete all call records before \(deleteBeforeTimestamp).")
 
         let deletedCount = await TimeGatedBatch.processAllAsync(db: db) { tx in
             return self.deleteSomeCallRecords(
-                beforeTimestamp: jobRecord.deleteAllBeforeTimestamp,
+                beforeTimestamp: deleteBeforeTimestamp,
                 tx: tx
             )
         }
@@ -143,7 +223,9 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
                 self.logger.info("Sending delete-all-calls sync message.")
 
                 self.sendClearCallLogSyncMessage(
-                    beforeTimestamp: jobRecord.deleteAllBeforeTimestamp,
+                    callId: jobRecord.deleteAllBeforeCallId,
+                    conversationId: jobRecord.deleteAllBeforeConversationId,
+                    beforeTimestamp: deleteBeforeTimestamp,
                     tx: sdsTx
                 )
             }
@@ -200,6 +282,8 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
     }
 
     private func sendClearCallLogSyncMessage(
+        callId: UInt64?,
+        conversationId: CallRecordDeleteAllJobRecord.ConversationId?,
         beforeTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
@@ -210,6 +294,8 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
         let outgoingCallLogEventSyncMessage = OutgoingCallLogEventSyncMessage(
             callLogEvent: OutgoingCallLogEventSyncMessage.CallLogEvent(
                 eventType: .cleared,
+                callId: callId,
+                conversationId: conversationId,
                 timestamp: beforeTimestamp
             ),
             thread: localThread,
@@ -230,27 +316,39 @@ private class CallRecordDeleteAllJobRunnerFactory: JobRunnerFactory {
 
     private let callRecordDeleteManager: CallRecordDeleteManager
     private let callRecordQuerier: CallRecordQuerier
+    private let callRecordStore: CallRecordStore
     private let db: DB
     private let messageSenderJobQueue: MessageSenderJobQueue
+    private let recipientDatabaseTable: RecipientDatabaseTable
+    private let threadStore: ThreadStore
 
     init(
         callRecordDeleteManager: CallRecordDeleteManager,
         callRecordQuerier: CallRecordQuerier,
+        callRecordStore: CallRecordStore,
         db: DB,
-        messageSenderJobQueue: MessageSenderJobQueue
+        messageSenderJobQueue: MessageSenderJobQueue,
+        recipientDatabaseTable: RecipientDatabaseTable,
+        threadStore: ThreadStore
     ) {
         self.callRecordDeleteManager = callRecordDeleteManager
         self.callRecordQuerier = callRecordQuerier
+        self.callRecordStore = callRecordStore
         self.db = db
         self.messageSenderJobQueue = messageSenderJobQueue
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.threadStore = threadStore
     }
 
     func buildRunner() -> CallRecordDeleteAllJobRunner {
         return CallRecordDeleteAllJobRunner(
             callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
+            callRecordStore: callRecordStore,
             db: db,
-            messageSenderJobQueue: messageSenderJobQueue
+            messageSenderJobQueue: messageSenderJobQueue,
+            recipientDatabaseTable: recipientDatabaseTable,
+            threadStore: threadStore
         )
     }
 }

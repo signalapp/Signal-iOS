@@ -251,6 +251,7 @@ public class GRDBSchemaMigrator: NSObject {
         case scheduleFullIntersection
         case addUnreadToCallRecord
         case addSearchableName
+        case addCallRecordRowIdColumnToCallRecordDeleteAllJobRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2702,6 +2703,15 @@ public class GRDBSchemaMigrator: NSObject {
             }
 
             try enableFts5SecureDelete(for: "SearchableNameFTS", db: tx.database)
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addCallRecordRowIdColumnToCallRecordDeleteAllJobRecord) { tx in
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "CRDAJR_deleteAllBeforeCallId", .text)
+                table.add(column: "CRDAJR_deleteAllBeforeConversationId", .blob)
+            }
 
             return .success(())
         }

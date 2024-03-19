@@ -19,7 +19,7 @@ public protocol RecipientDatabaseTable {
 }
 
 extension RecipientDatabaseTable {
-    func fetchServiceId(for contactThread: TSContactThread, tx: DBReadTransaction) -> ServiceId? {
+    func fetchServiceId(contactThread: TSContactThread, tx: DBReadTransaction) -> ServiceId? {
         let serviceId = contactThread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
         // If there's an ACI, it's *definitely* correct, and it's definitely the
         // owner, so we can return early without issuing any queries.

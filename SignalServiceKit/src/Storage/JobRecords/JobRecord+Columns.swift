@@ -102,6 +102,8 @@ extension JobRecord {
         // MARK: CallRecordDeleteAllJobRecord
 
         case sendDeleteAllSyncMessage = "CRDAJR_sendDeleteAllSyncMessage"
+        case deleteAllBeforeCallId = "CRDAJR_deleteAllBeforeCallId"
+        case deleteAllBeforeConversationId = "CRDAJR_deleteAllBeforeConversationId"
         case deleteAllBeforeTimestamp = "CRDAJR_deleteAllBeforeTimestamp"
     }
 }

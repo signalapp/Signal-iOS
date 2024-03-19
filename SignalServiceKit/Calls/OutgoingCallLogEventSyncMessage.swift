@@ -7,6 +7,8 @@ import SignalCoreKit
 
 /// Represents a sync message an event related to the Calls Tab (also known on
 /// other platforms as the "call log").
+///
+/// - SeeAlso ``IncomingCallLogEventSyncMessageManager``
 @objc(OutgoingCallLogEventSyncMessage)
 public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
 
@@ -57,6 +59,8 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
 public extension OutgoingCallLogEventSyncMessage {
     @objc(OutgoingCallLogEvent)
     class CallLogEvent: NSObject, NSCoding {
+        typealias ConversationId = CallSyncMessageConversationId
+
         public enum EventType: UInt, CaseIterable {
             /// Indicates we cleared our call log of calls before the timestamp
             /// in this event.
@@ -68,13 +72,19 @@ public extension OutgoingCallLogEventSyncMessage {
         }
 
         let eventType: EventType
+        let callId: UInt64?
+        let conversationId: ConversationId?
         let timestamp: UInt64
 
         init(
             eventType: EventType,
+            callId: UInt64?,
+            conversationId: ConversationId?,
             timestamp: UInt64
         ) {
             self.eventType = eventType
+            self.callId = callId
+            self.conversationId = conversationId
             self.timestamp = timestamp
         }
 
@@ -83,6 +93,8 @@ public extension OutgoingCallLogEventSyncMessage {
         private enum Keys {
             static let eventType = "eventType"
             static let timestamp = "timestamp"
+            static let callId = "callId"
+            static let conversationId = "conversationId"
         }
 
         required public init?(coder: NSCoder) {
@@ -97,11 +109,32 @@ public extension OutgoingCallLogEventSyncMessage {
 
             self.eventType = eventType
             self.timestamp = timestamp
+
+            if
+                let callId = coder.decodeObject(of: NSNumber.self, forKey: Keys.callId) as? UInt64,
+                let conversationId: ConversationId = coder.decodeObject(
+                    of: NSData.self, forKey: Keys.conversationId
+                ).flatMap({ .from(data: $0 as Data) })
+            {
+                self.callId = callId
+                self.conversationId = conversationId
+            } else {
+                self.callId = nil
+                self.conversationId = nil
+            }
         }
 
         public func encode(with coder: NSCoder) {
-            coder.encode(NSNumber(value: timestamp), forKey: Keys.timestamp)
             coder.encode(NSNumber(value: eventType.rawValue), forKey: Keys.eventType)
+            coder.encode(NSNumber(value: timestamp), forKey: Keys.timestamp)
+
+            if
+                let callId,
+                let conversationId
+            {
+                coder.encode(NSNumber(value: callId), forKey: Keys.callId)
+                coder.encode(conversationId.asData as NSData, forKey: Keys.conversationId)
+            }
         }
     }
 }
