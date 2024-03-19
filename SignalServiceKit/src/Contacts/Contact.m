@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation Contact
 
-@synthesize comparableNameFirstLast = _comparableNameFirstLast;
-@synthesize comparableNameLastFirst = _comparableNameLastFirst;
 @synthesize uniqueId = _uniqueId;
 
 #if TARGET_OS_IOS
@@ -199,45 +197,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     *outParsedPhoneNumbers = [parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
     *outParsedPhoneNumberNameMap = [parsedPhoneNumberNameMap copy];
-}
-
-- (NSString *)comparableNameFirstLast {
-    if (_comparableNameFirstLast == nil) {
-        // Combine the two names with a tab separator, which has a lower ascii code than space, so that first names
-        // that contain a space ("Mary Jo\tCatlett") will sort after those that do not ("Mary\tOliver")
-        _comparableNameFirstLast = [self combineLeftName:_firstName withRightName:_lastName usingSeparator:@"\t"];
-    }
-    
-    return _comparableNameFirstLast;
-}
-
-- (NSString *)comparableNameLastFirst {
-    if (_comparableNameLastFirst == nil) {
-        // Combine the two names with a tab separator, which has a lower ascii code than space, so that last names
-        // that contain a space ("Van Der Beek\tJames") will sort after those that do not ("Van\tJames")
-        _comparableNameLastFirst = [self combineLeftName:_lastName withRightName:_firstName usingSeparator:@"\t"];
-    }
-    
-    return _comparableNameLastFirst;
-}
-
-- (NSString *)combineLeftName:(NSString *)leftName withRightName:(NSString *)rightName usingSeparator:(NSString *)separator {
-    const BOOL leftNameNonEmpty = (leftName.length > 0);
-    const BOOL rightNameNonEmpty = (rightName.length > 0);
-
-    if (self.nickname.length > 0) {
-        return self.nickname;
-    }
-
-    if (leftNameNonEmpty && rightNameNonEmpty) {
-        return [NSString stringWithFormat:@"%@%@%@", leftName, separator, rightName];
-    } else if (leftNameNonEmpty) {
-        return [leftName copy];
-    } else if (rightNameNonEmpty) {
-        return [rightName copy];
-    } else {
-        return @"";
-    }
 }
 
 - (NSString *)description {

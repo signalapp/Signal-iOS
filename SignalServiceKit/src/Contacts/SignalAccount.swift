@@ -295,14 +295,8 @@ extension SignalAccount {
 // MARK: - SignalServiceAddress
 
 extension SignalAccount {
-
-    @objc
     public var recipientAddress: SignalServiceAddress {
         SignalServiceAddress(serviceId: recipientServiceId, phoneNumber: recipientPhoneNumber)
-    }
-
-    public var addressComponentsDescription: String {
-        recipientAddress.description
     }
 }
 

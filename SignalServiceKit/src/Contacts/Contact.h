@@ -24,8 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, readonly, nonatomic) NSString *lastName;
 @property (nullable, readonly, nonatomic) NSString *nickname;
 @property (readonly, nonatomic) NSString *fullName;
-@property (readonly, nonatomic) NSString *comparableNameFirstLast;
-@property (readonly, nonatomic) NSString *comparableNameLastFirst;
 @property (readonly, nonatomic) NSArray<PhoneNumber *> *parsedPhoneNumbers;
 @property (readonly, nonatomic) NSArray<NSString *> *userTextPhoneNumbers;
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
