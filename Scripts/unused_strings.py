@@ -32,7 +32,7 @@ def parse_args():
         default=map(
             project_path,
             [
-                "Signal/src",
+                "Signal",
                 "SignalNSE",
                 "SignalServiceKit",
                 "SignalShareExtension",
@@ -42,6 +42,16 @@ def parse_args():
         nargs="+",
         type=pathlib.Path,
         help="One or more source directories",
+    )
+    parser.add_argument(
+        "--extensions",
+        default=[
+            ".swift",
+            ".m",
+            ".h",
+        ],
+        nargs="+",
+        help="one or more file extensions",
     )
     return parser.parse_args()
 
@@ -54,10 +64,13 @@ def get_all_keys(strings_file: pathlib.Path) -> Iterable[str]:
                 yield match.group(1)
 
 
-def get_all_file_paths(src_dir: os.PathLike) -> Iterable[str]:
+def get_all_file_paths(src_dir: os.PathLike, extensions: set[str]) -> Iterable[str]:
     for root, _, files in os.walk(src_dir):
         for name in files:
-            yield os.path.join(root, name)
+            full_name: str = os.path.join(root, name)
+            extension = os.path.splitext(full_name)[1]
+            if extension in extensions:
+                yield os.path.join(root, name)
 
 
 def matching_substrings(file_path: str, substrings: Iterable[bytes]) -> Iterable[bytes]:
@@ -67,7 +80,9 @@ def matching_substrings(file_path: str, substrings: Iterable[bytes]) -> Iterable
 
 
 def get_unused_keys(
-    strings_file: pathlib.Path, src_dirs: Iterable[pathlib.Path]
+    strings_file: pathlib.Path,
+    src_dirs: Iterable[pathlib.Path],
+    extensions: set[str],
 ) -> Iterable[str]:
     all_keys = get_all_keys(strings_file)
     all_keys_as_bytes = [key.encode() for key in all_keys]
@@ -75,7 +90,7 @@ def get_unused_keys(
     keys_not_seen = set(all_keys_as_bytes)
 
     for src_dir in src_dirs:
-        for file_path in get_all_file_paths(src_dir):
+        for file_path in get_all_file_paths(src_dir, extensions):
             keys_seen = matching_substrings(file_path, keys_not_seen)
             keys_not_seen -= set(keys_seen)
 
@@ -85,7 +100,8 @@ def get_unused_keys(
 def main() -> None:
     args = parse_args()
 
-    unused_keys = get_unused_keys(args.strings, args.src_dirs)
+    unused_keys = get_unused_keys(
+        args.strings, args.src_dirs, set(args.extensions))
     sorted_unused_keys = sorted(unused_keys)
 
     for key in sorted_unused_keys:
