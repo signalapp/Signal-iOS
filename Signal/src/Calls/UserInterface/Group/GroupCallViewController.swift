@@ -489,6 +489,7 @@ class GroupCallViewController: UIViewController {
                         fromView: self.view,
                         widthReferenceView: self.view,
                         tailReferenceView: localMemberView,
+                        tailDirection: .down,
                         isVideoMuted: call.isOutgoingVideoMuted
                     )
                 } else {
@@ -504,6 +505,7 @@ class GroupCallViewController: UIViewController {
                         fromView: self.view,
                         widthReferenceView: self.view,
                         tailReferenceView: localMemberView,
+                        tailDirection: .down,
                         isVideoMuted: call.isOutgoingVideoMuted
                     )
                 }
@@ -575,10 +577,7 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    private var flipCameraTooltipManager = FlipCameraTooltipManager(
-        db: DependenciesBridge.shared.db,
-        tailDirection: .down // pip starts in lower right corner
-    )
+    private var flipCameraTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
 
     func updateCallUI(size: CGSize? = nil) {
         // Force load the view if it hasn't been yet.

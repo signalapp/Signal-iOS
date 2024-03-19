@@ -55,10 +55,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     /// the pip animation.
     private var shouldRelayoutAfterPipAnimationCompletes = false
 
-    private var flipCameraTooltipManager = FlipCameraTooltipManager(
-        db: DependenciesBridge.shared.db,
-        tailDirection: .up // pip starts in upper right corner
-    )
+    private var flipCameraTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
 
     // MARK: - Gradient Views
 
@@ -632,6 +629,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
                     fromView: self.view,
                     widthReferenceView: self.view,
                     tailReferenceView: self.localVideoView,
+                    tailDirection: .up,
                     isVideoMuted: self.call.isOutgoingVideoMuted
                 )
             }

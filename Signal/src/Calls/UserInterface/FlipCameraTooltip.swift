@@ -8,14 +8,9 @@ import SignalUI
 
 class FlipCameraTooltipManager {
     private let db: DB
-    private let tailDirection: TooltipView.TailDirection
 
-    init(
-        db: DB,
-        tailDirection: TooltipView.TailDirection
-    ) {
+    init(db: DB) {
         self.db = db
-        self.tailDirection = tailDirection
     }
 
     private static let keyValueStore = SDSKeyValueStore(collection: "FlipCameraButton")
@@ -39,6 +34,7 @@ class FlipCameraTooltipManager {
         fromView: UIView,
         widthReferenceView: UIView,
         tailReferenceView: UIView,
+        tailDirection: TooltipView.TailDirection,
         isVideoMuted: Bool
     ) {
         guard FeatureFlags.useCallMemberComposableViewsForLocalUser else { return }
@@ -53,7 +49,7 @@ class FlipCameraTooltipManager {
             fromView: fromView,
             widthReferenceView: widthReferenceView,
             tailReferenceView: tailReferenceView,
-            tailDirection: self.tailDirection
+            tailDirection: tailDirection
         ) { [weak self] in
             self?.dismissTooltip()
         }

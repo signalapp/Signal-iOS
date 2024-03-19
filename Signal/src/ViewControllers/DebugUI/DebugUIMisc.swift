@@ -169,10 +169,7 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 DebugUIMisc.enableEditMessagePromptMessage()
             }),
             OWSTableItem(title: "Mark flip cam button tooltip as unread", actionBlock: {
-                let flipCamTooltipManager = FlipCameraTooltipManager(
-                    db: DependenciesBridge.shared.db,
-                    tailDirection: .down
-                )
+                let flipCamTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
                 flipCamTooltipManager.markTooltipAsUnread()
             }),
         ]
