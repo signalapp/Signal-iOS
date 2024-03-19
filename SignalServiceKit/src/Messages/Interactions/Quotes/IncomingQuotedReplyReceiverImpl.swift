@@ -6,32 +6,6 @@
 import Foundation
 import LibSignalClient
 
-public class NoOpFinalizingAttachmentBuilder: QuotedMessageAttachmentBuilder {
-
-    public let attachmentInfo: OWSAttachmentInfo
-
-    public init(attachmentInfo: OWSAttachmentInfo) {
-        self.attachmentInfo = attachmentInfo
-    }
-
-    fileprivate init(
-        mimeType: String,
-        sourceFilename: String?
-    ) {
-        attachmentInfo = OWSAttachmentInfo(
-            attachmentId: nil,
-            ofType: .unset,
-            contentType: mimeType,
-            sourceFilename: sourceFilename
-        )
-    }
-
-    public private(set) var hasBeenFinalized: Bool = false
-    public func finalize(newMessageRowId: Int64, tx: DBWriteTransaction) {
-        hasBeenFinalized = true
-    }
-}
-
 public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
 
     private let attachmentManager: TSResourceManager
@@ -49,7 +23,7 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
         for dataMessage: SSKProtoDataMessage,
         thread: TSThread,
         tx: DBWriteTransaction
-    ) -> QuotedMessageBuilder? {
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
         guard let quote = dataMessage.quote else {
             return nil
         }
@@ -107,7 +81,7 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
         quoteAuthor: Aci,
         quoteTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) -> QuotedMessageBuilder? {
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
         let quoteAuthorAddress = SignalServiceAddress(quoteAuthor)
 
         // This is untrusted content from other users that may not be well-formed.
@@ -117,37 +91,59 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
             quoteProto.hasType,
             quoteProto.unwrappedType == .giftBadge
         {
-            return QuotedMessageBuilder(
-                quotedMessage: TSQuotedMessage(
-                    timestamp: quoteTimestamp,
-                    authorAddress: quoteAuthorAddress,
-                    body: nil,
-                    bodyRanges: nil,
-                    bodySource: .remote,
-                    receivedQuotedAttachmentInfo: nil,
-                    isGiftBadge: true
-                ),
-                attachmentBuilder: nil
-            )
+            return .withoutFinalizer(TSQuotedMessage(
+                timestamp: quoteTimestamp,
+                authorAddress: quoteAuthorAddress,
+                body: nil,
+                bodyRanges: nil,
+                bodySource: .remote,
+                receivedQuotedAttachmentInfo: nil,
+                isGiftBadge: true
+            ))
         }
 
         let body = quoteProto.text?.nilIfEmpty
         let bodyRanges =  quoteProto.bodyRanges.isEmpty ? nil : MessageBodyRanges(protos: quoteProto.bodyRanges)
-        let attachmentBuilder: QuotedMessageAttachmentBuilder?
+        let attachmentBuilder: OwnedAttachmentBuilder<OWSAttachmentInfo>?
         if
             // We're only interested in the first attachment
             let thumbnailProto = quoteProto.attachments.first?.thumbnail,
-            let thumbnailAttachmentBuilder = attachmentManager.createQuotedReplyAttachmentBuilder(
-                fromUntrustedRemote: thumbnailProto,
-                tx: tx
-            )
+            let mimeType = thumbnailProto.contentType
         {
-            attachmentBuilder = thumbnailAttachmentBuilder
+            do {
+                let thumbnailAttachmentBuilder = try attachmentManager.createAttachmentBuilder(
+                    from: thumbnailProto,
+                    tx: tx
+                )
+                attachmentBuilder = thumbnailAttachmentBuilder.wrap { attachmentInfo in
+                    switch attachmentInfo {
+                    case .legacy(let attachmentId):
+                        return OWSAttachmentInfo(
+                            attachmentId: attachmentId,
+                            ofType: .untrustedPointer,
+                            contentType: mimeType,
+                            sourceFilename: thumbnailProto.fileName
+                        )
+                    case .v2:
+                        return OWSAttachmentInfo(
+                            attachmentId: nil,
+                            ofType: .V2,
+                            contentType: mimeType,
+                            sourceFilename: thumbnailProto.fileName
+                        )
+                    }
+                }
+            } catch {
+                // Invalid proto!
+                return nil
+            }
         } else if let attachmentProto = quoteProto.attachments.first, let mimeType = attachmentProto.contentType {
-            attachmentBuilder = NoOpFinalizingAttachmentBuilder(
-                mimeType: mimeType,
+            attachmentBuilder = .withoutFinalizer(OWSAttachmentInfo(
+                attachmentId: nil,
+                ofType: .unset,
+                contentType: mimeType,
                 sourceFilename: attachmentProto.fileName
-            )
+            ))
         } else {
             attachmentBuilder = nil
         }
@@ -156,18 +152,24 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
             owsFailDebug("Failed to construct a valid quoted message from remote proto content")
             return nil
         }
-        return QuotedMessageBuilder(
-            quotedMessage: TSQuotedMessage(
+
+        func quotedMessage(attachmentInfo: OWSAttachmentInfo?) -> TSQuotedMessage {
+            return TSQuotedMessage(
                 timestamp: quoteTimestamp,
                 authorAddress: quoteAuthorAddress,
                 body: body,
                 bodyRanges: bodyRanges,
                 bodySource: .remote,
-                receivedQuotedAttachmentInfo: attachmentBuilder?.attachmentInfo,
+                receivedQuotedAttachmentInfo: attachmentInfo,
                 isGiftBadge: false
-            ),
-            attachmentBuilder: attachmentBuilder
-        )
+            )
+        }
+
+        if let attachmentBuilder {
+            return attachmentBuilder.wrap(quotedMessage(attachmentInfo:))
+        } else {
+            return .withoutFinalizer(quotedMessage(attachmentInfo: nil))
+        }
     }
 
     /// Builds a quoted message from the original source message
@@ -176,7 +178,7 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
         quoteProto: SSKProtoDataMessageQuote,
         author: Aci,
         tx: DBWriteTransaction
-    ) -> QuotedMessageBuilder? {
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
         let authorAddress: SignalServiceAddress
         if let incomingOriginal = originalMessage as? TSIncomingMessage {
             authorAddress = incomingOriginal.authorAddress
@@ -201,18 +203,15 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
                 "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
                 comment: "inbox cell and notification text for an already viewed view-once media message."
             )
-            return QuotedMessageBuilder(
-                quotedMessage: TSQuotedMessage(
-                    timestamp: originalMessage.timestamp,
-                    authorAddress: authorAddress,
-                    body: body,
-                    bodyRanges: nil,
-                    bodySource: .local,
-                    receivedQuotedAttachmentInfo: nil,
-                    isGiftBadge: false
-                ),
-                attachmentBuilder: nil
-            )
+            return .withoutFinalizer(TSQuotedMessage(
+                timestamp: originalMessage.timestamp,
+                authorAddress: authorAddress,
+                body: body,
+                bodyRanges: nil,
+                bodySource: .local,
+                receivedQuotedAttachmentInfo: nil,
+                isGiftBadge: false
+            ))
         }
 
         let body: String?
@@ -273,25 +272,30 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
             return nil
         }
 
-        return QuotedMessageBuilder(
-            quotedMessage: TSQuotedMessage(
+        func quotedMessage(attachmentInfo: OWSAttachmentInfo?) -> TSQuotedMessage {
+            return TSQuotedMessage(
                 timestamp: originalMessage.timestamp,
                 authorAddress: authorAddress,
                 body: body,
                 bodyRanges: bodyRanges,
                 bodySource: .local,
-                receivedQuotedAttachmentInfo: attachmentBuilder?.attachmentInfo,
+                receivedQuotedAttachmentInfo: attachmentInfo,
                 isGiftBadge: isGiftBadge
-            ),
-            attachmentBuilder: attachmentBuilder
-        )
+            )
+        }
+
+        if let attachmentBuilder {
+            return attachmentBuilder.wrap(quotedMessage(attachmentInfo:))
+        } else {
+            return .withoutFinalizer(quotedMessage(attachmentInfo: nil))
+        }
     }
 
     private func attachmentBuilder(
         originalMessage: TSMessage,
         quoteProto: SSKProtoDataMessageQuote,
         tx: DBWriteTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
         if quoteProto.attachments.isEmpty {
             // If the quote we got has no attachments, ignore any attachments
             // on the original message.

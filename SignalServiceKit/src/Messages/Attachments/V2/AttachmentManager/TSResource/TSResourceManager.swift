@@ -45,10 +45,10 @@ public protocol TSResourceManager {
         tx: DBWriteTransaction
     ) throws
 
-    /// Given a quote reply's attachment proto from its sender,
+    /// Given an attachment proto from its sender,
     /// returns a builder for creating the attachment locally.
     ///
-    /// The attachment info needed to construct the message
+    /// The attachment info needed to construct the owner
     /// is available immediately, but the caller _must_ finalize
     /// the builder to guarantee the attachment is created.
     ///
@@ -57,13 +57,11 @@ public protocol TSResourceManager {
     /// Callers should only assume the attachment (if any) exists
     /// after finalizing.
     ///
-    /// "Untrusted" because the sender can spoof what the original
-    /// message's actual attachment was; we should use this method
-    /// only if we couldn't find the original message ourselves.
-    func createQuotedReplyAttachmentBuilder(
-        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
+    /// Throws an error if the provided proto is invalid.
+    func createAttachmentBuilder(
+        from proto: SSKProtoAttachmentPointer,
         tx: DBWriteTransaction
-    ) -> QuotedMessageAttachmentBuilder?
+    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo>
 
     func buildProtoForSending(
         from reference: TSResourceReference,
@@ -132,7 +130,7 @@ public protocol TSResourceManager {
     func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         tx: DBWriteTransaction
-    ) -> QuotedMessageAttachmentBuilder?
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>?
 
     func thumbnailImage(
         thumbnail: TSQuotedMessageResourceReference.Thumbnail,

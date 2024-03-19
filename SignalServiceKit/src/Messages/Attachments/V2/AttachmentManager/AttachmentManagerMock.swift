@@ -17,11 +17,11 @@ open class AttachmentManagerMock: AttachmentManager {
         // Do nothing
     }
 
-    open func createQuotedReplyAttachmentBuilder(
-        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
-        tx: DBReadTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
-        return nil
+    open func createAttachmentBuilder(
+        from proto: SSKProtoAttachmentPointer,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<Void> {
+        return .withoutFinalizer(())
     }
 
     open func createAttachmentStreams(
@@ -35,7 +35,7 @@ open class AttachmentManagerMock: AttachmentManager {
     open func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
         return nil
     }
 

@@ -1013,7 +1013,7 @@ public final class MessageReceiver: Dependencies {
             attachmentIds: [],
             editState: .none,
             expiresInSeconds: dataMessage.expireTimer,
-            quotedMessage: quotedMessageBuilder?.quotedMessage,
+            quotedMessage: quotedMessageBuilder?.info,
             contactShare: contact,
             linkPreview: linkPreview,
             messageSticker: messageSticker,
@@ -1065,8 +1065,8 @@ public final class MessageReceiver: Dependencies {
             tx: tx.asV2Write
         )
 
-        quotedMessageBuilder?.attachmentBuilder?.finalize(
-            newMessageRowId: message.sqliteRowId!,
+        quotedMessageBuilder?.finalize(
+            owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
             tx: tx.asV2Write
         )
 

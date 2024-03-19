@@ -21,18 +21,16 @@ public class AttachmentManagerImpl: AttachmentManager {
         fatalError("Unimplemented")
     }
 
-    public func createQuotedReplyAttachmentBuilder(
-        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
-        tx: DBReadTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
+    public func createAttachmentBuilder(
+        from proto: SSKProtoAttachmentPointer,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<Void> {
         let cdnNumber = proto.cdnNumber
         guard let cdnKey = proto.cdnKey?.nilIfEmpty, cdnNumber > 0 else {
-            owsFailDebug("Invalid cdn info")
-            return nil
+            throw OWSAssertionError("Invalid cdn info")
         }
         guard let encryptionKey = proto.key?.nilIfEmpty else {
-            owsFailDebug("Invalid encryption key")
-            return nil
+            throw OWSAssertionError("Invalid encryption key")
         }
 
         let mimeType: String
@@ -54,14 +52,9 @@ public class AttachmentManagerImpl: AttachmentManager {
         }
 
         let sourceFilename =  proto.fileName
-        return QuotedAttachmentBuilder(
-            attachmentInfo: OWSAttachmentInfo(
-                attachmentId: nil,
-                ofType: .V2,
-                contentType: mimeType,
-                sourceFilename: sourceFilename
-            ),
-            finalizeBlock: { [self] (newMessageRowId: Int64, tx: DBWriteTransaction) in
+        return OwnedAttachmentBuilder<Void>(
+            info: (),
+            finalize: { [self] (owner: OwnerId, tx: DBWriteTransaction) in
                 let attachment: Attachment = {
                     // TODO: Create and insert Attachment for the provided proto.
                     fatalError("Unimplemented")
@@ -85,7 +78,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     public func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
         guard
             let originalReference = attachmentStore.attachmentToUseInQuote(
                 originalMessage: originalMessage,
@@ -117,30 +110,12 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: - Helpers
 
-    private class QuotedAttachmentBuilder: QuotedMessageAttachmentBuilder {
-        let attachmentInfo: OWSAttachmentInfo
-
-        let finalizeBlock: (_ newMessageRowId: Int64, _ tx: DBWriteTransaction) -> Void
-
-        init(
-            attachmentInfo: OWSAttachmentInfo,
-            finalizeBlock: @escaping (_ newMessageRowId: Int64, _ tx: DBWriteTransaction) -> Void
-        ) {
-            self.attachmentInfo = attachmentInfo
-            self.finalizeBlock = finalizeBlock
-        }
-
-        var hasBeenFinalized: Bool = false
-        func finalize(newMessageRowId: Int64, tx: DBWriteTransaction) {
-            finalizeBlock(newMessageRowId, tx)
-            hasBeenFinalized = true
-        }
-    }
+    private typealias OwnerId = AttachmentReference.OwnerId
 
     func newQuotedReplyMessageThumbnailBuilder(
         originalReference: AttachmentReference,
         tx: DBReadTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
         guard
             let originalAttachment = attachmentStore.fetch(id: originalReference.attachmentRowId, tx: tx)
         else {
@@ -148,28 +123,26 @@ public class AttachmentManagerImpl: AttachmentManager {
         }
         guard MIMETypeUtil.canMakeThumbnail(originalAttachment.mimeType) else {
             // Can't make a thumbnail!
-            return NoOpFinalizingAttachmentBuilder(
-                attachmentInfo: OWSAttachmentInfo(
-                    attachmentId: nil,
-                    ofType: .unset,
-                    contentType: originalAttachment.mimeType,
-                    sourceFilename: originalReference.sourceFilename
-                )
-            )
+            return .withoutFinalizer(OWSAttachmentInfo(
+                attachmentId: nil,
+                ofType: .unset,
+                contentType: originalAttachment.mimeType,
+                sourceFilename: originalReference.sourceFilename
+            ))
         }
         guard let originalStream = originalAttachment.asStream() else {
             let mimeType = originalAttachment.mimeType
             let sourceFilename = originalReference.sourceFilename
             let renderingFlag = originalReference.renderingFlag
 
-            return Self.QuotedAttachmentBuilder(
-                attachmentInfo: OWSAttachmentInfo(
+            return OwnedAttachmentBuilder<OWSAttachmentInfo>(
+                info: OWSAttachmentInfo(
                     attachmentId: nil,
                     ofType: .V2,
                     contentType: mimeType,
                     sourceFilename: sourceFilename
                 ),
-                finalizeBlock: { [self] (newMessageRowId: Int64, tx: DBWriteTransaction) in
+                finalize: { [self] (owner: OwnerId, tx: DBWriteTransaction) in
                     let attachmentReference: AttachmentReference = {
                         // TODO: create and insert a new reference to the same attachment pointer from the new message.
                         fatalError("Unimplemented")
@@ -185,14 +158,14 @@ public class AttachmentManagerImpl: AttachmentManager {
         let sourceFilename = originalReference.sourceFilename
         let renderingFlag = originalReference.renderingFlag
 
-        return Self.QuotedAttachmentBuilder(
-            attachmentInfo: OWSAttachmentInfo(
+        return OwnedAttachmentBuilder<OWSAttachmentInfo>(
+            info: OWSAttachmentInfo(
                 attachmentId: nil,
                 ofType: .V2,
                 contentType: targetThumbnailMimeType,
                 sourceFilename: sourceFilename
             ),
-            finalizeBlock: { [self, originalAttachmentId] (newMessageRowId: Int64, tx: DBWriteTransaction) in
+            finalize: { [self, originalAttachmentId] (owner: OwnerId, tx: DBWriteTransaction) in
                 guard
                     let originalAttachment = self.attachmentStore.fetch(
                         id: originalAttachmentId,
@@ -205,7 +178,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
                 self.cloneAsThumbnailAndCreateReference(
                     originalAttachment,
-                    newOwner: .quotedReplyAttachment(messageRowId: newMessageRowId),
+                    newOwner: owner,
                     sourceFilename: sourceFilename,
                     renderingFlag: renderingFlag,
                     targetThumbnailMimeType: targetThumbnailMimeType,

@@ -785,6 +785,8 @@
 		6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */; };
 		6640DD632ACDD5DE00CE9A8C /* SVRLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */; };
 		664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */; };
+		664165132BA4A27000C34F6A /* OwnedAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */; };
+		664165162BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664165152BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift */; };
 		6642A8702A8D7B4B00E591C2 /* OWSPaymentActivationRequestFinishedMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6642A8722A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */; };
 		6642A8742A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6642A8732A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3588,6 +3590,8 @@
 		6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingPniChangeNumberProcessor.swift; sourceTree = "<group>"; };
 		6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRLocalStorage.swift; sourceTree = "<group>"; };
 		664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAuth.swift; sourceTree = "<group>"; };
+		664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnedAttachmentBuilder.swift; sourceTree = "<group>"; };
+		664165152BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceRetrievalInfo.swift; sourceTree = "<group>"; };
 		6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSPaymentActivationRequestFinishedMessage.h; sourceTree = "<group>"; };
 		6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSPaymentActivationRequestFinishedMessage.m; sourceTree = "<group>"; };
 		6642A8732A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSPaymentActivationRequestMessage.h; sourceTree = "<group>"; };
@@ -7132,6 +7136,23 @@
 			path = LocalStorage;
 			sourceTree = "<group>";
 		};
+		664165112BA4A26000C34F6A /* OwnedAttachmentBuilder */ = {
+			isa = PBXGroup;
+			children = (
+				664165142BA4C25C00C34F6A /* TSResource */,
+				664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */,
+			);
+			path = OwnedAttachmentBuilder;
+			sourceTree = "<group>";
+		};
+		664165142BA4C25C00C34F6A /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				664165152BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift */,
+			);
+			path = TSResource;
+			sourceTree = "<group>";
+		};
 		6645F30629BF8D1000B58EBD /* AccountAttributes */ = {
 			isa = PBXGroup;
 			children = (
@@ -7396,6 +7417,7 @@
 				66E1AD7F2B8FDA5500C56B7B /* AttachmentReference */,
 				66E1AD512B8D016000C56B7B /* AttachmentStore */,
 				66D7B93E2B9A67A20005C98B /* Downloads */,
+				664165112BA4A26000C34F6A /* OwnedAttachmentBuilder */,
 				66D7B90C2B9798770005C98B /* QuotedMessageAttachment */,
 				66E1AD8C2B912A3000C56B7B /* TSResource */,
 				66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */,
@@ -13458,6 +13480,7 @@
 				F9C5CC5A289453B300548EEE /* OutgoingStoryMessage.swift in Sources */,
 				884E4C4828AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift in Sources */,
 				C1E307402BA3B342009F015B /* OutputStreamable.swift in Sources */,
+				664165132BA4A27000C34F6A /* OwnedAttachmentBuilder.swift in Sources */,
 				F9C5CDDE289453B400548EEE /* OWS2FAManager.m in Sources */,
 				F9C5CE0D289453B400548EEE /* OWS2FAManager.swift in Sources */,
 				F9C5CC49289453B300548EEE /* OWSAddToContactsOfferMessage+SDS.swift in Sources */,
@@ -13963,6 +13986,7 @@
 				66E1AD982B91444600C56B7B /* TSResourceManagerMock.swift in Sources */,
 				66C102F62B61E3D700B47EC2 /* TSResourcePointer.swift in Sources */,
 				66E1AD572B8D59B000C56B7B /* TSResourceReference.swift in Sources */,
+				664165162BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift in Sources */,
 				66E1AD532B8D017400C56B7B /* TSResourceStore.swift in Sources */,
 				66E1AD592B8D59D700C56B7B /* TSResourceStoreImpl.swift in Sources */,
 				66E1AD5B2B8D5A1900C56B7B /* TSResourceStoreMock.swift in Sources */,

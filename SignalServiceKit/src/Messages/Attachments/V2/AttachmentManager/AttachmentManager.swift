@@ -17,23 +17,21 @@ public protocol AttachmentManager {
         tx: DBWriteTransaction
     )
 
-    /// Given a quote reply's attachment proto from its sender,
+    /// Given an attachment proto from its sender,
     /// returns a builder for creating the attachment locally.
     ///
-    /// The attachment info needed to construct the message
+    /// The attachment info needed to construct the owner object
     /// is available immediately, but the caller _must_ finalize
-    /// the builder to guarantee the attachment is created.
+    /// the builder for the attachment to be created.
     ///
     /// Callers should only assume the attachment (if any) exists
     /// after finalizing.
     ///
-    /// "Untrusted" because the sender can spoof what the original
-    /// message's actual attachment was; we should use this method
-    /// only if we couldn't find the original message ourselves.
-    func createQuotedReplyAttachmentBuilder(
-        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
-        tx: DBReadTransaction
-    ) -> QuotedMessageAttachmentBuilder?
+    /// Throws an error if the provided proto is invalid.
+    func createAttachmentBuilder(
+        from proto: SSKProtoAttachmentPointer,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<Void>
 
     /// Create attachment streams from the outgoing infos and their data sources,
     /// consuming those data sources.
@@ -59,7 +57,7 @@ public protocol AttachmentManager {
     func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> QuotedMessageAttachmentBuilder?
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>?
 
     /// Remove an attachment from an owner.
     /// Will only delete the attachment if this is the last owner.

@@ -15,7 +15,7 @@ open class IncomingQuotedReplyReceiverMock: IncomingQuotedReplyReceiver {
         for dataMessage: SSKProtoDataMessage,
         thread: TSThread,
         tx: DBWriteTransaction
-    ) -> QuotedMessageBuilder? {
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
         return nil
     }
 }

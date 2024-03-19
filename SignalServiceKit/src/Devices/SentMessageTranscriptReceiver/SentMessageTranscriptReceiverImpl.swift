@@ -157,7 +157,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             expireStartedAt: messageParams.expirationStartedAt,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
-            quotedMessage: messageParams.quotedMessageBuilder?.quotedMessage,
+            quotedMessage: messageParams.quotedMessageBuilder?.info,
             contactShare: messageParams.contact,
             linkPreview: messageParams.linkPreview,
             messageSticker: messageParams.messageSticker,
@@ -215,8 +215,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 tx: tx
             )
 
-            messageParams.quotedMessageBuilder?.attachmentBuilder?.finalize(
-                newMessageRowId: outgoingMessage.sqliteRowId!,
+            messageParams.quotedMessageBuilder?.finalize(
+                owner: .quotedReplyAttachment(messageRowId: outgoingMessage.sqliteRowId!),
                 tx: tx
             )
         }

@@ -281,22 +281,17 @@ public class TSAttachmentManager {
 
     // MARK: - Creating quoted reply from proto
 
-    public func createQuotedReplyAttachment(
-        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
+    public func createAttachment(
+        from proto: SSKProtoAttachmentPointer,
         tx: SDSAnyWriteTransaction
-    ) -> OWSAttachmentInfo? {
+    ) throws -> TSAttachment {
         guard
             let thumbnailAttachment = TSAttachmentPointer(fromProto: proto, albumMessage: nil)
         else {
-            return nil
+            throw OWSAssertionError("Invalid proto, could not create attachment")
         }
         thumbnailAttachment.anyInsert(transaction: tx)
-        return OWSAttachmentInfo(
-            attachmentId: thumbnailAttachment.uniqueId,
-            ofType: .untrustedPointer,
-            contentType: thumbnailAttachment.mimeType,
-            sourceFilename: thumbnailAttachment.sourceFilename
-        )
+        return thumbnailAttachment
     }
 
     public func cloneThumbnailForNewQuotedReplyMessage(

@@ -33,7 +33,7 @@ public enum SentMessageTranscriptType {
         // TODO: generalize to cover attachments from backups
         public let attachmentPointerProtos: [SSKProtoAttachmentPointer]
 
-        public let quotedMessageBuilder: QuotedMessageBuilder?
+        public let quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>?
 
         public let contact: OWSContact?
 

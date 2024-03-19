@@ -23,11 +23,11 @@ public class TSResourceManagerMock: TSResourceManager {
         // Do nothing
     }
 
-    public func createQuotedReplyAttachmentBuilder(
-        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
+    public func createAttachmentBuilder(
+        from proto: SSKProtoAttachmentPointer,
         tx: DBWriteTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
-        return nil
+    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
+        throw OWSAssertionError("Unimplemented!")
     }
 
     public func buildProtoForSending(
@@ -60,7 +60,7 @@ public class TSResourceManagerMock: TSResourceManager {
     public func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         tx: DBWriteTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
         return nil
     }
 

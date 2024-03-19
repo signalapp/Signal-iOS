@@ -73,25 +73,21 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
-    public func createQuotedReplyAttachmentBuilder(
-        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
+    public func createAttachmentBuilder(
+        from proto: SSKProtoAttachmentPointer,
         tx: DBWriteTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
+    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         if FeatureFlags.newAttachmentsUseV2 {
-            return attachmentManager.createQuotedReplyAttachmentBuilder(
-                fromUntrustedRemote: proto,
+            return try attachmentManager.createAttachmentBuilder(
+                from: proto,
                 tx: tx
-            )
+            ).wrap({ .v2 })
         } else {
-            guard
-                let info = tsAttachmentManager.createQuotedReplyAttachment(
-                    fromUntrustedRemote: proto,
-                    tx: SDSDB.shimOnlyBridge(tx)
-                )
-            else {
-                return nil
-            }
-            return NoOpFinalizingAttachmentBuilder(attachmentInfo: info)
+            let attachment = try tsAttachmentManager.createAttachment(
+                from: proto,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
+            return .withoutFinalizer(.legacy(uniqueId: attachment.uniqueId))
         }
     }
 
@@ -263,7 +259,7 @@ public class TSResourceManagerImpl: TSResourceManager {
     public func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         tx: DBWriteTransaction
-    ) -> QuotedMessageAttachmentBuilder? {
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
         // Normally, we decide whether to create a v1 or v2 attachment based on
         // FeatureFlags.newAttachmentsUseV2. Here, though, we re-use whatever type
         // v1 or v2 that the original message was using.
@@ -291,7 +287,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             else {
                 return nil
             }
-            return NoOpFinalizingAttachmentBuilder(attachmentInfo: info)
+            return .withoutFinalizer(info)
         case .v2(let originalReference):
             return attachmentManager.newQuotedReplyMessageThumbnailBuilder(
                 originalReference: originalReference,
