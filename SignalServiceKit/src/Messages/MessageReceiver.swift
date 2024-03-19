@@ -938,7 +938,11 @@ public final class MessageReceiver: Dependencies {
         let body = dataMessage.body
         let bodyRanges = dataMessage.bodyRanges.isEmpty ? nil : MessageBodyRanges(protos: dataMessage.bodyRanges)
         let serverGuid = envelope.envelope.serverGuid.flatMap { UUID(uuidString: $0) }
-        let quotedMessage = TSQuotedMessage(for: dataMessage, thread: thread, transaction: tx)
+        let quotedMessageBuilder = DependenciesBridge.shared.incomingQuotedReplyReceiver.quotedMessage(
+            for: dataMessage,
+            thread: thread,
+            tx: tx.asV2Write
+        )
         let contact = OWSContact.contact(for: dataMessage, transaction: tx)
 
         var linkPreview: OWSLinkPreview?
@@ -1009,7 +1013,7 @@ public final class MessageReceiver: Dependencies {
             attachmentIds: [],
             editState: .none,
             expiresInSeconds: dataMessage.expireTimer,
-            quotedMessage: quotedMessage,
+            quotedMessage: quotedMessageBuilder?.quotedMessage,
             contactShare: contact,
             linkPreview: linkPreview,
             messageSticker: messageSticker,
@@ -1035,6 +1039,7 @@ public final class MessageReceiver: Dependencies {
         // built and doesn't have the attachments yet, we check for attachments
         // explicitly. Story replies cannot have attachments, so we can bail on
         // them here immediately.
+        // TODO: attachments may not have been created at this point!
         guard message.hasRenderableContent(tx: tx) || (!dataMessage.attachments.isEmpty && !message.isStoryReply) else {
             Logger.warn("Ignoring empty: \(messageDescription)")
             return nil
@@ -1057,6 +1062,11 @@ public final class MessageReceiver: Dependencies {
         DependenciesBridge.shared.tsResourceManager.createBodyAttachmentPointers(
             from: dataMessage.attachments,
             message: message,
+            tx: tx.asV2Write
+        )
+
+        quotedMessageBuilder?.attachmentBuilder?.finalize(
+            newMessageRowId: message.sqliteRowId!,
             tx: tx.asV2Write
         )
 

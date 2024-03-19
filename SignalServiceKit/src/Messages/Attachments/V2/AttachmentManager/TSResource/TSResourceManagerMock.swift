@@ -23,6 +23,13 @@ public class TSResourceManagerMock: TSResourceManager {
         // Do nothing
     }
 
+    public func createQuotedReplyAttachmentBuilder(
+        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
+        tx: DBWriteTransaction
+    ) -> QuotedMessageAttachmentBuilder? {
+        return nil
+    }
+
     public func buildProtoForSending(
         from reference: TSResourceReference,
         pointer: TSResourcePointer
@@ -47,6 +54,13 @@ public class TSResourceManagerMock: TSResourceManager {
         parentMessage: TSMessage,
         tx: DBWriteTransaction
     ) -> TSResourceStream? {
+        return nil
+    }
+
+    public func newQuotedReplyMessageThumbnailBuilder(
+        originalMessage: TSMessage,
+        tx: DBWriteTransaction
+    ) -> QuotedMessageAttachmentBuilder? {
         return nil
     }
 

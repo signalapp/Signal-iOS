@@ -67,6 +67,7 @@ public class DependenciesBridge {
     let incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager
     let incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager
     public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
+    public let incomingQuotedReplyReceiver: IncomingQuotedReplyReceiver
     public let individualCallRecordManager: IndividualCallRecordManager
     public let interactionStore: InteractionStore
     public let keyValueStoreFactory: KeyValueStoreFactory
@@ -144,6 +145,7 @@ public class DependenciesBridge {
         incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager,
         incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager,
         incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor,
+        incomingQuotedReplyReceiver: IncomingQuotedReplyReceiver,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: InteractionStore,
         keyValueStoreFactory: KeyValueStoreFactory,
@@ -220,6 +222,7 @@ public class DependenciesBridge {
         self.incomingCallEventSyncMessageManager = incomingCallEventSyncMessageManager
         self.incomingCallLogEventSyncMessageManager = incomingCallLogEventSyncMessageManager
         self.incomingPniChangeNumberProcessor = incomingPniChangeNumberProcessor
+        self.incomingQuotedReplyReceiver = incomingQuotedReplyReceiver
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
         self.keyValueStoreFactory = keyValueStoreFactory

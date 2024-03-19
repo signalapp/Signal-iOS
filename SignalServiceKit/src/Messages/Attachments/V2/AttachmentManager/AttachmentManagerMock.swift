@@ -17,12 +17,26 @@ open class AttachmentManagerMock: AttachmentManager {
         // Do nothing
     }
 
+    open func createQuotedReplyAttachmentBuilder(
+        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
+        tx: DBReadTransaction
+    ) -> QuotedMessageAttachmentBuilder? {
+        return nil
+    }
+
     open func createAttachmentStreams(
         consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
         owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing
+    }
+
+    open func newQuotedReplyMessageThumbnailBuilder(
+        originalMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> QuotedMessageAttachmentBuilder? {
+        return nil
     }
 
     open func removeAttachment(

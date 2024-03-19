@@ -57,4 +57,17 @@ extension AttachmentStore {
             return nil
         }
     }
+
+    public func attachmentToUseInQuote(
+        originalMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> AttachmentReference? {
+        guard let messageRowId = originalMessage.sqliteRowId else {
+            owsFailDebug("Cloning attachment for un-inserted message")
+            return nil
+        }
+        return self.orderedBodyAttachments(for: originalMessage, tx: tx).first
+            ?? self.fetchFirstReference(owner: .messageLinkPreview(messageRowId: messageRowId), tx: tx)
+            ?? self.fetchFirstReference(owner: .messageSticker(messageRowId: messageRowId), tx: tx)
+    }
 }

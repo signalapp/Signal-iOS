@@ -263,7 +263,11 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             messageSticker = nil
         }
 
-        let quotedMessage = TSQuotedMessage(for: dataMessage, thread: target.thread, transaction: SDSDB.shimOnlyBridge(tx))
+        let quotedMessageBuilder = DependenciesBridge.shared.incomingQuotedReplyReceiver.quotedMessage(
+            for: dataMessage,
+            thread: target.thread,
+            tx: tx
+        )
 
         let storyTimestamp: UInt64?
         let storyAuthorAci: Aci?
@@ -289,7 +293,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             body: body,
             bodyRanges: bodyRanges,
             attachmentPointerProtos: dataMessage.attachments,
-            quotedMessage: quotedMessage,
+            quotedMessageBuilder: quotedMessageBuilder,
             contact: contact,
             linkPreview: linkPreview,
             giftBadge: giftBadge,

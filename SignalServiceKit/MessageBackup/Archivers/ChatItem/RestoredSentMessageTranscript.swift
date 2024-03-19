@@ -44,13 +44,21 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             target = .group(groupThread)
         }
 
+        // TODO: handle attachments in quotes
+        let quotedMessageBuilder = contents.quotedMessage.map {
+            return QuotedMessageBuilder(
+                quotedMessage: $0,
+                attachmentBuilder: $0.attachmentInfo().map(NoOpFinalizingAttachmentBuilder.init(attachmentInfo:))
+            )
+        }
+
         let messageParams = SentMessageTranscriptType.Message(
             target: target,
             body: contents.body?.text,
             bodyRanges: contents.body?.ranges,
             // TODO: attachments
             attachmentPointerProtos: [],
-            quotedMessage: contents.quotedMessage,
+            quotedMessageBuilder: quotedMessageBuilder,
             // TODO: contact message
             contact: nil,
             // TODO: linkPreview message

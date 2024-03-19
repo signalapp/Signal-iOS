@@ -69,9 +69,19 @@ public class AttachmentStream {
         fatalError("Unimplemented!")
     }
 
+    public static func pointSize(pixelSize: CGSize) -> CGSize {
+        let factor = 1 / UIScreen.main.scale
+        return CGSize(
+            width: pixelSize.width * factor,
+            height: pixelSize.height * factor
+        )
+    }
+
     private static let thumbnailDimensionPointsSmall: CGFloat = 200
     private static let thumbnailDimensionPointsMedium: CGFloat = 450
     private static let thumbnailDimensionPointsMediumLarge: CGFloat = 600
+
+    public static let thumbnailDimensionPointsForQuotedReply = thumbnailDimensionPointsSmall
 
     // This size is large enough to render full screen.
     private static func thumbnailDimensionPointsLarge() -> CGFloat {

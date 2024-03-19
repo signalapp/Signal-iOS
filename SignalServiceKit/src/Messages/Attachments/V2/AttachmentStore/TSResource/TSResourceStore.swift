@@ -70,6 +70,11 @@ public protocol TSResourceStore {
         parentMessage: TSMessage,
         tx: DBReadTransaction
     ) -> TSQuotedMessageResourceReference?
+
+    func attachmentToUseInQuote(
+        originalMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSResourceReference?
 }
 
 // MARK: - Convenience

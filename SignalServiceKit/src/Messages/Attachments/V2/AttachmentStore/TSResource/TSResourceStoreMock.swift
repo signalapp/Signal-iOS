@@ -83,6 +83,13 @@ public class TSResourceStoreMock: TSResourceStore {
             .first
             .map { .thumbnail(.init(attachmentRef: $0, mimeType: nil, sourceFilename: nil)) }
     }
+
+    public func attachmentToUseInQuote(
+        originalMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSResourceReference? {
+        return nil
+    }
 }
 
 #endif

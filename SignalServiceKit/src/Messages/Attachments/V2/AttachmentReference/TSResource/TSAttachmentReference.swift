@@ -31,7 +31,7 @@ import Foundation
 public struct TSAttachmentReference: TSResourceReference {
 
     private let uniqueId: String
-    private let attachment: TSAttachment?
+    public let attachment: TSAttachment?
 
     internal init(uniqueId: String, attachment: TSAttachment?) {
         self.uniqueId = uniqueId

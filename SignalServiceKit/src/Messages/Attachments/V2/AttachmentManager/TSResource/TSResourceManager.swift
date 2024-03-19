@@ -45,6 +45,26 @@ public protocol TSResourceManager {
         tx: DBWriteTransaction
     ) throws
 
+    /// Given a quote reply's attachment proto from its sender,
+    /// returns a builder for creating the attachment locally.
+    ///
+    /// The attachment info needed to construct the message
+    /// is available immediately, but the caller _must_ finalize
+    /// the builder to guarantee the attachment is created.
+    ///
+    /// Legacy attachments are created synchronously,
+    /// v2 attachments are created at finalization time.
+    /// Callers should only assume the attachment (if any) exists
+    /// after finalizing.
+    ///
+    /// "Untrusted" because the sender can spoof what the original
+    /// message's actual attachment was; we should use this method
+    /// only if we couldn't find the original message ourselves.
+    func createQuotedReplyAttachmentBuilder(
+        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
+        tx: DBWriteTransaction
+    ) -> QuotedMessageAttachmentBuilder?
+
     func buildProtoForSending(
         from reference: TSResourceReference,
         pointer: TSResourcePointer
@@ -93,6 +113,26 @@ public protocol TSResourceManager {
         parentMessage: TSMessage,
         tx: DBWriteTransaction
     ) -> TSResourceStream?
+
+    /// Given an original message available locally, reurns a builder
+    /// for creating a thumbnail attachment for quoted replies.
+    ///
+    /// If the original lacks an attachment, returns nil. If the original has an
+    /// attachment that can't be thumbnailed, returns an appropriate
+    /// info without creating a new attachment.
+    ///
+    /// The attachment info needed to construct the reply message
+    /// is available immediately, but the caller _must_ finalize
+    /// the builder to guarantee the attachment is created.
+    ///
+    /// Legacy attachments are created synchronously,
+    /// v2 attachments are created at finalization time.
+    /// Callers should only assume the attachment (if any) exists
+    /// after finalizing.
+    func newQuotedReplyMessageThumbnailBuilder(
+        originalMessage: TSMessage,
+        tx: DBWriteTransaction
+    ) -> QuotedMessageAttachmentBuilder?
 
     func thumbnailImage(
         thumbnail: TSQuotedMessageResourceReference.Thumbnail,

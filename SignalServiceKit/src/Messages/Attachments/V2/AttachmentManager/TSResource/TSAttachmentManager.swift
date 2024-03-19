@@ -278,6 +278,70 @@ public class TSAttachmentManager {
         }
         return thumbnailClone
     }
+
+    // MARK: - Creating quoted reply from proto
+
+    public func createQuotedReplyAttachment(
+        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
+        tx: SDSAnyWriteTransaction
+    ) -> OWSAttachmentInfo? {
+        guard
+            let thumbnailAttachment = TSAttachmentPointer(fromProto: proto, albumMessage: nil)
+        else {
+            return nil
+        }
+        thumbnailAttachment.anyInsert(transaction: tx)
+        return OWSAttachmentInfo(
+            attachmentId: thumbnailAttachment.uniqueId,
+            ofType: .untrustedPointer,
+            contentType: thumbnailAttachment.mimeType,
+            sourceFilename: thumbnailAttachment.sourceFilename
+        )
+    }
+
+    public func cloneThumbnailForNewQuotedReplyMessage(
+        originalAttachment: TSAttachment,
+        tx: SDSAnyWriteTransaction
+    ) -> OWSAttachmentInfo? {
+        if
+            let stream = originalAttachment as? TSAttachmentStream,
+            MIMETypeUtil.canMakeThumbnail(stream.mimeType)
+        {
+            // We found an attachment stream on the original message! Use it as our quoted attachment
+            if let thumbnail = stream.cloneAsThumbnail() {
+                thumbnail.anyInsert(transaction: tx)
+                return OWSAttachmentInfo(
+                    attachmentId: thumbnail.uniqueId,
+                    ofType: .thumbnail,
+                    contentType: stream.mimeType,
+                    sourceFilename: stream.sourceFilename
+                )
+            } else {
+                owsFailDebug("Unable to clone!")
+                return nil
+            }
+
+        } else if
+            let pointer = originalAttachment as? TSAttachmentPointer,
+            MIMETypeUtil.canMakeThumbnail(pointer.mimeType)
+        {
+            // No attachment stream, but we have a pointer. It's likely this media hasn't finished downloading yet.
+            return OWSAttachmentInfo(
+                attachmentId: pointer.uniqueId,
+                ofType: .original,
+                contentType: pointer.mimeType,
+                sourceFilename: pointer.sourceFilename
+            )
+        } else {
+            // We have an attachment in the original message, but it doesn't support thumbnailing
+            return OWSAttachmentInfo(
+                attachmentId: nil,
+                ofType: .unset,
+                contentType: originalAttachment.mimeType,
+                sourceFilename: originalAttachment.sourceFilename
+            )
+        }
+    }
 }
 
 fileprivate extension OWSAttachmentInfoReference {

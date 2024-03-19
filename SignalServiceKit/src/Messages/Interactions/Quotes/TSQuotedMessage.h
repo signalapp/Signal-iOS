@@ -65,6 +65,11 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithAttachmentId:(NSString *_Nullable)attachmentId
+                              ofType:(OWSAttachmentInfoReference)attachmentType
+                         contentType:(NSString *)contentType
+                      sourceFilename:(NSString *_Nullable)sourceFilename;
 @end
 
 
@@ -98,10 +103,14 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
        quotedAttachmentForSending:(nullable TSAttachment *)attachment
                       isGiftBadge:(BOOL)isGiftBadge;
 
-// used when receiving quoted messages
-+ (nullable instancetype)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
-                                              thread:(TSThread *)thread
-                                         transaction:(SDSAnyWriteTransaction *)transaction;
+// used when receiving quoted messages. Do not call directly outside AttachmentManager.
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                    authorAddress:(SignalServiceAddress *)authorAddress
+                             body:(nullable NSString *)body
+                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                       bodySource:(TSQuotedMessageContentSource)bodySource
+     receivedQuotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
+                      isGiftBadge:(BOOL)isGiftBadge;
 
 // used when restoring quoted messages from backups
 // TODO: attachments should be here too, once they are body can be made nullable.

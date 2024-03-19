@@ -162,6 +162,11 @@ public class AppSetup {
             tsResourceStore: tsResourceStore
         )
 
+        let incomingQuotedReplyReceiver = IncomingQuotedReplyReceiverImpl(
+            attachmentManager: tsResourceManager,
+            attachmentStore: tsResourceStore
+        )
+
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
             dateProvider: dateProvider,
@@ -671,6 +676,7 @@ public class AppSetup {
             incomingCallEventSyncMessageManager: incomingCallEventSyncMessageManager,
             incomingCallLogEventSyncMessageManager: incomingCallLogEventSyncMessageManager,
             incomingPniChangeNumberProcessor: incomingPniChangeNumberProcessor,
+            incomingQuotedReplyReceiver: incomingQuotedReplyReceiver,
             individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore,
             keyValueStoreFactory: keyValueStoreFactory,

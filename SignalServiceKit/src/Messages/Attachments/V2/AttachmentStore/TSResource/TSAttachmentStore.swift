@@ -121,6 +121,38 @@ public class TSAttachmentStore {
         return exists
     }
 
+    public func attachmentToUseInQuote(
+        originalMessage: TSMessage,
+        tx: SDSAnyReadTransaction
+    ) -> TSAttachment? {
+        for attachmentId in originalMessage.attachmentIds {
+            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: tx) else {
+                continue
+            }
+            if attachment.isOversizeTextMimeType.negated {
+                return attachment
+            }
+        }
+
+        if
+            let linkPreview = originalMessage.linkPreview,
+            let attachmentId = linkPreview.legacyImageAttachmentId?.nilIfEmpty,
+            let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: tx)
+        {
+            return attachment
+        }
+
+        if
+            let messageSticker = originalMessage.messageSticker,
+            messageSticker.attachmentId.isEmpty.negated,
+            let attachment = TSAttachment.anyFetch(uniqueId: messageSticker.attachmentId, transaction: tx)
+        {
+            return attachment
+        }
+
+        return nil
+    }
+
     // MARK: - Helpers
 
     private func attachments(

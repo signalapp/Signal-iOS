@@ -93,4 +93,27 @@ extension AttachmentStore {
     ) -> [Attachment] {
         return fetch(ids: references.map(\.attachmentRowId), tx: tx)
     }
+
+    func orderedBodyAttachments(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) -> [AttachmentReference] {
+        guard let messageRowId = message.sqliteRowId else {
+            owsFailDebug("Fetching attachments for un-inserted message")
+            return []
+        }
+        return self
+            .fetchReferences(owner: .messageBodyAttachment(messageRowId: messageRowId), tx: tx)
+            .lazy
+            .compactMap { (ref: AttachmentReference) -> (UInt32, AttachmentReference)? in
+                switch ref.owner {
+                case .message(.bodyAttachment(let metadata)):
+                    return (metadata.index, ref)
+                default:
+                    return nil
+                }
+            }
+            .sorted(by: { $0.0 < $1.0 })
+            .map(\.1)
+    }
 }

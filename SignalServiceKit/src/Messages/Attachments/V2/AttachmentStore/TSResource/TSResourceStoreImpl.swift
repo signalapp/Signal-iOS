@@ -231,6 +231,28 @@ public class TSResourceStoreImpl: TSResourceStore {
             }
         }
     }
+
+    public func attachmentToUseInQuote(
+        originalMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSResourceReference? {
+        if
+            FeatureFlags.readV2Attachments,
+            let attachment = attachmentStore.attachmentToUseInQuote(originalMessage: originalMessage, tx: tx)
+        {
+            return attachment
+        } else {
+            guard
+                let attachment = tsAttachmentStore.attachmentToUseInQuote(
+                    originalMessage: originalMessage,
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )
+            else {
+                return nil
+            }
+            return TSAttachmentReference(uniqueId: attachment.uniqueId, attachment: attachment)
+        }
+    }
 }
 
 // MARK: - TSResourceUploadStore

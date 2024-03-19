@@ -73,6 +73,28 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
+    public func createQuotedReplyAttachmentBuilder(
+        fromUntrustedRemote proto: SSKProtoAttachmentPointer,
+        tx: DBWriteTransaction
+    ) -> QuotedMessageAttachmentBuilder? {
+        if FeatureFlags.newAttachmentsUseV2 {
+            return attachmentManager.createQuotedReplyAttachmentBuilder(
+                fromUntrustedRemote: proto,
+                tx: tx
+            )
+        } else {
+            guard
+                let info = tsAttachmentManager.createQuotedReplyAttachment(
+                    fromUntrustedRemote: proto,
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )
+            else {
+                return nil
+            }
+            return NoOpFinalizingAttachmentBuilder(attachmentInfo: info)
+        }
+    }
+
     public func buildProtoForSending(
         from reference: TSResourceReference,
         pointer: TSResourcePointer
@@ -228,6 +250,46 @@ public class TSResourceManagerImpl: TSResourceManager {
             return tsAttachmentManager.createThumbnailAndUpdateMessageIfNecessary(
                 parentMessage: parentMessage,
                 tx: SDSDB.shimOnlyBridge(tx)
+            )
+        }
+    }
+
+    public func newQuotedReplyMessageThumbnailBuilder(
+        originalMessage: TSMessage,
+        tx: DBWriteTransaction
+    ) -> QuotedMessageAttachmentBuilder? {
+        // Normally, we decide whether to create a v1 or v2 attachment based on
+        // FeatureFlags.newAttachmentsUseV2. Here, though, we re-use whatever type
+        // v1 or v2 that the original message was using.
+        // This does mean we could end up creating v1 attachments even after starting creating
+        // v2 ones, but the migration should eventually catch up.
+        // Remember that both this code and any migrations use write transactions, so
+        // that serves as a global lock that ensures there aren't races; new quotes create
+        // new v1 attachments but not while the migration is running.
+        let originalAttachmentRef = tsResourceStore.attachmentToUseInQuote(
+            originalMessage: originalMessage,
+            tx: tx
+        )
+        switch originalAttachmentRef?.concreteType {
+        case nil:
+            return nil
+        case .legacy(let tSAttachmentReference):
+            guard let attachment = tSAttachmentReference.attachment else {
+                return nil
+            }
+            guard
+                let info = tsAttachmentManager.cloneThumbnailForNewQuotedReplyMessage(
+                    originalAttachment: attachment,
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )
+            else {
+                return nil
+            }
+            return NoOpFinalizingAttachmentBuilder(attachmentInfo: info)
+        case .v2(let originalReference):
+            return attachmentManager.newQuotedReplyMessageThumbnailBuilder(
+                originalReference: originalReference,
+                tx: tx
             )
         }
     }

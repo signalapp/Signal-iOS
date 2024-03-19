@@ -157,7 +157,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             expireStartedAt: messageParams.expirationStartedAt,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
-            quotedMessage: messageParams.quotedMessage,
+            quotedMessage: messageParams.quotedMessageBuilder?.quotedMessage,
             contactShare: messageParams.contact,
             linkPreview: messageParams.linkPreview,
             messageSticker: messageParams.messageSticker,
@@ -175,6 +175,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
         // But since outgoingMessage is partially built and doesn't have the attachments yet, we check
         // for attachments explicitly.
+        // TODO: attachments may not have been created at this point!
         let hasRenderableContent = interactionStore.messageHasRenderableContent(outgoingMessage, tx: tx)
         let outgoingMessageHasContent = hasRenderableContent
             || messageParams.attachmentPointerProtos.isEmpty.negated
@@ -211,6 +212,11 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             tsResourceManager.createBodyAttachmentPointers(
                 from: messageParams.attachmentPointerProtos,
                 message: outgoingMessage,
+                tx: tx
+            )
+
+            messageParams.quotedMessageBuilder?.attachmentBuilder?.finalize(
+                newMessageRowId: outgoingMessage.sqliteRowId!,
                 tx: tx
             )
         }
