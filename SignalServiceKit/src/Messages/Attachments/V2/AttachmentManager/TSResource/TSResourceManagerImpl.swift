@@ -175,8 +175,14 @@ public class TSResourceManagerImpl: TSResourceManager {
 
         if types.contains(.linkPreview), let linkPreview = message.linkPreview {
             Logger.verbose("Removing link preview attachment.")
-            // TODO: move this into this class
-            linkPreview.removeAttachment(tx: SDSDB.shimOnlyBridge(tx))
+            if linkPreview.usesV2AttachmentReference {
+                v2Owners.append(.messageLinkPreview)
+            } else if let attachmentId = linkPreview.legacyImageAttachmentId?.nilIfEmpty {
+                tsAttachmentManager.removeAttachment(
+                    attachmentId: attachmentId,
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )
+            }
         }
 
         if types.contains(.sticker), let messageSticker = message.messageSticker {

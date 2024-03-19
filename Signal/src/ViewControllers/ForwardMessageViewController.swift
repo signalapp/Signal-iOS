@@ -866,9 +866,16 @@ public struct ForwardMessageItem {
             }
         }
         var linkPreviewImage: LinkPreviewImage?
-        if let imageAttachmentId = linkPreview.imageAttachmentId(forParentMessage: parentMessage, tx: transaction),
-           let image = LinkPreviewImage.load(attachmentId: imageAttachmentId,
-                                             transaction: transaction) {
+        if
+            let imageAttachmentId = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
+                for: parentMessage,
+                tx: transaction.asV2Read
+            )?.resourceId.bridgeUniqueId,
+            let image = LinkPreviewImage.load(
+                attachmentId: imageAttachmentId,
+                transaction: transaction
+            )
+        {
             linkPreviewImage = image
         }
         let draft = OWSLinkPreviewDraft(url: url,

@@ -18,7 +18,7 @@ public enum TSResourceId: Hashable, Equatable {
 extension TSResourceId {
 
     // TODO: remove this before creating v2 instances
-    var bridgeUniqueId: String {
+    public var bridgeUniqueId: String {
         switch self {
         case .legacy(let uniqueId):
             return uniqueId

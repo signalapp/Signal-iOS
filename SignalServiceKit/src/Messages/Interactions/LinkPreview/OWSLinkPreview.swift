@@ -107,7 +107,7 @@ public class OWSLinkPreview: MTLModel, Codable {
         try super.init(dictionary: dictionaryValue)
     }
 
-    internal var legacyImageAttachmentId: String? {
+    public var legacyImageAttachmentId: String? {
         return imageAttachmentId
     }
 

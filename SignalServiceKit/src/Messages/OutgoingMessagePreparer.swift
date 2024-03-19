@@ -128,9 +128,11 @@ public class OutgoingMessagePreparer: NSObject {
 
         if
             let linkPreview = message.linkPreview,
-            let attachmentId = linkPreview.imageAttachmentStreamId(forParentMessage: message, tx: tx)
+            let attachmentId = linkPreview.legacyImageAttachmentId
         {
-            attachmentIds.append(attachmentId)
+            let attachmentStream = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: attachmentId, transaction: tx)
+            owsAssertDebug(attachmentStream != nil)
+            attachmentStream.map { attachmentIds.append($0.uniqueId) }
         }
 
         if let messageSticker = message.messageSticker {

@@ -126,8 +126,11 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         switch attachment {
         case .file(let file):
             return file.attachmentId
-        case .text(let attachment):
-            return attachment.preview?.imageAttachmentUniqueId(forParentStoryMessage: self, tx: tx)
+        case .text:
+            return DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
+                for: self,
+                tx: tx.asV2Read
+            )?.resourceId.bridgeUniqueId
         case .foreignReferenceAttachment:
             guard
                 let resource = StoryMessageResource.fetch(storyMessage: self, tx: tx),

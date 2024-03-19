@@ -79,16 +79,17 @@ extension TSAttachmentDownloadManager {
                         return nil
                     }
                     return pointer
-                case .text(let attachment):
+                case .text:
                     guard
-                        let attachmentId = attachment.preview?.imageAttachmentUniqueId(
-                            forParentStoryMessage: storyMessage,
-                            tx: tx
-                        )
+                        let attachmentRef = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
+                            for: storyMessage,
+                            tx: tx.asV2Read
+                        ),
+                        let attachment = attachmentRef.fetch(tx: tx)
                     else {
                         return nil
                     }
-                    return TSAttachmentPointer.anyFetchAttachmentPointer(uniqueId: attachmentId, transaction: tx)
+                    return attachment.bridge as? TSAttachmentPointer
                 }
             }()
             guard let attachmentPointer else {
@@ -258,7 +259,7 @@ extension TSAttachmentDownloadManager {
                 self.contactShareAvatarPromise = nil
             }
 
-            if let attachmentId = message.linkPreview?.imageAttachmentId(forParentMessage: message, tx: tx) {
+            if let attachmentId = message.linkPreview?.legacyImageAttachmentId?.nilIfEmpty {
                 let jobNPromise = buildJob(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
                 self.linkPreviewJob = jobNPromise?.0
                 self.linkPreviewPromise = jobNPromise?.1

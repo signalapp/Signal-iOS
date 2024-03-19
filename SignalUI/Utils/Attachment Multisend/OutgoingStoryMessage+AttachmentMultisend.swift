@@ -79,12 +79,7 @@ extension OutgoingStoryMessage {
                                 throw OWSAssertionError("Invalid text attachment")
                             }
 
-                            if
-                                let linkPreviewAttachmentId = finalTextAttachment.preview?.imageAttachmentUniqueId(
-                                    forParentStoryMessageRowId: storyMessageRowId,
-                                    tx: transaction
-                                )
-                            {
+                            if let linkPreviewAttachmentId = finalTextAttachment.preview?.legacyImageAttachmentId {
                                 var correspondingIdsForAttachment = state.correspondingAttachmentIds[textAttachment.id] ?? []
                                 correspondingIdsForAttachment += [linkPreviewAttachmentId]
                                 state.correspondingAttachmentIds[textAttachment.id] = correspondingIdsForAttachment

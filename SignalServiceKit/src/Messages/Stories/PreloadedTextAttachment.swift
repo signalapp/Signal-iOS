@@ -21,12 +21,13 @@ public struct PreloadedTextAttachment: Equatable {
         storyMessage: StoryMessage,
         tx: SDSAnyReadTransaction
     ) -> Self {
-        let linkPreviewAttachment: TSAttachment? = textAttachment.preview?.imageAttachmentUniqueId(
-            forParentStoryMessage: storyMessage,
-            tx: tx
-        ).map { uniqueId in
-            return TSAttachment.anyFetch(uniqueId: uniqueId, transaction: tx)
-        } ?? nil
+        let linkPreviewAttachment: TSAttachment? = DependenciesBridge.shared.tsResourceStore
+            .linkPreviewAttachment(
+                for: storyMessage,
+                tx: tx.asV2Read
+            )?
+            .fetch(tx: tx)?
+            .bridge
         return .init(textAttachment: textAttachment, linkPreviewAttachment: linkPreviewAttachment)
     }
 }

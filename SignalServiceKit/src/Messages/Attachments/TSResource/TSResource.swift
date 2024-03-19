@@ -69,5 +69,5 @@ extension TSResource {
     // TODO: this is just to help with bridging while all TSResources are actually TSAttachments,
     // and we are migrating code to TSResource that hands an instance to unmigrated code.
     // Remove once all references to TSAttachment are replaced with TSResource.
-    var bridge: TSAttachment { self as! TSAttachment }
+    public var bridge: TSAttachment { self as! TSAttachment }
 }

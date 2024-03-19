@@ -90,6 +90,13 @@ public class TSResourceStoreMock: TSResourceStore {
     ) -> TSResourceReference? {
         return nil
     }
+
+    public func linkPreviewAttachment(
+        for storyMessage: StoryMessage,
+        tx: DBReadTransaction
+    ) -> TSResourceReference? {
+        return nil
+    }
 }
 
 #endif

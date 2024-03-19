@@ -144,9 +144,18 @@ public class TSResourceStoreImpl: TSResourceStore {
     }
 
     public func linkPreviewAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
-        // TODO: merge this with OWSLinkPreview+Attachment
-        let id = message.linkPreview?.imageAttachmentId(forParentMessage: message, tx: SDSDB.shimOnlyBridge(tx))
-        return legacyReference(uniqueId: id, tx: tx)
+        guard let linkPreview = message.linkPreview else {
+            return nil
+        }
+        if FeatureFlags.readV2Attachments, linkPreview.usesV2AttachmentReference {
+            guard let messageRowId = message.sqliteRowId else {
+                owsFailDebug("Fetching attachments for an un-inserted message!")
+                return nil
+            }
+            return attachmentStore.fetchFirstReference(owner: .messageLinkPreview(messageRowId: messageRowId), tx: tx)
+        } else {
+            return legacyReference(uniqueId: linkPreview.legacyImageAttachmentId, tx: tx)
+        }
     }
 
     public func stickerAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
@@ -251,6 +260,34 @@ public class TSResourceStoreImpl: TSResourceStore {
                 return nil
             }
             return TSAttachmentReference(uniqueId: attachment.uniqueId, attachment: attachment)
+        }
+    }
+
+    // MARK: - Story Message Attachment Fetching
+
+    public func linkPreviewAttachment(
+        for storyMessage: StoryMessage,
+        tx: DBReadTransaction
+    ) -> TSResourceReference? {
+        switch storyMessage.attachment {
+        case .file, .foreignReferenceAttachment:
+            return nil
+        case .text(let textAttachment):
+            guard let linkPreview = textAttachment.preview else {
+                return nil
+            }
+            if FeatureFlags.readV2Attachments, linkPreview.usesV2AttachmentReference {
+                guard let storyMessageRowId = storyMessage.id else {
+                    owsFailDebug("Fetching attachments for an un-inserted story message!")
+                    return nil
+                }
+                return attachmentStore.fetchFirstReference(
+                    owner: .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId),
+                    tx: tx
+                )
+            } else {
+                return legacyReference(uniqueId: linkPreview.legacyImageAttachmentId, tx: tx)
+            }
         }
     }
 }

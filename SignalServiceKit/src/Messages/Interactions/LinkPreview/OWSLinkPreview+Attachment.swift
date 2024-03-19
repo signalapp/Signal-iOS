@@ -22,90 +22,8 @@ extension OWSLinkPreview {
     }
 
     public static func withoutImage(urlString: String) -> OWSLinkPreview {
-        // TODO: use v2, but don't actually create any attachment.
-        return OWSLinkPreview(urlString: urlString, title: nil, attachmentRef: .legacy(uniqueId: nil))
-    }
-
-    @objc
-    public func imageAttachment(
-        forParentMessage: TSMessage,
-        tx: SDSAnyReadTransaction
-    ) -> TSAttachment? {
-        switch attachmentReference {
-        case .legacy(let uniqueId):
-            guard let uniqueId else {
-                return nil
-            }
-            return TSAttachment.anyFetch(uniqueId: uniqueId, transaction: tx)
-        case .v2:
-            // TODO: do a lookup on the AttachmentReferences table and then Attachments table.
-            owsFailDebug("V2 attachments should not be used yet!")
-            return nil
-        }
-    }
-
-    public func imageAttachmentUniqueId(
-        forParentStoryMessage: StoryMessage,
-        tx: SDSAnyReadTransaction
-    ) -> String? {
-        guard let id = forParentStoryMessage.id else {
-            owsFailDebug("Should pass an already-inserted story message")
-            return nil
-        }
-        return imageAttachmentUniqueId(
-            forParentStoryMessageRowId: id,
-            tx: tx
-        )
-    }
-
-    public func imageAttachmentUniqueId(
-        forParentStoryMessageRowId: Int64,
-        tx: SDSAnyReadTransaction
-    ) -> String? {
-        switch attachmentReference {
-        case .legacy(let uniqueId):
-            return uniqueId
-        case .v2:
-            // TODO: do a lookup on the AttachmentReferences table.
-            owsFailDebug("V2 attachments should not be used yet!")
-            return nil
-        }
-    }
-
-    /// Returns the unique id of the attachment if its an attachment stream; if there is no attachment
-    /// or its a pointer to an undownloaded attachment, returns nil.
-    @objc
-    public func imageAttachmentStreamId(
-        forParentMessage: TSMessage,
-        tx: SDSAnyReadTransaction
-    ) -> String? {
-        switch attachmentReference {
-        case .legacy(let uniqueId):
-            guard let uniqueId else {
-                return nil
-            }
-            return TSAttachmentStream.anyFetchAttachmentStream(uniqueId: uniqueId, transaction: tx)?.uniqueId
-        case .v2:
-            // TODO: do a lookup on the AttachmentReferences table.
-            owsFailDebug("V2 attachments should not be used yet!")
-            return nil
-        }
-    }
-
-    /// Returns the unique id of the attachment regardless of type.
-    @objc
-    public func imageAttachmentId(
-        forParentMessage: TSMessage,
-        tx: SDSAnyReadTransaction
-    ) -> String? {
-        switch attachmentReference {
-        case .legacy(let uniqueId):
-            return uniqueId
-        case .v2:
-            // TODO: do a lookup on the AttachmentReferences table.
-            owsFailDebug("V2 attachments should not be used yet!")
-            return nil
-        }
+        let attachmentRef: AttachmentReference = FeatureFlags.newAttachmentsUseV2 ? .v2 : .legacy(uniqueId: nil)
+        return OWSLinkPreview(urlString: urlString, title: nil, attachmentRef: attachmentRef)
     }
 
     // MARK: - From Proto
@@ -247,27 +165,6 @@ extension OWSLinkPreview {
         } catch {
             owsFailDebug("Could not write data source for: \(fileUrl), error: \(error)")
             return nil
-        }
-    }
-
-    // MARK: - Removing
-
-    @objc
-    public func removeAttachment(tx: SDSAnyWriteTransaction) {
-        switch attachmentReference {
-        case .legacy(let uniqueId):
-            guard let imageAttachmentId = uniqueId else {
-                owsFailDebug("No attachment id.")
-                return
-            }
-            guard let attachment = TSAttachment.anyFetch(uniqueId: imageAttachmentId, transaction: tx) else {
-                owsFailDebug("Could not load attachment.")
-                return
-            }
-            attachment.anyRemove(transaction: tx)
-        case .v2:
-            // TODO: look up and remove AttachmentReferences row.
-            owsFailDebug("V2 attachments should not be used yet!")
         }
     }
 }

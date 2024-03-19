@@ -1289,19 +1289,28 @@ fileprivate extension CVComponentState.Builder {
                                                state: state)
             }
         } else {
-            let linkPreviewAttachment = { () -> TSAttachment? in
-                guard let linkPreviewAttachment = linkPreview.imageAttachment(forParentMessage: message, tx: transaction) else {
+            let linkPreviewAttachment = { () -> TSResource? in
+                guard
+                    let linkPreviewAttachmentRef = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
+                        for: message,
+                        tx: transaction.asV2Read
+                    ),
+                    let linkPreviewAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
+                        linkPreviewAttachmentRef.resourceId,
+                        tx: transaction.asV2Read
+                    )
+                else {
                     return nil
                 }
 
-                guard linkPreviewAttachment.isImageMimeType else {
+                guard MIMETypeUtil.isImage(linkPreviewAttachment.mimeType) else {
                     owsFailDebug("Link preview attachment isn't an image.")
                     return nil
                 }
-                guard let attachmentStream = linkPreviewAttachment as? TSAttachmentStream else {
+                guard let attachmentStream = linkPreviewAttachment.asResourceStream() else {
                     return nil
                 }
-                guard attachmentStream.isValidImage else {
+                guard attachmentStream.computeContentType().isImage else {
                     owsFailDebug("Link preview image attachment isn't valid.")
                     return nil
                 }
@@ -1309,10 +1318,10 @@ fileprivate extension CVComponentState.Builder {
             }()
 
             let state = LinkPreviewSent(linkPreview: linkPreview,
-                                        imageAttachment: linkPreviewAttachment,
+                                        imageAttachment: linkPreviewAttachment?.bridge,
                                         conversationStyle: conversationStyle)
             self.linkPreview = LinkPreview(linkPreview: linkPreview,
-                                           linkPreviewAttachment: linkPreviewAttachment,
+                                           linkPreviewAttachment: linkPreviewAttachment?.bridge,
                                            state: state)
         }
     }
