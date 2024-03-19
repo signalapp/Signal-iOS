@@ -5156,13 +5156,13 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Fallo al activar la cámara.";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Ir al chat";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Iniciar un chat con “%1$@”";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "Se ha encontrado a %1$@";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "El vídeo es demasiado largo";

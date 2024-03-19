@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• Tab cuộc gọi giờ đây sẽ tự động sắp xếp và nhóm các sự kiện gọi có liên quan lại với nhau.
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• Chúng tôi cũng đã cập nhật máy ảnh của ứng dụng Signal để hỗ trợ quét mã QR tên người dùng.

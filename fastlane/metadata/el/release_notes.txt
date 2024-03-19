@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• Η καρτέλα κλήσεων θα οργανώνει και θα ομαδοποιεί πλέον αυτόματα τις σχετικές εκδηλώσεις κλήσης, όπως όταν κάποιος το κλείσει κατά λάθος και σε πάρει αμέσως να σου πει "κι εγώ σ' αγαπώ".
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• Ενημερώσαμε επίσης την κάμερα εντός του Signal για να υποστηρίζει τη σάρωση κωδικών QR με όνομα χρήστη.

@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• Karta hovorov bude teraz automaticky organizovať a zoskupovať súvisiace hovory.
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• Pridali sme taktiež podporu pre skenovanie QR kódov používateľských mien kamerou v aplikácii Signal.

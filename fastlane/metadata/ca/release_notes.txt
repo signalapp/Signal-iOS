@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• Ara, la pestanya de trucades organitzarà i agruparà automàticament els altres esdeveniments de trucades relacionats.
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• També hem actualitzat la càmera integrada de l'app perquè permeti escanejar els codis QR dels àlies.

@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• 이제 통화 탭에서 자동으로 관련 통화 이벤트를 함께 그룹으로 묶고 정리합니다.
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• 사용자 이름 QR 코드 스캔을 지원하도록 Signal의 인앱 카메라도 업데이트했습니다.

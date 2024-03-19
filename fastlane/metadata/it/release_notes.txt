@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• Da ora la schermata delle chiamate organizzerà e raggrupperà automaticamente le chiamate legate fra loro… utile per tutte quelle volte in cui richiami subito qualcuno dopo aver attaccato per sbaglio.
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• Abbiamo anche aggiornato la fotocamera in-app di Signal per supportare la scansione dei codici QR per i nomi utente.

@@ -184,9 +184,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>од укупно спојева: %2$d</string>
+			<string>од укупно %2$d поклапања</string>
 			<key>other</key>
-			<string>од укупно спојева: %2$d</string>
+			<string>од укупно %2$d поклапања</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Позивамо: %2$@, %3$@ и још %1$d особу…</string>
+			<string>Позивамо кориснике %2$@, %3$@ и још %1$d особу…</string>
 			<key>other</key>
-			<string>Позивамо: %2$@, %3$@ и још њих %1$d…</string>
+			<string>Позивамо кориснике %2$@, %3$@ и још њих %1$d…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Прича у групи · Гледалаца: %1$d</string>
+			<string>Групна прича · Гледалаца: %1$d</string>
 			<key>other</key>
-			<string>Прича у групи · Гледалаца: %1$d</string>
+			<string>Групна прича · Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -1208,9 +1208,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Шаље се %1$d…</string>
+			<string>Слање %1$d…</string>
 			<key>other</key>
-			<string>Шаље се %1$d…</string>
+			<string>Слање %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

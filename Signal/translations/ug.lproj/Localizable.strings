@@ -5156,13 +5156,13 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "كامېرا سەپلەنمىدى.";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "پاراڭغا كىرىش";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "«%1$@» بىلەن پاراڭلىشىشنى باشلاڭ";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ بايقالدى";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "سىن بەك ئۇزۇن.";

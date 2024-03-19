@@ -5156,13 +5156,13 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Konfigurácia kamery zlyhala.";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Prejsť na čet";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Začať čet s používateľom „%1$@“";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "Používateľ %1$@ bol nájdený";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video je príliš dlhé.";

@@ -2648,7 +2648,7 @@
 "FIND_BY_USERNAME_TITLE" = "Пошук за іменем користувача";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Верифікувати";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Позначити як перевірений";
 
 /* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Скинути сеанс";
@@ -4172,7 +4172,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Дозволити користувачу %1$@ надсилати вам повідомлення та ділитись ім'ям і фото з цим користувачем? Раніше ви вилучили цей контакт.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Повідомити…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Це спам";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Розблокувати";
@@ -5156,13 +5156,13 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Не вдалося настроїти камеру.";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "До чату";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Почніть чат з %1$@";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ знайдено";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Відео задовге.";
@@ -5345,7 +5345,7 @@
 "PRIVACY_TAP_TO_SCAN" = "Натисніть, щоб сканувати";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Очистити верифікацію";
+"PRIVACY_UNVERIFY_BUTTON" = "Позначити як неперевірений";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Це не схоже на ваш код безпеки із %1$@. Ви підтверджуєте саме той контакт, який хотіли?";
@@ -5372,7 +5372,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Підтвердити код безпеки";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Верифікувати";
+"PRIVACY_VERIFY_BUTTON" = "Позначити як перевірений";
 
 /* Button to add a new viewer on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Додати глядачів";
@@ -5735,7 +5735,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Прізвище";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Хто може знайти мене за номером телефону?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Хто може знайти мене за номером?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Ім'я";
@@ -6233,7 +6233,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Немає результатів пошуку";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Заблоковано";
+"SETTINGS_BLOCK_LIST_TITLE" = "Заблоковані";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Завжди ретранслювати дзвінки";
@@ -6920,7 +6920,7 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Ви впевнені?";
 
 /* The title for the phone number discoverability setting section. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Хто може знайти мене за номером телефону";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Хто може знайти мене за номером";
 
 /* Description label for Phone Number Privacy */
 "SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Виберіть, хто може бачити ваш номер телефону і хто може зв'язатися з вами в Signal через номер.";
@@ -7370,7 +7370,7 @@
 "STORY_NO_LONGER_AVAILABLE" = "Більше недоступна";
 
 /* Button to access the story privacy settings menu */
-"STORY_PRIVACY_SETTINGS" = "Приватність";
+"STORY_PRIVACY_SETTINGS" = "Конфіденційність";
 
 /* Title for the story privacy settings view */
 "STORY_PRIVACY_TITLE" = "Конфіденційність сторіз";

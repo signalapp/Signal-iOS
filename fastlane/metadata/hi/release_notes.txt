@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• कॉल टैब अब स्वचालित रूप से संबंधित कॉलिंग ईवेंट को एक साथ व्यवस्थित और समूहित करेगा, जैसे कि जब कोई आपको तुरंत वापस कॉल करता है, क्योंकि वे गलती से “मैं भी तुमसे प्यार करता हूँ” कहने से पहले ही वे हैंग हो जाते हैं।
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• हमने यूज़रनेम QR कोड स्कैन करने का सपोर्ट करने के लिए Signal के इन-ऐप कैमरे को भी अपडेट किया है।

@@ -824,7 +824,7 @@
 "CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "撥出";
 
 /* Title for a row in the Calls Tab that represents multiple calls that have been coalesced together. Embeds {{ a title describing the coalesced calls }}, {{ the number of coalesced calls }}. */
-"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
+"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@  (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "清除";
@@ -5156,13 +5156,13 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "無法設定相機。";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "到聊天";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "開始與「 %1$@ 」聊天";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "找到 %1$@";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "影片太長。";

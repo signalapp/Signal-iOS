@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• Aramalar sekmesi artık ilgili arama etkinliklerini otomatik olarak birlikte düzenleyecek ve gruplandıracak.
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• Signal'in uygulama içi kamerasını, kullanıcı adı kare kodlarını taramayı da destekleyecek şekilde güncelledik.

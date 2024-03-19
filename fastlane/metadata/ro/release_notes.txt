@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• Fila Apeluri va organiza și grupa acum automat evenimentele de apelare legate între ele, cum ar fi atunci când cineva te sună imediat înapoi pentru că a închis din greșeală înainte de a putea spune "Și eu te iubesc".
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• De asemenea, am actualizat camera integrată în aplicația Signal, pentru a permite scanarea codurilor QR ale numelui de utilizator.

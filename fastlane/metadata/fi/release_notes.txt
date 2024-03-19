@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• Puhelut-välilehti järjestää ja ryhmittelee nyt toisiinsa liittyvät puhelutapahtumat automaattisesti yhteen.
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• Päivitimme myös Signal-sovelluksen sisäisen kameran tukemaan käyttäjätunnusten QR-koodien skannausta.

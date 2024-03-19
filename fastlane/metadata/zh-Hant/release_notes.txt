@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• 現在「通話」選項標籤會自動將相關的通話事件整理歸類在一起，例如有人不小心掛斷電話後又立即回電給你。
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• 我們也更新了 Signal 應用程式內的相機，以支援掃描用戶名稱二維碼。

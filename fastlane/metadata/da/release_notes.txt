@@ -1,3 +1,3 @@
-• The calls tab will now automatically organize and group related calling events together, like when someone calls you back right away because they accidentally hung up before they could say “I love you too.”
+• Fanen Opkald organiserer og grupperer nu automatisk relaterede opkaldsbegivenheder sammen, eksempelvis når nogen ringer tilbage med det samme, fordi de ved et uheld lagde på, før de fik sagt "Jeg elsker dig også".
 
-• We also updated Signal's in-app camera to support scanning username QR codes.
+• Vi har også opdateret Signals kamera i appen for at understøtte scanning af QR-koder for brugernavne.
