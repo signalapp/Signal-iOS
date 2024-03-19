@@ -115,15 +115,15 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
 
                 // We use batching to avoid long-running write transactions
                 // and to place an upper bound on memory usage.
-                var allSignalServiceAddresses = [SignalServiceAddress]()
+                var allPhoneNumbers = [E164]()
                 while try processBatch(
                     contactStream: contactStream,
                     insertedThreads: &insertedThreads,
-                    processedAddresses: &allSignalServiceAddresses
+                    processedPhoneNumbers: &allPhoneNumbers
                 ) {}
 
                 if isComplete {
-                    try pruneContacts(exceptThoseReceivedFromCompleteSync: allSignalServiceAddresses)
+                    try pruneContacts(exceptThoseReceivedFromCompleteSync: allPhoneNumbers)
                 }
 
                 databaseStorage.write { transaction in
@@ -142,7 +142,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
     private func processBatch(
         contactStream: ContactsInputStream,
         insertedThreads: inout [(threadUniqueId: String, sortOrder: UInt32)],
-        processedAddresses: inout [SignalServiceAddress]
+        processedPhoneNumbers: inout [E164]
     ) throws -> Bool {
         try autoreleasepool {
             // We use batching to avoid long-running write transactions.
@@ -155,8 +155,9 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
             }
             try databaseStorage.write { tx in
                 for contact in contactBatch {
-                    let contactAddress = try processContactDetails(contact, insertedThreads: &insertedThreads, tx: tx)
-                    processedAddresses.append(contactAddress)
+                    if let phoneNumber = try processContactDetails(contact, insertedThreads: &insertedThreads, tx: tx) {
+                        processedPhoneNumbers.append(phoneNumber)
+                    }
                 }
             }
             return true
@@ -179,9 +180,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
         _ contactDetails: ContactDetails,
         insertedThreads: inout [(threadUniqueId: String, sortOrder: UInt32)],
         tx: SDSAnyWriteTransaction
-    ) throws -> SignalServiceAddress {
-        Logger.debug("contactDetails: \(contactDetails)")
-
+    ) throws -> E164? {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
             throw OWSGenericError("Not registered.")
@@ -238,7 +237,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
             transaction: tx
         )
 
-        return address
+        return contactDetails.phoneNumber
     }
 
     /// Clear ``SignalAccount``s that weren't part of a complete sync.
@@ -253,23 +252,23 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
     /// StorageService, so this job continues to fulfill that role. In the
     /// future, if you're removing this method, you should first ensure that
     /// periodic full syncs of contact details happen with StorageService.
-    private func pruneContacts(exceptThoseReceivedFromCompleteSync addresses: [SignalServiceAddress]) throws {
+    private func pruneContacts(exceptThoseReceivedFromCompleteSync phoneNumbers: [E164]) throws {
         try self.databaseStorage.write { transaction in
             // Every contact sync includes your own address. However, we shouldn't
             // create a SignalAccount for your own address. (If you're a primary, this
-            // is handled by ContactsMaps.phoneNumbers(…).)
+            // is handled by FetchedSystemContacts.phoneNumbers(…).)
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSGenericError("Not registered.")
             }
-            let setOfAddresses = Set(addresses.lazy.filter { !localIdentifiers.contains(address: $0) })
+            let setOfPhoneNumbers = Set(phoneNumbers.lazy.filter { !localIdentifiers.contains(phoneNumber: $0) })
 
             // Rather than collecting SignalAccount objects, collect their unique IDs.
             // This operation can run in the memory-constrainted NSE, so trade off a
             // bit of speed to save memory.
             var uniqueIdsToRemove = [String]()
             SignalAccount.anyEnumerate(transaction: transaction, batchingPreference: .batched(8)) { signalAccount, _ in
-                guard !setOfAddresses.contains(signalAccount.recipientAddress) else {
+                if let phoneNumber = E164(signalAccount.recipientPhoneNumber), setOfPhoneNumbers.contains(phoneNumber) {
                     // This contact was received in this batch, so don't remove it.
                     return
                 }
