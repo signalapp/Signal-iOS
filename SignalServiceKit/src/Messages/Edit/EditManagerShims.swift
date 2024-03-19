@@ -8,14 +8,12 @@ import LibSignalClient
 
 extension EditManager {
     public enum Shims {
-        public typealias LinkPreview = _EditManager_LinkPreviewShim
         public typealias DataStore = _EditManager_DataStore
         public typealias Groups = _EditManager_GroupsShim
         public typealias ReceiptManager = _EditManager_ReceiptManagerShim
     }
 
     public enum Wrappers {
-        public typealias LinkPreview = _EditManager_LinkPreviewWrapper
         public typealias DataStore = _EditManager_DataStoreWrapper
         public typealias Groups = _EditManager_GroupsWrapper
         public typealias ReceiptManager = _EditManager_ReceiptManagerWrapper
@@ -214,32 +212,6 @@ public class _EditManager_GroupsWrapper: EditManager.Shims.Groups {
     public func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo? {
         guard let masterKey = message.groupV2?.masterKey else { return nil }
         return try? groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
-    }
-}
-
-// MARK: - EditManager.LinkPreview
-
-public protocol _EditManager_LinkPreviewShim {
-
-    func buildPreview(
-        dataMessage: SSKProtoDataMessage,
-        tx: DBWriteTransaction
-    ) throws -> OWSLinkPreview
-}
-
-public class _EditManager_LinkPreviewWrapper: EditManager.Shims.LinkPreview {
-
-    public init() { }
-
-    public func buildPreview(
-        dataMessage: SSKProtoDataMessage,
-        tx: DBWriteTransaction
-    ) throws -> OWSLinkPreview {
-        return try OWSLinkPreview.buildValidatedLinkPreview(
-            dataMessage: dataMessage,
-            body: dataMessage.body,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
     }
 }
 

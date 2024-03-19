@@ -59,7 +59,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             // TODO: contact message
             contact: nil,
             // TODO: linkPreview message
-            linkPreview: nil,
+            linkPreviewBuilder: nil,
             // TODO: gift badge message
             giftBadge: nil,
             // TODO: sticker message

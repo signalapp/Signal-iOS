@@ -232,16 +232,20 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
 
         let contact = OWSContact.contact(for: dataMessage, transaction: SDSDB.shimOnlyBridge(tx))
 
-        let linkPreview: OWSLinkPreview?
+        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
         do {
-            linkPreview = try OWSLinkPreview.buildValidatedLinkPreview(
-                dataMessage: dataMessage,
-                body: body,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
+            if let linkPreview = dataMessage.preview.first {
+                linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+                    from: linkPreview,
+                    dataMessage: dataMessage,
+                    tx: tx
+                )
+            } else {
+                linkPreviewBuilder = nil
+            }
         } catch {
             Logger.error("linkPreviewError: \(error)")
-            linkPreview = nil
+            linkPreviewBuilder = nil
         }
 
         let giftBadge = OWSGiftBadge.maybeBuild(from: dataMessage)
@@ -295,7 +299,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             attachmentPointerProtos: dataMessage.attachments,
             quotedMessageBuilder: quotedMessageBuilder,
             contact: contact,
-            linkPreview: linkPreview,
+            linkPreviewBuilder: linkPreviewBuilder,
             giftBadge: giftBadge,
             messageSticker: messageSticker,
             isViewOnceMessage: isViewOnceMessage,

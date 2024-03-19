@@ -75,7 +75,7 @@ public class EditManager {
         let dataStore: EditManager.Shims.DataStore
         let groupsShim: EditManager.Shims.Groups
         let keyValueStoreFactory: KeyValueStoreFactory
-        let linkPreviewShim: EditManager.Shims.LinkPreview
+        let linkPreviewManager: LinkPreviewManager
         let receiptManagerShim: EditManager.Shims.ReceiptManager
         let tsResourceStore: TSResourceStore
 
@@ -83,14 +83,14 @@ public class EditManager {
             dataStore: EditManager.Shims.DataStore,
             groupsShim: EditManager.Shims.Groups,
             keyValueStoreFactory: KeyValueStoreFactory,
-            linkPreviewShim: EditManager.Shims.LinkPreview,
+            linkPreviewManager: LinkPreviewManager,
             receiptManagerShim: EditManager.Shims.ReceiptManager,
             tsResourceStore: TSResourceStore
         ) {
             self.dataStore = dataStore
             self.groupsShim = groupsShim
             self.keyValueStoreFactory = keyValueStoreFactory
-            self.linkPreviewShim = linkPreviewShim
+            self.linkPreviewManager = linkPreviewManager
             self.receiptManagerShim = receiptManagerShim
             self.tsResourceStore = tsResourceStore
         }
@@ -130,16 +130,17 @@ public class EditManager {
             bodyRanges = MessageBodyRanges(protos: newDataMessage.bodyRanges)
         }
 
-        var linkPreview: OWSLinkPreview?
-        if newDataMessage.preview.isEmpty.negated {
+        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>? = newDataMessage.preview.first.flatMap {
             do {
                 // NOTE: Currently makes no attempt to reuse existing link previews
-                linkPreview = try context.linkPreviewShim.buildPreview(
+                return try context.linkPreviewManager.validateAndBuildLinkPreview(
+                    from: $0,
                     dataMessage: newDataMessage,
                     tx: tx
                 )
             } catch {
                 owsFailDebug("Failed to build link preview")
+                return nil
             }
         }
 
@@ -154,7 +155,7 @@ public class EditManager {
 
             builder.messageBody = newDataMessage.body
             builder.bodyRanges = bodyRanges
-            builder.linkPreview = linkPreview
+            builder.linkPreview = linkPreviewBuilder?.info
             builder.timestamp = newDataMessage.timestamp
 
             // If the editMessage quote field is present, preserve the exisiting
@@ -180,6 +181,11 @@ public class EditManager {
             thread: thread,
             editedMessage: editedMessage,
             editTarget: targetMessageWrapper,
+            tx: tx
+        )
+
+        linkPreviewBuilder?.finalize(
+            owner: .messageLinkPreview(messageRowId: editedMessage.sqliteRowId!),
             tx: tx
         )
 
@@ -530,9 +536,9 @@ public class EditManager {
         let existingText: TSAttachment? = context.tsResourceStore.oversizeTextAttachment(
             for: targetMessage,
             tx: tx
-        ).map { attachmentRef in
+        ).flatMap { attachmentRef in
             return context.tsResourceStore.fetch(attachmentRef.resourceId, tx: tx)?.bridge
-        } ?? nil
+        }
 
         var newAttachmentIds = context.tsResourceStore
             .bodyAttachments(for: targetMessage, tx: tx)

@@ -24,13 +24,16 @@ class MockSSKPreferences: LinkPreviewManagerImpl.Shims.SSKPreferences {
 class OWSLinkPreviewTest: SSKBaseTestSwift {
     let shouldRunNetworkTests = false
 
+    var mockDB: MockDB!
     var linkPreviewManager: LinkPreviewManagerImpl!
 
     override func setUp() {
         super.setUp()
 
+        mockDB = MockDB()
         linkPreviewManager = LinkPreviewManagerImpl(
-            db: MockDB(),
+            attachmentManager: TSResourceManagerMock(),
+            db: mockDB,
             groupsV2: LinkPreviewManagerImpl.Wrappers.GroupsV2(GroupsV2Impl()),
             sskPreferences: MockSSKPreferences()
         )
@@ -48,11 +51,17 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         previewBuilder.setImage(imageAttachmentBuilder.buildInfallibly())
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
+        dataBuilder.setBody(body)
+        let dataMessage = try! dataBuilder.build()
 
-        self.write { (transaction) in
-            XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
-                                                                     body: body,
-                                                                     transaction: transaction))
+        mockDB.write { tx in
+            let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
+                from: dataMessage.preview.first!,
+                dataMessage: dataMessage,
+                tx: tx
+            )
+            XCTAssertNotNil(linkPreviewBuilder)
+            linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
         }
     }
 
@@ -63,11 +72,17 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         previewBuilder.setTitle("Some Youtube Video")
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
+        dataBuilder.setBody(body)
+        let dataMessage = try! dataBuilder.build()
 
-        self.write { (transaction) in
-            XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
-                                                                     body: body,
-                                                                     transaction: transaction))
+        mockDB.write { tx in
+            let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
+                from: dataMessage.preview.first!,
+                dataMessage: dataMessage,
+                tx: tx
+            )
+            XCTAssertNotNil(linkPreviewBuilder)
+            linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
         }
     }
 
@@ -82,11 +97,17 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         previewBuilder.setImage(imageAttachmentBuilder.buildInfallibly())
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
+        dataBuilder.setBody(body)
+        let dataMessage = try! dataBuilder.build()
 
-        self.write { (transaction) in
-            XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
-                                                                     body: body,
-                                                                     transaction: transaction))
+        mockDB.write { tx in
+            let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
+                from: dataMessage.preview.first!,
+                dataMessage: dataMessage,
+                tx: tx
+            )
+            XCTAssertNotNil(linkPreviewBuilder)
+            linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
         }
     }
 }

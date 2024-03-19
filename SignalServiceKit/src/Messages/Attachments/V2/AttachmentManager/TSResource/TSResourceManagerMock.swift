@@ -27,7 +27,7 @@ public class TSResourceManagerMock: TSResourceManager {
         from proto: SSKProtoAttachmentPointer,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
-        throw OWSAssertionError("Unimplemented!")
+        return .withoutFinalizer(.legacy(uniqueId: ""))
     }
 
     public func buildProtoForSending(

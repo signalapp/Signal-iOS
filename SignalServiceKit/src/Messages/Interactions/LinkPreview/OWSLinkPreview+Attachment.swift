@@ -21,35 +21,9 @@ extension OWSLinkPreview {
         return .legacy(uniqueId: self.legacyImageAttachmentId)
     }
 
-    public static func withoutImage(urlString: String) -> OWSLinkPreview {
+    public static func withoutImage(urlString: String, title: String? = nil) -> OWSLinkPreview {
         let attachmentRef: AttachmentReference = FeatureFlags.newAttachmentsUseV2 ? .v2 : .legacy(uniqueId: nil)
-        return OWSLinkPreview(urlString: urlString, title: nil, attachmentRef: attachmentRef)
-    }
-
-    // MARK: - From Proto
-
-    internal class func attachmentReference(
-        fromProto imageProto: SSKProtoAttachmentPointer?,
-        tx: SDSAnyWriteTransaction
-    ) throws -> AttachmentReference {
-        // TODO: create v2 attachments
-        return try .legacy(uniqueId: legacyAttachmentUniqueId(fromProto: imageProto, tx: tx))
-    }
-
-    fileprivate class func legacyAttachmentUniqueId(
-        fromProto imageProto: SSKProtoAttachmentPointer?,
-        tx: SDSAnyWriteTransaction
-    ) throws -> String? {
-        if let imageProto {
-            if let imageAttachmentPointer = TSAttachmentPointer(fromProto: imageProto, albumMessage: nil) {
-                imageAttachmentPointer.anyInsert(transaction: tx)
-                return imageAttachmentPointer.uniqueId
-            } else {
-                Logger.error("Could not parse image proto.")
-                throw LinkPreviewError.invalidPreview
-            }
-        }
-        return nil
+        return OWSLinkPreview(urlString: urlString, title: title, attachmentRef: attachmentRef)
     }
 
     // MARK: - To Proto

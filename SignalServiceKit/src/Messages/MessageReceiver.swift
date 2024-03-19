@@ -945,13 +945,20 @@ public final class MessageReceiver: Dependencies {
         )
         let contact = OWSContact.contact(for: dataMessage, transaction: tx)
 
-        var linkPreview: OWSLinkPreview?
-        do {
-            linkPreview = try OWSLinkPreview.buildValidatedLinkPreview(dataMessage: dataMessage, body: body, transaction: tx)
-        } catch LinkPreviewError.noPreview {
-            // this is fine
-        } catch {
-            Logger.warn("linkPreviewError: \(error)")
+        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>? = dataMessage.preview.first.flatMap {
+            do {
+                return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+                    from: $0,
+                    dataMessage: dataMessage,
+                    tx: tx.asV2Write
+                )
+            } catch LinkPreviewError.noPreview {
+                // this is fine
+                return nil
+            } catch {
+                Logger.warn("linkPreviewError: \(error)")
+                return nil
+            }
         }
 
         var messageSticker: MessageSticker?
@@ -1015,7 +1022,7 @@ public final class MessageReceiver: Dependencies {
             expiresInSeconds: dataMessage.expireTimer,
             quotedMessage: quotedMessageBuilder?.info,
             contactShare: contact,
-            linkPreview: linkPreview,
+            linkPreview: linkPreviewBuilder?.info,
             messageSticker: messageSticker,
             serverTimestamp: envelope.serverTimestamp,
             serverDeliveryTimestamp: request.serverDeliveryTimestamp,
@@ -1067,6 +1074,11 @@ public final class MessageReceiver: Dependencies {
 
         quotedMessageBuilder?.finalize(
             owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
+            tx: tx.asV2Write
+        )
+
+        linkPreviewBuilder?.finalize(
+            owner: .messageLinkPreview(messageRowId: message.sqliteRowId!),
             tx: tx.asV2Write
         )
 

@@ -260,6 +260,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         ))
 
         let attachment: StoryMessageAttachment
+        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
+
         if let fileAttachment = storyMessage.fileAttachment {
             guard let attachmentPointer = TSAttachmentPointer(fromProto: fileAttachment, albumMessage: nil) else {
                 throw OWSAssertionError("Invalid file attachment for StoryMessage.")
@@ -269,10 +271,23 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 attachmentId: attachmentPointer.uniqueId,
                 storyBodyRangeProtos: storyMessage.bodyRanges
             ))
+            linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
+            linkPreviewBuilder = textAttachmentProto.preview.flatMap {
+                do {
+                    return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildStoryLinkPreview(
+                        from: $0,
+                        tx: transaction.asV2Write
+                    )
+                } catch {
+                    Logger.error("Unable to build link preview!")
+                    return nil
+                }
+            }
             attachment = .text(try TextAttachment(
                 from: textAttachmentProto,
                 bodyRanges: storyMessage.bodyRanges,
+                linkPreview: linkPreviewBuilder?.info,
                 transaction: transaction
             ))
         } else {
@@ -300,6 +315,11 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         // Nil associated datas are for outgoing contexts, where we don't need to keep track of received timestamp.
         record.context.associatedData(transaction: transaction)?.update(lastReceivedTimestamp: timestamp, transaction: transaction)
+
+        linkPreviewBuilder?.finalize(
+            owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
+            tx: transaction.asV2Write
+        )
 
         return record
     }
@@ -342,6 +362,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }))
 
         let attachment: StoryMessageAttachment
+        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
+
         if let fileAttachment = storyMessage.fileAttachment {
             guard let attachmentPointer = TSAttachmentPointer(fromProto: fileAttachment, albumMessage: nil) else {
                 throw OWSAssertionError("Invalid file attachment for StoryMessage.")
@@ -351,10 +373,23 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 attachmentId: attachmentPointer.uniqueId,
                 storyBodyRangeProtos: storyMessage.bodyRanges
             ))
+            linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
+            linkPreviewBuilder = textAttachmentProto.preview.flatMap {
+                do {
+                    return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildStoryLinkPreview(
+                        from: $0,
+                        tx: transaction.asV2Write
+                    )
+                } catch {
+                    Logger.error("Unable to build link preview!")
+                    return nil
+                }
+            }
             attachment = .text(try TextAttachment(
                 from: textAttachmentProto,
                 bodyRanges: storyMessage.bodyRanges,
+                linkPreview: linkPreviewBuilder?.info,
                 transaction: transaction
             ))
         } else {
@@ -390,6 +425,11 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 thread.updateWithStorySendEnabled(true, transaction: transaction)
             }
         }
+
+        linkPreviewBuilder?.finalize(
+            owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
+            tx: transaction.asV2Write
+        )
 
         return record
     }

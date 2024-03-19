@@ -12,15 +12,18 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
     // most appropriate QoS.
     private static let workQueue: DispatchQueue = .sharedUserInitiated
 
+    private let attachmentManager: TSResourceManager
     private let db: DB
     private let groupsV2: Shims.GroupsV2
     private let sskPreferences: Shims.SSKPreferences
 
     public init(
+        attachmentManager: TSResourceManager,
         db: DB,
         groupsV2: Shims.GroupsV2,
         sskPreferences: Shims.SSKPreferences
     ) {
+        self.attachmentManager = attachmentManager
         self.db = db
         self.groupsV2 = groupsV2
         self.sskPreferences = sskPreferences
@@ -52,6 +55,41 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
             }
             return linkPreviewDraft
         }
+    }
+
+    public func validateAndBuildLinkPreview(
+        from proto: SSKProtoPreview,
+        dataMessage: SSKProtoDataMessage,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        guard dataMessage.attachments.count < 1 else {
+            Logger.error("Discarding link preview; message has attachments.")
+            throw LinkPreviewError.invalidPreview
+        }
+        guard let messageBody = dataMessage.body, messageBody.contains(proto.url) else {
+            Logger.error("Url not present in body")
+            throw LinkPreviewError.invalidPreview
+        }
+        guard
+            LinkValidator.canParseURLs(in: messageBody),
+            LinkValidator.isValidLink(linkText: proto.url)
+        else {
+            Logger.error("Discarding link preview; can't parse URLs in message.")
+            throw LinkPreviewError.invalidPreview
+        }
+
+       return try buildValidatedLinkPreview(proto: proto, tx: tx)
+    }
+
+    public func validateAndBuildStoryLinkPreview(
+        from proto: SSKProtoPreview,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        guard LinkValidator.isValidLink(linkText: proto.url) else {
+            Logger.error("Discarding link preview; can't parse URLs in story message.")
+            throw LinkPreviewError.invalidPreview
+        }
+        return try buildValidatedLinkPreview(proto: proto, tx: tx)
     }
 
     // MARK: - Private
@@ -160,6 +198,75 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
                 }
                 return rawData
             }
+        }
+    }
+
+    // MARK: - Private, generating from proto
+
+    private func buildValidatedLinkPreview(
+        proto: SSKProtoPreview,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        let urlString = proto.url
+
+        guard let url = URL(string: urlString), LinkPreviewHelper.isPermittedLinkPreviewUrl(url) else {
+            Logger.error("Could not parse preview url.")
+            throw LinkPreviewError.invalidPreview
+        }
+
+        var title: String?
+        var previewDescription: String?
+        if let rawTitle = proto.title {
+            let normalizedTitle = LinkPreviewHelper.normalizeString(rawTitle, maxLines: 2)
+            if !normalizedTitle.isEmpty {
+                title = normalizedTitle
+            }
+        }
+        if let rawDescription = proto.previewDescription, proto.title != proto.previewDescription {
+            let normalizedDescription = LinkPreviewHelper.normalizeString(rawDescription, maxLines: 3)
+            if !normalizedDescription.isEmpty {
+                previewDescription = normalizedDescription
+            }
+        }
+
+        let attachmentBuilder: OwnedAttachmentBuilder<TSResourceRetrievalInfo>?
+        if let protoImage = proto.image {
+            do {
+                attachmentBuilder = try attachmentManager.createAttachmentBuilder(
+                    from: protoImage,
+                    tx: tx
+                )
+            } catch {
+                // If we had a proto image but couldn't process it, the proto is invalid!
+                throw LinkPreviewError.invalidPreview
+            }
+        } else {
+            attachmentBuilder = nil
+        }
+
+        func buildLinkPreview(_ attachmentInfo: TSResourceRetrievalInfo?) -> OWSLinkPreview {
+            let linkPreview: OWSLinkPreview = {
+                switch attachmentInfo {
+                case .legacy(let uniqueId):
+                    return OWSLinkPreview(urlString: urlString, title: title, attachmentRef: .legacy(uniqueId: uniqueId))
+                case .v2:
+                    return OWSLinkPreview(urlString: urlString, title: title, attachmentRef: .v2)
+                case nil:
+                    return OWSLinkPreview.withoutImage(urlString: urlString, title: title)
+                }
+            }()
+            linkPreview.previewDescription = previewDescription
+            // Zero check required. Some devices in the wild will explicitly set zero to mean "no date"
+            if proto.hasDate, proto.date > 0 {
+                linkPreview.date = Date(millisecondsSince1970: proto.date)
+            }
+            return linkPreview
+        }
+
+        if let attachmentBuilder {
+            return attachmentBuilder.wrap(buildLinkPreview(_:))
+        } else {
+            return .withoutFinalizer(buildLinkPreview(nil))
         }
     }
 

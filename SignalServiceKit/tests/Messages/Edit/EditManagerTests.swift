@@ -34,7 +34,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock(),
+                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -80,7 +80,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock(),
+                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -114,7 +114,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock(),
+                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -147,7 +147,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock(),
+                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -184,7 +184,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock(),
+                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -379,15 +379,6 @@ class EditManagerTests: SSKBaseTestSwift {
             editRecord: EditRecord,
             tx: DBWriteTransaction
         ) throws {}
-    }
-
-    private class LinkPreviewMock: EditManager.Shims.LinkPreview {
-        func buildPreview(
-            dataMessage: SSKProtoDataMessage,
-            tx: DBWriteTransaction
-        ) throws -> OWSLinkPreview {
-            return OWSLinkPreview()
-        }
     }
 
     private class GroupsMock: EditManager.Shims.Groups {

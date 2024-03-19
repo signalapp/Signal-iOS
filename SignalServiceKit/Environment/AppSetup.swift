@@ -237,12 +237,19 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory
         )
 
+        let linkPreviewManager = LinkPreviewManagerImpl(
+            attachmentManager: tsResourceManager,
+            db: db,
+            groupsV2: LinkPreviewManagerImpl.Wrappers.GroupsV2(groupsV2),
+            sskPreferences: LinkPreviewManagerImpl.Wrappers.SSKPreferences()
+        )
+
         let editManager = EditManager(
             context: .init(
                 dataStore: EditManager.Wrappers.DataStore(),
                 groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
                 keyValueStoreFactory: keyValueStoreFactory,
-                linkPreviewShim: EditManager.Wrappers.LinkPreview(),
+                linkPreviewManager: linkPreviewManager,
                 receiptManagerShim: EditManager.Wrappers.ReceiptManager(receiptManager: receiptManager),
                 tsResourceStore: tsResourceStore
             )
@@ -617,12 +624,6 @@ public class AppSetup {
                 backupKeyMaterial: MessageBackupKeyMaterialImpl(svr: svr, tsAccountManager: tsAccountManager)
             ),
             tsAccountManager: tsAccountManager
-        )
-
-        let linkPreviewManager = LinkPreviewManagerImpl(
-            db: db,
-            groupsV2: LinkPreviewManagerImpl.Wrappers.GroupsV2(groupsV2),
-            sskPreferences: LinkPreviewManagerImpl.Wrappers.SSKPreferences()
         )
 
         let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)

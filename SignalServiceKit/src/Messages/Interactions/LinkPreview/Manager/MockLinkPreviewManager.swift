@@ -25,6 +25,21 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         fetchedURLs.append(url)
         return fetchLinkPreviewBlock!(url)
     }
+
+    public func validateAndBuildLinkPreview(
+        from proto: SSKProtoPreview,
+        dataMessage: SSKProtoDataMessage,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        return .withoutFinalizer(.init())
+    }
+
+    public func validateAndBuildStoryLinkPreview(
+        from proto: SSKProtoPreview,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        return .withoutFinalizer(.init())
+    }
 }
 
 #endif

@@ -223,6 +223,7 @@ public struct TextAttachment: Codable, Equatable {
     init(
         from proto: SSKProtoTextAttachment,
         bodyRanges: [SSKProtoBodyRange],
+        linkPreview: OWSLinkPreview?,
         transaction: SDSAnyWriteTransaction
     ) throws {
         self.body = proto.text?.nilIfEmpty.map { StyleOnlyMessageBody(text: $0, protos: bodyRanges) }
@@ -277,9 +278,7 @@ public struct TextAttachment: Codable, Equatable {
             throw OWSAssertionError("Missing background for attachment.")
         }
 
-        if let preview = proto.preview {
-            self.preview = try OWSLinkPreview.buildValidatedLinkPreview(proto: preview, transaction: transaction)
-        }
+        self.preview = linkPreview
     }
 
     public func buildProto(

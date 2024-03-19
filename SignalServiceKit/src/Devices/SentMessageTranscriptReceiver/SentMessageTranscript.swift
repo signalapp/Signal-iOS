@@ -37,7 +37,7 @@ public enum SentMessageTranscriptType {
 
         public let contact: OWSContact?
 
-        public let linkPreview: OWSLinkPreview?
+        public let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
 
         public let giftBadge: OWSGiftBadge?
 
