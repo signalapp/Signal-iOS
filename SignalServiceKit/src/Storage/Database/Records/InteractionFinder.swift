@@ -1387,7 +1387,7 @@ private extension InteractionFinder {
         \(Self.filterStoryRepliesClause(interactionsAlias: interactionsAlias))
         \(Self.filterEditHistoryClause(mode: .excludeReadEdits, interactionsAlias: interactionsAlias))
         AND (
-            \(columnPrefix)\(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
+            \(columnPrefix)\(interactionColumn: .recordType) IS \(SDSRecordType.incomingMessage.rawValue)
             OR (
                 \(columnPrefix)\(interactionColumn: .recordType) IS \(SDSRecordType.infoMessage.rawValue)
                 AND \(columnPrefix)\(interactionColumn: .messageType) IS \(TSInfoMessageType.userJoinedSignal.rawValue)
@@ -1433,11 +1433,24 @@ private extension InteractionFinder {
             columnPrefix = ""
         }
 
+        /// We need to ensure that whatever clauses we return here appropriately
+        /// handle `NULL` values for `editState.
+        ///
+        /// Specifically, only ``TSMessage`` descendants will have a non-`NULL`
+        /// `editState`, since it refers to the ``TSMessage/editState`` column.
+        /// However, we don't want this clause to necessarily exclude those
+        /// (non-``TSMessage``) interactions with `editState = NULL`.
         switch mode {
         case .includeAllEdits:
+            /// Using `IS NOT` includes `NULL`.
             return "AND \(columnPrefix)\(interactionColumn: .editState) IS NOT \(TSEditState.pastRevision.rawValue)"
         case .excludeReadEdits:
-            return "AND ( \(columnPrefix)\(interactionColumn: .editState) IN (\(TSEditState.none.rawValue), \(TSEditState.latestRevisionUnread.rawValue)))"
+            return """
+            AND (
+                \(columnPrefix)\(interactionColumn: .editState) IN (\(TSEditState.none.rawValue), \(TSEditState.latestRevisionUnread.rawValue))
+                OR \(columnPrefix)\(interactionColumn: .editState) IS NULL
+            )
+            """
         case .excludeAllEdits:
             return "AND \(columnPrefix)\(interactionColumn: .editState) IS \(TSEditState.none.rawValue)"
         }
