@@ -174,16 +174,21 @@ extension ConversationSettingsViewController {
                     constrainedTo: .square(16)
                 ))
                 hStack.tintColor = Theme.primaryTextColor
+
                 let descriptionLabel = UILabel()
                 descriptionLabel.font = .dynamicTypeSubheadline
                 descriptionLabel.textColor = Theme.primaryTextColor
                 descriptionLabel.text = description
                 hStack.addArrangedSubview(descriptionLabel)
+
+                hStack.addArrangedSubview(UIView.hStretchingSpacer())
+
                 let timestampLabel = UILabel()
                 timestampLabel.font = .dynamicTypeSubheadline
                 timestampLabel.textColor = Theme.secondaryTextAndIconColor
                 timestampLabel.text = timestamp
                 hStack.addArrangedSubview(timestampLabel)
+
                 return hStack
             }())
         }
