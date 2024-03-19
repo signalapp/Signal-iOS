@@ -30,8 +30,6 @@ extension SSKWebSocketState: CustomStringConvertible {
 
 public protocol SSKWebSocket: AnyObject {
 
-    init?(request: WebSocketRequest, signalService: OWSSignalServiceProtocol, callbackScheduler: Scheduler)
-
     var delegate: SSKWebSocketDelegate? { get set }
 
     var id: UInt { get }
@@ -171,7 +169,7 @@ public class SSKWebSocketNative: SSKWebSocket {
     private let callbackScheduler: Scheduler
     private let urlSession: OWSURLSessionProtocol
 
-    public required init?(
+    public init?(
         request: WebSocketRequest,
         signalService: OWSSignalServiceProtocol,
         callbackScheduler: Scheduler
