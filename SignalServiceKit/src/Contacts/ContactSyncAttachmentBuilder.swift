@@ -73,16 +73,27 @@ enum ContactSyncAttachmentBuilder {
         }
 
         let localAccount = localAccountToSync(localAddress: localAddress)
-        let otherAccounts = isFullSync ? contactsManager.unsortedSignalAccounts(transaction: tx) : []
-        let signalAccounts = [localAccount] + otherAccounts.stableSort()
+        let otherAccounts = isFullSync ? SignalAccount.anyFetchAll(transaction: tx) : []
+        let signalAccounts = [localAccount] + otherAccounts.sorted(
+            by: { ($0.recipientPhoneNumber ?? "") < ($1.recipientPhoneNumber ?? "") }
+        )
+
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
 
         for signalAccount in signalAccounts {
             try autoreleasepool {
-                let contactThread = TSContactThread.getWithContactAddress(signalAccount.recipientAddress, transaction: tx)
+                guard let phoneNumber = signalAccount.recipientPhoneNumber else {
+                    return
+                }
+                let signalRecipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)
+                guard let signalRecipient else {
+                    return
+                }
+                let contactThread = TSContactThread.getWithContactAddress(signalRecipient.address, transaction: tx)
                 let inboxPosition = contactThread?.sqliteRowId.flatMap { threadPositions.removeValue(forKey: $0) }
                 try writeContact(
                     to: contactOutputStream,
-                    address: signalAccount.recipientAddress,
+                    address: signalRecipient.address,
                     contactThread: contactThread,
                     signalAccount: signalAccount,
                     inboxPosition: inboxPosition,
