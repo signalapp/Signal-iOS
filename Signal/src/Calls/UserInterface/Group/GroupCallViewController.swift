@@ -596,6 +596,14 @@ class GroupCallViewController: UIViewController {
             localMemberView.configure(call: call, isFullScreen: isFullScreen)
         }
 
+        localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            // In the context of `isCallInPip`, the "pip" refers to when the entire call is in a pip
+            // (ie, minimized in the app). This is not to be confused with the local member view pip
+            // (ie, when the call is full screen and the local user is displayed in a pip).
+            // The following line disallows having a [local member] pip within a [call] pip.
+            view.isHidden = WindowManager.shared.isCallInPip
+        }
+
         if let speakerState = groupCall.remoteDeviceStates.sortedBySpeakerTime.first {
             if let speakerView = speakerView as? CallMemberView {
                 speakerView.configure(
@@ -770,6 +778,9 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 
     func willMoveToPip(pipWindow: UIWindow) {
         flipCameraTooltipManager.dismissTooltip()
+        localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            view.isHidden = true
+        }
     }
 
     private func animateReturnFromPip(pipSnapshot: UIView, pipFrame: CGRect, splitViewSnapshot: UIView) {
