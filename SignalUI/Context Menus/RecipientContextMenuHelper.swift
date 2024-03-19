@@ -186,7 +186,7 @@ class RecipientContextMenuHelper {
     /// Whether the given `e164` corresponds with a system contact.
     private func isSystemContact(e164: E164) -> Bool {
         return databaseStorage.read { tx in
-            contactsManager.isSystemContact(phoneNumber: e164.stringValue, transaction: tx)
+            return contactsManager.fetchSignalAccount(forPhoneNumber: e164.stringValue, transaction: tx) != nil
         }
     }
 

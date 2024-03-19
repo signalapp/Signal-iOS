@@ -100,8 +100,8 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
     }
 
     func fetchContacts() -> Result<[Contact], Error> {
-        var contacts = [Contact]()
         do {
+            var contacts = [Contact]()
             let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
             contactFetchRequest.sortOrder = .userDefault
             try autoreleasepool {
@@ -109,17 +109,17 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
                     contacts.append(Contact(systemContact: systemContact))
                 }
             }
-        } catch let error as NSError {
-            if error.domain == CNErrorDomain, error.code == CNError.Code.communicationError.rawValue {
+            return .success(contacts)
+        } catch {
+            switch error {
+            case CNError.communicationError:
                 // this seems occur intermittently, but not uncommonly.
                 Logger.warn("communication error: \(error)")
-            } else {
+            default:
                 owsFailDebug("Failed to fetch contacts with error:\(error)")
             }
             return .failure(error)
         }
-
-        return .success(contacts)
     }
 
     func fetchCNContact(contactId: String) -> CNContact? {
@@ -362,8 +362,7 @@ public class SystemContactsFetcher: NSObject {
         setupObservationIfNecessary()
 
         serialQueue.async {
-
-            Logger.info("fetching contacts")
+            Logger.info("Fetching contacts")
 
             let contacts: [Contact]
             switch self.contactStoreAdapter.fetchContacts() {

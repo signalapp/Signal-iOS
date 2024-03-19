@@ -94,7 +94,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
         let phoneNumbers = contactShare.dbRecord.e164PhoneNumbers()
-        guard phoneNumbers.count > 0 else {
+        if phoneNumbers.isEmpty {
             owsFailDebug("no phone numbers.")
             return
         }
