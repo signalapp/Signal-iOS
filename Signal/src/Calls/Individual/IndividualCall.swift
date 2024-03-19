@@ -477,7 +477,7 @@ public class IndividualCall: NSObject {
             Logger.info("No call id; unable to create call record.")
             return
         }
-        Logger.info("Creating or updating call record.")
+        Logger.info("Creating or updating call record for interaction: \(callInteraction.callType).")
 
         guard
             let callInteractionRowId = callInteraction.sqliteRowId,
