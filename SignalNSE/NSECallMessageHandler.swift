@@ -192,20 +192,18 @@ class NSECallMessageHandler: CallMessageHandler {
     func receivedGroupCallUpdateMessage(
         _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
         for groupThread: TSGroupThread,
-        serverReceivedTimestamp: UInt64,
-        completion: @escaping () -> Void
-    ) {
+        serverReceivedTimestamp: UInt64
+    ) async {
         GroupCallPeekLogger.shared.info(
             "Received group call update message for thread \(groupThread.uniqueId), eraId \(String(describing: updateMessage.eraID))"
         )
 
-        lightweightGroupCallManager?.peekGroupCallAndUpdateThread(
+        await lightweightGroupCallManager?.peekGroupCallAndUpdateThread(
             groupThread,
             peekTrigger: .receivedGroupUpdateMessage(
                 eraId: updateMessage.eraID,
                 messageTimestamp: serverReceivedTimestamp
-            ),
-            completion: completion
+            )
         )
     }
 }

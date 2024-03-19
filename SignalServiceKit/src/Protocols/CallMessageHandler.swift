@@ -63,9 +63,8 @@ public protocol CallMessageHandler {
     func receivedGroupCallUpdateMessage(
         _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
         for thread: TSGroupThread,
-        serverReceivedTimestamp: UInt64,
-        completion: @escaping () -> Void
-    )
+        serverReceivedTimestamp: UInt64
+    ) async
 
     func externallyHandleCallMessage(
         envelope: SSKProtoEnvelope,

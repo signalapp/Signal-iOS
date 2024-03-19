@@ -538,10 +538,12 @@ public final class CallService: LightweightGroupCallManager {
 
             // Kick off a peek now that we've disconnected to get an updated participant state.
             if let thread = call.thread as? TSGroupThread {
-                peekGroupCallAndUpdateThread(
-                    thread,
-                    peekTrigger: .localEvent()
-                )
+                Task {
+                    await peekGroupCallAndUpdateThread(
+                        thread,
+                        peekTrigger: .localEvent()
+                    )
+                }
             } else {
                 owsFailDebug("Invalid thread type")
             }
@@ -892,9 +894,8 @@ public final class CallService: LightweightGroupCallManager {
 
     override public func peekGroupCallAndUpdateThread(
         _ thread: TSGroupThread,
-        peekTrigger: PeekTrigger,
-        completion: (() -> Void)? = nil
-    ) {
+        peekTrigger: PeekTrigger
+    ) async {
         // If the currentCall is for the provided thread, we don't need to perform an explicit
         // peek. Connected calls will receive automatic updates from RingRTC
         guard currentCall?.thread != thread else {
@@ -902,11 +903,7 @@ public final class CallService: LightweightGroupCallManager {
             return
         }
 
-        super.peekGroupCallAndUpdateThread(
-            thread,
-            peekTrigger: peekTrigger,
-            completion: completion
-        )
+        await super.peekGroupCallAndUpdateThread(thread, peekTrigger: peekTrigger)
     }
 
     override public func postUserNotificationIfNecessary(

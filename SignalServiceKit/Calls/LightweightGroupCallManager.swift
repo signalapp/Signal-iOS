@@ -52,12 +52,13 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
 
     open dynamic func peekGroupCallAndUpdateThread(
         _ thread: TSGroupThread,
-        peekTrigger: PeekTrigger,
-        completion: (() -> Void)? = nil
-    ) {
-        guard thread.isLocalUserFullMember else { return }
+        peekTrigger: PeekTrigger
+    ) async {
+        guard thread.isLocalUserFullMember else {
+            return
+        }
 
-        firstly(on: DispatchQueue.global()) { () -> Promise<PeekInfo> in
+        do {
             switch peekTrigger {
             case .localEvent, .receivedGroupUpdateMessage(nil, _):
                 break
@@ -69,15 +70,15 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 ///
                 /// If we fail to fetch, this entry will stick around until the
                 /// next peek info fetch.
-                self.upsertPlaceholderGroupCallModelsIfNecessary(
+                await self.upsertPlaceholderGroupCallModelsIfNecessary(
                     eraId: eraId,
                     triggerEventTimestamp: messageTimestamp,
                     groupThread: thread
                 )
             }
 
-            return self.groupCallPeekClient.fetchPeekInfo(groupThread: thread)
-        }.then(on: DispatchQueue.sharedUtility) { (info: PeekInfo) -> Guarantee<Void> in
+            let info = try await self.groupCallPeekClient.fetchPeekInfo(groupThread: thread).awaitable()
+
             let shouldUpdateCallModels: Bool = {
                 guard let infoEraId = info.eraId else {
                     // We do want to update models if there's no active call, in
@@ -102,23 +103,18 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
             if shouldUpdateCallModels {
                 self.logger.info("Applying group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
 
-                return self.databaseStorage.write(.promise) { tx in
+                await self.databaseStorage.awaitableWrite { tx in
                     self.updateGroupCallModelsForPeek(
                         peekInfo: info,
                         groupThread: thread,
                         triggerEventTimestamp: peekTrigger.timestamp,
                         tx: tx
                     )
-                }.recover { error in
-                    owsFailDebug("Failed to get database write: \(error)")
                 }
             } else {
                 self.logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
-                return Guarantee.value(())
             }
-        }.done(on: DispatchQueue.sharedUtility) {
-            completion?()
-        }.catch(on: DispatchQueue.sharedUtility) { error in
+        } catch {
             if error.isNetworkFailureOrTimeout {
                 self.logger.warn("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
             } else if !TSConstants.isUsingProductionService {
@@ -365,10 +361,8 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         eraId: String,
         triggerEventTimestamp: UInt64,
         groupThread: TSGroupThread
-    ) {
-        AssertNotOnMainThread()
-
-        databaseStorage.write { tx in
+    ) async {
+        await databaseStorage.awaitableWrite { tx in
             guard !GroupCallInteractionFinder().existsGroupCallMessageForEraId(
                 eraId, thread: groupThread, transaction: tx
             ) else {
@@ -385,27 +379,27 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 return
             }
 
-            switch callRecordStore.fetch(
+            switch self.callRecordStore.fetch(
                 callId: callId,
                 threadRowId: groupThreadRowId,
                 tx: tx.asV2Read
             ) {
             case .matchDeleted:
-                logger.warn("Ignoring: call record was deleted!")
+                self.logger.warn("Ignoring: call record was deleted!")
             case .matchFound(let existingCallRecord):
                 /// We've already learned about this call, potentially via an
                 /// opportunistic peek. If we're now learning that the call may
                 /// have started earlier than we learned about it, we should
                 /// track the earlier time.
-                groupCallRecordManager.updateCallBeganTimestampIfEarlier(
+                self.groupCallRecordManager.updateCallBeganTimestampIfEarlier(
                     existingCallRecord: existingCallRecord,
                     callEventTimestamp: triggerEventTimestamp,
                     tx: tx.asV2Write
                 )
             case .matchNotFound:
-                logger.info("Inserting placeholder group call message with callId: \(callId)")
+                self.logger.info("Inserting placeholder group call message with callId: \(callId)")
 
-                _ = createModelsForNewGroupCall(
+                _ = self.createModelsForNewGroupCall(
                     callId: callId,
                     joinedMemberAcis: [],
                     creatorAci: nil,

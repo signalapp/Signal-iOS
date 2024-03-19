@@ -477,12 +477,14 @@ public final class MessageReceiver: Dependencies {
                 } else if let groupCallUpdate = dataMessage.groupCallUpdate {
                     if let groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) {
                         let pendingTask = MessageReceiver.buildPendingTask(label: "GroupCallUpdate")
-                        callMessageHandler.receivedGroupCallUpdateMessage(
-                            groupCallUpdate,
-                            for: groupThread,
-                            serverReceivedTimestamp: decryptedEnvelope.timestamp,
-                            completion: { pendingTask.complete() }
-                        )
+                        Task { [callMessageHandler] in
+                            defer { pendingTask.complete() }
+                            await callMessageHandler.receivedGroupCallUpdateMessage(
+                                groupCallUpdate,
+                                for: groupThread,
+                                serverReceivedTimestamp: decryptedEnvelope.timestamp
+                            )
+                        }
                     } else {
                         Logger.warn("Received GroupCallUpdate for unknown groupId")
                     }
@@ -929,12 +931,14 @@ public final class MessageReceiver: Dependencies {
                 return nil
             }
             let pendingTask = Self.buildPendingTask(label: "GroupCallUpdate")
-            callMessageHandler.receivedGroupCallUpdateMessage(
-                groupCallUpdate,
-                for: groupThread,
-                serverReceivedTimestamp: envelope.timestamp,
-                completion: { pendingTask.complete() }
-            )
+            Task { [callMessageHandler] in
+                defer { pendingTask.complete() }
+                await callMessageHandler.receivedGroupCallUpdateMessage(
+                    groupCallUpdate,
+                    for: groupThread,
+                    serverReceivedTimestamp: envelope.timestamp
+                )
+            }
             return nil
         }
 

@@ -80,10 +80,12 @@ public extension ConversationViewController {
 
     func refreshCallState() {
         if let groupThread = thread as? TSGroupThread {
-            callService.peekGroupCallAndUpdateThread(
-                groupThread,
-                peekTrigger: .localEvent()
-            )
+            Task { [callService] in
+                await callService.peekGroupCallAndUpdateThread(
+                    groupThread,
+                    peekTrigger: .localEvent()
+                )
+            }
         }
     }
 
