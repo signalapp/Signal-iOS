@@ -299,8 +299,13 @@ class WindowManager {
     func leaveCallView() {
         AssertIsOnMainThread()
 
-        owsAssertBeta(callViewController != nil)
+        guard let callViewController else {
+            owsFailBeta("callViewController == nil")
+            return
+        }
         owsAssertBeta(shouldShowCallView)
+
+        callViewController.willMoveToPip(pipWindow: returnToCallWindow)
 
         shouldShowCallView = false
         ensureWindowState()

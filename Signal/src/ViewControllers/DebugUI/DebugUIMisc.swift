@@ -167,7 +167,14 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
 
             OWSTableItem(title: "Enable edit send education prompt", actionBlock: {
                 DebugUIMisc.enableEditMessagePromptMessage()
-            })
+            }),
+            OWSTableItem(title: "Mark flip cam button tooltip as unread", actionBlock: {
+                let flipCamTooltipManager = FlipCameraTooltipManager(
+                    db: DependenciesBridge.shared.db,
+                    tailDirection: .down
+                )
+                flipCamTooltipManager.markTooltipAsUnread()
+            }),
         ]
         return OWSTableSection(title: name, items: items)
     }

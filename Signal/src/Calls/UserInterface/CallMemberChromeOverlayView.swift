@@ -200,7 +200,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         if width > CallMemberView.Constants.enlargedPipWidthIpadLandscape {
             // This is the widest width the pip can be. If we're wider, it
             // means that the local user is fullscreen (or animating from
-            // fullscreen down to th pip) and therefore should
+            // fullscreen down to the pip) and therefore should
             // not show the flip camera button.
             self.flipCameraButton.isHidden = true
         } else if width >= Constants.expandedPipMinWidth {

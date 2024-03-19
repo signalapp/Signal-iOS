@@ -123,6 +123,11 @@ open class TooltipView: UIView {
         true
     }
 
+    /// Whether the `tailReferenceView` is itself laid out with autolayout.
+    open var tailReferenceViewUsesAutolayout: Bool {
+        true
+    }
+
     // MARK: - Contents
 
     private func setupContents(
@@ -153,6 +158,26 @@ open class TooltipView: UIView {
 
     public weak var verticalConstraint: NSLayoutConstraint?
 
+    private func setUpVerticalConstraintWithTailReferenceView(tailReferenceView: UIView) {
+        switch tailDirection {
+        case .up:
+            verticalConstraint = autoPinEdge(.top, to: .bottom, of: tailReferenceView, withOffset: 0)
+        case .down:
+            verticalConstraint = autoPinEdge(.bottom, to: .top, of: tailReferenceView, withOffset: 0)
+        }
+    }
+
+    override open func layoutSubviews() {
+        super.layoutSubviews()
+        if !tailReferenceViewUsesAutolayout {
+            /// When the `tailReferenceView`'s frame is set, we must redo the vertical constraint.
+            /// Ideally, we wouldn't be operating in a dual autolayout + frame-setting world.
+            if let tailReferenceView {
+                setUpVerticalConstraintWithTailReferenceView(tailReferenceView: tailReferenceView)
+            }
+        }
+    }
+
     open func setupRelationshipWithSuperview(
         superview: UIView,
         tailReferenceView: UIView,
@@ -160,12 +185,7 @@ open class TooltipView: UIView {
     ) {
         superview.addSubview(self)
 
-        switch tailDirection {
-        case .up:
-            verticalConstraint = autoPinEdge(.top, to: .bottom, of: tailReferenceView, withOffset: -0)
-        case .down:
-            verticalConstraint = autoPinEdge(.bottom, to: .top, of: tailReferenceView, withOffset: -0)
-        }
+        setUpVerticalConstraintWithTailReferenceView(tailReferenceView: tailReferenceView)
 
         // Insist on the tooltip fitting within the margins of the widthReferenceView.
         if stretchesBubbleHorizontally {

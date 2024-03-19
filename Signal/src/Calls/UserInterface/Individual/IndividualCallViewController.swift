@@ -55,6 +55,11 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     /// the pip animation.
     private var shouldRelayoutAfterPipAnimationCompletes = false
 
+    private var flipCameraTooltipManager = FlipCameraTooltipManager(
+        db: DependenciesBridge.shared.db,
+        tailDirection: .up // pip starts in upper right corner
+    )
+
     // MARK: - Gradient Views
 
     private lazy var topGradientView: UIView = {
@@ -614,11 +619,23 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         let newFrame = CGRect(origin: previousOrigin, size: pipSize).pinnedToVerticalEdge(of: localVideoBoundingRect)
         previousOrigin = newFrame.origin
 
-        UIView.animate(withDuration: 0.25) {
-            self.localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
-                view.frame = newFrame
+        UIView.animate(
+            withDuration: 0.25,
+            animations: {
+                self.localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                    view.frame = newFrame
+                }
+            },
+            completion: { [weak self] _ in
+                guard let self else { return }
+                self.flipCameraTooltipManager.presentTooltipIfNecessary(
+                    fromView: self.view,
+                    widthReferenceView: self.view,
+                    tailReferenceView: self.localVideoView,
+                    isVideoMuted: self.call.isOutgoingVideoMuted
+                )
             }
-        }
+        )
     }
 
     private var startingTranslation: CGPoint?
@@ -634,6 +651,8 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         case .began, .changed:
             let translation = sender.translation(in: localVideoView)
             sender.setTranslation(.zero, in: localVideoView)
+
+            flipCameraTooltipManager.dismissTooltip()
 
             localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
                 view.frame.origin.y += translation.y
@@ -1154,6 +1173,10 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
         animateReturnFromPip(pipSnapshot: pipSnapshot, pipFrame: pipWindow.frame, splitViewSnapshot: splitViewSnapshot)
     }
 
+    func willMoveToPip(pipWindow: UIWindow) {
+        flipCameraTooltipManager.dismissTooltip()
+    }
+
     private func animateReturnFromPip(pipSnapshot: UIView, pipFrame: CGRect, splitViewSnapshot: UIView) {
         guard let window = view.window else { return owsFailDebug("missing window") }
         view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
@@ -1220,5 +1243,6 @@ extension IndividualCallViewController: AnimatableLocalMemberViewDelegate {
 
     func animatableLocalMemberViewWillBeginAnimation(_ localMemberView: CallMemberView) {
         self.isPipAnimationInProgress = true
+        self.flipCameraTooltipManager.dismissTooltip()
     }
 }

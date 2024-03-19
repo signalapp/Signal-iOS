@@ -485,6 +485,12 @@ class GroupCallViewController: UIViewController {
                             height: pipSize.height
                         )
                     }
+                    flipCameraTooltipManager.presentTooltipIfNecessary(
+                        fromView: self.view,
+                        widthReferenceView: self.view,
+                        tailReferenceView: localMemberView,
+                        isVideoMuted: call.isOutgoingVideoMuted
+                    )
                 } else {
                     localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
                         view.frame = CGRect(
@@ -494,6 +500,12 @@ class GroupCallViewController: UIViewController {
                             height: pipSize.height
                         )
                     }
+                    flipCameraTooltipManager.presentTooltipIfNecessary(
+                        fromView: self.view,
+                        widthReferenceView: self.view,
+                        tailReferenceView: localMemberView,
+                        isVideoMuted: call.isOutgoingVideoMuted
+                    )
                 }
             } else {
                 localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
@@ -560,9 +572,13 @@ class GroupCallViewController: UIViewController {
             UIView.animate(withDuration: 0.2, delay: 3.0, options: []) {
                 self.swipeToastView.alpha = 1
             }
-
         }
     }
+
+    private var flipCameraTooltipManager = FlipCameraTooltipManager(
+        db: DependenciesBridge.shared.db,
+        tailDirection: .down // pip starts in lower right corner
+    )
 
     func updateCallUI(size: CGSize? = nil) {
         // Force load the view if it hasn't been yet.
@@ -750,6 +766,10 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         shouldRemoteVideoControlsBeHidden = false
 
         animateReturnFromPip(pipSnapshot: pipSnapshot, pipFrame: pipWindow.frame, splitViewSnapshot: splitViewSnapshot)
+    }
+
+    func willMoveToPip(pipWindow: UIWindow) {
+        flipCameraTooltipManager.dismissTooltip()
     }
 
     private func animateReturnFromPip(pipSnapshot: UIView, pipFrame: CGRect, splitViewSnapshot: UIView) {
@@ -1159,5 +1179,6 @@ extension GroupCallViewController: AnimatableLocalMemberViewDelegate {
 
     func animatableLocalMemberViewWillBeginAnimation(_ localMemberView: CallMemberView) {
         self.isPipAnimationInProgress = true
+        self.flipCameraTooltipManager.dismissTooltip()
     }
 }

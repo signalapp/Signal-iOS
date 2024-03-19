@@ -13,6 +13,7 @@ public protocol CallViewControllerWindowReference: AnyObject {
     var view: UIView! { get }
 
     func returnFromPip(pipWindow: UIWindow)
+    func willMoveToPip(pipWindow: UIWindow)
 }
 
 // MARK: -

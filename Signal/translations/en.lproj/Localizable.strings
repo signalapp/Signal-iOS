@@ -2656,6 +2656,9 @@
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
 
+/* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Forward Contact";
 
