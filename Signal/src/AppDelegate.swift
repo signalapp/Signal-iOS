@@ -282,7 +282,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             appContext: CurrentAppContext(),
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
-            callMessageHandler: AppEnvironment.sharedCallMessageHandler,
+            callMessageHandler: WebRTCCallMessageHandler(),
             notificationPresenter: AppEnvironment.sharedNotificationPresenter
         )
         setupNSEInteroperation()

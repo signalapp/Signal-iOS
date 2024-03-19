@@ -60,8 +60,12 @@ public enum SealedSenderContentHint: Int, Codable, CustomStringConvertible {
 // MARK: -
 
 public final class MessageReceiver: Dependencies {
+    private let callMessageHandler: any CallMessageHandler
 
-    public init() {
+    public init(
+        callMessageHandler: any CallMessageHandler
+    ) {
+        self.callMessageHandler = callMessageHandler
     }
 
     private static let pendingTasks = PendingTasks(label: "messageReceiver")
@@ -184,7 +188,7 @@ public final class MessageReceiver: Dependencies {
             handleIncomingEnvelope(request: request, dataMessage: dataMessage, tx: tx)
         case .callMessage(let callMessage):
             owsAssertDebug(!request.shouldDiscardVisibleMessages)
-            let action = callMessageHandler?.action(
+            let action = callMessageHandler.action(
                 for: request.envelope,
                 callMessage: callMessage,
                 serverDeliveryTimestamp: request.serverDeliveryTimestamp
@@ -192,16 +196,15 @@ public final class MessageReceiver: Dependencies {
             switch action {
             case .process:
                 handleIncomingEnvelope(request: request, callMessage: callMessage, tx: tx)
-            case .handoff:
-                callMessageHandler?.externallyHandleCallMessage(
+            case .handOff:
+                callMessageHandler.externallyHandleCallMessage(
                     envelope: request.decryptedEnvelope.envelope,
                     plaintextData: request.plaintextData,
                     wasReceivedByUD: request.wasReceivedByUD,
                     serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                    transaction: tx
+                    tx: tx
                 )
-            case .ignore, .none: fallthrough
-            @unknown default:
+            case .ignore:
                 Logger.info("Ignoring call message w/ts \(request.decryptedEnvelope.timestamp)")
             }
         case .typingMessage(let typingMessage):
@@ -474,7 +477,7 @@ public final class MessageReceiver: Dependencies {
                 } else if let groupCallUpdate = dataMessage.groupCallUpdate {
                     if let groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) {
                         let pendingTask = MessageReceiver.buildPendingTask(label: "GroupCallUpdate")
-                        callMessageHandler?.receivedGroupCallUpdateMessage(
+                        callMessageHandler.receivedGroupCallUpdateMessage(
                             groupCallUpdate,
                             for: groupThread,
                             serverReceivedTimestamp: decryptedEnvelope.timestamp,
@@ -926,7 +929,7 @@ public final class MessageReceiver: Dependencies {
                 return nil
             }
             let pendingTask = Self.buildPendingTask(label: "GroupCallUpdate")
-            callMessageHandler?.receivedGroupCallUpdateMessage(
+            callMessageHandler.receivedGroupCallUpdateMessage(
                 groupCallUpdate,
                 for: groupThread,
                 serverReceivedTimestamp: envelope.timestamp,
@@ -1177,26 +1180,24 @@ public final class MessageReceiver: Dependencies {
         // [PKPushRegistry _terminateAppIfThereAreUnhandledVoIPPushes].
         if Thread.isMainThread, let offer = callMessage.offer {
             Logger.info("Handling 'offer' call message synchronously")
-            callMessageHandler?.receivedOffer(
+            callMessageHandler.receivedOffer(
                 offer,
-                from: SignalServiceAddress(envelope.sourceAci),
-                sourceDevice: envelope.sourceDeviceId,
+                from: (envelope.sourceAci, envelope.sourceDeviceId),
                 sentAtTimestamp: envelope.timestamp,
                 serverReceivedTimestamp: envelope.serverTimestamp,
                 serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                transaction: tx
+                tx: tx
             )
             return
         }
         if Thread.isMainThread, let opaque = callMessage.opaque, opaque.urgency == .handleImmediately {
             Logger.info("Handling 'opaque' call message synchronously")
-            callMessageHandler?.receivedOpaque(
+            callMessageHandler.receivedOpaque(
                 opaque,
-                from: envelope.sourceAciObjC,
-                sourceDevice: envelope.sourceDeviceId,
+                from: (envelope.sourceAci, envelope.sourceDeviceId),
                 serverReceivedTimestamp: envelope.serverTimestamp,
                 serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                transaction: tx
+                tx: tx
             )
             return
         }
@@ -1207,59 +1208,53 @@ public final class MessageReceiver: Dependencies {
         DispatchQueue.main.async { [databaseStorage, callMessageHandler] in
             if let offer = callMessage.offer {
                 databaseStorage.write { tx in
-                    callMessageHandler?.receivedOffer(
+                    callMessageHandler.receivedOffer(
                         offer,
-                        from: SignalServiceAddress(envelope.sourceAci),
-                        sourceDevice: envelope.sourceDeviceId,
+                        from: (envelope.sourceAci, envelope.sourceDeviceId),
                         sentAtTimestamp: envelope.timestamp,
                         serverReceivedTimestamp: envelope.serverTimestamp,
                         serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                        transaction: tx
+                        tx: tx
                     )
                 }
                 return
             }
             if let answer = callMessage.answer {
-                callMessageHandler?.receivedAnswer(
+                callMessageHandler.receivedAnswer(
                     answer,
-                    from: SignalServiceAddress(envelope.sourceAci),
-                    sourceDevice: envelope.sourceDeviceId
+                    from: (envelope.sourceAci, envelope.sourceDeviceId)
                 )
                 return
             }
             if !callMessage.iceUpdate.isEmpty {
-                callMessageHandler?.receivedIceUpdate(
+                callMessageHandler.receivedIceUpdate(
                     callMessage.iceUpdate,
-                    from: SignalServiceAddress(envelope.sourceAci),
-                    sourceDevice: envelope.sourceDeviceId
+                    from: (envelope.sourceAci, envelope.sourceDeviceId)
                 )
                 return
             }
             if let hangup = callMessage.hangup {
-                callMessageHandler?.receivedHangup(
+                callMessageHandler.receivedHangup(
                     hangup,
-                    from: SignalServiceAddress(envelope.sourceAci),
-                    sourceDevice: envelope.sourceDeviceId
+                    from: (envelope.sourceAci, envelope.sourceDeviceId)
                 )
                 return
             }
             if let busy = callMessage.busy {
-                callMessageHandler?.receivedBusy(
+                callMessageHandler.receivedBusy(
                     busy,
-                    from: SignalServiceAddress(envelope.sourceAci),
-                    sourceDevice: envelope.sourceDeviceId
+                    from: (envelope.sourceAci, envelope.sourceDeviceId)
                 )
                 return
             }
             if let opaque = callMessage.opaque {
                 databaseStorage.read { tx in
-                    callMessageHandler?.receivedOpaque(
+                    callMessageHandler.receivedOpaque(
                         opaque,
-                        from: envelope.sourceAciObjC,
-                        sourceDevice: envelope.sourceDeviceId,
+                        from: (envelope.sourceAci, envelope.sourceDeviceId),
                         serverReceivedTimestamp: envelope.serverTimestamp,
                         serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                        transaction: tx
+                        tx: tx
                     )
                 }
                 return

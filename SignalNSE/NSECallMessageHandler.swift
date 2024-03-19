@@ -3,20 +3,23 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CallKit
 import Foundation
+import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
-import CallKit
 
-public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
+class NSECallMessageHandler: CallMessageHandler {
 
     // MARK: Initializers
 
-    public override init() {
-        super.init()
-
+    init() {
         SwiftSingletons.register(self)
     }
+
+    private var lightweightGroupCallManager: LightweightGroupCallManager? { NSObject.lightweightGroupCallManager }
+    private var messagePipelineSupervisor: MessagePipelineSupervisor { NSObject.messagePipelineSupervisor }
+    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
 
     // MARK: - Call Handlers
 
@@ -24,7 +27,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         for envelope: SSKProtoEnvelope,
         callMessage: SSKProtoCallMessage,
         serverDeliveryTimestamp: UInt64
-    ) -> OWSCallMessageAction {
+    ) -> CallMessageAction {
         let bufferSecondsForMainAppToAnswerRing: UInt64 = 10
 
         let serverReceivedTimestamp = envelope.serverTimestamp > 0 ? envelope.serverTimestamp : envelope.timestamp
@@ -38,11 +41,11 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
             case .offerVideoCall: callType = .videoCall
             }
 
-            if let offerData = offer.opaque,
-               isValidOfferMessage(opaque: offerData,
-                                   messageAgeSec: messageAgeForRingRtc,
-                                   callMediaType: callType) {
-                return .handoff
+            if
+                let offerData = offer.opaque,
+                isValidOfferMessage(opaque: offerData, messageAgeSec: messageAgeForRingRtc, callMediaType: callType)
+            {
+                return .handOff
             }
 
             NSELogger.uncorrelated.info("Ignoring offer message; invalid according to RingRTC (likely expired).")
@@ -85,12 +88,12 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
                 }
             }
 
-            if opaqueMessage.urgency == .handleImmediately,
-               let opaqueData = opaqueMessage.data,
-               isValidOpaqueRing(opaqueCallMessage: opaqueData,
-                                 messageAgeSec: messageAgeForRingRtc,
-                                 validateGroupRing: validateGroupRing) {
-                return .handoff
+            if
+                opaqueMessage.urgency == .handleImmediately,
+                let opaqueData = opaqueMessage.data,
+                isValidOpaqueRing(opaqueCallMessage: opaqueData, messageAgeSec: messageAgeForRingRtc, validateGroupRing: validateGroupRing)
+            {
+                return .handOff
             }
 
             NSELogger.uncorrelated.info("Ignoring opaque message; not a valid ring according to RingRTC.")
@@ -101,12 +104,12 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         return .ignore
     }
 
-    public func externallyHandleCallMessage(
+    func externallyHandleCallMessage(
         envelope: SSKProtoEnvelope,
         plaintextData: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
         do {
             let payload = try CallMessageRelay.enqueueCallMessageForMainApp(
@@ -114,7 +117,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
                 plaintextData: plaintextData,
                 wasReceivedByUD: wasReceivedByUD,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
-                transaction: transaction
+                transaction: tx
             )
 
             // We don't want to risk consuming any call messages that the main app needs to perform the call
@@ -137,46 +140,56 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         }
     }
 
-    public func receivedOffer(
+    func receivedOffer(
         _ offer: SSKProtoCallMessageOffer,
-        from caller: SignalServiceAddress,
-        sourceDevice: UInt32,
+        from caller: (aci: Aci, deviceId: UInt32),
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
 
-    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32) {
+    func receivedAnswer(
+        _ answer: SSKProtoCallMessageAnswer,
+        from caller: (aci: Aci, deviceId: UInt32)
+    ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
 
-    public func receivedIceUpdate(_ iceUpdate: [SSKProtoCallMessageIceUpdate], from caller: SignalServiceAddress, sourceDevice: UInt32) {
+    func receivedIceUpdate(
+        _ iceUpdate: [SSKProtoCallMessageIceUpdate],
+        from caller: (aci: Aci, deviceId: UInt32)
+    ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
 
-    public func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from caller: SignalServiceAddress, sourceDevice: UInt32) {
+    func receivedHangup(
+        _ hangup: SSKProtoCallMessageHangup,
+        from caller: (aci: Aci, deviceId: UInt32)
+    ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
 
-    public func receivedBusy(_ busy: SSKProtoCallMessageBusy, from caller: SignalServiceAddress, sourceDevice: UInt32) {
+    func receivedBusy(
+        _ busy: SSKProtoCallMessageBusy,
+        from caller: (aci: Aci, deviceId: UInt32)
+    ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
 
-    public func receivedOpaque(
+    func receivedOpaque(
         _ opaque: SSKProtoCallMessageOpaque,
-        from caller: AciObjC,
-        sourceDevice: UInt32,
+        from caller: (aci: Aci, deviceId: UInt32),
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        transaction: SDSAnyReadTransaction
+        tx: SDSAnyReadTransaction
     ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
 
-    public func receivedGroupCallUpdateMessage(
+    func receivedGroupCallUpdateMessage(
         _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
         for groupThread: TSGroupThread,
         serverReceivedTimestamp: UInt64,

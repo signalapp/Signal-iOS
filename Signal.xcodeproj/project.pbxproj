@@ -678,6 +678,7 @@
 		50B815862A5E15390009D42D /* OWSIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B815852A5E14FF0009D42D /* OWSIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */; };
 		50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */; };
+		50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */; };
 		50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		50D2FC7D2AEB134C002E4589 /* AuthorMergeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */; };
@@ -1916,7 +1917,6 @@
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
 		F97A2EEA282578C000610669 /* BadgeIssueSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeIssueSheetStateTest.swift */; };
 		F97D02112970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97D02102970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift */; };
-		F97D10FB291C7FF900F0FFAA /* FakeCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */; };
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
 		F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */; };
 		F98ED2CE2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CD2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift */; };
@@ -2225,7 +2225,6 @@
 		F9C5CCE6289453B300548EEE /* ProtoUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA01289453B100548EEE /* ProtoUtils.m */; };
 		F9C5CCE7289453B300548EEE /* ProfileManagerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA02289453B100548EEE /* ProfileManagerProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA03289453B100548EEE /* SubscriptionManager.swift */; };
-		F9C5CCE9289453B300548EEE /* OWSCallMessageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA04289453B100548EEE /* OWSCallMessageHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCEA289453B300548EEE /* ProtoUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA05289453B100548EEE /* ProtoUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCEB289453B300548EEE /* NotificationsProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA06289453B100548EEE /* NotificationsProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCEC289453B300548EEE /* ContactsManagerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3477,6 +3476,7 @@
 		50B815852A5E14FF0009D42D /* OWSIdentity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIdentity.h; sourceTree = "<group>"; };
 		50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResendMessagePromptBuilder.swift; sourceTree = "<group>"; };
 		50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeGatedBatchTest.swift; sourceTree = "<group>"; };
+		50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageHandler.swift; sourceTree = "<group>"; };
 		50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberVisibilityFetcher.swift; sourceTree = "<group>"; };
 		50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContactsDataProvider.swift; sourceTree = "<group>"; };
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
@@ -4747,7 +4747,6 @@
 		F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtoParsingTest.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeIssueSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeIssueSheetStateTest.swift; sourceTree = "<group>"; };
 		F97D02102970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift"; sourceTree = "<group>"; };
-		F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeCallMessageHandler.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
 		F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendGiftBadgeJobQueue.swift; sourceTree = "<group>"; };
@@ -5061,7 +5060,6 @@
 		F9C5CA01289453B100548EEE /* ProtoUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoUtils.m; sourceTree = "<group>"; };
 		F9C5CA02289453B100548EEE /* ProfileManagerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileManagerProtocol.h; sourceTree = "<group>"; };
 		F9C5CA03289453B100548EEE /* SubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
-		F9C5CA04289453B100548EEE /* OWSCallMessageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCallMessageHandler.h; sourceTree = "<group>"; };
 		F9C5CA05289453B100548EEE /* ProtoUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProtoUtils.h; sourceTree = "<group>"; };
 		F9C5CA06289453B100548EEE /* NotificationsProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationsProtocol.h; sourceTree = "<group>"; };
 		F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsManagerProtocol.h; sourceTree = "<group>"; };
@@ -10290,11 +10288,11 @@
 		F9C5CA00289453B100548EEE /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */,
 				506A99D32B86B39F00E3C753 /* ContactManager.swift */,
 				F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */,
 				F9C5CA06289453B100548EEE /* NotificationsProtocol.h */,
 				664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */,
-				F9C5CA04289453B100548EEE /* OWSCallMessageHandler.h */,
 				503BD2882B44D666009624FC /* ProfileManager.swift */,
 				F9C5CA02289453B100548EEE /* ProfileManagerProtocol.h */,
 				F9C5CA05289453B100548EEE /* ProtoUtils.h */,
@@ -10818,7 +10816,6 @@
 			children = (
 				F9C5CB87289453B200548EEE /* Factories.swift */,
 				F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */,
-				F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */,
 				F9C5CB90289453B200548EEE /* FakeContactsManager.swift */,
 				F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */,
 				F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */,
@@ -10957,7 +10954,6 @@
 				F9C5CC84289453B300548EEE /* OWSAddToProfileWhitelistOfferMessage.h in Headers */,
 				F9C5CE02289453B400548EEE /* OWSBackgroundTask.h in Headers */,
 				F9C5CD04289453B300548EEE /* OWSBlockedPhoneNumbersMessage.h in Headers */,
-				F9C5CCE9289453B300548EEE /* OWSCallMessageHandler.h in Headers */,
 				F9C5CD93289453B300548EEE /* OWSCensorshipConfiguration.h in Headers */,
 				F9C5CDC7289453B400548EEE /* OWSCountryMetadata.h in Headers */,
 				F9C5CBE5289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h in Headers */,
@@ -13121,6 +13117,7 @@
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
 				7254653F2BA01FCC00EABFD2 /* CachedBadge.swift in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
+				50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */,
 				72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */,
 				D9C544292B8578B50036F274 /* CallRecord+CallStatus.swift in Sources */,
 				D9E7C8772B9A4A9C005BD3B9 /* CallRecord+Sorting.swift in Sources */,
@@ -13250,7 +13247,6 @@
 				F9C5CC1D289453B300548EEE /* FailedMessagesJob.swift in Sources */,
 				7255A4C82B98DF3E00E95368 /* FailedStorySendDisplayController.swift in Sources */,
 				F9C5CE61289453B400548EEE /* FakeAccountServiceClient.swift in Sources */,
-				F97D10FB291C7FF900F0FFAA /* FakeCallMessageHandler.swift in Sources */,
 				F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */,
 				F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */,
 				F9C5CE54289453B400548EEE /* FakeStorageServiceManager.swift in Sources */,

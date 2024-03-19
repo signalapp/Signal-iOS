@@ -302,16 +302,6 @@ public extension NSObject {
         SSKEnvironment.shared.earlyMessageManagerRef
     }
 
-    // This singleton is configured after the environments are created.
-    final var callMessageHandler: OWSCallMessageHandler? {
-        SSKEnvironment.shared.callMessageHandlerRef
-    }
-
-    // This singleton is configured after the environments are created.
-    static var callMessageHandler: OWSCallMessageHandler? {
-        SSKEnvironment.shared.callMessageHandlerRef
-    }
-
     final var pendingReceiptRecorder: PendingReceiptRecorder {
         SSKEnvironment.shared.pendingReceiptRecorderRef
     }
@@ -710,16 +700,6 @@ public extension Dependencies {
 
     static var earlyMessageManager: EarlyMessageManager {
         SSKEnvironment.shared.earlyMessageManagerRef
-    }
-
-    // This singleton is configured after the environments are created.
-    var callMessageHandler: OWSCallMessageHandler? {
-        SSKEnvironment.shared.callMessageHandlerRef
-    }
-
-    // This singleton is configured after the environments are created.
-    static var callMessageHandler: OWSCallMessageHandler? {
-        SSKEnvironment.shared.callMessageHandlerRef
     }
 
     var pendingReceiptRecorder: PendingReceiptRecorder {

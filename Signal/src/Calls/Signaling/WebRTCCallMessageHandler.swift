@@ -4,17 +4,19 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 
-public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
+class WebRTCCallMessageHandler: CallMessageHandler {
 
     // MARK: Initializers
 
-    public override init() {
-        super.init()
-
+    public init() {
         SwiftSingletons.register(self)
     }
+
+    private var callService: CallService { NSObject.callService }
+    private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     // MARK: - Call Handlers
 
@@ -22,18 +24,17 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         for envelope: SSKProtoEnvelope,
         callMessage: SSKProtoCallMessage,
         serverDeliveryTimestamp: UInt64
-    ) -> OWSCallMessageAction {
-        .process
+    ) -> CallMessageAction {
+        return .process
     }
 
-    public func receivedOffer(
+    func receivedOffer(
         _ offer: SSKProtoCallMessageOffer,
-        from caller: SignalServiceAddress,
-        sourceDevice: UInt32,
+        from caller: (aci: Aci, deviceId: UInt32),
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
         AssertIsOnMainThread()
 
@@ -45,46 +46,57 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             callType = .offerAudioCall
         }
 
-        let thread = TSContactThread.getOrCreateThread(withContactAddress: caller,
-                                                       transaction: transaction)
+        let thread = TSContactThread.getOrCreateThread(
+            withContactAddress: SignalServiceAddress(caller.aci),
+            transaction: tx
+        )
         self.callService.individualCallService.handleReceivedOffer(
             thread: thread,
             callId: offer.id,
-            sourceDevice: sourceDevice,
+            sourceDevice: caller.deviceId,
             opaque: offer.opaque,
             sentAtTimestamp: sentAtTimestamp,
             serverReceivedTimestamp: serverReceivedTimestamp,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
             callType: callType,
-            transaction: transaction
+            transaction: tx
         )
     }
 
-    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32) {
+    func receivedAnswer(
+        _ answer: SSKProtoCallMessageAnswer,
+        from caller: (aci: Aci, deviceId: UInt32)
+    ) {
         AssertIsOnMainThread()
 
-        let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(caller.aci))
         self.callService.individualCallService.handleReceivedAnswer(
             thread: thread,
             callId: answer.id,
-            sourceDevice: sourceDevice,
+            sourceDevice: caller.deviceId,
             opaque: answer.opaque
         )
     }
 
-    public func receivedIceUpdate(_ iceUpdate: [SSKProtoCallMessageIceUpdate], from caller: SignalServiceAddress, sourceDevice: UInt32) {
+    func receivedIceUpdate(
+        _ iceUpdate: [SSKProtoCallMessageIceUpdate],
+        from caller: (aci: Aci, deviceId: UInt32)
+    ) {
         AssertIsOnMainThread()
 
-        let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(caller.aci))
         self.callService.individualCallService.handleReceivedIceCandidates(
             thread: thread,
             callId: iceUpdate[0].id,
-            sourceDevice: sourceDevice,
+            sourceDevice: caller.deviceId,
             candidates: iceUpdate
         )
     }
 
-    public func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from caller: SignalServiceAddress, sourceDevice: UInt32) {
+    func receivedHangup(
+        _ hangup: SSKProtoCallMessageHangup,
+        from caller: (aci: Aci, deviceId: UInt32)
+    ) {
         AssertIsOnMainThread()
 
         // deviceId is optional and defaults to 0.
@@ -102,40 +114,43 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             type = .hangupNormal
         }
 
-        let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(caller.aci))
         self.callService.individualCallService.handleReceivedHangup(
             thread: thread,
             callId: hangup.id,
-            sourceDevice: sourceDevice,
+            sourceDevice: caller.deviceId,
             type: type,
             deviceId: deviceId
         )
     }
 
-    public func receivedBusy(_ busy: SSKProtoCallMessageBusy, from caller: SignalServiceAddress, sourceDevice: UInt32) {
+    func receivedBusy(
+        _ busy: SSKProtoCallMessageBusy,
+        from caller: (aci: Aci, deviceId: UInt32)
+    ) {
         AssertIsOnMainThread()
 
-        let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(caller.aci))
         self.callService.individualCallService.handleReceivedBusy(
             thread: thread,
             callId: busy.id,
-            sourceDevice: sourceDevice
+            sourceDevice: caller.deviceId
         )
     }
 
-    public func receivedOpaque(
+    func receivedOpaque(
         _ opaque: SSKProtoCallMessageOpaque,
-        from caller: AciObjC,
-        sourceDevice: UInt32,
+        from caller: (aci: Aci, deviceId: UInt32),
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        transaction: SDSAnyReadTransaction
+        tx: SDSAnyReadTransaction
     ) {
         AssertIsOnMainThread()
-        Logger.info("Received opaque call message from \(caller) on device \(sourceDevice)")
+        Logger.info("Received opaque call message from \(caller.aci).\(caller.deviceId)")
 
         guard let message = opaque.data else {
-            return owsFailDebug("Received opaque call message without data")
+            owsFailDebug("Received opaque call message without data")
+            return
         }
 
         var messageAgeSec: UInt64 = 0
@@ -143,18 +158,18 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
         }
 
-        let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
+        let localDeviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
 
         self.callService.callManager.receivedCallMessage(
-            senderUuid: caller.rawUUID,
-            senderDeviceId: sourceDevice,
+            senderUuid: caller.aci.rawUUID,
+            senderDeviceId: caller.deviceId,
             localDeviceId: localDeviceId,
             message: message,
             messageAgeSec: messageAgeSec
         )
     }
 
-    public func receivedGroupCallUpdateMessage(
+    func receivedGroupCallUpdateMessage(
         _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
         for groupThread: TSGroupThread,
         serverReceivedTimestamp: UInt64,
@@ -174,7 +189,13 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         )
     }
 
-    public func externallyHandleCallMessage(envelope: SSKProtoEnvelope, plaintextData: Data, wasReceivedByUD: Bool, serverDeliveryTimestamp: UInt64, transaction: SDSAnyWriteTransaction) {
+    func externallyHandleCallMessage(
+        envelope: SSKProtoEnvelope,
+        plaintextData: Data,
+        wasReceivedByUD: Bool,
+        serverDeliveryTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) {
         owsFailDebug("Can't handle externally. We're already the main app.")
     }
 }

@@ -37,7 +37,7 @@ public class AppSetup {
         appContext: AppContext,
         paymentsEvents: PaymentsEvents,
         mobileCoinHelper: MobileCoinHelper,
-        callMessageHandler: OWSCallMessageHandler,
+        callMessageHandler: CallMessageHandler,
         notificationPresenter: NotificationsProtocolSwift,
         testDependencies: TestDependencies? = nil
     ) -> AppSetup.DatabaseContinuation {
@@ -749,7 +749,7 @@ public class AppSetup {
         )
 
         let pendingReceiptRecorder = testDependencies?.pendingReceiptRecorder ?? MessageRequestPendingReceipts()
-        let messageReceiver = MessageReceiver()
+        let messageReceiver = MessageReceiver(callMessageHandler: callMessageHandler)
         let remoteConfigManager = testDependencies?.remoteConfigManager ?? RemoteConfigManagerImpl(
             appExpiry: appExpiry,
             db: db,
@@ -853,7 +853,6 @@ public class AppSetup {
             systemStoryManager: systemStoryManager,
             remoteMegaphoneFetcher: remoteMegaphoneFetcher,
             contactDiscoveryManager: contactDiscoveryManager,
-            callMessageHandler: callMessageHandler,
             notificationsManager: notificationPresenter,
             messageSendLog: messageSendLog,
             messageSenderJobQueue: messageSenderJobQueue,

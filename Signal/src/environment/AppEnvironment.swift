@@ -24,11 +24,6 @@ public class AppEnvironment: NSObject {
         }
     }
 
-    // A temporary hack until `.shared` goes away and this can be provided to `init`.
-    static let sharedCallMessageHandler = WebRTCCallMessageHandler()
-
-    public var callMessageHandlerRef: WebRTCCallMessageHandler
-
     public var callServiceRef: CallService
 
     // A temporary hack until `.shared` goes away and this can be provided to `init`.
@@ -53,7 +48,6 @@ public class AppEnvironment: NSObject {
     private var usernameValidationObserverRef: UsernameValidationObserver?
 
     private override init() {
-        self.callMessageHandlerRef = Self.sharedCallMessageHandler
         self.callServiceRef = CallService()
         self.notificationPresenterRef = Self.sharedNotificationPresenter
         self.pushRegistrationManagerRef = PushRegistrationManager()
