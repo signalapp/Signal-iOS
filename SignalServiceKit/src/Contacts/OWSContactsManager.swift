@@ -563,11 +563,10 @@ extension OWSContactsManager: ContactManager {
             return imageData
         }
 
-        guard let address = address,
-              address.isValid else {
-                  owsFailDebug("Missing or invalid address.")
-                  return nil
-              }
+        guard let address, address.isValid else {
+            owsFailDebug("Missing or invalid address.")
+            return nil
+        }
 
         guard !address.isLocalAddress else {
             // Never use system contact or synced image data for the local user
@@ -576,26 +575,13 @@ extension OWSContactsManager: ContactManager {
 
         if
             let phoneNumber = address.phoneNumber,
-            let contact = contact(forPhoneNumber: phoneNumber, transaction: transaction),
+            let signalAccount = self.fetchSignalAccount(forPhoneNumber: phoneNumber, transaction: transaction),
+            let contact = signalAccount.contact,
             let cnContactId = contact.cnContactId,
             let avatarData = self.avatarData(for: cnContactId),
             let validData = validateIfNecessary(avatarData)
         {
             return validData
-        }
-
-        // If we haven't loaded system contacts yet, we may have a cached copy in the db
-        if let signalAccount = self.fetchSignalAccount(for: address, transaction: transaction) {
-            if let contact = signalAccount.contact,
-               let cnContactId = contact.cnContactId,
-               let avatarData = self.avatarData(for: cnContactId),
-               let validData = validateIfNecessary(avatarData) {
-                return validData
-            }
-
-            if let contactAvatarData = signalAccount.buildContactAvatarJpegData() {
-                return contactAvatarData
-            }
         }
         return nil
     }
