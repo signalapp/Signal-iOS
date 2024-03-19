@@ -158,4 +158,19 @@ public extension Contact {
             style: .default
         )
     }
+
+    /// This method is used to de-bounce system contact fetch notifications by
+    /// checking for changes in the contact data.
+    func computeSystemContactHashValue() -> Int {
+        var hasher = Hasher()
+        hasher.combine(cnContactId)
+        hasher.combine(firstName)
+        hasher.combine(lastName)
+        hasher.combine(fullName)
+        hasher.combine(nickname)
+        hasher.combine(userTextPhoneNumbers)
+        // TODO: Include userTextPhoneNumberLabels in a follow-up commit.
+        // Don't include "emails" because it doesn't impact system contacts.
+        return hasher.finalize()
+    }
 }

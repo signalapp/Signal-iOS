@@ -218,37 +218,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [imageData copy];
 }
 
-- (NSArray<NSString *> *)e164PhoneNumbers
-{
-    NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (PhoneNumber *phoneNumber in self.parsedPhoneNumbers) {
-        [result addObject:phoneNumber.toE164];
-    }
-    return result;
-}
-
-// This method is used to de-bounce system contact fetch notifications
-// by checking for changes in the contact data.
-- (NSUInteger)hash
-{
-    // base hash is some arbitrary number
-    NSUInteger hash = 1825038313;
-
-    hash ^= self.fullName.hash;
-
-    hash ^= self.nickname.hash;
-
-    for (NSString *phoneNumber in self.e164PhoneNumbers) {
-        hash ^= phoneNumber.hash;
-    }
-
-    for (NSString *email in self.emails) {
-        hash ^= email.hash;
-    }
-
-    return hash;
-}
-
 #pragma mark - CNContactConverters
 
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data

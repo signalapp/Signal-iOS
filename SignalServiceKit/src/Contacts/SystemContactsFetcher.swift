@@ -373,10 +373,11 @@ public class SystemContactsFetcher: NSObject {
                 return
             }
 
-            var contactsHash = 0
+            var hasher = Hasher()
             for contact in contacts {
-                contactsHash = contactsHash ^ contact.hash
+                hasher.combine(contact.computeSystemContactHashValue())
             }
+            let contactsHash = hasher.finalize()
 
             DispatchQueue.main.async {
                 var shouldNotifyDelegate = false
