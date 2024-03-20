@@ -68,7 +68,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
 - (instancetype)initWithAttachmentId:(NSString *_Nullable)attachmentId
                               ofType:(OWSAttachmentInfoReference)attachmentType
-                         contentType:(NSString *)contentType
+                         contentType:(NSString *_Nullable)contentType
                       sourceFilename:(NSString *_Nullable)sourceFilename;
 @end
 

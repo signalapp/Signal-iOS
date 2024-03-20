@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachmentId:(NSString *_Nullable)attachmentId
                               ofType:(OWSAttachmentInfoReference)attachmentType
-                         contentType:(NSString *)contentType
+                         contentType:(NSString *_Nullable)contentType
                       sourceFilename:(NSString *_Nullable)sourceFilename
 {
     self = [super init];
