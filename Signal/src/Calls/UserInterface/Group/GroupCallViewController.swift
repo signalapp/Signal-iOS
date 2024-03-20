@@ -97,16 +97,14 @@ class GroupCallViewController: UIViewController {
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
             let type = CallMemberView.MemberType.remoteInGroup(.speaker)
-            let videoView = CallMemberVideoView(type: type)
-            speakerView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
+            speakerView = CallMemberView(type: type)
         } else {
             speakerView = GroupCallRemoteMemberView(context: .speaker)
         }
 
         if FeatureFlags.useCallMemberComposableViewsForLocalUser {
             let type = CallMemberView.MemberType.local
-            let videoView = CallMemberVideoView(type: type)
-            localMemberView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
+            localMemberView = CallMemberView(type: type)
         } else {
             localMemberView = GroupCallLocalMemberView()
         }

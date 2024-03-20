@@ -50,16 +50,13 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
 
     weak var animatableLocalMemberViewDelegate: AnimatableLocalMemberViewDelegate?
 
-    init(
-        type: MemberType,
-        associatedCallMemberVideoView: CallMemberVideoView
-    ) {
+    init(type: MemberType) {
         self.type = type
         self.callMemberCameraOffView = CallMemberCameraOffView(type: type)
         self.callMemberWaitingAndErrorView = CallMemberWaitingAndErrorView(type: type)
         self.callMemberChromeOverlayView = CallMemberChromeOverlayView(type: type)
 
-        self._associatedCallMemberVideoView = associatedCallMemberVideoView
+        self._associatedCallMemberVideoView = CallMemberVideoView(type: type)
 
         super.init(frame: .zero)
         self.backgroundColor = .clear

@@ -126,8 +126,7 @@ class GroupCallVideoGridCell: UICollectionViewCell {
     override init(frame: CGRect) {
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
             let type = CallMemberView.MemberType.remoteInGroup(.videoGrid)
-            let videoView = CallMemberVideoView(type: type)
-            memberView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
+            memberView = CallMemberView(type: type)
         } else {
             memberView = GroupCallRemoteMemberView(context: .videoGrid)
         }

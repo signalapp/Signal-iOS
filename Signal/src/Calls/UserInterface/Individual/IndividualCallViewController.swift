@@ -166,16 +166,14 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
             let type = CallMemberView.MemberType.remoteInIndividual
-            let videoView = CallMemberVideoView(type: type)
-            remoteMemberView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
+            remoteMemberView = CallMemberView(type: type)
         } else {
             remoteMemberView = RemoteVideoView()
         }
 
         if FeatureFlags.useCallMemberComposableViewsForLocalUser {
             let type = CallMemberView.MemberType.local
-            let videoView = CallMemberVideoView(type: type)
-            localVideoView = CallMemberView(type: type, associatedCallMemberVideoView: videoView)
+            localVideoView = CallMemberView(type: type)
         } else {
             let localVideoView = LocalVideoView()
             localVideoView.captureSession = call.videoCaptureController.captureSession
