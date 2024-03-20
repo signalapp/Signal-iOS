@@ -304,10 +304,8 @@ public class TSAttachmentManager {
             if let thumbnail = stream.cloneAsThumbnail() {
                 thumbnail.anyInsert(transaction: tx)
                 return OWSAttachmentInfo(
-                    attachmentId: thumbnail.uniqueId,
-                    ofType: .thumbnail,
-                    contentType: stream.mimeType,
-                    sourceFilename: stream.sourceFilename
+                    legacyAttachmentId: thumbnail.uniqueId,
+                    ofType: .thumbnail
                 )
             } else {
                 owsFailDebug("Unable to clone!")
@@ -320,17 +318,13 @@ public class TSAttachmentManager {
         {
             // No attachment stream, but we have a pointer. It's likely this media hasn't finished downloading yet.
             return OWSAttachmentInfo(
-                attachmentId: pointer.uniqueId,
-                ofType: .original,
-                contentType: pointer.mimeType,
-                sourceFilename: pointer.sourceFilename
+                legacyAttachmentId: pointer.uniqueId,
+                ofType: .original
             )
         } else {
             // We have an attachment in the original message, but it doesn't support thumbnailing
             return OWSAttachmentInfo(
-                attachmentId: nil,
-                ofType: .unset,
-                contentType: originalAttachment.mimeType,
+                stubWithMimeType: originalAttachment.mimeType,
                 sourceFilename: originalAttachment.sourceFilename
             )
         }

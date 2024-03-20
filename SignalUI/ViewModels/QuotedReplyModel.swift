@@ -179,20 +179,19 @@ public class QuotedReplyModel: NSObject {
             renderingFlag = nil
             canTapToDownload = false
             thumbnailImage = nil
-        case .thumbnail(let thumbnail):
-            mimeType = thumbnail.mimeType
-            sourceFilename = thumbnail.sourceFilename
-            renderingFlag = thumbnail.attachmentRef.renderingFlag
+        case .thumbnail(let attachmentRef):
+            sourceFilename = attachmentRef.sourceFilename
+            renderingFlag = attachmentRef.renderingFlag
 
             // Fetch the full attachment.
             let thumbnailAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
-                thumbnail.attachmentRef.resourceId,
+                attachmentRef.resourceId,
                 tx: transaction.asV2Read
             )
+            mimeType = thumbnailAttachment?.mimeType
             if
                 let thumbnailAttachment,
                 let image = DependenciesBridge.shared.tsResourceManager.thumbnailImage(
-                    thumbnail: thumbnail,
                     attachment: thumbnailAttachment,
                     parentMessage: message,
                     tx: transaction.asV2Read
@@ -513,13 +512,28 @@ public class QuotedReplyModel: NSObject {
     }
 
     public func buildQuotedMessageForSending() -> TSQuotedMessage {
+        // TODO: use TSResourceManager for this.
+        let quotedAttachmentForSending: OWSAttachmentInfo? = attachmentStream.map { attachmentStream in
+            if MIMETypeUtil.canMakeThumbnail(attachmentStream.contentType) {
+                return OWSAttachmentInfo(
+                    legacyAttachmentId: attachmentStream.uniqueId,
+                    ofType: .originalForSend
+                )
+            } else {
+                return OWSAttachmentInfo(
+                    stubWithMimeType: attachmentStream.contentType,
+                    sourceFilename: attachmentStream.sourceFilename
+                )
+            }
+        }
+
         // Legit usage of senderTimestamp to reference existing message
         return TSQuotedMessage(
             timestamp: timestamp.map { NSNumber(value: $0) },
             authorAddress: authorAddress,
             body: body,
             bodyRanges: bodyRanges,
-            quotedAttachmentForSending: attachmentStream,
+            quotedAttachmentForSending: quotedAttachmentForSending,
             isGiftBadge: isGiftBadge
         )
     }

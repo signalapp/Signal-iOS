@@ -23,11 +23,7 @@ extension AttachmentStore {
         )
 
         if let reference {
-            return .thumbnail(QuotedMessageAttachmentReference.Thumbnail(
-                attachmentRef: reference,
-                mimeType: info.contentType,
-                sourceFilename: info.sourceFilename
-            ))
+            return .thumbnail(reference)
         } else if let stub = QuotedMessageAttachmentReference.Stub(info) {
             return .stub(stub)
         } else {
@@ -51,8 +47,8 @@ extension AttachmentStore {
     ) -> TSResourceReference? {
         let ref = self.quotedAttachmentReference(for: message, tx: tx)
         switch ref {
-        case .thumbnail(let thumbnail):
-            return thumbnail.attachmentRef
+        case .thumbnail(let attachmentRef):
+            return attachmentRef
         case .stub, nil:
             return nil
         }

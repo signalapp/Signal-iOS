@@ -228,11 +228,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             fallthrough
         @unknown default:
             if let reference = self.legacyReference(uniqueId: info.attachmentId, tx: tx) {
-                return .thumbnail(TSQuotedMessageResourceReference.Thumbnail(
-                    attachmentRef: reference,
-                    mimeType: info.contentType,
-                    sourceFilename: info.sourceFilename
-                ))
+                return .thumbnail(reference)
             } else if let stub = TSQuotedMessageResourceReference.Stub(info) {
                 return .stub(stub)
             } else {

@@ -145,9 +145,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         guard MIMETypeUtil.canMakeThumbnail(originalAttachment.mimeType) else {
             // Can't make a thumbnail!
             return .withoutFinalizer(OWSAttachmentInfo(
-                attachmentId: nil,
-                ofType: .unset,
-                contentType: originalAttachment.mimeType,
+                stubWithMimeType: originalAttachment.mimeType,
                 sourceFilename: originalReference.sourceFilename
             ))
         }
@@ -157,12 +155,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             let renderingFlag = originalReference.renderingFlag
 
             return OwnedAttachmentBuilder<OWSAttachmentInfo>(
-                info: OWSAttachmentInfo(
-                    attachmentId: nil,
-                    ofType: .V2,
-                    contentType: mimeType,
-                    sourceFilename: sourceFilename
-                ),
+                info: OWSAttachmentInfo.init(forV2ThumbnailReference: ()),
                 finalize: { [self] (owner: OwnerId, tx: DBWriteTransaction) in
                     let attachmentReference: AttachmentReference = {
                         // TODO: create and insert a new reference to the same attachment pointer from the new message.
@@ -180,12 +173,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         let renderingFlag = originalReference.renderingFlag
 
         return OwnedAttachmentBuilder<OWSAttachmentInfo>(
-            info: OWSAttachmentInfo(
-                attachmentId: nil,
-                ofType: .V2,
-                contentType: targetThumbnailMimeType,
-                sourceFilename: sourceFilename
-            ),
+            info: OWSAttachmentInfo.init(forV2ThumbnailReference: ()),
             finalize: { [self, originalAttachmentId] (owner: OwnerId, tx: DBWriteTransaction) in
                 guard
                     let originalAttachment = self.attachmentStore.fetch(

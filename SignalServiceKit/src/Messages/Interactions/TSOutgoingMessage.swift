@@ -342,22 +342,27 @@ extension TSOutgoingMessage {
         let mimeType: String?
         let sourceFilename: String?
         switch reference {
-        case .thumbnail(let thumbnail):
-            mimeType = thumbnail.mimeType
-            sourceFilename = thumbnail.sourceFilename
+        case .thumbnail(let attachmentRef):
+            sourceFilename = attachmentRef.sourceFilename
 
             if
                 let attachment = DependenciesBridge.shared.tsResourceStore.fetch(
-                    thumbnail.attachmentRef.resourceId,
+                    attachmentRef.resourceId,
                     tx: tx.asV2Read
-                ),
-                let pointer = attachment.asTransitTierPointer(),
-                let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
-                    from: thumbnail.attachmentRef,
-                    pointer: pointer
                 )
             {
-                builder.setThumbnail(attachmentProto)
+                mimeType = attachment.mimeType
+                if
+                    let pointer = attachment.asTransitTierPointer(),
+                    let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+                        from: attachmentRef,
+                        pointer: pointer
+                    )
+                {
+                    builder.setThumbnail(attachmentProto)
+                }
+            } else {
+                mimeType = nil
             }
         case .stub(let stub):
             mimeType = stub.mimeType

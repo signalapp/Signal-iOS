@@ -53,45 +53,29 @@ extension OWSAttachmentInfo {
     static let constants: [(OWSAttachmentInfo, base64NSArchiverData: Data)] = [
         (
             OWSAttachmentInfo(
-                attachmentId: "1234",
-                ofType: .original,
-                contentType: "jpeg",
-                sourceFilename: "somefile.jpg"
+                legacyAttachmentId: "1234",
+                ofType: .original
             ),
             Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGpCwwbHB0eHyAhVSRudWxs1w0ODxAREhMUFRYXGBkaViRjbGFzc11zY2hlbWFWZXJzaW9uXxAPcmF3QXR0YWNobWVudElkXnNvdXJjZUZpbGVuYW1lXxAPTVRMTW9kZWxWZXJzaW9uW2NvbnRlbnRUeXBlXmF0dGFjaG1lbnRUeXBlgAiABYAEgAOAAoAGgAcQAFxzb21lZmlsZS5qcGdUMTIzNBABVGpwZWcQAtIiIyQlWiRjbGFzc25hbWVYJGNsYXNzZXNfEBFPV1NBdHRhY2htZW50SW5mb6MmJyhfEBFPV1NBdHRhY2htZW50SW5mb1hNVExNb2RlbFhOU09iamVjdAAIABEAGgAkACkAMgA3AEkATABRAFMAXQBjAHIAeQCHAJkAqAC6AMYA1QDXANkA2wDdAN8A4QDjAOUA8gD3APkA/gEAAQUBEAEZAS0BMQFFAU4AAAAAAAACAQAAAAAAAAApAAAAAAAAAAAAAAAAAAABVw==")!
         ),
         (
             OWSAttachmentInfo(
-                attachmentId: "1234",
-                ofType: .originalForSend,
-                contentType: nil,
-                sourceFilename: nil
+                legacyAttachmentId: "1234",
+                ofType: .originalForSend
             ),
             Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGmCwwXGBkaVSRudWxs1Q0ODxAREhMUEhZdc2NoZW1hVmVyc2lvbl8QD3Jhd0F0dGFjaG1lbnRJZF8QD01UTE1vZGVsVmVyc2lvbl5hdHRhY2htZW50VHlwZVYkY2xhc3OABIADgAKABIAFEABUMTIzNBAB0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc18QEU9XU0F0dGFjaG1lbnRJbmZvox8gIV8QEU9XU0F0dGFjaG1lbnRJbmZvWE1UTE1vZGVsWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBaAGAAawB5AIsAnQCsALMAtQC3ALkAuwC9AL8AxADGAMsA1gDfAPMA9wELARQAAAAAAAACAQAAAAAAAAAiAAAAAAAAAAAAAAAAAAABHQ==")!
         ),
         (
-            OWSAttachmentInfo(
-                attachmentId: nil,
-                ofType: .V2,
-                contentType: "mp4",
-                sourceFilename: "file.mp4"
-            ),
+            OWSAttachmentInfo(forV2ThumbnailReference: ()),
             Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGoCwwZGhscHR5VJG51bGzWDQ4PEBESExQVFhcYXnNvdXJjZUZpbGVuYW1lViRjbGFzc11zY2hlbWFWZXJzaW9uXxAPTVRMTW9kZWxWZXJzaW9uW2NvbnRlbnRUeXBlXmF0dGFjaG1lbnRUeXBlgAOAB4AEgAKABYAGEABYZmlsZS5tcDQQAVNtcDQQBdIfICEiWiRjbGFzc25hbWVYJGNsYXNzZXNfEBFPV1NBdHRhY2htZW50SW5mb6MjJCVfEBFPV1NBdHRhY2htZW50SW5mb1hNVExNb2RlbFhOU09iamVjdAAIABEAGgAkACkAMgA3AEkATABRAFMAXABiAG8AfgCFAJMApQCxAMAAwgDEAMYAyADKAMwAzgDXANkA3QDfAOQA7wD4AQwBEAEkAS0AAAAAAAACAQAAAAAAAAAmAAAAAAAAAAAAAAAAAAABNg==")!
         ),
         (
-            OWSAttachmentInfo(
-                attachmentId: nil,
-                ofType: .V2,
-                contentType: nil,
-                sourceFilename: nil
-            ),
+            OWSAttachmentInfo(forV2ThumbnailReference: ()),
             Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGmCwwVFhcYVSRudWxs1A0ODxAREhMUXXNjaGVtYVZlcnNpb25fEA9NVExNb2RlbFZlcnNpb25eYXR0YWNobWVudFR5cGVWJGNsYXNzgAOAAoAEgAUQABABEAXSGRobHFokY2xhc3NuYW1lWCRjbGFzc2VzXxART1dTQXR0YWNobWVudEluZm+jHR4fXxART1dTQXR0YWNobWVudEluZm9YTVRMTW9kZWxYTlNPYmplY3QACAARABoAJAApADIANwBJAEwAUQBTAFoAYABpAHcAiQCYAJ8AoQCjAKUApwCpAKsArQCyAL0AxgDaAN4A8gD7AAAAAAAAAgEAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAQQ=")!
         ),
         (
             OWSAttachmentInfo(
-                attachmentId: nil,
-                ofType: .unset,
-                contentType: "png",
+                stubWithMimeType: "png",
                 sourceFilename: "image.png"
             ),
             Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGnCwwZGhscHVUkbnVsbNYNDg8QERITFBUWFxZec291cmNlRmlsZW5hbWVWJGNsYXNzXXNjaGVtYVZlcnNpb25fEA9NVExNb2RlbFZlcnNpb25bY29udGVudFR5cGVeYXR0YWNobWVudFR5cGWAA4AGgASAAoAFgAIQAFlpbWFnZS5wbmcQAVNwbmfSHh8gIVokY2xhc3NuYW1lWCRjbGFzc2VzXxART1dTQXR0YWNobWVudEluZm+jIiMkXxART1dTQXR0YWNobWVudEluZm9YTVRMTW9kZWxYTlNPYmplY3QACAARABoAJAApADIANwBJAEwAUQBTAFsAYQBuAH0AhACSAKQAsAC/AMEAwwDFAMcAyQDLAM0A1wDZAN0A4gDtAPYBCgEOASIBKwAAAAAAAAIBAAAAAAAAACUAAAAAAAAAAAAAAAAAAAE0")!
@@ -99,14 +83,29 @@ extension OWSAttachmentInfo {
     ]
 
     func validate(against: OWSAttachmentInfo) throws {
-        guard
-            // Note that "rawAttachmentId" deserialized by mantle converts
-            // nil to empty string; use the derived "attachmentId" instead.
-            attachmentId == against.attachmentId,
-            attachmentType == against.attachmentType,
-            contentType == against.contentType,
-            sourceFilename == against.sourceFilename
-        else {
+        guard attachmentType == against.attachmentType else {
+            throw ValidatableModelError.failedToValidate
+        }
+        switch self.attachmentType {
+        case .V2:
+            // All v2 instances are equivalent; metadata is irrelevant
+            return
+        case .unset:
+            guard
+                stubMimeType == against.stubMimeType,
+                stubSourceFilename == against.stubSourceFilename
+            else {
+                throw ValidatableModelError.failedToValidate
+            }
+        case .original, .originalForSend, .thumbnail, .untrustedPointer:
+            guard
+                // Note that "rawAttachmentId" deserialized by mantle converts
+                // nil to empty string; use the derived "attachmentId" instead.
+                attachmentId == against.attachmentId
+            else {
+                throw ValidatableModelError.failedToValidate
+            }
+        @unknown default:
             throw ValidatableModelError.failedToValidate
         }
     }

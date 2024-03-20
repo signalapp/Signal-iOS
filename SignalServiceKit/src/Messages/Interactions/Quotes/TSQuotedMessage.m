@@ -16,6 +16,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSAttachmentInfo ()
+@property (nonatomic, readonly, nullable) NSString *contentType;
+@property (nonatomic, readonly, nullable) NSString *sourceFilename;
+@end
+
 @implementation OWSAttachmentInfo
 
 - (nullable NSString *)attachmentId
@@ -23,34 +28,32 @@ NS_ASSUME_NONNULL_BEGIN
     return _rawAttachmentId.ows_nilIfEmpty;
 }
 
-- (instancetype)initWithoutThumbnailWithContentType:(NSString *)contentType sourceFilename:(NSString *)sourceFilename
+- (nullable NSString *)stubMimeType
 {
-    self = [super init];
-    if (self) {
-        _schemaVersion = self.class.currentSchemaVersion;
-        _rawAttachmentId = nil;
-        _attachmentType = OWSAttachmentInfoReferenceUnset;
-        _contentType = contentType;
-        _sourceFilename = sourceFilename;
-    }
-    return self;
+    return _contentType;
 }
 
-- (instancetype)initWithOriginalAttachmentStream:(TSAttachmentStream *)attachmentStream
+- (nullable NSString *)stubSourceFilename
 {
-    OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
-    OWSAssertDebug(attachmentStream.uniqueId);
-    OWSAssertDebug(attachmentStream.contentType);
+    return _sourceFilename;
+}
 
-    if ([MIMETypeUtil canMakeThumbnail:attachmentStream.contentType]) {
-        return [self initWithAttachmentId:attachmentStream.uniqueId
-                                   ofType:OWSAttachmentInfoReferenceOriginalForSend
-                              contentType:attachmentStream.contentType
-                           sourceFilename:attachmentStream.sourceFilename];
-    } else {
-        return [self initWithoutThumbnailWithContentType:attachmentStream.contentType
-                                          sourceFilename:attachmentStream.sourceFilename];
-    }
+- (instancetype)initStubWithMimeType:(NSString *)mimeType sourceFilename:(NSString *_Nullable)sourceFilename
+{
+    return [self initWithAttachmentId:nil
+                               ofType:OWSAttachmentInfoReferenceUnset
+                          contentType:mimeType
+                       sourceFilename:sourceFilename];
+}
+
+- (instancetype)initForV2ThumbnailReference
+{
+    return [self initWithAttachmentId:nil ofType:OWSAttachmentInfoReferenceV2 contentType:nil sourceFilename:nil];
+}
+
+- (instancetype)initWithLegacyAttachmentId:(NSString *)attachmentId ofType:(OWSAttachmentInfoReference)attachmentType
+{
+    return [self initWithAttachmentId:attachmentId ofType:attachmentType contentType:nil sourceFilename:nil];
 }
 
 - (instancetype)initWithAttachmentId:(NSString *_Nullable)attachmentId
@@ -152,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
                     authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-       quotedAttachmentForSending:(nullable TSAttachmentStream *)attachment
+       quotedAttachmentForSending:(nullable OWSAttachmentInfo *)attachmentInfo
                       isGiftBadge:(BOOL)isGiftBadge
 {
     OWSAssertDebug(authorAddress.isValid);
@@ -172,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
     _body = body;
     _bodyRanges = bodyRanges;
     _bodySource = TSQuotedMessageContentSourceLocal;
-    _quotedAttachment = attachment ? [[OWSAttachmentInfo alloc] initWithOriginalAttachmentStream:attachment] : nil;
+    _quotedAttachment = attachmentInfo;
     _isGiftBadge = isGiftBadge;
 
     return self;

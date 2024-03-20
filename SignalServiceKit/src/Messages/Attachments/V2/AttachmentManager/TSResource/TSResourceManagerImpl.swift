@@ -327,7 +327,6 @@ public class TSResourceManagerImpl: TSResourceManager {
     }
 
     public func thumbnailImage(
-        thumbnail: TSQuotedMessageResourceReference.Thumbnail,
         attachment: TSResource,
         parentMessage: TSMessage,
         tx: DBReadTransaction

@@ -54,8 +54,6 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 @property (class, nonatomic, readonly) NSUInteger currentSchemaVersion;
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
-@property (nonatomic, readonly, nullable) NSString *contentType;
-@property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic) OWSAttachmentInfoReference attachmentType;
 @property (nonatomic) NSString *rawAttachmentId;
 
@@ -63,13 +61,21 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 /// (Mantle provides "reasonable" defaults). This undoes that; empty string values are reverted to nil.
 @property (nonatomic, readonly, nullable) NSString *attachmentId;
 
+/// Only should be read for "stub" quoted reply attachments (those without thumbnail-able attachments)
+@property (nonatomic, readonly, nullable) NSString *stubMimeType;
+/// Only should be read for "stub" quoted reply attachments (those without thumbnail-able attachments)
+@property (nonatomic, readonly, nullable) NSString *stubSourceFilename;
+
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithAttachmentId:(NSString *_Nullable)attachmentId
-                              ofType:(OWSAttachmentInfoReference)attachmentType
-                         contentType:(NSString *_Nullable)contentType
-                      sourceFilename:(NSString *_Nullable)sourceFilename;
+- (instancetype)initStubWithMimeType:(NSString *)mimeType sourceFilename:(NSString *_Nullable)sourceFilename;
+
+- (instancetype)initForV2ThumbnailReference;
+
+- (instancetype)initWithLegacyAttachmentId:(NSString *)attachmentId ofType:(OWSAttachmentInfoReference)attachmentType;
+
+
 @end
 
 
@@ -100,7 +106,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                     authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-       quotedAttachmentForSending:(nullable TSAttachment *)attachment
+       quotedAttachmentForSending:(nullable OWSAttachmentInfo *)attachmentInfo
                       isGiftBadge:(BOOL)isGiftBadge;
 
 // used when receiving quoted messages. Do not call directly outside AttachmentManager.

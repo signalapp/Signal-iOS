@@ -152,7 +152,6 @@ public protocol TSResourceManager {
     ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>?
 
     func thumbnailImage(
-        thumbnail: TSQuotedMessageResourceReference.Thumbnail,
         attachment: TSResource,
         parentMessage: TSMessage,
         tx: DBReadTransaction

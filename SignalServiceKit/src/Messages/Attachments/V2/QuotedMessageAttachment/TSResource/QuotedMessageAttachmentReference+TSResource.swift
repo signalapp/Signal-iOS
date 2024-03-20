@@ -9,21 +9,10 @@ extension QuotedMessageAttachmentReference {
 
     var tsReference: TSQuotedMessageResourceReference {
         switch self {
-        case .thumbnail(let thumbnail):
-            return .thumbnail(thumbnail.tsThumbnail)
+        case .thumbnail(let attachmentRef):
+            return .thumbnail(attachmentRef)
         case .stub(let stub):
             return .stub(stub)
         }
-    }
-}
-
-extension QuotedMessageAttachmentReference.Thumbnail {
-
-    var tsThumbnail: TSQuotedMessageResourceReference.Thumbnail {
-        return .init(
-            attachmentRef: attachmentRef,
-            mimeType: mimeType,
-            sourceFilename: sourceFilename
-        )
     }
 }

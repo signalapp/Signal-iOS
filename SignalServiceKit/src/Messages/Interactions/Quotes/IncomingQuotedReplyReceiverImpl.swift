@@ -107,8 +107,7 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
         let attachmentBuilder: OwnedAttachmentBuilder<OWSAttachmentInfo>?
         if
             // We're only interested in the first attachment
-            let thumbnailProto = quoteProto.attachments.first?.thumbnail,
-            let mimeType = thumbnailProto.contentType
+            let thumbnailProto = quoteProto.attachments.first?.thumbnail
         {
             do {
                 let thumbnailAttachmentBuilder = try attachmentManager.createAttachmentBuilder(
@@ -119,18 +118,11 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
                     switch attachmentInfo {
                     case .legacy(let attachmentId):
                         return OWSAttachmentInfo(
-                            attachmentId: attachmentId,
-                            ofType: .untrustedPointer,
-                            contentType: mimeType,
-                            sourceFilename: thumbnailProto.fileName
+                            legacyAttachmentId: attachmentId,
+                            ofType: .untrustedPointer
                         )
                     case .v2:
-                        return OWSAttachmentInfo(
-                            attachmentId: nil,
-                            ofType: .V2,
-                            contentType: mimeType,
-                            sourceFilename: thumbnailProto.fileName
-                        )
+                        return OWSAttachmentInfo(forV2ThumbnailReference: ())
                     }
                 }
             } catch {
@@ -138,10 +130,8 @@ public class IncomingQuotedReplyReceiverImpl: IncomingQuotedReplyReceiver {
                 return nil
             }
         } else if let attachmentProto = quoteProto.attachments.first, let mimeType = attachmentProto.contentType {
-            attachmentBuilder = .withoutFinalizer(OWSAttachmentInfo(
-                attachmentId: nil,
-                ofType: .unset,
-                contentType: mimeType,
+            attachmentBuilder = .withoutFinalizer(OWSAttachmentInfo.init(
+                stubWithMimeType: mimeType,
                 sourceFilename: attachmentProto.fileName
             ))
         } else {

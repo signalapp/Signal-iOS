@@ -81,7 +81,7 @@ public class TSResourceStoreMock: TSResourceStore {
         // TODO: sub-filter based on reference info
         return messageResourceReferences[rowId]?
             .first
-            .map { .thumbnail(.init(attachmentRef: $0, mimeType: nil, sourceFilename: nil)) }
+            .map { .thumbnail($0) }
     }
 
     public func attachmentToUseInQuote(
