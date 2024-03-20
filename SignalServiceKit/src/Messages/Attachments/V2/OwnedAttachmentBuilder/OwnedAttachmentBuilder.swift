@@ -32,12 +32,12 @@ public class OwnedAttachmentBuilder<InfoType> {
     public func finalize(
         owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         if self.hasBeenFinalized {
             owsFailDebug("Should only finalize once!")
             return
         }
-        finalizeFn(owner, tx)
+        try finalizeFn(owner, tx)
         hasBeenFinalized = true
     }
 
@@ -58,7 +58,7 @@ public class OwnedAttachmentBuilder<InfoType> {
     public typealias FinalizeFn = (
         _ owner: AttachmentReference.OwnerId,
         _ tx: DBWriteTransaction
-    ) -> Void
+    ) throws -> Void
 
     // MARK: - Private
 
@@ -78,7 +78,7 @@ extension OwnedAttachmentBuilder {
         return OwnedAttachmentBuilder<T>(
             info: mapFn(self.info),
             finalize: { [self] owner, tx in
-                self.finalize(owner: owner, tx: tx)
+                try self.finalize(owner: owner, tx: tx)
             }
         )
     }

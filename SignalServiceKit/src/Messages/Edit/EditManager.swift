@@ -184,10 +184,14 @@ public class EditManager {
             tx: tx
         )
 
-        linkPreviewBuilder?.finalize(
-            owner: .messageLinkPreview(messageRowId: editedMessage.sqliteRowId!),
-            tx: tx
-        )
+        do {
+            try linkPreviewBuilder?.finalize(
+                owner: .messageLinkPreview(messageRowId: editedMessage.sqliteRowId!),
+                tx: tx
+            )
+        } catch {
+            owsFailDebug("Failed to finalize link preview")
+        }
 
         return editedMessage
     }

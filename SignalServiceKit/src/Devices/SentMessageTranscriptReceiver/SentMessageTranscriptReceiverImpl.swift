@@ -215,12 +215,12 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 tx: tx
             )
 
-            messageParams.quotedMessageBuilder?.finalize(
+            try? messageParams.quotedMessageBuilder?.finalize(
                 owner: .quotedReplyAttachment(messageRowId: outgoingMessage.sqliteRowId!),
                 tx: tx
             )
 
-            messageParams.linkPreviewBuilder?.finalize(
+            try? messageParams.linkPreviewBuilder?.finalize(
                 owner: .messageLinkPreview(messageRowId: outgoingMessage.sqliteRowId!),
                 tx: tx
             )

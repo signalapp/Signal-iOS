@@ -62,7 +62,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
-            linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
+            try! linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
         }
     }
 
@@ -83,7 +83,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
-            linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
+            try! linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
         }
     }
 
@@ -108,7 +108,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
-            linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
+            try! linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
         }
     }
 }

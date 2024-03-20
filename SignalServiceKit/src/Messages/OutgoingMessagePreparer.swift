@@ -65,7 +65,7 @@ public class OutgoingMessagePreparer: NSObject {
                     tx: transaction.asV2Write
                 )
                 unpreparedMessage.update(with: linkPreviewBuilder.info, transaction: transaction)
-                linkPreviewBuilder.finalize(
+                try linkPreviewBuilder.finalize(
                     owner: .messageLinkPreview(messageRowId: messageRowId),
                     tx: transaction.asV2Write
                 )

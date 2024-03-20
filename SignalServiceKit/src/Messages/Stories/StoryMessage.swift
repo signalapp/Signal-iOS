@@ -204,7 +204,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         case .text:
             ownerId = .storyMessageLinkPreview(storyMessageRowId: id)
         }
-        attachmentBuilder.finalize(owner: ownerId, tx: transaction.asV2Write)
+        try attachmentBuilder.finalize(owner: ownerId, tx: transaction.asV2Write)
         return storyMessage
     }
 
@@ -302,7 +302,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // Nil associated datas are for outgoing contexts, where we don't need to keep track of received timestamp.
         record.context.associatedData(transaction: transaction)?.update(lastReceivedTimestamp: timestamp, transaction: transaction)
 
-        linkPreviewBuilder?.finalize(
+        try linkPreviewBuilder?.finalize(
             owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
             tx: transaction.asV2Write
         )
@@ -412,7 +412,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             }
         }
 
-        linkPreviewBuilder?.finalize(
+        try linkPreviewBuilder?.finalize(
             owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
             tx: transaction.asV2Write
         )

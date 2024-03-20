@@ -1079,15 +1079,18 @@ public final class MessageReceiver: Dependencies {
             tx: tx.asV2Write
         )
 
-        quotedMessageBuilder?.finalize(
-            owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
-            tx: tx.asV2Write
-        )
-
-        linkPreviewBuilder?.finalize(
-            owner: .messageLinkPreview(messageRowId: message.sqliteRowId!),
-            tx: tx.asV2Write
-        )
+        do {
+            try quotedMessageBuilder?.finalize(
+                owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
+                tx: tx.asV2Write
+            )
+            try linkPreviewBuilder?.finalize(
+                owner: .messageLinkPreview(messageRowId: message.sqliteRowId!),
+                tx: tx.asV2Write
+            )
+        } catch {
+            owsFailDebug("Unable to finalize attachments")
+        }
 
         owsAssertDebug(message.hasRenderableContent(tx: tx))
 
