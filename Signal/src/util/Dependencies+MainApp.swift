@@ -12,10 +12,12 @@ import SignalUI
 @objc
 public extension NSObject {
 
+    @nonobjc
     final var callService: CallService {
         AppEnvironment.shared.callServiceRef
     }
 
+    @nonobjc
     static var callService: CallService {
         AppEnvironment.shared.callServiceRef
     }

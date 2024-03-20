@@ -476,7 +476,7 @@ final class IndividualCallService {
 
                 let useTurnOnly = isUnknownCaller || self.preferences.doCallsHideIPAddress
 
-                let useLowData = CallService.shouldUseLowDataWithSneakyTransaction(for: NetworkRoute(localAdapterType: .unknown))
+                let useLowData = self.callService.shouldUseLowDataWithSneakyTransaction(for: NetworkRoute(localAdapterType: .unknown))
                 Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
 
                 // Tell the Call Manager to proceed with its active call.

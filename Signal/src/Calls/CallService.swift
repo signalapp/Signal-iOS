@@ -38,6 +38,11 @@ public final class CallService: LightweightGroupCallManager {
         }
     }
 
+    private var audioSession: AudioSession { NSObject.audioSession }
+    private var callService: CallService { NSObject.callService }
+    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var reachabilityManager: SSKReachabilityManager { NSObject.reachabilityManager }
+
     public var callUIAdapter: CallUIAdapter!
 
     let individualCallService = IndividualCallService()
@@ -424,11 +429,11 @@ public final class CallService: LightweightGroupCallManager {
 
         switch currentCall.mode {
         case let .group(call):
-            let useLowData = Self.shouldUseLowDataWithSneakyTransaction(for: call.localDeviceState.networkRoute)
+            let useLowData = shouldUseLowDataWithSneakyTransaction(for: call.localDeviceState.networkRoute)
             Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
             call.updateDataMode(dataMode: useLowData ? .low : .normal)
         case let .individual(call) where call.state == .connected:
-            let useLowData = Self.shouldUseLowDataWithSneakyTransaction(for: call.networkRoute)
+            let useLowData = shouldUseLowDataWithSneakyTransaction(for: call.networkRoute)
             Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
             callManager.updateDataMode(dataMode: useLowData ? .low : .normal)
         default:
@@ -437,7 +442,7 @@ public final class CallService: LightweightGroupCallManager {
         }
     }
 
-    static func shouldUseLowDataWithSneakyTransaction(for networkRoute: NetworkRoute) -> Bool {
+    func shouldUseLowDataWithSneakyTransaction(for networkRoute: NetworkRoute) -> Bool {
         let highDataInterfaces = databaseStorage.read { readTx in
             Self.highDataNetworkInterfaces(readTx: readTx)
         }
@@ -447,7 +452,7 @@ public final class CallService: LightweightGroupCallManager {
         // If we aren't sure whether the current route's high-data, fall back to checking reachability.
         // This also handles the situation where WebRTC doesn't know what interface we're on,
         // which is always true on iOS 11.
-        return !Self.reachabilityManager.isReachable(with: highDataInterfaces)
+        return !reachabilityManager.isReachable(with: highDataInterfaces)
     }
 
     // MARK: -
@@ -538,7 +543,7 @@ public final class CallService: LightweightGroupCallManager {
             // Kick off a peek now that we've disconnected to get an updated participant state.
             if let thread = call.thread as? TSGroupThread {
                 Task {
-                    await peekGroupCallAndUpdateThread(
+                    await self.peekGroupCallAndUpdateThread(
                         thread,
                         peekTrigger: .localEvent()
                     )
@@ -1150,7 +1155,7 @@ extension CallService: CallManagerDelegate {
             opaqueBuilder.setData(message)
             opaqueBuilder.setUrgency(urgency.protobufValue)
 
-            return Self.databaseStorage.write { transaction in
+            return self.databaseStorage.write { transaction in
                 let callMessage = OWSOutgoingCallMessage(
                     thread: thread,
                     opaqueMessage: opaqueBuilder.buildInfallibly(),
@@ -1202,7 +1207,7 @@ extension CallService: CallManagerDelegate {
             opaqueBuilder.setData(message)
             opaqueBuilder.setUrgency(urgency.protobufValue)
 
-            return Self.databaseStorage.write { transaction in
+            return self.databaseStorage.write { transaction in
                 let callMessage = OWSOutgoingCallMessage(
                     thread: thread,
                     opaqueMessage: opaqueBuilder.buildInfallibly(),
@@ -1580,7 +1585,7 @@ extension CallService: CallManagerDelegate {
             // Mute video by default unless the user has already approved it.
             // This keeps us from popping the "give permission to use your camera" alert before the user answers.
             let videoMuted = AVCaptureDevice.authorizationStatus(for: .video) != .authorized
-            guard let groupCall = Self.callService.buildAndConnectGroupCallIfPossible(
+            guard let groupCall = self.callService.buildAndConnectGroupCallIfPossible(
                 thread: thread,
                 videoMuted: videoMuted
             ) else {

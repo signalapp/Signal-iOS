@@ -14,7 +14,7 @@ import SignalRingRTC
 /// - Note
 /// This class is subclassed by ``CallService`` in the main app, to additionally
 /// manage calls this device is actively participating in.
-open class LightweightGroupCallManager: NSObject, Dependencies {
+open class LightweightGroupCallManager {
     /// The triggers that may kick off a group call peek.
     public enum PeekTrigger {
         /// We received a group update message, and are peeking in response.
@@ -34,8 +34,10 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
     }
 
     private var callRecordStore: CallRecordStore { DependenciesBridge.shared.callRecordStore }
+    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var groupCallRecordManager: GroupCallRecordManager { DependenciesBridge.shared.groupCallRecordManager }
     private var interactionStore: InteractionStore { DependenciesBridge.shared.interactionStore }
+    private var notificationPresenter: any NotificationsProtocol { NSObject.notificationPresenter }
     private var schedulers: Schedulers { DependenciesBridge.shared.schedulers }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
@@ -44,13 +46,11 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
     public let groupCallPeekClient: GroupCallPeekClient
     public var httpClient: SignalRingRTC.HTTPClient { groupCallPeekClient.httpClient }
 
-    public override init() {
+    public init() {
         groupCallPeekClient = GroupCallPeekClient()
-
-        super.init()
     }
 
-    open dynamic func peekGroupCallAndUpdateThread(
+    open func peekGroupCallAndUpdateThread(
         _ thread: TSGroupThread,
         peekTrigger: PeekTrigger
     ) async {
@@ -357,7 +357,9 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         return currentCallIdInteractions.first
     }
 
-    private func upsertPlaceholderGroupCallModelsIfNecessary(
+    // Should be private, but that causes the linker to fail in Xcode 14.3.
+    // TODO: Switch this to private when adopting Xcode 15.
+    public func upsertPlaceholderGroupCallModelsIfNecessary(
         eraId: String,
         triggerEventTimestamp: UInt64,
         groupThread: TSGroupThread
@@ -412,7 +414,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         }
     }
 
-    open dynamic func postUserNotificationIfNecessary(
+    open func postUserNotificationIfNecessary(
         groupCallMessage: OWSGroupCallMessage,
         joinedMemberAcis: [Aci],
         creatorAci: Aci,
