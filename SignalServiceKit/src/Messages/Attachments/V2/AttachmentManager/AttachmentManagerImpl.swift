@@ -21,10 +21,11 @@ public class AttachmentManagerImpl: AttachmentManager {
         fatalError("Unimplemented")
     }
 
-    public func createAttachmentBuilder(
+    public func createAttachment(
         from proto: SSKProtoAttachmentPointer,
+        owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<Void> {
+    ) throws {
         let cdnNumber = proto.cdnNumber
         guard let cdnKey = proto.cdnKey?.nilIfEmpty, cdnNumber > 0 else {
             throw OWSAssertionError("Invalid cdn info")
@@ -52,26 +53,23 @@ public class AttachmentManagerImpl: AttachmentManager {
         }
 
         let sourceFilename =  proto.fileName
-        return OwnedAttachmentBuilder<Void>(
-            info: (),
-            finalize: { [self] (owner: OwnerId, tx: DBWriteTransaction) in
-                let attachment: Attachment = {
-                    // TODO: Create and insert Attachment for the provided proto.
-                    fatalError("Unimplemented")
-                }()
-                let attachmentReference: AttachmentReference = {
-                    // TODO: Create and insert AttachmentReference from the provided message to the new Attachment
-                    fatalError("Unimplemented")
-                }()
-            }
-        )
+
+        let attachment: Attachment = {
+            // TODO: Create and insert Attachment for the provided proto.
+            fatalError("Unimplemented")
+        }()
+        let attachmentReference: AttachmentReference = {
+            // TODO: Create and insert AttachmentReference from the provided message to the new Attachment
+            fatalError("Unimplemented")
+        }()
     }
 
-    public func createAttachmentBuilder(
+    public func createAttachment(
         rawFileData: Data,
         mimeType: String,
+        owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<Void> {
+    ) throws {
         guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: mimeType) else {
             throw OWSAssertionError("Invalid mime type!")
         }
@@ -79,19 +77,15 @@ public class AttachmentManagerImpl: AttachmentManager {
         guard fileSize > 0 else {
             throw OWSAssertionError("Invalid file size for image data.")
         }
-        return OwnedAttachmentBuilder<Void>(
-            info: (),
-            finalize: { [self] (owner: OwnerId, tx: DBWriteTransaction) in
-                let attachment: Attachment = {
-                    // TODO: Create and insert Attachment for the provided data.
-                    fatalError("Unimplemented")
-                }()
-                let attachmentReference: AttachmentReference = {
-                    // TODO: Create and insert AttachmentReference from the provided owner to the new Attachment
-                    fatalError("Unimplemented")
-                }()
-            }
-        )
+
+        let attachment: Attachment = {
+            // TODO: Create and insert Attachment for the provided data.
+            fatalError("Unimplemented")
+        }()
+        let attachmentReference: AttachmentReference = {
+            // TODO: Create and insert AttachmentReference from the provided owner to the new Attachment
+            fatalError("Unimplemented")
+        }()
     }
 
     public func createAttachmentStreams(

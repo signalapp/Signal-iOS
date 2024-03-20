@@ -17,38 +17,26 @@ public protocol AttachmentManager {
         tx: DBWriteTransaction
     )
 
-    /// Given an attachment proto from its sender,
-    /// returns a builder for creating the attachment locally.
-    ///
-    /// The attachment info needed to construct the owner object
-    /// is available immediately, but the caller _must_ finalize
-    /// the builder for the attachment to be created.
-    ///
-    /// Callers should only assume the attachment (if any) exists
-    /// after finalizing.
+    /// Given an attachment proto from its sender and an owner,
+    /// creates a local attachment and an owner reference to it.
     ///
     /// Throws an error if the provided proto is invalid.
-    func createAttachmentBuilder(
+    func createAttachment(
         from proto: SSKProtoAttachmentPointer,
+        owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<Void>
+    ) throws
 
-    /// Given locally sourced attachmentData,
-    /// returns a builder for creating the attachment locally.
-    ///
-    /// The attachment info needed to construct the owner object
-    /// is available immediately, but the caller _must_ finalize
-    /// the builder for the attachment to be created.
-    ///
-    /// Callers should only assume the attachment (if any) exists
-    /// after finalizing.
+    /// Given locally sourced attachmentData and an owner,
+    /// creates a local attachment and an owner reference to it.
     ///
     /// Throws an error if the provided data/mimeType is invalid.
-    func createAttachmentBuilder(
+    func createAttachment(
         rawFileData: Data,
         mimeType: String,
+        owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<Void>
+    ) throws
 
     /// Create attachment streams from the outgoing infos and their data sources,
     /// consuming those data sources.

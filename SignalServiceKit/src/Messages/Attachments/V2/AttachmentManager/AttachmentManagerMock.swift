@@ -17,19 +17,21 @@ open class AttachmentManagerMock: AttachmentManager {
         // Do nothing
     }
 
-    open func createAttachmentBuilder(
+    open func createAttachment(
         from proto: SSKProtoAttachmentPointer,
+        owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<Void> {
-        return .withoutFinalizer(())
+    ) throws {
+        // Do nothing
     }
 
-    open func createAttachmentBuilder(
+    open func createAttachment(
         rawFileData: Data,
         mimeType: String,
+        owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<Void> {
-        return .withoutFinalizer(())
+    ) throws {
+        // Do nothing
     }
 
     open func createAttachmentStreams(

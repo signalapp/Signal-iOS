@@ -79,10 +79,16 @@ public class TSResourceManagerImpl: TSResourceManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         if FeatureFlags.newAttachmentsUseV2 {
-            return try attachmentManager.createAttachmentBuilder(
-                from: proto,
-                tx: tx
-            ).wrap({ .v2 })
+            return OwnedAttachmentBuilder<TSResourceRetrievalInfo>(
+                info: .v2,
+                finalize: { [attachmentManager] owner, innerTx in
+                    return try attachmentManager.createAttachment(
+                        from: proto,
+                        owner: owner,
+                        tx: innerTx
+                    )
+                }
+            )
         } else {
             let attachment = try tsAttachmentManager.createAttachment(
                 from: proto,
@@ -98,11 +104,17 @@ public class TSResourceManagerImpl: TSResourceManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         if FeatureFlags.newAttachmentsUseV2 {
-            return try attachmentManager.createAttachmentBuilder(
-                rawFileData: rawFileData,
-                mimeType: mimeType,
-                tx: tx
-            ).wrap({ .v2 })
+            return OwnedAttachmentBuilder<TSResourceRetrievalInfo>(
+                info: .v2,
+                finalize: { [attachmentManager] owner, innerTx in
+                    return try attachmentManager.createAttachment(
+                        rawFileData: rawFileData,
+                        mimeType: mimeType,
+                        owner: owner,
+                        tx: innerTx
+                    )
+                }
+            )
         } else {
             let attachmentId = try tsAttachmentManager.createLocalAttachment(
                 rawFileData: rawFileData,
