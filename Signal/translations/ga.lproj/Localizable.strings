@@ -2656,6 +2656,9 @@
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Críochnaigh cruthú an ghrúpa";
 
+/* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Cuir an teagmhálaí ar aghaidh";
 
@@ -5030,7 +5033,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%1$@“.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "View Requests";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Amharc ar Iarratais";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%1$@“.";
@@ -5156,13 +5159,13 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Níorbh fhéidir an ceamara a shocrú.";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Téigh chuig comhrá";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Tosaigh ar chomhrá le \"%1$@\"";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ aimsithe";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Físeán ró-fhada.";
@@ -8006,7 +8009,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Athraíodh an stádas deimhnithe.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Amharc ar an Uimhir Shábháilteachta";
+"VERIFY_PRIVACY" = "Amharc ar an Uimhir Sábháilteachta";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Déan Athbhreithniú ar Uimhreacha Sábháilteachta";
@@ -8024,10 +8027,10 @@
 "VIEW_CONTACT_BUTTON" = "Féach ar an teagmhálaí";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Bhreathnaigh tú ar an teachtaireacht seo cheana.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "D'amharc tú ar an teachtaireacht seo cheana.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tapáil anseo agus scriosfar an teachtaireacht seo tar éis don fhaighteoir breathnú uirthi.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tapáil anseo agus scriosfar an teachtaireacht seo tar éis don fhaighteoir amharc uirthi.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Scriostar comhaid mheán aonuaire go huathoibríoch tar éis duit iad a sheoladh.";
@@ -8063,7 +8066,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Svaidhpeáil chun réamhamharc a fháil ar thuilleadh chúlbhrat";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Socraigh cúlbhrat do gach comhrá.";

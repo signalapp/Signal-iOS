@@ -122,13 +122,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Зрозуміло";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Не вдалося доставити в чаті повідомлення, стікер, реакцію, повідомлення про прочитання або медіафайл від користувача %1$@.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Не вдалося доставити вам повідомлення, стікер, реакцію, сповіщення про прочитання або медіафайл у цьому чаті від користувача %1$@.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Проблема з доставленням";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Не вдалося доставити повідомлення, стікер, реакцію, повідомлення про прочитання або медіа від користувача %1$@";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Не вдалося доставити вам повідомлення, стікер, реакцію, сповіщення про прочитання або медіафайл від користувача %1$@. Користувач намагався надіслати це безпосередньо вам або в груповий чат.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Відхилити";
@@ -2648,13 +2648,16 @@
 "FIND_BY_USERNAME_TITLE" = "Пошук за іменем користувача";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Верифікувати";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Позначити як перевірений";
 
 /* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Скинути сеанс";
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Завершити створення групи";
+
+/* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Переслати контакт";
@@ -3959,7 +3962,7 @@
 "MESSAGE_ACTION_LINK_OPEN_PROXY" = "Відкрити проксі-сервер Signal";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Переглянути пакунок наліпок";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Переглянути набір стікерів";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_PAYMENT_DETAILS" = "Платіжні дані";
@@ -3995,7 +3998,7 @@
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Запрошення до групи";
 
 /* Title for message actions for a sticker pack. */
-"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Набір наліпок";
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Набір стікерів";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Повідомлення";
@@ -4172,7 +4175,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Дозволити користувачу %1$@ надсилати вам повідомлення та ділитись ім'ям і фото з цим користувачем? Раніше ви вилучили цей контакт.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Повідомити…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Це спам";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Розблокувати";
@@ -5156,13 +5159,13 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Не вдалося настроїти камеру.";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Go to chat";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "До чату";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Start a chat with “%1$@”";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Почніть чат з %1$@";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ found";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ знайдено";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
 "PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Відео задовге.";
@@ -5345,7 +5348,7 @@
 "PRIVACY_TAP_TO_SCAN" = "Натисніть, щоб сканувати";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Очистити верифікацію";
+"PRIVACY_UNVERIFY_BUTTON" = "Позначити як неперевірений";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Це не схоже на ваш код безпеки із %1$@. Ви підтверджуєте саме той контакт, який хотіли?";
@@ -5372,7 +5375,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Підтвердити код безпеки";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Верифікувати";
+"PRIVACY_VERIFY_BUTTON" = "Позначити як перевірений";
 
 /* Button to add a new viewer on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Додати глядачів";
@@ -5735,7 +5738,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Прізвище";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Хто може знайти мене за номером телефону?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Хто може знайти мене за номером?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Ім'я";
@@ -6233,7 +6236,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Немає результатів пошуку";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Заблоковано";
+"SETTINGS_BLOCK_LIST_TITLE" = "Заблоковані";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Завжди ретранслювати дзвінки";
@@ -6302,7 +6305,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Виклики";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Голосові повідомлення, одноразові медіафайли та стікери (менше ніж 100 кб) завжди автоматично завантажуються.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Голосові повідомлення, одноразові медіафайли та стікери (до 100 кБ) завжди завантажуються автоматично.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Автоматичне завантаження";
@@ -6920,7 +6923,7 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "Ви впевнені?";
 
 /* The title for the phone number discoverability setting section. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Хто може знайти мене за номером телефону";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Хто може знайти мене за номером";
 
 /* Description label for Phone Number Privacy */
 "SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Виберіть, хто може бачити ваш номер телефону і хто може зв'язатися з вами в Signal через номер.";
@@ -7160,7 +7163,7 @@
 "STICKER_CATEGORY_RECENTS_NAME" = "Нещодавно";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "Повідомлення зі Cтікером";
+"STICKER_MESSAGE_PREVIEW" = "Повідомлення зі стікером";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Встановити";
@@ -7172,7 +7175,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Отримані cтікери";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Не вдалося завантажити деякі набори стікерів";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Не всі набори стікерів удалося завантажити";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Встановлені стікери";
@@ -7184,19 +7187,19 @@
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Немає встановлених стікерів";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Стікери від вхідних дзвінків з'являться тут";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Тут будуть стікери зі вхідних повідомлень";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "Стікери";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Пакунок наліпок";
+"STICKERS_PACK_DEFAULT_TITLE" = "Набір стікерів";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Пакунок наліпок";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Набір стікерів";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Не вдалося завантажити Набір Стікерів";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Не вдалося завантажити набір стікерів";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Видалити";
@@ -7370,7 +7373,7 @@
 "STORY_NO_LONGER_AVAILABLE" = "Більше недоступна";
 
 /* Button to access the story privacy settings menu */
-"STORY_PRIVACY_SETTINGS" = "Приватність";
+"STORY_PRIVACY_SETTINGS" = "Конфіденційність";
 
 /* Title for the story privacy settings view */
 "STORY_PRIVACY_TITLE" = "Конфіденційність сторіз";
