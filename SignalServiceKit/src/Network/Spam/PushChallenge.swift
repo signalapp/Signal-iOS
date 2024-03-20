@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
+
 class PushChallenge: SpamChallenge, Dependencies {
 
     private var failureCount: UInt = 0
@@ -40,14 +42,12 @@ class PushChallenge: SpamChallenge, Dependencies {
     }
 
     private func requestToken() {
-        Logger.verbose("Requesting push token for challenge")
         let request = OWSRequestFactory.pushChallengeRequest()
 
         firstly(on: workQueue) {
             self.networkManager.makePromise(request: request)
 
         }.done(on: workQueue) { _ in
-            Logger.verbose("Push challenge request succeeded. Waiting for push delivery.")
             self.state = .deferred(self.expirationDate)
 
         }.catch(on: workQueue) { error in
@@ -75,14 +75,12 @@ class PushChallenge: SpamChallenge, Dependencies {
     }
 
     private func postToken(_ token: String) {
-        Logger.verbose("Posting push token for challenge")
         let request = OWSRequestFactory.pushChallengeResponse(withToken: token)
 
         firstly(on: workQueue) {
             self.networkManager.makePromise(request: request)
 
         }.done(on: workQueue) { _ in
-            Logger.verbose("Push challenge completed!")
             self.state = .complete
 
         }.catch(on: workQueue) { error in

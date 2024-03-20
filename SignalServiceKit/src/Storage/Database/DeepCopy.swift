@@ -20,7 +20,6 @@ public class DeepCopies {
 
     static func deepCopy<T: DeepCopyable>(_ objectToCopy: T) throws -> T {
         guard let newCopy = try objectToCopy.deepCopy() as? T else {
-            Logger.verbose("Could not copy: \(objectToCopy)")
             throw OWSAssertionError("Could not copy: \(type(of: objectToCopy))")
         }
         return newCopy
@@ -64,7 +63,6 @@ public class DeepCopies {
             if let objectToCopy = NSObject.asDeepCopyable(value) {
                 valueCopy = try objectToCopy.deepCopy()
             } else {
-                Logger.verbose("Could not copy: \(value)")
                 throw OWSAssertionError("Could not copy: \(type(of: value))")
             }
             return (InfoMessageUserInfoKey(rawValue: keyCopy), valueCopy)
@@ -74,7 +72,6 @@ public class DeepCopies {
     // "Cannot explicitly specialize a generic function."
     fileprivate static func shallowCopy<T: NSObject>(_ objectToCopy: T) throws -> T {
         guard let newCopy = objectToCopy.copy() as? T else {
-            Logger.verbose("Could not copy: \(objectToCopy)")
             throw OWSAssertionError("Could not copy: \(type(of: objectToCopy))")
         }
         return newCopy
@@ -110,7 +107,6 @@ extension NSOrderedSet {
     public func deepCopy() throws -> NSOrderedSet {
         let copiedElements: [AnyObject] = try self.array.map { (element: Any) throws -> AnyObject in
             guard let objectToCopy = NSObject.asDeepCopyable(element) else {
-                Logger.verbose("Could not copy: \(element)")
                 throw OWSAssertionError("Could not copy: \(type(of: element))")
             }
             return try objectToCopy.deepCopy()

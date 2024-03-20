@@ -287,8 +287,6 @@ public class PaymentsReconciliation: Dependencies {
         Logger.info("")
 
         // Fill in/reconcile incoming transactions.
-        Logger.verbose("transactionHistory: \(transactionHistory.blockCount)")
-        Logger.verbose("items: \(transactionHistory.safeItems.count) / \(transactionHistory.items.count)")
 
         let items: [MCTransactionHistoryItem] = transactionHistory.safeItems.sortedByBlockIndex(descending: false)
 
@@ -517,9 +515,6 @@ public class PaymentsReconciliation: Dependencies {
             for (_, paymentModels) in map {
                 guard paymentModels.count > 1 else {
                     continue
-                }
-                for paymentModel in paymentModels {
-                    Logger.verbose("Try to cull \(label): \(paymentModel.descriptionForLogs)")
                 }
                 let culled = cullPaymentModelsIfUnidentified(paymentModels)
                 owsAssertDebug(culled > 0)
@@ -841,7 +836,6 @@ internal class PaymentsDatabaseState {
 
         guard !paymentModel.isFailed else {
             // Ignore failed payments/transactions.
-            Logger.verbose("Ignoring failed paymentModel: \(formattedState).")
             return
         }
 
@@ -876,25 +870,6 @@ internal class PaymentsDatabaseState {
         if ledgerBlockIndex > 0 {
             ledgerBlockIndexMap.add(key: ledgerBlockIndex, value: paymentModel)
         }
-    }
-
-    // MARK: -
-
-    func logVerbose() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeStyle = .long
-        dateFormatter.dateStyle = .long
-
-        // TODO: Log incomingAnyMap.
-
-        func logMap(_ map: [Data: TSPaymentModel], name: String) {
-            Logger.verbose("\(name): \(map.count)")
-            for paymentModel in Array(map.values).sortedBySortDate(descending: false) {
-                Logger.verbose("\t paymentModel: \(paymentModel.descriptionForLogs)")
-            }
-        }
-        logMap(spentImageKeyMap, name: "spentImageKeyMap")
-        logMap(outputPublicKeyMap, name: "outputPublicKeyMap")
     }
 }
 

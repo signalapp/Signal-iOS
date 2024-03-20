@@ -5,6 +5,7 @@
 
 import Foundation
 import LocalAuthentication
+import SignalCoreKit
 
 public class ScreenLock: NSObject {
 
@@ -155,10 +156,8 @@ public class ScreenLock: NSObject {
                                             Logger.error("local authentication failed with unexpected error: \(error)")
                                             unexpectedFailure(self.authenticationError(errorDescription: error))
                                         case .success:
-                                            Logger.verbose("local authentication succeeded.")
                                             success()
                                         case .cancel:
-                                            Logger.verbose("local authentication cancelled.")
                                             cancel()
                                         }
         })

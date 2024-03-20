@@ -198,8 +198,6 @@ public class StickerManager: NSObject {
             return
         }
 
-        Logger.verbose("Uninstalling sticker pack: \(stickerPackInfo).")
-
         let isDefaultStickerPack = DefaultStickerPack.isDefaultStickerPack(packId: stickerPackInfo.packId)
         let shouldRemove = uninstallEverything || !isDefaultStickerPack
 
@@ -267,9 +265,7 @@ public class StickerManager: NSObject {
                 self.upsertStickerPack(stickerPack: stickerPack,
                                        installMode: installMode,
                                        wasLocallyInitiated: wasLocallyInitiated)
-        }.catch { error in
-            Logger.verbose("Error: \(error)")
-        }
+        }.cauterize()
     }
 
     private let packOperationQueue: OperationQueue = {
@@ -368,8 +364,6 @@ public class StickerManager: NSObject {
         if stickerPack.isInstalled {
             return .value(())
         }
-
-        Logger.verbose("Installing sticker pack: \(stickerPack.info).")
 
         stickerPack.update(withIsInstalled: true, transaction: transaction)
 
@@ -617,8 +611,6 @@ public class StickerManager: NSObject {
             return
         }
 
-        Logger.verbose("Uninstalling sticker: \(stickerInfo).")
-
         installedSticker.anyRemove(transaction: transaction)
 
         removeFromRecentStickers(stickerInfo, transaction: transaction)
@@ -676,8 +668,6 @@ public class StickerManager: NSObject {
             owsFailDebug("Missing sticker file.")
             return false
         }
-
-        Logger.verbose("Installing sticker: \(stickerInfo).")
 
         let installedSticker = InstalledSticker(info: stickerInfo,
                                                 contentType: contentType,

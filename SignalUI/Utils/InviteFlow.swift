@@ -45,10 +45,6 @@ public class InviteFlow: NSObject {
         super.init()
     }
 
-    deinit {
-        Logger.verbose("deinit")
-    }
-
     // MARK: - Localized Strings
 
     public static var unsupportedFeatureMessage: String {

@@ -111,8 +111,6 @@ class QRCodeParserTest: XCTestCase {
             let expectedString = sampleQRCode.expectedString
 
             let qrCodeData: Data = Data(base64Encoded: qrCodeBase64)!
-            Logger.verbose("qrCodeBase64: \(qrCodeBase64)")
-            Logger.verbose("qrCodeData: \(qrCodeData.hexadecimalString)")
             guard let payload = QRCodePayload.parse(
                     codewords: qrCodeData,
                     qrCodeVersion: symbolVersion) else {
@@ -123,14 +121,10 @@ class QRCodeParserTest: XCTestCase {
                 }
                 continue
             }
-            Logger.verbose("payload.symbolVersion: \(payload.version)")
-            Logger.verbose("payload.mode: \(payload.mode)")
-            Logger.verbose("payload.data: \(payload.data.hexadecimalString)")
             XCTAssertEqual(payload.mode.rawValue, expectedMode)
 
             if let expectedString = expectedString {
                 if let string = payload.asString {
-                    Logger.verbose("payload.string: \(string)")
                     XCTAssertEqual(string, expectedString)
                 } else {
                     XCTFail("Missing string.")

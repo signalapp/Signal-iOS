@@ -279,17 +279,14 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 },
                 completion: { _ in
                     guard let pendingCompletion = self.pendingCompletion else {
-                        Logger.verbose("pendingCompletion already ran by the time fadeout completed.")
                         return
                     }
 
-                    Logger.verbose("ran pendingCompletion after fadeout")
                     self.pendingCompletion = nil
                     pendingCompletion(nil)
                 }
             )
         } else {
-            Logger.verbose("ran completion simultaneously for non-interactive transition")
             completion(nil)
         }
     }
@@ -321,7 +318,6 @@ extension MediaDismissAnimationController: InteractiveDismissDelegate {
         didFinishWithVelocity velocity: CGVector?
     ) {
         if let pendingCompletion {
-            Logger.verbose("interactive gesture started pendingCompletion during fadeout")
             self.pendingCompletion = nil
             pendingCompletion(velocity)
         }

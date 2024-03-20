@@ -661,7 +661,6 @@ public extension TSPaymentModel {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return TSPaymentModelCursor(transaction: transaction, cursor: nil)
         }

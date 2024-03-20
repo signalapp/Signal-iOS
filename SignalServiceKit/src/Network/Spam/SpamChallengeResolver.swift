@@ -83,14 +83,11 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
         guard deferral.isAfterNow else { return }
         guard deferral != nextAttemptTimer?.fireDate else { return }
 
-        Logger.verbose("Deferred challenges will be re-checked in \(deferral.timeIntervalSinceNow)")
         nextAttemptTimer = Timer(
             timeInterval: deferral.timeIntervalSinceNow,
-            repeats: false) { [weak self] _ in
-
-            Logger.verbose("Deferral timer fired!")
+            repeats: false
+        ) { [weak self] _ in
             guard let self = self else { return }
-
             self.workQueue.async {
                 self.nextAttemptTimer = nil
                 self.recheckChallenges()

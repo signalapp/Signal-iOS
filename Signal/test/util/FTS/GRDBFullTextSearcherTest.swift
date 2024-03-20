@@ -563,7 +563,6 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                         maxResults: 500,
                         tx: transaction
                     ) { (match, snippet, _) in
-                        Logger.verbose("searchText: \(searchText), match: \(match), snippet: \(snippet)")
                         count += 1
                     }
                     return count

@@ -232,8 +232,6 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
     private func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         ensureStateAsync()
     }
 

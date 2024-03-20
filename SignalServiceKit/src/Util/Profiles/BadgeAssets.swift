@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CoreServices
 import Foundation
 import ImageIO
-import CoreServices
+import SignalCoreKit
 
 @objc
 public class BadgeAssets: NSObject {
@@ -78,7 +79,6 @@ public class BadgeAssets: NSObject {
             // If we have all our assets on disk, we're good to go
             let allAssetUrls = [fileUrlForSpritesheet()] + Variant.allCases.map { fileUrlForVariant($0) }
             guard allAssetUrls.contains(where: { OWSFileSystem.fileOrFolderExists(url: $0) == false }) else {
-                Logger.debug("All badge assets available")
                 state = .fetched
                 return false
             }
@@ -183,7 +183,6 @@ extension BadgeAssets {
     private func imageForVariant(_ variant: Variant) -> UIImage? {
         let currentState = lock.withLock { state }
         guard currentState == .fetched else {
-            Logger.debug("Current badge state is \(currentState). Badge asset unavailable")
             return nil
         }
 

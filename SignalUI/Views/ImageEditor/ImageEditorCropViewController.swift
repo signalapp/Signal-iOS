@@ -488,8 +488,6 @@ class ImageEditorCropViewController: OWSViewController {
     private func handlePinchGesture(_ gestureRecognizer: ImageEditorPinchGestureRecognizer) {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         switch gestureRecognizer.state {
         case .began:
             gestureStartTransform = transform
@@ -564,14 +562,11 @@ class ImageEditorCropViewController: OWSViewController {
             }
         }
 
-        Logger.verbose("")
-
         // We could undo an in-progress pinch if the gesture is cancelled, but it seems gratuitous.
 
         // Handle the GR if necessary.
         switch gestureRecognizer.state {
         case .began:
-            Logger.verbose("began: \(transform.unitTranslation)")
             gestureStartTransform = transform
             // Pans that start near the crop rectangle should be treated as crop gestures.
             panCropRegion = cropRegion(forGestureRecognizer: gestureRecognizer)
@@ -613,8 +608,6 @@ class ImageEditorCropViewController: OWSViewController {
     private func handleCropPanGesture(_ gestureRecognizer: ImageEditorPanGestureRecognizer,
                                       panCropRegion: CropRegion) {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         guard let locationStart = gestureRecognizer.locationFirst else {
             owsFailDebug("Missing locationStart.")
@@ -973,8 +966,6 @@ extension ImageEditorCropViewController {
 
     @objc
     private func didTapRotateImage() {
-        Logger.verbose("")
-
         let outputSizePixels = CGSize(width: transform.outputSizePixels.height, height: transform.outputSizePixels.width)
         let rotationRadians = transform.rotationRadians - CGFloat.pi / 2
         let newTransform = ImageEditorTransform(outputSizePixels: outputSizePixels,
@@ -987,8 +978,6 @@ extension ImageEditorCropViewController {
 
     @objc
     private func didTapFlipImage() {
-        Logger.verbose("")
-
         let newTransform = ImageEditorTransform(outputSizePixels: transform.outputSizePixels,
                                                 unitTranslation: transform.unitTranslation,
                                                 rotationRadians: transform.rotationRadians,
@@ -999,8 +988,6 @@ extension ImageEditorCropViewController {
 
     @objc
     private func didTapReset() {
-        Logger.verbose("")
-
         let newTransform = ImageEditorTransform.defaultTransform(srcImageSizePixels: model.srcImageSizePixels)
         applyTransformWithAnimation(newTransform)
     }

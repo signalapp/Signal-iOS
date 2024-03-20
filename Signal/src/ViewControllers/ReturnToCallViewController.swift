@@ -309,14 +309,6 @@ public class ReturnToCallViewController: UIViewController {
             return true
         }
 
-        // Useful when debugging state transitions.
-        Logger.verbose("\(userInfo)")
-        Logger.verbose("keyboard start: \((startFrame.minY, startFrame.maxY))")
-        Logger.verbose("keyboard end: \((endFrame.minY, endFrame.maxY))")
-        Logger.verbose("full height: \(fullFrame.maxY)")
-        Logger.verbose("current bottom: \(window.frame.maxY)")
-        Logger.verbose("saved bottom: \(frameBeforeAdjustingForKeyboard?.maxY ?? 0)")
-
         if isDockedAndOnscreen(endFrame) {
             guard !(animationDuration == 0 && endFrame.maxY > fullFrame.maxY) else {
                 // The older iPad "undock" action has a mysterious zero-duration transition

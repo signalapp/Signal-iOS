@@ -11,8 +11,6 @@ import SignalServiceKit
 extension UIViewController {
 
     public func ows_askForCameraPermissions(callback: @escaping (Bool) -> Void) {
-        Logger.verbose("\(String(describing: Self.self)) ows_askForCameraPermissions")
-
         // Ensure callback is invoked on main thread.
         let threadSafeCallback: (Bool) -> Void = { granted in
             DispatchMainThreadSafe {
@@ -71,8 +69,6 @@ extension UIViewController {
     }
 
     public func ows_askForMediaLibraryPermissions(callback: @escaping (Bool) -> Void) {
-        Logger.verbose("\(String(describing: Self.self)) ows_askForMediaLibraryPermissions")
-
         // Ensure callback is invoked on main thread.
         let threadSafeCallback: (Bool) -> Void = { granted in
             DispatchMainThreadSafe {
@@ -142,8 +138,6 @@ extension UIViewController {
     }
 
     public func ows_askForMicrophonePermissions(callback: @escaping (Bool) -> Void) {
-        Logger.verbose("\(String(describing: Self.self)) ows_askForMicrophonePermissions")
-
         // Ensure callback is invoked on main thread.
         let threadSafeCallback: (Bool) -> Void = { granted in
             DispatchMainThreadSafe {

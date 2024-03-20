@@ -83,7 +83,6 @@ extension PaymentsPassphrase {
         if validateWords {
             for word in words {
                 guard Self.paymentsSwift.isValidPassphraseWord(word) else {
-                    Logger.verbose("Invalid passphrase word: \(word).")
                     Logger.warn("Invalid passphrase word.")
                     throw PaymentsError.invalidPassphrase
                 }

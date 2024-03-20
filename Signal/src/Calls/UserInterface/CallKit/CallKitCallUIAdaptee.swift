@@ -520,8 +520,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
-        Logger.debug("Received \(#function) didActivate")
-
         _ = self.audioSession.startAudioActivity(self.audioActivity)
 
         guard let call = self.callManager.callService.currentCall else {
@@ -538,7 +536,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
-        Logger.debug("Received \(#function) didDeactivate")
         self.audioSession.isRTCAudioEnabled = false
         self.audioSession.endAudioActivity(self.audioActivity)
     }

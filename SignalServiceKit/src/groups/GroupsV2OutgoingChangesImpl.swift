@@ -326,7 +326,6 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
 
         let oldRevision = currentGroupModel.revision
         let newRevision = oldRevision + 1
-        Logger.verbose("Revision: \(oldRevision) -> \(newRevision)")
         actionsBuilder.setRevision(newRevision)
 
         // Track member counts that are updated to reflect each

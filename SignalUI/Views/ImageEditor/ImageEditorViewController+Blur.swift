@@ -46,8 +46,6 @@ extension ImageEditorViewController {
 
     @objc
     func didToggleAutoBlur(sender: UISwitch) {
-        Logger.verbose("")
-
         if let currentAutoBlurItem = currentAutoBlurItem {
             model.remove(item: currentAutoBlurItem)
         }
@@ -92,8 +90,6 @@ extension ImageEditorViewController {
                     guard let results = request.results as? [VNFaceObservation] else {
                         return faceDetectionFailed()
                     }
-
-                    Logger.verbose("Detected \(results.count) faces")
 
                     func unitBoundingBox(_ faceObservation: VNFaceObservation) -> CGRect {
                         var unitRect = faceObservation.boundingBox

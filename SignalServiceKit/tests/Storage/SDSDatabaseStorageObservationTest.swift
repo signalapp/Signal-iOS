@@ -135,7 +135,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.write { transaction in
             self.databaseStorage.touch(thread: someThread, shouldReindex: true, transaction: transaction)
-            Logger.verbose("Touch complete")
         }
         waitForRunLoop()
 
@@ -157,7 +156,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
         self.write { transaction in
             self.databaseStorage.touch(interaction: lastMessage, shouldReindex: true, transaction: transaction)
-            Logger.verbose("Touch complete")
         }
         waitForRunLoop()
 

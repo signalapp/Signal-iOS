@@ -139,9 +139,7 @@ public extension OWSReceiptManager {
                 oldReadReceipt.messageIdTimestamp > newReadReceipt.messageIdTimestamp {
                 // If there's an existing "linked device" read receipt for the same thread with
                 // a newer timestamp, discard this "linked device" read receipt.
-                Logger.verbose("Ignoring redundant read receipt for linked devices.")
             } else {
-                Logger.verbose("Enqueuing read receipt for linked devices.")
                 try toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: threadUniqueId, transaction: transaction)
             }
         } catch {

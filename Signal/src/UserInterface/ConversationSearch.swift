@@ -58,12 +58,10 @@ public class ConversationSearchController: NSObject {
 
 extension ConversationSearchController: UISearchControllerDelegate {
     public func didPresentSearchController(_ searchController: UISearchController) {
-        Logger.verbose("")
         delegate?.didPresentSearchController?(searchController)
     }
 
     public func didDismissSearchController(_ searchController: UISearchController) {
-        Logger.verbose("")
         delegate?.didDismissSearchController?(searchController)
     }
 }

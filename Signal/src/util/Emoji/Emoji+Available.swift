@@ -34,7 +34,6 @@ extension Emoji {
 
         let lastIosVersion = availableMap[iosVersionKey] as? String
         if lastIosVersion == iosVersion {
-            Logger.debug("Loading emoji availability cache (expect \(Emoji.allCases.count) items, found \(availableMap.count - 1)).")
             for emoji in Emoji.allCases {
                 if let available = availableMap[emoji.rawValue] as? Bool {
                     availableCache[emoji] = available

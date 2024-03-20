@@ -527,7 +527,6 @@ public extension OWSDisappearingMessagesConfiguration {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: nil)
         }

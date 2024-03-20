@@ -306,7 +306,6 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
             return
         }
 
-        Logger.verbose("Search controller became ready after \(cumulativeDelay) seconds")
         searchController.uiSearchController.searchBar.becomeFirstResponder()
     }
 }

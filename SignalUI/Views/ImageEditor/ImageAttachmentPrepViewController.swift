@@ -62,15 +62,11 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController {
     // MARK: - Tools
 
     override func activatePenTool() {
-        Logger.verbose("")
-
         let viewController = ImageEditorViewController(model: model, stickerSheetDelegate: stickerSheetDelegate)
         presentMediaTool(viewController: viewController)
     }
 
     override func activateCropTool() {
-        Logger.verbose("")
-
         guard let srcImage = ImageEditorCanvasView.loadSrcImage(model: model) else {
             owsFailDebug("Couldn't load src image.")
             return

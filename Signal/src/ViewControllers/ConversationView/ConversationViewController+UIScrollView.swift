@@ -159,8 +159,6 @@ extension ConversationViewController: UIScrollViewDelegate {
             return
         }
 
-        Logger.verbose("")
-
         // We need to manually schedule this timer using NSRunLoopCommonModes
         // or it won't fire during scrolling.
         let scrollUpdateTimer = Timer.weakTimer(

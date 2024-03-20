@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
+
 class CaptchaChallenge: SpamChallenge, Dependencies {
     let token: String
     var captchaToken: String? {
@@ -23,7 +25,6 @@ class CaptchaChallenge: SpamChallenge, Dependencies {
     }
 
     override public func resolveChallenge() {
-        Logger.verbose("Performing captcha challenge")
         super.resolveChallenge()
 
         if captchaToken == nil {
@@ -53,7 +54,6 @@ class CaptchaChallenge: SpamChallenge, Dependencies {
             self.networkManager.makePromise(request: request)
 
         }.done(on: workQueue) { _ in
-            Logger.verbose("Captcha challenge completed!")
             self.state = .complete
 
         }.catch(on: workQueue) { error in

@@ -1201,10 +1201,12 @@ public extension Error {
         Logger.verbose("grdbError: \(grdbError))")
         // DatabaseError.description does not include the extendedResultCode.
         Logger.verbose("resultCode: \(grdbError.resultCode), extendedResultCode: \(grdbError.extendedResultCode), message: \(String(describing: grdbError.message)), sql: \(String(describing: grdbError.sql))")
-        let error = GRDB.DatabaseError(resultCode: grdbError.extendedResultCode,
-                                       message: "\(String(describing: grdbError.message)) (extended result code: \(grdbError.extendedResultCode.rawValue))",
-                                       sql: nil,
-                                       arguments: nil)
+        let error = GRDB.DatabaseError(
+            resultCode: grdbError.extendedResultCode,
+            message: "\(String(describing: grdbError.message)) (extended result code: \(grdbError.extendedResultCode.rawValue))",
+            sql: nil,
+            arguments: nil
+        )
         return error
     }
 }

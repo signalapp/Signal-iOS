@@ -107,7 +107,6 @@ public class CVComponentBase: NSObject {
                           componentDelegate: CVComponentDelegate,
                           componentView: CVComponentView,
                           renderItem: CVRenderItem) -> Bool {
-        Logger.verbose("Ignoring tap.")
         return false
     }
 
@@ -115,7 +114,6 @@ public class CVComponentBase: NSObject {
                                      componentDelegate: CVComponentDelegate,
                                      componentView: CVComponentView,
                                      renderItem: CVRenderItem) -> CVLongPressHandler? {
-        Logger.verbose("Ignoring long press.")
         return nil
     }
 
@@ -124,7 +122,6 @@ public class CVComponentBase: NSObject {
                                componentView: CVComponentView,
                                renderItem: CVRenderItem,
                                messageSwipeActionState: CVMessageSwipeActionState) -> CVPanHandler? {
-        Logger.verbose("Ignoring pan.")
         return nil
     }
 

@@ -79,7 +79,6 @@ public class TSAttachmentManager {
                     // last minute by consulting the attachment model.
                     if attachment.isOversizeTextMimeType {
                         if removeOversizeText {
-                            Logger.verbose("Removing oversize text attachment.")
                             removedIds.insert(attachmentId)
                             return true
                         } else {
@@ -87,7 +86,6 @@ public class TSAttachmentManager {
                         }
                     } else {
                         if removeMedia {
-                            Logger.verbose("Removing body attachment.")
                             removedIds.insert(attachmentId)
                             return true
                         } else {

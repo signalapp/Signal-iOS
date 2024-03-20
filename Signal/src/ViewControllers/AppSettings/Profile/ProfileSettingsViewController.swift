@@ -759,7 +759,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     private func profileCompleted() {
         AssertIsOnMainThread()
-        Logger.verbose("")
 
         navigationController?.popViewController(animated: true)
     }

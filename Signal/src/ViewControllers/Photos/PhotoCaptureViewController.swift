@@ -679,8 +679,6 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private func updateIconOrientations(isAnimated: Bool, captureOrientation: AVCaptureVideoOrientation) {
         guard !UIDevice.current.isIPad else { return }
 
-        Logger.verbose("captureOrientation: \(captureOrientation)")
-
         let transformFromOrientation: CGAffineTransform
         switch captureOrientation {
         case .portrait:
@@ -961,8 +959,6 @@ extension PhotoCaptureViewController {
 
     @objc
     private func didTapTextStoryProceedButton() {
-        Logger.verbose("")
-
         let body: StyleOnlyMessageBody
         let textStyle: TextAttachment.TextStyle
         switch textStoryComposerView.textContent {
@@ -1093,7 +1089,6 @@ extension PhotoCaptureViewController {
 
     @objc
     private func contentTypeChanged() {
-        Logger.verbose("")
         guard let newComposerMode = ComposerMode(rawValue: bottomBar.contentTypeSelectionControl.selectedSegmentIndex) else { return }
         setComposerMode(newComposerMode, animated: true)
     }
@@ -1187,7 +1182,6 @@ extension PhotoCaptureViewController {
         guard let lastUserFocusTapPoint = lastUserFocusTapPoint else { return }
 
         guard lastUserFocusTapPoint.within(0.005, of: focusPoint) else {
-            Logger.verbose("focus completed for obsolete focus point. User has refocused.")
             return
         }
 
@@ -1306,7 +1300,6 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
             return
         }
 
-        Logger.verbose("")
         qrCodeScanned = true
 
         databaseStorage.read { tx in
@@ -1431,16 +1424,13 @@ extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
     // MARK: - Video
 
     func cameraCaptureSessionWillStartVideoRecording(_ session: CameraCaptureSession) {
-        Logger.verbose("")
         setIsRecordingVideo(true, animated: true)
     }
 
     func cameraCaptureSessionDidStartVideoRecording(_ session: CameraCaptureSession) {
-        Logger.verbose("")
     }
 
     func cameraCaptureSessionDidStopVideoRecording(_ session: CameraCaptureSession) {
-        Logger.verbose("")
         setIsRecordingVideo(false, animated: true)
     }
 
@@ -1750,8 +1740,6 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     @objc
     private func didTapTextStyleButton() {
-        Logger.verbose("")
-
         let textStyle = textViewAccessoryToolbar.textStyle.next()
         textViewAccessoryToolbar.textStyle = textStyle
 
@@ -1770,8 +1758,6 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     @objc
     private func didTapDecorationStyleButton() {
-        Logger.verbose("")
-
         // "Underline" and "Outline" are not available in text story composer.
         var decorationStyle = textViewAccessoryToolbar.decorationStyle.next()
         if decorationStyle == .outline || decorationStyle == .underline {
@@ -1789,8 +1775,6 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     @objc
     private func didChangeTextColor() {
-        Logger.verbose("")
-
         // Depending on text decoration style color picker changes either color of the text or background color.
         // That's why we need to update both.
         let textForegroundColor = textViewAccessoryToolbar.textForegroundColor
@@ -1802,8 +1786,6 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     @objc
     private func didTapTextViewDoneButton() {
-        Logger.verbose("")
-
         textView.acceptAutocorrectSuggestion()
         textView.resignFirstResponder()
     }

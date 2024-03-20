@@ -582,7 +582,6 @@ public extension StickerPack {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return StickerPackCursor(transaction: transaction, cursor: nil)
         }

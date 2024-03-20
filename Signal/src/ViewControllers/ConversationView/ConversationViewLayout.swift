@@ -1054,8 +1054,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
             return updatedContentOffset
         }
 
-        Logger.verbose("No continuity match.")
-
         return nil
     }
 

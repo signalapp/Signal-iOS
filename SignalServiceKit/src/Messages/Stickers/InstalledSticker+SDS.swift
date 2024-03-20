@@ -555,7 +555,6 @@ public extension InstalledSticker {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return InstalledStickerCursor(transaction: transaction, cursor: nil)
         }

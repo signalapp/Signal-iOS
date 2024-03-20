@@ -1779,7 +1779,6 @@ public extension %(class_name)s {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \\(sql)")
             owsFailDebug("Read failed: \\(error)")
             return %(class_name)sCursor(transaction: transaction, cursor: nil)
         }

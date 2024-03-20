@@ -202,7 +202,6 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             return true
         }
         guard sentProto.timestamp == dataMessage.timestamp else {
-            Logger.verbose("Transcript timestamps do not match: \(sentProto.timestamp) != \(dataMessage.timestamp)")
             owsFailDebug("Transcript timestamps do not match, discarding message.")
             // This transcript is invalid, discard it.
             return false

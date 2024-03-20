@@ -153,7 +153,6 @@ public class ReusableMediaView: NSObject {
                 return
             }
             guard self.loadState == .loading else {
-                Logger.verbose("Skipping obsolete load.")
                 return
             }
             guard let media = possibleMedia else {
@@ -175,13 +174,8 @@ public class ReusableMediaView: NSObject {
         let cacheKey = mediaViewAdapter.cacheKey
         let mediaCache = self.mediaCache
         if let media = mediaCache.getMedia(cacheKey, isAnimated: mediaViewAdapter.shouldBeRenderedByYY) {
-            Logger.verbose("media cache hit")
             loadCompletion(media)
             return
-        }
-
-        if !DebugFlags.reduceLogChatter {
-            Logger.verbose("media cache miss")
         }
 
         let loadState = self._loadState

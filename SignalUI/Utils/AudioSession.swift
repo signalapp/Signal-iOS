@@ -105,8 +105,6 @@ public class AudioSession: NSObject {
     private let unfairLock = UnfairLock()
 
     public func startAudioActivity(_ audioActivity: AudioActivity) -> Bool {
-        Logger.debug("with \(audioActivity)")
-
         unfairLock.lock()
         defer { unfairLock.unlock() }
 
@@ -130,8 +128,6 @@ public class AudioSession: NSObject {
     }
 
     public func endAudioActivity(_ audioActivity: AudioActivity) {
-        Logger.debug("with audioActivity: \(audioActivity)")
-
         unfairLock.lock()
         defer { unfairLock.unlock() }
 
@@ -184,12 +180,9 @@ public class AudioSession: NSObject {
             try avAudioSession.setAllowHapticsAndSystemSoundsDuringRecording(true)
         } else if aggregateBehaviors.contains(.audioMessagePlayback) {
             if self.device.proximityState {
-                Logger.debug("proximityState: true")
-
                 try setCategory(.playAndRecord)
                 try avAudioSession.overrideOutputAudioPort(.none)
             } else {
-                Logger.debug("proximityState: false")
                 try setCategory(.playback)
             }
         } else if aggregateBehaviors.contains(.playback) {
@@ -198,7 +191,6 @@ public class AudioSession: NSObject {
             try setCategory(.playback, options: .mixWithOthers)
         } else {
             if avAudioSession.category != AVAudioSession.Category.ambient {
-                Logger.debug("reverting to fallback audio category: ambient")
                 try setCategory(.ambient)
             }
 
@@ -250,7 +242,6 @@ public class AudioSession: NSObject {
         }
 
         guard currentActivities.isEmpty else {
-            Logger.debug("not deactivating due to currentActivities: \(currentActivities)")
             return
         }
 

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public class TSResourceManagerImpl: TSResourceManager {
 
@@ -191,7 +192,6 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
 
         if types.contains(.linkPreview), let linkPreview = message.linkPreview {
-            Logger.verbose("Removing link preview attachment.")
             if linkPreview.usesV2AttachmentReference {
                 v2Owners.append(.messageLinkPreview)
             } else if let attachmentId = linkPreview.legacyImageAttachmentId?.nilIfEmpty {
@@ -203,7 +203,6 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
 
         if types.contains(.sticker), let messageSticker = message.messageSticker {
-            Logger.verbose("Removing sticker attachment.")
             // TODO: differentiate legacy and v2
             tsAttachmentManager.removeAttachment(attachmentId: messageSticker.attachmentId, tx: SDSDB.shimOnlyBridge(tx))
         }
@@ -212,7 +211,6 @@ public class TSResourceManagerImpl: TSResourceManager {
             types.contains(.quotedReply),
             let quoteAttachmentInfo = message.quotedMessage?.attachmentInfo()
         {
-            Logger.verbose("Removing quoted reply attachment.")
             if quoteAttachmentInfo.attachmentType == OWSAttachmentInfoReference.V2 {
                 v2Owners.append(.quotedReplyAttachment)
             } else if let id = quoteAttachmentInfo.attachmentId {
@@ -225,7 +223,6 @@ public class TSResourceManagerImpl: TSResourceManager {
             let contactShare = message.contactShare,
             let contactShareAttachmentId = contactShare.avatarAttachmentId
         {
-            Logger.verbose("Removing contact share attachment.")
             // TODO: differentiate legacy and v2
             tsAttachmentManager.removeAttachment(attachmentId: contactShareAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
         }

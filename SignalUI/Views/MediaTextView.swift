@@ -124,8 +124,6 @@ public class MediaTextView: UITextView {
 
     @objc
     private func modifiedReturnPressed(sender: UIKeyCommand) {
-        Logger.verbose("")
-
         acceptAutocorrectSuggestion()
         resignFirstResponder()
     }

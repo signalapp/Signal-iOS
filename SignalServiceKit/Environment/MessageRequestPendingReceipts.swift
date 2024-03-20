@@ -77,7 +77,6 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
     private func sendAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
         let pendingReadReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
             guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
-                Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
 
@@ -86,7 +85,6 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
 
         let pendingViewedReceipts: [PendingViewedReceiptRecord] = try threads.flatMap { thread -> [PendingViewedReceiptRecord] in
             guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
-                Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
 
@@ -94,7 +92,6 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
         }
 
         guard !pendingReadReceipts.isEmpty || !pendingViewedReceipts.isEmpty else {
-            Logger.debug("aborting since pendingReceipts is empty for threads: \(threads.count)")
             return
         }
 
@@ -110,7 +107,6 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
     private func removeAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
         let pendingReadReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
             guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
-                Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
 
@@ -119,7 +115,6 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
 
         let pendingViewedReceipts: [PendingViewedReceiptRecord] = try threads.flatMap { thread -> [PendingViewedReceiptRecord] in
             guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
-                Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
 
@@ -127,7 +122,6 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
         }
 
         guard !pendingReadReceipts.isEmpty || !pendingViewedReceipts.isEmpty else {
-            Logger.debug("aborting since pendingReceipts is empty for threads: \(threads.count)")
             return
         }
 
@@ -148,7 +142,6 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
             return
         }
 
-        Logger.debug("Enqueuing read receipt for sender.")
         for receipt in pendingReadReceipts {
             let address = SignalServiceAddress.legacyAddress(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber)
             guard address.isValid else {
@@ -164,7 +157,6 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
         }
         try finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction)
 
-        Logger.debug("Enqueuing viewed receipt for sender.")
         for receipt in pendingViewedReceipts {
             let address = SignalServiceAddress.legacyAddress(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber)
             guard address.isValid else {
@@ -291,7 +283,6 @@ fileprivate extension Notification {
     func affectedThread(transaction: GRDBReadTransaction) -> TSThread? {
         if let address = userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress {
             guard let contactThread = TSContactThread.getWithContactAddress(address, transaction: transaction.asAnyRead) else {
-                Logger.debug("No existing contact thread for address: \(address)")
                 return nil
             }
             return contactThread
@@ -301,7 +292,6 @@ fileprivate extension Notification {
 
         if let groupId = userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data {
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction.asAnyRead) else {
-                Logger.debug("No existing group thread for groupId: \(groupId)")
                 return nil
             }
             return groupThread

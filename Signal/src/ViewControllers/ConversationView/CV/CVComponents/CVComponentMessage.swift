@@ -1670,7 +1670,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         for subcomponentAndView in findComponentAndViews(sender: sender, componentView: componentView) {
             let subcomponent = subcomponentAndView.component
             let subcomponentView = subcomponentAndView.componentView
-            Logger.verbose("key: \(subcomponentAndView.key)")
             if subcomponent.handleTap(sender: sender,
                                       componentDelegate: componentDelegate,
                                       componentView: subcomponentView,
@@ -1679,9 +1678,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
-        if let message = interaction as? TSMessage,
-           nil != componentState.failedOrPendingDownloads {
-            Logger.verbose("Retrying failed downloads.")
+        if let message = interaction as? TSMessage, nil != componentState.failedOrPendingDownloads {
             componentDelegate.didTapFailedOrPendingDownloads(message)
             return true
         }
@@ -1777,9 +1774,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return nil
         }
         guard let subcomponentView = messageView.subcomponentView(key: key) else {
-            if ignoreMissing {
-                Logger.verbose("Missing subcomponentView: \(key).")
-            } else {
+            if !ignoreMissing {
                 owsFailDebug("Missing subcomponentView.")
             }
             return nil

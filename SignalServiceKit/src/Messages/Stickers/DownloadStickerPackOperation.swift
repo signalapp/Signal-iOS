@@ -30,13 +30,10 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
     override public func run() {
 
         if let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: stickerPackInfo) {
-            Logger.verbose("Skipping redundant operation: \(stickerPackInfo).")
             success(stickerPack)
             self.reportSuccess()
             return
         }
-
-        Logger.verbose("Downloading: \(stickerPackInfo).")
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
         let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"

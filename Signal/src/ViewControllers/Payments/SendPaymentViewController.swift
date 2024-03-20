@@ -845,7 +845,6 @@ public class SendPaymentViewController: OWSViewController {
 
     private func updateBalanceLabel() {
         guard let helper = helper else {
-            Logger.verbose("Missing helper.")
             return
         }
         helper.updateBalanceLabel(balanceLabel)
@@ -1091,9 +1090,6 @@ public class SendPaymentViewController: OWSViewController {
                                          estimatedFeeAmount: TSPaymentAmount) {
         // Snapshot the conversion rate.
         let currencyConversion = self.currentCurrencyConversion
-
-        Logger.verbose("paymentAmount: \(paymentAmount)")
-        Logger.verbose("estimatedFeeAmount: \(estimatedFeeAmount)")
 
         let paymentInfo = PaymentInfo(
             recipient: recipient,
@@ -1510,8 +1506,6 @@ private struct InputString: Equatable {
                 }
             }
         }()
-        Logger.verbose("Before: \(self.asCharString) -> \(self.asString(formatMode: .parsing)), \(self.digitCountBeforeDecimal), \(self.digitCountAfterDecimal), \(result.asDouble)")
-        Logger.verbose("Considering: \(result.asCharString) -> \(result.asString(formatMode: .parsing)), \(result.digitCountBeforeDecimal), \(result.digitCountAfterDecimal), \(result.asDouble)")
         guard result.isValid else {
             Logger.warn("Invalid result: \(self.asString(formatMode: .parsing)) -> \(result.asString(formatMode: .parsing))")
             return self
@@ -1553,7 +1547,6 @@ private struct InputString: Equatable {
 
     static func maxDigitsBeforeDecimal(isFiat: Bool) -> UInt {
         // Max transaction size: 1 billion MOB.
-        Logger.verbose("maxMobNonDecimalDigits: \(PaymentsConstants.maxMobNonDecimalDigits)")
         return isFiat ? 9 : PaymentsConstants.maxMobNonDecimalDigits
     }
 
@@ -1626,7 +1619,6 @@ private struct InputString: Equatable {
     private static func parseAsDouble(_ stringValue: String) -> Double {
         guard let value = Double(stringValue.ows_stripped()) else {
             // inputString should be parseable at all times.
-            Logger.verbose("stringValue: \(stringValue)")
             owsFailDebug("Invalid inputString.")
             return 0
         }

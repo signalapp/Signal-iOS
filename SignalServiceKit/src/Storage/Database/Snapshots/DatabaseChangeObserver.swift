@@ -246,14 +246,12 @@ public class DatabaseChangeObserver: NSObject {
     @objc
     func didReceiveCrossProcessNotification(_ notification: Notification) {
         AssertIsOnMainThread()
-        Logger.verbose("")
 
         didUpdateExternallyEvent.requestNotify()
     }
 
     private func fireDidUpdateExternally() {
         AssertIsOnMainThread()
-        Logger.verbose("")
 
         for delegate in databaseChangeDelegates {
             delegate.databaseChangesDidUpdateExternally()

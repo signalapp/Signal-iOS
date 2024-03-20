@@ -55,8 +55,6 @@ open class OWSDevicesService: NSObject {
         return firstly(on: DispatchQueue.global()) {
             Self.networkManager.makePromise(request: request, canUseWebSocket: true)
         }.map(on: DispatchQueue.global()) { response in
-            Logger.verbose("Get devices request succeeded")
-
             guard let devices = Self.parseDeviceList(response: response) else {
                 throw OWSAssertionError("Unable to parse devices response.")
             }

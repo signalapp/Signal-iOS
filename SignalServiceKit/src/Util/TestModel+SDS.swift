@@ -591,7 +591,6 @@ public extension TestModel {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return TestModelCursor(transaction: transaction, cursor: nil)
         }

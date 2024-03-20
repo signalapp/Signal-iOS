@@ -6,40 +6,6 @@
 import Foundation
 import SignalCoreKit
 
-#if TESTABLE_BUILD
-protocol ModelCache {
-    var logName: String { get }
-}
-
-// MARK: -
-
-struct ModelReadCacheStats {
-    static let shouldLogCacheStats = false
-
-    let cacheHitCount = AtomicUInt()
-    let cacheReadCount = AtomicUInt()
-
-    func recordCacheHit(_ cache: ModelCache) {
-        let hitCount = cacheHitCount.increment()
-        let totalCount = cacheReadCount.increment()
-        logStats(hitCount: hitCount, totalCount: totalCount, cache: cache)
-    }
-
-    func recordCacheMiss(_ cache: ModelCache) {
-        let hitCount = cacheHitCount.get()
-        let totalCount = cacheReadCount.increment()
-        logStats(hitCount: hitCount, totalCount: totalCount, cache: cache)
-    }
-
-    private func logStats(hitCount: UInt, totalCount: UInt, cache: ModelCache) {
-        if Self.shouldLogCacheStats, totalCount > 0, totalCount % 100 == 0 {
-            let percentage = 100 * Double(hitCount) / Double(totalCount)
-            Logger.verbose("---- \(cache.logName): \(percentage)% \(totalCount)")
-        }
-    }
-}
-#endif
-
 // MARK: -
 
 class ModelCacheValueBox<ValueType> {
@@ -128,10 +94,6 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
         return "\(cacheName) \(mode)"
     }
 
-    #if TESTABLE_BUILD
-    let cacheStats = ModelReadCacheStats()
-    #endif
-
     fileprivate let cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>
 
     private let adapter: ModelCacheAdapter<KeyType, ValueType>
@@ -209,19 +171,6 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
         return zip(cacheKeys, maybeValues).map { tuple in
             let (cacheKey, maybeValue) = tuple
             if let value = maybeValue {
-                #if TESTABLE_BUILD
-                if !CurrentAppContext().isNSE,
-                   !isExcluded(cacheKey: cacheKey, transaction: transaction),
-                    canUseCache(cacheKey: cacheKey, transaction: transaction) {
-                    // NOTE: We don't need to update the cache; the SDS
-                    // model extensions will populate the cache for us.
-                    if readFromCache(cacheKey: cacheKey)?.value == nil {
-                        let cacheKeyForValue = adapter.cacheKey(forValue: value)
-                        let canUseCacheForValue = canUseCache(cacheKey: cacheKey, transaction: transaction)
-                        Logger.verbose("Missing value in cache: \(cacheKey.key), cacheKeyForValue: \(cacheKeyForValue), canUseCacheForValue: \(canUseCacheForValue), \(logName)")
-                    }
-                }
-                #endif
                 return value
             }
             if !isExcluded(cacheKey: cacheKey, transaction: transaction),
@@ -296,10 +245,6 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
                 return entries.map { tuple in
                     let (key, cachedValue) = (tuple.0, tuple.1!)
 
-                    #if TESTABLE_BUILD
-                    cacheStats.recordCacheHit(self)
-                    #endif
-
                     if let value = cachedValue.value {
                         // Return a copy of the model.
                         let cachedValue = self.copyValue(value)
@@ -322,12 +267,6 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
                 }
             } otherwise: { tuples -> [ValueType?] in
                 // Have no cache entry.
-                #if TESTABLE_BUILD
-                for _ in tuples {
-                    cacheStats.recordCacheMiss(self)
-                }
-                #endif
-
                 guard !returnNilOnCacheMiss else {
                     return tuples.lazy.map { _ in nil }
                 }
@@ -573,12 +512,6 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
         }
     }
 }
-
-// MARK: -
-
-#if TESTABLE_BUILD
-extension ModelReadCache: ModelCache {}
-#endif
 
 // MARK: -
 

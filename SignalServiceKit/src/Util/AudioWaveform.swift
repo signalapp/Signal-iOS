@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Accelerate
 import AVFoundation
+import Foundation
+import SignalCoreKit
 
 @objc
 public protocol AudioWaveformSamplingObserver: AnyObject {
@@ -152,8 +153,6 @@ public class AudioWaveformManager: NSObject {
             return nil
         }
 
-        Logger.verbose("Sampling waveform: \(identifier)")
-
         let waveform = AudioWaveform()
 
         // Listen for sampling completion so we can cache the final waveform to disk.
@@ -185,8 +184,6 @@ public class AudioWaveformManager: NSObject {
         func audioWaveformDidFinishSampling(_ audioWaveform: AudioWaveform) {
             let identifier = self.identifier
             let audioWaveformPath = self.audioWaveformPath
-
-            Logger.verbose("Sampling waveform complete: \(identifier)")
 
             DispatchQueue.global().async {
                 AudioWaveformManager.unfairLock.withLock {

@@ -147,8 +147,6 @@ extension ConversationViewController: ContactShareViewControllerDelegate {
     }
 
     private func send(contactShare: ContactShareViewModel) {
-        Logger.verbose("Sending contact share.")
-
         let thread = self.thread
         Self.databaseStorage.asyncWrite { transaction in
             let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
@@ -239,8 +237,6 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
 extension ConversationViewController: ConversationSearchControllerDelegate {
     public func didDismissSearchController(_ searchController: UISearchController) {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         // This method is called not only when the user taps "cancel" in the searchController, but also
         // called when the searchController was dismissed because we switched to another uiMode, like

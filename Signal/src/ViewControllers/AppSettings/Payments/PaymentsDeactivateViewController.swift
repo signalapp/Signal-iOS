@@ -169,9 +169,6 @@ public class PaymentsDeactivateViewController: OWSViewController {
 
     @objc
     private func didTapTransferBalanceButton() {
-
-        Logger.verbose("paymentBalance: \(paymentBalance.amount.picoMob)")
-
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: false) { [weak self] modalActivityIndicator in
 
@@ -179,8 +176,6 @@ public class PaymentsDeactivateViewController: OWSViewController {
                 Self.paymentsSwift.maximumPaymentAmount()
             }.done { (transferAmount: TSPaymentAmount) in
                 AssertIsOnMainThread()
-
-                Logger.verbose("maximumPaymentAmount: \(transferAmount.picoMob)")
 
                 modalActivityIndicator.dismiss {
                     guard let navigationController = self?.navigationController else {

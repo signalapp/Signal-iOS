@@ -201,8 +201,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     public func sendSticker(_ stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
 
-        Logger.verbose("Sending sticker.")
-
         ImpactHapticFeedback.impactOccurred(style: .light)
 
         let message = ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
@@ -715,8 +713,6 @@ extension ConversationViewController: LocationPickerDelegate {
 
     public func didPickLocation(_ locationPicker: LocationPicker, location: Location) {
         AssertIsOnMainThread()
-
-        Logger.verbose("Sending location share.")
 
         firstly(on: DispatchQueue.global()) { () -> Promise<SignalAttachment> in
             location.prepareAttachment()

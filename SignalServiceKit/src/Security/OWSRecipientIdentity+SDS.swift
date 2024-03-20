@@ -555,7 +555,6 @@ public extension OWSRecipientIdentity {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return OWSRecipientIdentityCursor(transaction: transaction, cursor: nil)
         }

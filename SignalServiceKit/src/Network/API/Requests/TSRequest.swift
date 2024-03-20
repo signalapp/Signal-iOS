@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // TODO: Rework to _not_ extend NSMutableURLRequest.
 @objcMembers
@@ -66,9 +67,6 @@ public class TSRequest: NSMutableURLRequest {
             owsAssertDebug(shouldHaveAuthorizationHeaders)
             return authLock.withLock {
                 let result = _authUsername ?? DependenciesBridge.shared.tsAccountManager.storedServerUsernameWithMaybeTransaction
-                if result.isEmptyOrNil {
-                    Logger.verbose(self.debugDescription)
-                }
                 owsAssertDebug(result.isEmptyOrNil.negated)
                 return result
             }
@@ -87,9 +85,6 @@ public class TSRequest: NSMutableURLRequest {
             owsAssertDebug(shouldHaveAuthorizationHeaders)
             return authLock.withLock {
                 let result = _authPassword ?? DependenciesBridge.shared.tsAccountManager.storedServerAuthTokenWithMaybeTransaction
-                if result.isEmptyOrNil {
-                    Logger.verbose(self.debugDescription)
-                }
                 owsAssertDebug(result.isEmptyOrNil.negated)
                 return result
             }

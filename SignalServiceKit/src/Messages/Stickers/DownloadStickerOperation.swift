@@ -47,20 +47,16 @@ class DownloadStickerOperation: CDNDownloadOperation {
 
     override public func run() {
         if let stickerUrl = DownloadStickerOperation.cachedUrl(for: stickerInfo) {
-            Logger.verbose("Using cached value: \(stickerInfo).")
             success(stickerUrl)
             self.reportSuccess()
             return
         }
 
         if let stickerUrl = loadInstalledStickerUrl() {
-            Logger.verbose("Skipping redundant operation: \(stickerInfo).")
             success(stickerUrl)
             self.reportSuccess()
             return
         }
-
-        Logger.verbose("Downloading sticker: \(stickerInfo).")
 
         // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>
         let urlPath = "stickers/\(stickerInfo.packId.hexadecimalString)/full/\(stickerInfo.stickerId)"

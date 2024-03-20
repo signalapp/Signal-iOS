@@ -218,7 +218,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
                 .promiseForTSRequest(request)
                 .asVoid(on: schedulers.sync)
                 .awaitable()
-            Logger.verbose("Successfully unregistered.")
 
             // No need to set any state, as we wipe the whole app anyway.
             appContext.resetAppDataAndExit()

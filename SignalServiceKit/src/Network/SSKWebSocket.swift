@@ -402,7 +402,6 @@ public class SSKWebSocketNative: SSKWebSocket {
         }
 
         guard shouldReportError else {
-            Logger.verbose("[\(id), context: \(context)] Ignoring error: \(error)")
             return
         }
         shouldReportError = false

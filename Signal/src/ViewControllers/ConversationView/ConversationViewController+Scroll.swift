@@ -514,44 +514,27 @@ extension ConversationViewController {
 
     // We use this hook to ensure scroll state continuity.  As the collection
     // view's content size changes, we want to keep the same cells in view.
-    public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint,
-                                    lastKnownDistanceFromBottom: CGFloat?) -> CGPoint {
-
-        // TODO: Remove logging in this method once scroll continuity
-        // issues are resolved.
-        if !DebugFlags.reduceLogChatter {
-            Logger.verbose("---- proposedContentOffset: \(proposedContentOffset)")
-        }
-
+    public func targetContentOffset(
+        forProposedContentOffset proposedContentOffset: CGPoint,
+        lastKnownDistanceFromBottom: CGFloat?
+    ) -> CGPoint {
         // TODO: Consider handling these transitions using a scroll
         // continuity token.
         if let contentOffset = targetContentOffsetForSizeTransition() {
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("---- targetContentOffsetForSizeTransition: \(contentOffset)")
-            }
             return contentOffset
         }
 
         // TODO: Consider handling these transitions using a scroll
         // continuity token.
         if let contentOffset = targetContentOffsetForUpdate() {
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("---- targetContentOffsetForUpdate: \(contentOffset)")
-            }
             return contentOffset
         }
 
         // TODO: Can we improve this case?
         if let contentOffset = targetContentOffsetForBottom(lastKnownDistanceFromBottom: lastKnownDistanceFromBottom) {
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("---- forLastKnownDistanceFromBottom: \(contentOffset)")
-            }
             return contentOffset
         }
 
-        if !DebugFlags.reduceLogChatter {
-            Logger.verbose("---- ...: \(proposedContentOffset)")
-        }
         return proposedContentOffset
     }
 

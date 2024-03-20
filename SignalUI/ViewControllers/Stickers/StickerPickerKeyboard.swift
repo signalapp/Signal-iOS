@@ -48,8 +48,6 @@ extension StickerKeyboard: StickerPacksToolbarDelegate {
     public func manageButtonWasPressed() {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         delegate?.presentManageStickersView()
     }
 }

@@ -223,8 +223,6 @@ class ImageEditorView: UIView {
     func createNewTextItem(withColor color: ColorPickerBarColor = ColorPickerBarColor.white,
                            textStyle: MediaTextView.TextStyle = .regular,
                            decorationStyle: MediaTextView.DecorationStyle = .none) -> ImageEditorTextItem {
-        Logger.verbose("")
-
         let viewSize = canvasView.gestureReferenceView.bounds.size
         let imageSize = model.srcImageSizePixels
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: imageSize,

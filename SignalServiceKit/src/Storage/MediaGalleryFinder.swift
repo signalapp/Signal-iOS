@@ -45,7 +45,6 @@ public final class MediaGalleryManager: NSObject {
         }
 
         guard attachmentStream.albumMessageId != nil else {
-            Logger.verbose("not a gallery attachment")
             return nil
         }
 
@@ -66,7 +65,6 @@ public final class MediaGalleryManager: NSObject {
         }
 
         guard let messageUniqueId = attachmentStream.albumMessageId else {
-            Logger.verbose("not a gallery attachment")
             return nil
         }
 

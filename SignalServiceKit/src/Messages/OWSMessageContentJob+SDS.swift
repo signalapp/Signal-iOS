@@ -555,7 +555,6 @@ public extension OWSMessageContentJob {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return OWSMessageContentJobCursor(transaction: transaction, cursor: nil)
         }

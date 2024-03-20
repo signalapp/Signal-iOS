@@ -176,13 +176,11 @@ final class CallKitCallManager: NSObject {
     }
 
     func addCall(_ call: SignalCall) {
-        Logger.verbose("call: \(call)")
         call.markReportedToSystem()
         calls.append(call)
     }
 
     func removeCall(_ call: SignalCall) {
-        Logger.verbose("call: \(call)")
         call.markRemovedFromSystem()
         guard calls.removeFirst(where: { $0 === call }) != nil else {
             Logger.warn("no call matching: \(call) to remove")
@@ -191,7 +189,6 @@ final class CallKitCallManager: NSObject {
     }
 
     func removeAllCalls() {
-        Logger.verbose("")
         calls.forEach { $0.markRemovedFromSystem() }
         calls.removeAll()
     }

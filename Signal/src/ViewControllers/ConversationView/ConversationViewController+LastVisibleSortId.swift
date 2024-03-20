@@ -115,29 +115,6 @@ extension ConversationViewController {
         }
     }
 
-    #if TESTABLE_BUILD
-    func logFirstAndLastVisibleItems() {
-        AssertIsOnMainThread()
-
-        if let firstVisibleIndexPath = firstVisibleIndexPath,
-           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: firstVisibleIndexPath) {
-
-            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
-            let bodyText: String = (reference.interaction as? TSMessage)?.body ?? "none"
-            Logger.verbose("---- first visible item: sortId: \(reference.sortId), indexPath: \(reference.indexPath), bodyText: \(bodyText), onScreenPercentage: \(onScreenPercentage), ")
-        }
-
-        if let lastVisibleIndexPath = lastVisibleIndexPath,
-           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
-
-            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
-            let bodyText: String = (reference.interaction as? TSMessage)?.body ?? "none"
-            Logger.verbose("---- last visible item: sortId: \(reference.sortId), indexPath: \(reference.indexPath), bodyText: \(bodyText), onScreenPercentage: \(onScreenPercentage)")
-        }
-
-    }
-    #endif
-
     private func percentOfIndexPathVisibleAboveBottom(_ indexPath: IndexPath) -> CGFloat {
 
         // If we don't have layout attributes, it's not visible

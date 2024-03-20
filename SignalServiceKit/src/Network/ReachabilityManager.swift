@@ -5,6 +5,7 @@
 
 import Foundation
 import Reachability
+import SignalCoreKit
 
 @objc(SSKReachabilityType)
 public enum ReachabilityType: Int {
@@ -124,8 +125,6 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
             return
         }
 
-        Logger.verbose("isReachable: \(isReachable)")
-
         updateToken()
 
         NotificationCenter.default.post(name: SSKReachability.owsReachabilityDidChange, object: self)
@@ -144,7 +143,6 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
             owsFailDebug("failed to start notifier")
             return
         }
-        Logger.debug("started notifier")
 
         updateToken()
 

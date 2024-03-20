@@ -508,8 +508,6 @@ public class TSAttachmentDownloadManager: NSObject {
 
     private func downloadDidSucceed(attachmentStream: TSAttachmentStream,
                                     job: Job) {
-        Logger.verbose("Attachment download succeeded.")
-
         if job.category.isSticker,
            let filePath = attachmentStream.originalFilePath {
             let imageMetadata = NSData.imageMetadata(withPath: filePath, mimeType: nil)

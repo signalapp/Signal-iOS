@@ -554,8 +554,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
 
-        Logger.verbose("Making request: \(rawRequest.description)")
-
         return firstly(on: DispatchQueue.global()) { () throws -> Promise<HTTPResponse> in
             urlSession.uploadTaskPromise(request: request, data: requestBody, progress: nil)
         }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> HTTPResponse in

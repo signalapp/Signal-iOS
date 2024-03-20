@@ -788,8 +788,6 @@ private class QRCodeScanner {
 
         let device = try selectCaptureDevice()
 
-        Logger.verbose("device: \(device.deviceType), position: \(device.position)")
-
         try device.lockForConfiguration()
 
         // Setting (focus/exposure)PointOfInterest alone does not initiate a (focus/exposure) operation.

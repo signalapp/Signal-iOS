@@ -630,7 +630,6 @@ public extension PaymentsImpl {
                 // prepareTransaction() will fail if local balance is not yet known.
                 mobileCoinAPI.getLocalBalance()
             }.then(on: DispatchQueue.global()) { (balance: TSPaymentAmount) -> Promise<Void> in
-                Logger.verbose("balance: \(balance.picoMob)")
                 return self.defragmentIfNecessary(forPaymentAmount: paymentAmount,
                                                   mobileCoinAPI: mobileCoinAPI,
                                                   canDefragment: canDefragment)
@@ -656,8 +655,6 @@ public extension PaymentsImpl {
     private func defragmentIfNecessary(forPaymentAmount paymentAmount: TSPaymentAmount,
                                        mobileCoinAPI: MobileCoinAPI,
                                        canDefragment: Bool) -> Promise<Void> {
-        Logger.verbose("")
-
         return firstly(on: DispatchQueue.global()) { () throws -> Promise<Bool> in
             mobileCoinAPI.requiresDefragmentation(forPaymentAmount: paymentAmount)
         }.then(on: DispatchQueue.global()) { (shouldDefragment: Bool) -> Promise<Void> in
@@ -823,7 +820,6 @@ public extension PaymentsImpl {
 
     class func sendDefragmentationSyncMessage(paymentModel: TSPaymentModel,
                                               transaction: SDSAnyWriteTransaction) {
-        Logger.verbose("")
         guard paymentModel.isDefragmentation else {
             owsFailDebug("Invalid paymentType.")
             return
@@ -949,7 +945,6 @@ public extension PaymentsImpl {
     class func sendOutgoingPaymentSyncMessage(paymentModel: TSPaymentModel,
                                               transaction: SDSAnyWriteTransaction) {
 
-        Logger.verbose("")
         guard let recipientAci = paymentModel.senderOrRecipientAci else {
             owsFailDebug("Missing recipientAci.")
             return
@@ -1186,13 +1181,10 @@ public extension PaymentsImpl {
     }
 
     static func formatAsUrl(publicAddress: MobileCoin.PublicAddress) -> String {
-        let url = MobileCoinAPI.formatAsUrl(publicAddress: publicAddress)
-        Logger.verbose("publicAddressUrl: \(url)")
-        return url
+        return MobileCoinAPI.formatAsUrl(publicAddress: publicAddress)
     }
 
     static func parseAsPublicAddress(url: URL) -> MobileCoin.PublicAddress? {
-        Logger.verbose("publicAddressUrl: \(url)")
         return MobileCoinAPI.parseAsPublicAddress(url: url)
     }
 

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public class LinkPreviewManagerImpl: LinkPreviewManager {
 
@@ -492,8 +493,6 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
     // MARK: - Stickers
 
     private func linkPreviewDraft(forStickerShare url: URL) -> Promise<OWSLinkPreviewDraft> {
-        Logger.verbose("url: \(url)")
-
         guard let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) else {
             Logger.error("Could not parse url.")
             return Promise(error: LinkPreviewError.invalidPreview)
@@ -527,8 +526,6 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
     // MARK: - Group Invite Links
 
     private func linkPreviewDraft(forGroupInviteLink url: URL) -> Promise<OWSLinkPreviewDraft> {
-        Logger.verbose("url: \(url)")
-
         return firstly(on: Self.workQueue) { () -> GroupInviteLinkInfo in
             guard let groupInviteLinkInfo = GroupManager.parseGroupInviteLink(url) else {
                 Logger.error("Could not parse URL.")

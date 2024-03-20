@@ -143,7 +143,6 @@ public class PaymentsProcessor: NSObject {
                     continue
                 }
                 self.processingPaymentIds.insert(paymentId)
-                Logger.verbose("Start processing: \(paymentId) \(paymentModel.descriptionForLogs)")
                 let operation = PaymentProcessingOperation(delegate: delegate,
                                                            paymentModel: paymentModel)
                 processingQueue(forPaymentModel: paymentModel).addOperation(operation)
@@ -316,8 +315,6 @@ extension PaymentsProcessor: PaymentProcessingOperationDelegate {
             return
         }
 
-        Logger.verbose("\(label): \(paymentId)")
-
         let operation = PaymentProcessingOperation(delegate: self,
                                                    paymentModel: paymentModel,
                                                    retryDelayInteral: retryDelayInteral)
@@ -328,7 +325,6 @@ extension PaymentsProcessor: PaymentProcessingOperationDelegate {
                                  retryDelayInteral: TimeInterval,
                                  nextRetryDelayInteral: TimeInterval) {
         let paymentId = paymentModel.uniqueId
-        Logger.verbose("schedule retry: \(paymentId), retryDelayInteral: \(retryDelayInteral), nextRetryDelayInteral: \(nextRetryDelayInteral)")
         add(retryScheduler: RetryScheduler(paymentModel: paymentModel,
                                            retryDelayInteral: retryDelayInteral,
                                            nextRetryDelayInteral: nextRetryDelayInteral,
@@ -340,7 +336,6 @@ extension PaymentsProcessor: PaymentProcessingOperationDelegate {
     }
 
     func endProcessing(paymentId: String) {
-        Logger.verbose("End processing: \(paymentId)")
         Self.unfairLock.withLock {
             owsAssertDebug(processingPaymentIds.contains(paymentId))
             processingPaymentIds.remove(paymentId)
@@ -614,7 +609,6 @@ private class PaymentProcessingOperation: OWSOperation {
             owsAssertDebug(paymentModel.isValid)
 
             let paymentId = paymentModel.uniqueId
-            Logger.verbose("Trying to process: \(paymentId), \(formattedState)")
 
             switch paymentModel.paymentState {
             case .outgoingUnsubmitted:
@@ -659,8 +653,6 @@ private class PaymentProcessingOperation: OWSOperation {
 
     private func submitOutgoingPayment(paymentModel: TSPaymentModel) -> Promise<Void> {
         owsAssertDebug(paymentModel.paymentState == .outgoingUnsubmitted)
-
-        Logger.verbose("")
 
         guard !payments.isKillSwitchActive else {
             do {
@@ -739,8 +731,6 @@ private class PaymentProcessingOperation: OWSOperation {
     private func verifyOutgoingPayment(paymentModel: TSPaymentModel) -> Promise<Void> {
         owsAssertDebug(paymentModel.paymentState == .outgoingUnverified)
 
-        Logger.verbose("")
-
         if DebugFlags.paymentsSkipSubmissionAndOutgoingVerification.get() {
             return firstly(on: DispatchQueue.global()) { () -> Void in
                 try Self.databaseStorage.write { transaction in
@@ -769,8 +759,6 @@ private class PaymentProcessingOperation: OWSOperation {
 
                 return mobileCoinAPI.getOutgoingTransactionStatus(transaction: transaction)
             }.map { (transactionStatus: MCOutgoingTransactionStatus) in
-                Logger.verbose("transactionStatus: \(transactionStatus)")
-
                 try Self.databaseStorage.write { transaction in
                     switch transactionStatus.transactionStatus {
                     case .unknown:
@@ -835,8 +823,6 @@ private class PaymentProcessingOperation: OWSOperation {
     private func sendPaymentNotificationMessage(paymentModel: TSPaymentModel) -> Promise<Void> {
         owsAssertDebug(paymentModel.paymentState == .outgoingVerified)
 
-        Logger.verbose("")
-
         guard !paymentModel.isOutgoingTransfer else {
             // No need to notify for "transfer out" transactions.
             return Self.updatePaymentStatePromise(paymentModel: paymentModel,
@@ -890,8 +876,6 @@ private class PaymentProcessingOperation: OWSOperation {
     private func verifyIncomingPayment(paymentModel: TSPaymentModel) -> Promise<Void> {
         owsAssertDebug(paymentModel.paymentState == .incomingUnverified)
 
-        Logger.verbose("")
-
         return firstly { () -> Promise<MobileCoinAPI> in
             Self.paymentsImpl.getMobileCoinAPI()
         }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MCIncomingReceiptStatus> in
@@ -906,8 +890,6 @@ private class PaymentProcessingOperation: OWSOperation {
 
             return mobileCoinAPI.getIncomingReceiptStatus(receipt: receipt)
         }.map { (receiptStatus: MCIncomingReceiptStatus) in
-            Logger.verbose("receiptStatus: \(receiptStatus)")
-
             try Self.databaseStorage.write { transaction in
                 switch receiptStatus.receiptStatus {
                 case .unknown:

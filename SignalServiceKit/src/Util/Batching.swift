@@ -54,9 +54,6 @@ public class Batching: NSObject {
         // With batching.
         var batchIndex = 0
         while !stop.boolValue {
-            if batchIndex > 0 {
-                Logger.verbose("batch: \(batchIndex)")
-            }
             autoreleasepool {
                 for _ in 0..<batchSize {
                     guard !stop.boolValue else {

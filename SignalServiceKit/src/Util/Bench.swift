@@ -244,7 +244,6 @@ private class MemoryBencher: MemorySampler {
 
     @usableFromInline
     func residentMemorySize() -> mach_vm_size_t? {
-        Logger.verbose("sampling")
         var info = mach_task_basic_info()
         let MACH_TASK_BASIC_INFO_COUNT = MemoryLayout<mach_task_basic_info>.stride/MemoryLayout<natural_t>.stride
         var count = mach_msg_type_number_t(MACH_TASK_BASIC_INFO_COUNT)

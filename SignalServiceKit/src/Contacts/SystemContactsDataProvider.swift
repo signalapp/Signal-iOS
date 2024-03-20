@@ -84,7 +84,6 @@ final class PrimaryDeviceSystemContactsDataProvider: SystemContactsDataProvider 
             // the entries may be written in chunks to reduce memory footprint
             if let data = Self.contactsStore.getData(key, transaction: transaction), let array = Self.deserializeContacts(data: data) {
                 contacts.append(contentsOf: array)
-                Logger.verbose("did read chunk with \(array.count) entries. We have now \(contacts.count) entries in total")
             }
         }
         return contacts
@@ -111,7 +110,6 @@ final class PrimaryDeviceSystemContactsDataProvider: SystemContactsDataProvider 
 
         // If there aren't any changes, we don't need to modify anything.
         if oldContactsMaps.isEqualForCache(newContactsMaps) {
-            Logger.verbose("Ignoring redundant contactsMap update.")
             shallPersist = false
             return
         }
@@ -135,7 +133,6 @@ final class PrimaryDeviceSystemContactsDataProvider: SystemContactsDataProvider 
                 continue
             }
             // The contact no longer exists -- remove it.
-            Logger.verbose("deleting system contact with UUID \(contactUUID)")
             removePhoneNumbers(for: oldContact)
         }
 
@@ -144,11 +141,9 @@ final class PrimaryDeviceSystemContactsDataProvider: SystemContactsDataProvider 
             case .some(let oldContact) where oldContact.isEqualForCache(newContact):
                 break
             case .some(let oldContact):
-                Logger.verbose("updating existing system contact with UUID \(contactUUID)")
                 removePhoneNumbers(for: oldContact)
                 addPhoneNumbers(for: newContact)
             case .none:
-                Logger.verbose("adding new system contact with UUID \(contactUUID)")
                 addPhoneNumbers(for: newContact)
             }
         }

@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVFoundation
 import Foundation
 import MobileCoreServices
-import AVFoundation
+import SignalCoreKit
 import YYImage
 
 public enum SignalAttachmentError: Error {
@@ -139,7 +140,6 @@ public class SignalAttachment: NSObject {
             AssertIsOnMainThread()
 
             assert(oldValue == nil)
-            Logger.verbose("Attachment has error: \(String(describing: error))")
         }
     }
 
@@ -275,9 +275,6 @@ public class SignalAttachment: NSObject {
             imageQuality: qualityLevel
         ) else { return self }
 
-        let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
-        Logger.verbose("Building output image attachment of type: \(mimeType), size: \(size)")
-
         return Self.convertAndCompressImage(
             dataSource: dataSource,
             attachment: self,
@@ -379,9 +376,7 @@ public class SignalAttachment: NSObject {
             cachedVideoPreview = image
             return image
 
-        } catch let error {
-            let localizedDescription: String = error.userErrorDescription
-            Logger.verbose("Could not generate video thumbnail: \(localizedDescription)")
+        } catch {
             return nil
         }
     }
@@ -750,7 +745,6 @@ public class SignalAttachment: NSObject {
 
             // Never re-encode animated images (i.e. GIFs) as JPEGs.
             if dataUTI == (kUTTypePNG as String) {
-                Logger.verbose("Attempting to remove metadata from animated PNG")
                 do {
                     return try attachment.removingImageMetadata()
                 } catch {
@@ -759,7 +753,6 @@ public class SignalAttachment: NSObject {
                     return attachment
                 }
             } else {
-                Logger.verbose("Sending raw \(attachment.mimeType) to retain any animation")
                 return attachment
             }
         } else {
@@ -776,7 +769,6 @@ public class SignalAttachment: NSObject {
                 // updating the extension as well. No problem.
                 // However the problem comes in when you edit an HEIC image in Photos.app - the image is saved
                 // in the Photos.app as a JPEG, but retains the (now incongruous) HEIC extension in the filename.
-                Logger.verbose("changing extension: \(sourceFileExtension) to match jpg uti type")
 
                 let baseFilename = sourceFilename.filenameWithoutExtension
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
@@ -787,16 +779,10 @@ public class SignalAttachment: NSObject {
             // standard or high quality. We will do the final convert and compress before uploading.
 
             if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .maximumForCurrentAppContext) {
-                Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 do {
                     return try attachment.removingImageMetadata()
-                } catch {
-                    Logger.verbose("Failed to remove metadata directly: \(error)")
-                }
+                } catch {}
             }
-
-            let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
-            Logger.verbose("Rebuilding image attachment of type: \(attachment.mimeType), size: \(size)")
 
             return convertAndCompressImage(
                 dataSource: dataSource,
@@ -950,7 +936,6 @@ public class SignalAttachment: NSObject {
 
             if outputDataSource.dataLength <= imageQuality.maxFileSize, outputDataSource.dataLength <= kMaxFileSizeImage {
                 let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataUTI as String)
-                Logger.verbose("Converted \(attachment.mimeType), size: \(outputDataSource.dataLength) to \(ByteCountFormatter.string(fromByteCount: Int64(outputDataSource.dataLength), countStyle: .file)) \(dataMIMEType)")
                 return .signalAttachment(signalAttachment: recompressedAttachment)
             }
 
@@ -1001,8 +986,6 @@ public class SignalAttachment: NSObject {
     // Resizing using a CGContext seems to work fine.
     private class func downsampleImage(dataSource: DataSource, toMaxSize maxSize: CGFloat) -> CGImage? {
         autoreleasepool {
-            Logger.verbose("maxSize: \(maxSize)")
-
             guard let imageSource: CGImageSource = cgImageSource(for: dataSource) else {
                 owsFailDebug("Failed to create CGImageSource for attachment")
                 return nil
@@ -1123,7 +1106,6 @@ public class SignalAttachment: NSObject {
         ]
         guard CGImageDestinationCopyImageSource(destination, source, copyOptions, &error) else {
             let errorMessage = (error?.takeRetainedValue()).map { String(describing: $0) } ?? "(unknown error)"
-            Logger.verbose("CGImageDestinationCopyImageSource failed for \(dataUTI): \(errorMessage)")
             throw SignalAttachmentError.couldNotRemoveMetadata
         }
 
@@ -1280,7 +1262,6 @@ public class SignalAttachment: NSObject {
         if dataSource.dataLength <= kMaxFileSizeVideo {
             return true
         }
-        Logger.verbose("Invalid file size: \(dataSource.dataLength) > \(kMaxFileSizeVideo).")
         Logger.warn("Invalid file size.")
         return false
     }

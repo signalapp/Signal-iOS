@@ -10,8 +10,6 @@ import Foundation
 @objc
 public class ReverseDispatchQueue: NSObject {
 
-    private static let isVerbose: Bool = false
-
     private let label: String
     private let serialQueue: DispatchQueue
 
@@ -51,10 +49,6 @@ public class ReverseDispatchQueue: NSObject {
             let item = Item(workBlock: workBlock, index: index )
             self.items.append(item)
 
-            if ReverseDispatchQueue.isVerbose {
-                Logger.verbose("Enqueued[\(self.label)]: \(item.index)")
-            }
-
             self.process()
         }
     }
@@ -67,9 +61,6 @@ public class ReverseDispatchQueue: NSObject {
             guard let item = self.items.popLast() else {
                 // No enqueued work to do.
                 return
-            }
-            if ReverseDispatchQueue.isVerbose {
-                Logger.verbose("Processing[\(self.label)]: \(item.index)")
             }
             item.workBlock()
 

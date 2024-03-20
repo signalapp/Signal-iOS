@@ -151,9 +151,6 @@ extension ChatListViewController {
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
             cellContentCache.removeObject(forKey: rowChange.threadUniqueId)
 
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("----- \(rowChange.logSafeDescription)")
-            }
             switch rowChange.type {
             case .delete(let oldIndexPath):
                 checkAndSetTableUpdates()

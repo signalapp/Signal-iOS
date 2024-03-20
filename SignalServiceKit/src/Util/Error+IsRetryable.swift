@@ -62,7 +62,6 @@ extension NSError {
 
         if self.isNetworkFailureOrTimeout {
             // We can safely default to retrying network failures.
-            Logger.verbose("Network error without retry behavior specified: \(self)")
             return true
         }
         // Do not retry generic 4xx errors.

@@ -1024,7 +1024,6 @@ public extension TSThread {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return TSThreadCursor(transaction: transaction, cursor: nil)
         }

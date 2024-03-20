@@ -233,7 +233,6 @@ public class MessageProcessor: NSObject {
         // Take note of any messages larger than we expect, but still process them.
         // This likely indicates a misbehaving sending client.
         if envelopeData.count > Self.largeEnvelopeWarningByteCount {
-            Logger.verbose("encryptedEnvelopeData: \(envelopeData.count) > : \(Self.largeEnvelopeWarningByteCount)")
             owsFailDebug("Unexpectedly large envelope, envelopeSource: \(envelopeSource).")
         }
 

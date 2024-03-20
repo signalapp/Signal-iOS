@@ -241,7 +241,6 @@ public extension GroupsV2Impl {
                                                                   groupSecretParamsData: groupContextInfo.groupSecretParamsData,
                                                                   groupUpdateMode: groupUpdateMode)
                 }.done { _ in
-                    Logger.verbose("Update succeeded.")
                     markAsComplete()
                     future.resolve(.success)
                 }.catch { error in
@@ -278,8 +277,6 @@ public extension GroupsV2Impl {
             firstly { [account] in
                 GroupsV2Impl.tryToRestoreNextGroup(account: account)
             }.done(on: DispatchQueue.global()) { [account] outcome in
-                Logger.verbose("Group restore complete.")
-
                 switch outcome {
                 case .success, .unretryableFailure:
                     // Continue draining queue.

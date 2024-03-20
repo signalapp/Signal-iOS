@@ -706,7 +706,6 @@ class CameraCaptureSession: NSObject {
     // MARK: - Photo Capture
 
     private func takePhoto() {
-        Logger.verbose("")
         AssertIsOnMainThread()
 
         guard let delegate else { return }
@@ -742,7 +741,6 @@ class CameraCaptureSession: NSObject {
         }
         set {
             AssertIsOnMainThread()
-            Logger.verbose("videoRecordingState: [\(_videoRecordingState)] -> [\(newValue)]")
             _videoRecordingState = newValue
         }
     }
@@ -763,7 +761,6 @@ class CameraCaptureSession: NSObject {
 
     private func startVideoRecording() {
         AssertIsOnMainThread()
-        Logger.verbose("")
 
         guard videoRecordingState == .ready else {
             owsFailBeta("Invalid recording state: \(videoRecordingState)")
@@ -808,8 +805,6 @@ class CameraCaptureSession: NSObject {
             return
         }
 
-        Logger.verbose("")
-
         videoRecordingState = .stopping
 
         videoCapture.stopRecording()
@@ -820,8 +815,6 @@ class CameraCaptureSession: NSObject {
             owsFailBeta("Invalid recording state: \(videoRecordingState)")
             return
         }
-
-        Logger.verbose("")
 
         videoRecordingState = .canceling
         videoCapture.stopRecording()
@@ -964,7 +957,6 @@ extension CameraCaptureSession: VideoCaptureDelegate {
 
     fileprivate func videoCapture(_ videoCapture: VideoCapture, didFinishWith result: Result<URL, Error>) {
         AssertIsOnMainThread()
-        Logger.verbose("Video recording ended with result: \(result)")
 
         switch result {
         case .success(let outputURL):
@@ -987,7 +979,6 @@ extension CameraCaptureSession: VideoCaptureDelegate {
 extension CameraCaptureSession: PhotoCaptureDelegate {
 
     fileprivate func photoCaptureDidProduce(result: Result<Data, Error>) {
-        Logger.verbose("")
         AssertIsOnMainThread()
         guard let delegate = delegate else { return }
 
@@ -1181,8 +1172,6 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         aspectRatio: CGFloat,
         includeAudio: Bool
     ) throws {
-        Logger.verbose("")
-
         guard let videoConnection = videoDataOutput.connection(with: .video) else {
             throw OWSAssertionError("videoConnection was unexpectedly nil")
         }
@@ -1265,7 +1254,6 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
 
     func stopRecording() {
-        Logger.verbose("")
         AssertIsOnMainThread()
 
         // Make video recording at least 1 second long.
@@ -1345,11 +1333,9 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         let acceptingSampleBuffers = isAssetWriterAcceptingSampleBuffers.get()
         guard acceptingSampleBuffers && isAssetWriterSessionStarted else {
-            Logger.verbose("Not accepting sample buffers at the moment.")
             return
         }
         guard assetWriterInput.isReadyForMoreMediaData else {
-            Logger.verbose("Input not ready for more media data")
             return
         }
 
@@ -1449,7 +1435,6 @@ private class PhotoCapture: NSObject {
         }
 
         avCaptureConnection.videoOrientation = captureOrientation
-        Logger.verbose("photoOrientation: \(captureOrientation), deviceOrientation: \(UIDevice.current.orientation)")
 
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.flashMode = flashMode

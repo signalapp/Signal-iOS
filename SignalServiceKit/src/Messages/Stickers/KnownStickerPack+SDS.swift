@@ -540,7 +540,6 @@ public extension KnownStickerPack {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return KnownStickerPackCursor(transaction: transaction, cursor: nil)
         }

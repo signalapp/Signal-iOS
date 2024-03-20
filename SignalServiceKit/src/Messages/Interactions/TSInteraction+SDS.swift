@@ -5832,7 +5832,6 @@ public extension TSInteraction {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return TSInteractionCursor(transaction: transaction, cursor: nil)
         }

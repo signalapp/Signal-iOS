@@ -112,8 +112,6 @@ public class CaptchaView: UIView {
 
 extension CaptchaView: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        Logger.verbose("navigationAction: \(String(describing: navigationAction.request.url))")
-
         guard let url: URL = navigationAction.request.url else {
             owsFailDebug("Missing URL.")
             decisionHandler(.cancel)
@@ -132,43 +130,34 @@ extension CaptchaView: WKNavigationDelegate {
     }
 
     public func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-        Logger.verbose("navigationResponse: \(String(describing: navigationResponse))")
-
         decisionHandler(.allow)
     }
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        Logger.verbose("navigation: \(String(describing: navigation))")
     }
 
     public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        Logger.verbose("navigation: \(String(describing: navigation))")
     }
 
     public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        Logger.verbose("navigation: \(String(describing: navigation)), error: \(error)")
         DispatchQueue.main.async {
             self.delegate?.captchaViewDidFailToCompleteCaptcha(self)
         }
     }
 
     public func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
-        Logger.verbose("navigation: \(String(describing: navigation))")
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        Logger.verbose("navigation: \(String(describing: navigation))")
     }
 
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        Logger.verbose("navigation: \(String(describing: navigation)), error: \(error)")
         DispatchQueue.main.async {
             self.delegate?.captchaViewDidFailToCompleteCaptcha(self)
         }
     }
 
     public func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
-        Logger.verbose("")
         DispatchQueue.main.async {
             self.delegate?.captchaViewDidFailToCompleteCaptcha(self)
         }

@@ -1093,10 +1093,8 @@ fileprivate extension CVComponentState.Builder {
         } else if let attachmentPointer = attachment as? TSAttachmentPointer {
             switch attachmentPointer.state {
             case .enqueued, .downloading:
-                Logger.verbose("Sticker downloading.")
                 self.sticker = .downloading(attachmentPointer: attachmentPointer)
             case .failed, .pendingManualDownload, .pendingMessageRequest:
-                Logger.verbose("Sticker failed or pending.")
                 self.sticker = .failedOrPending(attachmentPointer: attachmentPointer)
             }
             return build()

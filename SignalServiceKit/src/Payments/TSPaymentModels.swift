@@ -276,7 +276,6 @@ public extension TSPaymentModel {
     func updatePaymentModelState(fromState: TSPaymentState,
                                  toState: TSPaymentState,
                                  transaction: SDSAnyWriteTransaction) throws {
-        Logger.verbose("[\(uniqueId)] fromState: \(fromState.formatted) -> toState: \(toState.formatted)")
         guard isCurrentPaymentState(paymentState: fromState, transaction: transaction) else {
             throw OWSAssertionError("Payment model has unexpected state.")
         }
@@ -295,7 +294,6 @@ extension TSPaymentModel: TSPaymentBaseModel {
         let formattedState = descriptionForLogs
 
         if isIncoming != paymentState.isIncoming {
-            Logger.verbose("isIncoming: \(isIncoming), paymentState.isIncoming: \(paymentState.isIncoming), ")
             owsFailDebug("Invalid payment: \(formattedState).")
             isValid = false
         }

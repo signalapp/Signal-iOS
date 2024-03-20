@@ -359,12 +359,9 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             self.finder.nextJobs(forGroupId: self.groupId, batchSize: batchSize, transaction: transaction.unwrapGrdbRead)
         }
         guard !batchJobs.isEmpty else {
-            Logger.verbose("No jobs for \(groupId.hexadecimalString).")
             future.resolve()
             return
         }
-
-        Logger.verbose("Processing \(batchJobs.count) jobs for \(groupId.hexadecimalString)")
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
         let completion: BatchCompletionBlock = { (processedJobs, shouldWaitBeforeRetrying, transaction) in
@@ -380,8 +377,6 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             self.finder.removeJobs(withUniqueIds: processedUniqueIds, transaction: transaction.unwrapGrdbWrite)
 
             let jobCount: UInt = self.finder.jobCount(forGroupId: self.groupId, transaction: transaction.unwrapGrdbRead)
-
-            Logger.verbose("Completed \(processedJobs.count)/\(batchJobs.count) jobs. \(jobCount) jobs left.")
 
             transaction.addAsyncCompletionOffMain {
                 assert(backgroundTask != nil)
@@ -599,7 +594,6 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             let discardMode = Self.discardMode(forJobInfo: jobInfo, hasGroupBeenUpdated: true, tx: tx)
             if discardMode == .discard {
                 // Do nothing.
-                Logger.verbose("Discarding job.")
             } else {
                 // The forced unwraps are checked in `discardMode`, so they can't fail.
                 // TODO: Refactor so that the compiler enforces the above statement.

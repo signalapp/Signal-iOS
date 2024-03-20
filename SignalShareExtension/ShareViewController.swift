@@ -899,14 +899,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     nonisolated static private func isVideoNeedingRelocation(registeredTypeIdentifiers: [String], itemUrl: URL) -> Bool {
         let pathExtension = itemUrl.pathExtension
         if pathExtension.isEmpty {
-            Logger.verbose("item URL has no file extension: \(itemUrl).")
             return false
         }
         guard let utiTypeForURL = MIMETypeUtil.utiType(forFileExtension: pathExtension) else {
-            Logger.verbose("item has unknown UTI type: \(itemUrl).")
             return false
         }
-        Logger.verbose("utiTypeForURL: \(utiTypeForURL)")
         guard utiTypeForURL == kUTTypeMPEG4 as String else {
             // Either it's not a video or it was a video which was not auto-converted to mp4.
             // Not affected by the issue.

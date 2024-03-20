@@ -561,7 +561,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     public func updateBalanceLabel() {
         guard let helper = helper else {
-            Logger.verbose("Missing helper.")
             return
         }
         helper.updateBalanceLabel(balanceLabel)
@@ -611,11 +610,11 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 case .unexpectedFailure(let error):
                     throw PaymentsUIError.paymentsLockFailed(reason: "local authentication failed with unexpected error: \(error)")
                 case .success:
-                    Logger.verbose("payments lock local authentication succeeded.")
+                    break
                 case .cancel:
                     throw PaymentsUIError.paymentsLockCancelled(reason: "local authentication cancelled")
                 case .disabled:
-                    Logger.verbose("payments lock not enabled.")
+                    break
                 }
 
                 guard let promise = self.preparedPaymentPromise.get() else {

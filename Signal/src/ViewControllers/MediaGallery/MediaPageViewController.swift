@@ -487,8 +487,6 @@ class MediaPageViewController: UIPageViewController {
     }
 
     private func deleteCurrentMedia() {
-        Logger.verbose("")
-
         guard let mediaItem = currentItem else { return }
 
         let actionSheet = ActionSheetController(title: nil, message: nil)

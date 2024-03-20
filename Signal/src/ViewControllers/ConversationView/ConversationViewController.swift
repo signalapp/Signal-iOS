@@ -316,13 +316,10 @@ public final class ConversationViewController: OWSViewController {
 
     public func dismissPresentedViewControllerIfNecessary() {
         guard let presentedViewController = self.presentedViewController else {
-            Logger.verbose("presentedViewController was nil")
             return
         }
 
-        if presentedViewController is ActionSheetController ||
-            presentedViewController is UIAlertController {
-            Logger.verbose("Dismissing presentedViewController: \(type(of: presentedViewController))")
+        if presentedViewController is ActionSheetController || presentedViewController is UIAlertController {
             dismiss(animated: false, completion: nil)
             return
         }

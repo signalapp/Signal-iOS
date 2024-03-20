@@ -391,7 +391,6 @@ class ImageEditorViewController: OWSViewController {
     }
 
     private func undo() {
-        Logger.verbose("")
         guard canUndo else {
             owsFailDebug("Can't undo.")
             return
@@ -400,8 +399,6 @@ class ImageEditorViewController: OWSViewController {
     }
 
     private func clearAll() {
-        Logger.verbose("")
-
         if mode == .text {
             finishTextEditing(discardEdits: true)
         }
@@ -498,30 +495,22 @@ extension ImageEditorViewController {
 
     @objc
     private func didTapCancel(sender: UIButton) {
-        Logger.verbose("")
-
         discardAndDismiss()
     }
 
     @objc
     private func didTapDone(sender: UIButton) {
-        Logger.verbose("")
-
         completeAndDismiss()
     }
 
     @objc
     private func didTapPen(sender: UIButton) {
-        Logger.verbose("")
-
         // Second tap on Pen icon switches editor to "text" mode.
         mode = (mode == .draw) ? .text : .draw
     }
 
     @objc
     private func didTapAddText(sender: UIButton) {
-        Logger.verbose("")
-
         let decorationStyle = textViewAccessoryToolbar.decorationStyle
         let textColor = textViewAccessoryToolbar.currentColorPickerValue
         let textItem = imageEditorView.createNewTextItem(withColor: textColor, decorationStyle: decorationStyle)
@@ -530,8 +519,6 @@ extension ImageEditorViewController {
 
     @objc
     private func didTapAddSticker(sender: UIButton) {
-        Logger.verbose("")
-
         let stickerPicker: StickerPickerSheet
         if UIAccessibility.isReduceTransparencyEnabled {
             stickerPicker = StickerPickerSheet(backgroundColor: Theme.darkThemeBackgroundColor)
@@ -547,8 +534,6 @@ extension ImageEditorViewController {
 
     @objc
     private func didTapBlur(sender: UIButton) {
-        Logger.verbose("")
-
         // Second tap on Blur icon switches editor to "text" mode.
         mode = (mode == .blur) ? .text : .blur
     }

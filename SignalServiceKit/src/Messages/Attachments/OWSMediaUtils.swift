@@ -41,8 +41,6 @@ public class OWSMediaUtils: NSObject {
 
     @objc
     public class func thumbnail(forImageAtPath path: String, maxDimensionPixels: CGFloat) throws -> UIImage {
-        Logger.verbose("thumbnailing image: \(path)")
-
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
@@ -57,7 +55,6 @@ public class OWSMediaUtils: NSObject {
 
     @objc
     public class func thumbnail(forImageAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
-
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
@@ -72,8 +69,6 @@ public class OWSMediaUtils: NSObject {
 
     @objc
     public class func thumbnail(forImageData imageData: Data, maxDimensionPoints: CGFloat) throws -> UIImage {
-        Logger.verbose("thumbnailing image data.")
-
         guard imageData.ows_isValidImage else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
@@ -85,8 +80,6 @@ public class OWSMediaUtils: NSObject {
 
     @objc
     public class func thumbnail(forWebpAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
-        Logger.verbose("thumbnailing image: \(path)")
-
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
@@ -102,8 +95,6 @@ public class OWSMediaUtils: NSObject {
 
     @objc
     public class func thumbnail(forVideoAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
-        Logger.verbose("thumbnailing video: \(path)")
-
         guard isVideoOfValidContentTypeAndSize(path: path) else {
             throw OWSMediaError.failure(description: "Media file has missing or invalid length.")
         }

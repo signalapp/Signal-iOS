@@ -564,7 +564,6 @@ public extension IncomingGroupsV2MessageJob {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return IncomingGroupsV2MessageJobCursor(transaction: transaction, cursor: nil)
         }

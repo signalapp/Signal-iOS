@@ -67,8 +67,6 @@ public class GroupV2UpdatesImpl: Dependencies {
                 groupId: groupId,
                 groupSecretParamsData: groupSecretParamsData
             ).asVoid()
-        }.done(on: DispatchQueue.global()) { _ in
-            Logger.verbose("Complete.")
         }.catch(on: DispatchQueue.global()) { error in
             if case GroupsV2Error.localUserNotInGroup = error {
                 Logger.warn("Error: \(error)")
@@ -79,7 +77,6 @@ public class GroupV2UpdatesImpl: Dependencies {
     }
 
     private func didUpdateGroupToCurrentRevision(groupId: Data) {
-        Logger.verbose("Refreshed group to current revision: \(groupId.hexadecimalString).")
         let storeKey = groupId.hexadecimalString
         Self.databaseStorage.write { transaction in
             Self.groupRefreshStore.setDate(Date(), key: storeKey, transaction: transaction)
@@ -305,7 +302,6 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             if blockingManager.isGroupIdBlocked(groupId, transaction: $0) {
                 return Promise(error: GroupsV2Error.groupBlocked)
             } else if isThrottled, let thread = TSGroupThread.fetch(groupId: groupId, transaction: $0) {
-                Logger.verbose("Skipping redundant v2 group refresh.")
                 return Promise.value(thread)
             } else {
                 return nil
@@ -322,12 +318,8 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
                                                groupUpdateMode: groupUpdateMode,
                                                groupModelOptions: groupModelOptions)
         operation.promise.done(on: DispatchQueue.global()) { _ in
-            Logger.verbose("Group refresh succeeded.")
-
             self.groupRefreshDidSucceed(forGroupId: groupId, groupUpdateMode: groupUpdateMode)
-        }.catch(on: DispatchQueue.global()) { error in
-            Logger.verbose("Group refresh failed: \(error).")
-        }
+        }.cauterize()
         let operationQueue = self.operationQueue(forGroupUpdateMode: groupUpdateMode)
         operationQueue.addOperation(operation)
         return operation.promise
@@ -402,8 +394,6 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
                                                                 groupModelOptions: self.groupModelOptions,
                                                                 spamReportingMetadata: self.spamReportingMetadata)
             }.done(on: DispatchQueue.global()) { (groupThread: TSGroupThread) in
-                Logger.verbose("Group refresh succeeded.")
-
                 self.reportSuccess()
                 self.future.resolve(groupThread)
             }.catch(on: DispatchQueue.global()) { (error) in
@@ -444,7 +434,6 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         }
 
         public override func didReportError(_ error: Error) {
-            Logger.debug("remainingRetries: \(self.remainingRetries)")
         }
 
         public override func didFail(error: Error) {
@@ -683,7 +672,6 @@ private extension GroupV2UpdatesImpl {
             }
 
             if groupChanges.count < 1 {
-                Logger.verbose("No group changes.")
                 return groupThread
             }
 
@@ -1230,15 +1218,12 @@ private extension GroupV2UpdatesImpl {
 
     private func addGroupChangesToCache(groupChanges: [GroupV2Change], groupSecretParamsData: Data) {
         guard !groupChanges.isEmpty else {
-            Logger.verbose("No group changes.")
             changeCache.removeObject(forKey: groupSecretParamsData)
             return
         }
 
         let revisions = groupChanges.map { $0.revision }
-        Logger.verbose("Caching revisions: \(revisions)")
-        changeCache.setObject(ChangeCacheItem(groupChanges: groupChanges),
-                              forKey: groupSecretParamsData)
+        changeCache.setObject(ChangeCacheItem(groupChanges: groupChanges), forKey: groupSecretParamsData)
     }
 
     private func cachedGroupChanges(
@@ -1285,7 +1270,6 @@ private extension GroupV2UpdatesImpl {
             changeCache.removeObject(forKey: groupSecretParamsData)
             return nil
         }
-        Logger.verbose("Using cached revisions: \(revisions), dbRevision: \(dbRevision), upToRevision: \(upToRevision)")
         return cachedChanges
     }
 }

@@ -67,9 +67,8 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
            localeCurrencyCode.count == 3 {
             return localeCurrencyCode
         }
-        Logger.verbose("Missing currency code: \(Locale.current.currencyCode ?? "unknown").")
         if Platform.isSimulator {
-            Logger.warn("Missing currency code.")
+            Logger.warn("Missing currency code: \(Locale.current.currencyCode ?? "unknown").")
         } else {
             owsFailDebug("Missing currency code.")
         }

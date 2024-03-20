@@ -179,13 +179,11 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         }
 
         guard newPaymentsState != oldPaymentsState else {
-            Logger.verbose("Ignoring redundant change.")
             return
         }
         if let oldPaymentsEntropy = oldPaymentsState.paymentsEntropy,
            let newPaymentsEntropy = newPaymentsState.paymentsEntropy,
            oldPaymentsEntropy != newPaymentsEntropy {
-            Logger.verbose("oldPaymentsEntropy: \(oldPaymentsEntropy.hexadecimalString) != newPaymentsEntropy: \(newPaymentsEntropy.hexadecimalString).")
             owsFailDebug("paymentsEntropy does not match.")
         }
 
@@ -621,22 +619,10 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                 let otherSpentKeyImages = otherPaymentModel.mobileCoin?.spentKeyImages ?? []
                 let otherOutputPublicKeys = otherPaymentModel.mobileCoin?.outputPublicKeys ?? []
                 if !spentKeyImages.isDisjoint(with: otherSpentKeyImages) {
-                    for value in spentKeyImages {
-                        Logger.verbose("spentKeyImage: \(value.hexadecimalString)")
-                    }
-                    for value in otherSpentKeyImages {
-                        Logger.verbose("otherSpentKeyImage: \(value.hexadecimalString)")
-                    }
                     owsFailDebug("spentKeyImage conflict.")
                     return true
                 }
                 if !outputPublicKeys.isDisjoint(with: otherOutputPublicKeys) {
-                    for value in outputPublicKeys {
-                        Logger.verbose("outputPublicKey: \(value.hexadecimalString)")
-                    }
-                    for value in otherOutputPublicKeys {
-                        Logger.verbose("otherOutputPublicKey: \(value.hexadecimalString)")
-                    }
                     owsFailDebug("outputPublicKey conflict.")
                     return true
                 }

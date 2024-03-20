@@ -298,8 +298,6 @@ public class StickerPackViewController: OWSViewController {
     private func didTapInstall(sender: UIButton) {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         isDismissing = true
 
         guard let stickerPack = dataSource.getStickerPack() else {
@@ -327,8 +325,6 @@ public class StickerPackViewController: OWSViewController {
     @objc
     private func didTapUninstall(sender: UIButton) {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         isDismissing = true
 
@@ -396,8 +392,6 @@ public class StickerPackViewController: OWSViewController {
     @objc
     func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         updateContent()
     }
@@ -486,8 +480,6 @@ extension StickerPackViewController: StickerPackDataSourceDelegate {
 extension StickerPackViewController: StickerPackCollectionViewDelegate {
     public func didSelectSticker(stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
     }
 
     public var storyStickerConfiguration: StoryStickerConfiguration {

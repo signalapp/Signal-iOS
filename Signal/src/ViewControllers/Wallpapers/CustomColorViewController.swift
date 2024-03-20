@@ -509,11 +509,9 @@ extension CustomColorViewController: SpectrumSliderDelegate {
         }
 
         if spectrumSlider == self.hueSlider {
-            Logger.verbose("hueSlider did change.")
             currentColorSetting.hueAlpha = hueSlider.value.clamp01()
             updateSaturationSpectrum()
         } else if spectrumSlider == self.saturationSlider {
-            Logger.verbose("saturationSlider did change.")
             currentColorSetting.saturationAlpha = saturationSlider.value.clamp01()
         } else {
             owsFailDebug("Unknown slider.")

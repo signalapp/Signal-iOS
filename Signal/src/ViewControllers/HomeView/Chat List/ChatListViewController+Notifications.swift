@@ -261,8 +261,6 @@ extension ChatListViewController: DatabaseChangeDelegate {
     public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         // External database modifications can't be converted into incremental updates,
         // so rebuild everything.  This is expensive and usually isn't necessary, but
         // there's no alternative.

@@ -34,26 +34,18 @@ class ImageEditorContents {
     }
 
     func append(item: ImageEditorItem) {
-        Logger.verbose("\(item.itemId)")
-
         itemMap.append(key: item.itemId, value: item)
     }
 
     func replace(item: ImageEditorItem) {
-        Logger.verbose("\(item.itemId)")
-
         itemMap.replace(key: item.itemId, value: item)
     }
 
     func remove(item: ImageEditorItem) {
-        Logger.verbose("\(item.itemId)")
-
         itemMap.remove(key: item.itemId)
     }
 
     func remove(itemId: String) {
-        Logger.verbose("\(itemId)")
-
         itemMap.remove(key: itemId)
     }
 

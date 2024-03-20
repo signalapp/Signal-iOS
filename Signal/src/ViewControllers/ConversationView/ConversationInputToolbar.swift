@@ -1375,8 +1375,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private func didSelectSuggestedSticker(_ stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         clearTextMessage(animated: true)
         inputToolbarDelegate?.sendSticker(stickerInfo)
     }
@@ -2054,7 +2052,6 @@ extension ConversationInputToolbar {
 
     @objc
     private func addOrCancelButtonPressed() {
-        Logger.verbose("")
         ImpactHapticFeedback.impactOccurred(style: .light)
         if shouldShowEditUI {
             editTarget = nil
@@ -2089,8 +2086,6 @@ extension ConversationInputToolbar {
 
     @objc
     private func stickerButtonPressed() {
-        Logger.verbose("")
-
         ImpactHapticFeedback.impactOccurred(style: .light)
 
         var hasInstalledStickerPacks: Bool = false
@@ -2106,8 +2101,6 @@ extension ConversationInputToolbar {
 
     @objc
     private func keyboardButtonPressed() {
-        Logger.verbose("")
-
         ImpactHapticFeedback.impactOccurred(style: .light)
 
         toggleKeyboardType(.system, animated: true)
@@ -2185,7 +2178,6 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
 extension ConversationInputToolbar: StickerPickerDelegate {
     public func didSelectSticker(stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
-        Logger.verbose("")
         inputToolbarDelegate?.sendSticker(stickerInfo)
     }
 
@@ -2197,7 +2189,6 @@ extension ConversationInputToolbar: StickerPickerDelegate {
 extension ConversationInputToolbar: StickerPacksToolbarDelegate {
     public func presentManageStickersView() {
         AssertIsOnMainThread()
-        Logger.verbose("")
         inputToolbarDelegate?.presentManageStickersView()
     }
 }

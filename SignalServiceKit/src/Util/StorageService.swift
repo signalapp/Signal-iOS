@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public protocol StorageServiceManagerObjc {
@@ -128,7 +129,6 @@ public struct StorageService: Dependencies {
             var identifierTypeMap = [Data: StorageIdentifier]()
             for identifier in identifiers {
                 if let existingIdentifier = identifierTypeMap[identifier.data] {
-                    Logger.verbose("identifier.data: \(identifier.data.hexadecimalString)")
                     owsFailDebug("Duplicate identifiers in manifest with types: \(identifier.type), \(existingIdentifier.type)")
                 } else {
                     identifierTypeMap[identifier.data] = identifier

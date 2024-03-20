@@ -26,8 +26,6 @@ class ViewOnceMessageViewController: OWSViewController {
         }
 
         deinit {
-            Logger.verbose("Cleaning up temp file")
-
             let filePath = self.filePath
             DispatchQueue.global().async {
                 OWSFileSystem.deleteFile(filePath)

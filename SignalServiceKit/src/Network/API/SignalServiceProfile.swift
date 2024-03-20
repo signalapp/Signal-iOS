@@ -89,7 +89,6 @@ public class SignalServiceProfile {
                     return value
                 } else {
                     if requireCapability {
-                        Logger.verbose("capabilitiesJson: \(String(describing: capabilitiesJson))")
                         owsFailDebug("Missing capability: \(capabilityKey).")
                     } else {
                         Logger.warn("Missing capability: \(capabilityKey).")

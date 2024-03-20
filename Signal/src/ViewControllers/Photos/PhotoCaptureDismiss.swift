@@ -33,7 +33,6 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
 
     private var shouldCompleteTransition: Bool {
         if farEnoughToCompleteTransition {
-            Logger.verbose("farEnoughToCompleteTransition")
             return true
         }
 

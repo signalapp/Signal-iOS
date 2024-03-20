@@ -477,8 +477,6 @@ public class ManageStickersViewController: OWSTableViewController2 {
     private func show(packInfo: StickerPackInfo) {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         let packView = StickerPackViewController(stickerPackInfo: packInfo)
         packView.present(from: self, animated: true)
     }
@@ -488,8 +486,6 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
     private func share(packInfo: StickerPackInfo) {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         let packUrl = packInfo.shareUrl()
 
@@ -510,8 +506,6 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
     private func install(stickerPack: StickerPack) {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         let modalVC = ModalActivityIndicatorViewController(canCancel: false, presentationDelay: 0)
         modalVC.modalPresentationStyle = .overFullScreen
@@ -541,16 +535,12 @@ public class ManageStickersViewController: OWSTableViewController2 {
     func packsDidChange() {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         needsStateUpdate = true
     }
 
     @objc
     private func didPressDismiss(sender: UIButton) {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         dismiss(animated: true)
     }

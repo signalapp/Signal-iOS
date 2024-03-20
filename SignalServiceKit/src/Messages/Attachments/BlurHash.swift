@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import blurhash
+import Foundation
+import SignalCoreKit
 
 @objc
 public class BlurHash: NSObject {
@@ -76,7 +77,6 @@ public class BlurHash: NSObject {
             self.databaseStorage.write { transaction in
                 attachmentStream.update(withBlurHash: blurHash, transaction: transaction)
             }
-            Logger.verbose("Generated blurHash.")
             future.resolve()
         }
 

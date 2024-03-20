@@ -1260,8 +1260,6 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                                                           spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                                                           groupSecretParamsData: groupModelV2.secretParamsData,
                                                           groupUpdateMode: groupUpdateMode)
-        }.done { _ in
-            Logger.verbose("Update succeeded.")
         }.catch { error in
             if case GroupsV2Error.localUserNotInGroup = error {
                 Logger.warn("Error: \(error)")
@@ -2158,7 +2156,6 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
             let oldRevision = groupInviteLinkPreview.revision
             let newRevision = oldRevision + 1
-            Logger.verbose("Revision: \(oldRevision) -> \(newRevision)")
             actionsBuilder.setRevision(newRevision)
 
             // Use the new revision when creating a placeholder group.
@@ -2358,7 +2355,6 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 // Expected if our request has been cancelled or we're banned. In this
                 // scenario, we should remove ourselves from the local group (in which
                 // we will be stored as a requesting member).
-                Logger.verbose("Error: \(error)")
                 self.databaseStorage.write { transaction in
                     removeLocalUserBlock(transaction)
                 }

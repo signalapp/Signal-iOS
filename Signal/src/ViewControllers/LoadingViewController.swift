@@ -86,8 +86,6 @@ public class LoadingViewController: UIViewController {
 
     @objc
     private func showBottomLabelAnimated() {
-        Logger.verbose("")
-
         bottomLabel.layer.removeAllAnimations()
         bottomLabel.alpha = kMinAlpha
         UIView.animate(withDuration: 0.1) {
