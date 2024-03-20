@@ -7148,7 +7148,6 @@
 			isa = PBXGroup;
 			children = (
 				664165142BA4C25C00C34F6A /* TSResource */,
-				664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */,
 			);
 			path = OwnedAttachmentBuilder;
 			sourceTree = "<group>";
@@ -7156,6 +7155,7 @@
 		664165142BA4C25C00C34F6A /* TSResource */ = {
 			isa = PBXGroup;
 			children = (
+				664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */,
 				664165152BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift */,
 			);
 			path = TSResource;

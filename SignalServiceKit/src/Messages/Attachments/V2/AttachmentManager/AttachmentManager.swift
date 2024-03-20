@@ -49,20 +49,33 @@ public protocol AttachmentManager {
         tx: DBWriteTransaction
     ) throws
 
-    /// Given an original message available locally, reurns a builder
-    /// for creating a thumbnail attachment for quoted replies.
+    /// Given an original message available locally, returns metadata
+    /// supplied to a TSQuotedReply, which distinguishes "stubs"
+    /// (attachments that cannot be thumbnail-ed) from thumbnails.
     ///
     /// If the original lacks an attachment, returns nil. If the original has an
-    /// attachment that can't be thumbnailed, returns an appropriate
-    /// info without creating a new attachment.
+    /// attachment that can't be thumbnailed, returns stub metadata.
     ///
-    /// The attachment info needed to construct the reply message
-    /// is available immediately, but the caller _must_ finalize
-    /// the builder to guarantee the attachment is created.
-    func newQuotedReplyMessageThumbnailBuilder(
+    /// Callers should call ``createQuotedReplyMessageThumbnail`` to
+    /// actually construct the attachment once the owning message exists.
+    func quotedReplyAttachmentInfo(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>?
+    ) -> OWSAttachmentInfo?
+
+    /// Given an original message available locally and a new message
+    /// quoting that original, creates a thumbnail attachment and an owner
+    /// reference to it.
+    ///
+    /// If the original lacks an attachment, does nothing.
+    /// If the original has an attachment that can't be thumbnailed, does nothing.
+    ///
+    /// Only throws if a thumbnail _should_ have been created but failed.
+    func createQuotedReplyMessageThumbnail(
+        originalMessage: TSMessage,
+        quotedReplyMessageId: Int64,
+        tx: DBWriteTransaction
+    ) throws
 
     /// Remove an attachment from an owner.
     /// Will only delete the attachment if this is the last owner.

@@ -318,10 +318,32 @@ public class TSResourceManagerImpl: TSResourceManager {
                 return nil
             }
             return .withoutFinalizer(info)
-        case .v2(let originalReference):
-            return attachmentManager.newQuotedReplyMessageThumbnailBuilder(
-                originalReference: originalReference,
-                tx: tx
+        case .v2:
+            guard
+                let info = attachmentManager.quotedReplyAttachmentInfo(
+                    originalMessage: originalMessage,
+                    tx: tx
+                )
+            else {
+                return nil
+            }
+            return OwnedAttachmentBuilder<OWSAttachmentInfo>(
+                info: info,
+                finalize: { [attachmentManager, originalMessage] ownerId, tx in
+                    let quotedReplyMessageId: Int64
+                    switch ownerId {
+                    case .quotedReplyAttachment(let messageRowId):
+                        quotedReplyMessageId = messageRowId
+                    default:
+                        owsFailDebug("Invalid owner sent to quoted reply builder!")
+                        return
+                    }
+                    try attachmentManager.createQuotedReplyMessageThumbnail(
+                        originalMessage: originalMessage,
+                        quotedReplyMessageId: quotedReplyMessageId,
+                        tx: tx
+                    )
+                }
             )
         }
     }

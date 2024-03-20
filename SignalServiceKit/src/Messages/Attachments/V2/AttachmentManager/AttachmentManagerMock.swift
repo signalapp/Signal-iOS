@@ -42,11 +42,19 @@ open class AttachmentManagerMock: AttachmentManager {
         // Do nothing
     }
 
-    open func newQuotedReplyMessageThumbnailBuilder(
+    open func quotedReplyAttachmentInfo(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
+    ) -> OWSAttachmentInfo? {
         return nil
+    }
+
+    open func createQuotedReplyMessageThumbnail(
+        originalMessage: TSMessage,
+        quotedReplyMessageId: Int64,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
     }
 
     open func removeAttachment(

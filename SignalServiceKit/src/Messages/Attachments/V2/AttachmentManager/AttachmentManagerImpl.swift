@@ -96,20 +96,29 @@ public class AttachmentManagerImpl: AttachmentManager {
         fatalError("Unimplemented")
     }
 
-    public func newQuotedReplyMessageThumbnailBuilder(
+    public func quotedReplyAttachmentInfo(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
+    ) -> OWSAttachmentInfo? {
+        return _quotedReplyAttachmentInfo(originalMessage: originalMessage, tx: tx)?.info
+    }
+
+    public func createQuotedReplyMessageThumbnail(
+        originalMessage: TSMessage,
+        quotedReplyMessageId: Int64,
+        tx: DBWriteTransaction
+    ) throws {
         guard
-            let originalReference = attachmentStore.attachmentToUseInQuote(
-                originalMessage: originalMessage,
-                tx: tx
-            )
+            let info = _quotedReplyAttachmentInfo(originalMessage: originalMessage, tx: tx),
+            // Not a stub! Stubs would be .unset
+            info.info.attachmentType == .V2
         else {
-            return nil
+            return
         }
-        return newQuotedReplyMessageThumbnailBuilder(
-            originalReference: originalReference,
+        try _createQuotedReplyMessageThumbnail(
+            originalReference: info.originalAttachmentReference,
+            originalAttachment: info.originalAttachment,
+            quotedReplyMessageId: quotedReplyMessageId,
             tx: tx
         )
     }
@@ -133,36 +142,57 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private typealias OwnerId = AttachmentReference.OwnerId
 
-    func newQuotedReplyMessageThumbnailBuilder(
-        originalReference: AttachmentReference,
+    private struct QuotedAttachmentInfo {
+        let originalAttachmentReference: AttachmentReference
+        let originalAttachment: Attachment
+        let info: OWSAttachmentInfo
+    }
+
+    private func _quotedReplyAttachmentInfo(
+        originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
+    ) -> QuotedAttachmentInfo? {
         guard
+            let originalReference = attachmentStore.attachmentToUseInQuote(
+                originalMessage: originalMessage,
+                tx: tx
+            ),
             let originalAttachment = attachmentStore.fetch(id: originalReference.attachmentRowId, tx: tx)
         else {
             return nil
         }
-        guard MIMETypeUtil.canMakeThumbnail(originalAttachment.mimeType) else {
-            // Can't make a thumbnail!
-            return .withoutFinalizer(OWSAttachmentInfo(
-                stubWithMimeType: originalAttachment.mimeType,
-                sourceFilename: originalReference.sourceFilename
-            ))
-        }
+        return .init(
+            originalAttachmentReference: originalReference,
+            originalAttachment: originalAttachment,
+            info: {
+                guard MIMETypeUtil.canMakeThumbnail(originalAttachment.mimeType) else {
+                    // Can't make a thumbnail, just return a stub.
+                    return OWSAttachmentInfo(
+                        stubWithMimeType: originalAttachment.mimeType,
+                        sourceFilename: originalReference.sourceFilename
+                    )
+                }
+                return OWSAttachmentInfo(forV2ThumbnailReference: ())
+            }()
+        )
+    }
+
+    private func _createQuotedReplyMessageThumbnail(
+        originalReference: AttachmentReference,
+        originalAttachment: Attachment,
+        quotedReplyMessageId: Int64,
+        tx: DBWriteTransaction
+    ) throws {
         guard let originalStream = originalAttachment.asStream() else {
             let mimeType = originalAttachment.mimeType
             let sourceFilename = originalReference.sourceFilename
             let renderingFlag = originalReference.renderingFlag
 
-            return OwnedAttachmentBuilder<OWSAttachmentInfo>(
-                info: OWSAttachmentInfo.init(forV2ThumbnailReference: ()),
-                finalize: { [self] (owner: OwnerId, tx: DBWriteTransaction) in
-                    let attachmentReference: AttachmentReference = {
-                        // TODO: create and insert a new reference to the same attachment pointer from the new message.
-                        fatalError("Unimplemented")
-                    }()
-                }
-            )
+            let attachmentReference: AttachmentReference = {
+                // TODO: create and insert a new reference to the same attachment pointer from the new message.
+                fatalError("Unimplemented")
+            }()
+            return
         }
 
         let targetThumbnailMimeType = OWSThumbnailService.thumbnailMimetype(
@@ -172,28 +202,23 @@ public class AttachmentManagerImpl: AttachmentManager {
         let sourceFilename = originalReference.sourceFilename
         let renderingFlag = originalReference.renderingFlag
 
-        return OwnedAttachmentBuilder<OWSAttachmentInfo>(
-            info: OWSAttachmentInfo.init(forV2ThumbnailReference: ()),
-            finalize: { [self, originalAttachmentId] (owner: OwnerId, tx: DBWriteTransaction) in
-                guard
-                    let originalAttachment = self.attachmentStore.fetch(
-                        id: originalAttachmentId,
-                        tx: tx
-                    )
-                else {
-                    owsFailDebug("Original attachment in quote was lost!")
-                    return
-                }
+        guard
+            let originalAttachment = self.attachmentStore.fetch(
+                id: originalAttachmentId,
+                tx: tx
+            )
+        else {
+            owsFailDebug("Original attachment in quote was lost!")
+            return
+        }
 
-                self.cloneAsThumbnailAndCreateReference(
-                    originalAttachment,
-                    newOwner: owner,
-                    sourceFilename: sourceFilename,
-                    renderingFlag: renderingFlag,
-                    targetThumbnailMimeType: targetThumbnailMimeType,
-                    tx: tx
-                )
-            }
+        self.cloneAsThumbnailAndCreateReference(
+            originalAttachment,
+            newOwner: .quotedReplyAttachment(messageRowId: quotedReplyMessageId),
+            sourceFilename: sourceFilename,
+            renderingFlag: renderingFlag,
+            targetThumbnailMimeType: targetThumbnailMimeType,
+            tx: tx
         )
     }
 
