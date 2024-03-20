@@ -14,7 +14,7 @@ import SignalCoreKit
 ///
 /// - SeeAlso ``OutgoingCallEventSyncMessage``
 /// - SeeAlso ``OutgoingCallLogEventSyncMessage``
-enum CallSyncMessageConversationId {
+public enum CallSyncMessageConversationId {
     case individual(contactServiceId: ServiceId)
     case group(groupId: Data)
 

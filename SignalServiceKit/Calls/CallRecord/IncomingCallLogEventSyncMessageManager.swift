@@ -14,24 +14,18 @@ protocol IncomingCallLogEventSyncMessageManager {
 }
 
 class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessageManager {
-    private let callRecordStore: CallRecordStore
+    private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
     private let deleteAllCallsJobQueue: Shims.DeleteAllCallsJobQueue
     private let missedCallManager: CallRecordMissedCallManager
-    private let recipientDatabaseTable: RecipientDatabaseTable
-    private let threadStore: ThreadStore
 
     init(
-        callRecordStore: CallRecordStore,
+        callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         deleteAllCallsJobQueue: Shims.DeleteAllCallsJobQueue,
-        missedCallManager: CallRecordMissedCallManager,
-        recipientDatabaseTable: RecipientDatabaseTable,
-        threadStore: ThreadStore
+        missedCallManager: CallRecordMissedCallManager
     ) {
-        self.callRecordStore = callRecordStore
+        self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
         self.deleteAllCallsJobQueue = deleteAllCallsJobQueue
         self.missedCallManager = missedCallManager
-        self.recipientDatabaseTable = recipientDatabaseTable
-        self.threadStore = threadStore
     }
 
     func handleIncomingSyncMessage(
@@ -46,12 +40,9 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
         let referencedCallRecord: CallRecord? = {
             if
                 let callIdentifiers = incomingSyncMessage.anchorCallIdentifiers,
-                let referencedCallRecord: CallRecord = .hydrate(
+                let referencedCallRecord: CallRecord = callRecordConversationIdAdapter.hydrate(
                     callId: callIdentifiers.callId,
                     conversationId: callIdentifiers.conversationId,
-                    callRecordStore: callRecordStore,
-                    recipientDatabaseTable: recipientDatabaseTable,
-                    threadStore: threadStore,
                     tx: tx
                 )
             {

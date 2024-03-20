@@ -360,12 +360,16 @@ public class AppSetup {
             outgoingSyncMessageManager: outgoingCallEventSyncMessageManager
         )
         let callRecordQuerier = CallRecordQuerierImpl()
-        let callRecordMissedCallManager = CallRecordMissedCallManagerImpl(
-            callRecordQuerier: callRecordQuerier,
+        let callRecordSyncMessageConversationIdAdapater = CallRecordSyncMessageConversationIdAdapterImpl(
             callRecordStore: callRecordStore,
-            messageSenderJobQueue: messageSenderJobQueue,
             recipientDatabaseTable: recipientDatabaseTable,
             threadStore: threadStore
+        )
+        let callRecordMissedCallManager = CallRecordMissedCallManagerImpl(
+            callRecordConversationIdAdapter: callRecordSyncMessageConversationIdAdapater,
+            callRecordQuerier: callRecordQuerier,
+            callRecordStore: callRecordStore,
+            messageSenderJobQueue: messageSenderJobQueue
         )
         let callRecordDeleteManager = CallRecordDeleteManagerImpl(
             callRecordStore: callRecordStore,
@@ -376,13 +380,12 @@ public class AppSetup {
             threadStore: threadStore
         )
         let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
+            callRecordConversationIdAdapter: callRecordSyncMessageConversationIdAdapater,
             callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
             callRecordStore: callRecordStore,
             db: db,
-            messageSenderJobQueue: messageSenderJobQueue,
-            recipientDatabaseTable: recipientDatabaseTable,
-            threadStore: threadStore
+            messageSenderJobQueue: messageSenderJobQueue
         )
         let incomingCallEventSyncMessageManager = IncomingCallEventSyncMessageManagerImpl(
             callRecordStore: callRecordStore,
@@ -397,13 +400,11 @@ public class AppSetup {
             threadStore: threadStore
         )
         let incomingCallLogEventSyncMessageManager = IncomingCallLogEventSyncMessageManagerImpl(
-            callRecordStore: callRecordStore,
+            callRecordConversationIdAdapter: callRecordSyncMessageConversationIdAdapater,
             deleteAllCallsJobQueue: IncomingCallLogEventSyncMessageManagerImpl.Wrappers.DeleteAllCallsJobQueue(
                 callRecordDeleteAllJobQueue
             ),
-            missedCallManager: callRecordMissedCallManager,
-            recipientDatabaseTable: recipientDatabaseTable,
-            threadStore: threadStore
+            missedCallManager: callRecordMissedCallManager
         )
 
         let pinnedThreadStore = PinnedThreadStoreImpl(keyValueStoreFactory: keyValueStoreFactory)

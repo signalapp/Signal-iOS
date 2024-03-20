@@ -3,15 +3,44 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-extension CallRecord {
+public protocol CallRecordSyncMessageConversationIdAdapter {
     /// Fetch the ``CallRecord`` for the given call and conversation ID, if one
     /// exists.
-    static func hydrate(
+    func hydrate(
         callId: UInt64,
         conversationId: CallSyncMessageConversationId,
+        tx: DBReadTransaction
+    ) -> CallRecord?
+
+    /// Generates a conversation ID for use in call-related sync messages, from
+    /// a ``CallRecord``.
+    func getConversationId(
+        callRecord: CallRecord,
+        tx: DBReadTransaction
+    ) -> CallSyncMessageConversationId?
+}
+
+class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConversationIdAdapter {
+
+    private let callRecordStore: CallRecordStore
+    private let recipientDatabaseTable: RecipientDatabaseTable
+    private let threadStore: ThreadStore
+
+    init(
         callRecordStore: CallRecordStore,
         recipientDatabaseTable: RecipientDatabaseTable,
-        threadStore: ThreadStore,
+        threadStore: ThreadStore
+    ) {
+        self.callRecordStore = callRecordStore
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.threadStore = threadStore
+    }
+
+    // MARK: -
+
+    func hydrate(
+        callId: UInt64,
+        conversationId: CallSyncMessageConversationId,
         tx: DBReadTransaction
     ) -> CallRecord? {
         let threadRowId: Int64? = {
@@ -43,17 +72,12 @@ extension CallRecord {
         ).unwrapped
     }
 
-    // MARK: -
-
-    /// Generates a conversation ID for use in call-related sync messages, from
-    /// a ``CallRecord``.
-    func conversationId(
-        threadStore: ThreadStore,
-        recipientDatabaseTable: RecipientDatabaseTable,
+    func getConversationId(
+        callRecord: CallRecord,
         tx: DBReadTransaction
     ) -> CallSyncMessageConversationId? {
         guard let callThread = threadStore.fetchThread(
-            rowId: threadRowId, tx: tx
+            rowId: callRecord.threadRowId, tx: tx
         ) else { return nil }
 
         if

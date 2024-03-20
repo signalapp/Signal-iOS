@@ -10,27 +10,21 @@ import XCTest
 final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
     private typealias CallIdentifiers = IncomingCallLogEventSyncMessageParams.CallIdentifiers
 
-    private var mockCallRecordStore: MockCallRecordStore!
+    private var mockCallRecordConversationIdAdapter: MockCallRecordSyncMessageConversationIdAdapter!
     private var mockDeleteAllCallsJobQueue: MockDeleteAllCallsJobQueue!
     private var mockMissedCallManager: MockMissedCallManager!
-    private var mockRecipientDatabaseTable: MockRecipientDatabaseTable!
-    private var mockThreadStore: MockThreadStore!
 
     private var syncMessageManager: IncomingCallLogEventSyncMessageManagerImpl!
 
     override func setUp() {
-        mockCallRecordStore = MockCallRecordStore()
+        mockCallRecordConversationIdAdapter = MockCallRecordSyncMessageConversationIdAdapter()
         mockDeleteAllCallsJobQueue = MockDeleteAllCallsJobQueue()
         mockMissedCallManager = MockMissedCallManager()
-        mockRecipientDatabaseTable = MockRecipientDatabaseTable()
-        mockThreadStore = MockThreadStore()
 
         syncMessageManager = IncomingCallLogEventSyncMessageManagerImpl(
-            callRecordStore: mockCallRecordStore,
+            callRecordConversationIdAdapter: mockCallRecordConversationIdAdapter,
             deleteAllCallsJobQueue: mockDeleteAllCallsJobQueue,
-            missedCallManager: mockMissedCallManager,
-            recipientDatabaseTable: mockRecipientDatabaseTable,
-            threadStore: mockThreadStore
+            missedCallManager: mockMissedCallManager
         )
     }
 
@@ -46,14 +40,11 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
         let callId: UInt64 = .maxRandom
         let timestamp: UInt64 = .maxRandomInt64Compat
 
-        let thread = TSGroupThread.forUnitTest()
-        mockThreadStore.insertThread(thread)
-
-        mockCallRecordStore.callRecords.append(.fixture(
+        mockCallRecordConversationIdAdapter.mockHydratedCallRecord = .fixture(
             callId: callId,
-            threadRowId: thread.sqliteRowId!,
+            threadRowId: .maxRandom,
             callBeganTimestamp: timestamp
-        ))
+        )
 
         mockDeleteAllCallsJobQueue.deleteAllCallsMock = { beforeTimestamp in
             XCTAssertEqual(beforeTimestamp, timestamp)
@@ -63,7 +54,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .cleared,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: callId,
-                conversationId: .group(groupId: thread.groupId)
+                conversationId: .group(groupId: Data())
             ),
             anchorTimestamp: timestamp + 1
         ))
@@ -100,14 +91,11 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
         let callId: UInt64 = .maxRandom
         let timestamp: UInt64 = .maxRandomInt64Compat
 
-        let thread = TSGroupThread.forUnitTest()
-        mockThreadStore.insertThread(thread)
-
-        mockCallRecordStore.callRecords.append(.fixture(
+        mockCallRecordConversationIdAdapter.mockHydratedCallRecord = .fixture(
             callId: callId,
-            threadRowId: thread.sqliteRowId!,
+            threadRowId: .maxRandom,
             callBeganTimestamp: timestamp
-        ))
+        )
 
         mockMissedCallManager.markUnreadCallsAsReadMock = { beforeTimestamp in
             XCTAssertEqual(beforeTimestamp, timestamp)
@@ -117,7 +105,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .markedAsRead,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: callId,
-                conversationId: .group(groupId: thread.groupId)
+                conversationId: .group(groupId: Data())
             ),
             anchorTimestamp: timestamp + 1
         ))

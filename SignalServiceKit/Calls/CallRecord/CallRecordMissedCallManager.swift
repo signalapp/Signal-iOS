@@ -27,24 +27,21 @@ public protocol CallRecordMissedCallManager {
 }
 
 class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
+    private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
     private let callRecordQuerier: CallRecordQuerier
     private let callRecordStore: CallRecordStore
     private let messageSenderJobQueue: MessageSenderJobQueue
-    private let recipientDatabaseTable: RecipientDatabaseTable
-    private let threadStore: ThreadStore
 
     init(
+        callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         callRecordQuerier: CallRecordQuerier,
         callRecordStore: CallRecordStore,
-        messageSenderJobQueue: MessageSenderJobQueue,
-        recipientDatabaseTable: RecipientDatabaseTable,
-        threadStore: ThreadStore
+        messageSenderJobQueue: MessageSenderJobQueue
     ) {
-        self.callRecordQuerier = callRecordQuerier
+        self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
         self.callRecordStore = callRecordStore
+        self.callRecordQuerier = callRecordQuerier
         self.messageSenderJobQueue = messageSenderJobQueue
-        self.recipientDatabaseTable = recipientDatabaseTable
-        self.threadStore = threadStore
     }
 
     // MARK: -
@@ -145,17 +142,16 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
             return
         }
 
-        guard
-            let localThread = threadStore.getOrCreateLocalThread(tx: tx),
-            let conversationId: OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId = mostRecentCall
-                .conversationId(
-                    threadStore: threadStore,
-                    recipientDatabaseTable: recipientDatabaseTable,
-                    tx: tx
-                )
-        else { return }
+        typealias ConversationId = OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId
+        guard let conversationId: ConversationId = callRecordConversationIdAdapter.getConversationId(
+            callRecord: mostRecentCall, tx: tx
+        ) else { return }
 
         let sdsTx = SDSDB.shimOnlyBridge(tx)
+
+        guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: sdsTx) else {
+            return
+        }
 
         let outgoingCallLogEventSyncMessage = OutgoingCallLogEventSyncMessage(
             callLogEvent: OutgoingCallLogEventSyncMessage.CallLogEvent(

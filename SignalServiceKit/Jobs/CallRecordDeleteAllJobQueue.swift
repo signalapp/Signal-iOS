@@ -26,26 +26,23 @@ public class CallRecordDeleteAllJobQueue {
         CallRecordDeleteAllJobRunnerFactory
     >
 
-    private let recipientDatabaseTable: RecipientDatabaseTable
-    private let threadStore: ThreadStore
+    private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
 
     public init(
+        callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         callRecordDeleteManager: CallRecordDeleteManager,
         callRecordQuerier: CallRecordQuerier,
         callRecordStore: CallRecordStore,
         db: DB,
-        messageSenderJobQueue: MessageSenderJobQueue,
-        recipientDatabaseTable: RecipientDatabaseTable,
-        threadStore: ThreadStore
+        messageSenderJobQueue: MessageSenderJobQueue
     ) {
         self.jobRunnerFactory = CallRecordDeleteAllJobRunnerFactory(
+            callRecordConversationIdAdapter: callRecordConversationIdAdapter,
             callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
             callRecordStore: callRecordStore,
             db: db,
-            messageSenderJobQueue: messageSenderJobQueue,
-            recipientDatabaseTable: recipientDatabaseTable,
-            threadStore: threadStore
+            messageSenderJobQueue: messageSenderJobQueue
         )
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: false,
@@ -54,8 +51,7 @@ public class CallRecordDeleteAllJobQueue {
             jobRunnerFactory: self.jobRunnerFactory
         )
 
-        self.recipientDatabaseTable = recipientDatabaseTable
-        self.threadStore = threadStore
+        self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
     }
 
     func start(appContext: AppContext) {
@@ -79,12 +75,8 @@ public class CallRecordDeleteAllJobQueue {
         switch deleteAllBefore {
         case .callRecord(let callRecord):
             guard
-                let conversationId: CallRecordDeleteAllJobRecord.ConversationId = callRecord
-                    .conversationId(
-                        threadStore: threadStore,
-                        recipientDatabaseTable: recipientDatabaseTable,
-                        tx: tx.asV2Read
-                    )
+                let conversationId: CallRecordDeleteAllJobRecord.ConversationId = callRecordConversationIdAdapter
+                    .getConversationId(callRecord: callRecord, tx: tx.asV2Read)
             else { return }
 
             jobRecord = CallRecordDeleteAllJobRecord(
@@ -122,30 +114,27 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 
     private var logger: CallRecordLogger { .shared }
 
+    private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
     private let callRecordDeleteManager: CallRecordDeleteManager
     private let callRecordQuerier: CallRecordQuerier
     private let callRecordStore: CallRecordStore
     private let db: DB
     private let messageSenderJobQueue: MessageSenderJobQueue
-    private let recipientDatabaseTable: RecipientDatabaseTable
-    private let threadStore: ThreadStore
 
     init(
+        callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         callRecordDeleteManager: CallRecordDeleteManager,
         callRecordQuerier: CallRecordQuerier,
         callRecordStore: CallRecordStore,
         db: DB,
-        messageSenderJobQueue: MessageSenderJobQueue,
-        recipientDatabaseTable: RecipientDatabaseTable,
-        threadStore: ThreadStore
+        messageSenderJobQueue: MessageSenderJobQueue
     ) {
+        self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
         self.callRecordDeleteManager = callRecordDeleteManager
         self.callRecordQuerier = callRecordQuerier
         self.callRecordStore = callRecordStore
         self.db = db
         self.messageSenderJobQueue = messageSenderJobQueue
-        self.recipientDatabaseTable = recipientDatabaseTable
-        self.threadStore = threadStore
     }
 
     // MARK: -
@@ -189,12 +178,9 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
                 let callId = jobRecord.deleteAllBeforeCallId,
                 let conversationId = jobRecord.deleteAllBeforeConversationId,
                 let referencedCallRecord: CallRecord = db.read(block: { tx -> CallRecord? in
-                    return .hydrate(
+                    return callRecordConversationIdAdapter.hydrate(
                         callId: callId,
                         conversationId: conversationId,
-                        callRecordStore: callRecordStore,
-                        recipientDatabaseTable: recipientDatabaseTable,
-                        threadStore: threadStore,
                         tx: tx
                     )
                 })
@@ -314,41 +300,37 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 private class CallRecordDeleteAllJobRunnerFactory: JobRunnerFactory {
     typealias JobRunnerType = CallRecordDeleteAllJobRunner
 
+    private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
     private let callRecordDeleteManager: CallRecordDeleteManager
     private let callRecordQuerier: CallRecordQuerier
     private let callRecordStore: CallRecordStore
     private let db: DB
     private let messageSenderJobQueue: MessageSenderJobQueue
-    private let recipientDatabaseTable: RecipientDatabaseTable
-    private let threadStore: ThreadStore
 
     init(
+        callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         callRecordDeleteManager: CallRecordDeleteManager,
         callRecordQuerier: CallRecordQuerier,
         callRecordStore: CallRecordStore,
         db: DB,
-        messageSenderJobQueue: MessageSenderJobQueue,
-        recipientDatabaseTable: RecipientDatabaseTable,
-        threadStore: ThreadStore
+        messageSenderJobQueue: MessageSenderJobQueue
     ) {
+        self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
         self.callRecordDeleteManager = callRecordDeleteManager
         self.callRecordQuerier = callRecordQuerier
         self.callRecordStore = callRecordStore
         self.db = db
         self.messageSenderJobQueue = messageSenderJobQueue
-        self.recipientDatabaseTable = recipientDatabaseTable
-        self.threadStore = threadStore
     }
 
     func buildRunner() -> CallRecordDeleteAllJobRunner {
         return CallRecordDeleteAllJobRunner(
+            callRecordConversationIdAdapter: callRecordConversationIdAdapter,
             callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
             callRecordStore: callRecordStore,
             db: db,
-            messageSenderJobQueue: messageSenderJobQueue,
-            recipientDatabaseTable: recipientDatabaseTable,
-            threadStore: threadStore
+            messageSenderJobQueue: messageSenderJobQueue
         )
     }
 }
