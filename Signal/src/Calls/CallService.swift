@@ -1036,15 +1036,18 @@ extension CallService: CallObserver {
             return owsFailDebug("unexpectedly missing thread")
         }
 
-        firstly {
-            groupCallPeekClient.fetchGroupMembershipProof(groupThread: groupThread)
-        }.done(on: DispatchQueue.main) { proof in
-            call.groupCall.updateMembershipProof(proof: proof)
-        }.catch(on: DispatchQueue.main) { error in
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("Failed to fetch group call credentials \(error)")
-            } else {
-                owsFailDebug("Failed to fetch group call credentials \(error)")
+        Task { [groupCallPeekClient] in
+            do {
+                let proof = try await groupCallPeekClient.fetchGroupMembershipProof(groupThread: groupThread)
+                await MainActor.run {
+                    call.groupCall.updateMembershipProof(proof: proof)
+                }
+            } catch {
+                if error.isNetworkFailureOrTimeout {
+                    Logger.warn("Failed to fetch group call credentials \(error)")
+                } else {
+                    owsFailDebug("Failed to fetch group call credentials \(error)")
+                }
             }
         }
     }

@@ -122,21 +122,26 @@ public extension StorageService {
                                        authCredential: authCredential)
     }
 
-    static func buildFetchGroupExternalCredentials(groupV2Params: GroupV2Params,
-                                                   authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
-
-        return try buildGroupV2Request(protoData: nil,
-                                       urlString: "/v1/groups/token",
-                                       method: .get,
-                                       groupV2Params: groupV2Params,
-                                       authCredential: authCredential)
+    static func buildFetchGroupExternalCredentials(
+        groupV2Params: GroupV2Params,
+        authCredential: AuthCredentialWithPni
+    ) throws -> GroupsV2Request {
+        return try buildGroupV2Request(
+            protoData: nil,
+            urlString: "/v1/groups/token",
+            method: .get,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
     }
 
-    private static func buildGroupV2Request(protoData: Data?,
-                                            urlString: String,
-                                            method: HTTPMethod,
-                                            groupV2Params: GroupV2Params,
-                                            authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
+    private static func buildGroupV2Request(
+        protoData: Data?,
+        urlString: String,
+        method: HTTPMethod,
+        groupV2Params: GroupV2Params,
+        authCredential: AuthCredentialWithPni
+    ) throws -> GroupsV2Request {
 
         let request = GroupsV2Request(urlString: urlString, method: method, bodyData: protoData)
 
@@ -144,19 +149,22 @@ public extension StorageService {
         // even if the body is empty.
         request.addHeader("Content-Type", value: OWSMimeTypeProtobuf)
 
-        try self.addAuthorizationHeader(to: request,
-                                        groupV2Params: groupV2Params,
-                                        authCredential: authCredential)
+        try self.addAuthorizationHeader(
+            to: request,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
 
         return request
     }
 
     // MARK: - Authorization Headers
 
-    private static func addAuthorizationHeader(to request: GroupsV2Request,
-                                               groupV2Params: GroupV2Params,
-                                               authCredential: AuthCredentialWithPni) throws {
-
+    private static func addAuthorizationHeader(
+        to request: GroupsV2Request,
+        groupV2Params: GroupV2Params,
+        authCredential: AuthCredentialWithPni
+    ) throws {
         let serverPublicParams = try GroupsV2Protos.serverPublicParams()
         let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
         let authCredentialPresentation = try clientZkAuthOperations.createAuthCredentialPresentation(groupSecretParams: groupV2Params.groupSecretParams, authCredential: authCredential)
@@ -164,7 +172,9 @@ public extension StorageService {
 
         let username: String = groupV2Params.groupPublicParamsData.hexadecimalString
         let password: String = authCredentialPresentationData.hexadecimalString
-        request.addHeader(OWSHttpHeaders.authHeaderKey,
-                          value: try OWSHttpHeaders.authHeaderValue(username: username, password: password))
+        request.addHeader(
+            OWSHttpHeaders.authHeaderKey,
+            value: try OWSHttpHeaders.authHeaderValue(username: username, password: password)
+        )
     }
 }

@@ -2423,26 +2423,26 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         }
     }
 
-    public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential> {
+    public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) async throws -> GroupsProtoGroupExternalCredential {
         let requestBuilder: RequestBuilder = { authCredential in
-            firstly(on: DispatchQueue.global()) { () -> GroupsV2Request in
-                try StorageService.buildFetchGroupExternalCredentials(groupV2Params: try groupModel.groupV2Params(),
-                                                                      authCredential: authCredential)
-            }
+            return .value(try StorageService.buildFetchGroupExternalCredentials(
+                groupV2Params: try groupModel.groupV2Params(),
+                authCredential: authCredential
+            ))
         }
 
-        return firstly { () -> Promise<HTTPResponse> in
-            return self.performServiceRequest(requestBuilder: requestBuilder,
-                                              groupId: groupModel.groupId,
-                                              behavior400: .fail,
-                                              behavior403: .fetchGroupUpdates,
-                                              behavior404: .fail)
-        }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> GroupsProtoGroupExternalCredential in
-            guard let groupProtoData = response.responseBodyData else {
-                throw OWSAssertionError("Invalid responseObject.")
-            }
-            return try GroupsProtoGroupExternalCredential(serializedData: groupProtoData)
+        let response = try await self.performServiceRequest(
+            requestBuilder: requestBuilder,
+            groupId: groupModel.groupId,
+            behavior400: .fail,
+            behavior403: .fetchGroupUpdates,
+            behavior404: .fail
+        ).awaitable()
+
+        guard let groupProtoData = response.responseBodyData else {
+            throw OWSAssertionError("Invalid responseObject.")
         }
+        return try GroupsProtoGroupExternalCredential(serializedData: groupProtoData)
     }
 }
 

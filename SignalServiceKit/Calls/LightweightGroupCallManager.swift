@@ -77,7 +77,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 )
             }
 
-            let info = try await self.groupCallPeekClient.fetchPeekInfo(groupThread: thread).awaitable()
+            let info = try await self.groupCallPeekClient.fetchPeekInfo(groupThread: thread)
 
             let shouldUpdateCallModels: Bool = {
                 guard let infoEraId = info.eraId else {

@@ -163,7 +163,7 @@ public protocol GroupsV2 {
         removeLocalUserBlock: @escaping (SDSAnyWriteTransaction) -> Void
     )
 
-    func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential>
+    func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) async throws -> GroupsProtoGroupExternalCredential
 
     func groupRecordPendingStorageServiceRestore(
         masterKeyData: Data,
@@ -737,7 +737,7 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential> {
+    public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) async throws -> GroupsProtoGroupExternalCredential {
         owsFail("Not implemented")
     }
 }

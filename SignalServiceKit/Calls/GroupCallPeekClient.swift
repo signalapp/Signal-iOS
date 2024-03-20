@@ -32,48 +32,42 @@ public class GroupCallPeekClient: Dependencies {
     }
 
     /// Fetch the current group call peek info for the given thread.
-    public func fetchPeekInfo(groupThread: TSGroupThread) -> Promise<PeekInfo> {
-        AssertNotOnMainThread()
+    @MainActor
+    public func fetchPeekInfo(groupThread: TSGroupThread) async throws -> PeekInfo {
+        let membershipProof = try await self.fetchGroupMembershipProof(groupThread: groupThread)
 
-        return firstly { () -> Promise<Data> in
-            self.fetchGroupMembershipProof(groupThread: groupThread)
-        }.then(on: DispatchQueue.main) { (membershipProof: Data) -> Guarantee<PeekResponse> in
-            let membership = try self.databaseStorage.read { tx in
-                try self.groupMemberInfo(groupThread: groupThread, tx: tx)
-            }
+        let membership = try self.databaseStorage.read { tx in
+            try self.groupMemberInfo(groupThread: groupThread, tx: tx)
+        }
 
-            let peekRequest = PeekRequest(
-                sfuURL: self.sfuUrl,
-                membershipProof: membershipProof,
-                groupMembers: membership
-            )
+        let peekRequest = PeekRequest(
+            sfuURL: self.sfuUrl,
+            membershipProof: membershipProof,
+            groupMembers: membership
+        )
 
-            return self.sfuClient.peek(request: peekRequest)
-        }.map(on: DispatchQueue.sharedUtility) { peekResponse in
-            if let errorCode = peekResponse.errorStatusCode {
-                throw OWSGenericError("Failed to peek with status code: \(errorCode)")
-            } else {
-                return peekResponse.peekInfo
-            }
+        let peekResponse = await self.sfuClient.peek(request: peekRequest).awaitable()
+        if let errorCode = peekResponse.errorStatusCode {
+            throw OWSGenericError("Failed to peek with status code: \(errorCode)")
+        } else {
+            return peekResponse.peekInfo
         }
     }
 
     /// Fetches a data blob that serves as proof of membership in the group.
     /// Used by RingRTC to verify access to group call information.
-    public func fetchGroupMembershipProof(groupThread: TSGroupThread) -> Promise<Data> {
+    public func fetchGroupMembershipProof(groupThread: TSGroupThread) async throws -> Data {
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-            return Promise(error: OWSAssertionError("Expected V2 group model!"))
+            throw OWSAssertionError("Expected V2 group model!")
         }
 
-        return firstly {
-            try groupsV2Impl.fetchGroupExternalCredentials(groupModel: groupModel)
-        }.map(on: DispatchQueue.sharedUtility) { (credential) -> Data in
-            guard let tokenData = credential.token?.data(using: .utf8) else {
-                throw OWSAssertionError("Invalid credential")
-            }
+        let credential = try await groupsV2Impl.fetchGroupExternalCredentials(groupModel: groupModel)
 
-            return tokenData
+        guard let tokenData = credential.token?.data(using: .utf8) else {
+            throw OWSAssertionError("Invalid credential")
         }
+
+        return tokenData
     }
 
     public func groupMemberInfo(
@@ -137,26 +131,26 @@ extension GroupCallPeekClient: HTTPDelegate {
             return redirectedRequest
         }
 
-        firstly { () -> Promise<SignalServiceKit.HTTPResponse> in
-            session.dataTaskPromise(
-                request.url,
-                method: request.method.httpMethod,
-                headers: request.headers,
-                body: request.body)
-
-        }.done(on: DispatchQueue.main) { response in
-            self.httpClient.receivedResponse(
-                requestId: requestId,
-                response: response.asRingRTCResponse
-            )
-        }.catch(on: DispatchQueue.main) { error in
-            if error.isNetworkFailureOrTimeout {
-                self.logger.warn("Peek client HTTP request had network error: \(error)")
-            } else {
-                owsFailDebug("Peek client HTTP request failed \(error)")
+        Task { @MainActor in
+            do {
+                let response = try await session.dataTaskPromise(
+                    request.url,
+                    method: request.method.httpMethod,
+                    headers: request.headers,
+                    body: request.body
+                ).awaitable()
+                self.httpClient.receivedResponse(
+                    requestId: requestId,
+                    response: response.asRingRTCResponse
+                )
+            } catch {
+                if error.isNetworkFailureOrTimeout {
+                    self.logger.warn("Peek client HTTP request had network error: \(error)")
+                } else {
+                    owsFailDebug("Peek client HTTP request failed \(error)")
+                }
+                self.httpClient.httpRequestFailed(requestId: requestId)
             }
-
-            self.httpClient.httpRequestFailed(requestId: requestId)
         }
     }
 }

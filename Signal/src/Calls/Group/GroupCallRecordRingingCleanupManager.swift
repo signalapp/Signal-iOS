@@ -136,7 +136,7 @@ class GroupCallRecordRingingCleanupManager {
 
         let peekInfo = try await self.groupCallPeekClient.fetchPeekInfo(
             groupThread: groupThread
-        ).awaitable()
+        )
 
         let callRecordsMatchingCurrentCall = callRecords.filter { callRecord in
             return callRecord.callId == peekInfo.eraId.map { callIdFromEra($0) }
