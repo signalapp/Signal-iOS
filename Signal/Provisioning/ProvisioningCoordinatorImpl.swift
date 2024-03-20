@@ -9,6 +9,7 @@ import SignalServiceKit
 
 public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
+    private let chatConnectionManager: ChatConnectionManager
     private let db: DB
     private let identityManager: OWSIdentityManager
     private let messageFactory: Shims.MessageFactory
@@ -18,7 +19,6 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let receiptManager: Shims.ReceiptManager
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let signalService: OWSSignalServiceProtocol
-    private let socketManager: SocketManager
     private let storageServiceManager: StorageServiceManager
     private let svr: SecureValueRecovery
     private let syncManager: Shims.SyncManager
@@ -27,6 +27,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let udManager: Shims.UDManager
 
     public init(
+        chatConnectionManager: ChatConnectionManager,
         db: DB,
         identityManager: OWSIdentityManager,
         messageFactory: Shims.MessageFactory,
@@ -36,7 +37,6 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         receiptManager: Shims.ReceiptManager,
         registrationStateChangeManager: RegistrationStateChangeManager,
         signalService: OWSSignalServiceProtocol,
-        socketManager: SocketManager,
         storageServiceManager: StorageServiceManager,
         svr: SecureValueRecovery,
         syncManager: Shims.SyncManager,
@@ -44,6 +44,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         tsAccountManager: TSAccountManager,
         udManager: Shims.UDManager
     ) {
+        self.chatConnectionManager = chatConnectionManager
         self.db = db
         self.identityManager = identityManager
         self.messageFactory = messageFactory
@@ -53,7 +54,6 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.receiptManager = receiptManager
         self.registrationStateChangeManager = registrationStateChangeManager
         self.signalService = signalService
-        self.socketManager = socketManager
         self.storageServiceManager = storageServiceManager
         self.svr = svr
         self.syncManager = syncManager

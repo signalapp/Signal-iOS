@@ -490,7 +490,7 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
+        let chatConnectionManager = ChatConnectionManagerImpl(appExpiry: appExpiry, db: db)
         let preKeyManager = PreKeyManagerImpl(
             dateProvider: dateProvider,
             db: db,
@@ -500,7 +500,7 @@ public class AppSetup {
             messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
             protocolStoreManager: signalProtocolStoreManager,
             serviceClient: accountServiceClient,
-            socketManager: socketManager,
+            chatConnectionManager: chatConnectionManager,
             tsAccountManager: tsAccountManager
         )
 
@@ -652,7 +652,7 @@ public class AppSetup {
             db: db,
             interactionStore: InteractionStoreImpl(),
             networkManager: networkManager,
-            socketManager: socketManager,
+            chatConnectionManager: chatConnectionManager,
             signalService: signalService,
             attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
             blurHash: Upload.Wrappers.BlurHash(),
@@ -674,6 +674,7 @@ public class AppSetup {
             callRecordStore: callRecordStore,
             changePhoneNumberPniManager: changePhoneNumberPniManager,
             chatColorSettingStore: chatColorSettingStore,
+            chatConnectionManager: chatConnectionManager,
             db: db,
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,
@@ -720,7 +721,6 @@ public class AppSetup {
             searchableNameIndexer: searchableNameIndexer,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
             signalProtocolStoreManager: signalProtocolStoreManager,
-            socketManager: socketManager,
             svr: svr,
             svrCredentialStorage: svrCredentialStorage,
             threadAssociatedDataStore: threadAssociatedDataStore,

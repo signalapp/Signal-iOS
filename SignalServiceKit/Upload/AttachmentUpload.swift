@@ -15,7 +15,7 @@ public struct AttachmentUpload {
     private let db: DB
     private let signalService: OWSSignalServiceProtocol
     private let networkManager: NetworkManager
-    private let socketManager: SocketManager
+    private let chatConnectionManager: ChatConnectionManager
 
     private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let fileSystem: Upload.Shims.FileSystem
@@ -28,7 +28,7 @@ public struct AttachmentUpload {
         db: DB,
         signalService: OWSSignalServiceProtocol,
         networkManager: NetworkManager,
-        socketManager: SocketManager,
+        chatConnectionManager: ChatConnectionManager,
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         fileSystem: Upload.Shims.FileSystem,
         sourceURL: URL,
@@ -37,7 +37,7 @@ public struct AttachmentUpload {
         self.db = db
         self.signalService = signalService
         self.networkManager = networkManager
-        self.socketManager = socketManager
+        self.chatConnectionManager = chatConnectionManager
 
         self.attachmentEncrypter = attachmentEncrypter
         self.fileSystem = fileSystem
@@ -304,7 +304,7 @@ public struct AttachmentUpload {
     private func performRequest(_ request: TSRequest) async throws -> HTTPResponse {
         try await networkManager.makePromise(
             request: request,
-            canUseWebSocket: socketManager.canMakeRequests(webSocketType: .identified)
+            canUseWebSocket: chatConnectionManager.canMakeRequests(connectionType: .identified)
         ).awaitable()
     }
 

@@ -110,7 +110,7 @@ public class MessageFetchBGRefreshTask {
                     // We don't currently have a convenient API to know when message fetching is *done* when
                     // working with the websocket.
                     //
-                    // We *could* substantially rewrite the SocketManager to take advantage of the `empty` message
+                    // We *could* substantially rewrite the ChatConnectionManager to take advantage of the `empty` message
                     // But once our REST endpoint is fixed to properly de-enqueue fallback notifications, we can easily
                     // use the rest endpoint here rather than the websocket and circumvent making changes to critical code.
                     return Guarantee.after(seconds: 5)

@@ -29,7 +29,7 @@ class CLVViewState {
     let searchResultsController = ConversationSearchViewController()
     let reminderViews = CLVReminderViews()
     let settingsButtonCreator = ChatListSettingsButtonState()
-    let proxyButtonCreator = ChatListProxyButtonCreator(socketManager: DependenciesBridge.shared.socketManager)
+    let proxyButtonCreator = ChatListProxyButtonCreator(chatConnectionManager: DependenciesBridge.shared.chatConnectionManager)
 
     // MARK: - State
 

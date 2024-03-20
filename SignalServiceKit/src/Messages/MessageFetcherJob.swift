@@ -152,15 +152,15 @@ public class MessageFetcherJob: NSObject {
     }
 
     private class var shouldUseWebSocket: Bool {
-        OWSWebSocket.canAppUseSocketsToMakeRequests
+        OWSChatConnection.canAppUseSocketsToMakeRequests
     }
 
     @objc
     public var hasCompletedInitialFetch: Bool {
         if Self.shouldUseWebSocket {
             let isWebsocketDrained = (
-                DependenciesBridge.shared.socketManager.socketState(forType: .identified) == .open &&
-                DependenciesBridge.shared.socketManager.hasEmptiedInitialQueue
+                DependenciesBridge.shared.chatConnectionManager.connectionState(forType: .identified) == .open &&
+                DependenciesBridge.shared.chatConnectionManager.hasEmptiedInitialQueue
             )
             guard isWebsocketDrained else { return false }
         } else {
@@ -186,7 +186,7 @@ public class MessageFetcherJob: NSObject {
             }
 
             return NotificationCenter.default.observe(
-                once: OWSWebSocket.webSocketStateDidChange
+                once: OWSChatConnection.chatConnectionStateDidChange
             ).then { _ in
                 self.waitForFetchingComplete()
             }.asVoid()
@@ -218,7 +218,7 @@ public class MessageFetcherJob: NSObject {
 
         if shouldUseWebSocket {
             Logger.info("Fetching messages via Web Socket.")
-            DependenciesBridge.shared.socketManager.didReceivePush()
+            DependenciesBridge.shared.chatConnectionManager.didReceivePush()
             // Should we wait to resolve the future until we know the WebSocket is open? Wait until it empties?
         } else {
             Logger.info("Fetching messages via REST.")

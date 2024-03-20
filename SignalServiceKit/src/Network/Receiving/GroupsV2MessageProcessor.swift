@@ -50,8 +50,8 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
         )
         nc.addObserver(
             self,
-            selector: #selector(webSocketStateDidChange),
-            name: OWSWebSocket.webSocketStateDidChange,
+            selector: #selector(chatConnectionStateDidChange),
+            name: OWSChatConnection.chatConnectionStateDidChange,
             object: nil
         )
         nc.addObserver(
@@ -90,7 +90,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
     }
 
     @objc
-    func webSocketStateDidChange() {
+    func chatConnectionStateDidChange() {
         AssertIsOnMainThread()
 
         drainQueueWhenReady()
@@ -267,8 +267,8 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         )
         nc.addObserver(
             self,
-            selector: #selector(webSocketStateDidChange),
-            name: OWSWebSocket.webSocketStateDidChange,
+            selector: #selector(chatConnectionStateDidChange),
+            name: OWSChatConnection.chatConnectionStateDidChange,
             object: nil
         )
         nc.addObserver(
@@ -307,7 +307,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     }
 
     @objc
-    func webSocketStateDidChange() {
+    func chatConnectionStateDidChange() {
         AssertIsOnMainThread()
 
         tryToProcess()

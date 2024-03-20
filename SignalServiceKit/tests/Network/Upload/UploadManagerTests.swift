@@ -16,7 +16,7 @@ class UploadManagerTests: XCTestCase {
             db: helper.mockDB,
             interactionStore: helper.mockInteractionStore,
             networkManager: helper.mockNetworkManager,
-            socketManager: helper.mockSocketManager,
+            chatConnectionManager: helper.mockChatConnectionManager,
             signalService: helper.mockServiceManager,
             attachmentEncrypter: helper.mockAttachmentEncrypter,
             blurHash: helper.mockBlurHash,

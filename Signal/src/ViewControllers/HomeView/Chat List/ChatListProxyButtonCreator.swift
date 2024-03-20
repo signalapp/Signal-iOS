@@ -12,14 +12,14 @@ protocol ChatListProxyButtonDelegate: AnyObject {
 }
 
 final class ChatListProxyButtonCreator: NSObject {
-    private let socketManager: SocketManager
+    private let chatConnectionManager: ChatConnectionManager
     weak var delegate: ChatListProxyButtonDelegate?
 
     private var observers = [NSObjectProtocol]()
-    private var proxyState: OWSWebSocketState?
+    private var proxyState: OWSChatConnectionState?
 
-    init(socketManager: SocketManager) {
-        self.socketManager = socketManager
+    init(chatConnectionManager: ChatConnectionManager) {
+        self.chatConnectionManager = chatConnectionManager
         super.init()
         // The display of the button depends on `SignalProxy.isEnabled` and the
         // current status of the web socket. In theory, we should refresh the
@@ -27,7 +27,7 @@ final class ChatListProxyButtonCreator: NSObject {
         // or disabled, we disconnect & reconnect the web socket, so we can rely
         // entirely on those state transitions for this button.
         observers.append(NotificationCenter.default.addObserver(
-            forName: OWSWebSocket.webSocketStateDidChange,
+            forName: OWSChatConnection.chatConnectionStateDidChange,
             object: nil,
             queue: .main,
             using: { [weak self] _ in self?.updateState() }
@@ -39,11 +39,11 @@ final class ChatListProxyButtonCreator: NSObject {
     }
 
     private func updateState() {
-        let newValue: OWSWebSocketState? = {
+        let newValue: OWSChatConnectionState? = {
             guard SignalProxy.isEnabled else {
                 return nil
             }
-            return socketManager.socketState(forType: .identified)
+            return chatConnectionManager.connectionState(forType: .identified)
         }()
         let didUpdate = self.proxyState != newValue
         self.proxyState = newValue

@@ -16,6 +16,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
     private var provisioningCoordinator: ProvisioningCoordinatorImpl!
 
+    private var chatConnectionManagerMock: ChatConnectionManagerMock!
     private var identityManagerMock: MockIdentityManager!
     private var messageFactoryMock: Mocks.MessageFactory!
     private var prekeyManagerMock: MockPreKeyManager!
@@ -24,7 +25,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     private var receiptManagerMock: Mocks.ReceiptManager!
     private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
     private var signalServiceMock: OWSSignalServiceMock!
-    private var socketManagerMock: SocketManagerMock!
     private var storageServiceManagerMock: FakeStorageServiceManager!
     private var svrMock: SecureValueRecoveryMock!
     private var syncManagerMock: Mocks.SyncManager!
@@ -44,6 +44,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         )
         self.identityManagerMock = .init(recipientIdFinder: recipientIdFinder)
 
+        self.chatConnectionManagerMock = .init()
         self.messageFactoryMock = .init()
         self.prekeyManagerMock = .init()
         self.profileManagerMock = .init()
@@ -51,7 +52,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.receiptManagerMock = .init()
         self.registrationStateChangeManagerMock = .init()
         self.signalServiceMock = .init()
-        self.socketManagerMock = .init()
         self.storageServiceManagerMock = .init()
         self.svrMock = .init()
         self.syncManagerMock = .init()
@@ -60,6 +60,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.udManagerMock = .init()
 
         self.provisioningCoordinator = ProvisioningCoordinatorImpl(
+            chatConnectionManager: chatConnectionManagerMock,
             db: mockDb,
             identityManager: identityManagerMock,
             messageFactory: messageFactoryMock,
@@ -69,7 +70,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             receiptManager: receiptManagerMock,
             registrationStateChangeManager: registrationStateChangeManagerMock,
             signalService: signalServiceMock,
-            socketManager: socketManagerMock,
             storageServiceManager: storageServiceManagerMock,
             svr: svrMock,
             syncManager: syncManagerMock,

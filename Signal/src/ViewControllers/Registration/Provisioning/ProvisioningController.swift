@@ -35,6 +35,7 @@ public class ProvisioningController: NSObject {
 
     private lazy var provisioningCoordinator: ProvisioningCoordinator = {
         return ProvisioningCoordinatorImpl(
+            chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
             db: DependenciesBridge.shared.db,
             identityManager: DependenciesBridge.shared.identityManager,
             messageFactory: ProvisioningCoordinatorImpl.Wrappers.MessageFactory(),
@@ -46,7 +47,6 @@ public class ProvisioningController: NSObject {
             receiptManager: ProvisioningCoordinatorImpl.Wrappers.ReceiptManager(OWSReceiptManager.shared),
             registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
             signalService: self.signalService,
-            socketManager: DependenciesBridge.shared.socketManager,
             storageServiceManager: self.storageServiceManager,
             svr: DependenciesBridge.shared.svr,
             syncManager: ProvisioningCoordinatorImpl.Wrappers.SyncManager(OWSSyncManager.shared),

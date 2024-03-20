@@ -20,7 +20,7 @@ public actor UploadManagerImpl: UploadManager {
     private let db: DB
     private let interactionStore: InteractionStore
     private let networkManager: NetworkManager
-    private let socketManager: SocketManager
+    private let chatConnectionManager: ChatConnectionManager
     private let signalService: OWSSignalServiceProtocol
     private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let blurHash: Upload.Shims.BlurHash
@@ -31,7 +31,7 @@ public actor UploadManagerImpl: UploadManager {
         db: DB,
         interactionStore: InteractionStore,
         networkManager: NetworkManager,
-        socketManager: SocketManager,
+        chatConnectionManager: ChatConnectionManager,
         signalService: OWSSignalServiceProtocol,
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         blurHash: Upload.Shims.BlurHash,
@@ -41,7 +41,7 @@ public actor UploadManagerImpl: UploadManager {
         self.db = db
         self.interactionStore = interactionStore
         self.networkManager = networkManager
-        self.socketManager = socketManager
+        self.chatConnectionManager = chatConnectionManager
         self.signalService = signalService
         self.attachmentEncrypter = attachmentEncrypter
         self.blurHash = blurHash
@@ -82,7 +82,7 @@ public actor UploadManagerImpl: UploadManager {
                 db: db,
                 signalService: signalService,
                 networkManager: networkManager,
-                socketManager: socketManager,
+                chatConnectionManager: chatConnectionManager,
                 attachmentEncrypter: attachmentEncrypter,
                 fileSystem: fileSystem,
                 sourceURL: sourceURL,

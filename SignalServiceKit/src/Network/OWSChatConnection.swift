@@ -6,8 +6,7 @@
 import Foundation
 import SignalCoreKit
 
-@objc
-public enum OWSWebSocketType: Int, CaseIterable, CustomDebugStringConvertible {
+public enum OWSChatConnectionType: Int, CaseIterable, CustomDebugStringConvertible {
     case identified = 0
     case unidentified = 1
 
@@ -23,8 +22,7 @@ public enum OWSWebSocketType: Int, CaseIterable, CustomDebugStringConvertible {
 
 // MARK: -
 
-@objc
-public enum OWSWebSocketState: Int, CustomDebugStringConvertible {
+public enum OWSChatConnectionState: Int, CustomDebugStringConvertible {
     case closed = 0
     case connecting = 1
     case open = 2
@@ -43,23 +41,21 @@ public enum OWSWebSocketState: Int, CustomDebugStringConvertible {
 
 // MARK: -
 
-@objc
-public class OWSWebSocket: NSObject {
+public class OWSChatConnection: NSObject {
     // Track where Dependencies are used throughout this class.
     private struct GlobalDependencies: Dependencies {}
 
-    @objc
-    public static let webSocketStateDidChange = Notification.Name("webSocketStateDidChange")
+    public static let chatConnectionStateDidChange = Notification.Name("chatConnectionStateDidChange")
 
-    public static let serialQueue = DispatchQueue(label: "org.signal.websocket")
+    public static let serialQueue = DispatchQueue(label: "org.signal.chat-connection")
     fileprivate var serialQueue: DispatchQueue { Self.serialQueue }
 
     // TODO: Should we use a higher-priority queue?
-    fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.websocket.message-processing")
+    fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.chat-connection.message-processing")
 
     // MARK: -
 
-    private let webSocketType: OWSWebSocketType
+    private let type: OWSChatConnectionType
     private let appExpiry: AppExpiry
     private let db: DB
 
@@ -84,7 +80,7 @@ public class OWSWebSocket: NSObject {
 
     // MARK: -
 
-    public var currentState: OWSWebSocketState {
+    public var currentState: OWSChatConnectionState {
         guard let currentWebSocket = self.currentWebSocket else {
             return .closed
         }
@@ -212,16 +208,16 @@ public class OWSWebSocket: NSObject {
         if let currentWebSocket = currentWebSocket {
             return currentWebSocket.logPrefix
         } else {
-            return "[\(webSocketType)]"
+            return "[\(type)]"
         }
     }
 
     // MARK: -
 
-    public required init(webSocketType: OWSWebSocketType, appExpiry: AppExpiry, db: DB) {
+    public required init(type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
         AssertIsOnMainThread()
 
-        self.webSocketType = webSocketType
+        self.type = type
         self.appExpiry = appExpiry
         self.db = db
 
@@ -277,7 +273,7 @@ public class OWSWebSocket: NSObject {
     // MARK: -
 
     private struct StateObservation {
-        var currentState: OWSWebSocketState
+        var currentState: OWSChatConnectionState
         var onOpen: (guarantee: Guarantee<Void>, future: GuaranteeFuture<Void>)?
     }
 
@@ -288,7 +284,7 @@ public class OWSWebSocket: NSObject {
 
     private func notifyStatusChange() {
         let newState = self.currentState
-        let (oldState, futureToResolve): (OWSWebSocketState, GuaranteeFuture<Void>?)
+        let (oldState, futureToResolve): (OWSChatConnectionState, GuaranteeFuture<Void>?)
         (oldState, futureToResolve) = stateObservation.update {
             let oldState = $0.currentState
             if newState == oldState {
@@ -308,7 +304,7 @@ public class OWSWebSocket: NSObject {
             Logger.info("\(logPrefix): \(oldState) -> \(newState)")
         }
         futureToResolve?.resolve()
-        NotificationCenter.default.postNotificationNameAsync(Self.webSocketStateDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(Self.chatConnectionStateDidChange, object: nil)
     }
 
     func waitForOpen() -> Guarantee<Void> {
@@ -329,33 +325,20 @@ public class OWSWebSocket: NSObject {
 
     public typealias RequestSuccess = (HTTPResponse) -> Void
     public typealias RequestFailure = (OWSHTTPErrorWrapper) -> Void
-    fileprivate typealias RequestSuccessInternal = (HTTPResponse, SocketRequestInfo) -> Void
+    fileprivate typealias RequestSuccessInternal = (HTTPResponse, RequestInfo) -> Void
 
     fileprivate func makeRequestInternal(_ request: TSRequest,
                                          unsubmittedRequestToken: UnsubmittedRequestToken,
                                          success: @escaping RequestSuccessInternal,
                                          failure: @escaping RequestFailure) {
-        Self.makeRequestInternal(request,
-                                 unsubmittedRequestToken: unsubmittedRequestToken,
-                                 webSocket: self,
-                                 success: success,
-                                 failure: failure)
-    }
-
-    fileprivate static func makeRequestInternal(_ request: TSRequest,
-                                                unsubmittedRequestToken: UnsubmittedRequestToken,
-                                                webSocket: OWSWebSocket,
-                                                success: @escaping RequestSuccessInternal,
-                                                failure: @escaping RequestFailure) {
-        assertOnQueue(OWSWebSocket.serialQueue)
+        assertOnQueue(OWSChatConnection.serialQueue)
 
         defer {
-            webSocket.removeUnsubmittedRequestToken(unsubmittedRequestToken)
+            removeUnsubmittedRequestToken(unsubmittedRequestToken)
         }
 
-        let webSocketType = webSocket.webSocketType
         var label = Self.label(forRequest: request,
-                               webSocketType: webSocketType,
+                               connectionType: type,
                                requestInfo: nil)
         guard let requestUrl = request.url else {
             owsFailDebug("\(label) Missing requestUrl.")
@@ -371,7 +354,7 @@ public class OWSWebSocket: NSObject {
             }
             return
         }
-        guard let currentWebSocket = webSocket.currentWebSocket,
+        guard let currentWebSocket = currentWebSocket,
               currentWebSocket.state == .open else {
             owsFailDebug("\(label) Missing currentWebSocket.")
             DispatchQueue.global().async {
@@ -380,13 +363,13 @@ public class OWSWebSocket: NSObject {
             return
         }
 
-        let requestInfo = SocketRequestInfo(request: request,
-                                            requestUrl: requestUrl,
-                                            webSocketType: webSocket.webSocketType,
-                                            success: success,
-                                            failure: failure)
+        let requestInfo = RequestInfo(request: request,
+                                      requestUrl: requestUrl,
+                                      connectionType: type,
+                                      success: success,
+                                      failure: failure)
         label = Self.label(forRequest: request,
-                           webSocketType: webSocketType,
+                           connectionType: type,
                            requestInfo: requestInfo)
 
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
@@ -453,7 +436,7 @@ public class OWSWebSocket: NSObject {
 
             currentWebSocket.sendRequest(requestInfo: requestInfo,
                                          messageData: messageData,
-                                         delegate: webSocket)
+                                         delegate: self)
         } catch {
             owsFailDebug("\(label), Error: \(error).")
             requestInfo.didFailInvalidRequest()
@@ -585,7 +568,7 @@ public class OWSWebSocket: NSObject {
             return
         }
         let envelopeSource: EnvelopeSource = {
-            switch self.webSocketType {
+            switch self.type {
             case .identified:
                 return .websocketIdentified
             case .unidentified:
@@ -661,7 +644,7 @@ public class OWSWebSocket: NSObject {
 
     // This method is thread-safe.
     private var webSocketAuthenticationQueryItems: [URLQueryItem]? {
-        switch webSocketType {
+        switch type {
         case .unidentified:
             // UD socket is unauthenticated.
             return nil
@@ -855,7 +838,7 @@ public class OWSWebSocket: NSObject {
         }
 
         let signalServiceType: SignalServiceType
-        switch webSocketType {
+        switch type {
         case .identified:
             signalServiceType = .mainSignalServiceIdentified
         case .unidentified:
@@ -871,13 +854,13 @@ public class OWSWebSocket: NSObject {
 
         guard let webSocket = GlobalDependencies.webSocketFactory.buildSocket(
             request: request,
-            callbackScheduler: OWSWebSocket.serialQueue
+            callbackScheduler: OWSChatConnection.serialQueue
         ) else {
             owsFailDebug("Missing webSocket.")
             return
         }
         webSocket.delegate = self
-        let newWebSocket = WebSocketConnection(webSocketType: webSocketType, webSocket: webSocket)
+        let newWebSocket = WebSocketConnection(connectionType: type, webSocket: webSocket)
         self.currentWebSocket = newWebSocket
 
         // `connect` could hypothetically call a delegate method (e.g. if
@@ -999,13 +982,13 @@ public class OWSWebSocket: NSObject {
 
 // MARK: -
 
-extension OWSWebSocket {
+extension OWSChatConnection {
 
     fileprivate static func label(forRequest request: TSRequest,
-                                  webSocketType: OWSWebSocketType,
-                                  requestInfo: SocketRequestInfo?) -> String {
+                                  connectionType: OWSChatConnectionType,
+                                  requestInfo: RequestInfo?) -> String {
 
-        var label = "\(webSocketType), \(request)"
+        var label = "\(connectionType), \(request)"
         if let requestInfo = requestInfo {
             label += ", [\(requestInfo.requestId)]"
         }
@@ -1016,7 +999,7 @@ extension OWSWebSocket {
                             unsubmittedRequestToken: UnsubmittedRequestToken,
                             success successParam: @escaping RequestSuccess,
                             failure failureParam: @escaping RequestFailure) {
-        assertOnQueue(OWSWebSocket.serialQueue)
+        assertOnQueue(OWSChatConnection.serialQueue)
 
         guard !appExpiry.isExpired else {
             removeUnsubmittedRequestToken(unsubmittedRequestToken)
@@ -1032,17 +1015,17 @@ extension OWSWebSocket {
             return
         }
 
-        let webSocketType = self.webSocketType
+        let connectionType = self.type
 
-        let isIdentifiedSocket = webSocketType == .identified
+        let isIdentifiedConnection = connectionType == .identified
         let isIdentifiedRequest = request.shouldHaveAuthorizationHeaders && !request.isUDRequest
-        owsAssertDebug(isIdentifiedSocket == isIdentifiedRequest)
+        owsAssertDebug(isIdentifiedConnection == isIdentifiedRequest)
 
         self.makeRequestInternal(
             request,
             unsubmittedRequestToken: unsubmittedRequestToken,
-            success: { (response: HTTPResponse, requestInfo: SocketRequestInfo) in
-                let label = Self.label(forRequest: request, webSocketType: webSocketType, requestInfo: requestInfo)
+            success: { (response: HTTPResponse, requestInfo: RequestInfo) in
+                let label = Self.label(forRequest: request, connectionType: connectionType, requestInfo: requestInfo)
                 Logger.info("\(label): Request Succeeded (\(response.responseStatusCode))")
 
                 successParam(response)
@@ -1061,7 +1044,7 @@ extension OWSWebSocket {
 
 // MARK: -
 
-private class SocketRequestInfo {
+private class RequestInfo {
 
     let request: TSRequest
 
@@ -1069,7 +1052,7 @@ private class SocketRequestInfo {
 
     let requestId: UInt64 = Cryptography.randomUInt64()
 
-    let webSocketType: OWSWebSocketType
+    let connectionType: OWSChatConnectionType
 
     let startDate = Date()
 
@@ -1088,19 +1071,19 @@ private class SocketRequestInfo {
 
     private let backgroundTask: OWSBackgroundTask
 
-    public typealias RequestSuccess = OWSWebSocket.RequestSuccessInternal
-    public typealias RequestFailure = OWSWebSocket.RequestFailure
+    public typealias RequestSuccess = OWSChatConnection.RequestSuccessInternal
+    public typealias RequestFailure = OWSChatConnection.RequestFailure
 
     public required init(request: TSRequest,
                          requestUrl: URL,
-                         webSocketType: OWSWebSocketType,
+                         connectionType: OWSChatConnectionType,
                          success: @escaping RequestSuccess,
                          failure: @escaping RequestFailure) {
         self.request = request
         self.requestUrl = requestUrl
-        self.webSocketType = webSocketType
+        self.connectionType = connectionType
         self.status = AtomicValue(.incomplete(success: success, failure: failure))
-        self.backgroundTask = OWSBackgroundTask(label: "SocketRequestInfo")
+        self.backgroundTask = OWSBackgroundTask(label: "ChatRequestInfo")
     }
 
     public func didSucceed(status: Int,
@@ -1174,7 +1157,7 @@ private class SocketRequestInfo {
 
 // MARK: -
 
-extension OWSWebSocket: SSKWebSocketDelegate {
+extension OWSChatConnection: SSKWebSocketDelegate {
 
     public func websocketDidConnect(socket eventSocket: SSKWebSocket) {
         assertOnQueue(Self.serialQueue)
@@ -1188,7 +1171,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
         currentWebSocket.didConnect(delegate: self)
 
         // If socket opens, we know we're not de-registered.
-        if webSocketType == .identified {
+        if type == .identified {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             if tsAccountManager.registrationStateWithMaybeSneakyTransaction.isDeregistered {
                 DependenciesBridge.shared.db.write { tx in
@@ -1215,7 +1198,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
 
         self.currentWebSocket = nil
 
-        if webSocketType == .identified, case WebSocketError.httpError(statusCode: 403, _) = error {
+        if type == .identified, case WebSocketError.httpError(statusCode: 403, _) = error {
             DependenciesBridge.shared.db.write { tx in
                 DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
             }
@@ -1270,7 +1253,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
 
 // MARK: -
 
-extension OWSWebSocket: WebSocketConnectionDelegate {
+extension OWSChatConnection: WebSocketConnectionDelegate {
     fileprivate func webSocketSendHeartBeat(_ webSocket: WebSocketConnection) {
         if shouldSocketBeOpen {
             webSocket.writePing()
@@ -1296,7 +1279,7 @@ private protocol WebSocketConnectionDelegate: AnyObject {
 
 private class WebSocketConnection {
 
-    private let webSocketType: OWSWebSocketType
+    private let connectionType: OWSChatConnectionType
 
     private let webSocket: SSKWebSocket
 
@@ -1308,7 +1291,7 @@ private class WebSocketConnection {
 
     public var state: SSKWebSocketState { webSocket.state }
 
-    private var requestInfoMap = AtomicDictionary<UInt64, SocketRequestInfo>()
+    private var requestInfoMap = AtomicDictionary<UInt64, RequestInfo>()
 
     public var hasPendingRequests: Bool {
         !requestInfoMap.isEmpty
@@ -1317,13 +1300,13 @@ private class WebSocketConnection {
     public let hasConnected = AtomicBool(false)
 
     public var logPrefix: String {
-        "[\(webSocketType): \(id)]"
+        "[\(connectionType): \(id)]"
     }
 
-    required init(webSocketType: OWSWebSocketType, webSocket: SSKWebSocket) {
+    required init(connectionType: OWSChatConnectionType, webSocket: SSKWebSocket) {
         owsAssertDebug(!CurrentAppContext().isRunningTests)
 
-        self.webSocketType = webSocketType
+        self.connectionType = connectionType
         self.webSocket = webSocket
     }
 
@@ -1370,7 +1353,7 @@ private class WebSocketConnection {
         failPendingMessages(requestInfos: requestInfos)
     }
 
-    private func failPendingMessages(requestInfos: [SocketRequestInfo]) {
+    private func failPendingMessages(requestInfos: [RequestInfo]) {
         guard !requestInfos.isEmpty else {
             return
         }
@@ -1383,7 +1366,7 @@ private class WebSocketConnection {
     }
 
     // This method is thread-safe.
-    fileprivate func sendRequest(requestInfo: SocketRequestInfo,
+    fileprivate func sendRequest(requestInfo: RequestInfo,
                                  messageData: Data,
                                  delegate: WebSocketConnectionDelegate) {
         requestInfoMap[requestInfo.requestId] = requestInfo
@@ -1403,7 +1386,7 @@ private class WebSocketConnection {
         }
     }
 
-    fileprivate func popRequestInfo(forRequestId requestId: UInt64) -> SocketRequestInfo? {
+    fileprivate func popRequestInfo(forRequestId requestId: UInt64) -> RequestInfo? {
         requestInfoMap.removeValue(forKey: requestId)
     }
 

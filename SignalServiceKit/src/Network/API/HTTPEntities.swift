@@ -11,9 +11,9 @@ import SignalCoreKit
 // way without concern for whether the request is made via
 //
 // * REST (e.g. AFNetworking, OWSURLSession, URLSession, etc.).
-// * a Websocket (e.g. OWSWebSocket).
+// * a Websocket (e.g. OWSChatConnection).
 
-// A common protocol for responses from OWSUrlSession, NetworkManager, SocketManager, etc.
+// A common protocol for responses from OWSUrlSession, NetworkManager, ChatConnectionManager, etc.
 @objc
 public protocol HTTPResponse {
     var requestUrl: URL { get }
@@ -26,7 +26,7 @@ public protocol HTTPResponse {
 
 // MARK: -
 
-// A common protocol for errors from OWSUrlSession, NetworkManager, SocketManager, etc.
+// A common protocol for errors from OWSUrlSession, NetworkManager, ChatConnectionManager, etc.
 public protocol HTTPError {
     var requestUrl: URL? { get }
     // status is zero by default, if request never made or failed.
@@ -388,7 +388,7 @@ extension HTTPURLResponse {
 // MARK: -
 
 // Temporary obj-c wrapper for OWSHTTPError until
-// OWSWebSocket, etc. have been ported to Swift.
+// OWSChatConnection, etc. have been ported to Swift.
 @objc
 public class OWSHTTPErrorWrapper: NSObject {
     public let error: OWSHTTPError

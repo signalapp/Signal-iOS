@@ -98,7 +98,7 @@ public class DependenciesBridge {
     public let searchableNameIndexer: SearchableNameIndexer
     public let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     public let signalProtocolStoreManager: SignalProtocolStoreManager
-    public let socketManager: SocketManager
+    public let chatConnectionManager: ChatConnectionManager
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
     public let threadAssociatedDataStore: ThreadAssociatedDataStore
@@ -131,6 +131,7 @@ public class DependenciesBridge {
         callRecordStore: CallRecordStore,
         changePhoneNumberPniManager: ChangePhoneNumberPniManager,
         chatColorSettingStore: ChatColorSettingStore,
+        chatConnectionManager: ChatConnectionManager,
         db: DB,
         deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager,
         deletedCallRecordStore: DeletedCallRecordStore,
@@ -177,7 +178,6 @@ public class DependenciesBridge {
         searchableNameIndexer: SearchableNameIndexer,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         signalProtocolStoreManager: SignalProtocolStoreManager,
-        socketManager: SocketManager,
         svr: SecureValueRecovery,
         svrCredentialStorage: SVRAuthCredentialStorage,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
@@ -255,7 +255,7 @@ public class DependenciesBridge {
         self.searchableNameIndexer = searchableNameIndexer
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.signalProtocolStoreManager = signalProtocolStoreManager
-        self.socketManager = socketManager
+        self.chatConnectionManager = chatConnectionManager
         self.svr = svr
         self.svrCredentialStorage = svrCredentialStorage
         self.threadAssociatedDataStore = threadAssociatedDataStore

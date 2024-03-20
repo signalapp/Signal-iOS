@@ -106,16 +106,16 @@ public final class RequestMaker: Dependencies {
         if FeatureFlags.deprecateREST {
             shouldUseWebsocket = true
         } else {
-            let webSocketType: OWSWebSocketType = (isUDRequest ? .unidentified : .identified)
+            let connectionType: OWSChatConnectionType = (isUDRequest ? .unidentified : .identified)
             shouldUseWebsocket = (
-                OWSWebSocket.canAppUseSocketsToMakeRequests
-                && DependenciesBridge.shared.socketManager.canMakeRequests(webSocketType: webSocketType)
+                OWSChatConnection.canAppUseSocketsToMakeRequests
+                && DependenciesBridge.shared.chatConnectionManager.canMakeRequests(connectionType: connectionType)
             )
         }
 
         if shouldUseWebsocket {
             return firstly {
-                DependenciesBridge.shared.socketManager.makeRequestPromise(request: request)
+                DependenciesBridge.shared.chatConnectionManager.makeRequestPromise(request: request)
             }.map(on: DispatchQueue.global()) { response in
                 self.requestSucceeded(udAccess: udAccess)
                 return RequestMakerResult(response: response, wasSentByUD: isUDRequest, wasSentByWebsocket: true)

@@ -20,7 +20,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
-            name: OWSWebSocket.webSocketStateDidChange,
+            name: OWSChatConnection.chatConnectionStateDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -71,7 +71,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             }
         } else if
             !signalService.isCensorshipCircumventionActive,
-            DependenciesBridge.shared.socketManager.isAnySocketOpen
+            DependenciesBridge.shared.chatConnectionManager.isAnyConnectionOpen
         {
             isCensorshipCircumventionSwitchEnabled = false
             censorshipCircumventionSection.footerTitle = OWSLocalizedString(

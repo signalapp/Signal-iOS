@@ -2353,8 +2353,8 @@
 		F9C5CD96289453B300548EEE /* SignalServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABE289453B200548EEE /* SignalServiceClient.swift */; };
 		F9C5CD97289453B300548EEE /* ProxiedContentDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */; };
 		F9C5CD98289453B300548EEE /* OWSCountryMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC0289453B200548EEE /* OWSCountryMetadata.m */; };
-		F9C5CD9A289453B400548EEE /* OWSWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC3289453B200548EEE /* OWSWebSocket.swift */; };
-		F9C5CD9B289453B400548EEE /* SocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC4289453B200548EEE /* SocketManager.swift */; };
+		F9C5CD9A289453B400548EEE /* OWSChatConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC3289453B200548EEE /* OWSChatConnection.swift */; };
+		F9C5CD9B289453B400548EEE /* ChatConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC4289453B200548EEE /* ChatConnectionManager.swift */; };
 		F9C5CD9C289453B400548EEE /* OWSCensorshipConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC5289453B200548EEE /* OWSCensorshipConfiguration.m */; };
 		F9C5CD9D289453B400548EEE /* OWSMultipart.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC6289453B200548EEE /* OWSMultipart.m */; };
 		F9C5CD9E289453B400548EEE /* SSKWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC7289453B200548EEE /* SSKWebSocket.swift */; };
@@ -5190,8 +5190,8 @@
 		F9C5CABE289453B200548EEE /* SignalServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceClient.swift; sourceTree = "<group>"; };
 		F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxiedContentDownloader.swift; sourceTree = "<group>"; };
 		F9C5CAC0289453B200548EEE /* OWSCountryMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCountryMetadata.m; sourceTree = "<group>"; };
-		F9C5CAC3289453B200548EEE /* OWSWebSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSWebSocket.swift; sourceTree = "<group>"; };
-		F9C5CAC4289453B200548EEE /* SocketManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketManager.swift; sourceTree = "<group>"; };
+		F9C5CAC3289453B200548EEE /* OWSChatConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSChatConnection.swift; sourceTree = "<group>"; };
+		F9C5CAC4289453B200548EEE /* ChatConnectionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatConnectionManager.swift; sourceTree = "<group>"; };
 		F9C5CAC5289453B200548EEE /* OWSCensorshipConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCensorshipConfiguration.m; sourceTree = "<group>"; };
 		F9C5CAC6289453B200548EEE /* OWSMultipart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMultipart.m; sourceTree = "<group>"; };
 		F9C5CAC7289453B200548EEE /* SSKWebSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKWebSocket.swift; sourceTree = "<group>"; };
@@ -10539,16 +10539,18 @@
 			children = (
 				F9C5CAD3289453B200548EEE /* API */,
 				F9C5CAC9289453B200548EEE /* Receiving */,
+				66C2B1472A13E290008DDE72 /* SgxWebsocketConnection */,
 				88DF819328E112F600F8BA80 /* Signal Proxy */,
 				F9C5CAB4289453B200548EEE /* Spam */,
-				F9C5CAC2289453B200548EEE /* WebSockets */,
 				669E8FE528B4149200043D28 /* BaseOWSURLSessionMock.swift */,
+				F9C5CAC4289453B200548EEE /* ChatConnectionManager.swift */,
 				F9C5CAF7289453B200548EEE /* ContentProxy.swift */,
 				F9C5CABC289453B200548EEE /* HTMLMetadata.swift */,
 				F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */,
 				F9C5CAC8289453B200548EEE /* OutageDetection.swift */,
 				F9C5CABB289453B200548EEE /* OWSCensorshipConfiguration.h */,
 				F9C5CAC5289453B200548EEE /* OWSCensorshipConfiguration.m */,
+				F9C5CAC3289453B200548EEE /* OWSChatConnection.swift */,
 				F9C5CAF4289453B200548EEE /* OWSCountryMetadata.h */,
 				F9C5CAC0289453B200548EEE /* OWSCountryMetadata.m */,
 				F9C5CAF2289453B200548EEE /* OWSHttpHeaders.swift */,
@@ -10583,16 +10585,6 @@
 				F9C5CAB8289453B200548EEE /* TimeElapsedChallenge.swift */,
 			);
 			path = Spam;
-			sourceTree = "<group>";
-		};
-		F9C5CAC2289453B200548EEE /* WebSockets */ = {
-			isa = PBXGroup;
-			children = (
-				66C2B1472A13E290008DDE72 /* SgxWebsocketConnection */,
-				F9C5CAC3289453B200548EEE /* OWSWebSocket.swift */,
-				F9C5CAC4289453B200548EEE /* SocketManager.swift */,
-			);
-			path = WebSockets;
 			sourceTree = "<group>";
 		};
 		F9C5CAC9289453B200548EEE /* Receiving */ = {
@@ -13158,6 +13150,7 @@
 				50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */,
 				6603AC2D29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift in Sources */,
 				500AEE072A4DF48700371F05 /* ChatColorSettingStore.swift in Sources */,
+				F9C5CD9B289453B400548EEE /* ChatConnectionManager.swift in Sources */,
 				66CD257F2B0D67F300139E17 /* ChatContexts.swift in Sources */,
 				664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */,
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
@@ -13513,6 +13506,7 @@
 				F9C5CE4E289453B400548EEE /* OWSBackgroundTask.m in Sources */,
 				F9C5CD0C289453B300548EEE /* OWSBlockedPhoneNumbersMessage.m in Sources */,
 				F9C5CD9C289453B400548EEE /* OWSCensorshipConfiguration.m in Sources */,
+				F9C5CD9A289453B400548EEE /* OWSChatConnection.swift in Sources */,
 				763A16002AEC3A490081D7E5 /* OWSContact.swift in Sources */,
 				725465192BA00F7500EABFD2 /* OWSContactsManager.swift in Sources */,
 				F9C5CD98289453B300548EEE /* OWSCountryMetadata.m in Sources */,
@@ -13632,7 +13626,6 @@
 				F9C5CCFE289453B300548EEE /* OWSVerificationStateSyncMessage.m in Sources */,
 				F9C5CCFC289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.m in Sources */,
 				F9C5CCFF289453B300548EEE /* OWSViewOnceMessageReadSyncMessage.m in Sources */,
-				F9C5CD9A289453B400548EEE /* OWSWebSocket.swift in Sources */,
 				F9C5CDCD289453B400548EEE /* ParamParser.swift in Sources */,
 				F9C5CD89289453B300548EEE /* PaymentFinder.swift in Sources */,
 				F9C5CD86289453B300548EEE /* Payments+SSK.swift in Sources */,
@@ -13820,7 +13813,6 @@
 				F9C5CC51289453B300548EEE /* SMKError.swift in Sources */,
 				F9C5CC53289453B300548EEE /* SMKSecretSessionCipher.swift in Sources */,
 				F9C5CC50289453B300548EEE /* SMKUDAccessKey.swift in Sources */,
-				F9C5CD9B289453B400548EEE /* SocketManager.swift in Sources */,
 				72C905892B9A28BF00E586B8 /* Sounds.swift in Sources */,
 				F9C5CD8F289453B300548EEE /* SpamChallenge.swift in Sources */,
 				F9C5CD8E289453B300548EEE /* SpamChallengeResolver.swift in Sources */,

@@ -10,7 +10,7 @@ extension Upload {
     enum Mocks {
         typealias NetworkManager = _UploadManager_NetworkManagerMock
         typealias URLSession = _UploadManager_OWSURLSessionMock
-        typealias SocketManager = _UploadManager_SocketManagerMock
+        typealias ChatConnectionManager = _UploadManager_ChatConnectionManagerMock
 
         typealias AttachmentEncrypter = _UploadManager_AttachmentEncrypterMock
         typealias BlurHash = _Upload_BlurHashMock
@@ -76,13 +76,13 @@ public class _UploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
     }
 }
 
-class _UploadManager_SocketManagerMock: SocketManager {
-    var isAnySocketOpen: Bool { true }
+class _UploadManager_ChatConnectionManagerMock: ChatConnectionManager {
+    var isAnyConnectionOpen: Bool { true }
     var hasEmptiedInitialQueue: Bool { true }
-    func waitForSocketToOpen(webSocketType: OWSWebSocketType) async throws { }
-    func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState { .open }
+    func waitForConnectionToOpen(type: OWSChatConnectionType) async throws { }
+    func connectionState(forType type: OWSChatConnectionType) -> OWSChatConnectionState { .open }
     func cycleSocket() { }
-    func canMakeRequests(webSocketType: OWSWebSocketType) -> Bool { true }
+    func canMakeRequests(connectionType: OWSChatConnectionType) -> Bool { true }
     func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> { fatalError() }
     func didReceivePush() { }
 }

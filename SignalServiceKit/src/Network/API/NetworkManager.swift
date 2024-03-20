@@ -25,7 +25,7 @@ public class NetworkManager: NSObject {
         }
 
         // Otherwise, try the web socket first if it's allowed for this request.
-        let useWebSocket = canUseWebSocket && OWSWebSocket.canAppUseSocketsToMakeRequests
+        let useWebSocket = canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests
         return useWebSocket ? websocketRequestPromise(request: request) : restRequestPromise(request: request)
     }
 
@@ -34,7 +34,7 @@ public class NetworkManager: NSObject {
     }
 
     private func websocketRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
-        DependenciesBridge.shared.socketManager.makeRequestPromise(request: request)
+        DependenciesBridge.shared.chatConnectionManager.makeRequestPromise(request: request)
     }
 }
 

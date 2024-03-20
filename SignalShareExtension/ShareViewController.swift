@@ -153,7 +153,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             // We don't need to update the app icon badge number in the SAE.
 
-            // We don't need to prod the SocketManager in the SAE.
+            // We don't need to prod the ChatConnectionManager in the SAE.
         }
 
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
@@ -161,7 +161,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 guard self != nil else { return }
                 Logger.info("running post launch block for registered user: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
 
-                // We don't need to use the SocketManager in the SAE.
+                // We don't need to use the ChatConnectionManager in the SAE.
 
                 // TODO: Re-enable when system contact fetching uses less memory.
                 // self.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
