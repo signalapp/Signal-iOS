@@ -30,6 +30,14 @@ public class TSResourceManagerMock: TSResourceManager {
         return .withoutFinalizer(.legacy(uniqueId: ""))
     }
 
+    public func createLocalAttachmentBuilder(
+        rawFileData: Data,
+        mimeType: String,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
+        return .withoutFinalizer(.legacy(uniqueId: ""))
+    }
+
     public func buildProtoForSending(
         from reference: TSResourceReference,
         pointer: TSResourcePointer

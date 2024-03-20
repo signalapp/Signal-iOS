@@ -41,6 +41,13 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         return .withoutFinalizer(.init())
     }
 
+    public func validateAndBuildLinkPreview(
+        from draft: OWSLinkPreviewDraft,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        return .withoutFinalizer(.init())
+    }
+
     public func buildProtoForSending(
         _ linkPreview: OWSLinkPreview,
         parentMessage: TSMessage,

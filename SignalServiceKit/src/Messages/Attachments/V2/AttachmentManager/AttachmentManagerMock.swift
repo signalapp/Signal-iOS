@@ -24,6 +24,14 @@ open class AttachmentManagerMock: AttachmentManager {
         return .withoutFinalizer(())
     }
 
+    open func createAttachmentBuilder(
+        rawFileData: Data,
+        mimeType: String,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<Void> {
+        return .withoutFinalizer(())
+    }
+
     open func createAttachmentStreams(
         consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
         owner: AttachmentReference.OwnerId,

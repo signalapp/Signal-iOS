@@ -337,6 +337,39 @@ public class TSAttachmentManager {
             )
         }
     }
+
+    // MARK: - Creating from local data
+
+    public func createLocalAttachment(
+        rawFileData: Data,
+        mimeType: String,
+        tx: SDSAnyWriteTransaction
+    ) throws -> String {
+        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: mimeType) else {
+            throw OWSAssertionError("Invalid mime type!")
+        }
+        let fileSize = rawFileData.count
+        guard fileSize > 0 else {
+            throw OWSAssertionError("Invalid file size for image data.")
+        }
+        let contentType = mimeType
+
+        let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
+        try rawFileData.write(to: fileUrl)
+        let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
+        let attachment = TSAttachmentStream(
+            contentType: contentType,
+            byteCount: UInt32(fileSize),
+            sourceFilename: nil,
+            caption: nil,
+            attachmentType: .default,
+            albumMessageId: nil
+        )
+        try attachment.writeConsumingDataSource(dataSource)
+        attachment.anyInsert(transaction: tx)
+
+        return attachment.uniqueId
+    }
 }
 
 fileprivate extension OWSAttachmentInfoReference {

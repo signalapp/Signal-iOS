@@ -33,6 +33,23 @@ public protocol AttachmentManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<Void>
 
+    /// Given locally sourced attachmentData,
+    /// returns a builder for creating the attachment locally.
+    ///
+    /// The attachment info needed to construct the owner object
+    /// is available immediately, but the caller _must_ finalize
+    /// the builder for the attachment to be created.
+    ///
+    /// Callers should only assume the attachment (if any) exists
+    /// after finalizing.
+    ///
+    /// Throws an error if the provided data/mimeType is invalid.
+    func createAttachmentBuilder(
+        rawFileData: Data,
+        mimeType: String,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<Void>
+
     /// Create attachment streams from the outgoing infos and their data sources,
     /// consuming those data sources.
     /// May reuse an existing attachment stream if matched by content, and discard

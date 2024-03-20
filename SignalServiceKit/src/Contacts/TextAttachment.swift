@@ -6,8 +6,8 @@
 import Foundation
 
 public struct UnsentTextAttachment {
-    private let body: StyleOnlyMessageBody?
-    private let textStyle: TextAttachment.TextStyle
+    public let body: StyleOnlyMessageBody?
+    public let textStyle: TextAttachment.TextStyle
     public let textForegroundColor: UIColor
     public let textBackgroundColor: UIColor?
     public let background: TextAttachment.Background
@@ -34,69 +34,43 @@ public struct UnsentTextAttachment {
         self.linkPreviewDraft = linkPreviewDraft
     }
 
-    public func validateLinkPreviewAndBuildUnownedTextAttachment(
-        transaction: SDSAnyWriteTransaction
-    ) -> (TextAttachment, imageAttachmentUniqueId: String?)? {
-        var validatedLinkPreview: OWSLinkPreview?
-        var imageAttachmentUniqueId: String?
-        if let linkPreview = linkPreviewDraft {
-            do {
-                (validatedLinkPreview, imageAttachmentUniqueId) = try OWSLinkPreview.buildValidatedUnownedLinkPreview(
-                    fromInfo: linkPreview,
-                    transaction: transaction
-                )
-            } catch LinkPreviewError.featureDisabled {
-                validatedLinkPreview = .withoutImage(urlString: linkPreview.urlString)
-            } catch {
-                Logger.error("Failed to generate link preview.")
-            }
-        }
-
-        guard validatedLinkPreview != nil || !(body?.isEmpty ?? true) else {
-            owsFailDebug("Empty content")
-            return nil
-        }
-        return (TextAttachment(
-            body: body,
-            textStyle: textStyle,
-            textForegroundColor: textForegroundColor,
-            textBackgroundColor: textBackgroundColor,
-            background: background,
-            linkPreview: validatedLinkPreview
-        ), imageAttachmentUniqueId)
-    }
-
     public func validateLinkPreviewAndBuildTextAttachment(
-        storyMessageRowId: Int64,
         transaction: SDSAnyWriteTransaction
-    ) -> TextAttachment? {
-        var validatedLinkPreview: OWSLinkPreview?
+    ) -> OwnedAttachmentBuilder<TextAttachment>? {
+        var validatedLinkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
         if let linkPreview = linkPreviewDraft {
             do {
-                validatedLinkPreview = try OWSLinkPreview.buildValidatedLinkPreview(
-                    fromInfo: linkPreview,
-                    storyMessageRowId: storyMessageRowId,
-                    transaction: transaction
+                validatedLinkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+                    from: linkPreview,
+                    tx: transaction.asV2Write
                 )
             } catch LinkPreviewError.featureDisabled {
-                validatedLinkPreview = .withoutImage(urlString: linkPreview.urlString)
+                validatedLinkPreviewBuilder = .withoutFinalizer(.withoutImage(urlString: linkPreview.urlString))
             } catch {
                 Logger.error("Failed to generate link preview.")
             }
         }
 
-        guard validatedLinkPreview != nil || !(body?.isEmpty ?? true) else {
+        guard validatedLinkPreviewBuilder != nil || !(body?.isEmpty ?? true) else {
             owsFailDebug("Empty content")
             return nil
         }
-        return TextAttachment(
-            body: body,
-            textStyle: textStyle,
-            textForegroundColor: textForegroundColor,
-            textBackgroundColor: textBackgroundColor,
-            background: background,
-            linkPreview: validatedLinkPreview
-        )
+
+        func buildTextAttachment(linkPreview: OWSLinkPreview?) -> TextAttachment {
+            return TextAttachment(
+                body: body,
+                textStyle: textStyle,
+                textForegroundColor: textForegroundColor,
+                textBackgroundColor: textBackgroundColor,
+                background: background,
+                linkPreview: linkPreview
+            )
+        }
+        if let validatedLinkPreviewBuilder {
+            return validatedLinkPreviewBuilder.wrap(buildTextAttachment(linkPreview:))
+        } else {
+            return .withoutFinalizer(buildTextAttachment(linkPreview: nil))
+        }
     }
 }
 

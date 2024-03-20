@@ -91,6 +91,27 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
+    public func createLocalAttachmentBuilder(
+        rawFileData: Data,
+        mimeType: String,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
+        if FeatureFlags.newAttachmentsUseV2 {
+            return try attachmentManager.createAttachmentBuilder(
+                rawFileData: rawFileData,
+                mimeType: mimeType,
+                tx: tx
+            ).wrap({ .v2 })
+        } else {
+            let attachmentId = try tsAttachmentManager.createLocalAttachment(
+                rawFileData: rawFileData,
+                mimeType: mimeType,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
+            return .withoutFinalizer(.legacy(uniqueId: attachmentId))
+        }
+    }
+
     public func buildProtoForSending(
         from reference: TSResourceReference,
         pointer: TSResourcePointer

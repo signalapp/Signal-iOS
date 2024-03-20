@@ -60,12 +60,15 @@ public class OutgoingMessagePreparer: NSObject {
 
         if let linkPreviewDraft = linkPreviewDraft {
             do {
-                let linkPreview = try OWSLinkPreview.buildValidatedLinkPreview(
-                    fromInfo: linkPreviewDraft,
-                    messageRowId: messageRowId,
-                    transaction: transaction
+                let linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+                    from: linkPreviewDraft,
+                    tx: transaction.asV2Write
                 )
-                unpreparedMessage.update(with: linkPreview, transaction: transaction)
+                unpreparedMessage.update(with: linkPreviewBuilder.info, transaction: transaction)
+                linkPreviewBuilder.finalize(
+                    owner: .messageLinkPreview(messageRowId: messageRowId),
+                    tx: transaction.asV2Write
+                )
             } catch {
                 Logger.error("error: \(error)")
             }

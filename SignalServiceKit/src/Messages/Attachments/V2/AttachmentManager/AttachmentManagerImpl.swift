@@ -67,6 +67,33 @@ public class AttachmentManagerImpl: AttachmentManager {
         )
     }
 
+    public func createAttachmentBuilder(
+        rawFileData: Data,
+        mimeType: String,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<Void> {
+        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: mimeType) else {
+            throw OWSAssertionError("Invalid mime type!")
+        }
+        let fileSize = rawFileData.count
+        guard fileSize > 0 else {
+            throw OWSAssertionError("Invalid file size for image data.")
+        }
+        return OwnedAttachmentBuilder<Void>(
+            info: (),
+            finalize: { [self] (owner: OwnerId, tx: DBWriteTransaction) in
+                let attachment: Attachment = {
+                    // TODO: Create and insert Attachment for the provided data.
+                    fatalError("Unimplemented")
+                }()
+                let attachmentReference: AttachmentReference = {
+                    // TODO: Create and insert AttachmentReference from the provided owner to the new Attachment
+                    fatalError("Unimplemented")
+                }()
+            }
+        )
+    }
+
     public func createAttachmentStreams(
         consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
         owner: AttachmentReference.OwnerId,

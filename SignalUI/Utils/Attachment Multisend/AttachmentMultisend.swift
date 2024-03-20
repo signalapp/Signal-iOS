@@ -252,7 +252,7 @@ public class AttachmentMultisend: Dependencies {
             let attachmentToUploadIdentifier = UUID()
             guard
                 let (_, imageAttachmentUniqueId) =
-                    textAttachment.validateLinkPreviewAndBuildUnownedTextAttachment(transaction: transaction)
+                    Self.validateLinkPreviewAndBuildUnownedTextAttachment(textAttachment, transaction: transaction)
             else {
                 throw OWSAssertionError("Invalid text attachment")
             }
@@ -292,6 +292,71 @@ public class AttachmentMultisend: Dependencies {
     }
 
     // MARK: - Helpers
+
+    private class func validateLinkPreviewAndBuildUnownedTextAttachment(
+        _ textAttachment: UnsentTextAttachment,
+        transaction: SDSAnyWriteTransaction
+    ) -> (TextAttachment, imageAttachmentUniqueId: String?)? {
+        var validatedLinkPreview: OWSLinkPreview?
+        var imageAttachmentUniqueId: String?
+        if let linkPreview = textAttachment.linkPreviewDraft {
+            do {
+                (validatedLinkPreview, imageAttachmentUniqueId) = try Self.buildValidatedUnownedLinkPreview(
+                    fromInfo: linkPreview,
+                    transaction: transaction
+                )
+            } catch LinkPreviewError.featureDisabled {
+                validatedLinkPreview = .withoutImage(urlString: linkPreview.urlString)
+            } catch {
+                Logger.error("Failed to generate link preview.")
+            }
+        }
+
+        guard validatedLinkPreview != nil || !(textAttachment.body?.isEmpty ?? true) else {
+            owsFailDebug("Empty content")
+            return nil
+        }
+        return (TextAttachment(
+            body: textAttachment.body,
+            textStyle: textAttachment.textStyle,
+            textForegroundColor: textAttachment.textForegroundColor,
+            textBackgroundColor: textAttachment.textBackgroundColor,
+            background: textAttachment.background,
+            linkPreview: validatedLinkPreview
+        ), imageAttachmentUniqueId)
+    }
+
+    private class func buildValidatedUnownedLinkPreview(
+        fromInfo info: OWSLinkPreviewDraft,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> (OWSLinkPreview, attachmentUniqueId: String?) {
+        guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
+            throw LinkPreviewError.featureDisabled
+        }
+        let attachmentUniqueId: String?
+        do {
+            if let imageData = info.imageData, let imageMimeType = info.imageMimeType {
+                attachmentUniqueId = try TSAttachmentManager().createLocalAttachment(
+                    rawFileData: imageData,
+                    mimeType: imageMimeType,
+                    tx: transaction
+                )
+            } else {
+                attachmentUniqueId = nil
+            }
+        } catch {
+            owsFailDebug("Failed to build attachment, error: \(error)")
+            attachmentUniqueId = nil
+        }
+        let linkPreview = OWSLinkPreview.init(
+            urlString: info.urlString,
+            title: info.title,
+            legacyImageAttachmentId: attachmentUniqueId
+        )
+        linkPreview.previewDescription = info.previewDescription
+        linkPreview.date = info.date
+        return (linkPreview, attachmentUniqueId: attachmentUniqueId)
+    }
 
     private class func sendAttachment(preparedSend: PreparedMultisend) -> Promise<[TSThread]> {
         databaseStorage.write { transaction in

@@ -25,28 +25,30 @@ extension OutgoingStoryMessage {
                             transaction: transaction
                         )
                     } else {
+                        let attachment = identifiedAttachment.value
+                        let captionBody = state.approvalMessageBody?
+                            .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
+                            .asStyleOnlyBody()
+                        attachment.captionText = captionBody?.text
+                        let attachmentStream = try attachment
+                            .buildOutgoingAttachmentInfo()
+                            .asStreamConsumingDataSource(isVoiceMessage: attachment.isVoiceMessage)
+                        attachmentStream.anyInsert(transaction: transaction)
+                        let attachmentBuilder = OwnedAttachmentBuilder<StoryMessageAttachment>.withoutFinalizer(
+                            .file(StoryMessageFileAttachment(
+                                attachmentId: attachmentStream.uniqueId,
+                                captionStyles: captionBody?.collapsedStyles ?? []
+                            ))
+                        )
+
+                        var correspondingIdsForAttachment = state.correspondingAttachmentIds[identifiedAttachment.id] ?? []
+                        correspondingIdsForAttachment += [attachmentStream.uniqueId]
+                        state.correspondingAttachmentIds[identifiedAttachment.id] = correspondingIdsForAttachment
+
                         message = try OutgoingStoryMessage.createUnsentMessage(
                             thread: destination.thread,
-                            transaction: transaction,
-                            attachmentGenerator: { _, storyMessageUniqueId, transaction in
-                                let attachment = identifiedAttachment.value
-                                let captionBody = state.approvalMessageBody?
-                                    .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
-                                    .asStyleOnlyBody()
-                                attachment.captionText = captionBody?.text
-                                let attachmentStream = try attachment
-                                    .buildOutgoingAttachmentInfo()
-                                    .asStreamConsumingDataSource(isVoiceMessage: attachment.isVoiceMessage)
-                                attachmentStream.anyInsert(transaction: transaction)
-
-                                var correspondingIdsForAttachment = state.correspondingAttachmentIds[identifiedAttachment.id] ?? []
-                                correspondingIdsForAttachment += [attachmentStream.uniqueId]
-                                state.correspondingAttachmentIds[identifiedAttachment.id] = correspondingIdsForAttachment
-                                return .file(StoryMessageFileAttachment(
-                                    attachmentId: attachmentStream.uniqueId,
-                                    captionStyles: captionBody?.collapsedStyles ?? []
-                                ))
-                            }
+                            attachmentBuilder: attachmentBuilder,
+                            transaction: transaction
                         )
                         if destination.thread is TSPrivateStoryThread {
                             privateStoryMessageIds[identifiedAttachment.id] = message.storyMessageId
@@ -66,26 +68,21 @@ extension OutgoingStoryMessage {
                         transaction: transaction
                     )
                 } else {
+                    guard
+                        let textAttachmentBuilder = textAttachment.value
+                            .validateLinkPreviewAndBuildTextAttachment(transaction: transaction)
+                    else {
+                        throw OWSAssertionError("Invalid text attachment")
+                    }
+                    if let linkPreviewAttachmentId = textAttachmentBuilder.info.preview?.legacyImageAttachmentId {
+                        var correspondingIdsForAttachment = state.correspondingAttachmentIds[textAttachment.id] ?? []
+                        correspondingIdsForAttachment += [linkPreviewAttachmentId]
+                        state.correspondingAttachmentIds[textAttachment.id] = correspondingIdsForAttachment
+                    }
                     message = try OutgoingStoryMessage.createUnsentMessage(
                         thread: destination.thread,
-                        transaction: transaction,
-                        attachmentGenerator: { storyMessageRowId, _, transaction in
-                            guard
-                                let finalTextAttachment = textAttachment.value.validateLinkPreviewAndBuildTextAttachment(
-                                    storyMessageRowId: storyMessageRowId,
-                                    transaction: transaction
-                                )
-                            else {
-                                throw OWSAssertionError("Invalid text attachment")
-                            }
-
-                            if let linkPreviewAttachmentId = finalTextAttachment.preview?.legacyImageAttachmentId {
-                                var correspondingIdsForAttachment = state.correspondingAttachmentIds[textAttachment.id] ?? []
-                                correspondingIdsForAttachment += [linkPreviewAttachmentId]
-                                state.correspondingAttachmentIds[textAttachment.id] = correspondingIdsForAttachment
-                            }
-                            return .text(finalTextAttachment)
-                        }
+                        attachmentBuilder: textAttachmentBuilder.wrap { .text($0) },
+                        transaction: transaction
                     )
                     if destination.thread is TSPrivateStoryThread {
                         privateStoryMessageIds[textAttachment.id] = message.storyMessageId

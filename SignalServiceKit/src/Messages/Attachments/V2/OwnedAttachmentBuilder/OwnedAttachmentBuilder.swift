@@ -74,7 +74,7 @@ public class OwnedAttachmentBuilder<InfoType> {
 
 extension OwnedAttachmentBuilder {
 
-    func wrap<T>(_ mapFn: (InfoType) -> T) -> OwnedAttachmentBuilder<T> {
+    public func wrap<T>(_ mapFn: (InfoType) -> T) -> OwnedAttachmentBuilder<T> {
         return OwnedAttachmentBuilder<T>(
             info: mapFn(self.info),
             finalize: { [self] owner, tx in

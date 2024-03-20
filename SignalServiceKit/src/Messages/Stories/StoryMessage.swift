@@ -176,49 +176,35 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         self.replyCount = replyCount
     }
 
-    public typealias AttachmentGenerator = (
-        _ storyMessageId: Int64,
-        _ storyMessageUniqueID: String,
-        _ tx: SDSAnyWriteTransaction
-    ) throws -> StoryMessageAttachment
-
     public static func createAndInsert(
         timestamp: UInt64,
         authorAci: Aci,
         groupId: Data?,
         manifest: StoryManifest,
         replyCount: UInt64,
-        transaction: SDSAnyWriteTransaction,
-        attachmentGenerator: AttachmentGenerator
+        attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>,
+        transaction: SDSAnyWriteTransaction
     ) throws -> StoryMessage {
-        // During this transitory period, this attachment type is temporary; we immediately
-        // replace it with the attachment from the AttachmentGenerator (and enforce as much
-        // below; if the replace fails we delete the story message).
-        // Eventually, foreign reference attachments will be the _only_ kind of attachment
-        // in a StoryMessage, so this will actually not be temporary.
-        let initialAttachmentType = StoryMessageAttachment.foreignReferenceAttachment
-
         let storyMessage = StoryMessage(
             timestamp: timestamp,
             authorAci: authorAci,
             groupId: groupId,
             manifest: manifest,
-            attachment: initialAttachmentType,
+            attachment: attachmentBuilder.info,
             replyCount: replyCount
         )
         storyMessage.anyInsert(transaction: transaction)
         guard let id = storyMessage.id else {
             throw OWSAssertionError("No sqlite id after insert!")
         }
-        do {
-            let attachment = try attachmentGenerator(id, storyMessage.uniqueId, transaction)
-            storyMessage.updateAttachment(attachment, transaction: transaction)
-        } catch let error {
-            // If we couldn't generate the attachment the story message is invalid
-            // and needs to be removed.
-            storyMessage.anyRemove(transaction: transaction)
-            throw error
+        let ownerId: AttachmentReference.OwnerId
+        switch attachmentBuilder.info {
+        case .file, .foreignReferenceAttachment:
+            ownerId = .storyMessageMedia(storyMessageRowId: id)
+        case .text:
+            ownerId = .storyMessageLinkPreview(storyMessageRowId: id)
         }
+        attachmentBuilder.finalize(owner: ownerId, tx: transaction.asV2Write)
         return storyMessage
     }
 

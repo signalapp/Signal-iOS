@@ -63,6 +63,25 @@ public protocol TSResourceManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo>
 
+    /// Given locally sourced attachmentData,
+    /// returns a builder for creating the attachment locally.
+    ///
+    /// The attachment info needed to construct the owner
+    /// is available immediately, but the caller _must_ finalize
+    /// the builder to guarantee the attachment is created.
+    ///
+    /// Legacy attachments are created synchronously,
+    /// v2 attachments are created at finalization time.
+    /// Callers should only assume the attachment (if any) exists
+    /// after finalizing.
+    ///
+    /// Throws an error if the provided data/mimeType is invalid.
+    func createLocalAttachmentBuilder(
+        rawFileData: Data,
+        mimeType: String,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo>
+
     func buildProtoForSending(
         from reference: TSResourceReference,
         pointer: TSResourcePointer

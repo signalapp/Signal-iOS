@@ -22,6 +22,11 @@ public protocol LinkPreviewManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 
+    func validateAndBuildLinkPreview(
+        from draft: OWSLinkPreviewDraft,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
+
     func buildProtoForSending(
         _ linkPreview: OWSLinkPreview,
         parentMessage: TSMessage,

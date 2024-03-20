@@ -66,8 +66,8 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
     public class func createUnsentMessage(
         thread: TSThread,
-        transaction: SDSAnyWriteTransaction,
-        attachmentGenerator: StoryMessage.AttachmentGenerator
+        attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>,
+        transaction: SDSAnyWriteTransaction
     ) throws -> OutgoingStoryMessage {
         let storyManifest: StoryManifest = .outgoing(
             recipientStates: try thread.recipientAddresses(with: transaction)
@@ -91,8 +91,8 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             groupId: (thread as? TSGroupThread)?.groupId,
             manifest: storyManifest,
             replyCount: 0,
-            transaction: transaction,
-            attachmentGenerator: attachmentGenerator
+            attachmentBuilder: attachmentBuilder,
+            transaction: transaction
         )
 
         thread.updateWithLastSentStoryTimestamp(NSNumber(value: storyMessage.timestamp), transaction: transaction)
