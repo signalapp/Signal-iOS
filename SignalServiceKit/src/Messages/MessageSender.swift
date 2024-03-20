@@ -480,6 +480,7 @@ public class MessageSender: Dependencies {
                 caption: nil,
                 albumMessageId: nil,
                 isBorderless: false,
+                isVoiceMessage: false,
                 isLoopingVideo: false
             )]
         )

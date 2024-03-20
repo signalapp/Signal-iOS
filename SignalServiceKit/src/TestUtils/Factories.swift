@@ -501,7 +501,8 @@ public class ConversationFactory: NSObject {
             dataSource: dataSource,
             contentType: "image/png",
             caption: caption,
-            albumMessageId: outgoingMessage.uniqueId
+            albumMessageId: outgoingMessage.uniqueId,
+            isVoiceMessage: outgoingMessage.isVoiceMessage
         )
     }
 

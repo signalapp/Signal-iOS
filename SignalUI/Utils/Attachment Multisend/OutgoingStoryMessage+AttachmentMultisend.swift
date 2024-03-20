@@ -32,7 +32,7 @@ extension OutgoingStoryMessage {
                         attachment.captionText = captionBody?.text
                         let attachmentStream = try attachment
                             .buildOutgoingAttachmentInfo()
-                            .asStreamConsumingDataSource(isVoiceMessage: attachment.isVoiceMessage)
+                            .asStreamConsumingDataSource()
                         attachmentStream.anyInsert(transaction: transaction)
                         let attachmentBuilder = OwnedAttachmentBuilder<StoryMessageAttachment>.withoutFinalizer(
                             .file(StoryMessageFileAttachment(

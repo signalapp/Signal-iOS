@@ -302,6 +302,7 @@ public class SignalAttachment: NSObject {
             caption: captionText,
             albumMessageId: message?.uniqueId,
             isBorderless: isBorderless,
+            isVoiceMessage: isVoiceMessage,
             isLoopingVideo: isLoopingVideo
         )
     }

@@ -11,8 +11,7 @@ public final class OutgoingAttachmentInfo {
     let sourceFilename: String?
     let caption: String?
     let albumMessageId: String?
-    let isBorderless: Bool
-    let isLoopingVideo: Bool
+    let renderingFlag: AttachmentReference.RenderingFlag
 
     public init(
         dataSource: DataSource,
@@ -21,6 +20,7 @@ public final class OutgoingAttachmentInfo {
         caption: String? = nil,
         albumMessageId: String? = nil,
         isBorderless: Bool = false,
+        isVoiceMessage: Bool = false,
         isLoopingVideo: Bool = false
     ) {
         self.dataSource = dataSource
@@ -28,28 +28,26 @@ public final class OutgoingAttachmentInfo {
         self.sourceFilename = sourceFilename
         self.caption = caption
         self.albumMessageId = albumMessageId
-        self.isBorderless = isBorderless
-        self.isLoopingVideo = isLoopingVideo
+        self.renderingFlag = {
+            if isVoiceMessage {
+                return .voiceMessage
+            } else if isBorderless {
+                return .borderless
+            } else if isLoopingVideo || MIMETypeUtil.isDefinitelyAnimated(contentType) {
+                return .shouldLoop
+            } else {
+                return .default
+            }
+        }()
     }
 
-    public func asStreamConsumingDataSource(isVoiceMessage: Bool) throws -> TSAttachmentStream {
-        let attachmentType: TSAttachmentType
-        if isVoiceMessage {
-            attachmentType = .voiceMessage
-        } else if isBorderless {
-            attachmentType = .borderless
-        } else if isLoopingVideo || MIMETypeUtil.isDefinitelyAnimated(contentType) {
-            attachmentType = .GIF
-        } else {
-            attachmentType = .default
-        }
-
+    public func asStreamConsumingDataSource() throws -> TSAttachmentStream {
         let attachmentStream = TSAttachmentStream(
             contentType: contentType,
             byteCount: UInt32(dataSource.dataLength),
             sourceFilename: sourceFilename,
             caption: caption,
-            attachmentType: attachmentType,
+            attachmentType: renderingFlag.tsAttachmentType,
             albumMessageId: albumMessageId
         )
 

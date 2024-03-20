@@ -31,9 +31,8 @@ public class TSAttachmentManager {
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction
     ) throws {
-        let isVoiceMessage = message.isVoiceMessage
         let attachmentStreams = try unsavedAttachmentInfos.map {
-            try $0.asStreamConsumingDataSource(isVoiceMessage: isVoiceMessage)
+            try $0.asStreamConsumingDataSource()
         }
 
         self.addBodyAttachments(attachmentStreams, to: message, tx: tx)
