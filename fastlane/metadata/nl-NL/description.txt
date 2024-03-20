@@ -6,7 +6,7 @@ Signal is een berichten-app waar privacy centraal staat. Het is gratis en gemakk
 
 • Houd contact via groepschats met tot wel 1000 mensen. Bepaal wie kan posten en groepsleden kan beheren met instellingen voor beheerdersmachtigingen.
 
-• Deel beeld-, tekst- en videoverhalen die na 24 uur verdwijnen. Privacy-instellingen laten je precies zien wie elk Verhaal kan zien.
+• Deel beeld-, tekst- en videoverhalen die na 24 uur verdwijnen. Privacyinstellingen laten je precies zien wie elk Verhaal kan zien.
 
 • Signal is gebouwd voor jouw privacy. We weten niets over jou of met wie je praat. Ons open-source Signal Protocol betekent dat we jouw berichten niet kunnen lezen of naar je oproepen kunnen luisteren. En niemand anders kan dat. Geen addertjes onder het gras, geen gegevensverzameling, geen compromissen. 
 
