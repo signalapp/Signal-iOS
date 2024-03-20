@@ -40,8 +40,7 @@ public final class CallService: LightweightGroupCallManager {
 
     public var callUIAdapter: CallUIAdapter!
 
-    @objc
-    public let individualCallService = IndividualCallService()
+    let individualCallService = IndividualCallService()
     let groupCallRemoteVideoManager = GroupCallRemoteVideoManager()
 
     /// Needs to be lazily initialized, because it uses singletons that are not

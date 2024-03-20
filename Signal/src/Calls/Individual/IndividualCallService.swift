@@ -3,16 +3,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CallKit
 import Foundation
 import SignalRingRTC
-import WebRTC
 import SignalServiceKit
-import CallKit
+import SignalUI
+import WebRTC
 
 // MARK: - CallService
 
 // This class' state should only be accessed on the main queue.
-final public class IndividualCallService: NSObject {
+final class IndividualCallService {
 
     private var callManager: CallService.CallManagerType {
         return callService.callManager
@@ -20,11 +21,18 @@ final public class IndividualCallService: NSObject {
 
     // MARK: Class
 
-    public override init() {
-        super.init()
-
+    init() {
         SwiftSingletons.register(self)
     }
+
+    private var audioSession: AudioSession { NSObject.audioSession }
+    private var callService: CallService { NSObject.callService }
+    private var contactManager: any ContactManager { NSObject.contactsManager }
+    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var networkManager: NetworkManager { NSObject.networkManager }
+    private var notificationPresenter: NotificationPresenter { NSObject.notificationPresenter }
+    private var preferences: Preferences { NSObject.preferences }
+    private var profileManager: any ProfileManager { NSObject.profileManager }
 
     // MARK: - Call Control Actions
 
@@ -448,41 +456,41 @@ final public class IndividualCallService: NSObject {
         }
 
         // Start the call, asynchronously.
-        getIceServers().done(on: DispatchQueue.main) { iceServers in
-            guard self.callService.currentCall === call else {
-                Logger.debug("call has since ended")
-                return
-            }
-
-            var isUnknownCaller = false
-            if call.individualCall.direction == .incoming {
-                isUnknownCaller = self.databaseStorage.read { tx in
-                    return self.contactsManager.fetchSignalAccount(for: call.individualCall.thread.contactAddress, transaction: tx) == nil
+        Task { @MainActor in
+            do {
+                let iceServers = try await self.getIceServers()
+                guard self.callService.currentCall === call else {
+                    Logger.debug("call has since ended")
+                    return
                 }
-                if isUnknownCaller {
-                    Logger.warn("Using relay server because remote user is an unknown caller")
+
+                var isUnknownCaller = false
+                if call.individualCall.direction == .incoming {
+                    isUnknownCaller = self.databaseStorage.read { tx in
+                        return self.contactManager.fetchSignalAccount(for: call.individualCall.thread.contactAddress, transaction: tx) == nil
+                    }
+                    if isUnknownCaller {
+                        Logger.warn("Using relay server because remote user is an unknown caller")
+                    }
                 }
+
+                let useTurnOnly = isUnknownCaller || self.preferences.doCallsHideIPAddress
+
+                let useLowData = CallService.shouldUseLowDataWithSneakyTransaction(for: NetworkRoute(localAdapterType: .unknown))
+                Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
+
+                // Tell the Call Manager to proceed with its active call.
+                try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController, dataMode: useLowData ? .low : .normal, audioLevelsIntervalMillis: nil)
+            } catch {
+                owsFailDebug("\(error)")
+                guard call === self.callService.currentCall else {
+                    return
+                }
+
+                callManager.drop(callId: callId)
+                self.handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: false)
             }
-
-            let useTurnOnly = isUnknownCaller || Self.preferences.doCallsHideIPAddress
-
-            let useLowData = CallService.shouldUseLowDataWithSneakyTransaction(for: NetworkRoute(localAdapterType: .unknown))
-            Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
-
-            // Tell the Call Manager to proceed with its active call.
-            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController, dataMode: useLowData ? .low : .normal, audioLevelsIntervalMillis: nil)
-        }.catch { error in
-            owsFailDebug("\(error)")
-            guard call === self.callService.currentCall else {
-                Logger.debug("")
-                return
-            }
-
-            callManager.drop(callId: callId)
-            self.handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: false)
         }
-
-        Logger.debug("")
     }
 
     public func callManager(_ callManager: CallService.CallManagerType, onEvent call: SignalCall, event: CallManagerEvent) {
@@ -785,34 +793,35 @@ final public class IndividualCallService: NSObject {
 
         Logger.info("shouldSendOffer")
 
-        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
-            let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId)
-            offerBuilder.setOpaque(opaque)
-            switch callMediaType {
-            case .audioCall: offerBuilder.setType(.offerAudioCall)
-            case .videoCall: offerBuilder.setType(.offerVideoCall)
+        Task { @MainActor in
+            do {
+                let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId)
+                offerBuilder.setOpaque(opaque)
+                switch callMediaType {
+                case .audioCall: offerBuilder.setType(.offerAudioCall)
+                case .videoCall: offerBuilder.setType(.offerVideoCall)
+                }
+                let sendPromise = try await self.databaseStorage.awaitableWrite { tx -> Promise<Void> in
+                    let callMessage = OWSOutgoingCallMessage(
+                        thread: call.individualCall.thread,
+                        offerMessage: try offerBuilder.build(),
+                        destinationDeviceId: NSNumber(value: destinationDeviceId),
+                        transaction: tx
+                    )
+                    return ThreadUtil.enqueueMessagePromise(
+                        message: callMessage,
+                        limitToCurrentProcessLifetime: true,
+                        isHighPriority: true,
+                        transaction: tx
+                    )
+                }
+                try await sendPromise.awaitable()
+                Logger.info("sent offer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
+                try self.callManager.signalingMessageDidSend(callId: callId)
+            } catch {
+                Logger.error("failed to send offer message to \(call.individualCall.thread.contactAddress) with error: \(error)")
+                self.callManager.signalingMessageDidFail(callId: callId)
             }
-
-            return try Self.databaseStorage.write { transaction -> Promise<Void> in
-                let callMessage = OWSOutgoingCallMessage(
-                    thread: call.individualCall.thread,
-                    offerMessage: try offerBuilder.build(),
-                    destinationDeviceId: NSNumber(value: destinationDeviceId),
-                    transaction: transaction)
-
-                return ThreadUtil.enqueueMessagePromise(
-                    message: callMessage,
-                    limitToCurrentProcessLifetime: true,
-                    isHighPriority: true,
-                    transaction: transaction
-                )
-            }
-        }.done(on: DispatchQueue.main) {
-            Logger.info("sent offer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
-            try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: DispatchQueue.main) { error in
-            Logger.error("failed to send offer message to \(call.individualCall.thread.contactAddress) with error: \(error)")
-            self.callManager.signalingMessageDidFail(callId: callId)
         }
     }
 
@@ -821,30 +830,31 @@ final public class IndividualCallService: NSObject {
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendAnswer")
 
-        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
-            let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId)
-            answerBuilder.setOpaque(opaque)
-
-            return try Self.databaseStorage.write { transaction -> Promise<Void> in
-                let callMessage = OWSOutgoingCallMessage(
-                    thread: call.individualCall.thread,
-                    answerMessage: try answerBuilder.build(),
-                    destinationDeviceId: NSNumber(value: destinationDeviceId),
-                    transaction: transaction)
-
-                return ThreadUtil.enqueueMessagePromise(
-                    message: callMessage,
-                    limitToCurrentProcessLifetime: true,
-                    isHighPriority: true,
-                    transaction: transaction
-                )
+        Task { @MainActor in
+            do {
+                let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId)
+                answerBuilder.setOpaque(opaque)
+                let sendPromise = try await self.databaseStorage.awaitableWrite { tx -> Promise<Void> in
+                    let callMessage = OWSOutgoingCallMessage(
+                        thread: call.individualCall.thread,
+                        answerMessage: try answerBuilder.build(),
+                        destinationDeviceId: NSNumber(value: destinationDeviceId),
+                        transaction: tx
+                    )
+                    return ThreadUtil.enqueueMessagePromise(
+                        message: callMessage,
+                        limitToCurrentProcessLifetime: true,
+                        isHighPriority: true,
+                        transaction: tx
+                    )
+                }
+                try await sendPromise.awaitable()
+                Logger.debug("sent answer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
+                try self.callManager.signalingMessageDidSend(callId: callId)
+            } catch {
+                Logger.error("failed to send answer message to \(call.individualCall.thread.contactAddress) with error: \(error)")
+                self.callManager.signalingMessageDidFail(callId: callId)
             }
-        }.done(on: DispatchQueue.main) {
-            Logger.debug("sent answer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
-            try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: DispatchQueue.main) { error in
-            Logger.error("failed to send answer message to \(call.individualCall.thread.contactAddress) with error: \(error)")
-            self.callManager.signalingMessageDidFail(callId: callId)
         }
     }
 
@@ -853,42 +863,44 @@ final public class IndividualCallService: NSObject {
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendIceCandidates")
 
-        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
-            var iceUpdateProtos = [SSKProtoCallMessageIceUpdate]()
+        Task { @MainActor in
+            do {
+                var iceUpdateProtos = [SSKProtoCallMessageIceUpdate]()
 
-            for iceCandidate in candidates {
-                let iceUpdateProto: SSKProtoCallMessageIceUpdate
-                let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.builder(id: callId)
-                iceUpdateBuilder.setOpaque(iceCandidate)
+                for iceCandidate in candidates {
+                    let iceUpdateProto: SSKProtoCallMessageIceUpdate
+                    let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.builder(id: callId)
+                    iceUpdateBuilder.setOpaque(iceCandidate)
 
-                iceUpdateProto = try iceUpdateBuilder.build()
-                iceUpdateProtos.append(iceUpdateProto)
+                    iceUpdateProto = try iceUpdateBuilder.build()
+                    iceUpdateProtos.append(iceUpdateProto)
+                }
+
+                guard !iceUpdateProtos.isEmpty else {
+                    throw OWSAssertionError("no ice updates to send")
+                }
+
+                let sendPromise = await self.databaseStorage.awaitableWrite { tx -> Promise<Void> in
+                    let callMessage = OWSOutgoingCallMessage(
+                        thread: call.individualCall.thread,
+                        iceUpdateMessages: iceUpdateProtos,
+                        destinationDeviceId: NSNumber(value: destinationDeviceId),
+                        transaction: tx
+                    )
+                    return ThreadUtil.enqueueMessagePromise(
+                        message: callMessage,
+                        limitToCurrentProcessLifetime: true,
+                        isHighPriority: true,
+                        transaction: tx
+                    )
+                }
+                try await sendPromise.awaitable()
+                Logger.debug("sent ice update message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
+                try self.callManager.signalingMessageDidSend(callId: callId)
+            } catch {
+                Logger.error("failed to send ice update message to \(call.individualCall.thread.contactAddress) with error: \(error)")
+                callManager.signalingMessageDidFail(callId: callId)
             }
-
-            guard !iceUpdateProtos.isEmpty else {
-                throw OWSAssertionError("no ice updates to send")
-            }
-
-            return Self.databaseStorage.write { transaction -> Promise<Void> in
-                let callMessage = OWSOutgoingCallMessage(
-                    thread: call.individualCall.thread,
-                    iceUpdateMessages: iceUpdateProtos,
-                    destinationDeviceId: NSNumber(value: destinationDeviceId),
-                    transaction: transaction)
-
-                return ThreadUtil.enqueueMessagePromise(
-                    message: callMessage,
-                    limitToCurrentProcessLifetime: true,
-                    isHighPriority: true,
-                    transaction: transaction
-                )
-            }
-        }.done(on: DispatchQueue.main) {
-            Logger.debug("sent ice update message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
-            try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: DispatchQueue.main) { error in
-            Logger.error("failed to send ice update message to \(call.individualCall.thread.contactAddress) with error: \(error)")
-            callManager.signalingMessageDidFail(callId: callId)
         }
     }
 
@@ -897,43 +909,45 @@ final public class IndividualCallService: NSObject {
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendHangup")
 
-        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
-            let hangupBuilder = SSKProtoCallMessageHangup.builder(id: callId)
+        Task { @MainActor in
+            do {
+                let hangupBuilder = SSKProtoCallMessageHangup.builder(id: callId)
 
-            switch hangupType {
-            case .normal: hangupBuilder.setType(.hangupNormal)
-            case .accepted: hangupBuilder.setType(.hangupAccepted)
-            case .declined: hangupBuilder.setType(.hangupDeclined)
-            case .busy: hangupBuilder.setType(.hangupBusy)
-            case .needPermission: hangupBuilder.setType(.hangupNeedPermission)
+                switch hangupType {
+                case .normal: hangupBuilder.setType(.hangupNormal)
+                case .accepted: hangupBuilder.setType(.hangupAccepted)
+                case .declined: hangupBuilder.setType(.hangupDeclined)
+                case .busy: hangupBuilder.setType(.hangupBusy)
+                case .needPermission: hangupBuilder.setType(.hangupNeedPermission)
+                }
+
+                if hangupType != .normal {
+                    // deviceId is optional and only used when indicated by a hangup due to
+                    // a call being accepted elsewhere.
+                    hangupBuilder.setDeviceID(deviceId)
+                }
+
+                let sendPromise = try await self.databaseStorage.awaitableWrite { tx -> Promise<Void> in
+                    let callMessage = OWSOutgoingCallMessage(
+                        thread: call.individualCall.thread,
+                        hangupMessage: try hangupBuilder.build(),
+                        destinationDeviceId: NSNumber(value: destinationDeviceId),
+                        transaction: tx
+                    )
+                    return ThreadUtil.enqueueMessagePromise(
+                        message: callMessage,
+                        limitToCurrentProcessLifetime: true,
+                        isHighPriority: true,
+                        transaction: tx
+                    )
+                }
+                try await sendPromise.awaitable()
+                Logger.debug("sent hangup message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
+                try self.callManager.signalingMessageDidSend(callId: callId)
+            } catch {
+                Logger.error("failed to send hangup message to \(call.individualCall.thread.contactAddress) with error: \(error)")
+                self.callManager.signalingMessageDidFail(callId: callId)
             }
-
-            if hangupType != .normal {
-                // deviceId is optional and only used when indicated by a hangup due to
-                // a call being accepted elsewhere.
-                hangupBuilder.setDeviceID(deviceId)
-            }
-
-            return try Self.databaseStorage.write { transaction -> Promise<Void> in
-                let callMessage = OWSOutgoingCallMessage(
-                    thread: call.individualCall.thread,
-                    hangupMessage: try hangupBuilder.build(),
-                    destinationDeviceId: NSNumber(value: destinationDeviceId),
-                    transaction: transaction)
-
-                return ThreadUtil.enqueueMessagePromise(
-                    message: callMessage,
-                    limitToCurrentProcessLifetime: true,
-                    isHighPriority: true,
-                    transaction: transaction
-                )
-            }
-        }.done(on: DispatchQueue.main) {
-            Logger.debug("sent hangup message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
-            try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: DispatchQueue.main) { error in
-            Logger.error("failed to send hangup message to \(call.individualCall.thread.contactAddress) with error: \(error)")
-            self.callManager.signalingMessageDidFail(callId: callId)
         }
     }
 
@@ -942,29 +956,31 @@ final public class IndividualCallService: NSObject {
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendBusy")
 
-        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
-            let busyBuilder = SSKProtoCallMessageBusy.builder(id: callId)
+        Task { @MainActor in
+            do {
+                let busyBuilder = SSKProtoCallMessageBusy.builder(id: callId)
 
-            return try Self.databaseStorage.write { transaction -> Promise<Void> in
-                let callMessage = OWSOutgoingCallMessage(
-                    thread: call.individualCall.thread,
-                    busyMessage: try busyBuilder.build(),
-                    destinationDeviceId: NSNumber(value: destinationDeviceId),
-                    transaction: transaction)
-
-                return ThreadUtil.enqueueMessagePromise(
-                    message: callMessage,
-                    limitToCurrentProcessLifetime: true,
-                    isHighPriority: true,
-                    transaction: transaction
-                )
+                let sendPromise = try await self.databaseStorage.awaitableWrite { tx -> Promise<Void> in
+                    let callMessage = OWSOutgoingCallMessage(
+                        thread: call.individualCall.thread,
+                        busyMessage: try busyBuilder.build(),
+                        destinationDeviceId: NSNumber(value: destinationDeviceId),
+                        transaction: tx
+                    )
+                    return ThreadUtil.enqueueMessagePromise(
+                        message: callMessage,
+                        limitToCurrentProcessLifetime: true,
+                        isHighPriority: true,
+                        transaction: tx
+                    )
+                }
+                try await sendPromise.awaitable()
+                Logger.debug("sent busy message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
+                try self.callManager.signalingMessageDidSend(callId: callId)
+            } catch {
+                Logger.error("failed to send busy message to \(call.individualCall.thread.contactAddress) with error: \(error)")
+                self.callManager.signalingMessageDidFail(callId: callId)
             }
-        }.done(on: DispatchQueue.main) {
-            Logger.debug("sent busy message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
-            try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: DispatchQueue.main) { error in
-            Logger.error("failed to send busy message to \(call.individualCall.thread.contactAddress) with error: \(error)")
-            self.callManager.signalingMessageDidFail(callId: callId)
         }
     }
 
@@ -1172,42 +1188,35 @@ final public class IndividualCallService: NSObject {
     }
 
     /**
-     * RTCIceServers are used when attempting to establish an optimal connection to the other party. SignalService supplies
-     * a list of servers.
+     * RTCIceServers are used when attempting to establish an optimal
+     * connection to the other party. SignalService supplies a list of servers.
      */
-    private func getIceServers() -> Promise<[RTCIceServer]> {
+    private func getIceServers() async throws -> [RTCIceServer] {
+        let turnServerInfo = try await self.getTurnServerInfo()
+        Logger.debug("got turn server urls: \(turnServerInfo.urls)")
 
-        self.getTurnServerInfo()
-            .map(on: DispatchQueue.global()) { turnServerInfo -> [RTCIceServer] in
-                Logger.debug("got turn server urls: \(turnServerInfo.urls)")
-
-                return turnServerInfo.urls.map { url in
-                    if url.hasPrefix("turn") {
-                        // Only "turn:" servers require authentication. Don't include the credentials to other ICE servers
-                        // as 1.) they aren't used, and 2.) the non-turn servers might not be under our control.
-                        return RTCIceServer(urlStrings: [url], username: turnServerInfo.username, credential: turnServerInfo.password)
-                    } else {
-                        return RTCIceServer(urlStrings: [url])
-                    }
-                }
-            }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<[RTCIceServer]> in
-                Logger.error("fetching ICE servers failed with error: \(error)")
-                throw error
+        return turnServerInfo.urls.map { url in
+            if url.hasPrefix("turn") {
+                // Only "turn:" servers require authentication. Don't include the credentials to other ICE servers
+                // as 1.) they aren't used, and 2.) the non-turn servers might not be under our control.
+                return RTCIceServer(urlStrings: [url], username: turnServerInfo.username, credential: turnServerInfo.password)
+            } else {
+                return RTCIceServer(urlStrings: [url])
             }
+        }
     }
 
-    func getTurnServerInfo() -> Promise<TurnServerInfo> {
+    private func getTurnServerInfo() async throws -> TurnServerInfo {
         let request = OWSRequestFactory.turnServerInfoRequest()
-        return firstly {
-            Self.networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            guard let json = response.responseBodyJson,
-                  let responseDictionary = json as? [String: AnyObject],
-                  let turnServerInfo = TurnServerInfo(attributes: responseDictionary) else {
-                throw OWSAssertionError("Missing or invalid JSON")
-            }
-            return turnServerInfo
+        let response = try await self.networkManager.makePromise(request: request).awaitable()
+        guard
+            let json = response.responseBodyJson,
+            let responseDictionary = json as? [String: AnyObject],
+            let turnServerInfo = TurnServerInfo(attributes: responseDictionary)
+        else {
+            throw OWSAssertionError("Missing or invalid JSON")
         }
+        return turnServerInfo
     }
 
     public func handleCallKitProviderReset() {
