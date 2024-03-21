@@ -478,6 +478,23 @@ public class OWSContact: MTLModel {
         name.updateDisplayName()
     }
 
+    public init(
+        name: OWSContactName,
+        phoneNumbers: [OWSContactPhoneNumber],
+        emails: [OWSContactEmail],
+        addresses: [OWSContactAddress],
+        avatarAttachmentId: String?,
+        isProfileAvatar: Bool
+    ) {
+        self.name = name
+        self.phoneNumbers = phoneNumbers
+        self.emails = emails
+        self.addresses = addresses
+        self.avatarAttachmentId = avatarAttachmentId
+        self.isProfileAvatar = isProfileAvatar
+        super.init()
+    }
+
     required init!(coder: NSCoder!) {
         self.name = OWSContactName()
         super.init(coder: coder)
@@ -784,12 +801,14 @@ extension OWSContact {
             nickname: cnContact.nickname.stripped,
             organizationName: cnContact.organizationName.stripped
         )
-        self.init(name: contactName)
-
-        // Phone Numbers, Emails, Addresses
-        phoneNumbers = cnContact.phoneNumbers.map { OWSContactPhoneNumber(cnLabeledValue: $0) }
-        emails = cnContact.emailAddresses.map { OWSContactEmail(cnLabeledValue: $0) }
-        addresses = cnContact.postalAddresses.map { OWSContactAddress(cnLabeledValue: $0) }
+        self.init(
+            name: contactName,
+            phoneNumbers: cnContact.phoneNumbers.map { OWSContactPhoneNumber(cnLabeledValue: $0) },
+            emails: cnContact.emailAddresses.map { OWSContactEmail(cnLabeledValue: $0) },
+            addresses: cnContact.postalAddresses.map { OWSContactAddress(cnLabeledValue: $0) },
+            avatarAttachmentId: nil,
+            isProfileAvatar: false
+        )
     }
 
     public func buildSystemContact(withImageData imageData: Data?) -> CNContact? {
