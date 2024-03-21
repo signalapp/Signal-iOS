@@ -777,9 +777,9 @@
 		662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44082A1567E4001F83E2 /* svr2.pb.swift */; };
 		662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */; };
 		662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */; };
-		6635B8A52BA25D9F005C80EA /* IncomingQuotedReplyReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A42BA25D9F005C80EA /* IncomingQuotedReplyReceiver.swift */; };
-		6635B8A72BA25DDD005C80EA /* IncomingQuotedReplyReceiverImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A62BA25DDD005C80EA /* IncomingQuotedReplyReceiverImpl.swift */; };
-		6635B8A92BA25E08005C80EA /* IncomingQuotedReplyReceiverMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A82BA25E08005C80EA /* IncomingQuotedReplyReceiverMock.swift */; };
+		6635B8A52BA25D9F005C80EA /* QuotedReplyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A42BA25D9F005C80EA /* QuotedReplyManager.swift */; };
+		6635B8A72BA25DDD005C80EA /* QuotedReplyManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A62BA25DDD005C80EA /* QuotedReplyManagerImpl.swift */; };
+		6635B8A92BA25E08005C80EA /* QuotedReplyManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */; };
 		663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */; };
 		663BA3202A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
@@ -3590,9 +3590,9 @@
 		662C44082A1567E4001F83E2 /* svr2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svr2.pb.swift; sourceTree = "<group>"; };
 		662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Impl.swift; sourceTree = "<group>"; };
 		662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Tests.swift; sourceTree = "<group>"; };
-		6635B8A42BA25D9F005C80EA /* IncomingQuotedReplyReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingQuotedReplyReceiver.swift; sourceTree = "<group>"; };
-		6635B8A62BA25DDD005C80EA /* IncomingQuotedReplyReceiverImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingQuotedReplyReceiverImpl.swift; sourceTree = "<group>"; };
-		6635B8A82BA25E08005C80EA /* IncomingQuotedReplyReceiverMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingQuotedReplyReceiverMock.swift; sourceTree = "<group>"; };
+		6635B8A42BA25D9F005C80EA /* QuotedReplyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyManager.swift; sourceTree = "<group>"; };
+		6635B8A62BA25DDD005C80EA /* QuotedReplyManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyManagerImpl.swift; sourceTree = "<group>"; };
+		6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyManagerMock.swift; sourceTree = "<group>"; };
 		663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderState.swift; sourceTree = "<group>"; };
 		663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyDisplayConfigurations.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
@@ -7373,9 +7373,9 @@
 		669FAE0C2B744BA4009EE2FE /* Quotes */ = {
 			isa = PBXGroup;
 			children = (
-				6635B8A42BA25D9F005C80EA /* IncomingQuotedReplyReceiver.swift */,
-				6635B8A62BA25DDD005C80EA /* IncomingQuotedReplyReceiverImpl.swift */,
-				6635B8A82BA25E08005C80EA /* IncomingQuotedReplyReceiverMock.swift */,
+				6635B8A42BA25D9F005C80EA /* QuotedReplyManager.swift */,
+				6635B8A62BA25DDD005C80EA /* QuotedReplyManagerImpl.swift */,
+				6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */,
 				F9C5C90F289453B100548EEE /* TSQuotedMessage.h */,
 				F9C5C8F0289453B100548EEE /* TSQuotedMessage.m */,
 			);
@@ -13343,9 +13343,6 @@
 				F9C5CDA0289453B400548EEE /* IncomingGroupsV2MessageJob.m in Sources */,
 				D9AE0AD1291870220063488B /* IncomingGroupSyncJobRecord.swift in Sources */,
 				6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */,
-				6635B8A52BA25D9F005C80EA /* IncomingQuotedReplyReceiver.swift in Sources */,
-				6635B8A72BA25DDD005C80EA /* IncomingQuotedReplyReceiverImpl.swift in Sources */,
-				6635B8A92BA25E08005C80EA /* IncomingQuotedReplyReceiverMock.swift in Sources */,
 				F9C5CC69289453B300548EEE /* IncompleteCallsJob.swift in Sources */,
 				D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */,
 				D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */,
@@ -13714,6 +13711,9 @@
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
 				66D7B9132B979C3A0005C98B /* QuotedMessageAttachmentReference+TSResource.swift in Sources */,
 				66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */,
+				6635B8A52BA25D9F005C80EA /* QuotedReplyManager.swift in Sources */,
+				6635B8A72BA25DDD005C80EA /* QuotedReplyManagerImpl.swift in Sources */,
+				6635B8A92BA25E08005C80EA /* QuotedReplyManagerMock.swift in Sources */,
 				F9C5CD95289453B300548EEE /* ReachabilityManager.swift in Sources */,
 				F9C5CC3C289453B300548EEE /* ReactionFinder.swift in Sources */,
 				F9C5CC3D289453B300548EEE /* ReactionManager.swift in Sources */,

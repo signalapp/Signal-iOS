@@ -945,7 +945,7 @@ public final class MessageReceiver: Dependencies {
         let body = dataMessage.body
         let bodyRanges = dataMessage.bodyRanges.isEmpty ? nil : MessageBodyRanges(protos: dataMessage.bodyRanges)
         let serverGuid = envelope.envelope.serverGuid.flatMap { UUID(uuidString: $0) }
-        let quotedMessageBuilder = DependenciesBridge.shared.incomingQuotedReplyReceiver.quotedMessage(
+        let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.quotedMessage(
             for: dataMessage,
             thread: thread,
             tx: tx.asV2Write

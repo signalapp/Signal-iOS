@@ -162,7 +162,7 @@ public class AppSetup {
             tsResourceStore: tsResourceStore
         )
 
-        let incomingQuotedReplyReceiver = IncomingQuotedReplyReceiverImpl(
+        let quotedReplyManager = QuotedReplyManagerImpl(
             attachmentManager: tsResourceManager,
             attachmentStore: tsResourceStore
         )
@@ -690,7 +690,6 @@ public class AppSetup {
             incomingCallEventSyncMessageManager: incomingCallEventSyncMessageManager,
             incomingCallLogEventSyncMessageManager: incomingCallLogEventSyncMessageManager,
             incomingPniChangeNumberProcessor: incomingPniChangeNumberProcessor,
-            incomingQuotedReplyReceiver: incomingQuotedReplyReceiver,
             individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -708,6 +707,7 @@ public class AppSetup {
             pinnedThreadStore: pinnedThreadStore,
             pniHelloWorldManager: pniHelloWorldManager,
             preKeyManager: preKeyManager,
+            quotedReplyManager: quotedReplyManager,
             receiptCredentialResultStore: receiptCredentialResultStore,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,

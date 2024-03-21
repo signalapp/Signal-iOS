@@ -266,7 +266,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             messageSticker = nil
         }
 
-        let quotedMessageBuilder = DependenciesBridge.shared.incomingQuotedReplyReceiver.quotedMessage(
+        let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.quotedMessage(
             for: dataMessage,
             thread: target.thread,
             tx: tx

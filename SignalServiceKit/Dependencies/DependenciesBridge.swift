@@ -67,7 +67,6 @@ public class DependenciesBridge {
     let incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager
     let incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager
     public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
-    public let incomingQuotedReplyReceiver: IncomingQuotedReplyReceiver
     public let individualCallRecordManager: IndividualCallRecordManager
     public let interactionStore: InteractionStore
     public let keyValueStoreFactory: KeyValueStoreFactory
@@ -85,6 +84,7 @@ public class DependenciesBridge {
     public let pinnedThreadStore: PinnedThreadStore
     public let pniHelloWorldManager: PniHelloWorldManager
     public let preKeyManager: PreKeyManager
+    public let quotedReplyManager: QuotedReplyManager
     public let receiptCredentialResultStore: ReceiptCredentialResultStore
     public let recipientDatabaseTable: RecipientDatabaseTable
     public let recipientFetcher: RecipientFetcher
@@ -147,7 +147,6 @@ public class DependenciesBridge {
         incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager,
         incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager,
         incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor,
-        incomingQuotedReplyReceiver: IncomingQuotedReplyReceiver,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: InteractionStore,
         keyValueStoreFactory: KeyValueStoreFactory,
@@ -165,6 +164,7 @@ public class DependenciesBridge {
         pinnedThreadStore: PinnedThreadStore,
         pniHelloWorldManager: PniHelloWorldManager,
         preKeyManager: PreKeyManager,
+        quotedReplyManager: QuotedReplyManager,
         receiptCredentialResultStore: ReceiptCredentialResultStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
@@ -224,7 +224,6 @@ public class DependenciesBridge {
         self.incomingCallEventSyncMessageManager = incomingCallEventSyncMessageManager
         self.incomingCallLogEventSyncMessageManager = incomingCallLogEventSyncMessageManager
         self.incomingPniChangeNumberProcessor = incomingPniChangeNumberProcessor
-        self.incomingQuotedReplyReceiver = incomingQuotedReplyReceiver
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
         self.keyValueStoreFactory = keyValueStoreFactory
@@ -242,6 +241,7 @@ public class DependenciesBridge {
         self.pinnedThreadStore = pinnedThreadStore
         self.pniHelloWorldManager = pniHelloWorldManager
         self.preKeyManager = preKeyManager
+        self.quotedReplyManager = quotedReplyManager
         self.receiptCredentialResultStore = receiptCredentialResultStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher

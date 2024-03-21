@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public protocol IncomingQuotedReplyReceiver {
+public protocol QuotedReplyManager {
 
     func quotedMessage(
         for dataMessage: SSKProtoDataMessage,

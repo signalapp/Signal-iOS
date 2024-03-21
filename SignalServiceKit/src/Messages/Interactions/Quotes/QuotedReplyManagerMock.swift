@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-open class IncomingQuotedReplyReceiverMock: IncomingQuotedReplyReceiver {
+open class QuotedReplyManagerMock: QuotedReplyManager {
 
     public init() {}
 
