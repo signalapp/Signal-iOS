@@ -34,9 +34,7 @@ class UploadManagerTests: XCTestCase {
         let (auth, uploadLocation) = helper.addFormRequestMock(version: 2)
         // 1. Mock UploadLocation request
         let location = helper.addResumeLocationMock(auth: auth)
-        // 2. Mock Resume progress as a new download
-        helper.addResumeProgressMock(auth: auth, location: location, type: .newUpload)
-        // 3. Successful download
+        // 2. Successful download
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
         _ = try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
@@ -48,15 +46,7 @@ class UploadManagerTests: XCTestCase {
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "0")
         } else { XCTFail("Unexpected request encountered.") }
 
-        if case let .uploadProgress(request) = helper.capturedRequests[2] {
-            XCTAssertEqual(request.url!.absoluteString, location)
-            XCTAssertEqual(request.httpMethod, "PUT")
-
-            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "0")
-            XCTAssertEqual(request.allHTTPHeaderFields!["content-range"], "bytes */\(size)")
-        } else { XCTFail("Unexpected request encountered.") }
-
-        if case let .uploadTask(request) = helper.capturedRequests[3] {
+        if case let .uploadTask(request) = helper.capturedRequests[2] {
             XCTAssertEqual(request.url!.absoluteString, location)
             XCTAssertEqual(request.httpMethod, "PUT")
 
@@ -74,18 +64,16 @@ class UploadManagerTests: XCTestCase {
         let (auth, _) = helper.addFormRequestMock(version: 2)
         // 1. Upload location request
         let location = helper.addResumeLocationMock(auth: auth)
-        // 2. Upload location request
-        helper.addResumeProgressMock(auth: auth, location: location, type: .newUpload)
-        // 3. Fail the upload with a network error
+        // 2. Fail the upload with a network error
         helper.addUploadRequestMock(auth: auth, location: location, type: .networkError)
-        // 4. Fetch the progress (10 of 20 bytes)
+        // 3. Fetch the progress (10 of 20 bytes)
         helper.addResumeProgressMock(auth: auth, location: location, type: .progress(count: firstUpload))
-        // 5. Complete the upload
+        // 4. Complete the upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
         try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
-        if case let .uploadTask(request) = helper.capturedRequests[5] {
+        if case let .uploadTask(request) = helper.capturedRequests[4] {
             XCTAssertEqual(request.url!.absoluteString, location)
             XCTAssertEqual(request.httpMethod, "PUT")
             // the '- 1' is because the length reports is inclusive (so 0-10 is 11 bytes)
@@ -108,18 +96,16 @@ class UploadManagerTests: XCTestCase {
         let (auth, _) = helper.addFormRequestMock(version: 2)
         // 1. Upload location request
         let location = helper.addResumeLocationMock(auth: auth)
-        // 2. Upload location request
-        helper.addResumeProgressMock(auth: auth, location: location, type: .newUpload)
-        // 3. Fail the upload with a network error
+        // 2. Fail the upload with a network error
         helper.addUploadRequestMock(auth: auth, location: location, type: .networkError)
-        // 4. Fetch the progress (10 of 20 bytes)
+        // 3. Fetch the progress (10 of 20 bytes)
         helper.addResumeProgressMock(auth: auth, location: location, type: .missingRange)
-        // 5. Complete the upload
+        // 4. Complete the upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
         try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
-        if case let .uploadTask(request) = helper.capturedRequests[5] {
+        if case let .uploadTask(request) = helper.capturedRequests[4] {
             XCTAssertEqual(request.url!.absoluteString, location)
             XCTAssertEqual(request.httpMethod, "PUT")
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(size)")
@@ -137,25 +123,21 @@ class UploadManagerTests: XCTestCase {
         let (auth, _) = helper.addFormRequestMock(version: 2)
         // 1. Upload location request
         let location = helper.addResumeLocationMock(auth: auth)
-        // 2. Upload location request
-        helper.addResumeProgressMock(auth: auth, location: location, type: .newUpload)
-        // 3. Fail the upload with a network error
+        // 2. Fail the upload with a network error
         helper.addUploadRequestMock(auth: auth, location: location, type: .networkError)
-        // 4. Fetch the progress (10 of 20 bytes)
+        // 3. Fetch the progress (10 of 20 bytes)
         helper.addResumeProgressMock(auth: auth, location: location, type: .malformedRange)
 
-        // 5. Mock the form request
+        // 4. Mock the form request
         let (auth2, _) = helper.addFormRequestMock(version: 2)
-        // 6. Upload location request
+        // 5. Upload location request
         let location2 = helper.addResumeLocationMock(auth: auth2)
-        // 7. Upload location request
-        helper.addResumeProgressMock(auth: auth2, location: location2, type: .newUpload)
-        // 8. Complete the upload
+        // 6. Complete the upload
         helper.addUploadRequestMock(auth: auth2, location: location2, type: .success)
 
         try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
-        if case let .uploadTask(request) = helper.capturedRequests[8] {
+        if case let .uploadTask(request) = helper.capturedRequests[6] {
             XCTAssertEqual(request.url!.absoluteString, location2)
             XCTAssertEqual(request.httpMethod, "PUT")
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(size)")

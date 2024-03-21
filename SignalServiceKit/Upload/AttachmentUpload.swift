@@ -153,18 +153,21 @@ public struct AttachmentUpload {
         let totalDataLength = attempt.localMetadata.encryptedDataLength
         var bytesAlreadyUploaded = 0
 
-        let uploadProgress = try await getResumableUploadProgress(attempt: attempt)
-        switch uploadProgress {
-        case .complete(let result):
-            attempt.logger.info("Complete upload reported by endpoint.")
-            return result
-        case .uploaded(let updatedBytesAlreadUploaded):
-            attempt.logger.info("Endpoint reported \(updatedBytesAlreadUploaded)/\(attempt.localMetadata.encryptedDataLength) uploaded.")
-            bytesAlreadyUploaded = updatedBytesAlreadUploaded
-        case .restart:
-            attempt.logger.warn("Error with fetching progress. Restart upload.")
-            let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count + 1)
-            throw Upload.Error.uploadFailure(recovery: .restart(.afterDelay(backoff)))
+        // Only check remote upload progress if we think progress was made locally
+        if count > 0 {
+            let uploadProgress = try await getResumableUploadProgress(attempt: attempt)
+            switch uploadProgress {
+            case .complete(let result):
+                attempt.logger.info("Complete upload reported by endpoint.")
+                return result
+            case .uploaded(let updatedBytesAlreadUploaded):
+                attempt.logger.info("Endpoint reported \(updatedBytesAlreadUploaded)/\(attempt.localMetadata.encryptedDataLength) uploaded.")
+                bytesAlreadyUploaded = updatedBytesAlreadUploaded
+            case .restart:
+                attempt.logger.warn("Error with fetching progress. Restart upload.")
+                let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count + 1)
+                throw Upload.Error.uploadFailure(recovery: .restart(.afterDelay(backoff)))
+            }
         }
 
         // Wrap the progress block.
