@@ -633,6 +633,8 @@
 		5050A8792B76E2E100E9BFA4 /* PreKeyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */; };
 		5050A87B2B76EEC500E9BFA4 /* PreKeyIdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5050A87A2B76EEC500E9BFA4 /* PreKeyIdTest.swift */; };
 		5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */; };
+		50552C2E2BAC066A00815474 /* CallLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C2D2BAC066A00815474 /* CallLink.swift */; };
+		50552C312BAC079A00815474 /* CallLinkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C302BAC079A00815474 /* CallLinkTest.swift */; };
 		50597BBA2B97C38C004681E1 /* SignalAccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50597BB92B97C38C004681E1 /* SignalAccountStore.swift */; };
 		50597BBC2B97C449004681E1 /* UsernameLookupRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50597BBB2B97C449004681E1 /* UsernameLookupRecordStore.swift */; };
 		50597BBF2B97D629004681E1 /* SearchableNameFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50597BBE2B97D629004681E1 /* SearchableNameFinder.swift */; };
@@ -3433,6 +3435,8 @@
 		5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyId.swift; sourceTree = "<group>"; };
 		5050A87A2B76EEC500E9BFA4 /* PreKeyIdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyIdTest.swift; sourceTree = "<group>"; };
 		5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergePair.swift; sourceTree = "<group>"; };
+		50552C2D2BAC066A00815474 /* CallLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLink.swift; sourceTree = "<group>"; };
+		50552C302BAC079A00815474 /* CallLinkTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkTest.swift; sourceTree = "<group>"; };
 		50597BB92B97C38C004681E1 /* SignalAccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountStore.swift; sourceTree = "<group>"; };
 		50597BBB2B97C449004681E1 /* UsernameLookupRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordStore.swift; sourceTree = "<group>"; };
 		50597BBE2B97D629004681E1 /* SearchableNameFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchableNameFinder.swift; sourceTree = "<group>"; };
@@ -6859,6 +6863,14 @@
 			path = Launch;
 			sourceTree = "<group>";
 		};
+		50552C2F2BAC079000815474 /* Calls */ = {
+			isa = PBXGroup;
+			children = (
+				50552C302BAC079A00815474 /* CallLinkTest.swift */,
+			);
+			path = Calls;
+			sourceTree = "<group>";
+		};
 		50597BBD2B97D624004681E1 /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -8486,6 +8498,7 @@
 				17ACF11D267D71E0009BE867 /* AudioSession+WebRTC.swift */,
 				88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */,
 				88D23D2B23CEC17400B0E74B /* CallAudioService.swift */,
+				50552C2D2BAC066A00815474 /* CallLink.swift */,
 				88588D25252E59CE00405414 /* CallService.swift */,
 				B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */,
 				8841584B252F9F1C0078903D /* SignalCall.swift */,
@@ -8563,6 +8576,7 @@
 				34C6B0A41FA0E46F00D35993 /* Assets */,
 				1704690725D4C2DA000793D8 /* attachments */,
 				D979DA122B8D1B3E000EEAB8 /* Badge */,
+				50552C2F2BAC079000815474 /* Calls */,
 				D931080C2B338D00006A034E /* CallsTab */,
 				B660F6751C29867F00687D6E /* contact */,
 				50B6BCB22AEC58190010FB3B /* Contacts */,
@@ -12396,6 +12410,7 @@
 				88ABB8B52534070400229EAA /* CallHeader.swift in Sources */,
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
+				50552C2E2BAC066A00815474 /* CallLink.swift in Sources */,
 				E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */,
 				E1E78CAD2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift in Sources */,
 				E1E78CB42B575C2700B6FC2D /* CallMemberVideoView.swift in Sources */,
@@ -12998,6 +13013,7 @@
 				D99ABC742A3D0BE10034CD3B /* BitmapsImageParsingTest.swift in Sources */,
 				D9317FD32A4BAC8300075A92 /* BitmapsImagePixelMergingTest.swift in Sources */,
 				D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */,
+				50552C312BAC079A00815474 /* CallLinkTest.swift in Sources */,
 				D93108152B34B6BE006A034E /* CallRecordLoaderTest.swift in Sources */,
 				D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,

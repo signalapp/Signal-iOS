@@ -5,6 +5,7 @@
 
 import Foundation
 import PassKit
+import SignalCoreKit
 
 /// Stripe donations
 ///
@@ -509,7 +510,6 @@ public extension Stripe {
             let components = URLComponents(string: url.absoluteString),
             let queryItems = components.queryItems
         else {
-            owsFailDebug("Invalid URL.")
             return nil
         }
 

@@ -15,6 +15,7 @@ private enum OpenableUrl {
     case signalProxy(URL)
     case linkDevice(DeviceProvisioningURL)
     case completeIDEALDonation(Stripe.IDEALCallbackType)
+    case callLink(CallLink)
 }
 
 class UrlOpener {
@@ -72,6 +73,9 @@ class UrlOpener {
         }
         if let donationType = Stripe.parseStripeIDEALCallback(url) {
             return .completeIDEALDonation(donationType)
+        }
+        if let callLink = CallLink(url: url), FeatureFlags.callLinkJoin {
+            return .callLink(callLink)
         }
         owsFailDebug("Couldn't parse URL")
         return nil
@@ -131,7 +135,7 @@ class UrlOpener {
     private func shouldDismiss(for url: OpenableUrl) -> Bool {
         switch url {
         case .completeIDEALDonation: return false
-        case .groupInvite, .linkDevice, .phoneNumberLink, .signalProxy, .stickerPack, .usernameLink: return true
+        case .groupInvite, .linkDevice, .phoneNumberLink, .signalProxy, .stickerPack, .usernameLink, .callLink: return true
         }
     }
 
@@ -209,6 +213,10 @@ class UrlOpener {
                     OWSLogger.warn("[Donations] Unexpected error encountered with iDEAL donation")
                 }
             }
+
+        case .callLink(let callLink):
+            // CallLink TODO: Join the call.
+            Logger.debug("Trying to open \(callLink)")
         }
     }
 }
