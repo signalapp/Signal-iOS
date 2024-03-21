@@ -1349,6 +1349,7 @@ private extension InteractionFinder {
             .unknownProtocolVersionMessage,
             .verificationStateChangeMessage,
             .call,
+            .groupCallMessage,
             .errorMessage,
             .recoverableDecryptionPlaceholder,
             .incomingMessage,
