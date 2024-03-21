@@ -8,8 +8,7 @@
 import Foundation
 import SignalCoreKit
 
-@objc
-public class TSConstants: NSObject {
+public class TSConstants {
 
     private enum Environment {
         case production, staging
@@ -30,13 +29,12 @@ public class TSConstants: NSObject {
         return .production
     }()
 
-    @objc
     public static var isUsingProductionService: Bool {
         return environment == .production
     }
 
     // Never instantiate this class.
-    private override init() {}
+    private init() {}
 
     public static let legalTermsUrl = URL(string: "https://signal.org/legal/")!
     public static let donateUrl = URL(string: "https://signal.org/donate/")!
@@ -45,33 +43,20 @@ public class TSConstants: NSObject {
     public static var mainServiceIdentifiedURL: String { shared.mainServiceIdentifiedURL }
     public static var mainServiceUnidentifiedURL: String { shared.mainServiceUnidentifiedURL }
 
-    @objc
     public static var textSecureCDN0ServerURL: String { shared.textSecureCDN0ServerURL }
-    @objc
     public static var textSecureCDN2ServerURL: String { shared.textSecureCDN2ServerURL }
-    @objc
     public static var textSecureCDN3ServerURL: String { shared.textSecureCDN3ServerURL }
-    @objc
     public static var contactDiscoveryV2URL: String { shared.contactDiscoveryV2URL }
-    @objc
     public static var storageServiceURL: String { shared.storageServiceURL }
-    @objc
     public static var sfuURL: String { shared.sfuURL }
-    @objc
     public static var sfuTestURL: String { shared.sfuTestURL }
     public static var svr2URL: String { shared.svr2URL }
-    @objc
     public static var registrationCaptchaURL: String { shared.registrationCaptchaURL }
-    @objc
     public static var challengeCaptchaURL: String { shared.challengeCaptchaURL }
-    @objc
     public static var kUDTrustRoot: String { shared.kUDTrustRoot }
-    @objc
     public static var updatesURL: String { shared.updatesURL }
-    @objc
     public static var updates2URL: String { shared.updates2URL }
 
-    @objc
     public static var censorshipReflectorHost: String { shared.censorshipReflectorHost }
 
     public static var serviceCensorshipPrefix: String { shared.serviceCensorshipPrefix }
@@ -87,10 +72,8 @@ public class TSConstants: NSObject {
     static var svr2Enclave: MrEnclave { shared.svr2Enclave }
     static var svr2PreviousEnclaves: [MrEnclave] { shared.svr2PreviousEnclaves }
 
-    @objc
     public static var applicationGroup: String { shared.applicationGroup }
 
-    @objc
     public static var serverPublicParamsBase64: String { shared.serverPublicParamsBase64 }
 
     public static let shared: TSConstantsProtocol = {
