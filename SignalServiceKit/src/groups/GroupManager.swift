@@ -216,7 +216,7 @@ public class GroupManager: NSObject {
             for: initialGroupMembership.allMembersOfAnyKind.compactMap { $0.serviceId as? Aci },
             ignoreMissingProfiles: false,
             forceRefresh: false
-        ).awaitable()
+        )
 
         let groupAccess = GroupAccess.defaultForV2
         let separatedGroupMembership = databaseStorage.read { tx in
@@ -248,7 +248,7 @@ public class GroupManager: NSObject {
             let avatarUrlPath = try await groupsV2.uploadGroupAvatar(
                 avatarData: avatarData,
                 groupSecretParamsData: proposedGroupModel.secretParamsData
-            ).awaitable()
+            )
 
             // Fill in the avatarUrl on the group model.
             var builder = proposedGroupModel.asBuilder
@@ -259,11 +259,11 @@ public class GroupManager: NSObject {
         try await groupsV2.createNewGroupOnService(
             groupModel: proposedGroupModel,
             disappearingMessageToken: disappearingMessageToken
-        ).awaitable()
+        )
 
         let groupV2Snapshot = try await groupsV2.fetchCurrentGroupV2Snapshot(
             groupModel: proposedGroupModel
-        ).awaitable()
+        )
 
         let thread = try await databaseStorage.awaitableWrite { tx in
             let builder = try TSGroupModelBuilder.builderForSnapshot(
@@ -771,7 +771,7 @@ public class GroupManager: NSObject {
             inviteLinkPassword: inviteLinkPassword,
             groupInviteLinkPreview: groupInviteLinkPreview,
             avatarData: avatarData
-        ).awaitable()
+        )
 
         await NSObject.databaseStorage.awaitableWrite { transaction in
             NSObject.profileManager.addGroupId(
@@ -804,7 +804,9 @@ public class GroupManager: NSObject {
         let description = "Cancel Member Request"
 
         return firstly(on: DispatchQueue.global()) {
-            self.groupsV2.cancelMemberRequests(groupModel: groupModel)
+            Promise.wrapAsync {
+                try await self.groupsV2.cancelMemberRequests(groupModel: groupModel)
+            }
         }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
             GroupsV2Error.timeout
         }
@@ -889,13 +891,17 @@ public class GroupManager: NSObject {
             }
         }
 
-        if let groupModelV2 = groupModel as? TSGroupModelV2,
-           groupModelV2.isPlaceholderModel {
+        if
+            let groupModelV2 = groupModel as? TSGroupModelV2,
+            groupModelV2.isPlaceholderModel
+        {
             Logger.warn("Ignoring 403 for placeholder group.")
-            groupsV2.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
-                groupModel: groupModelV2,
-                removeLocalUserBlock: removeLocalUserBlock
-            )
+            Task {
+                try? await groupsV2.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
+                    groupModel: groupModelV2,
+                    removeLocalUserBlock: removeLocalUserBlock
+                )
+            }
         } else {
             removeLocalUserBlock(transaction)
         }
@@ -1561,11 +1567,13 @@ extension GroupManager {
             // the add below, since we depend on credential state to decide
             // whether to add or invite a user.
 
-            self.groupsV2.tryToFetchProfileKeyCredentials(
-                for: serviceIds.compactMap { $0 as? Aci },
-                ignoreMissingProfiles: false,
-                forceRefresh: false
-            )
+            Promise.wrapAsync {
+                try await self.groupsV2.tryToFetchProfileKeyCredentials(
+                    for: serviceIds.compactMap { $0 as? Aci },
+                    ignoreMissingProfiles: false,
+                    forceRefresh: false
+                )
+            }
         }.then(on: DispatchQueue.global()) { () -> Promise<TSGroupThread> in
             updateGroupV2(
                 groupModel: existingGroupModel,
@@ -1624,10 +1632,12 @@ extension GroupManager {
                 return .value(nil)
             }
 
-            return self.groupsV2.uploadGroupAvatar(
-                avatarData: avatarData,
-                groupSecretParamsData: existingGroupModel.secretParamsData
-            ).map { Optional.some($0) }
+            return Promise.wrapAsync {
+                try await self.groupsV2.uploadGroupAvatar(
+                    avatarData: avatarData,
+                    groupSecretParamsData: existingGroupModel.secretParamsData
+                )
+            }.map { Optional.some($0) }
         }.then(on: DispatchQueue.global()) { (avatarUrlPath: String?) -> Promise<TSGroupThread> in
             var message = "Update attributes:"
             message += title != nil ? " title" : ""

@@ -59,11 +59,13 @@ extension GroupManager {
                     try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
                 }
             }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
-                self.groupsV2.updateGroupV2(
-                    groupId: self.groupId,
-                    groupSecretParamsData: self.groupSecretParamsData,
-                    changesBlock: self.changesBlock
-                )
+                Promise.wrapAsync {
+                    try await self.groupsV2.updateGroupV2(
+                        groupId: self.groupId,
+                        groupSecretParamsData: self.groupSecretParamsData,
+                        changesBlock: self.changesBlock
+                    )
+                }
             }.done(on: DispatchQueue.global()) { groupThread in
                 self.reportSuccess()
                 self.future.resolve(groupThread)

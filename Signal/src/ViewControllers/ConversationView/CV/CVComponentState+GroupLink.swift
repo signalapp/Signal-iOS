@@ -54,8 +54,12 @@ fileprivate extension CVComponentState {
 
         return firstly(on: DispatchQueue.global()) { () -> Promise<Data> in
             let groupV2ContextInfo = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
-            return self.groupsV2Impl.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
-                                                                groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
+            return Promise.wrapAsync {
+                try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
+                    avatarUrlPath: avatarUrlPath,
+                    groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData
+                )
+            }
         }.map(on: DispatchQueue.global()) { (avatarData: Data) -> Void in
             let imageMetadata = (avatarData as NSData).imageMetadata(withPath: nil, mimeType: nil)
             let cacheFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: imageMetadata.fileExtension,
@@ -109,9 +113,13 @@ extension CVComponentState {
             // in order to trigger reload of the view.
             firstly(on: DispatchQueue.global()) { () -> Promise<GroupInviteLinkPreview> in
                 let groupContextInfo = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
-                return Self.groupsV2Impl.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                                                                     groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                     allowCached: false)
+                return Promise.wrapAsync {
+                    try await Self.groupsV2Impl.fetchGroupInviteLinkPreview(
+                        inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
+                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                        allowCached: false
+                    )
+                }
             }.done(on: DispatchQueue.global()) { (_: GroupInviteLinkPreview) in
                 if Self.updateExpirationList(url: url, isExpired: false) {
                     touchMessage()

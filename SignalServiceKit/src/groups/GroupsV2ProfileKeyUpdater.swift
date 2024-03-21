@@ -238,7 +238,9 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     throw OWSAssertionError("Invalid group model.")
                 }
                 if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetch snapshot") }
-                return self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+                return Promise.wrapAsync {
+                    try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+                }
             }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> (TSGroupThread, UInt32) in
                 guard groupV2Snapshot.groupMembership.isFullMember(localAci) else {
                     // We're not a full member, no need to update profile key.
@@ -302,7 +304,9 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                         throw OWSAssertionError("Invalid group model.")
                     }
                     if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetch snapshot again") }
-                    return self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+                    return Promise.wrapAsync {
+                        try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+                    }
                 }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Void in
                     guard groupV2Snapshot.groupMembership.isFullMember(localAci) else {
                         owsFailDebug("Not a full member.")

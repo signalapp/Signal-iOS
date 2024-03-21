@@ -51,21 +51,25 @@ public class _LinkPreviewManagerImpl_GroupsV2Wrapper: _LinkPreviewManagerImpl_Gr
         groupSecretParamsData: Data,
         allowCached: Bool
     ) -> Promise<GroupInviteLinkPreview> {
-        return groupsV2.fetchGroupInviteLinkPreview(
-            inviteLinkPassword: inviteLinkPassword,
-            groupSecretParamsData: groupSecretParamsData,
-            allowCached: allowCached
-        )
+        Promise.wrapAsync {
+            return try await self.groupsV2.fetchGroupInviteLinkPreview(
+                inviteLinkPassword: inviteLinkPassword,
+                groupSecretParamsData: groupSecretParamsData,
+                allowCached: allowCached
+            )
+        }
     }
 
     public func fetchGroupInviteLinkAvatar(
         avatarUrlPath: String,
         groupSecretParamsData: Data
     ) -> Promise<Data> {
-        return groupsV2.fetchGroupInviteLinkAvatar(
-            avatarUrlPath: avatarUrlPath,
-            groupSecretParamsData: groupSecretParamsData
-        )
+        Promise.wrapAsync {
+            return try await self.groupsV2.fetchGroupInviteLinkAvatar(
+                avatarUrlPath: avatarUrlPath,
+                groupSecretParamsData: groupSecretParamsData
+            )
+        }
     }
 }
 

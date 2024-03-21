@@ -259,10 +259,12 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         newUserAcis.insert(localAci)
 
         return firstly(on: DispatchQueue.global()) { () -> Promise<GroupsV2.ProfileKeyCredentialMap> in
-            self.groupsV2.loadProfileKeyCredentials(
-                for: Array(newUserAcis),
-                forceRefresh: forceRefreshProfileKeyCredentials
-            )
+            return Promise.wrapAsync {
+                try await self.groupsV2.loadProfileKeyCredentials(
+                    for: Array(newUserAcis),
+                    forceRefresh: forceRefreshProfileKeyCredentials
+                )
+            }
         }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: GroupsV2.ProfileKeyCredentialMap) throws -> GroupsV2BuiltGroupChange in
             try self.buildGroupChangeProto(
                 currentGroupModel: currentGroupModel,

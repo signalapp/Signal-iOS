@@ -604,10 +604,12 @@ private extension GroupV2UpdatesImpl {
                 return Promise.value(GroupsV2Impl.GroupChangePage(changes: groupChanges, earlyEnd: nil))
             }
             return firstly {
-                return self.groupsV2Impl.fetchGroupChangeActions(
-                    groupSecretParamsData: groupSecretParamsData,
-                    includeCurrentRevision: includeCurrentRevision
-                )
+                return Promise.wrapAsync {
+                    try await self.groupsV2Impl.fetchGroupChangeActions(
+                        groupSecretParamsData: groupSecretParamsData,
+                        includeCurrentRevision: includeCurrentRevision
+                    )
+                }
             }.map(on: DispatchQueue.global()) { (groupChanges: GroupsV2Impl.GroupChangePage) -> GroupsV2Impl.GroupChangePage in
                 self.addGroupChangesToCache(groupChanges: groupChanges.changes,
                                             groupSecretParamsData: groupSecretParamsData)
@@ -1021,7 +1023,9 @@ private extension GroupV2UpdatesImpl {
     ) -> Promise<TSGroupThread> {
 
         return firstly {
-            self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+            Promise.wrapAsync {
+                try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+            }
         }.then(on: DispatchQueue.global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(
                 groupV2Snapshot: groupV2Snapshot,

@@ -770,7 +770,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 changeActionsProto: changeActionsProto,
                 ignoreSignature: false,
                 groupSecretParamsData: oldGroupModel.secretParamsData
-            ).awaitable()
+            )
 
             guard let updatedGroupModel = updatedGroupThread.groupModel as? TSGroupModelV2 else {
                 owsFailDebug("Invalid group model.")

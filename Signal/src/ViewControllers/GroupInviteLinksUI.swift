@@ -207,9 +207,13 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
 
     private func loadLinkPreview() {
         firstly(on: DispatchQueue.global()) {
-            self.groupsV2Impl.fetchGroupInviteLinkPreview(inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
-                                                          groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
-                                                          allowCached: false)
+            Promise.wrapAsync {
+                try await self.groupsV2Impl.fetchGroupInviteLinkPreview(
+                    inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
+                    groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                    allowCached: false
+                )
+            }
         }.done { [weak self] (groupInviteLinkPreview: GroupInviteLinkPreview) in
             self?.applyGroupInviteLinkPreview(groupInviteLinkPreview)
 
@@ -241,8 +245,12 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
 
     private func loadGroupAvatar(avatarUrlPath: String) {
         firstly(on: DispatchQueue.global()) {
-            self.groupsV2Impl.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
-                                                         groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData)
+            Promise.wrapAsync {
+                try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
+                    avatarUrlPath: avatarUrlPath,
+                    groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData
+                )
+            }
         }.done { [weak self] (groupAvatar: Data) in
             self?.applyGroupAvatar(groupAvatar)
         }.catch { error in
@@ -346,9 +354,13 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                 }
                 // Kick off a fresh attempt to download the link preview.
                 // We cannot join the group without the preview.
-                return self.groupsV2Impl.fetchGroupInviteLinkPreview(inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
-                                                                     groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
-                                                                     allowCached: false)
+                return Promise.wrapAsync {
+                    try await self.groupsV2Impl.fetchGroupInviteLinkPreview(
+                        inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
+                        groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                        allowCached: false
+                    )
+                }
             }.then(on: DispatchQueue.global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, Data?)> in
                 guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
                     // Group has no avatar.
@@ -359,8 +371,12 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                     return Promise.value((groupInviteLinkPreview, existingAvatarData))
                 }
                 return firstly(on: DispatchQueue.global()) {
-                    self.groupsV2Impl.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
-                                                                 groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData)
+                    Promise.wrapAsync {
+                        try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
+                            avatarUrlPath: avatarUrlPath,
+                            groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData
+                        )
+                    }
                 }.map(on: DispatchQueue.global()) { (groupAvatar: Data) in
                     (groupInviteLinkPreview, groupAvatar)
                 }.recover(on: DispatchQueue.global()) { error -> Promise<(GroupInviteLinkPreview, Data?)> in
