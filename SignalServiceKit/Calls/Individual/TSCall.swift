@@ -48,6 +48,27 @@ extension TSCall: OWSReadTracking {
             callMessage.wasRead = true
         }
 
-        // Ignore circumstance, we don't send receipts for call messages.
+        switch circumstance {
+        case .onThisDevice, .onThisDeviceWhilePendingMessageRequest:
+            let callRecordStore = DependenciesBridge.shared.callRecordStore
+            let missedCallManager = DependenciesBridge.shared.callRecordMissedCallManager
+
+            if
+                let sqliteRowId = sqliteRowId,
+                let associatedCallRecord = callRecordStore.fetch(
+                    interactionRowId: sqliteRowId, tx: tx.asV2Read
+                )
+            {
+                missedCallManager.markUnreadCallsInConversationAsRead(
+                    beforeCallRecord: associatedCallRecord,
+                    sendSyncMessage: true,
+                    tx: tx.asV2Write
+                )
+            }
+        case .onLinkedDevice, .onLinkedDeviceWhilePendingMessageRequest:
+            break
+        @unknown default:
+            break
+        }
     }
 }

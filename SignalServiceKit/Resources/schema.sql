@@ -1580,7 +1580,7 @@ CREATE
             ,tokenize = 'unicode61'
             ,content = 'SearchableName'
             ,content_rowid = 'id'
-        ) /* SearchableNameFTS(value) */
+        ) /* SearchableNameFTS(VALUE) */
 ;
 
 CREATE
@@ -1644,4 +1644,13 @@ new. "id"
 ;
 
 END
+;
+
+CREATE
+    INDEX "index_call_record_on_threadRowId_and_callStatus_and_unreadStatus_and_timestamp"
+        ON "CallRecord"("threadRowId"
+    ,"status"
+    ,"unreadStatus"
+    ,"timestamp"
+)
 ;

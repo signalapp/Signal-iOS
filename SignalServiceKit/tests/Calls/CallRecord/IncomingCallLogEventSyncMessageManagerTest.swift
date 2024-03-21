@@ -164,9 +164,14 @@ private class MockMissedCallManager: CallRecordMissedCallManager {
         owsFail("Not implemented!")
     }
 
+    func markUnreadCallsInConversationAsRead(beforeCallRecord: CallRecord, sendSyncMessage: Bool, tx: DBWriteTransaction) {
+        // TODO: implement, because we'll need this when handling incoming sync messages
+        owsFail("Not implemented!")
+    }
+
     var markUnreadCallsAsReadMock: ((_ beforeTimestamp: UInt64?) -> Void)!
-    func markUnreadCallsAsRead(beforeTimestamp: UInt64?, sendMarkedAsReadSyncMessage: Bool, tx: DBWriteTransaction) {
-        XCTAssertFalse(sendMarkedAsReadSyncMessage)
+    func markUnreadCallsAsRead(beforeTimestamp: UInt64?, sendSyncMessage: Bool, tx: DBWriteTransaction) {
+        XCTAssertFalse(sendSyncMessage)
         markUnreadCallsAsReadMock(beforeTimestamp)
     }
 }

@@ -584,7 +584,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             self.deps.db.write { tx in
                 self.deps.callRecordMissedCallManager.markUnreadCallsAsRead(
                     beforeTimestamp: nil,
-                    sendMarkedAsReadSyncMessage: true,
+                    sendSyncMessage: true,
                     tx: tx.asV2Write
                 )
             }

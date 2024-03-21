@@ -3637,6 +3637,7 @@ struct SignalServiceProtos_SyncMessage {
       typealias RawValue = Int
       case cleared // = 0
       case markedAsRead // = 1
+      case markedAsReadInConversation // = 2
 
       init() {
         self = .cleared
@@ -3646,6 +3647,7 @@ struct SignalServiceProtos_SyncMessage {
         switch rawValue {
         case 0: self = .cleared
         case 1: self = .markedAsRead
+        case 2: self = .markedAsReadInConversation
         default: return nil
         }
       }
@@ -3654,6 +3656,7 @@ struct SignalServiceProtos_SyncMessage {
         switch self {
         case .cleared: return 0
         case .markedAsRead: return 1
+        case .markedAsReadInConversation: return 2
         }
       }
 
@@ -8280,6 +8283,7 @@ extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: SwiftProtobuf._
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "CLEARED"),
     1: .same(proto: "MARKED_AS_READ"),
+    2: .same(proto: "MARKED_AS_READ_IN_CONVERSATION"),
   ]
 }
 

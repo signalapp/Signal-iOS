@@ -19,6 +19,7 @@ struct IncomingCallLogEventSyncMessageParams {
     enum EventType {
         case cleared
         case markedAsRead
+        case markedAsReadInConversation
     }
 
     struct CallIdentifiers {
@@ -91,6 +92,7 @@ private extension IncomingCallLogEventSyncMessageParams.EventType {
         switch protoEventType {
         case .cleared: self = .cleared
         case .markedAsRead: self = .markedAsRead
+        case .markedAsReadInConversation: self = .markedAsReadInConversation
         }
     }
 }

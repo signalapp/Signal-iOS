@@ -9,19 +9,36 @@ public protocol CallRecordMissedCallManager {
     /// The number of unread missed calls.
     func countUnreadMissedCalls(tx: DBReadTransaction) -> UInt
 
-    /// Marks all unread calls as read, before the given timestamp.
+    /// Marks all unread calls at and before the given timestamp as read.
     ///
     /// - Parameter beforeTimestamp
-    /// A timestamp before which to mark calls as read. Calls after this
-    /// timestamp will not be marked as read. If this value is `nil`, all calls
-    /// are marked as read.
-    /// - Parameter sendMarkedAsReadSyncMessage
-    /// Whether a "marked as read" sync message should be sent as part of this
-    /// operation. No sync message is sent regardless of this value if no calls
-    /// are actually marked as read.
+    /// A timestamp at and before which to mark calls as read. If this value is
+    /// `nil`, all calls are marked as read.
+    /// - Parameter sendSyncMessage
+    /// Whether a sync message should be sent as part of this operation. No sync
+    /// message is sent regardless of this value if no calls are actually marked
+    /// as read. The sync message will be of type
+    /// ``OutgoingCallLogEventSyncMessage/CallLogEvent/EventType/markedAsRead``.
     func markUnreadCallsAsRead(
         beforeTimestamp: UInt64?,
-        sendMarkedAsReadSyncMessage: Bool,
+        sendSyncMessage: Bool,
+        tx: DBWriteTransaction
+    )
+
+    /// Marks the given call and all unread calls before it in the same
+    /// conversation as the given call as read.
+    ///
+    /// - Parameter beforeCallRecord
+    /// The call identifying the conversation and timestamp at and before which
+    /// to mark unread calls as read.
+    /// - Parameter sendSyncMessage
+    /// Whether a sync message should be sent as part of this operation. No sync
+    /// message is sent regardless of this value if no calls are actually marked
+    /// as read. The sync message will be of type
+    /// ``OutgoingCallLogEventSyncMessage/CallLogEvent/EventType/markedAsReadInConversation``.
+    func markUnreadCallsInConversationAsRead(
+        beforeCallRecord: CallRecord,
+        sendSyncMessage: Bool,
         tx: DBWriteTransaction
     )
 }
@@ -71,10 +88,71 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
 
     func markUnreadCallsAsRead(
         beforeTimestamp: UInt64?,
-        sendMarkedAsReadSyncMessage: Bool,
+        sendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) {
-        var markedAsReadCount = 0
+        let markedAsReadCount = _markUnreadCallsAsRead(
+            beforeTimestamp: beforeTimestamp,
+            threadRowId: nil,
+            tx: tx
+        )
+
+        guard markedAsReadCount > 0 else { return }
+
+        CallRecordLogger.shared.info("Marked \(markedAsReadCount) calls as read.")
+
+        if sendSyncMessage {
+            /// When doing a bulk mark-as-read, we want to use our absolute
+            /// most-recent call as the anchor for the sync message.
+            let mostRecentCall: CallRecord? = try? callRecordQuerier.fetchCursor(
+                ordering: .descending, tx: tx
+            )?.next()
+
+            guard let mostRecentCall else {
+                owsFailDebug("Unexpectedly failed to get most-recent call after marking calls as read!")
+                return
+            }
+
+            sendMarkedCallsAsReadSyncMessage(
+                callRecord: mostRecentCall,
+                eventType: .markedAsRead,
+                tx: tx
+            )
+        }
+    }
+
+    func markUnreadCallsInConversationAsRead(
+        beforeCallRecord: CallRecord,
+        sendSyncMessage: Bool,
+        tx: DBWriteTransaction
+    ) {
+        let markedAsReadCount = _markUnreadCallsAsRead(
+            beforeTimestamp: beforeCallRecord.callBeganTimestamp,
+            threadRowId: beforeCallRecord.threadRowId,
+            tx: tx
+        )
+
+        guard markedAsReadCount > 0 else { return }
+
+        CallRecordLogger.shared.info("Marked \(markedAsReadCount) calls as read.")
+
+        if sendSyncMessage {
+            sendMarkedCallsAsReadSyncMessage(
+                callRecord: beforeCallRecord,
+                eventType: .markedAsReadInConversation,
+                tx: tx
+            )
+        }
+    }
+
+    /// Mark calls before or at the given timestamp as read, optionally
+    /// considering only calls with the given thread row ID.
+    private func _markUnreadCallsAsRead(
+        beforeTimestamp: UInt64?,
+        threadRowId: Int64?,
+        tx: DBWriteTransaction
+    ) -> UInt {
+        var markedAsReadCount: UInt = 0
 
         let fetchCursorOrdering: CallRecordQuerier.FetchOrdering = {
             if let beforeTimestamp {
@@ -91,11 +169,24 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         }()
 
         for callStatus in CallRecord.CallStatus.allCases {
-            guard let unreadCallCursor = callRecordQuerier.fetchCursorForUnread(
-                callStatus: callStatus,
-                ordering: fetchCursorOrdering,
-                tx: tx
-            ) else { continue }
+            let unreadCallCursor: CallRecordCursor? = {
+                if let threadRowId {
+                    return callRecordQuerier.fetchCursorForUnread(
+                        threadRowId: threadRowId,
+                        callStatus: callStatus,
+                        ordering: fetchCursorOrdering,
+                        tx: tx
+                    )
+                } else {
+                    return callRecordQuerier.fetchCursorForUnread(
+                        callStatus: callStatus,
+                        ordering: fetchCursorOrdering,
+                        tx: tx
+                    )
+                }
+            }()
+
+            guard let unreadCallCursor else { continue }
 
             do {
                 let markedAsReadCountBefore = markedAsReadCount
@@ -118,33 +209,25 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
             }
         }
 
-        guard markedAsReadCount > 0 else { return }
-
-        CallRecordLogger.shared.info("Marked \(markedAsReadCount) calls as read.")
-
-        if sendMarkedAsReadSyncMessage {
-            sendMarkedCallsAsReadSyncMessage(tx: tx)
-        }
+        return markedAsReadCount
     }
 
-    /// Send a "marked calls as read" sync message, so our other devices can
-    /// clear their missed-call badges.
+    /// Send a "marked calls as read" sync message with the given event type, so
+    /// our other devices can also mark the calls as read.
     ///
-    /// The sync message includes a timestamp before which we want to consider
-    /// calls read; that timestamp should be of our most-recent call.
-    private func sendMarkedCallsAsReadSyncMessage(tx: DBWriteTransaction) {
-        let mostRecentCall: CallRecord? = try? callRecordQuerier.fetchCursor(
-            ordering: .descending, tx: tx
-        )?.next()
-
-        guard let mostRecentCall else {
-            owsFailDebug("Unexpectedly failed to get most-recent call after marking calls as read!")
-            return
-        }
-
+    /// - Parameter callRecord
+    /// A call record whose timestamp and other parameters will populate the
+    /// sync message.
+    /// - Parameter eventType
+    /// The type of sync message to send.
+    private func sendMarkedCallsAsReadSyncMessage(
+        callRecord: CallRecord,
+        eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
+        tx: DBWriteTransaction
+    ) {
         typealias ConversationId = OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId
         guard let conversationId: ConversationId = callRecordConversationIdAdapter.getConversationId(
-            callRecord: mostRecentCall, tx: tx
+            callRecord: callRecord, tx: tx
         ) else { return }
 
         let sdsTx = SDSDB.shimOnlyBridge(tx)
@@ -155,10 +238,10 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
 
         let outgoingCallLogEventSyncMessage = OutgoingCallLogEventSyncMessage(
             callLogEvent: OutgoingCallLogEventSyncMessage.CallLogEvent(
-                eventType: .markedAsRead,
-                callId: mostRecentCall.callId,
+                eventType: eventType,
+                callId: callRecord.callId,
                 conversationId: conversationId,
-                timestamp: mostRecentCall.callBeganTimestamp
+                timestamp: callRecord.callBeganTimestamp
             ),
             thread: localThread,
             tx: sdsTx

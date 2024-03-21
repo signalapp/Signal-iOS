@@ -253,6 +253,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addSearchableName
         case addCallRecordRowIdColumnToCallRecordDeleteAllJobRecord
         case markAllGroupCallMessagesAsRead
+        case addIndexForUnreadByThreadRowIdToCallRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2723,6 +2724,21 @@ public class GRDBSchemaMigrator: NSObject {
                 SET read = 1
                 WHERE recordType = \(SDSRecordType.groupCallMessage.rawValue)
             """)
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addIndexForUnreadByThreadRowIdToCallRecord) { tx in
+            try tx.database.create(
+                index: "index_call_record_on_threadRowId_and_callStatus_and_unreadStatus_and_timestamp",
+                on: "CallRecord",
+                columns: [
+                    "threadRowId",
+                    "status",
+                    "unreadStatus",
+                    "timestamp",
+                ]
+            )
 
             return .success(())
         }

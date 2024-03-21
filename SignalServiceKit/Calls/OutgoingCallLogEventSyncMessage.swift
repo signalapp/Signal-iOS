@@ -62,13 +62,22 @@ public extension OutgoingCallLogEventSyncMessage {
         typealias ConversationId = CallSyncMessageConversationId
 
         public enum EventType: UInt, CaseIterable {
-            /// Indicates we cleared our call log of calls before the timestamp
-            /// in this event.
+            /// Indicates we cleared our call log in its entirety.
+            ///
+            /// - SeeAlso
+            /// ``OutgoingCallEvent/EventType/deleted``, which indicates that we
+            /// deleted a singular individual call.
+            ///
+            /// That action is part of the `CallEvent` sync message for
+            /// historical reasons, in that it predates the `CallLogEvent` sync
+            /// message.
             case cleared = 0
 
-            /// Indicates we marked calls as read before the timestamp in this
-            /// event.
+            /// Indicates we marked calls as read.
             case markedAsRead = 1
+
+            /// Indicates we marked calls as read in a particular conversation.
+            case markedAsReadInConversation = 2
         }
 
         let eventType: EventType
@@ -146,6 +155,7 @@ private extension OutgoingCallLogEventSyncMessage.CallLogEvent.EventType {
         switch self {
         case .cleared: return .cleared
         case .markedAsRead: return .markedAsRead
+        case .markedAsReadInConversation: return .markedAsReadInConversation
         }
     }
 }

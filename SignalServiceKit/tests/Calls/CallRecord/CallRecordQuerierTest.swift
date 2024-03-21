@@ -313,6 +313,40 @@ final class CallRecordQuerierTest: XCTestCase {
         }
     }
 
+    func testFetchUnreadByCallStatusInConversation() {
+        /// This is a contrived scenario, since we won't in practice have an
+        /// unread `.group(.ringingDeclined)` call, but it's useful here to test
+        /// that we're filtering on call status correctly.
+        let threadRowId1 = insertCallRecordsForThread(callStatuses: [.group(.ringingMissed), .group(.ringingDeclined)], unreadStatus: .unread)
+        _ = insertCallRecordsForThread(callStatuses: [.group(.ringingMissed)], unreadStatus: .read, knownThreadRowId: threadRowId1)
+        _ = insertCallRecordsForThread(callStatuses: [.group(.ringingMissed)], unreadStatus: .unread)
+
+        func testCase(
+            _ callRecords: [CallRecord],
+            threadRowId: Int64,
+            count: Int
+        ) {
+            assertExplanation(contains: "index_call_record_on_threadRowId_and_callStatus_and_unreadStatus_and_timestamp")
+            XCTAssertEqual(callRecords.count, count)
+            XCTAssertTrue(callRecords.allSatisfy { $0.threadRowId == threadRowId })
+            XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })
+            XCTAssertTrue(callRecords.allSatisfy { $0.unreadStatus == .unread })
+        }
+
+        inMemoryDB.read { tx in
+            testCase(
+                try! callRecordQuerier.fetchCursorForUnread(
+                    threadRowId: threadRowId1,
+                    callStatus: .group(.ringingMissed),
+                    ordering: .descending,
+                    db: tx.database
+                )!.drain(expectingSort: .descending),
+                threadRowId: threadRowId1,
+                count: 1
+            )
+        }
+    }
+
     /// Asserts that the latest fetch explanation in the call record querier
     /// contains the given string.
     private func assertExplanation(

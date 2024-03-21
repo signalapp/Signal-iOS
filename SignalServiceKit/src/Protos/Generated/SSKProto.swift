@@ -12688,12 +12688,14 @@ extension SSKProtoSyncMessageCallEventBuilder {
 public enum SSKProtoSyncMessageCallLogEventType: Int32 {
     case cleared = 0
     case markedAsRead = 1
+    case markedAsReadInConversation = 2
 }
 
 private func SSKProtoSyncMessageCallLogEventTypeWrap(_ value: SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum) -> SSKProtoSyncMessageCallLogEventType {
     switch value {
     case .cleared: return .cleared
     case .markedAsRead: return .markedAsRead
+    case .markedAsReadInConversation: return .markedAsReadInConversation
     }
 }
 
@@ -12701,6 +12703,7 @@ private func SSKProtoSyncMessageCallLogEventTypeUnwrap(_ value: SSKProtoSyncMess
     switch value {
     case .cleared: return .cleared
     case .markedAsRead: return .markedAsRead
+    case .markedAsReadInConversation: return .markedAsReadInConversation
     }
 }
 

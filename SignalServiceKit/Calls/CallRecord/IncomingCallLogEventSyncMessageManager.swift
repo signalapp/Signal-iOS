@@ -18,6 +18,8 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
     private let deleteAllCallsJobQueue: Shims.DeleteAllCallsJobQueue
     private let missedCallManager: CallRecordMissedCallManager
 
+    private var logger: CallRecordLogger { .shared }
+
     init(
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         deleteAllCallsJobQueue: Shims.DeleteAllCallsJobQueue,
@@ -62,7 +64,13 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
             case .markedAsRead:
                 missedCallManager.markUnreadCallsAsRead(
                     beforeTimestamp: referencedCallRecord.callBeganTimestamp,
-                    sendMarkedAsReadSyncMessage: false,
+                    sendSyncMessage: false,
+                    tx: tx
+                )
+            case .markedAsReadInConversation:
+                missedCallManager.markUnreadCallsInConversationAsRead(
+                    beforeCallRecord: referencedCallRecord,
+                    sendSyncMessage: false,
                     tx: tx
                 )
             }
@@ -76,9 +84,16 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
             case .markedAsRead:
                 missedCallManager.markUnreadCallsAsRead(
                     beforeTimestamp: incomingSyncMessage.anchorTimestamp,
-                    sendMarkedAsReadSyncMessage: false,
+                    sendSyncMessage: false,
                     tx: tx
                 )
+            case .markedAsReadInConversation:
+                /// This case was added concurrently with the introduction of
+                /// call identifiers to the `CallLogEvent` sync message, and so
+                /// it's unexpected that we're missing the referenced call
+                /// record. We'd only expect this if the call record was deleted
+                /// on this device, so if we end up here: do nothing.
+                logger.warn("Received markedAsReadInConversation CallLogEvent sync message, but missing referenced call record!")
             }
         }
     }
