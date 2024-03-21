@@ -24,3 +24,30 @@ extension OWSGroupCallMessage {
         )
     }
 }
+
+// MARK: - OWSReadTracking
+
+@objc
+extension OWSGroupCallMessage: OWSReadTracking {
+    public var expireStartedAt: UInt64 {
+        return 0
+    }
+
+    public func markAsRead(
+        atTimestamp readTimestamp: UInt64,
+        thread: TSThread,
+        circumstance: OWSReceiptCircumstance,
+        shouldClearNotifications: Bool,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        if wasRead {
+            return
+        }
+
+        anyUpdateGroupCallMessage(transaction: tx) { groupCallMessage in
+            groupCallMessage.wasRead = true
+        }
+
+        // Ignore circumstance, we don't send receipts for call messages.
+    }
+}

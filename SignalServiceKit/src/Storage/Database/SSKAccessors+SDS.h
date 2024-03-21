@@ -77,14 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface TSCall (SDS)
-
-@property (nonatomic, getter=wasRead) BOOL read;
-
-@end
-
-#pragma mark -
-
 @interface TSIncomingMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;
@@ -151,14 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, copy) NSString *authorId;
 
 @property (atomic, readonly, nullable) NSData *envelopeData;
-
-@end
-
-#pragma mark -
-
-@interface OWSGroupCallMessage (SDS)
-
-@property (nonatomic, getter=wasRead) BOOL read;
 
 @end
 

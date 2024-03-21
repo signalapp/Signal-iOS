@@ -46,8 +46,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 @interface TSCall ()
 
-@property (nonatomic, getter=wasRead) BOOL read;
-
 @property (nonatomic, readonly) NSUInteger callSchemaVersion;
 
 @property (nonatomic) TSRecentCallOfferType offerType;
@@ -214,33 +212,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
                 @"info message text in conversation view for when a call was dropped because the contact is blocked in "
                 @"iOS settings");
     }
-}
-
-#pragma mark - OWSReadTracking
-
-- (uint64_t)expireStartedAt
-{
-    return 0;
-}
-
-- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-                       thread:(TSThread *)thread
-                 circumstance:(OWSReceiptCircumstance)circumstance
-     shouldClearNotifications:(BOOL)shouldClearNotifications
-                  transaction:(SDSAnyWriteTransaction *)transaction
-{
-
-    OWSAssertDebug(transaction);
-
-    if (self.read) {
-        return;
-    }
-
-    OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
-
-    [self anyUpdateCallWithTransaction:transaction block:^(TSCall *call) { call.read = YES; }];
-
-    // Ignore `circumstance` - we never send read receipts for calls.
 }
 
 @end

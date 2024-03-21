@@ -41,13 +41,17 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 /// ``TSCall`` instances local to this device.
 ///
 /// Not to be confused with an ``OWSOutgoingCallMessage``.
-@interface TSCall : TSInteraction <OWSReadTracking, OWSPreviewText>
+@interface TSCall : TSInteraction <OWSPreviewText>
 
 /// Encodes both what kind of call it is, and the state of that call (pending, answered, missed, etc.)
 /// Written to by CallKit callbacks, but also by incoming call event sync messages from linked
 /// devices, by way of `CallRecord`.
 @property (nonatomic) RPRecentCallType callType;
 @property (nonatomic, readonly) TSRecentCallOfferType offerType;
+
+/// Whether this call has been read, or is "unread".
+/// - SeeAlso ``OWSReadTracking``
+@property (nonatomic, getter=wasRead) BOOL read;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp

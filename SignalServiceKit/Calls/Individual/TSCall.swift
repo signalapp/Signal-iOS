@@ -24,3 +24,30 @@ extension TSCall {
         )
     }
 }
+
+// MARK: - OWSReadTracking
+
+@objc
+extension TSCall: OWSReadTracking {
+    public var expireStartedAt: UInt64 {
+        return 0
+    }
+
+    public func markAsRead(
+        atTimestamp readTimestamp: UInt64,
+        thread: TSThread,
+        circumstance: OWSReceiptCircumstance,
+        shouldClearNotifications: Bool,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        if wasRead {
+            return
+        }
+
+        anyUpdateCall(transaction: tx) { callMessage in
+            callMessage.wasRead = true
+        }
+
+        // Ignore circumstance, we don't send receipts for call messages.
+    }
+}

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Represents a group call-related update that lives in chat history.
 ///
 /// Not to be confused with an ``OutgoingGroupCallUpdateMessage``.
-@interface OWSGroupCallMessage : TSInteraction <OWSReadTracking, OWSPreviewText>
+@interface OWSGroupCallMessage : TSInteraction <OWSPreviewText>
 
 /// The ACI-string of the creator of the call.
 /// - Note
@@ -34,6 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Whether the call has been ended, or is still in-progress.
 @property (nonatomic) BOOL hasEnded;
+
+/// Whether this call has been read, or is "unread".
+/// - SeeAlso ``OWSReadTracking``
+@property (nonatomic, getter=wasRead) BOOL read;
 
 /// This property is deprecated, but remains here to preserve compatibility with
 /// legacy data. Specifically, it will only be populated on old messages -

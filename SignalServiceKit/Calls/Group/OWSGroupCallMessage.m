@@ -11,12 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSGroupCallMessage ()
-
-@property (nonatomic, getter=wasRead) BOOL read;
-
-@end
-
 #pragma mark -
 
 @implementation OWSGroupCallMessage
@@ -104,36 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Call;
-}
-
-#pragma mark - OWSReadTracking
-
-- (uint64_t)expireStartedAt
-{
-    return 0;
-}
-
-- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-                       thread:(TSThread *)thread
-                 circumstance:(OWSReceiptCircumstance)circumstance
-     shouldClearNotifications:(BOOL)shouldClearNotifications
-                  transaction:(SDSAnyWriteTransaction *)transaction
-{
-
-    OWSAssertDebug(transaction);
-
-    if (self.read) {
-        return;
-    }
-
-    OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
-
-    [self anyUpdateGroupCallMessageWithTransaction:transaction
-                                             block:^(OWSGroupCallMessage *groupCallMessage) {
-                                                 groupCallMessage.read = YES;
-                                             }];
-
-    // Ignore `circumstance` - we never send read receipts for calls.
 }
 
 #pragma mark - Methods
