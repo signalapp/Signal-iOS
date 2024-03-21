@@ -890,7 +890,6 @@
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
 		669FAE152B75968D009EE2FE /* TSAttachmentDownloadJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE142B75968D009EE2FE /* TSAttachmentDownloadJob.swift */; };
-		669FAE182B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */; };
 		669FAE1B2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */; };
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
@@ -3708,7 +3707,6 @@
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
 		669FAE142B75968D009EE2FE /* TSAttachmentDownloadJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentDownloadJob.swift; sourceTree = "<group>"; };
-		669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSLinkPreview+Attachment.swift"; sourceTree = "<group>"; };
 		669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLinkPreviewSerializationTest.swift; sourceTree = "<group>"; };
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
@@ -7396,7 +7394,6 @@
 			isa = PBXGroup;
 			children = (
 				6600BB1B2BA3ABCC0005A035 /* Manager */,
-				669FAE172B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift */,
 				F9C5C8E3289453B100548EEE /* OWSLinkPreview.swift */,
 			);
 			path = LinkPreview;
@@ -13578,7 +13575,6 @@
 				6605D4F82A85A504004DC345 /* OWSIncomingPaymentMessage.m in Sources */,
 				6619A1C72B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift in Sources */,
 				F9C5CD0D289453B300548EEE /* OWSLinkedDeviceReadReceipt.m in Sources */,
-				669FAE182B7A8EAD009EE2FE /* OWSLinkPreview+Attachment.swift in Sources */,
 				F9C5CBD7289453B300548EEE /* OWSLinkPreview.swift in Sources */,
 				F9C5CC75289453B300548EEE /* OWSMediaUtils.swift in Sources */,
 				F9C5CC56289453B300548EEE /* OWSMessageContentJob+SDS.swift in Sources */,

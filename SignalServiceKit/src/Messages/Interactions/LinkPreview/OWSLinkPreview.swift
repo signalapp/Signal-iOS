@@ -67,23 +67,59 @@ public class OWSLinkPreview: MTLModel, Codable {
     @objc
     public var date: Date?
 
-    public convenience init(urlString: String, title: String?, legacyImageAttachmentId: String?) {
-        self.init(urlString: urlString, title: title, attachmentRef: .legacy(uniqueId: legacyImageAttachmentId))
-    }
-
-    internal init(urlString: String, title: String?, attachmentRef: AttachmentReference) {
+    private init(
+        urlString: String,
+        title: String?,
+        legacyImageAttachmentId: String?,
+        usesV2AttachmentReference: Bool
+    ) {
         self.urlString = urlString
         self.title = title
-        switch attachmentRef {
-        case .legacy(let uniqueId):
-            self.imageAttachmentId = uniqueId
-            self.usesV2AttachmentReferenceValue = NSNumber(value: false)
-        case .v2:
-            self.imageAttachmentId = nil
-            self.usesV2AttachmentReferenceValue = NSNumber(value: true)
-        }
+        self.imageAttachmentId = legacyImageAttachmentId
+        self.usesV2AttachmentReferenceValue = NSNumber(value: usesV2AttachmentReference)
 
         super.init()
+    }
+
+    public static func withLegacyImageAttachment(
+        urlString: String,
+        title: String? = nil,
+        attachmentId: String
+    ) -> OWSLinkPreview {
+        return .init(
+            urlString: urlString,
+            title: title,
+            legacyImageAttachmentId: attachmentId,
+            usesV2AttachmentReference: false
+        )
+    }
+
+    public static func withForeignReferenceImageAttachment(
+        urlString: String,
+        title: String? = nil
+    ) -> OWSLinkPreview {
+        return .init(
+            urlString: urlString,
+            title: title,
+            legacyImageAttachmentId: nil,
+            usesV2AttachmentReference: true
+        )
+    }
+
+    public static func withoutImage(
+        urlString: String,
+        title: String? = nil
+    ) -> OWSLinkPreview {
+        /// In legacy-world, we put nil on the attachment id to mark this as not having an attachment
+        /// In v2-world, the existence of an AttachmentReference is what determines if a link preview has an image or not.
+        /// In either case, the legacy attachment id is nil, but fetching ends up different, so mark it down at write time.
+        let usesV2AttachmentReference = FeatureFlags.newAttachmentsUseV2
+        return .init(
+            urlString: urlString,
+            title: title,
+            legacyImageAttachmentId: nil,
+            usesV2AttachmentReference: usesV2AttachmentReference
+        )
     }
 
     public override init() {

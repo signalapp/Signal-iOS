@@ -361,11 +361,13 @@ public class AttachmentMultisend: Dependencies {
             owsFailDebug("Failed to build attachment, error: \(error)")
             attachmentUniqueId = nil
         }
-        let linkPreview = OWSLinkPreview.init(
-            urlString: info.urlString,
-            title: info.title,
-            legacyImageAttachmentId: attachmentUniqueId
-        )
+        let linkPreview = attachmentUniqueId.map {
+            OWSLinkPreview.withLegacyImageAttachment(
+                urlString: info.urlString,
+                title: info.title,
+                attachmentId: $0
+            )
+        } ?? OWSLinkPreview.withoutImage(urlString: info.urlString, title: info.title)
         linkPreview.previewDescription = info.previewDescription
         linkPreview.date = info.date
         return (linkPreview, attachmentUniqueId: attachmentUniqueId)

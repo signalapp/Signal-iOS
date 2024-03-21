@@ -355,9 +355,9 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
         let linkPreview: OWSLinkPreview = {
             switch attachmentInfo {
             case .legacy(let uniqueId):
-                return OWSLinkPreview(urlString: urlString, title: title, attachmentRef: .legacy(uniqueId: uniqueId))
+                return OWSLinkPreview.withLegacyImageAttachment(urlString: urlString, title: title, attachmentId: uniqueId)
             case .v2:
-                return OWSLinkPreview(urlString: urlString, title: title, attachmentRef: .v2)
+                return OWSLinkPreview.withForeignReferenceImageAttachment(urlString: urlString, title: title)
             case nil:
                 return OWSLinkPreview.withoutImage(urlString: urlString, title: title)
             }
