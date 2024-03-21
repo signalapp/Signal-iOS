@@ -123,8 +123,11 @@ public class OutgoingMessagePreparer: NSObject {
             break
         }
 
-        if let contactShare = message.contactShare, contactShare.avatarAttachmentId != nil {
-            let attachmentStream = contactShare.avatarAttachment(with: tx) as? TSAttachmentStream
+        if let contactShareAvatarId = message.contactShare?.legacyAvatarAttachmentId {
+            let attachmentStream = TSAttachmentStream.anyFetchAttachmentStream(
+                uniqueId: contactShareAvatarId,
+                transaction: tx
+            )
             owsAssertDebug(attachmentStream != nil)
             attachmentStream.map { attachmentIds.append($0.uniqueId) }
         }

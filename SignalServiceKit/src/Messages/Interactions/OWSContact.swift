@@ -436,7 +436,9 @@ public class OWSContact: MTLModel {
     public var addresses: [OWSContactAddress] = []
 
     @objc
-    public private(set) var avatarAttachmentId: String?
+    private var avatarAttachmentId: String?
+
+    public var legacyAvatarAttachmentId: String? { avatarAttachmentId }
 
     public var isValid: Bool {
         guard !name.displayName.stripped.isEmpty else {
@@ -510,11 +512,8 @@ public class OWSContact: MTLModel {
 
     // MARK: Avatar
 
-    @objc(avatarAttachmentWithTransaction:)
-    public func avatarAttachment(with tx: SDSAnyReadTransaction) -> TSAttachment? {
-        guard let avatarAttachmentId else { return nil }
-
-        return TSAttachment.anyFetch(uniqueId: avatarAttachmentId, transaction: tx)
+    public func setLegacyAvatarAttachmentId(_ attachmentId: String) {
+        self.avatarAttachmentId = attachmentId
     }
 
     public func saveAvatarImage(_ image: UIImage, transaction tx: SDSAnyWriteTransaction) {

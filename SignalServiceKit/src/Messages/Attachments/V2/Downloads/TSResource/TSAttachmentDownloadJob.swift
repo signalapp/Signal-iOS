@@ -250,7 +250,7 @@ extension TSAttachmentDownloadManager {
                 self.quotedReplyThumbnailPromise = nil
             }
 
-            if let attachmentId = message.contactShare?.avatarAttachmentId {
+            if let attachmentId = message.contactShare?.legacyAvatarAttachmentId {
                 let jobNPromise = buildJob(attachmentId: attachmentId, category: .contactShareAvatar)
                 self.contactShareAvatarJob = jobNPromise?.0
                 self.contactShareAvatarPromise = jobNPromise?.1

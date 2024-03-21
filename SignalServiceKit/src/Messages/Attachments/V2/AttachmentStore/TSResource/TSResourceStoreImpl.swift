@@ -132,7 +132,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         if
             FeatureFlags.readV2Attachments,
             let contactShare = message.contactShare,
-            contactShare.avatarAttachmentId == nil
+            contactShare.legacyAvatarAttachmentId == nil
         {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
@@ -140,7 +140,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             }
             return attachmentStore.fetchFirstReference(owner: .messageContactAvatar(messageRowId: messageRowId), tx: tx)
         }
-        return legacyReference(uniqueId: message.contactShare?.avatarAttachmentId, tx: tx)
+        return legacyReference(uniqueId: message.contactShare?.legacyAvatarAttachmentId, tx: tx)
     }
 
     public func linkPreviewAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {

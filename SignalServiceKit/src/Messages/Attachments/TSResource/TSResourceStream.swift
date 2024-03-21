@@ -13,6 +13,9 @@ public protocol TSResourceStream: TSResource {
     /// Interprets the data on disk as a string with standard encoding (utf-8, but thats an implementation detail).
     func decryptedLongText() -> String?
 
+    func decryptedRawDataSync() throws -> Data
+    func decryptedRawData() async throws -> Data
+
     func decryptedImage() async throws -> UIImage
 
     var concreteStreamType: ConcreteTSResourceStream { get }

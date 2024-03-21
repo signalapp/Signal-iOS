@@ -98,6 +98,17 @@ extension TSAttachmentStream: TSResourceStream {
         return text
     }
 
+    public func decryptedRawDataSync() throws -> Data {
+        guard let originalFilePath else {
+            throw OWSAssertionError("Missing file path!")
+        }
+        return try NSData(contentsOfFile: originalFilePath) as Data
+    }
+
+    public func decryptedRawData() async throws -> Data {
+        return try decryptedRawDataSync()
+    }
+
     public func decryptedImage() async throws -> UIImage {
         // TSAttachments keep the file decrypted on disk.
         guard let originalImage = self.originalImage else {

@@ -235,11 +235,16 @@ public class TSResourceManagerImpl: TSResourceManager {
 
         if
             types.contains(.contactAvatar),
-            let contactShare = message.contactShare,
-            let contactShareAttachmentId = contactShare.avatarAttachmentId
+            let contactShare = message.contactShare
         {
-            // TODO: differentiate legacy and v2
-            tsAttachmentManager.removeAttachment(attachmentId: contactShareAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
+            if let legacyAvatarAttachmentId = contactShare.legacyAvatarAttachmentId {
+                tsAttachmentManager.removeAttachment(
+                    attachmentId: legacyAvatarAttachmentId,
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )
+            } else {
+                v2Owners.append(.messageContactAvatar)
+            }
         }
 
         if FeatureFlags.readV2Attachments {

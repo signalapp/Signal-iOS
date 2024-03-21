@@ -61,6 +61,14 @@ extension AttachmentStream: TSResourceStream {
         fatalError("Unimplemented!")
     }
 
+    public func decryptedRawData() async throws -> Data {
+        fatalError("Unimplemented!")
+    }
+
+    public func decryptedRawDataSync() throws -> Data {
+        fatalError("Unimplemented!")
+    }
+
     public func decryptedImage() async throws -> UIImage {
         fatalError("Unimplemented!")
     }

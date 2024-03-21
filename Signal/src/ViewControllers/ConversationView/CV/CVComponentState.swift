@@ -1020,7 +1020,11 @@ fileprivate extension CVComponentState.Builder {
 
     // TODO: Should we throw more?
     mutating func buildContact(message: TSMessage, contact: OWSContact) throws -> CVComponentState {
-        let contactShare = ContactShareViewModel(contactShareRecord: contact, transaction: transaction)
+        let contactShare = ContactShareViewModel(
+            contactShareRecord: contact,
+            parentMessage: message,
+            transaction: transaction
+        )
         let state = CVContactShareView.buildState(
             contactShare: contactShare,
             isIncoming: isIncoming,

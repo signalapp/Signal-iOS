@@ -113,7 +113,7 @@ extension OWSContact {
             phoneNumbers == against.phoneNumbers,
             emails == against.emails,
             addresses == against.addresses,
-            avatarAttachmentId == against.avatarAttachmentId,
+            legacyAvatarAttachmentId == against.legacyAvatarAttachmentId,
             isValid == against.isValid
         else {
             throw ValidatableModelError.failedToValidate

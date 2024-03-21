@@ -73,9 +73,29 @@ public class ContactShareViewModel: NSObject {
         self.avatarImageData = avatarImageData
     }
 
-    public convenience init(contactShareRecord: OWSContact, transaction: SDSAnyReadTransaction) {
-        if let avatarAttachment = contactShareRecord.avatarAttachment(with: transaction) as? TSAttachmentStream {
-            self.init(contactShareRecord: contactShareRecord, avatarImageData: avatarAttachment.validStillImageData())
+    public convenience init(
+        contactShareRecord: OWSContact,
+        parentMessage: TSMessage,
+        transaction: SDSAnyReadTransaction
+    ) {
+        if
+            let avatarAttachmentRef = DependenciesBridge.shared.tsResourceStore.contactShareAvatarAttachment(
+                for: parentMessage,
+                tx: transaction.asV2Read
+            ),
+            let avatarAttachment = avatarAttachmentRef.fetch(tx: transaction)?.asResourceStream()
+        {
+            let avatarImageData: Data?
+            switch avatarAttachment.computeContentType() {
+            case .file, .video, .animatedImage, .audio:
+                avatarImageData = nil
+            case .image:
+                avatarImageData = try? avatarAttachment.decryptedRawDataSync()
+            }
+            self.init(
+                contactShareRecord: contactShareRecord,
+                avatarImageData: avatarImageData
+            )
         } else {
             self.init(contactShareRecord: contactShareRecord, avatarImageData: nil)
         }
