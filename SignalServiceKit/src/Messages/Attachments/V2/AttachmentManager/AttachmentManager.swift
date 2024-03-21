@@ -7,47 +7,31 @@ import Foundation
 
 public protocol AttachmentManager {
 
+    // MARK: - Creating Attachments from source
+
     /// Create attachment pointers from protos.
     /// Does no deduplication; once we download the contents of the attachment
     /// we may deduplicate and update the owner reference accordingly.
     /// Creates a reference from the owner to the attachment.
+    ///
+    /// Throws an error if any of the provided protos are invalid.
     func createAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
         owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    )
-
-    /// Given an attachment proto from its sender and an owner,
-    /// creates a local attachment and an owner reference to it.
-    ///
-    /// Throws an error if the provided proto is invalid.
-    func createAttachment(
-        from proto: SSKProtoAttachmentPointer,
-        owner: AttachmentReference.OwnerId,
-        tx: DBWriteTransaction
     ) throws
 
-    /// Given locally sourced attachmentData and an owner,
-    /// creates a local attachment and an owner reference to it.
-    ///
-    /// Throws an error if the provided data/mimeType is invalid.
-    func createAttachment(
-        rawFileData: Data,
-        mimeType: String,
-        owner: AttachmentReference.OwnerId,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Create attachment streams from the outgoing infos and their data sources,
-    /// consuming those data sources.
+    /// Create attachment streams from the data sources, consuming those data sources.
     /// May reuse an existing attachment stream if matched by content, and discard
     /// the data source.
-    /// Creates a reference from the owner to the attachment.
+    /// Creates a reference from the owner to the attachments.
     func createAttachmentStreams(
-        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        consuming dataSources: [AttachmentDataSource],
         owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
     ) throws
+
+    // MARK: - Quoted Replies
 
     /// Given an original message available locally, returns metadata
     /// supplied to a TSQuotedReply, which distinguishes "stubs"
@@ -77,6 +61,8 @@ public protocol AttachmentManager {
         tx: DBWriteTransaction
     ) throws
 
+    // MARK: - Removing Attachments
+
     /// Remove an attachment from an owner.
     /// Will only delete the attachment if this is the last owner.
     /// Typically because the owner has been deleted.
@@ -92,4 +78,41 @@ public protocol AttachmentManager {
         from owners: [AttachmentReference.OwnerId],
         tx: DBWriteTransaction
     )
+}
+
+// MARK: - Array<->Single object convenience methods
+
+extension AttachmentManager {
+
+    /// Given an attachment proto from its sender and an owner,
+    /// creates a local attachment and an owner reference to it.
+    ///
+    /// Throws an error if the provided proto is invalid.
+    public func createAttachmentPointer(
+        from proto: SSKProtoAttachmentPointer,
+        owner: AttachmentReference.OwnerId,
+        tx: DBWriteTransaction
+    ) throws {
+        try createAttachmentPointers(
+            from: [proto],
+            owner: owner,
+            tx: tx
+        )
+    }
+
+    /// Create an attachment stream from a data source, consuming that data source.
+    /// May reuse an existing attachment stream if matched by content, and discard
+    /// the data source.
+    /// Creates a reference from the owner to the attachment.
+    public func createAttachmentStream(
+        consuming dataSource: AttachmentDataSource,
+        owner: AttachmentReference.OwnerId,
+        tx: DBWriteTransaction
+    ) throws {
+        try createAttachmentStreams(
+            consuming: [dataSource],
+            owner: owner,
+            tx: tx
+        )
+    }
 }

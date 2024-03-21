@@ -24,19 +24,21 @@ public class TSResourceManagerImpl: TSResourceManager {
         self.tsResourceStore = tsResourceStore
     }
 
-    // MARK: - Protos
+    // MARK: - Creating Attachments from source
+
+    // MARK: Body Attachments (special treatment)
 
     public func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
         message: TSMessage,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         if FeatureFlags.newAttachmentsUseV2 {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
             }
-            attachmentManager.createAttachmentPointers(
+            try attachmentManager.createAttachmentPointers(
                 from: protos,
                 owner: .messageBodyAttachment(messageRowId: messageRowId),
                 tx: tx
@@ -51,7 +53,7 @@ public class TSResourceManagerImpl: TSResourceManager {
     }
 
     public func createBodyAttachmentStreams(
-        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        consuming dataSources: [AttachmentDataSource],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) throws {
@@ -61,20 +63,22 @@ public class TSResourceManagerImpl: TSResourceManager {
                 return
             }
             try attachmentManager.createAttachmentStreams(
-                consumingDataSourcesOf: unsavedAttachmentInfos,
+                consuming: dataSources,
                 owner: .messageBodyAttachment(messageRowId: messageRowId),
                 tx: tx
             )
         } else {
             try tsAttachmentManager.createBodyAttachmentStreams(
-                consumingDataSourcesOf: unsavedAttachmentInfos,
+                consuming: dataSources,
                 message: message,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
         }
     }
 
-    public func createAttachmentBuilder(
+    // MARK: Other Attachments
+
+    public func createAttachmentPointerBuilder(
         from proto: SSKProtoAttachmentPointer,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
@@ -82,7 +86,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             return OwnedAttachmentBuilder<TSResourceRetrievalInfo>(
                 info: .v2,
                 finalize: { [attachmentManager] owner, innerTx in
-                    return try attachmentManager.createAttachment(
+                    return try attachmentManager.createAttachmentPointer(
                         from: proto,
                         owner: owner,
                         tx: innerTx
@@ -90,7 +94,7 @@ public class TSResourceManagerImpl: TSResourceManager {
                 }
             )
         } else {
-            let attachment = try tsAttachmentManager.createAttachment(
+            let attachment = try tsAttachmentManager.createAttachmentPointer(
                 from: proto,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
@@ -98,32 +102,31 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
-    public func createLocalAttachmentBuilder(
-        rawFileData: Data,
-        mimeType: String,
+    public func createAttachmentStreamBuilder(
+        from dataSource: AttachmentDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         if FeatureFlags.newAttachmentsUseV2 {
             return OwnedAttachmentBuilder<TSResourceRetrievalInfo>(
                 info: .v2,
                 finalize: { [attachmentManager] owner, innerTx in
-                    return try attachmentManager.createAttachment(
-                        rawFileData: rawFileData,
-                        mimeType: mimeType,
+                    return try attachmentManager.createAttachmentStream(
+                        consuming: dataSource,
                         owner: owner,
                         tx: innerTx
                     )
                 }
             )
         } else {
-            let attachmentId = try tsAttachmentManager.createLocalAttachment(
-                rawFileData: rawFileData,
-                mimeType: mimeType,
+            let attachmentId = try tsAttachmentManager.createAttachmentStream(
+                from: dataSource,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
             return .withoutFinalizer(.legacy(uniqueId: attachmentId))
         }
     }
+
+    // MARK: - Outgoing Proto Creation
 
     public func buildProtoForSending(
         from reference: TSResourceReference,
@@ -263,7 +266,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             return nil
         case .V2:
             guard let messageRowId = parentMessage.sqliteRowId else {
-                owsFailDebug("Clonign thumbnail attachment from un-inserted message.")
+                owsFailDebug("Cloning thumbnail attachment from un-inserted message.")
                 return nil
             }
             let attachment = attachmentStore.fetchFirst(owner: .quotedReplyAttachment(messageRowId: messageRowId), tx: tx)

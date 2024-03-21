@@ -114,10 +114,22 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
             )
         }
 
-        if let imageData = draft.imageData, let imageMimeType = draft.imageMimeType {
-            return try attachmentManager.createLocalAttachmentBuilder(
-                rawFileData: imageData,
+        if
+            let imageData = draft.imageData,
+            let imageMimeType = draft.imageMimeType,
+            let dataSource = DataSourceValue.dataSource(
+                with: imageData,
+                mimeType: imageMimeType
+            )
+        {
+            let dataSource = AttachmentDataSource(
                 mimeType: imageMimeType,
+                caption: nil,
+                renderingFlag: .default,
+                dataSource: dataSource
+            )
+            return try attachmentManager.createAttachmentStreamBuilder(
+                from: dataSource,
                 tx: tx
             ).wrap(buildLinkPreview(attachmentInfo:))
         } else {
@@ -297,7 +309,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
         let attachmentBuilder: OwnedAttachmentBuilder<TSResourceRetrievalInfo>?
         if let protoImage = proto.image {
             do {
-                attachmentBuilder = try attachmentManager.createAttachmentBuilder(
+                attachmentBuilder = try attachmentManager.createAttachmentPointerBuilder(
                     from: protoImage,
                     tx: tx
                 )

@@ -11,28 +11,31 @@ public class TSResourceManagerMock: TSResourceManager {
 
     public init() {}
 
-    public func createBodyAttachmentPointers(from protos: [SSKProtoAttachmentPointer], message: TSMessage, tx: DBWriteTransaction) {
+    public func createBodyAttachmentPointers(
+        from protos: [SSKProtoAttachmentPointer],
+        message: TSMessage,
+        tx: DBWriteTransaction
+    ) throws {
         // Do nothing
     }
 
     public func createBodyAttachmentStreams(
-        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        consuming dataSources: [AttachmentDataSource],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing
     }
 
-    public func createAttachmentBuilder(
+    public func createAttachmentPointerBuilder(
         from proto: SSKProtoAttachmentPointer,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         return .withoutFinalizer(.legacy(uniqueId: ""))
     }
 
-    public func createLocalAttachmentBuilder(
-        rawFileData: Data,
-        mimeType: String,
+    public func createAttachmentStreamBuilder(
+        from dataSource: AttachmentDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         return .withoutFinalizer(.legacy(uniqueId: ""))

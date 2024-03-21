@@ -209,7 +209,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // The sender may have resent the message. If so, we should swap it in place of the placeholder
             interactionStore.insertOrReplacePlaceholder(for: outgoingMessage, from: localIdentifiers.aciAddress, tx: tx)
 
-            tsResourceManager.createBodyAttachmentPointers(
+            try? tsResourceManager.createBodyAttachmentPointers(
                 from: messageParams.attachmentPointerProtos,
                 message: outgoingMessage,
                 tx: tx

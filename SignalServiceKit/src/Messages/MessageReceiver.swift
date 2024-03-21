@@ -1073,11 +1073,16 @@ public final class MessageReceiver: Dependencies {
         // it. For example, we may have marked the thread as visible.
         thread.anyReload(transaction: tx)
 
-        DependenciesBridge.shared.tsResourceManager.createBodyAttachmentPointers(
-            from: dataMessage.attachments,
-            message: message,
-            tx: tx.asV2Write
-        )
+        do {
+            try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentPointers(
+                from: dataMessage.attachments,
+                message: message,
+                tx: tx.asV2Write
+            )
+        } catch {
+            owsFailDebug("Could not build attachments!")
+            return nil
+        }
 
         do {
             try quotedMessageBuilder?.finalize(

@@ -110,7 +110,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             let thumbnailProto = quoteProto.attachments.first?.thumbnail
         {
             do {
-                let thumbnailAttachmentBuilder = try attachmentManager.createAttachmentBuilder(
+                let thumbnailAttachmentBuilder = try attachmentManager.createAttachmentPointerBuilder(
                     from: thumbnailProto,
                     tx: tx
                 )

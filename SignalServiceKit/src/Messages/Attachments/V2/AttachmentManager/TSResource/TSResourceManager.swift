@@ -31,22 +31,26 @@ public struct TSMessageAttachmentReferenceType: OptionSet {
 
 public protocol TSResourceManager {
 
-    // MARK: - Protos
+    // MARK: - Creating Attachments from source
+
+    // MARK: Body Attachments (special treatment)
 
     func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
         message: TSMessage,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     func createBodyAttachmentStreams(
-        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        consuming dataSources: [AttachmentDataSource],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) throws
 
+    // MARK: Other Attachments
+
     /// Given an attachment proto from its sender,
-    /// returns a builder for creating the attachment locally.
+    /// returns a builder for creating the attachment stream.
     ///
     /// The attachment info needed to construct the owner
     /// is available immediately, but the caller _must_ finalize
@@ -58,13 +62,13 @@ public protocol TSResourceManager {
     /// after finalizing.
     ///
     /// Throws an error if the provided proto is invalid.
-    func createAttachmentBuilder(
+    func createAttachmentPointerBuilder(
         from proto: SSKProtoAttachmentPointer,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo>
 
     /// Given locally sourced attachmentData,
-    /// returns a builder for creating the attachment locally.
+    /// returns a builder for creating the attachment stream.
     ///
     /// The attachment info needed to construct the owner
     /// is available immediately, but the caller _must_ finalize
@@ -76,11 +80,12 @@ public protocol TSResourceManager {
     /// after finalizing.
     ///
     /// Throws an error if the provided data/mimeType is invalid.
-    func createLocalAttachmentBuilder(
-        rawFileData: Data,
-        mimeType: String,
+    func createAttachmentStreamBuilder(
+        from dataSource: AttachmentDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo>
+
+    // MARK: - Outgoing Proto Creation
 
     func buildProtoForSending(
         from reference: TSResourceReference,

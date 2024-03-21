@@ -13,29 +13,12 @@ open class AttachmentManagerMock: AttachmentManager {
         from protos: [SSKProtoAttachmentPointer],
         owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) {
-        // Do nothing
-    }
-
-    open func createAttachment(
-        from proto: SSKProtoAttachmentPointer,
-        owner: AttachmentReference.OwnerId,
-        tx: DBWriteTransaction
-    ) throws {
-        // Do nothing
-    }
-
-    open func createAttachment(
-        rawFileData: Data,
-        mimeType: String,
-        owner: AttachmentReference.OwnerId,
-        tx: DBWriteTransaction
     ) throws {
         // Do nothing
     }
 
     open func createAttachmentStreams(
-        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        consuming dataSources: [AttachmentDataSource],
         owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
     ) throws {

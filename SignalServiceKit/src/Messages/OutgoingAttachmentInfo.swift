@@ -41,18 +41,12 @@ public final class OutgoingAttachmentInfo {
         }()
     }
 
-    public func asStreamConsumingDataSource() throws -> TSAttachmentStream {
-        let attachmentStream = TSAttachmentStream(
-            contentType: contentType,
-            byteCount: UInt32(dataSource.dataLength),
-            sourceFilename: sourceFilename,
+    public func asAttachmentDataSource() -> AttachmentDataSource {
+        return AttachmentDataSource(
+            mimeType: contentType,
             caption: caption,
-            attachmentType: renderingFlag.tsAttachmentType,
-            albumMessageId: albumMessageId
+            renderingFlag: renderingFlag,
+            dataSource: dataSource
         )
-
-        try attachmentStream.writeConsumingDataSource(dataSource)
-
-        return attachmentStream
     }
 }

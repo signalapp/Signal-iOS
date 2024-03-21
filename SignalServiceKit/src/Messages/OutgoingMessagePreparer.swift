@@ -85,7 +85,7 @@ public class OutgoingMessagePreparer: NSObject {
             owsAssertDebug(unpreparedMessage.messageSticker == nil)
 
             try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentStreams(
-                consumingDataSourcesOf: unsavedAttachmentInfos,
+                consuming: unsavedAttachmentInfos.map { $0.asAttachmentDataSource() },
                 message: unpreparedMessage,
                 tx: transaction.asV2Write
             )

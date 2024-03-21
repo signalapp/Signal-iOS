@@ -27,12 +27,23 @@ public class TSAttachmentManager {
     }
 
     public func createBodyAttachmentStreams(
-        consumingDataSourcesOf unsavedAttachmentInfos: [OutgoingAttachmentInfo],
+        consuming dataSources: [AttachmentDataSource],
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction
     ) throws {
-        let attachmentStreams = try unsavedAttachmentInfos.map {
-            try $0.asStreamConsumingDataSource()
+        let attachmentStreams = try dataSources.map { dataSource in
+            let attachmentStream = TSAttachmentStream(
+                contentType: dataSource.mimeType,
+                byteCount: UInt32(dataSource.dataSource.dataLength),
+                sourceFilename: dataSource.sourceFilename,
+                caption: dataSource.caption,
+                attachmentType: dataSource.renderingFlag.tsAttachmentType,
+                albumMessageId: message.uniqueId
+            )
+
+            try attachmentStream.writeConsumingDataSource(dataSource.dataSource)
+
+            return attachmentStream
         }
 
         self.addBodyAttachments(attachmentStreams, to: message, tx: tx)
@@ -278,7 +289,7 @@ public class TSAttachmentManager {
 
     // MARK: - Creating quoted reply from proto
 
-    public func createAttachment(
+    public func createAttachmentPointer(
         from proto: SSKProtoAttachmentPointer,
         tx: SDSAnyWriteTransaction
     ) throws -> TSAttachment {
@@ -331,32 +342,26 @@ public class TSAttachmentManager {
 
     // MARK: - Creating from local data
 
-    public func createLocalAttachment(
-        rawFileData: Data,
-        mimeType: String,
+    public func createAttachmentStream(
+        from dataSource: AttachmentDataSource,
         tx: SDSAnyWriteTransaction
     ) throws -> String {
-        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: mimeType) else {
-            throw OWSAssertionError("Invalid mime type!")
-        }
-        let fileSize = rawFileData.count
-        guard fileSize > 0 else {
+        guard dataSource.dataLength > 0 else {
             throw OWSAssertionError("Invalid file size for image data.")
         }
-        let contentType = mimeType
+        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: dataSource.mimeType) else {
+            throw OWSAssertionError("Invalid mime type!")
+        }
 
-        let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
-        try rawFileData.write(to: fileUrl)
-        let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
         let attachment = TSAttachmentStream(
-            contentType: contentType,
-            byteCount: UInt32(fileSize),
-            sourceFilename: nil,
-            caption: nil,
-            attachmentType: .default,
+            contentType: dataSource.mimeType,
+            byteCount: UInt32(dataSource.dataSource.dataLength),
+            sourceFilename: dataSource.sourceFilename,
+            caption: dataSource.caption,
+            attachmentType: dataSource.renderingFlag.tsAttachmentType,
             albumMessageId: nil
         )
-        try attachment.writeConsumingDataSource(dataSource)
+        try attachment.writeConsumingDataSource(dataSource.dataSource)
         attachment.anyInsert(transaction: tx)
 
         return attachment.uniqueId

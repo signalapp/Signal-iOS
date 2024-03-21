@@ -30,19 +30,20 @@ extension OutgoingStoryMessage {
                             .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
                             .asStyleOnlyBody()
                         attachment.captionText = captionBody?.text
-                        let attachmentStream = try attachment
-                            .buildOutgoingAttachmentInfo()
-                            .asStreamConsumingDataSource()
-                        attachmentStream.anyInsert(transaction: transaction)
+                        let dataSource = attachment.buildAttachmentDataSource()
+                        let attachmentStreamId = try TSAttachmentManager().createAttachmentStream(
+                            from: dataSource,
+                            tx: transaction
+                        )
                         let attachmentBuilder = OwnedAttachmentBuilder<StoryMessageAttachment>.withoutFinalizer(
                             .file(StoryMessageFileAttachment(
-                                attachmentId: attachmentStream.uniqueId,
+                                attachmentId: attachmentStreamId,
                                 captionStyles: captionBody?.collapsedStyles ?? []
                             ))
                         )
 
                         var correspondingIdsForAttachment = state.correspondingAttachmentIds[identifiedAttachment.id] ?? []
-                        correspondingIdsForAttachment += [attachmentStream.uniqueId]
+                        correspondingIdsForAttachment += [attachmentStreamId]
                         state.correspondingAttachmentIds[identifiedAttachment.id] = correspondingIdsForAttachment
 
                         message = try OutgoingStoryMessage.createUnsentMessage(

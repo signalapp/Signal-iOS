@@ -192,13 +192,16 @@ public class AttachmentMultisend: Dependencies {
 
             for attachmentInfo in attachmentsToUpload {
                 do {
-                    let attachmentToUpload = try attachmentInfo.value.asStreamConsumingDataSource()
-                    attachmentToUpload.anyInsert(transaction: transaction)
+                    let dataSource = attachmentInfo.value.asAttachmentDataSource()
+                    let attachmentIdToUpload = try TSAttachmentManager().createAttachmentStream(
+                        from: dataSource,
+                        tx: transaction
+                    )
 
                     // Finally we map the unique ID of each TSAttachment we intend to upload to the unique IDs of
                     // all the independent TSAttachments we created for each destination. This lets us upload only
                     // the one attachment (the one whose id is the key below) instead of uploading once per destination.
-                    state.attachmentIdMap[attachmentToUpload.uniqueId] = state.correspondingAttachmentIds[attachmentInfo.id]
+                    state.attachmentIdMap[attachmentIdToUpload] = state.correspondingAttachmentIds[attachmentInfo.id]
                 } catch {
                     owsFailDebug("error: \(error)")
                 }
@@ -336,10 +339,19 @@ public class AttachmentMultisend: Dependencies {
         }
         let attachmentUniqueId: String?
         do {
-            if let imageData = info.imageData, let imageMimeType = info.imageMimeType {
-                attachmentUniqueId = try TSAttachmentManager().createLocalAttachment(
-                    rawFileData: imageData,
+            if
+                let imageData = info.imageData,
+                let imageMimeType = info.imageMimeType,
+                let dataSource = DataSourceValue.dataSource(with: imageData, mimeType: imageMimeType)
+            {
+                let attachmentDataSource = AttachmentDataSource(
                     mimeType: imageMimeType,
+                    caption: nil,
+                    renderingFlag: .default,
+                    dataSource: dataSource
+                )
+                attachmentUniqueId = try TSAttachmentManager().createAttachmentStream(
+                    from: attachmentDataSource,
                     tx: transaction
                 )
             } else {

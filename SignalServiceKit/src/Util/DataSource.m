@@ -80,6 +80,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [[self alloc] initWithData:data fileExtension:fileExtension];
 }
 
++ (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data mimeType:(NSString *)mimeType
+{
+    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:mimeType];
+    if (fileExtension) {
+        return [[self alloc] initWithData:data fileExtension:fileExtension];
+    } else {
+        return nil;
+    }
+}
+
 + (_Nullable id<DataSource>)dataSourceWithOversizeText:(NSString *_Nullable)text
 {
     if (!text) {
