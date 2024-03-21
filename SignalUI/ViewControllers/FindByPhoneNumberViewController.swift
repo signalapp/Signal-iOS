@@ -17,7 +17,12 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
 
     var callingCode: String = "+1"
     let countryCodeLabel = UILabel()
-    let phoneNumberTextField = OWSTextField()
+    private lazy var phoneNumberTextField = OWSTextField(
+        keyboardType: .numberPad,
+        returnKeyType: .done,
+        autocorrectionType: .no,
+        delegate: self
+    )
     let countryRowTitleLabel = UILabel()
     let phoneNumberRowTitleLabel = UILabel()
 
@@ -141,15 +146,6 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
             phoneNumberRowTitleLabel.autoSetDimension(.width, toSize: titleWidth)
         }
 
-        phoneNumberTextField.font = .dynamicTypeBodyClamped
-        phoneNumberTextField.autocorrectionType = .no
-        phoneNumberTextField.autocapitalizationType = .none
-        phoneNumberTextField.accessibilityIdentifier =
-            UIView.accessibilityIdentifier(in: self, name: "phoneNumberTextField")
-
-        phoneNumberTextField.keyboardType = .numberPad
-        phoneNumberTextField.delegate = self
-        phoneNumberTextField.returnKeyType = .done
         phoneNumberTextField.becomeFirstResponder()
 
         phoneNumberStack.addArrangedSubview(phoneNumberTextField)

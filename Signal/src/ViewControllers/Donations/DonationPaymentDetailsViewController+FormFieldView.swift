@@ -54,16 +54,18 @@ extension DonationPaymentDetailsViewController {
         weak var delegate: CreditOrDebitCardDonationFormViewDelegate?
 
         private lazy var textField: UITextField = {
-            let result = OWSTextField()
+            let result = OWSTextField(
+                font: Self.textFieldFont,
+                keyboardType: style.keyboardType,
+                spellCheckingType: .no,
+                autocorrectionType: .no,
+                delegate: self,
+                editingChanged: { [weak self] in
+                    self?.delegate?.didSomethingChange()
+                }
+            )
 
-            result.font = Self.textFieldFont
             result.textColor = Theme.primaryTextColor
-            result.autocorrectionType = .no
-            result.spellCheckingType = .no
-            result.keyboardType = style.keyboardType
-
-            result.delegate = self
-            result.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
             return result
         }()
@@ -171,13 +173,6 @@ extension DonationPaymentDetailsViewController {
         }
 
         // MARK: - UITextFieldDelegate
-
-        // Not technically part of UITextFieldDelegate, but added as as a
-        // target to handle the 'editingChanged' control event.
-        @objc
-        func textFieldDidChange() {
-            delegate?.didSomethingChange()
-        }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
             delegate?.didSomethingChange()

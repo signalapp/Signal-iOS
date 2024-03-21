@@ -15,19 +15,21 @@ public class FindByUsernameViewController: OWSTableViewController2 {
 
     weak var findByUsernameDelegate: FindByUsernameDelegate?
 
-    private lazy var usernameTextField: OWSTextField = {
-        let textField = OWSTextField()
-        textField.returnKeyType = .done
-        textField.autocorrectionType = .no
-        textField.autocapitalizationType = .none
-        textField.placeholder = OWSLocalizedString(
+    private lazy var usernameTextField = OWSTextField(
+        placeholder: OWSLocalizedString(
             "FIND_BY_USERNAME_PLACEHOLDER",
             comment: "A placeholder value for the text field for finding an account by their username"
-        )
-        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        textField.addTarget(self, action: #selector(didTapNext), for: .editingDidEndOnExit)
-        return textField
-    }()
+        ),
+        returnKeyType: .done,
+        autocorrectionType: .no,
+        autocapitalizationType: .none,
+        editingChanged: { [weak self] in
+            self?.textFieldDidChange()
+        },
+        returnPressed: { [weak self] in
+            self?.didTapNext()
+        }
+    )
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,17 +65,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
         contents.add(OWSTableSection(
             title: nil,
             items: [
-                OWSTableItem(customCellBlock: {
-                    let cell = OWSTableItem.newCell()
-                    cell.selectionStyle = .none
-                    cell.addSubview(textField)
-                    textField.autoPinEdgesToSuperviewMargins()
-                    textField.font = .dynamicTypeBody
-                    textField.textColor = Theme.primaryTextColor
-                    return cell
-                }, actionBlock: {
-                    textField.becomeFirstResponder()
-                })
+                .textFieldItem(textField),
             ],
             footerTitle: OWSLocalizedString(
                 "FIND_BY_USERNAME_FOOTER",
@@ -86,9 +78,9 @@ public class FindByUsernameViewController: OWSTableViewController2 {
         }
 
         let qrButtonSection = OWSTableSection(items: [
-            OWSTableItem(customCellBlock: {
+            OWSTableItem(customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
-                let button = OWSRoundedButton { [weak self] in
+                let button = OWSRoundedButton {
                     self?.findByUsernameDelegate?.openQRCodeScanner()
                 }
                 let font = UIFont.dynamicTypeSubheadline

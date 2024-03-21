@@ -16,7 +16,17 @@ class ProfileBioViewController: OWSTableViewController2 {
 
     private weak var profileDelegate: ProfileBioViewControllerDelegate?
 
-    private lazy var bioTextField = OWSTextField()
+    private lazy var bioTextField = OWSTextField(
+        placeholder: OWSLocalizedString(
+            "PROFILE_BIO_VIEW_BIO_PLACEHOLDER",
+            comment: "Placeholder text for the bio field of the profile bio view."
+        ),
+        returnKeyType: .done,
+        delegate: self,
+        editingChanged: { [weak self] in
+            self?.updateNavigation()
+        }
+    )
     private lazy var cancelButton = OWSButton { [weak self] in
         self?.didTapResetButton()
     }
@@ -165,15 +175,6 @@ class ProfileBioViewController: OWSTableViewController2 {
         addEmojiImageView.accessibilityIdentifier = "bio_emoji"
         updateEmojiViews()
 
-        bioTextField.returnKeyType = .done
-        bioTextField.placeholder = OWSLocalizedString("PROFILE_BIO_VIEW_BIO_PLACEHOLDER",
-                                                            comment: "Placeholder text for the bio field of the profile bio view.")
-        bioTextField.delegate = self
-        bioTextField.accessibilityIdentifier = "bio_textfield"
-        bioTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        bioTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidBegin)
-        bioTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidEnd)
-
         let cancelColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray45 : UIColor.ows_gray25
         let cancelIcon = UIImageView.withTemplateImageName("x-circle-fill-compact", tintColor: cancelColor)
 
@@ -202,7 +203,6 @@ class ProfileBioViewController: OWSTableViewController2 {
             bioEmojiLabel.setContentHuggingHorizontalHigh()
             bioEmojiLabel.setCompressionResistanceHorizontalHigh()
 
-            bioTextField.font = .dynamicTypeBodyClamped
             bioTextField.textColor = Theme.primaryTextColor
             bioTextField.setContentHuggingHorizontalLow()
             bioTextField.setCompressionResistanceHorizontalLow()
@@ -358,8 +358,11 @@ extension ProfileBioViewController: UITextFieldDelegate {
         )
     }
 
-    @objc
-    func textFieldDidChange(_ textField: UITextField) {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        updateNavigation()
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
         updateNavigation()
     }
 

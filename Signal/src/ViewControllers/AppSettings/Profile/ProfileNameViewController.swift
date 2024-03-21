@@ -13,8 +13,32 @@ protocol ProfileNameViewControllerDelegate: AnyObject {
 // MARK: -
 
 class ProfileNameViewController: OWSTableViewController2 {
-    private let givenNameTextField = OWSTextField()
-    private let familyNameTextField = OWSTextField()
+    private lazy var givenNameTextField = OWSTextField(
+        placeholder: OWSLocalizedString(
+            "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT",
+            comment: "Default text for the given name field of the profile view."
+        ),
+        returnKeyType: .next,
+        spellCheckingType: .no,
+        autocorrectionType: .no,
+        delegate: self,
+        editingChanged: { [weak self] in
+            self?.textFieldDidChange()
+        }
+    )
+    private lazy var familyNameTextField = OWSTextField(
+        placeholder: OWSLocalizedString(
+            "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT",
+            comment: "Default text for the family name field of the profile view."
+        ),
+        returnKeyType: .done,
+        spellCheckingType: .no,
+        autocorrectionType: .no,
+        delegate: self,
+        editingChanged: { [weak self] in
+            self?.textFieldDidChange()
+        }
+    )
 
     private let originalGivenName: String?
     private let originalFamilyName: String?
@@ -42,7 +66,6 @@ class ProfileNameViewController: OWSTableViewController2 {
 
     public override func loadView() {
         view = UIView()
-        createViews()
     }
 
     override func viewDidLoad() {
@@ -111,28 +134,6 @@ class ProfileNameViewController: OWSTableViewController2 {
         // TODO: First responder
     }
 
-    private func createViews() {
-        givenNameTextField.returnKeyType = .next
-        givenNameTextField.autocorrectionType = .no
-        givenNameTextField.spellCheckingType = .no
-        givenNameTextField.placeholder = OWSLocalizedString(
-            "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT",
-            comment: "Default text for the given name field of the profile view."
-        )
-        givenNameTextField.delegate = self
-        givenNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-
-        familyNameTextField.returnKeyType = .done
-        familyNameTextField.autocorrectionType = .no
-        familyNameTextField.spellCheckingType = .no
-        familyNameTextField.placeholder = OWSLocalizedString(
-            "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT",
-            comment: "Default text for the family name field of the profile view."
-        )
-        familyNameTextField.delegate = self
-        familyNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-    }
-
     private static let bioButtonHeight: CGFloat = 28
 
     func updateTableContents() {
@@ -143,14 +144,7 @@ class ProfileNameViewController: OWSTableViewController2 {
 
         let namesSection = OWSTableSection()
         func addTextField(_ textField: UITextField) {
-            namesSection.add(.init(customCellBlock: { [weak self] in
-                guard let self = self else { return UITableViewCell() }
-                return self.nameCell(textField: textField)
-            },
-                actionBlock: {
-                    textField.becomeFirstResponder()
-                }
-            ))
+            namesSection.add(.textFieldItem(textField))
         }
 
         // For CJKV locales, display family name field first.
@@ -167,20 +161,6 @@ class ProfileNameViewController: OWSTableViewController2 {
         contents.add(namesSection)
 
         self.contents = contents
-    }
-
-    private func nameCell(textField: UITextField) -> UITableViewCell {
-        let cell = OWSTableItem.newCell()
-
-        cell.selectionStyle = .none
-
-        textField.font = .dynamicTypeBodyClamped
-        textField.textColor = Theme.primaryTextColor
-
-        cell.addSubview(textField)
-        textField.autoPinEdgesToSuperviewMargins()
-
-        return cell
     }
 
     @objc
@@ -248,8 +228,7 @@ extension ProfileNameViewController: UITextFieldDelegate {
         return false
     }
 
-    @objc
-    func textFieldDidChange(_ textField: UITextField) {
+    func textFieldDidChange() {
         updateNavigation()
     }
 }

@@ -745,3 +745,37 @@ public extension OWSTableItem {
         })
     }
 }
+
+// MARK: - Text field item
+
+public extension OWSTableItem {
+    // [Colors] TODO: When proper dynamic colors are added, the `textColor`
+    // property here should be moved to `OWSTextField` since it won't need to be
+    // explicitly updated when the table refreshes.
+    /// Creates an ``OWSTableItem`` with the text field while optionally setting
+    /// its font and/or text color.
+    /// - Parameters:
+    ///   - textField: The text field to use in the table item's cell.
+    ///   - textColor: The text color to set on the text field.
+    ///   If this value is `nil`, the text color will not be modified.
+    ///   Default value is `nil`.
+    /// - Returns: An ``OWSTableItem`` with the `textField` embedded.
+    static func textFieldItem(
+        _ textField: UITextField,
+        textColor: @escaping @autoclosure () -> UIColor? = Theme.primaryTextColor
+    ) -> OWSTableItem {
+        .init(customCellBlock: {
+            if let textColor = textColor() {
+                textField.textColor = textColor
+            }
+
+            let cell = Self.newCell()
+            cell.selectionStyle = .none
+            cell.addSubview(textField)
+            textField.autoPinEdgesToSuperviewMargins()
+            return cell
+        }, actionBlock: {
+            textField.becomeFirstResponder()
+        })
+    }
+}
