@@ -192,11 +192,3 @@ private extension UInt64 {
         return self * 1000
     }
 }
-
-private extension Array {
-    mutating func popFirst() -> Element? {
-        let firstElement = first
-        self = Array(dropFirst())
-        return firstElement
-    }
-}

@@ -47,18 +47,20 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
     private let callRecordQuerier: CallRecordQuerier
     private let callRecordStore: CallRecordStore
-    private let messageSenderJobQueue: MessageSenderJobQueue
+    private let syncMessageSender: Shims.SyncMessageSender
+
+    private var logger: CallRecordLogger { .shared }
 
     init(
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         callRecordQuerier: CallRecordQuerier,
         callRecordStore: CallRecordStore,
-        messageSenderJobQueue: MessageSenderJobQueue
+        syncMessageSender: Shims.SyncMessageSender
     ) {
         self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
         self.callRecordStore = callRecordStore
         self.callRecordQuerier = callRecordQuerier
-        self.messageSenderJobQueue = messageSenderJobQueue
+        self.syncMessageSender = syncMessageSender
     }
 
     // MARK: -
@@ -91,21 +93,25 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         sendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) {
+        let fetchOrdering = fetchOrdering(forBeforeTimestamp: beforeTimestamp)
+
         let markedAsReadCount = _markUnreadCallsAsRead(
-            beforeTimestamp: beforeTimestamp,
+            fetchOrdering: fetchOrdering,
             threadRowId: nil,
             tx: tx
         )
 
         guard markedAsReadCount > 0 else { return }
 
-        CallRecordLogger.shared.info("Marked \(markedAsReadCount) calls as read.")
+        logger.info("Marked \(markedAsReadCount) calls as read.")
 
         if sendSyncMessage {
-            /// When doing a bulk mark-as-read, we want to use our absolute
-            /// most-recent call as the anchor for the sync message.
+            /// When doing a bulk mark-as-read, we want to use the newest call
+            /// at or before the indicated timestamp (read or not) to populate
+            /// the sync message. So, we'll query for a single call, using the
+            /// same fetch ordering we used above.
             let mostRecentCall: CallRecord? = try? callRecordQuerier.fetchCursor(
-                ordering: .descending, tx: tx
+                ordering: fetchOrdering, tx: tx
             )?.next()
 
             guard let mostRecentCall else {
@@ -127,14 +133,16 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         tx: DBWriteTransaction
     ) {
         let markedAsReadCount = _markUnreadCallsAsRead(
-            beforeTimestamp: beforeCallRecord.callBeganTimestamp,
+            fetchOrdering: fetchOrdering(
+                forBeforeTimestamp: beforeCallRecord.callBeganTimestamp
+            ),
             threadRowId: beforeCallRecord.threadRowId,
             tx: tx
         )
 
         guard markedAsReadCount > 0 else { return }
 
-        CallRecordLogger.shared.info("Marked \(markedAsReadCount) calls as read.")
+        logger.info("Marked \(markedAsReadCount) calls as read.")
 
         if sendSyncMessage {
             sendMarkedCallsAsReadSyncMessage(
@@ -148,25 +156,11 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     /// Mark calls before or at the given timestamp as read, optionally
     /// considering only calls with the given thread row ID.
     private func _markUnreadCallsAsRead(
-        beforeTimestamp: UInt64?,
+        fetchOrdering: CallRecordQuerier.FetchOrdering,
         threadRowId: Int64?,
         tx: DBWriteTransaction
     ) -> UInt {
         var markedAsReadCount: UInt = 0
-
-        let fetchCursorOrdering: CallRecordQuerier.FetchOrdering = {
-            if let beforeTimestamp {
-                /// Adjust the timestamp forward one second to catch calls at
-                /// this exact timestamp. That's relevant because when we send
-                /// this sync message, we do so with the timestamp of an actual
-                /// call – and because we (try to) sync call timestamps across
-                /// devices, our copy of the call likely has the exact same
-                /// timestamp. Without adjusting, we'll skip that call!
-                return .descendingBefore(timestamp: beforeTimestamp + 1)
-            }
-
-            return .descending
-        }()
 
         for callStatus in CallRecord.CallStatus.allCases {
             let unreadCallCursor: CallRecordCursor? = {
@@ -174,13 +168,13 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
                     return callRecordQuerier.fetchCursorForUnread(
                         threadRowId: threadRowId,
                         callStatus: callStatus,
-                        ordering: fetchCursorOrdering,
+                        ordering: fetchOrdering,
                         tx: tx
                     )
                 } else {
                     return callRecordQuerier.fetchCursorForUnread(
                         callStatus: callStatus,
-                        ordering: fetchCursorOrdering,
+                        ordering: fetchOrdering,
                         tx: tx
                     )
                 }
@@ -212,6 +206,24 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         return markedAsReadCount
     }
 
+    /// Returns a fetch ordering appropriate for querying calls at or before the
+    /// given timestamp. If a `nil` timestamp, all calls will be queried.
+    private func fetchOrdering(
+        forBeforeTimestamp beforeTimestamp: UInt64?
+    ) -> CallRecordQuerier.FetchOrdering {
+        if let beforeTimestamp {
+            /// Adjust the timestamp forward one second to catch calls at
+            /// this exact timestamp. That's relevant because when we send
+            /// this sync message, we do so with the timestamp of an actual
+            /// call – and because we (try to) sync call timestamps across
+            /// devices, our copy of the call likely has the exact same
+            /// timestamp. Without adjusting, we'll skip that call!
+            return .descendingBefore(timestamp: beforeTimestamp + 1)
+        }
+
+        return .descending
+    }
+
     /// Send a "marked calls as read" sync message with the given event type, so
     /// our other devices can also mark the calls as read.
     ///
@@ -230,6 +242,52 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
             callRecord: callRecord, tx: tx
         ) else { return }
 
+        syncMessageSender.sendCallLogEventSyncMessage(
+            eventType: eventType,
+            callId: callRecord.callId,
+            conversationId: conversationId,
+            timestamp: callRecord.callBeganTimestamp,
+            tx: tx
+        )
+    }
+}
+
+// MARK: - Mocks
+
+extension CallRecordMissedCallManagerImpl {
+    enum Shims {
+        typealias SyncMessageSender = _CallRecordMissedCallManagerImpl_SyncMessageSender_Shim
+    }
+
+    enum Wrappers {
+        typealias SyncMessageSender = _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper
+    }
+}
+
+protocol _CallRecordMissedCallManagerImpl_SyncMessageSender_Shim {
+    func sendCallLogEventSyncMessage(
+        eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
+        callId: UInt64,
+        conversationId: OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId,
+        timestamp: UInt64,
+        tx: DBWriteTransaction
+    )
+}
+
+class _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper: _CallRecordMissedCallManagerImpl_SyncMessageSender_Shim {
+    private let messageSenderJobQueue: MessageSenderJobQueue
+
+    init(_ messageSenderJobQueue: MessageSenderJobQueue) {
+        self.messageSenderJobQueue = messageSenderJobQueue
+    }
+
+    func sendCallLogEventSyncMessage(
+        eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
+        callId: UInt64,
+        conversationId: OutgoingCallLogEventSyncMessage.CallLogEvent.ConversationId,
+        timestamp: UInt64,
+        tx: DBWriteTransaction
+    ) {
         let sdsTx = SDSDB.shimOnlyBridge(tx)
 
         guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: sdsTx) else {
@@ -239,9 +297,9 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         let outgoingCallLogEventSyncMessage = OutgoingCallLogEventSyncMessage(
             callLogEvent: OutgoingCallLogEventSyncMessage.CallLogEvent(
                 eventType: eventType,
-                callId: callRecord.callId,
+                callId: callId,
                 conversationId: conversationId,
-                timestamp: callRecord.callBeganTimestamp
+                timestamp: timestamp
             ),
             thread: localThread,
             tx: sdsTx

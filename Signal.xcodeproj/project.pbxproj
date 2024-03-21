@@ -1656,6 +1656,8 @@
 		D9A3E2322A0DBDFC00E2A8B5 /* Usernames+UsernameLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55429834BC900158EE4 /* Usernames+UsernameLinkTests.swift */; };
 		D9A81C6B2BAA54FC00C07D2B /* CallRecordSyncMessageConversationIdAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C6A2BAA54FC00C07D2B /* CallRecordSyncMessageConversationIdAdapter.swift */; };
 		D9A81C6D2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C6C2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift */; };
+		D9A81C6F2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C6E2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift */; };
+		D9A81C712BAB443600C07D2B /* MockCallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C702BAB443600C07D2B /* MockCallRecordQuerier.swift */; };
 		D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */; };
 		D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
@@ -4466,6 +4468,8 @@
 		D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameQuerier.swift; sourceTree = "<group>"; };
 		D9A81C6A2BAA54FC00C07D2B /* CallRecordSyncMessageConversationIdAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordSyncMessageConversationIdAdapter.swift; sourceTree = "<group>"; };
 		D9A81C6C2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordSyncMessageConversationIdAdapter.swift; sourceTree = "<group>"; };
+		D9A81C6E2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordMissedCallManagerTest.swift; sourceTree = "<group>"; };
+		D9A81C702BAB443600C07D2B /* MockCallRecordQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordQuerier.swift; sourceTree = "<group>"; };
 		D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessageTest.swift; sourceTree = "<group>"; };
 		D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessage.swift; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
@@ -8883,6 +8887,7 @@
 			isa = PBXGroup;
 			children = (
 				D9C42C322B6C66320086B142 /* MockCallRecordDeleteManager.swift */,
+				D9A81C702BAB443600C07D2B /* MockCallRecordQuerier.swift */,
 				D91AC9392B62F79700814975 /* MockCallRecordStore.swift */,
 				D9A81C6C2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift */,
 				D9C42C302B6C60FE0086B142 /* MockDeletedCallRecordCleanupManager.swift */,
@@ -9028,6 +9033,7 @@
 			children = (
 				D9C42C2E2B6C60600086B142 /* CallRecordDeleteManagerTest.swift */,
 				D979CC4A2AD4DECA006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift */,
+				D9A81C6E2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift */,
 				D93108052B30F920006A034E /* CallRecordQuerierTest.swift */,
 				D979CC492AD4DECA006AAC49 /* CallRecordStatusTransitionManagerTest.swift */,
 				D979CC482AD4DECA006AAC49 /* CallRecordStoreTest.swift */,
@@ -13437,6 +13443,7 @@
 				664657352AC370670099DE1C /* MockAccountAttributesUpdater.swift in Sources */,
 				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				D9C42C332B6C66320086B142 /* MockCallRecordDeleteManager.swift in Sources */,
+				D9A81C712BAB443600C07D2B /* MockCallRecordQuerier.swift in Sources */,
 				D91AC93A2B62F79700814975 /* MockCallRecordStore.swift in Sources */,
 				D9A81C6D2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift in Sources */,
 				D9E335A42993269100825677 /* MockDBV2.swift in Sources */,
@@ -14084,6 +14091,7 @@
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
 				D9C42C2F2B6C60600086B142 /* CallRecordDeleteManagerTest.swift in Sources */,
 				D979CC4F2AD4DECB006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift in Sources */,
+				D9A81C6F2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift in Sources */,
 				D93108062B30F920006A034E /* CallRecordQuerierTest.swift in Sources */,
 				D979CC4E2AD4DECB006AAC49 /* CallRecordStatusTransitionManagerTest.swift in Sources */,
 				D979CC4D2AD4DECB006AAC49 /* CallRecordStoreTest.swift in Sources */,

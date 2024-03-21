@@ -369,7 +369,7 @@ public class AppSetup {
             callRecordConversationIdAdapter: callRecordSyncMessageConversationIdAdapater,
             callRecordQuerier: callRecordQuerier,
             callRecordStore: callRecordStore,
-            messageSenderJobQueue: messageSenderJobQueue
+            syncMessageSender: CallRecordMissedCallManagerImpl.Wrappers.SyncMessageSender(messageSenderJobQueue)
         )
         let callRecordDeleteManager = CallRecordDeleteManagerImpl(
             callRecordStore: callRecordStore,

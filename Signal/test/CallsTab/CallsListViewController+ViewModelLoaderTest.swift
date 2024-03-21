@@ -648,11 +648,3 @@ private class MockCallRecordLoader: CallRecordLoader {
         return Cursor(applyLoadDirection(loadDirection), direction: loadDirection)
     }
 }
-
-private extension Array {
-    mutating func popFirst() -> Element? {
-        let firstElement = first
-        self = Array(dropFirst())
-        return firstElement
-    }
-}

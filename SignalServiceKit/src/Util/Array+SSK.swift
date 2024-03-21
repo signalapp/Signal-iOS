@@ -44,3 +44,20 @@ public extension Array {
         return self.compactMap({ $0 })
     }
 }
+
+#if TESTABLE_BUILD
+
+public extension Array {
+    /// Removes and returns the first element of the array, if there is one.
+    /// 
+    /// - Important
+    /// This method runs in O(N), and consequently should not be used outside
+    /// test code.
+    mutating func popFirst() -> Element? {
+        let firstElement = first
+        self = Array(dropFirst())
+        return firstElement
+    }
+}
+
+#endif

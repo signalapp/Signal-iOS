@@ -42,9 +42,9 @@ class MockCallRecordStore: CallRecordStore {
         askedToUpdateRecordStatusTo = newCallStatus
     }
 
-    var askedToMarkAsRead: Bool = false
+    var markAsReadMock: ((_ callRecord: CallRecord) -> Void)!
     func markAsRead(callRecord: CallRecord, tx: DBWriteTransaction) {
-        askedToMarkAsRead = true
+        markAsReadMock(callRecord)
     }
 
     var askedToUpdateRecordDirectionTo: CallRecord.CallDirection?
