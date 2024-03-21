@@ -37,21 +37,20 @@ public class ContactShareViewModel: NSObject {
         tx: SDSAnyReadTransaction
     ) -> ContactShareViewModel {
         let contactShareRecord = OWSContact(cnContact: cnContact)
-        let avatarResult = loadAvatar(cnContact: cnContact, signalContact: signalContact(), tx: tx)
-        contactShareRecord.isProfileAvatar = avatarResult.isProfileAvatarData
+        let avatarData = loadAvatarData(cnContact: cnContact, signalContact: signalContact(), tx: tx)
         return ContactShareViewModel(
             contactShareRecord: contactShareRecord,
-            avatarImageData: avatarResult.avatarData
+            avatarImageData: avatarData
         )
     }
 
-    private static func loadAvatar(
+    private static func loadAvatarData(
         cnContact: CNContact,
         signalContact: @autoclosure () -> Contact,
         tx: SDSAnyReadTransaction
-    ) -> (avatarData: Data?, isProfileAvatarData: Bool) {
+    ) -> Data? {
         if let systemAvatarImageData = contactsManager.avatarData(for: cnContact.identifier) {
-            return (systemAvatarImageData, false)
+            return systemAvatarImageData
         }
 
         let recipientManager = DependenciesBridge.shared.recipientManager
@@ -63,10 +62,10 @@ public class ContactShareViewModel: NSObject {
             return profileManager.profileAvatarData(for: recipient.address, transaction: tx)
         }.first
         if let profileAvatarData {
-            return (profileAvatarData, true)
+            return profileAvatarData
         }
 
-        return (nil, false)
+        return nil
     }
 
     public required init(contactShareRecord: OWSContact, avatarImageData: Data?) {
@@ -149,10 +148,6 @@ public class ContactShareViewModel: NSObject {
 
     public var ows_isValid: Bool {
         return dbRecord.isValid
-    }
-
-    public var isProfileAvatar: Bool {
-        return dbRecord.isProfileAvatar
     }
 
     public func copy(withName name: OWSContactName) -> ContactShareViewModel {

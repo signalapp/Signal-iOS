@@ -437,8 +437,6 @@ public class OWSContact: MTLModel {
 
     @objc
     public private(set) var avatarAttachmentId: String?
-    @objc
-    public var isProfileAvatar: Bool = false
 
     public var isValid: Bool {
         guard !name.displayName.stripped.isEmpty else {
@@ -483,15 +481,13 @@ public class OWSContact: MTLModel {
         phoneNumbers: [OWSContactPhoneNumber],
         emails: [OWSContactEmail],
         addresses: [OWSContactAddress],
-        avatarAttachmentId: String?,
-        isProfileAvatar: Bool
+        avatarAttachmentId: String?
     ) {
         self.name = name
         self.phoneNumbers = phoneNumbers
         self.emails = emails
         self.addresses = addresses
         self.avatarAttachmentId = avatarAttachmentId
-        self.isProfileAvatar = isProfileAvatar
         super.init()
     }
 
@@ -806,8 +802,7 @@ extension OWSContact {
             phoneNumbers: cnContact.phoneNumbers.map { OWSContactPhoneNumber(cnLabeledValue: $0) },
             emails: cnContact.emailAddresses.map { OWSContactEmail(cnLabeledValue: $0) },
             addresses: cnContact.postalAddresses.map { OWSContactAddress(cnLabeledValue: $0) },
-            avatarAttachmentId: nil,
-            isProfileAvatar: false
+            avatarAttachmentId: nil
         )
     }
 
@@ -1163,7 +1158,6 @@ extension OWSContact {
             let attachmentPointer  = TSAttachmentPointer(fromProto: avatarAttachment, albumMessage: nil) {
             attachmentPointer.anyInsert(transaction: tx)
             self.avatarAttachmentId = attachmentPointer.uniqueId
-            self.isProfileAvatar = avatar.isProfile
         }
     }
 }
