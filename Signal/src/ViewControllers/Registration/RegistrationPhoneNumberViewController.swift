@@ -10,7 +10,7 @@ import SignalUI
 
 protocol RegistrationPhoneNumberPresenter: AnyObject {
     func goToNextStep(withE164: E164)
-
+    func handleInvalidPhoneNumber()
     func exitRegistration()
 }
 
@@ -332,8 +332,9 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 message: OWSLocalizedString(
                     "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE",
                     comment: "Message of alert indicating that users needs to enter a valid phone number to register."
-                )
-            )
+                )) { [weak self] _ in
+                    self?.presenter?.handleInvalidPhoneNumber()
+                }
         }
 
         previousInvalidE164 = e164
