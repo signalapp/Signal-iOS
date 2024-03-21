@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *filePath = [dirPath stringByAppendingPathComponent:relativePath];
         OWSLogDebug(@"path: %@ had attributes: %@", filePath, directoryEnumerator.fileAttributes);
 
-        success = success && [self protectFileOrFolderAtPath:filePath];
+        success = [self protectFileOrFolderAtPath:filePath] && success;
     }
 
     return success;
