@@ -647,6 +647,30 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                   gestureLocation: .bodyText(item: item))
     }
 
+    public override func findDoubleTapHandler(sender: UIGestureRecognizer,
+                                              componentDelegate: CVComponentDelegate,
+                                              componentView: CVComponentView,
+                                              renderItem: CVRenderItem) -> CVDoubleTapHandler? {
+
+        guard let componentView = componentView as? CVComponentViewBodyText else {
+            owsFailDebug("Unexpected componentView.")
+            return nil
+        }
+
+        guard !shouldIgnoreEvents else {
+            return nil
+        }
+
+        let bodyTextLabel = componentView.bodyTextLabel
+        guard let item = bodyTextLabel.itemForGesture(sender: sender) else {
+            return nil
+        }
+        bodyTextLabel.animate(selectedItem: item)
+        return CVDoubleTapHandler(delegate: componentDelegate,
+                                  renderItem: renderItem,
+                                  gestureLocation: .bodyText(item: item))
+    }
+
     // MARK: -
 
     fileprivate class BodyTextRootView: ManualStackView {}

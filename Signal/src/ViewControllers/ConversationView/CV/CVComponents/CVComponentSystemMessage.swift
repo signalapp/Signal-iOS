@@ -495,6 +495,15 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                   gestureLocation: .systemMessage)
     }
 
+    public override func findDoubleTapHandler(sender: UIGestureRecognizer,
+                                              componentDelegate: CVComponentDelegate,
+                                              componentView: CVComponentView,
+                                              renderItem: CVRenderItem) -> CVDoubleTapHandler? {
+        return CVDoubleTapHandler(delegate: componentDelegate,
+                                  renderItem: renderItem,
+                                  gestureLocation: .systemMessage)
+    }
+
     // MARK: -
 
     // Used for rendering some portion of an Conversation View item.
