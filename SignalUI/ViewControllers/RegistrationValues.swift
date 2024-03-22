@@ -24,14 +24,7 @@ public struct RegistrationCountryState: Equatable, Dependencies {
     public static var defaultValue: RegistrationCountryState {
         AssertIsOnMainThread()
 
-        var countryCode: String = PhoneNumberUtil.defaultCountryCode()
-        if
-            let lastRegisteredCountryCode = RegistrationValues.lastRegisteredCountryCode(),
-            !lastRegisteredCountryCode.isEmpty
-        {
-            countryCode = lastRegisteredCountryCode
-        }
-
+        let countryCode: String = PhoneNumberUtil.defaultCountryCode()
         let callingCodeNumber: NSNumber = phoneNumberUtil.getCallingCode(forRegion: countryCode)
         let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumber)"
         let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)
@@ -118,60 +111,5 @@ public class RegistrationPhoneNumberParser {
         }
         let nationalNumber = phoneNumberUtil.nationalNumber(for: phoneNumber)
         return RegistrationPhoneNumber(countryState: countryState, nationalNumber: nationalNumber)
-    }
-}
-
-// MARK: -
-
-public class RegistrationValues: NSObject {
-
-    private static let kKeychainService_LastRegistered = "kKeychainService_LastRegistered"
-    private static let kKeychainKey_LastRegisteredCountryCode = "kKeychainKey_LastRegisteredCountryCode"
-    private static let kKeychainKey_LastRegisteredPhoneNumber = "kKeychainKey_LastRegisteredPhoneNumber"
-
-    private class func debugValue(forKey key: String) -> String? {
-        AssertIsOnMainThread()
-
-        guard OWSIsDebugBuild() else {
-            return nil
-        }
-
-        do {
-            let value = try CurrentAppContext().keychainStorage().string(forService: kKeychainService_LastRegistered, key: key)
-            return value
-        } catch {
-            // The value may not be present in the keychain.
-            return nil
-        }
-    }
-
-    private class func setDebugValue(_ value: String, forKey key: String) {
-        AssertIsOnMainThread()
-
-        guard OWSIsDebugBuild() else {
-            return
-        }
-
-        do {
-            try CurrentAppContext().keychainStorage().set(string: value, service: kKeychainService_LastRegistered, key: key)
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    public class func lastRegisteredCountryCode() -> String? {
-        return debugValue(forKey: kKeychainKey_LastRegisteredCountryCode)
-    }
-
-    public class func setLastRegisteredCountryCode(value: String) {
-        setDebugValue(value, forKey: kKeychainKey_LastRegisteredCountryCode)
-    }
-
-    public class func lastRegisteredPhoneNumber() -> String? {
-        return debugValue(forKey: kKeychainKey_LastRegisteredPhoneNumber)
-    }
-
-    public class func setLastRegisteredPhoneNumber(value: String) {
-        setDebugValue(value, forKey: kKeychainKey_LastRegisteredPhoneNumber)
     }
 }
