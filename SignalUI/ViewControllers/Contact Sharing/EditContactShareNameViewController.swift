@@ -124,8 +124,10 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
 
         navigationItem.title = OWSLocalizedString("CONTACT_SHARE_EDIT_NAME_VIEW_TITLE",
                                                   comment: "Title for the 'edit contact share name' view.")
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didPressDone))
+        navigationItem.leftBarButtonItem = .cancelButton(poppingFrom: navigationController)
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.didPressDone()
+        }
 
         updateContents()
         updateNavigationBar()
@@ -159,7 +161,6 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
         return false
     }
 
-    @objc
     private func didPressDone() {
         guard let editingDelegate else {
             owsFailDebug("missing delegate.")
@@ -176,11 +177,6 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
         )
         editingDelegate.editContactShareNameView(self, didFinishWith: newName)
 
-        navigationController?.popViewController(animated: true)
-    }
-
-    @objc
-    private func didPressCancel() {
         navigationController?.popViewController(animated: true)
     }
 

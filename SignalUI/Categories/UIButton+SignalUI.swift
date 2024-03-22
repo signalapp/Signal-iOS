@@ -5,6 +5,8 @@
 
 import SignalCoreKit
 
+// MARK: - UIButton
+
 public extension UIButton {
     /// Add spacing between a button's image and its title.
     ///
@@ -85,7 +87,7 @@ public extension UIButton {
     }
 }
 
-// MARK: -
+// MARK: - UIBarButtonItem
 
 public extension UIBarButtonItem {
 
@@ -137,9 +139,120 @@ public extension UIBarButtonItem {
         self.init(customView: customView)
         self.accessibilityIdentifier = accessibilityIdentifier
     }
+
+    private class ClosureBarButtonItem: UIBarButtonItem {
+        private class Handler {
+            var actionClosure: () -> Void
+            init(actionClosure: @escaping () -> Void) {
+                self.actionClosure = actionClosure
+            }
+            @objc
+            func action() {
+                actionClosure()
+            }
+        }
+
+        private var handler: Handler?
+
+        convenience init(
+            systemItem: UIBarButtonItem.SystemItem,
+            action: @escaping () -> Void
+        ) {
+            let handler = Handler(actionClosure: action)
+            // The `Handler` type exists because we can't
+            // reference `self` in its own initializer call.
+            self.init(barButtonSystemItem: systemItem, target: handler, action: #selector(handler.action))
+            // Keep a strong reference to the Handler
+            self.handler = handler
+        }
+    }
+
+    // Keep this static function public instead of exposing ClosureBarButtonItem
+    // because ClosureBarButtonItem will only function properly if using its
+    // custom convenience initializer.
+    /// Creates a system bar button item which performs the action in the provided closure.
+    ///
+    /// - Parameters:
+    ///   - systemItem: The system item to use.
+    ///   - action: The action to perform on tap.
+    /// - Returns: A new `UIBarButtonItem`.
+    static func systemItem(
+        _ systemItem: UIBarButtonItem.SystemItem,
+        action: @escaping () -> Void
+    ) -> UIBarButtonItem {
+        ClosureBarButtonItem(systemItem: systemItem, action: action)
+    }
+
+    /// Creates a "Cancel" bar button which performs the action in the provided closure.
+    static func cancelButton(action: @escaping () -> Void) -> UIBarButtonItem {
+        Self.systemItem(.cancel, action: action)
+    }
+
+    /// Creates a "Cancel" bar button which dismisses the view using the provided view controller.
+    /// - Parameters:
+    ///   - viewController: The view controller to dismiss from.
+    ///   - animated: Whether to animate the dismiss.
+    ///   - completion: The block to execute after the view controller is dismissed.
+    /// - Returns: A new `UIBarButtonItem`.
+    static func cancelButton(
+        dismissingFrom viewController: UIViewController,
+        animated: Bool = true,
+        completion: (() -> Void)? = nil
+    ) -> UIBarButtonItem {
+        Self.cancelButton { [weak viewController] in
+            viewController?.dismiss(animated: animated, completion: completion)
+        }
+    }
+
+    /// Creates a "Cancel" bar button which dismisses the view after checking if
+    /// there are unsaved changes and presenting a confirmation sheet if so.
+    /// - Parameters:
+    ///   - viewController: The view controller to display the confirmation and to dismiss from.
+    ///   - hasUnsavedChanges: A closure called on tap to check if there are
+    ///   unsaved changes. Returning `nil` is equivalent to returning `false`.
+    ///   - animated: Whether to animate the dismiss.
+    ///   - completion: The block to execute after the view controller is dismissed.
+    /// - Returns: A new `UIBarButtonItem`.
+    static func cancelButton(
+        dismissingFrom viewController: UIViewController,
+        hasUnsavedChanges: @escaping () -> Bool?,
+        animated: Bool = true,
+        completion: (() -> Void)? = nil
+    ) -> UIBarButtonItem {
+        Self.cancelButton { [weak viewController] in
+            if hasUnsavedChanges() == true {
+                OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak viewController] in
+                    viewController?.dismiss(animated: animated, completion: completion)
+                })
+            } else {
+                viewController?.dismiss(animated: animated, completion: completion)
+            }
+        }
+    }
+
+    /// Creates a "Cancel" bar button which pops the view controller using the provided navigation controller.
+    /// - Parameters:
+    ///   - navigationController: The navigation controller to pop.
+    ///   - animated: Whether to animate the pop.
+    /// - Returns: A new `UIBarButtonItem`.
+    static func cancelButton(
+        poppingFrom navigationController: UINavigationController?,
+        animated: Bool = true
+    ) -> UIBarButtonItem {
+        Self.cancelButton { [weak navigationController] in
+            navigationController?.popViewController(animated: animated)
+        }
+    }
+
+    /// Creates a "Done" bar button which performs the action in the provided closure.
+    static func doneButton(action: @escaping () -> Void) -> UIBarButtonItem {
+        Self.systemItem(.done, action: action)
+    }
+
+    // Feel free to add more system item functions as the need arises
 }
 
-// MARK: -
+// MARK: - UIToolbar
 
 public extension UIToolbar {
 
