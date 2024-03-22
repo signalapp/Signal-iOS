@@ -268,7 +268,7 @@ extension TSAttachmentDownloadManager {
                 self.linkPreviewPromise = nil
             }
 
-            if let attachmentId = message.messageSticker?.attachmentId {
+            if let attachmentId = message.messageSticker?.legacyAttachmentId {
                 if let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: tx) {
                     owsAssertDebug(attachment.byteCount > 0)
                     let autoDownloadSizeThreshold: UInt32 = 100 * 1024

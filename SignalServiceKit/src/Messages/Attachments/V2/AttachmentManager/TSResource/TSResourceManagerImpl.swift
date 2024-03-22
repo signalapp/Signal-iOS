@@ -217,9 +217,9 @@ public class TSResourceManagerImpl: TSResourceManager {
             }
         }
 
-        if types.contains(.sticker), let messageSticker = message.messageSticker {
+        if types.contains(.sticker), let messageSticker = message.messageSticker, let legacyAttachmentId = messageSticker.legacyAttachmentId {
             // TODO: differentiate legacy and v2
-            tsAttachmentManager.removeAttachment(attachmentId: messageSticker.attachmentId, tx: SDSDB.shimOnlyBridge(tx))
+            tsAttachmentManager.removeAttachment(attachmentId: legacyAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
         }
 
         if

@@ -141,8 +141,7 @@ public class OutgoingMessagePreparer: NSObject {
             attachmentStream.map { attachmentIds.append($0.uniqueId) }
         }
 
-        if let messageSticker = message.messageSticker {
-            let attachmentId = messageSticker.attachmentId
+        if let messageSticker = message.messageSticker, let attachmentId = messageSticker.legacyAttachmentId {
             let attachmentStream = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: attachmentId, transaction: tx)
             owsAssertDebug(attachmentStream != nil)
             attachmentStream.map { attachmentIds.append($0.uniqueId) }

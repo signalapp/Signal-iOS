@@ -163,7 +163,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             FeatureFlags.readV2Attachments,
             let messageSticker = message.messageSticker,
             // TODO: need to make this attachment id nullable
-            messageSticker.attachmentId == nil
+            messageSticker.legacyAttachmentId == nil
         {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
@@ -171,7 +171,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             }
             return attachmentStore.fetchFirstReference(owner: .messageSticker(messageRowId: messageRowId), tx: tx)
         }
-        return legacyReference(uniqueId: message.messageSticker?.attachmentId, tx: tx)
+        return legacyReference(uniqueId: message.messageSticker?.legacyAttachmentId, tx: tx)
     }
 
     public func indexForBodyAttachmentId(

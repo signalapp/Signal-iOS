@@ -70,18 +70,33 @@ public class MessageSticker: MTLModel {
 
     // MTLModel requires default values.
     @objc
-    public var attachmentId: String = ""
+    private var attachmentId: String?
+
+    public var legacyAttachmentId: String? {
+        return attachmentId?.nilIfEmpty
+    }
 
     @objc
     public var emoji: String?
 
-    @objc
-    public init(info: StickerInfo, attachmentId: String, emoji: String?) {
+    private init(info: StickerInfo, legacyAttachmentId: String?, emoji: String?) {
         self.info = info
-        self.attachmentId = attachmentId
+        self.attachmentId = legacyAttachmentId
         self.emoji = emoji
 
         super.init()
+    }
+
+    public static func withLegacyAttachment(
+        info: StickerInfo,
+        legacyAttachmentId: String,
+        emoji: String?
+    ) -> MessageSticker {
+        return MessageSticker(info: info, legacyAttachmentId: legacyAttachmentId, emoji: emoji)
+    }
+
+    public static func withForeignReferenceAttachment(info: StickerInfo, emoji: String?) -> MessageSticker {
+        return MessageSticker(info: info, legacyAttachmentId: nil, emoji: emoji)
     }
 
     @objc
@@ -131,7 +146,7 @@ public class MessageSticker: MTLModel {
                                             transaction: transaction)
         let attachmentId = attachment.uniqueId
 
-        let messageSticker = MessageSticker(info: stickerInfo, attachmentId: attachmentId, emoji: emoji)
+        let messageSticker = MessageSticker.withLegacyAttachment(info: stickerInfo, legacyAttachmentId: attachmentId, emoji: emoji)
         guard messageSticker.isValid else {
             throw StickerError.invalidInput
         }
@@ -214,7 +229,7 @@ public class MessageSticker: MTLModel {
                                                              stickerType: draft.stickerType,
                                                              transaction: transaction)
 
-        let messageSticker = MessageSticker(info: draft.info, attachmentId: attachmentId, emoji: draft.emoji)
+        let messageSticker = MessageSticker.withLegacyAttachment(info: draft.info, legacyAttachmentId: attachmentId, emoji: draft.emoji)
         guard messageSticker.isValid else {
             throw StickerError.assertionFailure
         }

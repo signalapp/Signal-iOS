@@ -144,8 +144,8 @@ public class TSAttachmentStore {
 
         if
             let messageSticker = originalMessage.messageSticker,
-            messageSticker.attachmentId.isEmpty.negated,
-            let attachment = TSAttachment.anyFetch(uniqueId: messageSticker.attachmentId, transaction: tx)
+            let legacyAttachmentId = messageSticker.legacyAttachmentId?.nilIfEmpty,
+            let attachment = TSAttachment.anyFetch(uniqueId: legacyAttachmentId, transaction: tx)
         {
             return attachment
         }
