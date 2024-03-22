@@ -11,6 +11,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     public typealias TSAccountManager = SignalServiceKit.TSAccountManager & LocalIdentifiersSetter
 
     private let appContext: AppContext
+    private let authCredentialStore: AuthCredentialStore
     private let groupsV2: GroupsV2
     private let identityManager: OWSIdentityManager
     private let notificationPresenter: NotificationsProtocolSwift
@@ -26,8 +27,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let udManager: OWSUDManager
     private let versionedProfiles: VersionedProfilesSwift
 
-    public init(
+    init(
         appContext: AppContext,
+        authCredentialStore: AuthCredentialStore,
         groupsV2: GroupsV2,
         identityManager: OWSIdentityManager,
         notificationPresenter: NotificationsProtocolSwift,
@@ -44,6 +46,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         versionedProfiles: VersionedProfilesSwift
     ) {
         self.appContext = appContext
+        self.authCredentialStore = authCredentialStore
         self.groupsV2 = groupsV2
         self.identityManager = identityManager
         self.notificationPresenter = notificationPresenter
@@ -158,7 +161,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         senderKeyStore.resetSenderKeyStore(tx: tx)
         udManager.removeSenderCertificates(tx: tx)
         versionedProfiles.clearProfileKeyCredentials(tx: tx)
-        groupsV2.clearTemporalCredentials(tx: tx)
+        authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
 
         if wasPrimaryDevice {
             // Don't reset payments state at this time.
@@ -242,7 +245,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         udManager.removeSenderCertificates(tx: tx)
         identityManager.clearShouldSharePhoneNumberForEveryone(tx: tx)
         versionedProfiles.clearProfileKeyCredentials(tx: tx)
-        groupsV2.clearTemporalCredentials(tx: tx)
+        authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
 
         storageServiceManager.setLocalIdentifiers(.init(.init(aci: aci, pni: pni, e164: e164)))
 

@@ -83,7 +83,6 @@ public class AppSetup {
         let blockingManager = BlockingManager()
         let dateProvider = Date.provider
         let earlyMessageManager = EarlyMessageManager()
-        let groupsV2 = testDependencies?.groupsV2 ?? GroupsV2Impl()
         let messageProcessor = MessageProcessor()
         let messageSender = testDependencies?.messageSender ?? MessageSender()
         let messageSenderJobQueue = MessageSenderJobQueue()
@@ -137,6 +136,19 @@ public class AppSetup {
 
         let schedulers = DispatchQueueSchedulers()
         let db = SDSDB(databaseStorage: databaseStorage)
+
+        let authCredentialStore = AuthCredentialStore(keyValueStoreFactory: keyValueStoreFactory)
+
+        let authCredentialManager = AuthCredentialManagerImpl(
+            authCredentialStore: authCredentialStore,
+            dateProvider: dateProvider,
+            db: db
+        )
+
+        let groupsV2 = testDependencies?.groupsV2 ?? GroupsV2Impl(
+            authCredentialStore: authCredentialStore,
+            authCredentialManager: authCredentialManager
+        )
 
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
@@ -446,6 +458,7 @@ public class AppSetup {
 
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
             appContext: appContext,
+            authCredentialStore: authCredentialStore,
             groupsV2: groupsV2,
             identityManager: identityManager,
             notificationPresenter: notificationPresenter,
@@ -875,6 +888,7 @@ public class AppSetup {
 
         return AppSetup.DatabaseContinuation(
             appContext: appContext,
+            authCredentialStore: authCredentialStore,
             dependenciesBridge: dependenciesBridge,
             sskEnvironment: sskEnvironment,
             backgroundTask: backgroundTask
@@ -891,17 +905,20 @@ public class AppSetup {
 extension AppSetup {
     public class DatabaseContinuation {
         private let appContext: AppContext
+        private let authCredentialStore: AuthCredentialStore
         private let dependenciesBridge: DependenciesBridge
         private let sskEnvironment: SSKEnvironment
         private let backgroundTask: OWSBackgroundTask
 
         fileprivate init(
             appContext: AppContext,
+            authCredentialStore: AuthCredentialStore,
             dependenciesBridge: DependenciesBridge,
             sskEnvironment: SSKEnvironment,
             backgroundTask: OWSBackgroundTask
         ) {
             self.appContext = appContext
+            self.authCredentialStore = authCredentialStore
             self.dependenciesBridge = dependenciesBridge
             self.sskEnvironment = sskEnvironment
             self.backgroundTask = backgroundTask
@@ -927,6 +944,7 @@ extension AppSetup.DatabaseContinuation {
                 self.sskEnvironment.warmCaches()
                 self.backgroundTask.end()
                 future.resolve(AppSetup.FinalContinuation(
+                    authCredentialStore: self.authCredentialStore,
                     dependenciesBridge: self.dependenciesBridge,
                     sskEnvironment: self.sskEnvironment
                 ))
@@ -950,10 +968,16 @@ extension AppSetup.DatabaseContinuation {
 
 extension AppSetup {
     public class FinalContinuation {
+        private let authCredentialStore: AuthCredentialStore
         private let dependenciesBridge: DependenciesBridge
         private let sskEnvironment: SSKEnvironment
 
-        fileprivate init(dependenciesBridge: DependenciesBridge, sskEnvironment: SSKEnvironment) {
+        fileprivate init(
+            authCredentialStore: AuthCredentialStore,
+            dependenciesBridge: DependenciesBridge,
+            sskEnvironment: SSKEnvironment
+        ) {
+            self.authCredentialStore = authCredentialStore
             self.dependenciesBridge = dependenciesBridge
             self.sskEnvironment = sskEnvironment
         }
@@ -969,9 +993,9 @@ extension AppSetup.FinalContinuation {
         AssertIsOnMainThread()
 
         ZkParamsMigrator(
+            authCredentialStore: authCredentialStore,
             db: dependenciesBridge.db,
             keyValueStoreFactory: dependenciesBridge.keyValueStoreFactory,
-            groupsV2: sskEnvironment.groupsV2Ref,
             profileManager: sskEnvironment.profileManagerRef,
             tsAccountManager: dependenciesBridge.tsAccountManager,
             versionedProfiles: sskEnvironment.versionedProfilesRef

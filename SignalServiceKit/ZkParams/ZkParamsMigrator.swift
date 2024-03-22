@@ -5,24 +5,24 @@
 
 import Foundation
 
-public class ZkParamsMigrator {
+class ZkParamsMigrator {
+    private let authCredentialStore: AuthCredentialStore
     private let db: DB
-    private let groupsV2: GroupsV2
     private let migrationStore: KeyValueStore
     private let profileManager: ProfileManager
     private let tsAccountManager: TSAccountManager
     private let versionedProfiles: VersionedProfilesSwift
 
-    public init(
+    init(
+        authCredentialStore: AuthCredentialStore,
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
-        groupsV2: GroupsV2,
         profileManager: ProfileManager,
         tsAccountManager: TSAccountManager,
         versionedProfiles: VersionedProfilesSwift
     ) {
+        self.authCredentialStore = authCredentialStore
         self.db = db
-        self.groupsV2 = groupsV2
         // This collection name is weird for historical reasons.
         self.migrationStore = keyValueStoreFactory.keyValueStore(collection: "GroupsV2Impl.serviceStore")
         self.profileManager = profileManager
@@ -40,7 +40,7 @@ public class ZkParamsMigrator {
         static let zkGroupMigrationCounter: Int = 5
     }
 
-    public func migrateIfNeeded() {
+    func migrateIfNeeded() {
         let oldMigrationCounter = db.read { tx -> Int in
             migrationStore.getInt(Constants.lastZkGroupVersionCounterKey, defaultValue: 0, transaction: tx)
         }
@@ -65,7 +65,7 @@ public class ZkParamsMigrator {
             // If you have v4 and any params other than the ones just prior to the new
             // migration logic, reset everything.
             Logger.info("Resetting zkgroup-related state.")
-            groupsV2.clearTemporalCredentials(tx: tx)
+            authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
             versionedProfiles.clearProfileKeyCredentials(tx: tx)
             reuploadLocalProfile()
             fallthrough

@@ -14,8 +14,6 @@ open class SignalBaseTest: XCTestCase {
 
         SetCurrentAppContext(TestAppContext(), true)
         MockSSKEnvironment.activate()
-
-        SSKEnvironment.shared.setGroupsV2ForUnitTests(GroupsV2Impl())
     }
 
     open override func tearDown() {

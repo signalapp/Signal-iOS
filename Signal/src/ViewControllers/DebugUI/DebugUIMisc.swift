@@ -137,10 +137,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 DebugUIMisc.clearProfileKeyCredentials()
             }),
 
-            OWSTableItem(title: "Clear Temporal Credentials", actionBlock: {
-                DebugUIMisc.clearTemporalCredentials()
-            }),
-
             OWSTableItem(title: "Clear custom reaction emoji (locally)", actionBlock: {
                 DebugUIMisc.clearLocalCustomEmoji()
             }),
@@ -389,12 +385,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
     private static func clearProfileKeyCredentials() {
         Self.databaseStorage.write { transaction in
             Self.versionedProfiles.clearProfileKeyCredentials(transaction: transaction)
-        }
-    }
-
-    private static func clearTemporalCredentials() {
-        Self.databaseStorage.write { transaction in
-            Self.groupsV2.clearTemporalCredentials(transaction: transaction)
         }
     }
 

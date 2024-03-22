@@ -103,8 +103,6 @@ public protocol GroupsV2 {
 
     func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool
 
-    func clearTemporalCredentials(transaction: SDSAnyWriteTransaction)
-
     typealias ProfileKeyCredentialMap = [Aci: ExpiringProfileKeyCredential]
 
     func createNewGroupOnService(
@@ -193,8 +191,6 @@ public protocol GroupsV2 {
         account: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     )
-
-    func clearTemporalCredentials(tx: DBWriteTransaction)
 }
 
 // MARK: -
@@ -704,16 +700,6 @@ public class MockGroupsV2: GroupsV2 {
 
     public func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool {
         owsFail("Not implemented.")
-    }
-
-    public func clearTemporalCredentials(transaction: SDSAnyWriteTransaction) {
-        // Do nothing.
-    }
-
-    var didClearTemporalCredentials = false
-
-    public func clearTemporalCredentials(tx: DBWriteTransaction) {
-        didClearTemporalCredentials = true
     }
 
     public func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
