@@ -726,7 +726,7 @@ private extension GroupV2UpdatesImpl {
 
             let localUserWasAddedByBlockedUser: Bool
             switch localUserWasAddedBy {
-            case .unknown:
+            case nil, .unknown, .localUser:
                 localUserWasAddedByBlockedUser = false
             case .legacyE164(let e164):
                 localUserWasAddedByBlockedUser = self.blockingManager.isAddressBlocked(
@@ -738,12 +738,8 @@ private extension GroupV2UpdatesImpl {
                     .init(aci),
                     transaction: transaction
                 )
-            case .rejectedInviteToPni(let pni):
-                localUserWasAddedByBlockedUser = self.blockingManager.isAddressBlocked(
-                    .init(pni),
-                    transaction: transaction
-                )
-            case .localUser:
+            case .rejectedInviteToPni:
+                owsFailDebug("Local user added, but group update source was a PNI invite decline?")
                 localUserWasAddedByBlockedUser = false
             }
 
@@ -790,7 +786,7 @@ private extension GroupV2UpdatesImpl {
         groupModelOptions: TSGroupModelOptions,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
-    ) -> (TSGroupThread, addedToNewThreadBy: GroupUpdateSource)? {
+    ) -> (TSGroupThread, addedToNewThreadBy: GroupUpdateSource?)? {
 
         if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             return (groupThread, addedToNewThreadBy: .unknown)
@@ -842,7 +838,7 @@ private extension GroupV2UpdatesImpl {
 
             return (
                 result.groupThread,
-                addedToNewThreadBy: didAddLocalUserToV2Group ? groupUpdateSource : .unknown
+                addedToNewThreadBy: didAddLocalUserToV2Group ? groupUpdateSource : nil
             )
         } catch {
             owsFailDebug("Error: \(error)")
@@ -1226,7 +1222,6 @@ private extension GroupV2UpdatesImpl {
             return
         }
 
-        let revisions = groupChanges.map { $0.revision }
         changeCache.setObject(ChangeCacheItem(groupChanges: groupChanges), forKey: groupSecretParamsData)
     }
 
@@ -1341,6 +1336,17 @@ public extension GroupsProtoGroupChangeActions {
         groupV2Params: GroupV2Params,
         localIdentifiers: LocalIdentifiers
     ) throws -> (GroupUpdateSource, ServiceId?) {
+        func compareToLocal(
+            source: GroupUpdateSource,
+            serviceId: ServiceId
+        ) -> (GroupUpdateSource, ServiceId) {
+            if localIdentifiers.contains(serviceId: serviceId) {
+                return (.localUser(originalSource: source), serviceId)
+            }
+
+            return (source, serviceId)
+        }
+
         guard let changeAuthorUserId: Data = self.sourceUserID else {
             owsFailDebug("Explicit changes should always have authors")
             return (.unknown, nil)
@@ -1349,35 +1355,57 @@ public extension GroupsProtoGroupChangeActions {
         let serviceId = try groupV2Params.serviceId(for: changeAuthorUserId)
         switch serviceId.concreteType {
         case .aci(let aci):
-            if localIdentifiers.aci == aci {
-                return (.localUser(originalSource: .aci(aci)), aci)
-            }
-            return (.aci(aci), aci)
+            return compareToLocal(
+                source: .aci(aci),
+                serviceId: aci
+            )
         case .pni(let pni):
-            // As of now, the only update with a pni author is
-            // declining a pni invite. If this changes, differentiate
-            // state here and split which enum case this becomes.
-            // This may not be the BEST place to do that differentiation;
-            // you may need to pass in new params to be able to tell,
-            // or even just push this up to the callsite. In any case,
-            // the time to differentiate is when looking at the group updates
-            // or before/after model we get from the server.
+            /// At the time of writing, the only change actions with a PNI
+            /// author are accepting or declining a PNI invite.
+            ///
+            /// If future updates to change actions introduce more actions with
+            /// PNI authors, differentiate them here. The best time to
+            /// differentiate is when we have access to the raw change actions.
             if
                 self.deletePendingMembers.count == 1,
-                let firstDeletePendingMemberIdData = self.deletePendingMembers.first?.deletedUserID,
-                let firstDeletePendingMemberId = try? groupV2Params.serviceId(for: firstDeletePendingMemberIdData)
+                let firstDeletePendingMember = self.deletePendingMembers.first,
+                let firstDeletePendingMemberUserId = firstDeletePendingMember.deletedUserID,
+                let firstDeletePendingMemberPni = try? groupV2Params.serviceId(for: firstDeletePendingMemberUserId) as? Pni
             {
-                owsAssertDebug(firstDeletePendingMemberId == pni, "Canary: pni for group update doesn't match")
-            } else {
-                owsFailDebug("Canary: unknown type of pni authored group update")
-            }
+                guard firstDeletePendingMemberPni == pni else {
+                    owsFailDebug("Canary: PNI from change author doesn't match service ID in delete pending member change action!")
+                    return (.unknown, nil)
+                }
 
-            // At this point we are processing a new set of group changes; its safe
-            // to compare our pni against this pni.
-            if localIdentifiers.contains(serviceId: pni) {
-                return (.localUser(originalSource: .rejectedInviteToPni(pni)), pni)
+                return compareToLocal(
+                    source: .rejectedInviteToPni(pni),
+                    serviceId: pni
+                )
+            } else if
+                self.promotePniPendingMembers.count == 1,
+                let firstPromotePniPendingMember = self.promotePniPendingMembers.first,
+                let firstPromotePniPendingMemberAciUserId = firstPromotePniPendingMember.userID,
+                let firstPromotePniPendingMemberAci = try? groupV2Params.serviceId(for: firstPromotePniPendingMemberAciUserId) as? Aci,
+                let firstPromotePniPendingMemberPniUserId = firstPromotePniPendingMember.pni,
+                let firstPromotePniPendingMemberPni = try? groupV2Params.serviceId(for: firstPromotePniPendingMemberPniUserId) as? Pni
+            {
+                guard firstPromotePniPendingMemberPni == pni else {
+                    owsFailDebug("Canary: PNI from change author doesn't match service ID in promote PNI pending member change action!")
+                    return (.unknown, nil)
+                }
+
+                /// While the service ID we received as the group update source
+                /// from the server was a PNI, we know (thanks to the change
+                /// action itself) the associated ACI. Since the ACI is how
+                /// we're going to address this user going forward, we'll
+                /// claim starting now that's who authored the change action.
+                return compareToLocal(
+                    source: .aci(firstPromotePniPendingMemberAci),
+                    serviceId: firstPromotePniPendingMemberAci
+                )
             } else {
-                return (.rejectedInviteToPni(pni), pni)
+                owsFailDebug("Canary: unknown type of PNI-authored group update!")
+                return (.unknown, nil)
             }
         }
     }

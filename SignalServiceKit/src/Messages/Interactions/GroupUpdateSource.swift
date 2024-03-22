@@ -14,21 +14,26 @@ public indirect enum GroupUpdateSource {
     /// cannot itself be localUser or unknown.
     case localUser(originalSource: GroupUpdateSource)
 
-    /// Legacy update (pre-gv2) with only an e164.
+    /// Legacy update (pre-GV2) with only an e164.
     case legacyE164(E164)
 
-    /// Standard case. Most updates come from an aci.
+    /// Standard case. Most updates come from an ACI.
     case aci(Aci)
 
-    /// Only case at time of writing where an update comes
-    /// from a pni; a user invited by pni rejected that invite.
+    /// A user who was invited by PNI rejected the invite.
+    ///
+    /// This case will refer to the ``GroupsProtoGroupChangeActionsDeletePendingMemberAction``,
+    /// when the pending member in question is identified by a PNI.
+    ///
+    /// This is, at the time of writing, the only case in which the best
+    /// identifier we have for the group update source is a PNI.
     case rejectedInviteToPni(Pni)
 
-    // If there are new cases where updates are authored by
-    // a pni, add them here. This is because pni authors are
-    // the SUPER rare exception to the rule, and forcing
-    // every other case to wonder "when is this a Pni?" is
-    // more onerous than explicitly typing all such cases.
+    /// If future updates introduce additional cases in which a PNI is the
+    /// best/only identifier for the group update source, add them here. These
+    /// cases are rare exceptions to the rule, so we prefer to enumerate them so
+    /// as to make it easier for callers to understand exactly when they might
+    /// be dealing with a PNI.
 }
 
 extension GroupUpdateSource {
