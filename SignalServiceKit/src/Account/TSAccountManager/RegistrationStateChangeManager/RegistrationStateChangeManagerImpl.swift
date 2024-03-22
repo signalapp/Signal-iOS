@@ -162,6 +162,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         udManager.removeSenderCertificates(tx: tx)
         versionedProfiles.clearProfileKeyCredentials(tx: tx)
         authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
+        authCredentialStore.removeAllCallLinkAuthCredentials(tx: tx)
 
         if wasPrimaryDevice {
             // Don't reset payments state at this time.
@@ -246,6 +247,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         identityManager.clearShouldSharePhoneNumberForEveryone(tx: tx)
         versionedProfiles.clearProfileKeyCredentials(tx: tx)
         authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
+        authCredentialStore.removeAllCallLinkAuthCredentials(tx: tx)
 
         storageServiceManager.setLocalIdentifiers(.init(.init(aci: aci, pni: pni, e164: e164)))
 

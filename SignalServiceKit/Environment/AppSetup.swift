@@ -141,6 +141,7 @@ public class AppSetup {
 
         let authCredentialManager = AuthCredentialManagerImpl(
             authCredentialStore: authCredentialStore,
+            callLinkPublicParams: tsConstants.callLinkPublicParams,
             dateProvider: dateProvider,
             db: db
         )

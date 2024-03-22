@@ -8,19 +8,23 @@ import LibSignalClient
 
 protocol AuthCredentialManager {
     func fetchGroupAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> AuthCredentialWithPni
+    func fetchCallLinkAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> CallLinkAuthCredential
 }
 
 class AuthCredentialManagerImpl: AuthCredentialManager {
     private let authCredentialStore: AuthCredentialStore
+    private let callLinkPublicParams: GenericServerPublicParams
     private let dateProvider: DateProvider
     private let db: any DB
 
     init(
         authCredentialStore: AuthCredentialStore,
+        callLinkPublicParams: Data,
         dateProvider: @escaping DateProvider,
         db: any DB
     ) {
         self.authCredentialStore = authCredentialStore
+        self.callLinkPublicParams = try! GenericServerPublicParams(contents: [UInt8](callLinkPublicParams))
         self.dateProvider = dateProvider
         self.db = db
     }
@@ -32,10 +36,30 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
     // MARK: -
 
     func fetchGroupAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> AuthCredentialWithPni {
+        return try await fetchAuthCredential(
+            localIdentifiers: localIdentifiers,
+            fetchCachedAuthCredential: self.authCredentialStore.groupAuthCredential(for:tx:),
+            authCredentialsKeyPath: \.groupAuthCredentials
+        )
+    }
+
+    func fetchCallLinkAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> CallLinkAuthCredential {
+        return try await fetchAuthCredential(
+            localIdentifiers: localIdentifiers,
+            fetchCachedAuthCredential: self.authCredentialStore.callLinkAuthCredential(for:tx:),
+            authCredentialsKeyPath: \.callLinkAuthCredentials
+        )
+    }
+
+    private func fetchAuthCredential<T>(
+        localIdentifiers: LocalIdentifiers,
+        fetchCachedAuthCredential: (UInt64, DBReadTransaction) throws -> T?,
+        authCredentialsKeyPath: KeyPath<ReceivedAuthCredentials, [(redemptionTime: UInt64, authCredential: T)]>
+    ) async throws -> T {
         do {
             let redemptionTime = self.startOfTodayTimestamp()
-            let authCredential = try self.db.read { (tx) throws -> AuthCredentialWithPni? in
-                return try self.authCredentialStore.groupAuthCredential(for: redemptionTime, tx: tx)
+            let authCredential = try self.db.read { (tx) throws -> T? in
+                return try fetchCachedAuthCredential(redemptionTime, tx)
             }
             if let authCredential {
                 return authCredential
@@ -48,10 +72,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
         let authCredentials = try await fetchNewAuthCredentials(localIdentifiers: localIdentifiers)
 
         await db.awaitableWrite { tx in
-            // Remove stale auth credentials.
             self.authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
-
-            // Store new auth credentials.
             for (redemptionTime, authCredential) in authCredentials.groupAuthCredentials {
                 self.authCredentialStore.setGroupAuthCredential(
                     authCredential,
@@ -59,9 +80,18 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
                     tx: tx
                 )
             }
+
+            self.authCredentialStore.removeAllCallLinkAuthCredentials(tx: tx)
+            for (redemptionTime, authCredential) in authCredentials.callLinkAuthCredentials {
+                self.authCredentialStore.setCallLinkAuthCredential(
+                    authCredential,
+                    for: redemptionTime,
+                    tx: tx
+                )
+            }
         }
 
-        guard let authCredential = authCredentials.groupAuthCredentials.first?.authCredential else {
+        guard let authCredential = authCredentials[keyPath: authCredentialsKeyPath].first?.authCredential else {
             throw OWSAssertionError("The server didn't give us any auth credentials.")
         }
 
@@ -70,6 +100,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
 
     private struct ReceivedAuthCredentials {
         var groupAuthCredentials = [(redemptionTime: UInt64, authCredential: AuthCredentialWithPni)]()
+        var callLinkAuthCredentials = [(redemptionTime: UInt64, authCredential: CallLinkAuthCredential)]()
     }
 
     private func fetchNewAuthCredentials(localIdentifiers: LocalIdentifiers) async throws -> ReceivedAuthCredentials {
@@ -100,7 +131,6 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
         let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
         var result = ReceivedAuthCredentials()
         for fetchedValue in authCredentialResponse.groupAuthCredentials {
-            // Verify the credentials.
             let receivedValue = try clientZkAuthOperations.receiveAuthCredentialWithPniAsServiceId(
                 aci: localIdentifiers.aci,
                 pni: authCredentialResponse.pni,
@@ -108,6 +138,16 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
                 authCredentialResponse: AuthCredentialWithPniResponse(contents: [UInt8](fetchedValue.credential))
             )
             result.groupAuthCredentials.append((fetchedValue.redemptionTime, receivedValue))
+        }
+        for fetchedValue in authCredentialResponse.callLinkAuthCredentials {
+            let receivedValue = try CallLinkAuthCredentialResponse(
+                contents: [UInt8](fetchedValue.credential)
+            ).receive(
+                userId: localIdentifiers.aci,
+                redemptionTime: Date(timeIntervalSince1970: TimeInterval(fetchedValue.redemptionTime)),
+                params: callLinkPublicParams
+            )
+            result.callLinkAuthCredentials.append((fetchedValue.redemptionTime, receivedValue))
         }
         return result
     }
@@ -122,10 +162,12 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
         enum CodingKeys: String, CodingKey {
             case pni
             case groupAuthCredentials = "credentials"
+            case callLinkAuthCredentials
         }
 
         @PniUuid var pni: Pni
         var groupAuthCredentials: [AuthCredential]
+        var callLinkAuthCredentials: [AuthCredential]
 
         struct AuthCredential: Decodable {
             var redemptionTime: UInt64
