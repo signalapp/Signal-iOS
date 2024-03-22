@@ -8,9 +8,7 @@ import SignalCoreKit
 
 private enum FeatureBuild: Int {
     case dev
-    case internalPreview
     case `internal`
-    case openPreview
     case beta
     case production
 }
@@ -112,12 +110,8 @@ extension FeatureFlags {
         switch build {
         case .dev:
             featureFlagString = LocalizationNotNeeded("Development")
-        case .internalPreview:
-            featureFlagString = LocalizationNotNeeded("Internal Preview")
         case .internal:
             featureFlagString = LocalizationNotNeeded("Internal")
-        case .openPreview:
-            featureFlagString = LocalizationNotNeeded("Open Preview")
         case .beta:
             featureFlagString = LocalizationNotNeeded("Beta")
         case .production:
@@ -165,7 +159,7 @@ extension FeatureFlags {
 @objc(SSKDebugFlags)
 public class DebugFlags: NSObject {
     @objc
-    public static let internalLogging = build.includes(.openPreview)
+    public static let internalLogging = build.includes(.internal)
 
     public static let betaLogging = build.includes(.beta)
 
@@ -233,7 +227,7 @@ public class DebugFlags: NSObject {
 
     public static let fastPerfTests = false
 
-    public static let extraDebugLogs = build.includes(.openPreview)
+    public static let extraDebugLogs = build.includes(.internal)
 
     @objc
     public static let paymentsIgnoreBlockTimestamps = TestableFlag(
