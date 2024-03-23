@@ -12,7 +12,7 @@ private let networkManagerQueue = DispatchQueue(
 
 class RESTNetworkManager {
     fileprivate typealias Success = (HTTPResponse) -> Void
-    fileprivate typealias Failure = (OWSHTTPErrorWrapper) -> Void
+    fileprivate typealias Failure = (OWSHTTPError) -> Void
 
     private let udSessionManagerPool = OWSSessionManagerPool()
     private let nonUdSessionManagerPool = OWSSessionManagerPool()
@@ -64,12 +64,12 @@ class RESTNetworkManager {
                 OutageDetection.shared.reportConnectionSuccess()
             }
         }
-        let failure = { (errorWrapper: OWSHTTPErrorWrapper) in
+        let failure = { (error: OWSHTTPError) in
             networkManagerQueue.async {
                 sessionManagerPool.returnToPool(sessionManager)
             }
             completionQueue.async {
-                failureParam(errorWrapper)
+                failureParam(error)
             }
         }
         sessionManager.performRequest(request, success: success, failure: failure)
@@ -82,8 +82,8 @@ class RESTNetworkManager {
                     success: { (response: HTTPResponse) in
                         future.resolve(response)
                     },
-                    failure: { (error: OWSHTTPErrorWrapper) in
-                        future.reject(error.error)
+                    failure: { (error: OWSHTTPError) in
+                        future.reject(error)
                     })
         return promise
     }
@@ -113,7 +113,7 @@ private class RESTSessionManager {
 
         guard let requestUrl = request.url else {
             owsFailDebug("Missing requestUrl.")
-            failure(OWSHTTPErrorWrapper(error: .missingRequest))
+            failure(.missingRequest)
             return
         }
 
@@ -126,28 +126,27 @@ private class RESTSessionManager {
             if let httpError = error as? OWSHTTPError {
                 HTTPUtils.applyHTTPError(httpError)
 
-                let wrappedError = OWSHTTPErrorWrapper(error: httpError)
                 if httpError.httpStatusCode == 401, request.shouldCheckDeregisteredOn401 {
                     networkManagerQueue.async {
                         self.makeIsDeregisteredRequest(
                             originalRequestFailureHandler: failure,
-                            originalRequestFailure: wrappedError
+                            originalRequestFailure: httpError
                         )
                     }
                 } else {
-                    failure(wrappedError)
+                    failure(httpError)
                 }
             } else {
                 owsFailDebug("Unexpected error: \(error)")
 
-                failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidRequest(requestUrl: requestUrl)))
+                failure(.invalidRequest(requestUrl: requestUrl))
             }
         }
     }
 
     private func makeIsDeregisteredRequest(
         originalRequestFailureHandler: @escaping RESTNetworkManager.Failure,
-        originalRequestFailure: OWSHTTPErrorWrapper
+        originalRequestFailure: OWSHTTPError
     ) {
         let isDeregisteredRequest = WhoAmIRequestFactory.amIDeregisteredRequest()
 
@@ -172,7 +171,7 @@ private class RESTSessionManager {
                 handleDeregisteredResponse(response)
                 originalRequestFailureHandler(originalRequestFailure)
             }, failure: { rawFailure in
-                let response = WhoAmIRequestFactory.Responses.AmIDeregistered(rawValue: rawFailure.error.responseStatusCode)
+                let response = WhoAmIRequestFactory.Responses.AmIDeregistered(rawValue: rawFailure.responseStatusCode)
                 handleDeregisteredResponse(response)
                 originalRequestFailureHandler(originalRequestFailure)
             }

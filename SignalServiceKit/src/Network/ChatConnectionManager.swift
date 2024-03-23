@@ -149,8 +149,8 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
                              success: { (response: HTTPResponse) in
                                 future.resolve(response)
                              },
-                             failure: { (failure: OWSHTTPErrorWrapper) in
-                                future.reject(failure.error)
+                             failure: { (failure: OWSHTTPError) in
+                                future.reject(failure)
                              })
             return promise
         }

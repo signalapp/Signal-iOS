@@ -324,7 +324,7 @@ public class OWSChatConnection: NSObject {
     // MARK: - Message Sending
 
     public typealias RequestSuccess = (HTTPResponse) -> Void
-    public typealias RequestFailure = (OWSHTTPErrorWrapper) -> Void
+    public typealias RequestFailure = (OWSHTTPError) -> Void
     fileprivate typealias RequestSuccessInternal = (HTTPResponse, RequestInfo) -> Void
 
     fileprivate func makeRequestInternal(_ request: TSRequest,
@@ -343,14 +343,14 @@ public class OWSChatConnection: NSObject {
         guard let requestUrl = request.url else {
             owsFailDebug("\(label) Missing requestUrl.")
             DispatchQueue.global().async {
-                failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: request.url!)))
+                failure(.invalidRequest(requestUrl: request.url!))
             }
             return
         }
         guard let httpMethod = request.httpMethod.nilIfEmpty else {
             owsFailDebug("\(label) Missing httpMethod.")
             DispatchQueue.global().async {
-                failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: requestUrl)))
+                failure(.invalidRequest(requestUrl: requestUrl))
             }
             return
         }
@@ -358,7 +358,7 @@ public class OWSChatConnection: NSObject {
               currentWebSocket.state == .open else {
             owsFailDebug("\(label) Missing currentWebSocket.")
             DispatchQueue.global().async {
-                failure(OWSHTTPErrorWrapper(error: .networkFailure(requestUrl: requestUrl)))
+                failure(.networkFailure(requestUrl: requestUrl))
             }
             return
         }
@@ -989,9 +989,7 @@ extension OWSChatConnection {
                 guard let requestUrl = request.url else {
                     owsFail("Missing requestUrl.")
                 }
-                let error = OWSHTTPError.invalidAppState(requestUrl: requestUrl)
-                let failure = OWSHTTPErrorWrapper(error: error)
-                failureParam(failure)
+                failureParam(.invalidAppState(requestUrl: requestUrl))
             }
             return
         }
@@ -1114,10 +1112,7 @@ private class RequestInfo {
         case .incomplete(_, let failure):
             DispatchQueue.global().async {
                 Logger.warn("\(error)")
-
-                let error = error as! OWSHTTPError
-                let socketFailure = OWSHTTPErrorWrapper(error: error)
-                failure(socketFailure)
+                failure(error as! OWSHTTPError)
             }
             return true
         }
