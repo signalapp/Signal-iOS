@@ -159,7 +159,7 @@ public class MessageFetcherJob: NSObject {
     public var hasCompletedInitialFetch: Bool {
         if Self.shouldUseWebSocket {
             let isWebsocketDrained = (
-                DependenciesBridge.shared.chatConnectionManager.connectionState(forType: .identified) == .open &&
+                DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState == .open &&
                 DependenciesBridge.shared.chatConnectionManager.hasEmptiedInitialQueue
             )
             guard isWebsocketDrained else { return false }

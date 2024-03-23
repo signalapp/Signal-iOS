@@ -17,7 +17,7 @@ enum ProxyConnectionChecker: Dependencies {
 
         // Wait to see if we can establish a websocket connection via the new proxy.
         observer = NotificationCenter.default.addObserver(forName: OWSChatConnection.chatConnectionStateDidChange, object: nil, queue: nil) { _ in
-            switch DependenciesBridge.shared.chatConnectionManager.connectionState(forType: .identified) {
+            switch DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState {
             case .closed:
                 // Ignore closed state until we start connecting, it's expected that old sockets will close
                 guard hasTransitionedToConnecting else { break }

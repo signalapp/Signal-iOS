@@ -147,7 +147,7 @@ public class PreKeyManagerImpl: PreKeyManager {
 
         Task { [weak self, chatConnectionManager, taskManager, targets] in
             let task = await Self.taskQueue.enqueue {
-                try await chatConnectionManager.waitForConnectionToOpen(type: .identified)
+                try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
                 try Task.checkCancellation()
                 try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
                 if shouldPerformPniOp {
@@ -220,7 +220,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         let shouldPerformPniOp = db.read(block: hasPniIdentityKey(tx:))
 
         return await Self.taskQueue.enqueue { [chatConnectionManager, taskManager, targets] in
-            try await chatConnectionManager.waitForConnectionToOpen(type: .identified)
+            try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
             try Task.checkCancellation()
             try await taskManager.rotate(identity: .aci, targets: targets, auth: .implicit())
             if shouldPerformPniOp {
@@ -295,7 +295,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         var retryInterval: TimeInterval = 0.5
         while db.read(block: tsAccountManager.registrationState(tx:)).isRegistered {
             do {
-                try await chatConnectionManager.waitForConnectionToOpen(type: .identified)
+                try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
                 try await _refreshOneTimePreKeys(forIdentity: identity, alsoRefreshSignedPreKey: true)
                 break
             } catch {

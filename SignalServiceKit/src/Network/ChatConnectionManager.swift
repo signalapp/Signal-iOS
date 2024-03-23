@@ -7,12 +7,9 @@ import Foundation
 import SignalCoreKit
 
 public protocol ChatConnectionManager {
-    var isAnyConnectionOpen: Bool { get }
-    func waitForConnectionToOpen(type: OWSChatConnectionType) async throws
-
+    func waitForIdentifiedConnectionToOpen() async throws
+    var identifiedConnectionState: OWSChatConnectionState { get }
     var hasEmptiedInitialQueue: Bool { get }
-
-    func connectionState(forType type: OWSChatConnectionType) -> OWSChatConnectionState
 
     func canMakeRequests(connectionType: OWSChatConnectionType) -> Bool
     func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse>
@@ -72,11 +69,11 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
                                failure: failure)
     }
 
-    public func waitForConnectionToOpen(type: OWSChatConnectionType) async throws {
+    public func waitForIdentifiedConnectionToOpen() async throws {
         let (waiterPromise, waiterFuture) = Promise<Void>.pending()
         try await withTaskCancellationHandler(
             operation: {
-                let openGuarantee = connection(ofType: type).waitForOpen()
+                let openGuarantee = connectionIdentified.waitForOpen()
                 waiterFuture.resolve(on: SyncScheduler(), with: openGuarantee)
                 try await waiterPromise.awaitable()
             },
@@ -163,12 +160,8 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         }
     }
 
-    public var isAnyConnectionOpen: Bool {
-        OWSChatConnectionType.allCases.contains { connectionState(forType: $0) == .open }
-    }
-
-    public func connectionState(forType type: OWSChatConnectionType) -> OWSChatConnectionState {
-        connection(ofType: type).currentState
+    public var identifiedConnectionState: OWSChatConnectionState {
+        connectionIdentified.currentState
     }
 
     public var hasEmptiedInitialQueue: Bool {
@@ -182,18 +175,12 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
 
     public init() {}
 
-    public var isAnyConnectionOpen: Bool = false
-
     public var hasEmptiedInitialQueue: Bool = false
 
-    public func waitForConnectionToOpen(type: OWSChatConnectionType) async throws {
+    public func waitForIdentifiedConnectionToOpen() async throws {
     }
 
-    public var socketStatesPerType = [OWSChatConnectionType: OWSChatConnectionState]()
-
-    public func connectionState(forType type: OWSChatConnectionType) -> OWSChatConnectionState {
-        return  socketStatesPerType[type] ?? .closed
-    }
+    public var identifiedConnectionState: OWSChatConnectionState = .closed
 
     public var canMakeRequestsPerType = [OWSChatConnectionType: Bool]()
 

@@ -77,10 +77,9 @@ public class _UploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
 }
 
 class _UploadManager_ChatConnectionManagerMock: ChatConnectionManager {
-    var isAnyConnectionOpen: Bool { true }
     var hasEmptiedInitialQueue: Bool { true }
-    func waitForConnectionToOpen(type: OWSChatConnectionType) async throws { }
-    func connectionState(forType type: OWSChatConnectionType) -> OWSChatConnectionState { .open }
+    var identifiedConnectionState: OWSChatConnectionState { .open }
+    func waitForIdentifiedConnectionToOpen() async throws { }
     func cycleSocket() { }
     func canMakeRequests(connectionType: OWSChatConnectionType) -> Bool { true }
     func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> { fatalError() }

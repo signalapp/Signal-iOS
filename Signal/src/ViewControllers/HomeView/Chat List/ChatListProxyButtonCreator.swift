@@ -43,7 +43,7 @@ final class ChatListProxyButtonCreator: NSObject {
             guard SignalProxy.isEnabled else {
                 return nil
             }
-            return chatConnectionManager.connectionState(forType: .identified)
+            return chatConnectionManager.identifiedConnectionState
         }()
         let didUpdate = self.proxyState != newValue
         self.proxyState = newValue

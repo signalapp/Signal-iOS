@@ -71,7 +71,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             }
         } else if
             !signalService.isCensorshipCircumventionActive,
-            DependenciesBridge.shared.chatConnectionManager.isAnyConnectionOpen
+            DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState == .open
         {
             isCensorshipCircumventionSwitchEnabled = false
             censorshipCircumventionSection.footerTitle = OWSLocalizedString(
