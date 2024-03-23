@@ -189,6 +189,8 @@ public class AttachmentManagerImpl: AttachmentManager {
 
         let attachment: Attachment = {
             // TODO: Create and insert Attachment for the provided data.
+
+            // IMPORTANT: respect dataSource.shouldCopyDataSource
             fatalError("Unimplemented")
         }()
         let attachmentReference: AttachmentReference = {

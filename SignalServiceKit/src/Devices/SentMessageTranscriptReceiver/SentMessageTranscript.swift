@@ -41,7 +41,7 @@ public enum SentMessageTranscriptType {
 
         public let giftBadge: OWSGiftBadge?
 
-        public let messageSticker: MessageSticker?
+        public let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
 
         public let isViewOnceMessage: Bool
 

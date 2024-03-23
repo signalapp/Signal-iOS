@@ -361,7 +361,11 @@ public class TSAttachmentManager {
             attachmentType: dataSource.renderingFlag.tsAttachmentType,
             albumMessageId: nil
         )
-        try attachment.writeConsumingDataSource(dataSource.dataSource)
+        if dataSource.shouldCopyDataSource {
+            try attachment.writeCopyingDataSource(dataSource.dataSource)
+        } else {
+            try attachment.writeConsumingDataSource(dataSource.dataSource)
+        }
         attachment.anyInsert(transaction: tx)
 
         return attachment.uniqueId

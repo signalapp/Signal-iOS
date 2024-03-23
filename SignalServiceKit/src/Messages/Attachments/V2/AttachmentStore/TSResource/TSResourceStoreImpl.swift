@@ -159,19 +159,20 @@ public class TSResourceStoreImpl: TSResourceStore {
     }
 
     public func stickerAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
-        if
-            FeatureFlags.readV2Attachments,
-            let messageSticker = message.messageSticker,
-            // TODO: need to make this attachment id nullable
-            messageSticker.legacyAttachmentId == nil
-        {
+        guard let messageSticker = message.messageSticker else {
+            return nil
+        }
+        if let legacyAttachmentId = messageSticker.legacyAttachmentId {
+            return legacyReference(uniqueId: legacyAttachmentId, tx: tx)
+        } else if FeatureFlags.readV2Attachments {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
                 return nil
             }
             return attachmentStore.fetchFirstReference(owner: .messageSticker(messageRowId: messageRowId), tx: tx)
+        } else {
+            return nil
         }
-        return legacyReference(uniqueId: message.messageSticker?.legacyAttachmentId, tx: tx)
     }
 
     public func indexForBodyAttachmentId(

@@ -154,18 +154,28 @@ public extension ThreadUtil {
     ) {
         AssertNotOnMainThread()
 
-        let messageSticker: MessageSticker
+        let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>
         do {
-            messageSticker = try MessageSticker.buildValidatedMessageSticker(fromDraft: stickerDraft, transaction: tx)
+            messageStickerBuilder = try MessageSticker.buildValidatedMessageSticker(fromDraft: stickerDraft, transaction: tx)
         } catch {
             return owsFailDebug("Couldn't send sticker: \(error)")
         }
 
         message.anyInsert(transaction: tx)
-        message.update(with: messageSticker, transaction: tx)
+        message.update(with: messageStickerBuilder.info, transaction: tx)
+
+        do {
+            try messageStickerBuilder.finalize(
+                owner: .messageSticker(messageRowId: message.sqliteRowId!),
+                tx: tx.asV2Write
+            )
+        } catch {
+            message.anyRemove(transaction: tx)
+            return owsFailDebug("Couldn't finalize sticker!")
+        }
 
         SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
-        StickerManager.stickerWasSent(messageSticker.info, transaction: tx)
+        StickerManager.stickerWasSent(messageStickerBuilder.info.info, transaction: tx)
 
         thread.donateSendMessageIntent(for: message, transaction: tx)
     }

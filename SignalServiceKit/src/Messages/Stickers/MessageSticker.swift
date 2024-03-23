@@ -127,9 +127,10 @@ public class MessageSticker: MTLModel {
         return error == .noSticker
     }
 
-    @objc
-    public class func buildValidatedMessageSticker(dataMessage: SSKProtoDataMessage,
-                                                   transaction: SDSAnyWriteTransaction) throws -> MessageSticker {
+    public class func buildValidatedMessageSticker(
+        dataMessage: SSKProtoDataMessage,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<MessageSticker> {
         guard let stickerProto: SSKProtoDataMessageSticker = dataMessage.sticker else {
             throw StickerError.noSticker
         }
@@ -141,21 +142,30 @@ public class MessageSticker: MTLModel {
         let dataProto: SSKProtoAttachmentPointer = stickerProto.data
         let stickerInfo = StickerInfo(packId: packID, packKey: packKey, stickerId: stickerID)
 
-        let attachment = try saveAttachment(dataProto: dataProto,
-                                            stickerInfo: stickerInfo,
-                                            transaction: transaction)
-        let attachmentId = attachment.uniqueId
+        let attachmentBuilder = try saveAttachment(
+            dataProto: dataProto,
+            stickerInfo: stickerInfo,
+            transaction: transaction
+        )
 
-        let messageSticker = MessageSticker.withLegacyAttachment(info: stickerInfo, legacyAttachmentId: attachmentId, emoji: emoji)
+        let messageSticker: MessageSticker
+        switch attachmentBuilder.info {
+        case .legacy(let uniqueId):
+            messageSticker = .withLegacyAttachment(info: stickerInfo, legacyAttachmentId: uniqueId, emoji: emoji)
+        case .v2:
+            messageSticker = .withForeignReferenceAttachment(info: stickerInfo, emoji: emoji)
+        }
         guard messageSticker.isValid else {
             throw StickerError.invalidInput
         }
-        return messageSticker
+        return attachmentBuilder.wrap { _ in messageSticker }
     }
 
-    private class func saveAttachment(dataProto: SSKProtoAttachmentPointer,
-                                      stickerInfo: StickerInfo,
-                                      transaction: SDSAnyWriteTransaction) throws -> TSAttachment {
+    private class func saveAttachment(
+        dataProto: SSKProtoAttachmentPointer,
+        stickerInfo: StickerInfo,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
 
         // As an optimization, if the sticker is already installed,
         // try to derive an TSAttachmentStream using that.
@@ -165,19 +175,29 @@ public class MessageSticker: MTLModel {
             return attachment
         }
 
-        guard let attachmentPointer = TSAttachmentPointer(fromProto: dataProto, albumMessage: nil) else {
+        do {
+            let proto: SSKProtoAttachmentPointer
+            if dataProto.contentType == OWSMimeTypeApplicationOctetStream {
+                let builder = dataProto.asBuilder()
+                builder.setContentType(OWSMimeTypeImageWebp)
+                proto = builder.buildInfallibly()
+            } else {
+                proto = dataProto
+            }
+            return try DependenciesBridge.shared.tsResourceManager.createAttachmentPointerBuilder(
+                from: proto,
+                tx: transaction.asV2Write
+            )
+        } catch {
             throw StickerError.invalidInput
         }
-
-        attachmentPointer.setDefaultContentType(OWSMimeTypeImageWebp)
-
-        attachmentPointer.anyInsert(transaction: transaction)
-        return attachmentPointer
     }
 
-    private class func attachmentForInstalledSticker(dataProto: SSKProtoAttachmentPointer,
-                                                     stickerInfo: StickerInfo,
-                                                     transaction: SDSAnyWriteTransaction) -> TSAttachmentStream? {
+    private class func attachmentForInstalledSticker(
+        dataProto: SSKProtoAttachmentPointer,
+        stickerInfo: StickerInfo,
+        transaction: SDSAnyWriteTransaction
+    ) -> OwnedAttachmentBuilder<TSResourceRetrievalInfo>? {
         guard let installedSticker = StickerManager.fetchInstalledSticker(stickerInfo: stickerInfo,
                                                                           transaction: transaction) else {
             // Sticker is not installed.
@@ -194,79 +214,93 @@ public class MessageSticker: MTLModel {
         }
         do {
             let dataSource = try DataSourcePath.dataSource(with: stickerDataUrl, shouldDeleteOnDeallocation: false)
-            let contentType: String
+            let mimeType: String
             let imageMetadata = NSData.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
             if imageMetadata.imageFormat != .unknown,
                let mimeTypeFromMetadata = imageMetadata.mimeType {
-                contentType = mimeTypeFromMetadata
-            } else if let dataContentType = dataProto.contentType,
-                !dataContentType.isEmpty {
-                contentType = dataContentType
+                mimeType = mimeTypeFromMetadata
+            } else if let dataMimeType = dataProto.contentType, !dataMimeType.isEmpty {
+                mimeType = dataMimeType
             } else {
-                contentType = OWSMimeTypeImageWebp
+                mimeType = OWSMimeTypeImageWebp
             }
-            let attachment = TSAttachmentStream(
-                contentType: contentType,
-                byteCount: fileSize.uint32Value,
-                sourceFilename: nil,
+
+            let attachmentDataSource = AttachmentDataSource(
+                mimeType: mimeType,
                 caption: nil,
-                attachmentType: .default,
-                albumMessageId: nil
+                renderingFlag: .default,
+                dataSource: dataSource,
+                shouldCopyDataSource: true
             )
-            try attachment.writeCopyingDataSource(dataSource)
-            attachment.anyInsert(transaction: transaction)
-            return attachment
+
+            return try DependenciesBridge.shared.tsResourceManager.createAttachmentStreamBuilder(
+                from: attachmentDataSource,
+                tx: transaction.asV2Write
+            )
         } catch {
             owsFailDebug("Could not write data source for path: \(stickerDataUrl.path), error: \(error)")
             return nil
         }
     }
 
-    @objc
-    public class func buildValidatedMessageSticker(fromDraft draft: MessageStickerDraft,
-                                                   transaction: SDSAnyWriteTransaction) throws -> MessageSticker {
-        let attachmentId = try MessageSticker.saveAttachment(stickerData: draft.stickerData,
-                                                             stickerType: draft.stickerType,
-                                                             transaction: transaction)
+    public class func buildValidatedMessageSticker(
+        fromDraft draft: MessageStickerDraft,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<MessageSticker> {
+        let attachmentBuilder = try MessageSticker.saveAttachment(
+            stickerData: draft.stickerData,
+            stickerType: draft.stickerType,
+            transaction: transaction
+        )
 
-        let messageSticker = MessageSticker.withLegacyAttachment(info: draft.info, legacyAttachmentId: attachmentId, emoji: draft.emoji)
-        guard messageSticker.isValid else {
-            throw StickerError.assertionFailure
+        let messageSticker: MessageSticker
+        switch attachmentBuilder.info {
+        case .legacy(let uniqueId):
+            messageSticker = .withLegacyAttachment(info: draft.info, legacyAttachmentId: uniqueId, emoji: draft.emoji)
+        case .v2:
+            messageSticker = .withForeignReferenceAttachment(info: draft.info, emoji: draft.emoji)
         }
-        return messageSticker
+        guard messageSticker.isValid else {
+            throw StickerError.invalidInput
+        }
+        return attachmentBuilder.wrap { _ in messageSticker }
     }
 
-    private class func saveAttachment(stickerData: Data,
-                                      stickerType: StickerType,
-                                      transaction: SDSAnyWriteTransaction) throws -> String {
+    private class func saveAttachment(
+        stickerData: Data,
+        stickerType: StickerType,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         let fileSize = stickerData.count
         guard fileSize > 0 else {
             owsFailDebug("Invalid file size for data.")
             throw StickerError.assertionFailure
         }
         let fileExtension = stickerType.fileExtension
-        var contentType = stickerType.contentType
+        var mimeType = stickerType.contentType
         let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
         try stickerData.write(to: fileUrl)
 
         let imageMetadata = NSData.imageMetadata(withPath: fileUrl.path, mimeType: nil)
         if imageMetadata.imageFormat != .unknown,
            let mimeTypeFromMetadata = imageMetadata.mimeType {
-            contentType = mimeTypeFromMetadata
+            mimeType = mimeTypeFromMetadata
         }
 
         let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
-        let attachment = TSAttachmentStream(
-            contentType: contentType,
-            byteCount: UInt32(fileSize),
-            sourceFilename: nil,
-            caption: nil,
-            attachmentType: .default,
-            albumMessageId: nil
-        )
-        try attachment.writeConsumingDataSource(dataSource)
 
-        attachment.anyInsert(transaction: transaction)
-        return attachment.uniqueId
+        let attachmentDataSource = AttachmentDataSource(
+            mimeType: mimeType,
+            caption: nil,
+            renderingFlag: .default,
+            dataSource: dataSource,
+            // this data source should be consumed.
+            shouldCopyDataSource: false
+        )
+
+        return try DependenciesBridge.shared.tsResourceManager.createAttachmentStreamBuilder(
+            from: attachmentDataSource,
+            tx: transaction.asV2Write
+        )
     }
 }

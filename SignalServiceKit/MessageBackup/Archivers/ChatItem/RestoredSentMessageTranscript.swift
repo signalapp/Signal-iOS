@@ -63,7 +63,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             // TODO: gift badge message
             giftBadge: nil,
             // TODO: sticker message
-            messageSticker: nil,
+            messageStickerBuilder: nil,
             // TODO: isViewOnceMessage
             isViewOnceMessage: false,
             expirationStartedAt: chatItem.expireStartDate,

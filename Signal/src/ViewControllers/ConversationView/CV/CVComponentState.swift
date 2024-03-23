@@ -1074,11 +1074,10 @@ fileprivate extension CVComponentState.Builder {
     mutating func buildSticker(message: TSMessage, messageSticker: MessageSticker) throws -> CVComponentState {
 
         guard
-            let attachmentId = messageSticker.legacyAttachmentId,
-            let attachment = TSAttachment.anyFetch(
-                uniqueId: attachmentId,
-                transaction: transaction
-            )
+            let attachment = DependenciesBridge.shared.tsResourceStore.stickerAttachment(
+                for: message,
+                tx: transaction.asV2Read
+            )?.fetch(tx: transaction)?.bridge
         else {
             throw OWSAssertionError("Missing sticker attachment.")
         }

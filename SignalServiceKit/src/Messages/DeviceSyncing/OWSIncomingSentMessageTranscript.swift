@@ -253,9 +253,9 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             return nil
         }
 
-        let messageSticker: MessageSticker?
+        let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
         do {
-            messageSticker = try MessageSticker.buildValidatedMessageSticker(
+            messageStickerBuilder = try MessageSticker.buildValidatedMessageSticker(
                 dataMessage: dataMessage,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
@@ -263,7 +263,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             if !MessageSticker.isNoStickerError(error) {
                 owsFailDebug("stickerError: \(error)")
             }
-            messageSticker = nil
+            messageStickerBuilder = nil
         }
 
         let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.quotedMessage(
@@ -300,7 +300,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             contact: contact,
             linkPreviewBuilder: linkPreviewBuilder,
             giftBadge: giftBadge,
-            messageSticker: messageSticker,
+            messageStickerBuilder: messageStickerBuilder,
             isViewOnceMessage: isViewOnceMessage,
             expirationStartedAt: sentProto.expirationStartTimestamp,
             expirationDuration: dataMessage.expireTimer,

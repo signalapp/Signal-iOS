@@ -160,7 +160,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             quotedMessage: messageParams.quotedMessageBuilder?.info,
             contactShare: messageParams.contact,
             linkPreview: messageParams.linkPreviewBuilder?.info,
-            messageSticker: messageParams.messageSticker,
+            messageSticker: messageParams.messageStickerBuilder?.info,
             isViewOnceMessage: messageParams.isViewOnceMessage,
             changeActionsProtoData: nil,
             additionalRecipients: nil,
@@ -222,6 +222,11 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
             try? messageParams.linkPreviewBuilder?.finalize(
                 owner: .messageLinkPreview(messageRowId: outgoingMessage.sqliteRowId!),
+                tx: tx
+            )
+
+            try? messageParams.messageStickerBuilder?.finalize(
+                owner: .messageSticker(messageRowId: outgoingMessage.sqliteRowId!),
                 tx: tx
             )
         }

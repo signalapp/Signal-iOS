@@ -217,9 +217,12 @@ public class TSResourceManagerImpl: TSResourceManager {
             }
         }
 
-        if types.contains(.sticker), let messageSticker = message.messageSticker, let legacyAttachmentId = messageSticker.legacyAttachmentId {
-            // TODO: differentiate legacy and v2
-            tsAttachmentManager.removeAttachment(attachmentId: legacyAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
+        if types.contains(.sticker), let messageSticker = message.messageSticker {
+            if let legacyAttachmentId = messageSticker.legacyAttachmentId {
+                tsAttachmentManager.removeAttachment(attachmentId: legacyAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
+            } else {
+                v2Owners.append(.messageSticker)
+            }
         }
 
         if

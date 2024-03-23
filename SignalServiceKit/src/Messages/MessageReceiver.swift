@@ -968,9 +968,9 @@ public final class MessageReceiver: Dependencies {
             }
         }
 
-        var messageSticker: MessageSticker?
+        var messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
         do {
-            messageSticker = try MessageSticker.buildValidatedMessageSticker(dataMessage: dataMessage, transaction: tx)
+            messageStickerBuilder = try MessageSticker.buildValidatedMessageSticker(dataMessage: dataMessage, transaction: tx)
         } catch StickerError.noSticker {
             // this is fine
         } catch {
@@ -1030,7 +1030,7 @@ public final class MessageReceiver: Dependencies {
             quotedMessage: quotedMessageBuilder?.info,
             contactShare: contact,
             linkPreview: linkPreviewBuilder?.info,
-            messageSticker: messageSticker,
+            messageSticker: messageStickerBuilder?.info,
             serverTimestamp: envelope.serverTimestamp,
             serverDeliveryTimestamp: request.serverDeliveryTimestamp,
             serverGuid: serverGuid?.uuidString.lowercased(),
@@ -1091,6 +1091,10 @@ public final class MessageReceiver: Dependencies {
             )
             try linkPreviewBuilder?.finalize(
                 owner: .messageLinkPreview(messageRowId: message.sqliteRowId!),
+                tx: tx.asV2Write
+            )
+            try messageStickerBuilder?.finalize(
+                owner: .messageSticker(messageRowId: message.sqliteRowId!),
                 tx: tx.asV2Write
             )
         } catch {
