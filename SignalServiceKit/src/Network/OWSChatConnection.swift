@@ -462,12 +462,6 @@ public class OWSChatConnection: NSObject {
 
         ensureBackgroundKeepAlive(.receiveResponse)
 
-        // The websocket is only used to connect to the main signal
-        // service, so we need to check for remote deprecation.
-        if responseStatus == AppExpiryImpl.appExpiredStatusCode {
-            appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
-        }
-
         let headers = OWSHttpHeaders()
         headers.addHeaderList(message.headers, overwriteOnConflict: true)
 
@@ -1032,13 +1026,7 @@ extension OWSChatConnection {
 
                 Self.outageDetection.reportConnectionSuccess()
             },
-            failure: { (failure: OWSHTTPErrorWrapper) in
-                if failure.error.responseStatusCode == AppExpiryImpl.appExpiredStatusCode {
-                    self.appExpiry.setHasAppExpiredAtCurrentVersion(db: self.db)
-                }
-
-                failureParam(failure)
-            })
+            failure: failureParam)
     }
 }
 
