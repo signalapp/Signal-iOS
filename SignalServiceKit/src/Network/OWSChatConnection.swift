@@ -469,20 +469,7 @@ public class OWSChatConnection: NSObject {
             Logger.warn("Received response to unknown request \(currentWebSocket.logPrefix)")
             return
         }
-        let hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299
-        if hasSuccessStatus {
-            requestInfo.didSucceed(
-                status: Int(responseStatus),
-                headers: headers,
-                bodyData: responseData
-            )
-        } else {
-            requestInfo.didFail(
-                responseStatus: Int(responseStatus),
-                responseHeaders: headers,
-                responseData: responseData
-            )
-        }
+        requestInfo.complete(status: Int(responseStatus), headers: headers, data: responseData)
 
         // We may have been holding the websocket open, waiting for this response.
         // Check if we should close the websocket.
@@ -1059,14 +1046,14 @@ private class RequestInfo {
 
     private let backgroundTask: OWSBackgroundTask
 
-    public typealias RequestSuccess = OWSChatConnection.RequestSuccessInternal
-    public typealias RequestFailure = OWSChatConnection.RequestFailure
+    typealias RequestSuccess = OWSChatConnection.RequestSuccessInternal
+    typealias RequestFailure = OWSChatConnection.RequestFailure
 
-    public required init(request: TSRequest,
-                         requestUrl: URL,
-                         connectionType: OWSChatConnectionType,
-                         success: @escaping RequestSuccess,
-                         failure: @escaping RequestFailure) {
+    init(request: TSRequest,
+         requestUrl: URL,
+         connectionType: OWSChatConnectionType,
+         success: @escaping RequestSuccess,
+         failure: @escaping RequestFailure) {
         self.request = request
         self.requestUrl = requestUrl
         self.connectionType = connectionType
@@ -1074,17 +1061,26 @@ private class RequestInfo {
         self.backgroundTask = OWSBackgroundTask(label: "ChatRequestInfo")
     }
 
-    public func didSucceed(status: Int,
-                           headers: OWSHttpHeaders,
-                           bodyData: Data?) {
-        let response = HTTPResponseImpl(requestUrl: requestUrl,
-                                        status: status,
-                                        headers: headers,
-                                        bodyData: bodyData)
-        didSucceed(response: response)
+    func complete(status: Int, headers: OWSHttpHeaders, data: Data?) {
+        if (200...299).contains(status) {
+            let response = HTTPResponseImpl(requestUrl: requestUrl,
+                                            status: status,
+                                            headers: headers,
+                                            bodyData: data)
+            didSucceed(response: response)
+        } else {
+            let error = HTTPUtils.preprocessMainServiceHTTPError(
+                request: request,
+                requestUrl: requestUrl,
+                responseStatus: status,
+                responseHeaders: headers,
+                responseData: data
+            )
+            didFail(error: error)
+        }
     }
 
-    public func didSucceed(response: HTTPResponse) {
+    private func didSucceed(response: HTTPResponse) {
         // Ensure that we only complete once.
         switch status.swap(.complete) {
         case .complete:
@@ -1097,31 +1093,16 @@ private class RequestInfo {
     }
 
     // Returns true if the message timed out.
-    public func timeoutIfNecessary() -> Bool {
+    func timeoutIfNecessary() -> Bool {
         return didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
-    public func didFailInvalidRequest() {
+    func didFailInvalidRequest() {
         didFail(error: OWSHTTPError.invalidRequest(requestUrl: requestUrl))
     }
 
-    public func didFailDueToNetwork() {
+    func didFailDueToNetwork() {
         didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
-    }
-
-    public func didFail(
-        responseStatus: Int,
-        responseHeaders: OWSHttpHeaders,
-        responseData: Data?
-    ) {
-        let error = HTTPUtils.preprocessMainServiceHTTPError(
-            request: request,
-            requestUrl: requestUrl,
-            responseStatus: responseStatus,
-            responseHeaders: responseHeaders,
-            responseData: responseData
-        )
-        didFail(error: error)
     }
 
     @discardableResult
