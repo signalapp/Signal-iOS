@@ -5823,7 +5823,6 @@
 		34386A4C207D0C01009F5D9C /* HomeView */ = {
 			isa = PBXGroup;
 			children = (
-				B93955E12B06D46400F35940 /* Calls */,
 				8852572A27DD3A590032073C /* Chat List */,
 				8852572727DD365D0032073C /* Stories */,
 				880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */,
@@ -6485,7 +6484,6 @@
 				881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */,
 				881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */,
 				88DF81A028E1538000F8BA80 /* ProxyLinkSheetViewController.swift */,
-				342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */,
 				C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */,
 				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
 				3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */,
@@ -7946,7 +7944,6 @@
 			children = (
 				F94D12FD28BD0DD900B2C478 /* Accessibility */,
 				50EF8DC82A1885B100A00935 /* Badge */,
-				88D23D1323CEC0C700B0E74B /* Calls */,
 				76EB041118170B33006006FC /* environment */,
 				5045F44129E0DAA400058E5F /* Launch */,
 				457F3AC01D14A0F700C51351 /* Models */,
@@ -8056,16 +8053,6 @@
 				88238EBB24F21EE400F28079 /* EmojiSkinTonePicker.swift */,
 			);
 			path = "Emoji Picker";
-			sourceTree = "<group>";
-		};
-		8814D9642564A32500A472E3 /* Group */ = {
-			isa = PBXGroup;
-			children = (
-				32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */,
-				D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */,
-				8814D9652564A33E00A472E3 /* GroupCallRemoteVideoManager.swift */,
-			);
-			path = Group;
 			sourceTree = "<group>";
 		};
 		8835DDFB230CEE7600DC6B66 /* RecipientPicker */ = {
@@ -8189,40 +8176,6 @@
 				88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */,
 			);
 			path = "Reactions Details";
-			sourceTree = "<group>";
-		};
-		88588D19252D3DE900405414 /* Group */ = {
-			isa = PBXGroup;
-			children = (
-				32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */,
-				88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */,
-				E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */,
-				88D6E93B254CE317003142D9 /* GroupCallNotificationView.swift */,
-				328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */,
-				88CB462125843758001900F2 /* GroupCallTooltip.swift */,
-				88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */,
-				88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */,
-				88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */,
-				88588D17252D312800405414 /* GroupCallViewController.swift */,
-			);
-			path = Group;
-			sourceTree = "<group>";
-		};
-		88588D24252E593500405414 /* Individual */ = {
-			isa = PBXGroup;
-			children = (
-				88D23D0D23CEBF6000B0E74B /* IndividualCall.swift */,
-				88D23D1423CEC0C700B0E74B /* IndividualCallService.swift */,
-			);
-			path = Individual;
-			sourceTree = "<group>";
-		};
-		88588D27252E5A1F00405414 /* Individual */ = {
-			isa = PBXGroup;
-			children = (
-				34B3F83B1E8DF1700035BE1A /* IndividualCallViewController.swift */,
-			);
-			path = Individual;
 			sourceTree = "<group>";
 		};
 		8864072F27F21AA7009916B6 /* Group Reply Sheet */ = {
@@ -8523,17 +8476,25 @@
 		88D23D1323CEC0C700B0E74B /* Calls */ = {
 			isa = PBXGroup;
 			children = (
-				8814D9642564A32500A472E3 /* Group */,
-				88588D24252E593500405414 /* Individual */,
-				88D23D1D23CEC0C700B0E74B /* Signaling */,
 				88D23D1723CEC0C700B0E74B /* UserInterface */,
 				17ACF11D267D71E0009BE867 /* AudioSession+WebRTC.swift */,
 				88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */,
 				88D23D2B23CEC17400B0E74B /* CallAudioService.swift */,
+				88D23D1A23CEC0C700B0E74B /* CallKitCallManager.swift */,
 				50552C2D2BAC066A00815474 /* CallLink.swift */,
+				D93108082B337A23006A034E /* CallRecordLoader.swift */,
 				88588D25252E59CE00405414 /* CallService.swift */,
 				B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */,
+				32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */,
+				D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */,
+				8814D9652564A33E00A472E3 /* GroupCallRemoteVideoManager.swift */,
+				D9E7C8782B9B9072005BD3B9 /* IdentifierIndexedArray.swift */,
+				88D23D0D23CEBF6000B0E74B /* IndividualCall.swift */,
+				88D23D1423CEC0C700B0E74B /* IndividualCallService.swift */,
+				D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */,
 				8841584B252F9F1C0078903D /* SignalCall.swift */,
+				88D23D1F23CEC0C700B0E74B /* TurnServerInfo.swift */,
+				88D23D1E23CEC0C700B0E74B /* WebRTCCallMessageHandler.swift */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -8541,44 +8502,40 @@
 		88D23D1723CEC0C700B0E74B /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
-				88D23D1923CEC0C700B0E74B /* CallKit */,
-				88588D19252D3DE900405414 /* Group */,
-				88588D27252E5A1F00405414 /* Individual */,
 				88238EA324E9DDE900F28079 /* CallButton.swift */,
 				88588D1A252D3DFF00405414 /* CallControls.swift */,
 				E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */,
 				88ABB8B42534070400229EAA /* CallHeader.swift */,
+				88D23D1B23CEC0C700B0E74B /* CallKitCallUIAdaptee.swift */,
 				E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */,
 				E1E78CAC2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift */,
 				E1E78CB32B575C2700B6FC2D /* CallMemberVideoView.swift */,
 				88588D1C252D5D3D00405414 /* CallMemberView.swift */,
 				E1E78CB02B573C3100B6FC2D /* CallMemberWaitingAndErrorView.swift */,
+				D9C5442C2B865B060036F274 /* CallsListViewController+Strings.swift */,
+				D9F122532B7EDF4C0008164A /* CallsListViewController+ViewModelLoader.swift */,
+				B93955E22B06D47000F35940 /* CallsListViewController.swift */,
 				88D23D1C23CEC0C700B0E74B /* CallUIAdapter.swift */,
 				E1DB073C2BA4FEDD00181E4C /* FlipCameraTooltip.swift */,
+				32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */,
+				88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */,
+				E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */,
+				88D6E93B254CE317003142D9 /* GroupCallNotificationView.swift */,
+				328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */,
+				88CB462125843758001900F2 /* GroupCallTooltip.swift */,
+				88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */,
+				88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */,
+				88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */,
+				88588D17252D312800405414 /* GroupCallViewController.swift */,
 				1700E33E28B856FB0073D949 /* IncomingCallControls.swift */,
+				34B3F83B1E8DF1700035BE1A /* IndividualCallViewController.swift */,
 				88238EA124E9DDB700F28079 /* LocalVideoView.swift */,
+				B935268F2B0E63C300421E6A /* NewCallViewController.swift */,
 				88D23D1823CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift */,
 				766CE0D52A323DFE00AD609D /* RemoteVideoView.swift */,
+				342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */,
 			);
 			path = UserInterface;
-			sourceTree = "<group>";
-		};
-		88D23D1923CEC0C700B0E74B /* CallKit */ = {
-			isa = PBXGroup;
-			children = (
-				88D23D1A23CEC0C700B0E74B /* CallKitCallManager.swift */,
-				88D23D1B23CEC0C700B0E74B /* CallKitCallUIAdaptee.swift */,
-			);
-			path = CallKit;
-			sourceTree = "<group>";
-		};
-		88D23D1D23CEC0C700B0E74B /* Signaling */ = {
-			isa = PBXGroup;
-			children = (
-				88D23D1F23CEC0C700B0E74B /* TurnServerInfo.swift */,
-				88D23D1E23CEC0C700B0E74B /* WebRTCCallMessageHandler.swift */,
-			);
-			path = Signaling;
 			sourceTree = "<group>";
 		};
 		88DF819328E112F600F8BA80 /* Signal Proxy */ = {
@@ -8686,20 +8643,6 @@
 				1466AB262817F7E7003B3D9F /* PluralAware.stringsdict */,
 			);
 			name = Translations;
-			sourceTree = "<group>";
-		};
-		B93955E12B06D46400F35940 /* Calls */ = {
-			isa = PBXGroup;
-			children = (
-				D93108082B337A23006A034E /* CallRecordLoader.swift */,
-				D9C5442C2B865B060036F274 /* CallsListViewController+Strings.swift */,
-				D9F122532B7EDF4C0008164A /* CallsListViewController+ViewModelLoader.swift */,
-				B93955E22B06D47000F35940 /* CallsListViewController.swift */,
-				D9E7C8782B9B9072005BD3B9 /* IdentifierIndexedArray.swift */,
-				D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */,
-				B935268F2B0E63C300421E6A /* NewCallViewController.swift */,
-			);
-			path = Calls;
 			sourceTree = "<group>";
 		};
 		B99B155B2A71B9F300E26DAC /* Stories */ = {
@@ -8862,6 +8805,7 @@
 		D221A093169C9E5E00537ABF /* Signal */ = {
 			isa = PBXGroup;
 			children = (
+				88D23D1323CEC0C700B0E74B /* Calls */,
 				50B6BCAF2AEC4F3B0010FB3B /* Contacts */,
 				88BFD4712335C2A4001797D7 /* Lottie */,
 				5011D9712A0471E8000FE8E5 /* OrphanData */,
