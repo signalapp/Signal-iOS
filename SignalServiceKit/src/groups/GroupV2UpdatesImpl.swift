@@ -789,7 +789,7 @@ private extension GroupV2UpdatesImpl {
     ) -> (TSGroupThread, addedToNewThreadBy: GroupUpdateSource?)? {
 
         if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            return (groupThread, addedToNewThreadBy: .unknown)
+            return (groupThread, addedToNewThreadBy: nil)
         }
 
         do {
