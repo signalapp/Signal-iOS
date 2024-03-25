@@ -31,6 +31,36 @@ public class TSAttachmentManager {
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction
     ) throws {
+        try _createBodyAttachmentStreams(
+            consuming: dataSources,
+            message: message,
+            albumMessageId: message.uniqueId,
+            tx: tx
+        )
+    }
+
+    public func createContactSyncAttachmentStreams(
+        consuming dataSources: [AttachmentDataSource],
+        message: TSOutgoingMessage,
+        tx: SDSAnyWriteTransaction
+    ) throws {
+        try _createBodyAttachmentStreams(
+            consuming: dataSources,
+            message: message,
+            // This attachment is "unowned" in the database
+            // and the message is ephemeral for sending only,
+            // so we don't include the owning message id.
+            albumMessageId: nil,
+            tx: tx
+        )
+    }
+
+    private func _createBodyAttachmentStreams(
+        consuming dataSources: [AttachmentDataSource],
+        message: TSOutgoingMessage,
+        albumMessageId: String?,
+        tx: SDSAnyWriteTransaction
+    ) throws {
         let attachmentStreams = try dataSources.map { dataSource in
             let attachmentStream = TSAttachmentStream(
                 contentType: dataSource.mimeType,
@@ -38,7 +68,7 @@ public class TSAttachmentManager {
                 sourceFilename: dataSource.sourceFilename,
                 caption: dataSource.caption,
                 attachmentType: dataSource.renderingFlag.tsAttachmentType,
-                albumMessageId: message.uniqueId
+                albumMessageId: albumMessageId
             )
 
             try attachmentStream.writeConsumingDataSource(dataSource.dataSource)

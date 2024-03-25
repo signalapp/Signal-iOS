@@ -84,11 +84,21 @@ public class OutgoingMessagePreparer: NSObject {
             // cannot be sent along with stickers.
             owsAssertDebug(unpreparedMessage.messageSticker == nil)
 
-            try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentStreams(
-                consuming: unsavedAttachmentInfos.map { $0.asAttachmentDataSource() },
-                message: unpreparedMessage,
-                tx: transaction.asV2Write
-            )
+            let dataSources = unsavedAttachmentInfos.map { $0.asAttachmentDataSource() }
+            if message is OWSSyncContactsMessage {
+                owsAssertDebug(dataSources.count == 1, "Contact syncs should have just one attachment!")
+                try TSAttachmentManager().createContactSyncAttachmentStreams(
+                    consuming: dataSources,
+                    message: message,
+                    tx: transaction
+                )
+            } else {
+                try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentStreams(
+                    consuming: unsavedAttachmentInfos.map { $0.asAttachmentDataSource() },
+                    message: unpreparedMessage,
+                    tx: transaction.asV2Write
+                )
+            }
         }
 
         self.savedAttachmentIds = Self.prepareAttachments(message: unpreparedMessage, tx: transaction)
