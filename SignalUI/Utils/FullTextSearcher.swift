@@ -438,7 +438,7 @@ public class FullTextSearcher: NSObject {
         }
 
         func fetchMentionedMessages(for address: SignalServiceAddress) -> [TSMessage] {
-            guard let aci = address.aci else { return [] }
+            guard let aci = address.serviceId as? Aci else { return [] }
             return MentionFinder.messagesMentioning(aci: aci, tx: transaction)
         }
 
