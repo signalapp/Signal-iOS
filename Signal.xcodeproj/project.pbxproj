@@ -5680,37 +5680,6 @@
 			path = Signal/AudioFiles/messageReceivedSounds;
 			sourceTree = SOURCE_ROOT;
 		};
-		340FC875204DAC8C007AEB0F /* Registration */ = {
-			isa = PBXGroup;
-			children = (
-				4C3A2BC5235661AB004B3986 /* Provisioning */,
-				66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */,
-				F9480120299E89F8005442BE /* RegistrationCaptchaViewController.swift */,
-				66AAC2C329CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift */,
-				66AAC2C729CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift */,
-				66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */,
-				6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */,
-				F92E4C73299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift */,
-				F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */,
-				F905DFEA29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift */,
-				F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */,
-				F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */,
-				66AAC2C929CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift */,
-				F9D47A4729D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift */,
-				F9E3006029A02D8800DCA219 /* RegistrationPinViewController.swift */,
-				F9EECB00299EC9D8005FDD52 /* RegistrationProfileViewController.swift */,
-				F9440E7129C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift */,
-				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
-				F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */,
-				66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */,
-				66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */,
-				F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */,
-				F9E3006B299D76C3000323F8 /* RegistrationVerificationViewController.swift */,
-				F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */,
-			);
-			path = Registration;
-			sourceTree = "<group>";
-		};
 		340FC87A204DAC8C007AEB0F /* AppSettings */ = {
 			isa = PBXGroup;
 			children = (
@@ -5773,6 +5742,11 @@
 				3428577526BD8777005A2A96 /* Emoji+Name.swift */,
 				3428577226BD8777005A2A96 /* Emoji+SkinTones.swift */,
 				3428577426BD8777005A2A96 /* Emoji.swift */,
+				880D902B2480889B003D2B14 /* EmojiPickerCollectionView.swift */,
+				880D902D2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift */,
+				880D90292480887F003D2B14 /* EmojiPickerSheet.swift */,
+				F090C81F2762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift */,
+				88238EBB24F21EE400F28079 /* EmojiSkinTonePicker.swift */,
 				3428577126BD8777005A2A96 /* EmojiWithSkinTones+String.swift */,
 				3428577326BD8777005A2A96 /* EmojiWithSkinTones.swift */,
 			);
@@ -5846,10 +5820,14 @@
 		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
-				34D1F0951F867BFC0066283D /* Cells */,
-				347C3818252CE69400F3D941 /* CV */,
-				880D902824808830003D2B14 /* Emoji Picker */,
-				8855DF85238F1DEE0066D96F /* Reactions Details */,
+				34D1F0951F867BFC0066283D /* CellViews */,
+				347C3839252CE6C900F3D941 /* Components */,
+				50E7E1CF2BACC1A500A94861 /* DynamicInteractions */,
+				50E7E1D02BACC21900A94861 /* Loading */,
+				50E7E1D12BACC3DB00A94861 /* Reactions */,
+				503AECCB29B2B80800642F66 /* VoiceMessage */,
+				88594E592335B08000390B19 /* AudioMessagePresenter.swift */,
+				45A1684C2A1C308800C2432D /* AudioPresentation.swift */,
 				3491899A269CD68D008A18AF /* BlockingAnnouncementOnlyView.swift */,
 				347DE5BB2548967900C32CDC /* BlockingLegacyGroupView.swift */,
 				3457794226828A9A00732869 /* ConversationCollectionView.swift */,
@@ -5886,18 +5864,18 @@
 				34A4D88C267A363A00A794E7 /* ConversationViewController.swift */,
 				3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */,
 				50EF8DCB2A189B3000A00935 /* ConversationViewModel.swift */,
+				348815CF25545C0A00D4F4C4 /* CVAttachments.swift */,
+				348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */,
 				3420CF6C26327B1A00E7DCB0 /* CVBackgroundContainer.swift */,
+				347C3822252CE69400F3D941 /* CVCell.swift */,
+				3426A365255C854A0036407F /* CVItemViewModelImpl.swift */,
+				348EE28C25B897BF00814FC2 /* CVMediaCache.swift */,
+				348815C5255346A500D4F4C4 /* CVNode.swift */,
 				D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */,
 				341D392825472F3B00996E7B /* CVViewState.swift */,
-				88535063240829950011D318 /* DateHeaderInteraction.swift */,
-				88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */,
-				88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */,
 				346EAA13250199A300E8AB6F /* MemberRequestView.swift */,
+				4CB5F26820F7D060004D1B42 /* MessageActions.swift */,
 				88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */,
-				88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */,
-				34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */,
-				346CD5C126306578004162D6 /* UnknownThreadWarningInteraction.swift */,
-				4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */,
 			);
 			path = ConversationView;
 			sourceTree = "<group>";
@@ -5912,47 +5890,17 @@
 			path = Payments;
 			sourceTree = "<group>";
 		};
-		347C3818252CE69400F3D941 /* CV */ = {
+		347C3839252CE6C900F3D941 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				347C3839252CE6C900F3D941 /* CVComponents */,
-				348815CF25545C0A00D4F4C4 /* CVAttachments.swift */,
-				348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */,
-				348815B92552063D00D4F4C4 /* CVAvatarBuilder.swift */,
-				347C3822252CE69400F3D941 /* CVCell.swift */,
-				3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */,
 				348815C6255346A500D4F4C4 /* CVComponent.swift */,
-				348815C3255343FC00D4F4C4 /* CVComponentDelegate.swift */,
-				347C3819252CE69400F3D941 /* CVComponentState+GroupLink.swift */,
-				347C381E252CE69400F3D941 /* CVComponentState.swift */,
-				347C3824252CE69400F3D941 /* CVItemModel.swift */,
-				3426A365255C854A0036407F /* CVItemViewModelImpl.swift */,
-				347C3820252CE69400F3D941 /* CVItemViewState.swift */,
-				3470C8762555883600F5847C /* CVLoadContext.swift */,
-				347C381A252CE69400F3D941 /* CVLoadCoordinator.swift */,
-				348815B225503BAA00D4F4C4 /* CVLoader.swift */,
-				3470C8752555883600F5847C /* CVLoadRequest.swift */,
-				348815C5255346A500D4F4C4 /* CVNode.swift */,
-				348815C7255346A500D4F4C4 /* CVRenderItem.swift */,
-				3470518B254B320700A19468 /* CVRenderState.swift */,
-				347C381C252CE69400F3D941 /* CVStackView.swift */,
-				3470C8812559B23F00F5847C /* CVUpdate.swift */,
-				345772B5257E4E01001D7D44 /* CVViewStateSnapshot.swift */,
-				3420CF6E2638A01A00E7DCB0 /* CVWallpaperBlurView.swift */,
-				34DE9C012565752F0080E4AF /* MessageLoader.swift */,
-			);
-			path = CV;
-			sourceTree = "<group>";
-		};
-		347C3839252CE6C900F3D941 /* CVComponents */ = {
-			isa = PBXGroup;
-			children = (
 				348815C1255341F200D4F4C4 /* CVComponentAudioAttachment.swift */,
 				347C3840252CE6C900F3D941 /* CVComponentBodyMedia.swift */,
 				347C383C252CE6C900F3D941 /* CVComponentBodyText.swift */,
 				3426A3792563F0EA0036407F /* CVComponentBottomButtons.swift */,
 				3470C8792555DE5F00F5847C /* CVComponentContactShare.swift */,
 				347C3848252D004C00F3D941 /* CVComponentDateHeader.swift */,
+				348815C3255343FC00D4F4C4 /* CVComponentDelegate.swift */,
 				347C383D252CE6C900F3D941 /* CVComponentFooter.swift */,
 				348815CD25545B0F00D4F4C4 /* CVComponentGenericAttachment.swift */,
 				50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */,
@@ -5962,6 +5910,8 @@
 				347C383E252CE6C900F3D941 /* CVComponentQuotedReply.swift */,
 				343417F02530A7480034FE0C /* CVComponentReactions.swift */,
 				347C383F252CE6C900F3D941 /* CVComponentSenderName.swift */,
+				347C3819252CE69400F3D941 /* CVComponentState+GroupLink.swift */,
+				347C381E252CE69400F3D941 /* CVComponentState.swift */,
 				347C383A252CE6C900F3D941 /* CVComponentSticker.swift */,
 				348815BB2552E67900D4F4C4 /* CVComponentSystemMessage.swift */,
 				347C3856252E1E2300F3D941 /* CVComponentThreadDetails.swift */,
@@ -5970,7 +5920,7 @@
 				348815BF2553291200D4F4C4 /* CVComponentViewOnce.swift */,
 				667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */,
 			);
-			path = CVComponents;
+			path = Components;
 			sourceTree = "<group>";
 		};
 		34969558219B605E00DCFE74 /* Photos */ = {
@@ -6445,18 +6395,15 @@
 				8809CE8822F93C0D00D38867 /* Attachment Keyboard */,
 				883A7FC1269F4BE700841DF9 /* Avatars */,
 				F0B872B4269CF01E00D26481 /* Context Menus */,
-				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
 				34D8C0221ED3673300188D7C /* DebugUI */,
 				F924A68028F8703400E368C8 /* Donations */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				34386A4C207D0C01009F5D9C /* HomeView */,
 				4C4F360E2284516F00A8DF48 /* MediaGallery */,
 				34995F122411838C00C70546 /* NewGroupView */,
-				88A4CC13246CE41E0082211F /* OutgoingDeviceTransfer */,
 				3497971D25DAA86100E99FA4 /* Payments */,
 				34969558219B605E00DCFE74 /* Photos */,
 				8835DDFB230CEE7600DC6B66 /* RecipientPicker */,
-				340FC875204DAC8C007AEB0F /* Registration */,
 				349767DE25B8744600ECE1B0 /* Stickers */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				88A51B9825BA079500CDB45C /* Wallpapers */,
@@ -6473,7 +6420,6 @@
 				3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */,
 				D9C30DDA2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift */,
 				76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */,
-				4542DF53208D40AC007B4E76 /* LoadingViewController.swift */,
 				88A9729322FB4D02004B4FBF /* LocationPicker.swift */,
 				3496744E2076ACCE00080B5F /* LongTextViewController.swift */,
 				4CFF4C0920F55BBA005DA313 /* MessageActionsToolbar.swift */,
@@ -6562,20 +6508,20 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
-		34D1F0951F867BFC0066283D /* Cells */ = {
+		34D1F0951F867BFC0066283D /* CellViews */ = {
 			isa = PBXGroup;
 			children = (
 				668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */,
-				88594E592335B08000390B19 /* AudioMessagePresenter.swift */,
 				450B0FC829FB301700B9A458 /* AudioMessageView.swift */,
-				45A1684C2A1C308800C2432D /* AudioPresentation.swift */,
 				88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */,
 				3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */,
+				3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */,
 				3470C87F2555F25200F5847C /* CVContactShareView.swift */,
 				34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */,
-				348EE28C25B897BF00814FC2 /* CVMediaCache.swift */,
 				3488F9352191CC4000E524CC /* CVMediaView.swift */,
 				34635331257549F1003C5428 /* CVReactionCountsView.swift */,
+				347C381C252CE69400F3D941 /* CVStackView.swift */,
+				3420CF6E2638A01A00E7DCB0 /* CVWallpaperBlurView.swift */,
 				503614CE282AF657008128B4 /* GiftBadgeView.swift */,
 				4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */,
 				34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */,
@@ -6583,7 +6529,7 @@
 				3470C8732554926200F5847C /* QuotedMessageView.swift */,
 				348EE28D25B897BF00814FC2 /* ReusableMediaView.swift */,
 			);
-			path = Cells;
+			path = CellViews;
 			sourceTree = "<group>";
 		};
 		34D8C0221ED3673300188D7C /* DebugUI */ = {
@@ -6620,7 +6566,6 @@
 			isa = PBXGroup;
 			children = (
 				342FFE6C271EF580000AC89F /* Categories */,
-				88A505F523DBA0C70005C012 /* Experience Upgrades */,
 				34B3F8331E8DF1700035BE1A /* ViewControllers */,
 				76EB052B18170B33006006FC /* Views */,
 				342FFE67271EF4FF000AC89F /* ConversationSearch.swift */,
@@ -6650,16 +6595,6 @@
 				34B0796E1FD07B1E00E248C2 /* SignalShareExtension.entitlements */,
 			);
 			path = SignalShareExtension;
-			sourceTree = "<group>";
-		};
-		457F3AC01D14A0F700C51351 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */,
-				4CB5F26820F7D060004D1B42 /* MessageActions.swift */,
-				4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		458E38381D6699110094BD24 /* Models */ = {
@@ -6693,24 +6628,6 @@
 				34A4D56E24E4D341002F8044 /* UnfairLockPerformanceTest.swift */,
 			);
 			path = PerformanceTests;
-			sourceTree = "<group>";
-		};
-		4C3A2BC5235661AB004B3986 /* Provisioning */ = {
-			isa = PBXGroup;
-			children = (
-				66AA0BA32A819FFA00F7DC80 /* ProvisioningBaseViewController.swift */,
-				4C3A2BC62356620E004B3986 /* ProvisioningController.swift */,
-				6605D4EF2A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift */,
-				6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */,
-				4C30E223234F9F34009558B7 /* ProvisioningPrepViewController.swift */,
-				4C30E225234FB033009558B7 /* ProvisioningQRCodeViewController.swift */,
-				4C2EBB7E2356B2B900BBC171 /* ProvisioningSetDeviceNameViewController.swift */,
-				34ACA7C32733159600E47AD4 /* ProvisioningSplashViewController.swift */,
-				34ACA7BC2733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift */,
-				34ACA7BE2733159600E47AD4 /* ProvisioningTransferProgressViewController.swift */,
-				34ACA7BD2733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift */,
-			);
-			path = Provisioning;
 			sourceTree = "<group>";
 		};
 		4C3EF8002109184A0007EBF7 /* SSKTests */ = {
@@ -6867,12 +6784,18 @@
 			path = Curve25519;
 			sourceTree = "<group>";
 		};
-		5045F44129E0DAA400058E5F /* Launch */ = {
+		5045F44129E0DAA400058E5F /* AppLaunch */ = {
 			isa = PBXGroup;
 			children = (
+				F92074752888648A00B7F087 /* AppDelegate.swift */,
+				34D99CE3217509C1000AFB39 /* AppEnvironment.swift */,
+				3498AC882513896400B1F315 /* Dependencies+MainApp.swift */,
 				349C3636233D198300D52012 /* LaunchJobs.swift */,
+				4542DF53208D40AC007B4E76 /* LoadingViewController.swift */,
+				5033D46829D7951F007FEADA /* MainAppContext.swift */,
+				880D902F2481E617003D2B14 /* SignalApp.swift */,
 			);
-			path = Launch;
+			path = AppLaunch;
 			sourceTree = "<group>";
 		};
 		50552C2F2BAC079000815474 /* Calls */ = {
@@ -6969,13 +6892,86 @@
 			path = Contacts;
 			sourceTree = "<group>";
 		};
-		50EF8DC82A1885B100A00935 /* Badge */ = {
+		50E7E1CC2BACBDE000A94861 /* Expiration */ = {
+			isa = PBXGroup;
+			children = (
+				4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */,
+				F9952B2E29F1E59F00EA989E /* OsExpiry.swift */,
+				F93BCB9929EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift */,
+			);
+			path = Expiration;
+			sourceTree = "<group>";
+		};
+		50E7E1CD2BACBE7D00A94861 /* UserInterface */ = {
+			isa = PBXGroup;
+			children = (
+				66AA0BA32A819FFA00F7DC80 /* ProvisioningBaseViewController.swift */,
+				4C3A2BC62356620E004B3986 /* ProvisioningController.swift */,
+				6605D4EF2A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift */,
+				6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */,
+				4C30E223234F9F34009558B7 /* ProvisioningPrepViewController.swift */,
+				4C30E225234FB033009558B7 /* ProvisioningQRCodeViewController.swift */,
+				4C2EBB7E2356B2B900BBC171 /* ProvisioningSetDeviceNameViewController.swift */,
+				34ACA7C32733159600E47AD4 /* ProvisioningSplashViewController.swift */,
+				34ACA7BC2733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift */,
+				34ACA7BE2733159600E47AD4 /* ProvisioningTransferProgressViewController.swift */,
+				34ACA7BD2733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift */,
+			);
+			path = UserInterface;
+			sourceTree = "<group>";
+		};
+		50E7E1CE2BACBF3300A94861 /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
 				50EF8DC92A1885C000A00935 /* AppIconBadgeUpdater.swift */,
 				50EF8DC42A1860EF00A00935 /* BadgeManager.swift */,
+				88D23D1123CEBFB200B0E74B /* NotificationActionHandler.swift */,
+				4539B5851F79348F007141FF /* PushRegistrationManager.swift */,
 			);
-			path = Badge;
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		50E7E1CF2BACC1A500A94861 /* DynamicInteractions */ = {
+			isa = PBXGroup;
+			children = (
+				88535063240829950011D318 /* DateHeaderInteraction.swift */,
+				88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */,
+				88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */,
+				34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */,
+				346CD5C126306578004162D6 /* UnknownThreadWarningInteraction.swift */,
+				4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */,
+			);
+			path = DynamicInteractions;
+			sourceTree = "<group>";
+		};
+		50E7E1D02BACC21900A94861 /* Loading */ = {
+			isa = PBXGroup;
+			children = (
+				348815B92552063D00D4F4C4 /* CVAvatarBuilder.swift */,
+				347C3824252CE69400F3D941 /* CVItemModel.swift */,
+				347C3820252CE69400F3D941 /* CVItemViewState.swift */,
+				3470C8762555883600F5847C /* CVLoadContext.swift */,
+				347C381A252CE69400F3D941 /* CVLoadCoordinator.swift */,
+				348815B225503BAA00D4F4C4 /* CVLoader.swift */,
+				3470C8752555883600F5847C /* CVLoadRequest.swift */,
+				348815C7255346A500D4F4C4 /* CVRenderItem.swift */,
+				3470518B254B320700A19468 /* CVRenderState.swift */,
+				3470C8812559B23F00F5847C /* CVUpdate.swift */,
+				345772B5257E4E01001D7D44 /* CVViewStateSnapshot.swift */,
+				34DE9C012565752F0080E4AF /* MessageLoader.swift */,
+			);
+			path = Loading;
+			sourceTree = "<group>";
+		};
+		50E7E1D12BACC3DB00A94861 /* Reactions */ = {
+			isa = PBXGroup;
+			children = (
+				8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */,
+				8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */,
+				88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */,
+				88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */,
+			);
+			path = Reactions;
 			sourceTree = "<group>";
 		};
 		6600BB1B2BA3ABCC0005A035 /* Manager */ = {
@@ -7036,7 +7032,8 @@
 		6600F38C29918A5100B1EDB7 /* Registration */ = {
 			isa = PBXGroup;
 			children = (
-				66B35EA1299F077F00130204 /* ViewControllers */,
+				66B35EA1299F077F00130204 /* UserInterface */,
+				4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */,
 				6600F39529919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift */,
 				66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */,
 				66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */,
@@ -7045,6 +7042,7 @@
 				66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */,
 				66533E3929B9502100E8D928 /* RegistrationMode.swift */,
 				6600F38F29918CBF00B1EDB7 /* RegistrationStep.swift */,
+				3440426A273AB186008C9FA4 /* RegistrationUtils.swift */,
 			);
 			path = Registration;
 			sourceTree = "<group>";
@@ -7437,12 +7435,35 @@
 			path = Registration;
 			sourceTree = "<group>";
 		};
-		66B35EA1299F077F00130204 /* ViewControllers */ = {
+		66B35EA1299F077F00130204 /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
+				66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */,
+				F9480120299E89F8005442BE /* RegistrationCaptchaViewController.swift */,
+				66AAC2C329CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift */,
+				66AAC2C729CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift */,
+				66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */,
+				6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */,
+				F92E4C73299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift */,
 				F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */,
+				F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */,
+				F905DFEA29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift */,
+				F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */,
+				F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */,
+				66AAC2C929CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift */,
+				F9D47A4729D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift */,
+				F9E3006029A02D8800DCA219 /* RegistrationPinViewController.swift */,
+				F9EECB00299EC9D8005FDD52 /* RegistrationProfileViewController.swift */,
+				F9440E7129C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift */,
+				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
+				F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */,
+				66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */,
+				66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */,
+				F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */,
+				F9E3006B299D76C3000323F8 /* RegistrationVerificationViewController.swift */,
+				F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */,
 			);
-			path = ViewControllers;
+			path = UserInterface;
 			sourceTree = "<group>";
 		};
 		66B9437C2A6EEAA600DCF2FF /* SpoilerRendering */ = {
@@ -7621,6 +7642,8 @@
 		66CDB7532AFC3EFB009A36EC /* Provisioning */ = {
 			isa = PBXGroup;
 			children = (
+				50E7E1CD2BACBE7D00A94861 /* UserInterface */,
+				5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */,
 				66CDB7582AFC4232009A36EC /* ProvisioningCoordinator+Shims.swift */,
 				66CDB7542AFC3F1F009A36EC /* ProvisioningCoordinator.swift */,
 				66CDB7662AFC5FCD009A36EC /* ProvisioningCoordinatorImpl+Service.swift */,
@@ -7942,61 +7965,35 @@
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
-				F94D12FD28BD0DD900B2C478 /* Accessibility */,
-				50EF8DC82A1885B100A00935 /* Badge */,
-				76EB041118170B33006006FC /* environment */,
-				5045F44129E0DAA400058E5F /* Launch */,
-				457F3AC01D14A0F700C51351 /* Models */,
 				D9DCFDAC2A3BB22800C73C0B /* QRCodes */,
 				45CD81A41DBFF8CF004C9430 /* Storyboards */,
 				450DF2061E0DD28D003D14BE /* UserInterface */,
-				D99840BB297A04A300F7ED6D /* Usernames */,
 				76EB04C818170B33006006FC /* util */,
 				6698FC12297F38AC004EFC30 /* ViewControllerContext */,
-				F92074752888648A00B7F087 /* AppDelegate.swift */,
 				66CDB7512AF9D117009A36EC /* MessageFetchBGRefreshTask.swift */,
 				45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
 		};
-		76EB041118170B33006006FC /* environment */ = {
-			isa = PBXGroup;
-			children = (
-				34D99CE3217509C1000AFB39 /* AppEnvironment.swift */,
-				4539B5851F79348F007141FF /* PushRegistrationManager.swift */,
-				880D902F2481E617003D2B14 /* SignalApp.swift */,
-			);
-			path = environment;
-			sourceTree = "<group>";
-		};
 		76EB04C818170B33006006FC /* util */ = {
 			isa = PBXGroup;
 			children = (
-				88C4E38124671F9D009C9B97 /* Device Transfer */,
-				3428576F26BD8777005A2A96 /* Emoji */,
-				4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */,
 				F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */,
 				34F1071F26D005340053EF4D /* BatchUpdate.swift */,
 				4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */,
 				50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */,
 				34067EAA2710D61A000407C3 /* DebugLogs.swift */,
-				3498AC882513896400B1F315 /* Dependencies+MainApp.swift */,
 				34A95500271B503E00B05242 /* DisplayableText.swift */,
 				F9D289B5291EDC8D00187394 /* DonationJobError.swift */,
-				5033D46829D7951F007FEADA /* MainAppContext.swift */,
-				88D23D1123CEBFB200B0E74B /* NotificationActionHandler.swift */,
-				F9952B2E29F1E59F00EA989E /* OsExpiry.swift */,
 				F93461B8291ED28900366682 /* PaymentDetailsValidity.swift */,
 				F9FAABD729DB55940004B383 /* Progress+Signal.swift */,
 				888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */,
-				3440426A273AB186008C9FA4 /* RegistrationUtils.swift */,
 				66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */,
 				7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */,
 				8822558C26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift */,
 				6675F64E29261C39007A311E /* SyncPushTokensJob.swift */,
 				4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */,
-				F93BCB9929EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift */,
 				8811CF832295D8DA00FF6549 /* VolumeButtons.swift */,
 				667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */,
 			);
@@ -8041,18 +8038,6 @@
 				8809CE8922F93C2200D38867 /* RecentPhotoCollectionView.swift */,
 			);
 			path = "Attachment Keyboard";
-			sourceTree = "<group>";
-		};
-		880D902824808830003D2B14 /* Emoji Picker */ = {
-			isa = PBXGroup;
-			children = (
-				880D902B2480889B003D2B14 /* EmojiPickerCollectionView.swift */,
-				880D902D2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift */,
-				880D90292480887F003D2B14 /* EmojiPickerSheet.swift */,
-				F090C81F2762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift */,
-				88238EBB24F21EE400F28079 /* EmojiSkinTonePicker.swift */,
-			);
-			path = "Emoji Picker";
 			sourceTree = "<group>";
 		};
 		8835DDFB230CEE7600DC6B66 /* RecipientPicker */ = {
@@ -8166,16 +8151,6 @@
 				1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */,
 			);
 			path = "Chat List";
-			sourceTree = "<group>";
-		};
-		8855DF85238F1DEE0066D96F /* Reactions Details */ = {
-			isa = PBXGroup;
-			children = (
-				8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */,
-				8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */,
-				88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */,
-			);
-			path = "Reactions Details";
 			sourceTree = "<group>";
 		};
 		8864072F27F21AA7009916B6 /* Group Reply Sheet */ = {
@@ -8338,39 +8313,28 @@
 			path = "Member Picker";
 			sourceTree = "<group>";
 		};
-		88A4CC13246CE41E0082211F /* OutgoingDeviceTransfer */ = {
+		88A505F523DBA0C70005C012 /* Megaphones */ = {
 			isa = PBXGroup;
 			children = (
-				88A4CC18246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift */,
-				88A4CC16246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift */,
-				88A4CC1C246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift */,
-				88A4CC1A246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift */,
-			);
-			path = OutgoingDeviceTransfer;
-			sourceTree = "<group>";
-		};
-		88A505F523DBA0C70005C012 /* Experience Upgrades */ = {
-			isa = PBXGroup;
-			children = (
-				88A505FE23DBAE640005C012 /* Upgrade Views */,
+				88A505FE23DBAE640005C012 /* UserInterface */,
 				88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */,
-				8837F74023DA0B0F00772A32 /* MegaphoneView.swift */,
-				34B3F8441E8DF1700035BE1A /* SplashViewController.swift */,
 			);
-			path = "Experience Upgrades";
+			path = Megaphones;
 			sourceTree = "<group>";
 		};
-		88A505FE23DBAE640005C012 /* Upgrade Views */ = {
+		88A505FE23DBAE640005C012 /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
 				D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */,
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
+				8837F74023DA0B0F00772A32 /* MegaphoneView.swift */,
 				8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */,
 				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
 				D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */,
+				34B3F8441E8DF1700035BE1A /* SplashViewController.swift */,
 			);
-			path = "Upgrade Views";
+			path = UserInterface;
 			sourceTree = "<group>";
 		};
 		88A51B9825BA079500CDB45C /* Wallpapers */ = {
@@ -8449,7 +8413,7 @@
 			path = Lottie;
 			sourceTree = "<group>";
 		};
-		88C4E38124671F9D009C9B97 /* Device Transfer */ = {
+		88C4E38124671F9D009C9B97 /* DeviceTransfer */ = {
 			isa = PBXGroup;
 			children = (
 				887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */,
@@ -8459,9 +8423,13 @@
 				887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */,
 				887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */,
 				88C4E37F24635337009C9B97 /* DeviceTransferService.swift */,
+				88A4CC18246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift */,
+				88A4CC16246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift */,
+				88A4CC1C246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift */,
+				88A4CC1A246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift */,
 				88C659AF24688335002AC115 /* SelfSignedIdentity.swift */,
 			);
-			path = "Device Transfer";
+			path = DeviceTransfer;
 			sourceTree = "<group>";
 		};
 		88D23D0823CEBF4400B0E74B /* Notifications */ = {
@@ -8805,9 +8773,17 @@
 		D221A093169C9E5E00537ABF /* Signal */ = {
 			isa = PBXGroup;
 			children = (
+				F94D12FD28BD0DD900B2C478 /* Accessibility */,
+				5045F44129E0DAA400058E5F /* AppLaunch */,
 				88D23D1323CEC0C700B0E74B /* Calls */,
 				50B6BCAF2AEC4F3B0010FB3B /* Contacts */,
+				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
+				88C4E38124671F9D009C9B97 /* DeviceTransfer */,
+				3428576F26BD8777005A2A96 /* Emoji */,
+				50E7E1CC2BACBDE000A94861 /* Expiration */,
 				88BFD4712335C2A4001797D7 /* Lottie */,
+				88A505F523DBA0C70005C012 /* Megaphones */,
+				50E7E1CE2BACBF3300A94861 /* Notifications */,
 				5011D9712A0471E8000FE8E5 /* OrphanData */,
 				50A76F512AF565A300FCF02D /* Preconditions */,
 				66CDB7532AFC3EFB009A36EC /* Provisioning */,
@@ -8818,7 +8794,7 @@
 				D221A094169C9E5E00537ABF /* Supporting Files */,
 				B660F66C1C29867F00687D6E /* test */,
 				5033D46C29DCA8DE007FEADA /* URLs */,
-				503AECCB29B2B80800642F66 /* VoiceMessage */,
+				D99840BB297A04A300F7ED6D /* Usernames */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
 				F0C124B626D4788A0031C96F /* NSE-Images.xcassets */,
 				881FF30623B5B1520023B620 /* Signal-AppStore.entitlements */,
