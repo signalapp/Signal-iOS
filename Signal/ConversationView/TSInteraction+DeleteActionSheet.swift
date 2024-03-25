@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalUI
 import UIKit
 
 public extension TSInteraction {

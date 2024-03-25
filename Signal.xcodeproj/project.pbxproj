@@ -354,13 +354,10 @@
 		34A4D88F267A402100A794E7 /* ConversationViewController+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D88E267A402100A794E7 /* ConversationViewController+Notifications.swift */; };
 		34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */; };
 		34A8B3512190A40E00218A25 /* CVMediaAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */; };
-		34A954AC271A471300B05242 /* SignalUI.docc in Sources */ = {isa = PBXBuildFile; fileRef = 34A954AB271A471300B05242 /* SignalUI.docc */; };
 		34A954B2271A471300B05242 /* SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A954A8271A471200B05242 /* SignalUI.framework */; };
 		34A954BA271A471300B05242 /* SignalUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954AA271A471300B05242 /* SignalUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34A954BD271A471300B05242 /* SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A954A8271A471200B05242 /* SignalUI.framework */; };
 		34A954BE271A471300B05242 /* SignalUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34A954A8271A471200B05242 /* SignalUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		34A954CB271B4BE600B05242 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */; };
-		34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 34A954CE271B4D0700B05242 /* SignalUI-Prefix.pch */; };
 		34A954DC271B4F3E00B05242 /* Theme+Icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D4271B4F3E00B05242 /* Theme+Icons.swift */; };
 		34A954DE271B4F3E00B05242 /* ChatColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D6271B4F3E00B05242 /* ChatColors.swift */; };
 		34A954E0271B4F3E00B05242 /* ColorOrGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D8271B4F3E00B05242 /* ColorOrGradient.swift */; };
@@ -370,7 +367,6 @@
 		34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AD271B532F00B05242 /* FullTextSearcher.swift */; };
 		34A955B2271B53F600B05242 /* GroupManager+GroupInvites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */; };
 		34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B8271B553D00B05242 /* PaymentsFormat.swift */; };
-		34A955BD271B560000B05242 /* NameCollisionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955BC271B560000B05242 /* NameCollisionFinder.swift */; };
 		34ACA7D52733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BC2733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift */; };
 		34ACA7D62733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BD2733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift */; };
 		34ACA7D72733159600E47AD4 /* ProvisioningTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BE2733159600E47AD4 /* ProvisioningTransferProgressViewController.swift */; };
@@ -681,6 +677,9 @@
 		50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B6BCB52AEC68940010FB3B /* AuthorMergeHelperTest.swift */; };
 		50B815862A5E15390009D42D /* OWSIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B815852A5E14FF0009D42D /* OWSIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */; };
+		50BF51022BB1FACA00C2C309 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */; };
+		50BF51042BB1FE5D00C2C309 /* NameCollisionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955BC271B560000B05242 /* NameCollisionFinder.swift */; };
+		50BF51052BB1FE7E00C2C309 /* TSInteraction+DeleteActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C980D327F3AD2C009750C0 /* TSInteraction+DeleteActionSheet.swift */; };
 		50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */; };
 		50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */; };
 		50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */; };
@@ -1404,7 +1403,6 @@
 		88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C4E37F24635337009C9B97 /* DeviceTransferService.swift */; };
 		88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C659AF24688335002AC115 /* SelfSignedIdentity.swift */; };
 		88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */; };
-		88C980D427F3AD2C009750C0 /* TSInteraction+DeleteActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C980D327F3AD2C009750C0 /* TSInteraction+DeleteActionSheet.swift */; };
 		88CB462225843758001900F2 /* GroupCallTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CB462125843758001900F2 /* GroupCallTooltip.swift */; };
 		88D1D40222EBB5A100F472C5 /* MessageRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */; };
 		88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */; };
@@ -3011,10 +3009,8 @@
 		34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaAlbumView.swift; sourceTree = "<group>"; };
 		34A954A8271A471200B05242 /* SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A954AA271A471300B05242 /* SignalUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalUI.h; sourceTree = "<group>"; };
-		34A954AB271A471300B05242 /* SignalUI.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = SignalUI.docc; sourceTree = "<group>"; };
 		34A954B1271A471300B05242 /* SignalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareViewDelegate.swift; sourceTree = "<group>"; };
-		34A954CE271B4D0700B05242 /* SignalUI-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalUI-Prefix.pch"; sourceTree = "<group>"; };
 		34A954D4271B4F3E00B05242 /* Theme+Icons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Theme+Icons.swift"; sourceTree = "<group>"; };
 		34A954D6271B4F3E00B05242 /* ChatColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColors.swift; sourceTree = "<group>"; };
 		34A954D8271B4F3E00B05242 /* ColorOrGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorOrGradient.swift; sourceTree = "<group>"; };
@@ -5617,13 +5613,14 @@
 			name = Help;
 			sourceTree = "<group>";
 		};
-		3402A9D8271D953A0084CBAE /* Environment */ = {
+		3402A9D8271D953A0084CBAE /* AppLaunch */ = {
 			isa = PBXGroup;
 			children = (
+				342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */,
 				3402A9DB271D95C10084CBAE /* Dependencies+SignalUI.swift */,
 				3402A9D9271D953A0084CBAE /* SUIEnvironment.swift */,
 			);
-			path = Environment;
+			path = AppLaunch;
 			sourceTree = "<group>";
 		};
 		34074F54203D0722004596AE /* Sounds */ = {
@@ -5806,17 +5803,6 @@
 			path = HomeView;
 			sourceTree = "<group>";
 		};
-		34480B2F1FD0921000BC14EF /* utils */ = {
-			isa = PBXGroup;
-			children = (
-				34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */,
-				4CCB567B23C8D89C004A5731 /* NSItemProvider+TypedAccessors.h */,
-				4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */,
-				7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */,
-			);
-			path = utils;
-			sourceTree = "<group>";
-		};
 		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
@@ -5876,6 +5862,7 @@
 				346EAA13250199A300E8AB6F /* MemberRequestView.swift */,
 				4CB5F26820F7D060004D1B42 /* MessageActions.swift */,
 				88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */,
+				88C980D327F3AD2C009750C0 /* TSInteraction+DeleteActionSheet.swift */,
 			);
 			path = ConversationView;
 			sourceTree = "<group>";
@@ -6016,22 +6003,29 @@
 			isa = PBXGroup;
 			children = (
 				34A954D2271B4F3E00B05242 /* Appearance */,
-				34A954E9271B4FB000B05242 /* Categories */,
-				E14EDF6C2A71AF9F00F0FD7C /* Context Menus */,
-				3402A9D8271D953A0084CBAE /* Environment */,
+				3402A9D8271D953A0084CBAE /* AppLaunch */,
+				34A95596271B510500B05242 /* AttachmentApproval */,
+				884E4C4928B02301007A338C /* AttachmentMultisend */,
+				50BF51032BB1FC7E00C2C309 /* AV */,
+				76E08F3C2AE8761D00032BC9 /* ContactSharing */,
+				34A95521271B510400B05242 /* ConversationView */,
 				34330A581E7875FB00DF2FB9 /* Fonts */,
+				34A95551271B510400B05242 /* ImageEditor */,
+				34A95514271B510400B05242 /* LinkPreview */,
 				34A955B7271B553D00B05242 /* Payments */,
+				88B986F728807D7400F8C74D /* RecipientPickers */,
+				88B9870B28808C2900F8C74D /* SafetyNumbers */,
 				50597BBD2B97D624004681E1 /* Search */,
+				34A955A0271B510500B05242 /* Sending */,
+				34A9556D271B510500B05242 /* Stickers */,
 				B99B155B2A71B9F300E26DAC /* Stories */,
-				34A954C9271B4BE600B05242 /* UI */,
+				34A954E9271B4FB000B05242 /* UIKitExtensions */,
 				D9A3E22E2A0DABC000E2A8B5 /* Usernames */,
 				34A95502271B510400B05242 /* Utils */,
+				34A9551A271B510400B05242 /* VideoEditor */,
 				34A95566271B510500B05242 /* ViewControllers */,
-				34A955A0271B510500B05242 /* ViewModels */,
 				34A95508271B510400B05242 /* Views */,
 				34A955A8271B510500B05242 /* Wallpapers */,
-				34A954CE271B4D0700B05242 /* SignalUI-Prefix.pch */,
-				34A954AB271A471300B05242 /* SignalUI.docc */,
 				34A954AA271A471300B05242 /* SignalUI.h */,
 			);
 			path = SignalUI;
@@ -6049,29 +6043,21 @@
 			path = SignalUITests;
 			sourceTree = "<group>";
 		};
-		34A954C9271B4BE600B05242 /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */,
-				34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */,
-				34A954E5271B4F6A00B05242 /* VideoPlayer.swift */,
-			);
-			path = UI;
-			sourceTree = "<group>";
-		};
 		34A954D2271B4F3E00B05242 /* Appearance */ = {
 			isa = PBXGroup;
 			children = (
 				34A954D6271B4F3E00B05242 /* ChatColors.swift */,
 				34A954D8271B4F3E00B05242 /* ColorOrGradient.swift */,
 				34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */,
+				34A95506271B510400B05242 /* ConversationStyle.swift */,
 				34A954D4271B4F3E00B05242 /* Theme+Icons.swift */,
 				7677E40C29F75C4200AC6A75 /* Theme.swift */,
+				66FC638329E2201500F00DAC /* ThemedColor+Theme.swift */,
 			);
 			path = Appearance;
 			sourceTree = "<group>";
 		};
-		34A954E9271B4FB000B05242 /* Categories */ = {
+		34A954E9271B4FB000B05242 /* UIKitExtensions */ = {
 			isa = PBXGroup;
 			children = (
 				F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */,
@@ -6087,33 +6073,18 @@
 				3402A9E5271D97090084CBAE /* UIView+SignalUI.swift */,
 				762A41682A37D71600057955 /* UIViewController+SignalUI.swift */,
 			);
-			path = Categories;
+			path = UIKitExtensions;
 			sourceTree = "<group>";
 		};
 		34A95502271B510400B05242 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				884E4C4928B02301007A338C /* Attachment Multisend */,
-				342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */,
-				7609818B2936EF22008F8300 /* AudioPlayer.swift */,
-				342FFE58271DAA25000AC89F /* AudioSession.swift */,
 				762EBBD12A2FE370002FD28F /* BlockListUIUtils.swift */,
-				34A95506271B510400B05242 /* ConversationStyle.swift */,
 				F963F817292D7E53007DBBBD /* FormattedNumberField.swift */,
-				34A955AD271B532F00B05242 /* FullTextSearcher.swift */,
 				34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */,
 				34A95507271B510400B05242 /* GroupViewUtils.swift */,
-				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
-				5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */,
 				6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */,
-				34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */,
-				34A955BC271B560000B05242 /* NameCollisionFinder.swift */,
-				342FFE56271DA8C9000AC89F /* Sounds+SignalUI.swift */,
 				C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */,
-				88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */,
-				88F5FA9228EBD484007AA1BF /* StorySharing.swift */,
-				66FC638329E2201500F00DAC /* ThemedColor+Theme.swift */,
-				88C980D327F3AD2C009750C0 /* TSInteraction+DeleteActionSheet.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -6122,36 +6093,27 @@
 			isa = PBXGroup;
 			children = (
 				34A9552A271B510400B05242 /* BodyRanges */,
-				34A95521271B510400B05242 /* ConversationView */,
-				34A95551271B510400B05242 /* ImageEditor */,
-				34A95514271B510400B05242 /* Link Preview */,
 				34A9554A271B510400B05242 /* Tooltips */,
-				34A9551A271B510400B05242 /* VideoEditor */,
+				34A9558E271B510500B05242 /* ApprovalFooterView.swift */,
 				34A95545271B510400B05242 /* AvatarImageView.swift */,
 				760981872936DE90008F8300 /* BezierPathView.swift */,
 				83B9573827C9A1FA00A678FD /* CaptchaView.swift */,
 				D925F5502983399D00158EE4 /* CircleButton.swift */,
 				34A9553F271B510400B05242 /* CircleView.swift */,
 				76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */,
-				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
-				34A9550B271B510400B05242 /* ContactCellView.swift */,
-				503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */,
-				34A9551E271B510400B05242 /* ContactsViewHelper.swift */,
-				34A95536271B510400B05242 /* ContactTableViewCell.swift */,
 				34A95543271B510400B05242 /* ConversationAvatarView.swift */,
 				34A9553A271B510400B05242 /* CustomKeyboard.swift */,
 				34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */,
 				34A9551F271B510400B05242 /* DisappearingTimerConfigurationView.swift */,
 				34A95548271B510400B05242 /* GalleryRailView.swift */,
 				34A95546271B510400B05242 /* GradientView.swift */,
-				45A663C41F92EC760027B59E /* GroupTableViewCell.swift */,
 				34A9554F271B510400B05242 /* InputAccessoryViewPlaceholder.swift */,
 				34A95529271B510400B05242 /* LinkingTextView.swift */,
 				34A9552F271B510400B05242 /* LoopingVideoView.swift */,
 				34A9551D271B510400B05242 /* ManualLayoutView.swift */,
 				34A9550C271B510400B05242 /* ManualStackView.swift */,
+				34A95578271B510500B05242 /* MediaMessageView.swift */,
 				76A2EB0F28B578B800A29C24 /* MediaTextView.swift */,
-				34A9550A271B510400B05242 /* NonContactTableViewCell.swift */,
 				34A9553D271B510400B05242 /* OWSActionSheets.swift */,
 				34A95535271B510400B05242 /* OWSBubbleShapeView.swift */,
 				34A95530271B510400B05242 /* OWSButton.swift */,
@@ -6173,6 +6135,7 @@
 				34A95509271B510400B05242 /* TappableStackView.swift */,
 				34A95532271B510400B05242 /* TappableView.swift */,
 				885275BF27E26775003F2F9B /* TextAttachmentView.swift */,
+				764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */,
 				34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */,
 				34A9553E271B510400B05242 /* TextViewWithPlaceholder.swift */,
 				34A95564271B510400B05242 /* Toast.swift */,
@@ -6181,14 +6144,15 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		34A95514271B510400B05242 /* Link Preview */ = {
+		34A95514271B510400B05242 /* LinkPreview */ = {
 			isa = PBXGroup;
 			children = (
 				34A95517271B510400B05242 /* GroupLinkPreview.swift */,
+				5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */,
 				34A95516271B510400B05242 /* LinkPreviewState.swift */,
 				34A95515271B510400B05242 /* LinkPreviewView.swift */,
 			);
-			path = "Link Preview";
+			path = LinkPreview;
 			sourceTree = "<group>";
 		};
 		34A9551A271B510400B05242 /* VideoEditor */ = {
@@ -6206,6 +6170,7 @@
 			isa = PBXGroup;
 			children = (
 				34A95523271B510400B05242 /* CVCellMeasurement.swift */,
+				764981442A23194F00EC1287 /* CVItemViewModel.swift */,
 				34A95525271B510400B05242 /* CVText.swift */,
 				34A95522271B510400B05242 /* CVTextLabel.swift */,
 				34A95524271B510400B05242 /* CVUtils.swift */,
@@ -6269,40 +6234,27 @@
 		34A95566271B510500B05242 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				34A95596271B510500B05242 /* AttachmentApproval */,
-				76E08F3C2AE8761D00032BC9 /* Contact Sharing */,
-				34A9557A271B510500B05242 /* ConversationPicker */,
-				88A47174286666AF001A3065 /* Member Picker */,
-				765283AC2A00D893004583A9 /* OWSTableView */,
-				88B986F728807D7400F8C74D /* Recipient Picker */,
-				88B9870B28808C2900F8C74D /* Safety Numbers */,
-				34A9556D271B510500B05242 /* Stickers */,
-				8868A087287F44F3000E74A5 /* Stories */,
 				34A95569271B510500B05242 /* ActionSheetController.swift */,
-				34A9558E271B510500B05242 /* ApprovalFooterView.swift */,
-				34B3F83E1E8DF1700035BE1A /* ContactPickerViewController.swift */,
-				34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */,
 				508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */,
-				34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */,
-				B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */,
 				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
-				34A95578271B510500B05242 /* MediaMessageView.swift */,
 				34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */,
 				665EF86C290C385B00F490D2 /* OWSNavigationController.swift */,
 				34A95582271B510500B05242 /* OWSNavigationControllerBase.h */,
 				34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */,
+				765283AD2A00D8B4004583A9 /* OWSTableContents.swift */,
+				765283B12A00D8EC004583A9 /* OWSTableItem.swift */,
+				765283AF2A00D8CE004583A9 /* OWSTableSection.swift */,
 				8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */,
+				76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */,
+				34A9558B271B510500B05242 /* OWSTableViewController2.swift */,
 				66F44B4A2909EEDA004CF66C /* OWSViewController.swift */,
 				34A95567271B510500B05242 /* OWSWindow.swift */,
-				34ACA7F42733183000E47AD4 /* RegistrationValues.swift */,
-				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
 				345779402682464700732869 /* ScanQRCodeViewController.swift */,
 				7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */,
 				34A95595271B510500B05242 /* SheetViewController.swift */,
 				34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */,
 				B92E76A82B647E780095C4DF /* StackSheetViewController.swift */,
 				34A9557F271B510500B05242 /* TextApprovalViewController.swift */,
-				764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */,
 				764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */,
 			);
 			path = ViewControllers;
@@ -6324,16 +6276,6 @@
 			path = Stickers;
 			sourceTree = "<group>";
 		};
-		34A9557A271B510500B05242 /* ConversationPicker */ = {
-			isa = PBXGroup;
-			children = (
-				34A9557C271B510500B05242 /* ConversationItem.swift */,
-				34A9557B271B510500B05242 /* ConversationPicker.swift */,
-				663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */,
-			);
-			path = ConversationPicker;
-			sourceTree = "<group>";
-		};
 		34A95596271B510500B05242 /* AttachmentApproval */ = {
 			isa = PBXGroup;
 			children = (
@@ -6351,17 +6293,13 @@
 			path = AttachmentApproval;
 			sourceTree = "<group>";
 		};
-		34A955A0271B510500B05242 /* ViewModels */ = {
+		34A955A0271B510500B05242 /* Sending */ = {
 			isa = PBXGroup;
 			children = (
-				34A955A5271B510500B05242 /* ContactShareViewModel.swift */,
-				764981442A23194F00EC1287 /* CVItemViewModel.swift */,
 				764FE0442A2F0C0F004D2804 /* QuotedReplyModel.swift */,
 				3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */,
-				34A955A7271B510500B05242 /* ThreadViewModel.swift */,
-				50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */,
 			);
-			path = ViewModels;
+			path = Sending;
 			sourceTree = "<group>";
 		};
 		34A955A8271B510500B05242 /* Wallpapers */ = {
@@ -6379,6 +6317,7 @@
 				34D21DA127297FBE00D891F4 /* DebugLogger+Payments.swift */,
 				3465F4D227287675001663AF /* MobileCoinAPI+Configuration.swift */,
 				3465F4D427287675001663AF /* MobileCoinAPI.swift */,
+				34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */,
 				3465F4DC2728812A001663AF /* Payments.swift */,
 				34A955B8271B553D00B05242 /* PaymentsFormat.swift */,
 				3465F4D327287675001663AF /* PaymentsImpl.swift */,
@@ -6581,13 +6520,17 @@
 		453518691FC635DD00210559 /* SignalShareExtension */ = {
 			isa = PBXGroup;
 			children = (
-				34480B2F1FD0921000BC14EF /* utils */,
 				4535186F1FC635DD00210559 /* Info.plist */,
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
+				34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */,
+				4CCB567B23C8D89C004A5731 /* NSItemProvider+TypedAccessors.h */,
+				4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */,
 				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
 				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
 				7677E40E29F79BF300AC6A75 /* SAEScreenLockViewController.swift */,
+				7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */,
 				4535186A1FC635DD00210559 /* ShareViewController.swift */,
+				34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */,
 				88EFF4FB25AD4230000FAFBA /* SharingThreadPickerViewController.swift */,
 				881FF30723B5B16F0023B620 /* SignalShareExtension-AppStore.entitlements */,
 				34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */,
@@ -6809,6 +6752,7 @@
 		50597BBD2B97D624004681E1 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				34A955AD271B532F00B05242 /* FullTextSearcher.swift */,
 				50597BBE2B97D629004681E1 /* SearchableNameFinder.swift */,
 			);
 			path = Search;
@@ -6879,6 +6823,7 @@
 			isa = PBXGroup;
 			children = (
 				50B6BCB02AEC4F4D0010FB3B /* AuthorMergeHelperBuilder.swift */,
+				34A955BC271B560000B05242 /* NameCollisionFinder.swift */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -6890,6 +6835,25 @@
 				503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */,
 			);
 			path = Contacts;
+			sourceTree = "<group>";
+		};
+		50BF51032BB1FC7E00C2C309 /* AV */ = {
+			isa = PBXGroup;
+			children = (
+				7609818B2936EF22008F8300 /* AudioPlayer.swift */,
+				342FFE58271DAA25000AC89F /* AudioSession.swift */,
+				342FFE56271DA8C9000AC89F /* Sounds+SignalUI.swift */,
+				34A954E5271B4F6A00B05242 /* VideoPlayer.swift */,
+			);
+			path = AV;
+			sourceTree = "<group>";
+		};
+		50BF51062BB201AE00C2C309 /* Sharing */ = {
+			isa = PBXGroup;
+			children = (
+				762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */,
+			);
+			path = Sharing;
 			sourceTree = "<group>";
 		};
 		50E7E1CC2BACBDE000A94861 /* Expiration */ = {
@@ -7928,18 +7892,6 @@
 			path = Environment;
 			sourceTree = "<group>";
 		};
-		765283AC2A00D893004583A9 /* OWSTableView */ = {
-			isa = PBXGroup;
-			children = (
-				765283AD2A00D8B4004583A9 /* OWSTableContents.swift */,
-				765283B12A00D8EC004583A9 /* OWSTableItem.swift */,
-				765283AF2A00D8CE004583A9 /* OWSTableSection.swift */,
-				76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */,
-				34A9558B271B510500B05242 /* OWSTableViewController2.swift */,
-			);
-			path = OWSTableView;
-			sourceTree = "<group>";
-		};
 		765E22D92A44AF33002CCA3B /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -7951,15 +7903,16 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
-		76E08F3C2AE8761D00032BC9 /* Contact Sharing */ = {
+		76E08F3C2AE8761D00032BC9 /* ContactSharing */ = {
 			isa = PBXGroup;
 			children = (
 				34A9558A271B510500B05242 /* ContactFieldViewHelper.swift */,
 				76E08F3D2AE8763900032BC9 /* ContactShareField.swift */,
 				76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */,
+				34A955A5271B510500B05242 /* ContactShareViewModel.swift */,
 				34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */,
 			);
-			path = "Contact Sharing";
+			path = ContactSharing;
 			sourceTree = "<group>";
 		};
 		76EB03C118170B33006006FC /* src */ = {
@@ -8095,14 +8048,14 @@
 			path = "Context View";
 			sourceTree = "<group>";
 		};
-		884E4C4928B02301007A338C /* Attachment Multisend */ = {
+		884E4C4928B02301007A338C /* AttachmentMultisend */ = {
 			isa = PBXGroup;
 			children = (
 				3402A9EB271D98440084CBAE /* AttachmentMultisend.swift */,
 				8803C2F328B02FDB00183D2B /* OutgoingStoryMessage+AttachmentMultisend.swift */,
 				8803C2F428B02FDB00183D2B /* TSOutgoingMessage+AttachmentMultisend.swift */,
 			);
-			path = "Attachment Multisend";
+			path = AttachmentMultisend;
 			sourceTree = "<group>";
 		};
 		8852572727DD365D0032073C /* Stories */ = {
@@ -8164,22 +8117,6 @@
 				8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */,
 			);
 			path = "Group Reply Sheet";
-			sourceTree = "<group>";
-		};
-		8868A087287F44F3000E74A5 /* Stories */ = {
-			isa = PBXGroup;
-			children = (
-				887F898128FF32A600D3B78E /* AllSignalConnectionsViewController.swift */,
-				667E90CF28E799D1005FE603 /* ConnectionsEducationSheetViewController.swift */,
-				66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */,
-				88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */,
-				88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */,
-				88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */,
-				880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */,
-				8868A088287F4514000E74A5 /* NewStorySheet.swift */,
-				66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */,
-			);
-			path = Stories;
 			sourceTree = "<group>";
 		};
 		8871B16D25F007CE00D4E070 /* Profile */ = {
@@ -8304,15 +8241,6 @@
 			path = Transitions;
 			sourceTree = "<group>";
 		};
-		88A47174286666AF001A3065 /* Member Picker */ = {
-			isa = PBXGroup;
-			children = (
-				88A4717228664DE3001A3065 /* BaseMemberViewController.swift */,
-				3465947B2433B77700E5C510 /* NewMembersBar.swift */,
-			);
-			path = "Member Picker";
-			sourceTree = "<group>";
-		};
 		88A505F523DBA0C70005C012 /* Megaphones */ = {
 			isa = PBXGroup;
 			children = (
@@ -8349,24 +8277,46 @@
 			path = Wallpapers;
 			sourceTree = "<group>";
 		};
-		88B986F728807D7400F8C74D /* Recipient Picker */ = {
+		88B986F728807D7400F8C74D /* RecipientPickers */ = {
 			isa = PBXGroup;
 			children = (
+				88A4717228664DE3001A3065 /* BaseMemberViewController.swift */,
+				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
+				34A9550B271B510400B05242 /* ContactCellView.swift */,
+				34B3F83E1E8DF1700035BE1A /* ContactPickerViewController.swift */,
+				503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */,
+				34A9551E271B510400B05242 /* ContactsViewHelper.swift */,
+				34A95536271B510400B05242 /* ContactTableViewCell.swift */,
+				34A9557C271B510500B05242 /* ConversationItem.swift */,
+				34A9557B271B510500B05242 /* ConversationPicker.swift */,
+				663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */,
+				34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */,
+				E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */,
+				34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */,
+				45A663C41F92EC760027B59E /* GroupTableViewCell.swift */,
+				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
+				3465947B2433B77700E5C510 /* NewMembersBar.swift */,
+				34A9550A271B510400B05242 /* NonContactTableViewCell.swift */,
+				E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */,
 				506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */,
 				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
 				F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */,
+				34ACA7F42733183000E47AD4 /* RegistrationValues.swift */,
+				34A955A7271B510500B05242 /* ThreadViewModel.swift */,
+				50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */,
 			);
-			path = "Recipient Picker";
+			path = RecipientPickers;
 			sourceTree = "<group>";
 		};
-		88B9870B28808C2900F8C74D /* Safety Numbers */ = {
+		88B9870B28808C2900F8C74D /* SafetyNumbers */ = {
 			isa = PBXGroup;
 			children = (
 				45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */,
 				7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */,
 				662AC9242A460477009E2D5F /* FingerprintViewController.swift */,
+				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
 			);
-			path = "Safety Numbers";
+			path = SafetyNumbers;
 			sourceTree = "<group>";
 		};
 		88BFD4712335C2A4001797D7 /* Lottie */ = {
@@ -8616,7 +8566,18 @@
 		B99B155B2A71B9F300E26DAC /* Stories */ = {
 			isa = PBXGroup;
 			children = (
+				887F898128FF32A600D3B78E /* AllSignalConnectionsViewController.swift */,
+				667E90CF28E799D1005FE603 /* ConnectionsEducationSheetViewController.swift */,
+				66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */,
+				88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */,
+				88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */,
+				88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */,
+				880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */,
+				8868A088287F4514000E74A5 /* NewStorySheet.swift */,
+				66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */,
 				B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */,
+				88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */,
+				88F5FA9228EBD484007AA1BF /* StorySharing.swift */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -8788,6 +8749,7 @@
 				50A76F512AF565A300FCF02D /* Preconditions */,
 				66CDB7532AFC3EFB009A36EC /* Provisioning */,
 				6600F38C29918A5100B1EDB7 /* Registration */,
+				50BF51062BB201AE00C2C309 /* Sharing */,
 				34074F54203D0722004596AE /* Sounds */,
 				76EB03C118170B33006006FC /* src */,
 				50A76F572AF5762C00FCF02D /* Storage */,
@@ -9101,6 +9063,7 @@
 		D9A3E22E2A0DABC000E2A8B5 /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
+				B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */,
 				D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */,
 			);
 			path = Usernames;
@@ -9247,15 +9210,6 @@
 				D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */,
 			);
 			path = SDSCodableModel;
-			sourceTree = "<group>";
-		};
-		E14EDF6C2A71AF9F00F0FD7C /* Context Menus */ = {
-			isa = PBXGroup;
-			children = (
-				E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */,
-				E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */,
-			);
-			path = "Context Menus";
 			sourceTree = "<group>";
 		};
 		E75DD3DC2810CD3500E32C36 /* subscriptions */ = {
@@ -10893,7 +10847,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
-				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -12121,7 +12074,6 @@
 				34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */,
 				3402AA44271D9DCD0084CBAE /* ModalActivityIndicatorViewController.swift in Sources */,
 				66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */,
-				34A955BD271B560000B05242 /* NameCollisionFinder.swift in Sources */,
 				88B986F4287F5B6500F8C74D /* NewGroupStoryViewController.swift in Sources */,
 				88B98701288088BC00F8C74D /* NewMembersBar.swift in Sources */,
 				88F5D78C2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift in Sources */,
@@ -12177,9 +12129,7 @@
 				50597BBF2B97D629004681E1 /* SearchableNameFinder.swift in Sources */,
 				66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */,
 				66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */,
-				34A954CB271B4BE600B05242 /* ShareViewDelegate.swift in Sources */,
 				3402AA3C271D9DCD0084CBAE /* SheetViewController.swift in Sources */,
-				34A954AC271A471300B05242 /* SignalUI.docc in Sources */,
 				342FFE57271DA8C9000AC89F /* Sounds+SignalUI.swift in Sources */,
 				3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */,
 				C1D9B1532B7E949500D94595 /* SpamReportingUIUtils.swift in Sources */,
@@ -12216,7 +12166,6 @@
 				3402AA96271D9E180084CBAE /* Toast.swift in Sources */,
 				3402AA9B271D9E180084CBAE /* TooltipView.swift in Sources */,
 				50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */,
-				88C980D427F3AD2C009750C0 /* TSInteraction+DeleteActionSheet.swift in Sources */,
 				8803C2F628B02FDB00183D2B /* TSOutgoingMessage+AttachmentMultisend.swift in Sources */,
 				F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */,
 				7685DFFF29EA1F6400542CBC /* UIFont+OWS.swift in Sources */,
@@ -12267,6 +12216,7 @@
 				7677E40F29F79BF300AC6A75 /* SAEScreenLockViewController.swift in Sources */,
 				7677E40729F7472800AC6A75 /* ShareAppExtensionContext.swift in Sources */,
 				4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */,
+				50BF51022BB1FACA00C2C309 /* ShareViewDelegate.swift in Sources */,
 				88EFF4FC25AD4230000FAFBA /* SharingThreadPickerViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -12716,6 +12666,7 @@
 				8840B6E2283F16650036BA4C /* MyStoriesViewController.swift in Sources */,
 				886292122835606D00AA0C3B /* MyStoryCell.swift in Sources */,
 				8862921028355B8000AA0C3B /* MyStoryViewModel.swift in Sources */,
+				50BF51042BB1FE5D00C2C309 /* NameCollisionFinder.swift in Sources */,
 				32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */,
 				3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */,
 				329D42A725AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift in Sources */,
@@ -12906,6 +12857,7 @@
 				88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */,
 				1477630B275E20D700D1067E /* ThreadSwipeHandler.swift in Sources */,
 				88A4CC10246CE2760082211F /* TransferProgressView.swift in Sources */,
+				50BF51052BB1FE7E00C2C309 /* TSInteraction+DeleteActionSheet.swift in Sources */,
 				88D23D2823CEC0C700B0E74B /* TurnServerInfo.swift in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
@@ -14784,8 +14736,6 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "SignalUI/SignalUI-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -14860,8 +14810,6 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "SignalUI/SignalUI-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -14937,8 +14885,6 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "SignalUI/SignalUI-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -15015,8 +14961,6 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "SignalUI/SignalUI-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
