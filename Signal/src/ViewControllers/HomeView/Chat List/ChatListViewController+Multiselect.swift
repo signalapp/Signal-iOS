@@ -25,12 +25,9 @@ extension ChatListViewController {
         searchBar.delegate?.searchBarCancelButtonClicked?(searchBar)
         viewState.multiSelectState.title = title
         if chatListMode == .inbox {
-            let doneButton = UIBarButtonItem(
-                barButtonSystemItem: .cancel,
-                target: self,
-                action: #selector(done),
-                accessibilityIdentifier: CommonStrings.cancelButton
-            )
+            let doneButton: UIBarButtonItem = .cancelButton { [weak self] in
+                self?.done()
+            }
             navigationItem.setLeftBarButton(doneButton, animated: true)
             navigationItem.setRightBarButtonItems(nil, animated: true)
         } else {
@@ -120,7 +117,6 @@ extension ChatListViewController {
 
     // MARK: private helper
 
-    @objc
     private func done() {
         leaveMultiselectMode()
         updateBarButtonItems()
@@ -163,11 +159,10 @@ extension ChatListViewController {
         let deleteBtn = UIBarButtonItem(title: CommonStrings.deleteButton, style: .plain, target: self, action: #selector(performDelete))
         deleteBtn.isEnabled = hasSelectedEntries
 
-        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         var entries: [UIBarButtonItem] = []
         for button in [archiveBtn, readButton, deleteBtn] {
             if !entries.isEmpty {
-                entries.append(spacer)
+                entries.append(.flexibleSpace())
             }
             entries.append(button)
         }

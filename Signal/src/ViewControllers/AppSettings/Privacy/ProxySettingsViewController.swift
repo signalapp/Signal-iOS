@@ -55,18 +55,15 @@ class ProxySettingsViewController: OWSTableViewController2 {
 
     private func updateNavigationBar() {
         if navigationController?.viewControllers.count == 1 {
-            navigationItem.leftBarButtonItem = .init(
-                barButtonSystemItem: .cancel,
-                target: self,
-                action: #selector(didTapCancel)
+            navigationItem.leftBarButtonItem = .cancelButton(
+                dismissingFrom: self,
+                hasUnsavedChanges: { [weak self] in self?.hasPendingChanges }
             )
         }
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .save,
-            target: self,
-            action: #selector(didTapSave)
-        )
+        navigationItem.rightBarButtonItem = .systemItem(.save) { [weak self] in
+            self?.didTapSave()
+        }
         navigationItem.rightBarButtonItem?.isEnabled = hasPendingChanges
     }
 
@@ -191,7 +188,6 @@ class ProxySettingsViewController: OWSTableViewController2 {
         return true
     }
 
-    @objc
     private func didTapSave() {
         hostTextField.resignFirstResponder()
 
@@ -268,17 +264,6 @@ class ProxySettingsViewController: OWSTableViewController2 {
                     }
                     return .value(isConnected(error.responseStatusCode))
                 }
-        }
-    }
-
-    @objc
-    private func didTapCancel() {
-        if hasPendingChanges {
-            OWSActionSheets.showPendingChangesActionSheet { [weak self] in
-                self?.dismiss(animated: true)
-            }
-        } else {
-            dismiss(animated: true)
         }
     }
 

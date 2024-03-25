@@ -186,9 +186,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                                target: self,
-                                                                action: #selector(didPressCancel))
+        self.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.delegate?.gifPickerDidCancel()
+        }
         self.navigationItem.title = OWSLocalizedString("GIF_PICKER_VIEW_TITLE",
                                                       comment: "Title for the 'GIF picker' dialog.")
 
@@ -540,13 +540,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return
         }
         cell.isCellVisible = false
-    }
-
-    // MARK: - Event Handlers
-
-    @objc
-    private func didPressCancel(sender: UIButton) {
-        delegate?.gifPickerDidCancel()
     }
 
     // MARK: - UISearchBarDelegate

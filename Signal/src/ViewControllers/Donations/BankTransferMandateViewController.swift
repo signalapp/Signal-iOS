@@ -42,12 +42,7 @@ class BankTransferMandateViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
-        )
+        navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
 
         updateTableContents()
         updateBottomFooter()
@@ -257,11 +252,6 @@ class BankTransferMandateViewController: OWSTableViewController2 {
     }
 
     // MARK: Actions
-
-    @objc
-    private func didTapCancel() {
-        dismiss(animated: true)
-    }
 
     private func loadMandate() async {
         let request = OWSRequestFactory.bankMandateRequest(bankTransferType: self.bankTransferType)

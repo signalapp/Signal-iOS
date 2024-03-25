@@ -31,7 +31,9 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCloseButton))
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.didPressCloseButton()
+        }
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
@@ -94,8 +96,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    @objc
-    private func didPressCloseButton(sender: UIButton) {
+    private func didPressCloseButton() {
         Logger.info("")
 
         self.dismiss(animated: true)

@@ -48,11 +48,9 @@ public class CountryCodeViewController: OWSTableViewController2 {
 
         self.title = OWSLocalizedString("COUNTRYCODE_SELECT_TITLE", comment: "")
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .stop,
-            target: self,
-            action: #selector(didPressCancel),
-            accessibilityIdentifier: "cancel")
+        self.navigationItem.leftBarButtonItem = .systemItem(.stop) { [weak self] in
+            self?.dismiss(animated: true)
+        }
 
         createViews()
     }
@@ -88,11 +86,6 @@ public class CountryCodeViewController: OWSTableViewController2 {
 
         countryCodeDelegate?.countryCodeViewController(self, didSelectCountry: countryState)
         searchBar.resignFirstResponder()
-        self.dismiss(animated: true)
-    }
-
-    @objc
-    private func didPressCancel() {
         self.dismiss(animated: true)
     }
 }

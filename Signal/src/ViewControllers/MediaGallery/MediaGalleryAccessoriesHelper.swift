@@ -191,11 +191,9 @@ public class MediaGalleryAccessoriesHelper {
             return
         }
         if isInBatchSelectMode {
-            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .cancel,
-                target: self,
-                action: #selector(didCancelSelect)
-            )
+            viewController.navigationItem.rightBarButtonItem = .cancelButton { [weak self] in
+                self?.didCancelSelect()
+            }
         } else {
             viewController.navigationItem.rightBarButtonItem = nil // TODO: Search
         }
@@ -212,8 +210,7 @@ public class MediaGalleryAccessoriesHelper {
         isInBatchSelectMode = true
     }
 
-    @objc
-    private func didCancelSelect(_ sender: Any) {
+    private func didCancelSelect() {
         endSelectMode()
     }
 
@@ -431,13 +428,12 @@ public class MediaGalleryAccessoriesHelper {
         guard footerBarState != .hidden else { return }
 
         let fixedSpace = { return UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil) }
-        let flexibleSpace = { return UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil) }
         let footerBarItems: [UIBarButtonItem]? = {
             switch footerBarState {
             case .hidden:
                 return nil
             case .selection:
-                return [ shareButton, flexibleSpace(), selectionInfoButton, flexibleSpace(), deleteButton ]
+                return [ shareButton, .flexibleSpace(), selectionInfoButton, .flexibleSpace(), deleteButton ]
             case .regular:
                 let firstItem: UIBarButtonItem
                 if isGridViewAllowed {
@@ -450,9 +446,9 @@ public class MediaGalleryAccessoriesHelper {
                 }
                 return [
                     firstItem,
-                    flexibleSpace(),
+                    .flexibleSpace(),
                     currentFileTypeSupportsFiltering ? filterButton : fixedSpace(),
-                    flexibleSpace(),
+                    .flexibleSpace(),
                     selectButton
                 ]
             }
@@ -530,11 +526,12 @@ public class MediaGalleryAccessoriesHelper {
 
     // MARK: - Delete
 
-    private lazy var deleteButton = UIBarButtonItem(
-        image: Theme.iconImage(.buttonDelete),
+    private lazy var deleteButton = UIBarButtonItem.button(
+        icon: .buttonDelete,
         style: .plain,
-        target: self,
-        action: #selector(didPressDelete)
+        action: { [weak self] in
+            self?.didPressDelete()
+        }
     )
 
     private func updateDeleteButton() {
@@ -542,8 +539,7 @@ public class MediaGalleryAccessoriesHelper {
         deleteButton.isEnabled = viewController.hasSelection
     }
 
-    @objc
-    private func didPressDelete(_ sender: Any) {
+    private func didPressDelete() {
         Logger.debug("")
         viewController?.deleteSelectedItems()
     }

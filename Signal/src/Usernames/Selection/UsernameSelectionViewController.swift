@@ -196,12 +196,9 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     // MARK: Views
 
     /// Navbar button for finishing this view.
-    private lazy var doneBarButtonItem = UIBarButtonItem(
-        barButtonSystemItem: .done,
-        target: self,
-        action: #selector(didTapDone),
-        accessibilityIdentifier: "done_button"
-    )
+    private lazy var doneBarButtonItem: UIBarButtonItem = .doneButton { [weak self] in
+        self?.didTapDone()
+    }
 
     private lazy var wrapperScrollView = UIScrollView()
 
@@ -300,11 +297,9 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
             comment: "The title for the username selection view."
         )
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.hasUnsavedEdits }
         )
 
         navigationItem.rightBarButtonItem = doneBarButtonItem
@@ -606,24 +601,9 @@ private extension UsernameSelectionViewController {
 // MARK: - Nav bar events
 
 private extension UsernameSelectionViewController {
-    /// Called when the user cancels editing. Dismisses the view, discarding
-    /// unsaved changes.
-    @objc
-    private func didTapCancel() {
-        guard hasUnsavedEdits else {
-            dismiss(animated: true)
-            return
-        }
-
-        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            guard let self else { return }
-            self.dismiss(animated: true)
-        })
-    }
 
     /// Called when the user taps "Done". Attempts to finalize the new chosen
     /// username.
-    @objc
     private func didTapDone() {
         AssertIsOnMainThread()
 

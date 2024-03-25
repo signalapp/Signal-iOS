@@ -47,15 +47,6 @@ class AvatarEditViewController: OWSTableViewController2 {
         updateFooterViewLayout(forceUpdate: true)
     }
 
-    @objc
-    private func didTapCancel() {
-        guard model != originalModel else { return dismiss(animated: true) }
-        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.dismiss(animated: true)
-        })
-    }
-
-    @objc
     private func didTapDone() {
         defer { dismiss(animated: true) }
 
@@ -67,12 +58,19 @@ class AvatarEditViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in
+                self?.model != self?.originalModel
+            }
+        )
 
         if case .text(let text) = model.type, text.nilIfEmpty == nil {
             navigationItem.rightBarButtonItem = nil
         } else if model != originalModel {
-            navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
+            navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+                self?.didTapDone()
+            }
         } else {
             navigationItem.rightBarButtonItem = nil
         }

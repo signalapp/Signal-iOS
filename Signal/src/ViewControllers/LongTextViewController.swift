@@ -203,13 +203,10 @@ public class LongTextViewController: OWSViewController {
                 target: self,
                 action: #selector(shareButtonPressed)
             ),
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            UIBarButtonItem(
-                image: Theme.iconImage(.buttonForward),
-                style: .plain,
-                target: self,
-                action: #selector(forwardButtonPressed)
-            )
+            .flexibleSpace(),
+            .button(icon: .buttonForward, style: .plain) { [weak self] in
+                self?.forwardButtonPressed()
+            },
         ]
 
         loadContent()
@@ -248,7 +245,6 @@ public class LongTextViewController: OWSViewController {
         AttachmentSharing.showShareUI(for: shareText, sender: sender)
     }
 
-    @objc
     private func forwardButtonPressed() {
         // Only forward text.
         let selectionType: CVSelectionType = (itemViewModel.componentState.hasPrimaryAndSecondaryContentForSelection

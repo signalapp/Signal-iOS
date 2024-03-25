@@ -687,19 +687,14 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private func updateNavigationItem() {
         if hasUnsavedChanges {
             // If we have a unsaved changes, right item should be a "save" button.
-            let saveButton = UIBarButtonItem(
-                barButtonSystemItem: .save,
-                target: self,
-                action: #selector(updateProfile),
-                accessibilityIdentifier: "save_button"
-            )
-            navigationItem.rightBarButtonItem = saveButton
+            navigationItem.rightBarButtonItem = .systemItem(.save) { [weak self] in
+                self?.updateProfile()
+            }
         } else {
             navigationItem.rightBarButtonItem = nil
         }
     }
 
-    @objc
     private func updateProfile() {
 
         // Copy this on the main thread before the asynchronous update.

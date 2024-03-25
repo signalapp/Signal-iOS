@@ -1028,15 +1028,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
     public func present(fromViewController: UIViewController) {
         let navigationController = OWSNavigationController(rootViewController: self)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
-                                                           target: self,
-                                                           action: #selector(donePressed))
+        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
         fromViewController.present(navigationController, animated: true, completion: nil)
-    }
-
-    @objc
-    private func donePressed() {
-        self.dismiss(animated: true, completion: nil)
     }
 
     // MARK: - UIScrollViewDelegate

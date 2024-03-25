@@ -28,16 +28,17 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
     }
 
     private func updateBarButtons() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(dismissPressed))
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.dismissPressed()
+        }
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        navigationItem.rightBarButtonItem = .button(
             title: CommonStrings.nextButton,
             style: .plain,
-            target: self,
-            action: #selector(nextPressed))
+            action: { [weak self] in
+                self?.nextPressed()
+            }
+        )
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
 
         if recipientSet.isEmpty {
@@ -56,7 +57,6 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
 
     // MARK: - Actions
 
-    @objc
     private func nextPressed() {
         AssertIsOnMainThread()
 

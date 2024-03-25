@@ -76,16 +76,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         // manages to get here bad things could happen.
         owsAssert(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice)
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel)
-        )
-    }
-
-    @objc
-    private func didTapCancel() {
-        dismiss(animated: true)
+        self.navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {

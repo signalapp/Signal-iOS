@@ -165,6 +165,44 @@ public extension UIBarButtonItem {
             // Keep a strong reference to the Handler
             self.handler = handler
         }
+
+        convenience init(
+            title: String,
+            style: UIBarButtonItem.Style,
+            action: @escaping () -> Void
+        ) {
+            let handler = Handler(actionClosure: action)
+            self.init(title: title, style: style, target: handler, action: #selector(handler.action))
+            self.handler = handler
+        }
+
+        convenience init(
+            image: UIImage,
+            style: UIBarButtonItem.Style,
+            action: @escaping () -> Void
+        ) {
+            let handler = Handler(actionClosure: action)
+            self.init(image: image, style: style, target: handler, action: #selector(handler.action))
+            self.handler = handler
+        }
+    }
+
+    /// Creates a bar button with the given title that performs the action in the provided closure.
+    static func button(
+        title: String,
+        style: UIBarButtonItem.Style,
+        action: @escaping () -> Void
+    ) -> UIBarButtonItem {
+        ClosureBarButtonItem(title: title, style: style, action: action)
+    }
+
+    /// Creates a bar button with the given icon that performs the action in the provided closure.
+    static func button(
+        icon: ThemeIcon,
+        style: UIBarButtonItem.Style,
+        action: @escaping () -> Void
+    ) -> UIBarButtonItem {
+        ClosureBarButtonItem(image: Theme.iconImage(icon), style: style, action: action)
     }
 
     // Keep this static function public instead of exposing ClosureBarButtonItem
@@ -195,7 +233,7 @@ public extension UIBarButtonItem {
     ///   - completion: The block to execute after the view controller is dismissed.
     /// - Returns: A new `UIBarButtonItem`.
     static func cancelButton(
-        dismissingFrom viewController: UIViewController,
+        dismissingFrom viewController: UIViewController?,
         animated: Bool = true,
         completion: (() -> Void)? = nil
     ) -> UIBarButtonItem {
@@ -214,7 +252,7 @@ public extension UIBarButtonItem {
     ///   - completion: The block to execute after the view controller is dismissed.
     /// - Returns: A new `UIBarButtonItem`.
     static func cancelButton(
-        dismissingFrom viewController: UIViewController,
+        dismissingFrom viewController: UIViewController?,
         hasUnsavedChanges: @escaping () -> Bool?,
         animated: Bool = true,
         completion: (() -> Void)? = nil
@@ -247,6 +285,27 @@ public extension UIBarButtonItem {
     /// Creates a "Done" bar button which performs the action in the provided closure.
     static func doneButton(action: @escaping () -> Void) -> UIBarButtonItem {
         Self.systemItem(.done, action: action)
+    }
+
+    /// Creates a "Done" bar button which dismisses the view using the provided view controller.
+    /// - Parameters:
+    ///   - viewController: The view controller to dismiss from.
+    ///   - animated: Whether to animate the dismiss.
+    ///   - completion: The block to execute after the view controller is dismissed.
+    /// - Returns: A new `UIBarButtonItem`.
+    static func doneButton(
+        dismissingFrom viewController: UIViewController?,
+        animated: Bool = true,
+        completion: (() -> Void)? = nil
+    ) -> UIBarButtonItem {
+        Self.doneButton { [weak viewController] in
+            viewController?.dismiss(animated: animated, completion: completion)
+        }
+    }
+
+    /// Creates a flexible space bar item.
+    static func flexibleSpace() -> UIBarButtonItem {
+        UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     }
 
     // Feel free to add more system item functions as the need arises

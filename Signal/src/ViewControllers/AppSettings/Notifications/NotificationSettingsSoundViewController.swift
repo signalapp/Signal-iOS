@@ -48,12 +48,9 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
-        )
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.didTapCancel()
+        }
 
         if hasUnsavedChanges {
             navigationItem.rightBarButtonItem = UIBarButtonItem(
@@ -144,7 +141,6 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
         completion?()
     }
 
-    @objc
     private func didTapCancel() {
         guard hasUnsavedChanges else {
             stopPlayingAndDismiss()

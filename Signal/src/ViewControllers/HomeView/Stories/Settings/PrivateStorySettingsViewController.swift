@@ -23,11 +23,9 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
     private func updateBarButtons() {
         title = thread.name
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .edit,
-            target: self,
-            action: #selector(editPressed)
-        )
+        navigationItem.rightBarButtonItem = .systemItem(.edit) { [weak self] in
+            self?.editPressed()
+        }
     }
 
     override func viewDidLoad() {
@@ -301,7 +299,6 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         presentActionSheet(actionSheet)
     }
 
-    @objc
     private func editPressed() {
         let vc = PrivateStoryNameSettingsViewController(thread: thread) { [weak self] in
             self?.title = self?.thread.name

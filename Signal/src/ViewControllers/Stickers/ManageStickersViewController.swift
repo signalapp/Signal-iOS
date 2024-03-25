@@ -66,7 +66,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
         navigationItem.title = OWSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didPressDismiss))
+        navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
     }
 
     override public func viewDidLoad() {
@@ -536,13 +536,6 @@ public class ManageStickersViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         needsStateUpdate = true
-    }
-
-    @objc
-    private func didPressDismiss(sender: UIButton) {
-        AssertIsOnMainThread()
-
-        dismiss(animated: true)
     }
 }
 

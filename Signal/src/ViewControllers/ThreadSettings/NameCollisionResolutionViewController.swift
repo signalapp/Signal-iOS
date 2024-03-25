@@ -55,10 +55,9 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(donePressed))
+        navigationItem.leftBarButtonItem = .doneButton { [weak self] in
+            self?.donePressed()
+        }
         navigationItem.rightBarButtonItem = nil
     }
 
@@ -262,8 +261,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         // We observe contact updates and will automatically update our model in response
     }
 
-    @objc
-    private func donePressed(_ sender: UIBarButtonItem) {
+    private func donePressed() {
         // When the user presses done, implicitly mark the remaining collisions as resolved (if the finder supports it)
         // Note: We only do this for dismissal via "Done". If the user uses interactive sheet dismissal, leave the
         // collisions as-is.

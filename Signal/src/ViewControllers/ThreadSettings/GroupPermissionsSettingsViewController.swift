@@ -68,20 +68,18 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
         )
 
         if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
+            navigationItem.rightBarButtonItem = .button(
                 title: CommonStrings.setButton,
                 style: .done,
-                target: self,
-                action: #selector(didTapSet),
-                accessibilityIdentifier: "set_button"
+                action: { [weak self] in
+                    self?.didTapSet()
+                }
             )
         } else {
             navigationItem.rightBarButtonItem = nil
@@ -258,19 +256,6 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    @objc
-    private func didTapCancel() {
-        guard hasUnsavedChanges else {
-            dismiss(animated: true)
-            return
-        }
-
-        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.dismiss(animated: true)
-        })
-    }
-
-    @objc
     private func didTapSet() {
         guard groupViewHelper.canEditPermissions else {
             owsFailDebug("Missing edit permission.")

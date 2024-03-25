@@ -216,9 +216,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             guard let self else { return }
             // See ChatListViewController.showToolbar for why this is async
             DispatchQueue.main.async {
-                let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
                 self.multiselectToolbar?.setItems(
-                    [spacer, self.toolbarDeleteButton],
+                    [.flexibleSpace(), self.toolbarDeleteButton],
                     animated: false
                 )
                 self.updateMultiselectToolbarButtons()
@@ -279,16 +278,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     // MARK: Cancel multiselect button
 
     private func cancelMultiselectButton() -> UIBarButtonItem {
-        let barButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(cancelMultiselect),
-            accessibilityIdentifier: CommonStrings.cancelButton
-        )
-        return barButtonItem
+        .cancelButton { [weak self] in
+            self?.cancelMultiselect()
+        }
     }
 
-    @objc
     private func cancelMultiselect() {
         tableView.setEditing(false, animated: true)
         updateBarButtonItems()

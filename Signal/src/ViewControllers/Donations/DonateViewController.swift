@@ -81,11 +81,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         let isPresentedStandalone = navigationController?.viewControllers.first == self
         if isPresentedStandalone {
-            navigationItem.leftBarButtonItem = .init(
-                barButtonSystemItem: .cancel,
-                target: self,
-                action: #selector(didTapCancel)
-            )
+            navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
         }
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
@@ -120,11 +116,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     // MARK: - Events
-
-    @objc
-    private func didTapCancel() {
-        dismiss(animated: true)
-    }
 
     @objc
     private func didDonateModeChange() {

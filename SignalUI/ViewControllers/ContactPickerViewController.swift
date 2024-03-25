@@ -38,17 +38,15 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel)
-        )
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            guard let self else { return }
+            self.delegate?.contactPickerDidCancel(self)
+        }
         if allowsMultipleSelection {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .done,
-                target: self,
-                action: #selector(didTapDone)
-            )
+            navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+                guard let self else { return }
+                self.delegate?.contactPicker(self, didSelectMultiple: self.selectedContacts)
+            }
         }
 
         addChild(tableViewController)
@@ -281,18 +279,6 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
         // width of self.tableView. (A more complete fix would likely add a
         // callback when self.tableView’s size is available.)
         searchBar.layoutMargins = OWSTableViewController2.cellOuterInsets(in: view)
-    }
-
-    // MARK: Button Actions
-
-    @objc
-    private func didTapCancel() {
-        delegate?.contactPickerDidCancel(self)
-    }
-
-    @objc
-    private func didTapDone() {
-        delegate?.contactPicker(self, didSelectMultiple: selectedContacts)
     }
 }
 

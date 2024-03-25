@@ -215,13 +215,12 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
             return
         }
         if navigationController.viewControllers.count == 1 {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
-                                                               target: self,
-                                                               action: #selector(dismissPressed))
+            navigationItem.leftBarButtonItem = .doneButton { [weak self] in
+                self?.dismissPressed()
+            }
         }
     }
 
-    @objc
     open func dismissPressed() {
         if !self.hasUnsavedChanges {
             // If user made no changes, dismiss.

@@ -34,7 +34,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
         super.viewDidLoad()
 
-        navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
+        navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
         navigationItem.rightBarButtonItem = .init(title: CommonStrings.deleteButton, style: .done, target: self, action: #selector(didTapDelete))
         navigationItem.rightBarButtonItem?.setTitleTextAttributes([.foregroundColor: UIColor.ows_accentRed], for: .normal)
 
@@ -360,11 +360,6 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         ).map { $0.toE164() }
 
         return possibleNumbers.contains(localNumber)
-    }
-
-    @objc
-    private func didTapCancel() {
-        dismiss(animated: true)
     }
 }
 

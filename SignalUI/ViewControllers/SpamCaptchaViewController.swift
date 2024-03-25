@@ -38,17 +38,10 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
 
         isModalInPresentation = true
         navigationItem.title = OWSLocalizedString("SPAM_CAPTCHA_VIEW_CONTROLLER", comment: "Title for the captcha view controller")
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .stop,
-            target: self,
-            action: #selector(didTapCancel)
-        )
-    }
-
-    @objc
-    private func didTapCancel() {
-        completionHandler?(nil)
-        completionHandler = nil
+        navigationItem.leftBarButtonItem = .systemItem(.stop) { [weak self] in
+            self?.completionHandler?(nil)
+            self?.completionHandler = nil
+        }
     }
 
     public func captchaView(_: CaptchaView, didCompleteCaptchaWithToken token: String) {

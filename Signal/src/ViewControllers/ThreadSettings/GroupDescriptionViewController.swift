@@ -119,38 +119,30 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         }
 
         if isEditable {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .cancel,
-                target: self,
-                action: #selector(didTapCancel),
-                accessibilityIdentifier: "cancel_button"
+            navigationItem.leftBarButtonItem = .cancelButton(
+                dismissingFrom: self,
+                hasUnsavedChanges: { [weak self] in self?.helper.hasUnsavedChanges }
             )
         } else {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .done,
-                target: self,
-                action: #selector(didTapDone),
-                accessibilityIdentifier: "done_button"
-            )
+            navigationItem.leftBarButtonItem = .doneButton { [weak self] in
+                self?.didTapDone()
+            }
         }
 
         if helper.hasUnsavedChanges {
             owsAssertDebug(isEditable)
             if options.contains(.updateImmediately) {
-                navigationItem.rightBarButtonItem = UIBarButtonItem(
+                navigationItem.rightBarButtonItem = .button(
                     title: CommonStrings.setButton,
                     style: .done,
-                    target: self,
-                    action: #selector(didTapSet),
-                    accessibilityIdentifier: "set_button"
+                    action: { [weak self] in
+                        self?.didTapSet()
+                    }
                 )
             } else {
-                navigationItem.rightBarButtonItem = UIBarButtonItem(
-                    barButtonSystemItem: .done,
-                    target: self,
-                    action: #selector(didTapDone),
-                    accessibilityIdentifier: "done_button"
-                )
+                navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+                    self?.didTapDone()
+                }
             }
         } else {
             navigationItem.rightBarButtonItem = nil
@@ -213,26 +205,12 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    @objc
-    private func didTapCancel() {
-        guard helper.hasUnsavedChanges else {
-            dismiss(animated: true)
-            return
-        }
-
-        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.dismiss(animated: true)
-        })
-    }
-
-    @objc
     private func didTapDone() {
         helper.descriptionTextView.acceptAutocorrectSuggestion()
         descriptionDelegate?.groupDescriptionViewControllerDidComplete(groupDescription: helper.groupDescriptionCurrent)
         dismiss(animated: true)
     }
 
-    @objc
     private func didTapSet() {
         guard isEditable, helper.hasUnsavedChanges else {
             return owsFailDebug("Unexpectedly trying to set")

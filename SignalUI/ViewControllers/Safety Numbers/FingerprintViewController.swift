@@ -97,11 +97,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         super.init()
 
         title = NSLocalizedString("PRIVACY_VERIFICATION_TITLE", comment: "Navbar title")
-        navigationItem.leftBarButtonItem = .init(
-            barButtonSystemItem: .done,
-            target: self, action: #selector(didTapDone),
-            accessibilityIdentifier: "FingerprintViewController.done"
-        )
+        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
 
         identityStateChangeObserver = NotificationCenter.default.addObserver(
             forName: .identityStateDidChange,
@@ -380,11 +376,6 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     }
 
     // MARK: Actions
-
-    @objc
-    private func didTapDone() {
-        dismiss(animated: true)
-    }
 
     private func didTapLearnMore() {
         Self.showLearnMoreUrl(from: self)

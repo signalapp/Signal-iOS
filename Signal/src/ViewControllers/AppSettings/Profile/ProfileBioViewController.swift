@@ -101,22 +101,17 @@ class ProfileBioViewController: OWSTableViewController2 {
             title = OWSLocalizedString("PROFILE_BIO_VIEW_TITLE", comment: "Title for the profile bio view.")
         }
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
         )
 
         cancelButton.isHiddenInStackView = normalizedProfileBio?.isEmpty != false && normalizedProfileBioEmoji?.isEmpty != false
 
         if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .done,
-                target: self,
-                action: #selector(didTapDone),
-                accessibilityIdentifier: "done_button"
-            )
+            navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+                self?.didTapDone()
+            }
         } else {
             navigationItem.rightBarButtonItem = nil
         }
@@ -287,19 +282,6 @@ class ProfileBioViewController: OWSTableViewController2 {
         ]
     }
 
-    @objc
-    private func didTapCancel() {
-        guard hasUnsavedChanges else {
-            dismiss(animated: true)
-            return
-        }
-
-        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.dismiss(animated: true)
-        })
-    }
-
-    @objc
     private func didTapDone() {
         profileDelegate?.profileBioViewDidComplete(bio: normalizedProfileBio, bioEmoji: normalizedProfileBioEmoji)
 

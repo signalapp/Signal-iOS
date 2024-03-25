@@ -12,16 +12,7 @@ class UsernameLinkScanQRCodeSheet: UsernameLinkScanQRCodeViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = CommonStrings.scanQRCodeTitle
-        navigationItem.leftBarButtonItem = .init(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(didTapDone)
-        )
-    }
-
-    @objc
-    private func didTapDone() {
-        dismiss(animated: true)
+        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
     }
 }
 

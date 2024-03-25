@@ -92,12 +92,7 @@ class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChild
         addChild(presentQRCodeViewController)
         addChild(scanQRCodeViewController)
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(didTapDone),
-            accessibilityIdentifier: "done"
-        )
+        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
 
         contentSegmentedControl.selectedSegmentIndex = 0
         navigationItem.titleView = contentSegmentedControl
@@ -129,10 +124,5 @@ class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChild
         case .scan:
             setActive(viewController: scanQRCodeViewController)
         }
-    }
-
-    @objc
-    private func didTapDone() {
-        dismiss(animated: true)
     }
 }

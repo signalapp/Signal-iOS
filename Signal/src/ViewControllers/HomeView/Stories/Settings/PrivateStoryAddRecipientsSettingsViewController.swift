@@ -28,10 +28,9 @@ public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewCont
     }
 
     private func updateBarButtons() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .save,
-            target: self,
-            action: #selector(updatePressed))
+        navigationItem.rightBarButtonItem = .systemItem(.save) { [weak self] in
+            self?.updatePressed()
+        }
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
 
         title = OWSLocalizedString(
@@ -42,7 +41,6 @@ public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewCont
 
     // MARK: - Actions
 
-    @objc
     private func updatePressed() {
         AssertIsOnMainThread()
 

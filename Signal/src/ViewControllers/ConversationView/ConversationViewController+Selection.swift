@@ -423,20 +423,24 @@ extension ConversationViewController {
 extension ConversationViewController {
 
     var cancelSelectionBarButtonItem: UIBarButtonItem {
-        UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancelSelection))
+        .cancelButton { [weak self] in
+            self?.uiMode = .normal
+        }
     }
 
     var deleteAllBarButtonItem: UIBarButtonItem {
-        let title = OWSLocalizedString("CONVERSATION_VIEW_DELETE_ALL_MESSAGES", comment: "button text to delete all items in the current conversation")
-        return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(didTapDeleteAll))
+        return .button(
+            title: OWSLocalizedString(
+                "CONVERSATION_VIEW_DELETE_ALL_MESSAGES",
+                comment: "button text to delete all items in the current conversation"
+            ),
+            style: .plain,
+            action: { [weak self] in
+                self?.didTapDeleteAll()
+            }
+        )
     }
 
-    @objc
-    func didTapCancelSelection() {
-        uiMode = .normal
-    }
-
-    @objc
     func didTapDeleteAll() {
         let thread = self.thread
         let alert = ActionSheetController(title: nil, message: OWSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY", comment: "action sheet body"))

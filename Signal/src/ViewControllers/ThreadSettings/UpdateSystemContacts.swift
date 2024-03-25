@@ -61,11 +61,7 @@ private class AddToContactsFlowNavigationController: UINavigationController, CNC
             let contactViewController = contactsViewHelper.contactViewController(for: flow)
             // CNContactViewController doesn't provide a Cancel button unless in editing mode.
             if !flow.editImmediately {
-                contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(
-                    barButtonSystemItem: .cancel,
-                    target: self,
-                    action: #selector(cancelButtonTapped(sender:))
-                )
+                contactViewController.navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self, completion: completion)
             }
             pushViewController(contactViewController, animated: false)
         case is AddToExistingContactFlow:
@@ -90,11 +86,6 @@ private class AddToContactsFlowNavigationController: UINavigationController, CNC
         if let contactPickerViewController = viewController as? ContactPickerViewController {
             contactPickerViewController.delegate = self
         }
-    }
-
-    @objc
-    private func cancelButtonTapped(sender: Any) {
-        dismiss(animated: true, completion: completion)
     }
 
     // MARK: CNContactViewControllerDelegate

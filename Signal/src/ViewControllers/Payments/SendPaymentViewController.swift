@@ -474,10 +474,7 @@ public class SendPaymentViewController: OWSViewController {
         view.backgroundColor = tableBackgroundColor
         navigationItem.title = nil
         if mode.isModalRootView {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
-                                                               target: self,
-                                                               action: #selector(didTapDismiss),
-                                                               accessibilityIdentifier: "dismiss")
+            navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
             navigationItem.rightBarButtonItem = nil
         } else {
             navigationItem.leftBarButtonItem = nil
@@ -857,11 +854,6 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     // MARK: - Events
-
-    @objc
-    private func didTapDismiss() {
-        dismiss(animated: true, completion: nil)
-    }
 
     @objc
     private func didTapAddMemo() {

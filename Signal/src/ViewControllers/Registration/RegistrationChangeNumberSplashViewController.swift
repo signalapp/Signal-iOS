@@ -43,11 +43,9 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
     }
 
     private func createContents() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didPressCancel)
-        )
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.presenter?.exitRegistration()
+        }
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
@@ -141,11 +139,6 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
         bottomContainer.removeAllSubviews()
         bottomContainer.addSubview(continueButton)
         continueButton.autoPinEdgesToSuperviewMargins()
-    }
-
-    @objc
-    private func didPressCancel() {
-        presenter?.exitRegistration()
     }
 
     @objc

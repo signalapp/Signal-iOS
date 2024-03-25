@@ -160,7 +160,7 @@ public class MessageActionsToolbar: UIToolbar {
         var actionItems = [MessageActionsToolbarButton]()
         for action in messagesActions {
             if !newItems.isEmpty {
-                newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+                newItems.append(.flexibleSpace())
             }
 
             let actionItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: action)
@@ -172,8 +172,8 @@ public class MessageActionsToolbar: UIToolbar {
 
         // If we only have a single button, center it.
         if newItems.count == 1 {
-            newItems.insert(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), at: 0)
-            newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+            newItems.insert(.flexibleSpace(), at: 0)
+            newItems.append(.flexibleSpace())
         }
 
         items = newItems
@@ -199,9 +199,9 @@ public class MessageActionsToolbar: UIToolbar {
 
         var newItems = [UIBarButtonItem]()
         newItems.append(deleteItem)
-        newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+        newItems.append(.flexibleSpace())
         newItems.append(labelItem)
-        newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+        newItems.append(.flexibleSpace())
         newItems.append(forwardItem)
 
         items = newItems

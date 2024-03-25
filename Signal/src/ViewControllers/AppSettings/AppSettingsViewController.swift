@@ -23,7 +23,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         }
 
         title = OWSLocalizedString("SETTINGS_NAV_BAR_TITLE", comment: "Title for settings activity")
-        navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
+        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
@@ -61,11 +61,6 @@ class AppSettingsViewController: OWSTableViewController2 {
             name: .hasExpiredGiftBadgeDidChangeNotification,
             object: nil
         )
-    }
-
-    @objc
-    private func didTapDone() {
-        dismiss(animated: true)
     }
 
     @objc

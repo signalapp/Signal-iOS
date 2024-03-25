@@ -84,7 +84,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         navigationItem.titleView = titleView
 
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancel))
+        let cancelButton: UIBarButtonItem = .cancelButton { [weak self] in
+            guard let self else { return }
+            self.delegate?.imagePickerDidCancel(self)
+        }
         cancelButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.leftBarButtonItem = cancelButton
 
@@ -314,11 +317,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     // MARK: - Actions
-
-    @objc
-    private func didPressCancel() {
-        self.delegate?.imagePickerDidCancel(self)
-    }
 
     @objc
     private func didTapDoneButton() {

@@ -66,21 +66,19 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
     private func updateNavigation() {
         if !useCustomPicker {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .cancel,
-                target: self,
-                action: #selector(didTapCancel),
-                accessibilityIdentifier: "cancel_button"
+            navigationItem.leftBarButtonItem = .cancelButton(
+                dismissingFrom: self,
+                hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
             )
         }
 
         if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
+            navigationItem.rightBarButtonItem = .button(
                 title: CommonStrings.setButton,
                 style: .done,
-                target: self,
-                action: #selector(didTapDone),
-                accessibilityIdentifier: "set_button"
+                action: { [weak self] in
+                    self?.didTapDone()
+                }
             )
         } else {
             navigationItem.rightBarButtonItem = nil
@@ -179,19 +177,6 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
         return OWSDisappearingMessagesConfiguration.presetDurationsSeconds().map { $0.uint32Value }.reversed()
     }
 
-    @objc
-    private func didTapCancel() {
-        guard hasUnsavedChanges else {
-            dismiss(animated: true)
-            return
-        }
-
-        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.dismiss(animated: true)
-        })
-    }
-
-    @objc
     private func didTapDone() {
         let configuration = self.configuration
 

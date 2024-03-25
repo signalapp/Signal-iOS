@@ -39,7 +39,7 @@ class EmojiPickerSectionToolbar: BlurredToolbarContainer {
         toolbar.items = Array(
             buttons
                 .map { [UIBarButtonItem(customView: $0)] }
-                .joined(separator: [UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)])
+                .joined(separator: [.flexibleSpace()])
         )
 
         setSelectedSection(0)

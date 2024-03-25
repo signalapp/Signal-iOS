@@ -65,17 +65,13 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
     }
 
     private func updateNavigationBar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel)
-        )
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.didTapCancel()
+        }
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(didTapDone)
-        )
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.didTapDone()
+        }
         navigationItem.rightBarButtonItem?.isEnabled = hasPendingChanges
     }
 
@@ -103,7 +99,6 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Actions
 
-    @objc
     private func didTapCancel() {
         AssertIsOnMainThread()
 
@@ -116,7 +111,6 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
     private func didTapDone() {
         AssertIsOnMainThread()
 

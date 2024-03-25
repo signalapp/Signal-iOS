@@ -203,8 +203,9 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         if pickerDelegate?.conversationPickerCanCancel(self) ?? false {
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
-            self.navigationItem.leftBarButtonItem = cancelButton
+            self.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+                self?.onTouchCancelButton()
+            }
         }
 
         ensureSearchBarVisibility()
@@ -533,7 +534,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     // MARK: - Button Actions
 
-    @objc
     private func onTouchCancelButton() {
         pickerDelegate?.conversationPickerDidCancel(self)
     }

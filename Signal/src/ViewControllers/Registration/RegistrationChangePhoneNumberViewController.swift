@@ -80,22 +80,17 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         title = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE",
                                   comment: "Title for the 'change phone number' views in settings.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didPressCancel)
-        )
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.presenter?.exitRegistration()
+        }
 
         updateTableContents()
     }
 
     fileprivate func updateNavigationBar() {
-        let doneItem = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(didTapContinue)
-        )
-        navigationItem.rightBarButtonItem = doneItem
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.tryToContinue()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -279,22 +274,6 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
                         "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE",
                         comment: "Error indicating that the user's old and new phone numbers are identical.")
         OWSActionSheets.showActionSheet(title: nil, message: message)
-    }
-
-    // MARK: - Events
-
-    @objc
-    private func didPressCancel() {
-        AssertIsOnMainThread()
-
-        presenter?.exitRegistration()
-    }
-
-    @objc
-    private func didTapContinue() {
-        AssertIsOnMainThread()
-
-        tryToContinue()
     }
 }
 

@@ -59,20 +59,15 @@ class GroupNameViewController: OWSTableViewController2 {
             comment: "Title for the group name view."
         )
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.helper.hasUnsavedChanges }
         )
 
         if helper.hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .done,
-                target: self,
-                action: #selector(didTapDone),
-                accessibilityIdentifier: "done_button"
-            )
+            navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+                self?.didTapDone()
+            }
         } else {
             navigationItem.rightBarButtonItem = nil
         }
@@ -116,19 +111,6 @@ class GroupNameViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    @objc
-    private func didTapCancel() {
-        guard helper.hasUnsavedChanges else {
-            dismiss(animated: true)
-            return
-        }
-
-        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.dismiss(animated: true)
-        })
-    }
-
-    @objc
     private func didTapDone() {
         helper.nameTextField.acceptAutocorrectSuggestion()
         nameDelegate?.groupNameViewControllerDidComplete(groupName: helper.groupNameCurrent)

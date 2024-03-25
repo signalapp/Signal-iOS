@@ -52,14 +52,10 @@ public class SendPaymentMemoViewController: OWSViewController {
     private func createContents() {
         navigationItem.title = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
                                                  comment: "Label for the 'add memo' ui in the 'send payment' UI.")
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                           target: self,
-                                                           action: #selector(didTapCancelMemo),
-                                                           accessibilityIdentifier: "memo.cancel")
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
-                                                            target: self,
-                                                            action: #selector(didTapDoneMemo),
-                                                            accessibilityIdentifier: "memo.done")
+        navigationItem.leftBarButtonItem = .cancelButton(poppingFrom: navigationController)
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.didTapDoneMemo()
+        }
 
         rootStack.axis = .vertical
         rootStack.alignment = .fill
@@ -149,12 +145,6 @@ public class SendPaymentMemoViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc
-    private func didTapCancelMemo() {
-        navigationController?.popViewController(animated: true)
-    }
-
-    @objc
     private func didTapDoneMemo() {
         let memoMessage = memoTextField.text?.ows_stripped()
         delegate?.didChangeMemo(memoMessage: memoMessage)

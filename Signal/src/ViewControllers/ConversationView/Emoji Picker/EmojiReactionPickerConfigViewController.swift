@@ -25,11 +25,20 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
         title = OWSLocalizedString("CONFIGURE_REACTIONS", comment: "Configure reactions title text")
         view.backgroundColor = Theme.isDarkThemeEnabled ? Theme.actionSheetBackgroundColor : UIColor.color(rgbHex: 0xF0F0F0)
 
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped(sender:)))
-        navigationItem.setRightBarButton(doneButton, animated: false)
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.doneButtonTapped()
+        }
 
-        let resetButton = UIBarButtonItem(title: OWSLocalizedString("RESET", comment: "Configure reactions reset button text"), style: .plain, target: self, action: #selector(resetButtonTapped(sender:)))
-        navigationItem.setLeftBarButton(resetButton, animated: false)
+        navigationItem.leftBarButtonItem = .button(
+            title: OWSLocalizedString(
+                "RESET",
+                comment: "Configure reactions reset button text"
+            ),
+            style: .plain,
+            action: { [weak self] in
+                self?.resetButtonTapped()
+            }
+        )
 
         // Reaction picker
         reactionPicker.delegate = self
@@ -42,8 +51,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
         instructionLabel.autoPinEdge(.top, to: .bottom, of: reactionPicker, withOffset: 30)
     }
 
-    @objc
-    private func resetButtonTapped(sender: UIButton) {
+    private func resetButtonTapped() {
         let emojiSet: [EmojiWithSkinTones] = ReactionManager.defaultEmojiSet.map { EmojiWithSkinTones(rawValue: $0)! }
 
         for (index, emoji) in reactionPicker.currentEmojiSet().enumerated() {
@@ -53,8 +61,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
         }
     }
 
-    @objc
-    private func doneButtonTapped(sender: UIButton) {
+    private func doneButtonTapped() {
         let currentEmojiSet = reactionPicker.currentEmojiSet()
         SDSDatabaseStorage.shared.write { transaction in
             ReactionManager.setCustomEmojiSet(currentEmojiSet, transaction: transaction)

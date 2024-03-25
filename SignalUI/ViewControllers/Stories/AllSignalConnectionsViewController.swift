@@ -13,17 +13,12 @@ public class AllSignalConnectionsViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         title = OWSLocalizedString("ALL_SIGNAL_CONNECTIONS_TITLE", comment: "Title for the view of all your signal connections")
-        navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(done))
+        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
         updateTableContents()
-    }
-
-    @objc
-    private func done() {
-        dismiss(animated: true)
     }
 
     private func updateTableContents() {

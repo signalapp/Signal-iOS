@@ -86,7 +86,10 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
                                                           comment: "Title for the 'message approval' dialog.")
         }
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelPressed))
+        self.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            guard let self else { return }
+            self.delegate?.textApprovalDidCancel(self)
+        }
 
         footerView.delegate = self
 
@@ -163,13 +166,6 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         textView.setMessageBody(self.initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
         textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         textView.textContainerInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
-    }
-
-    // MARK: - Event Handlers
-
-    @objc
-    private func cancelPressed(sender: UIButton) {
-        delegate?.textApprovalDidCancel(self)
     }
 
     // MARK: - UITextViewDelegate

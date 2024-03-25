@@ -196,10 +196,7 @@ public class SearchResultsBar: UIView {
         showMoreRecentButton.imageInsets = UIEdgeInsets(top: 2, left: leftInteriorChevronMargin, bottom: 2, right: leftExteriorChevronMargin)
         showMoreRecentButton.tintColor = Theme.accentBlueColor
 
-        let spacer1 = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let spacer2 = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-
-        toolbar.items = [showLessRecentButton, showMoreRecentButton, spacer1, labelItem, spacer2]
+        toolbar.items = [showLessRecentButton, showMoreRecentButton, .flexibleSpace(), labelItem, .flexibleSpace()]
 
         self.autoresizingMask = .flexibleHeight
         self.translatesAutoresizingMaskIntoConstraints = false

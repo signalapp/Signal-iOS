@@ -124,16 +124,10 @@ open class OWSTableViewController: OWSViewController {
 
     public func present(fromViewController viewController: UIViewController) {
         let navigationController = OWSNavigationController(rootViewController: self)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .stop,
-            target: self,
-            action: #selector(donePressed(sender:)))
+        navigationItem.leftBarButtonItem = .systemItem(.stop) { [weak self] in
+            self?.dismiss(animated: true)
+        }
         viewController.present(navigationController, animated: true)
-    }
-
-    @objc
-    private func donePressed(sender: Any) {
-        dismiss(animated: true)
     }
 }
 

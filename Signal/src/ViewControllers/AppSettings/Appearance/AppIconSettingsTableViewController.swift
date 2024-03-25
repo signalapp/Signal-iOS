@@ -58,11 +58,7 @@ private class AppIconLearnMoreTableViewController: OWSTableViewController2 {
         super.viewDidLoad()
         updateTableContents()
 
-        navigationItem.leftBarButtonItem = .init(
-            barButtonSystemItem: .done,
-            target: self, action: #selector(didTapDone),
-            accessibilityIdentifier: "AppIconLearnMoreTableViewController.done"
-        )
+        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
     }
 
     override func themeDidChange() {
@@ -128,11 +124,6 @@ private class AppIconLearnMoreTableViewController: OWSTableViewController2 {
         cell.contentView.addSubview(imageView)
         imageView.autoPinEdgesToSuperviewEdges(with: insets)
         return cell
-    }
-
-    @objc
-    private func didTapDone() {
-        dismiss(animated: true)
     }
 }
 

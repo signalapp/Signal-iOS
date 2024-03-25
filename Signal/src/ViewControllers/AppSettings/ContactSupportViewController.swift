@@ -148,16 +148,15 @@ final class ContactSupportViewController: OWSTableViewController2 {
     }
 
     func setupNavigationBar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel)
-        )
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.didTapCancel()
+        }
+        navigationItem.rightBarButtonItem = .button(
             title: CommonStrings.nextButton,
             style: .done,
-            target: self,
-            action: #selector(didTapNext)
+            action: { [weak self] in
+                self?.didTapNext()
+            }
         )
         navigationItem.rightBarButtonItem?.isEnabled = false
     }
@@ -231,7 +230,6 @@ final class ContactSupportViewController: OWSTableViewController2 {
 
     // MARK: - Actions
 
-    @objc
     private func didTapCancel() {
         currentEmailComposeOperation?.cancel()
         navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
@@ -239,7 +237,6 @@ final class ContactSupportViewController: OWSTableViewController2 {
 
     var currentEmailComposeOperation: ComposeSupportEmailOperation?
 
-    @objc
     private func didTapNext() {
         var emailRequest = SupportEmailModel()
         emailRequest.userDescription = descriptionField.text

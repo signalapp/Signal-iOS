@@ -89,11 +89,9 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
 
     private func updateNavigation() {
         if navigationController?.viewControllers.count == 1 {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .cancel,
-                target: self,
-                action: #selector(didTapCancel),
-                accessibilityIdentifier: "cancel_button")
+            navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+                self?.didTapCancel()
+            }
         }
 
         if hasUnsavedChanges, showDismissalActivity {
@@ -103,18 +101,18 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
             spinner.startAnimating()
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: spinner)
         } else if hasUnsavedChanges, !showDismissalActivity {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
+            navigationItem.rightBarButtonItem = .button(
                 title: CommonStrings.setButton,
                 style: .done,
-                target: self,
-                action: #selector(didTapDone),
-                accessibilityIdentifier: "set_button")
+                action: { [weak self] in
+                    self?.didTapDone()
+                }
+            )
         } else {
             navigationItem.rightBarButtonItem = nil
         }
     }
 
-    @objc
     private func didTapCancel() {
         let requestDismissal: () -> Void = { [weak self] in
             guard let self = self else { return }
@@ -128,7 +126,6 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
         }
     }
 
-    @objc
     private func didTapDone() {
         if displayBadgeOnProfile, let selectedPrimaryBadge = selectedPrimaryBadge {
             badgeConfigDelegate?.badgeConfiguration(self, didCompleteWithBadgeSetting: .display(featuredBadge: selectedPrimaryBadge))

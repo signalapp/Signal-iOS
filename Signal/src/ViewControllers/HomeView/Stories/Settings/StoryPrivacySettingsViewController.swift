@@ -15,7 +15,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
         if navigationController?.viewControllers.count == 1 {
             title = OWSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view")
-            navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
+            navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
         } else {
             title = OWSLocalizedString(
                 "STORY_SETTINGS_TITLE",
@@ -34,11 +34,6 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         super.viewWillAppear(animated)
 
         updateTableContents()
-    }
-
-    @objc
-    private func didTapDone() {
-        dismiss(animated: true)
     }
 
     @objc

@@ -77,7 +77,9 @@ public class ContactShareViewController: OWSTableViewController2 {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancel))
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.didPressCancel()
+        }
         if let title = shareDelegate?.titleForContactShareViewController(self) {
             navigationItem.title = title
         } else {
@@ -199,7 +201,6 @@ public class ContactShareViewController: OWSTableViewController2 {
         shareDelegate.contactShareViewController(self, didApproveContactShare: filteredContactShare)
     }
 
-    @objc
     private func didPressCancel() {
         guard let shareDelegate else {
             owsFailDebug("missing delegate.")

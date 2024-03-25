@@ -144,19 +144,11 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel"
-        )
+        navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(didTapDone),
-            accessibilityIdentifier: "done"
-        )
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.didTapDone()
+        }
 
         navigationItem.title = OWSLocalizedString(
             "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR",
@@ -212,12 +204,6 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
 
     // MARK: - Events
 
-    @objc
-    private func didTapCancel() {
-        dismiss(animated: true)
-    }
-
-    @objc
     private func didTapDone() {
         if startingColor != currentColor {
             colorPickerDelegate?.didFinalizeSelectedColor(color: currentColor)

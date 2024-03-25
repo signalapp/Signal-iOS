@@ -41,7 +41,9 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
         title = OWSLocalizedString("CURRENCY_PICKER_VIEW_TITLE",
                                   comment: "Title for the 'currency picker' view in the app settings.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.dismissPicker()
+        }
 
         searchBar.placeholder = CommonStrings.searchBarPlaceholder
         searchBar.delegate = self
@@ -195,11 +197,6 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
         } else {
             navigationController?.popViewController(animated: true)
         }
-    }
-
-    @objc
-    private func didTapCancel() {
-        dismissPicker()
     }
 
     private func didSelectCurrency(_ currencyCode: String) {

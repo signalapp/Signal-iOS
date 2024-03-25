@@ -29,17 +29,7 @@ class ComposeViewController: RecipientPickerContainerViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissPressed))
-    }
-
-    @objc
-    private func dismissPressed() {
-        dismiss(animated: true)
-    }
-
-    @objc
-    private func newGroupPressed() {
-        showNewGroupUI()
+        navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
     }
 
     /// Presents the conversation for the given address and dismisses this

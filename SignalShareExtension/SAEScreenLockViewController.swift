@@ -25,11 +25,10 @@ final class SAEScreenLockViewController: ScreenLockViewController {
         super.loadView()
         view.backgroundColor = Theme.launchScreenBackgroundColor
         title = OWSLocalizedString("SHARE_EXTENSION_VIEW_TITLE", comment: "Title for the 'share extension' view.")
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .stop,
-            target: self,
-            action: #selector(dismissPressed)
-        )
+        navigationItem.leftBarButtonItem = .systemItem(.stop) { [weak self] in
+            Logger.debug("tapped dismiss share button")
+            self?.cancelShareExperience()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -128,12 +127,6 @@ final class SAEScreenLockViewController: ScreenLockViewController {
 
     private func cancelShareExperience() {
         shareViewDelegate?.shareViewWasCancelled()
-    }
-
-    @objc
-    private func dismissPressed(_ sender: Any) {
-        Logger.debug("tapped dismiss share button")
-        cancelShareExperience()
     }
 }
 

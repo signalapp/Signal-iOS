@@ -39,15 +39,13 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
     }
 
     private func updateBarButtons() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(dismissPressed))
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.dismissPressed()
+        }
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .save,
-            target: self,
-            action: #selector(savePressed))
+        navigationItem.rightBarButtonItem = .systemItem(.save) { [weak self] in
+            self?.savePressed()
+        }
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
 
         switch mode {
@@ -84,7 +82,6 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
 
     // MARK: - Actions
 
-    @objc
     private func savePressed() {
         AssertIsOnMainThread()
 

@@ -379,20 +379,17 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         moreButton.isHidden = isNavigationBarVisible || !showDisablePinButton
 
         if isNavigationBarVisible, showDisablePinButton {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-                image: Theme.iconImage(.buttonMore),
+            self.navigationItem.rightBarButtonItem = .button(
+                icon: .buttonMore,
                 style: .plain,
-                target: self,
-                action: #selector(didTapMoreButton(_:))
+                action: { [weak self] in
+                    self?.didTapMoreButton()
+                }
             )
         }
 
         if showCancelButton {
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .cancel,
-                target: self,
-                action: #selector(didTapCancel)
-            )
+            self.navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
         }
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
@@ -422,12 +419,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     }
 
     @objc
-    private func didTapCancel() {
-        dismiss(animated: true)
-    }
-
-    @objc
-    private func didTapMoreButton(_ sender: UIButton) {
+    private func didTapMoreButton() {
         let actionSheet = ActionSheetController()
         actionSheet.addAction(OWSActionSheets.cancelAction)
 

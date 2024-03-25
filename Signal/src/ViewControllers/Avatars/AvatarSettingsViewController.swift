@@ -80,15 +80,6 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    @objc
-    private func didTapCancel() {
-        guard state.isNew else { return dismiss(animated: true) }
-        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.dismiss(animated: true)
-        })
-    }
-
-    @objc
     private func didTapDone() {
         defer { dismiss(animated: true) }
 
@@ -197,15 +188,18 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.state.isNew }
+        )
 
         if state.isNew {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
+            navigationItem.rightBarButtonItem = .button(
                 title: CommonStrings.setButton,
                 style: .done,
-                target: self,
-                action: #selector(didTapDone),
-                accessibilityIdentifier: "set_button"
+                action: { [weak self] in
+                    self?.didTapDone()
+                }
             )
         } else {
             navigationItem.rightBarButtonItem = nil

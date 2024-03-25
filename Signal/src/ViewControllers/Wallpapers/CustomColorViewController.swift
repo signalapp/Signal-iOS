@@ -112,10 +112,13 @@ class CustomColorViewController: OWSTableViewController2 {
         title = OWSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TITLE",
                                   comment: "Title for the custom chat color settings view.")
 
-        navigationItem.rightBarButtonItem = .init(title: CommonStrings.setButton,
-                                                  style: .done,
-                                                  target: self,
-                                                  action: #selector(didTapSet))
+        navigationItem.rightBarButtonItem = .button(
+            title: CommonStrings.setButton,
+            style: .done,
+            action: { [weak self] in
+                self?.didTapSet()
+            }
+        )
 
         createSubviews()
 
@@ -177,20 +180,17 @@ class CustomColorViewController: OWSTableViewController2 {
         }
         self.navigationState = navigationState
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
-        )
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.didTapCancel()
+        }
 
         if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
+            navigationItem.rightBarButtonItem = .button(
                 title: CommonStrings.setButton,
                 style: .done,
-                target: self,
-                action: #selector(didTapDone),
-                accessibilityIdentifier: "set_button"
+                action: { [weak self] in
+                    self?.didTapDone()
+                }
             )
         } else {
             navigationItem.rightBarButtonItem = nil
@@ -471,12 +471,10 @@ class CustomColorViewController: OWSTableViewController2 {
         self.navigationController?.popViewController(animated: true)
     }
 
-    @objc
     private func didTapSet() {
         showSaveUI()
     }
 
-    @objc
     private func didTapCancel() {
         guard hasUnsavedChanges else {
             dismissWithoutSaving()
@@ -488,7 +486,6 @@ class CustomColorViewController: OWSTableViewController2 {
         })
     }
 
-    @objc
     private func didTapDone() {
         showSaveUI()
     }
