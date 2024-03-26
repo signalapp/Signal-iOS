@@ -185,7 +185,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: spamReportingMetadata,
             transaction: transaction
-        ).groupThread
+        )
 
         let authoritativeProfileKeys = changedGroupModel.profileKeys.filter {
             $0.key == changedGroupModel.updateSource.serviceIdUnsafeForLocalUserComparison()
@@ -820,7 +820,7 @@ private extension GroupV2UpdatesImpl {
                 localIdentifiers: localIdentifiers
             )
 
-            let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            let groupThread = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
                 newlyLearnedPniToAciAssociations: [:],
@@ -836,7 +836,7 @@ private extension GroupV2UpdatesImpl {
             // care of that.
 
             return (
-                result.groupThread,
+                groupThread,
                 addedToNewThreadBy: didAddLocalUserToV2Group ? groupUpdateSource : nil
             )
         } catch {
@@ -963,7 +963,7 @@ private extension GroupV2UpdatesImpl {
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: spamReportingMetadata,
             transaction: transaction
-        ).groupThread
+        )
 
         switch groupUpdateSource {
         case .unknown, .legacyE164, .rejectedInviteToPni, .localUser:
@@ -1072,7 +1072,7 @@ private extension GroupV2UpdatesImpl {
             // groupUpdateSource is unknown because we don't know the
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSource: GroupUpdateSource = .unknown
-            let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            let groupThread = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
                 newlyLearnedPniToAciAssociations: [:], // Not available from snapshots
@@ -1094,7 +1094,7 @@ private extension GroupV2UpdatesImpl {
                 self.groupsV2.updateLocalProfileKeyInGroup(groupId: newGroupModel.groupId, transaction: transaction)
             }
 
-            return result.groupThread
+            return groupThread
         }
     }
 

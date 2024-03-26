@@ -7,30 +7,6 @@ import Foundation
 import LibSignalClient
 import SignalCoreKit
 
-@objc
-public class UpsertGroupResult: NSObject {
-    @objc
-    public enum Action: UInt {
-        case inserted
-        case updatedWithUserFacingChanges
-        case updatedWithoutUserFacingChanges
-        case unchanged
-    }
-
-    @objc
-    public let action: Action
-
-    @objc
-    public let groupThread: TSGroupThread
-
-    public required init(action: Action, groupThread: TSGroupThread) {
-        self.action = action
-        self.groupThread = groupThread
-    }
-}
-
-// MARK: -
-
 // * The "local" methods are used in response to the local user's interactions.
 // * The "remote" methods are used in response to remote activity (incoming messages,
 //   sync transcripts, group syncs, etc.).
@@ -405,7 +381,7 @@ public class GroupManager: NSObject {
             groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
             localIdentifiers: localIdentifiers,
             transaction: transaction
-        ).groupThread
+        )
     }
 
     // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
@@ -416,7 +392,7 @@ public class GroupManager: NSObject {
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
-    ) throws -> UpsertGroupResult {
+    ) throws -> TSGroupThread {
         owsAssertDebug(groupModel.groupsVersion == .V1)
 
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
@@ -1059,12 +1035,23 @@ public class GroupManager: NSObject {
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
-    ) throws -> UpsertGroupResult {
+    ) throws -> TSGroupThread {
 
         TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
         let threadId = TSGroupThread.threadId(forGroupId: newGroupModel.groupId, transaction: transaction)
 
-        guard TSGroupThread.anyExists(uniqueId: threadId, transaction: transaction) else {
+        if TSGroupThread.anyExists(uniqueId: threadId, transaction: transaction) {
+            return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+                newGroupModel: newGroupModel,
+                newDisappearingMessageToken: newDisappearingMessageToken,
+                newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
+                groupUpdateSource: groupUpdateSource,
+                infoMessagePolicy: infoMessagePolicy,
+                localIdentifiers: localIdentifiers,
+                spamReportingMetadata: spamReportingMetadata,
+                transaction: transaction
+            )
+        } else {
             // When inserting a v2 group into the database for the
             // first time, we don't want to attribute all of the group
             // state to the author of the most recent revision.
@@ -1082,7 +1069,7 @@ public class GroupManager: NSObject {
                 }
             }
 
-            let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(
+            return insertGroupThreadInDatabaseAndCreateInfoMessage(
                 groupModel: newGroupModel,
                 disappearingMessageToken: newDisappearingMessageToken,
                 groupUpdateSource: shouldAttributeAuthor ? groupUpdateSource : .unknown,
@@ -1091,20 +1078,7 @@ public class GroupManager: NSObject {
                 spamReportingMetadata: spamReportingMetadata,
                 transaction: transaction
             )
-
-            return UpsertGroupResult(action: .inserted, groupThread: thread)
         }
-
-        return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
-            newGroupModel: newGroupModel,
-            newDisappearingMessageToken: newDisappearingMessageToken,
-            newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
-            groupUpdateSource: groupUpdateSource,
-            infoMessagePolicy: infoMessagePolicy,
-            localIdentifiers: localIdentifiers,
-            spamReportingMetadata: spamReportingMetadata,
-            transaction: transaction
-        )
     }
 
     /// Update persisted group-related state for the provided models. If
@@ -1123,7 +1097,7 @@ public class GroupManager: NSObject {
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
-    ) throws -> UpsertGroupResult {
+    ) throws -> TSGroupThread {
         // Step 1: First reload latest thread state. This ensures:
         //
         // * The thread (still) exists in the database.
@@ -1224,7 +1198,7 @@ public class GroupManager: NSObject {
         }
 
         // Step 4: Update group in database, if necessary.
-        let updateThreadResult: UpsertGroupResult = {
+        let hasUserFacingUpdate: Bool = {
             guard newGroupModel.revision > oldGroupModel.revision else {
                 /// Local group state must never revert to an earlier revision.
                 ///
@@ -1236,7 +1210,7 @@ public class GroupManager: NSObject {
                 /// the group models each codepath constructs for that revision
                 /// should be equivalent.
                 Logger.warn("Skipping redundant update for V2 group.")
-                return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
+                return false
             }
 
             autoWhitelistGroupIfNecessary(
@@ -1252,42 +1226,25 @@ public class GroupManager: NSObject {
                 transaction: transaction
             )
 
-            let hasUserFacingChange = newGroupModel.hasUserFacingChangeCompared(
+            let hasUserFacingGroupModelChange = newGroupModel.hasUserFacingChangeCompared(
                 to: oldGroupModel
             )
 
+            let hasDMUpdate = updateDMResult.newConfiguration != updateDMResult.oldConfiguration
+
+            let hasUserFacingUpdate = hasUserFacingGroupModelChange || hasDMUpdate
+
             groupThread.update(
                 with: newGroupModel,
-                shouldUpdateChatListUi: hasUserFacingChange,
+                shouldUpdateChatListUi: hasUserFacingUpdate,
                 transaction: transaction
             )
 
-            let action: UpsertGroupResult.Action = {
-                if hasUserFacingChange {
-                    return .updatedWithUserFacingChanges
-                }
-
-                return .updatedWithoutUserFacingChanges
-            }()
-            return UpsertGroupResult(action: action, groupThread: groupThread)
+            return hasUserFacingUpdate
         }()
 
-        let hadUserFacingChanges: Bool = {
-            if updateDMResult.newConfiguration != updateDMResult.oldConfiguration {
-                return true
-            }
-            switch updateThreadResult.action {
-            case .inserted, .updatedWithUserFacingChanges:
-                return true
-            case .unchanged, .updatedWithoutUserFacingChanges:
-                break
-            }
-            return false
-        }()
-
-        guard hadUserFacingChanges else {
-            // Neither DM config nor thread model had user-facing changes.
-            return updateThreadResult
+        guard hasUserFacingUpdate else {
+            return groupThread
         }
 
         switch infoMessagePolicy {
@@ -1308,7 +1265,7 @@ public class GroupManager: NSObject {
             break
         }
 
-        return UpsertGroupResult(action: .updatedWithUserFacingChanges, groupThread: groupThread)
+        return groupThread
     }
 
     private static func mutualGroupThreads(
