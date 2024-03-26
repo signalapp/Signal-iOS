@@ -14,7 +14,7 @@ public extension ThreadUtil {
         body messageBody: MessageBody?,
         mediaAttachments: [SignalAttachment] = [],
         thread: TSThread,
-        quotedReplyModel: QuotedReplyModel? = nil,
+        quotedReplyDraft: DraftQuotedReplyModel? = nil,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
         editTarget: TSOutgoingMessage? = nil,
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
@@ -26,7 +26,6 @@ public extension ThreadUtil {
             messageBody: messageBody,
             mediaAttachments: mediaAttachments,
             thread: thread,
-            quotedReplyModel: quotedReplyModel,
             editTarget: editTarget,
             transaction: readTransaction
         )
@@ -39,6 +38,7 @@ public extension ThreadUtil {
             insertMessage: {
                 outgoingMessagePreparer.insertMessage(
                     linkPreviewDraft: linkPreviewDraft,
+                    quotedReplyDraft: quotedReplyDraft,
                     transaction: $0
                 )
                 return outgoingMessagePreparer
@@ -88,17 +88,16 @@ public extension ThreadUtil {
     class func createUnsentMessage(body messageBody: MessageBody?,
                                    mediaAttachments: [SignalAttachment],
                                    thread: TSThread,
-                                   quotedReplyModel: QuotedReplyModel? = nil,
+                                   draftQuotedReply: DraftQuotedReplyModel? = nil,
                                    linkPreviewDraft: OWSLinkPreviewDraft? = nil,
                                    transaction: SDSAnyWriteTransaction) throws -> TSOutgoingMessage {
 
         let preparer = OutgoingMessagePreparer(messageBody: messageBody,
                                                mediaAttachments: mediaAttachments,
                                                thread: thread,
-                                               quotedReplyModel: quotedReplyModel,
                                                editTarget: nil,
                                                transaction: transaction)
-        preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
+        preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, quotedReplyDraft: draftQuotedReply, transaction: transaction)
         return try preparer.prepareMessage(transaction: transaction)
     }
 }
@@ -111,7 +110,6 @@ extension OutgoingMessagePreparer {
         messageBody: MessageBody?,
         mediaAttachments: [SignalAttachment] = [],
         thread: TSThread,
-        quotedReplyModel: QuotedReplyModel? = nil,
         editTarget: TSOutgoingMessage?,
         transaction: SDSAnyReadTransaction
     ) {
@@ -162,11 +160,6 @@ extension OutgoingMessagePreparer {
             }
         }
 
-        // Discard quoted reply for view-once messages.
-        let quotedMessage: TSQuotedMessage? = (isViewOnceMessage
-                                               ? nil
-                                               : quotedReplyModel?.buildQuotedMessageForSending())
-
         let message: TSOutgoingMessage
         if let editTarget {
             message = DependenciesBridge.shared.editManager.createOutgoingEditMessage(
@@ -176,7 +169,6 @@ extension OutgoingMessagePreparer {
                     builder.messageBody = truncatedText
                     builder.bodyRanges = bodyRanges
                     builder.expiresInSeconds = expiresInSeconds
-                    builder.quotedMessage = quotedMessage
                 }
         } else {
             let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
@@ -186,7 +178,6 @@ extension OutgoingMessagePreparer {
 
             messageBuilder.expiresInSeconds = expiresInSeconds
             messageBuilder.isVoiceMessage = isVoiceMessage
-            messageBuilder.quotedMessage = quotedMessage
             messageBuilder.isViewOnceMessage = isViewOnceMessage
 
             message = messageBuilder.build(transaction: transaction)

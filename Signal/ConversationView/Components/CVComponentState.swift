@@ -1116,7 +1116,25 @@ fileprivate extension CVComponentState.Builder {
         message: TSMessage,
         revealedSpoilerIdsSnapshot: Set<StyleIdType>
     ) {
-        guard let quotedReplyModel = QuotedReplyModel(message: message, transaction: transaction) else {
+        let quotedReplyModel: QuotedReplyModel? = {
+            if
+                message.isStoryReply,
+                let storyTimestamp = message.storyTimestamp?.uint64Value,
+                let storyAuthorAci = message.storyAuthorAci?.wrappedAciValue
+            {
+                return QuotedReplyModel.build(
+                    storyReplyMessage: message,
+                    storyTimestamp: storyTimestamp,
+                    storyAuthorAci: storyAuthorAci,
+                    transaction: transaction
+                )
+            } else if let quotedMessage = message.quotedMessage {
+                return QuotedReplyModel.build(replyMessage: message, quotedMessage: quotedMessage, transaction: transaction)
+            } else {
+                return nil
+            }
+        }()
+        guard let quotedReplyModel else {
             return
         }
         var displayableQuotedText: DisplayableText?

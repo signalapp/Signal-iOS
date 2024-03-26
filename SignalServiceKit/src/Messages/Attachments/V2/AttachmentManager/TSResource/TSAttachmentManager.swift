@@ -287,10 +287,10 @@ public class TSAttachmentManager {
         // - Updating the message's state to now point to the new attachment
         guard
             let attachmentId = info.attachmentId,
-            let attachmentStream = TSAttachmentStream.anyFetchAttachmentStream(
+            let attachmentStream = TSAttachment.anyFetch(
                 uniqueId: attachmentId,
                 transaction: tx
-            )
+            ) as? TSAttachmentStream
         else {
             // No stream, nothing to clone. exit early.
             return nil

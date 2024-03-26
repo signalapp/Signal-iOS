@@ -190,6 +190,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)updateWithQuotedMessage:(TSQuotedMessage *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction;
+
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
 
 #ifdef TESTABLE_BUILD

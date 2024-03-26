@@ -1727,10 +1727,15 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 )
                 let itemViewModel = CVItemViewModelImpl(renderItem: renderItem!)
 
-                let quotedMessage = QuotedReplyModel.forSending(
-                    item: itemViewModel,
-                    transaction: transaction
-                )!.buildQuotedMessageForSending()
+                let draft = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(
+                    originalMessage: itemViewModel.interaction as! TSMessage,
+                    tx: transaction.asV2Read
+                )!
+                let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
+                    draft: draft,
+                    threadUniqueId: thread.uniqueId,
+                    tx: transaction.asV2Write
+                )
 
                 let replyMessageBodyWIndex: String?
                 if let replyMessageBody {
@@ -1743,7 +1748,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                         thread: thread,
                         messageBody: replyMessageBodyWIndex,
                         fakeAssetLoader: replyAssetLoader,
-                        quotedMessage: quotedMessage,
+                        quotedMessageBuilder: quotedMessageBuilder,
                         transaction: transaction
                     )
                 } else {
@@ -1754,7 +1759,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                         messageState: replyMessageState,
                         isDelivered: replyIsDelivered,
                         isRead: replyIsRead,
-                        quotedMessage: quotedMessage,
+                        quotedMessageBuilder: quotedMessageBuilder,
                         transaction: transaction
                     )
                 }
@@ -3848,7 +3853,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         messageState: TSOutgoingMessageState,
         isDelivered: Bool = false,
         isRead: Bool = false,
-        quotedMessage: TSQuotedMessage? = nil,
+        quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>? = nil,
         contactShare: OWSContact? = nil,
         linkPreview: OWSLinkPreview? = nil,
         messageSticker: MessageSticker? = nil,
@@ -3871,7 +3876,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: messageBody)
         messageBuilder.isVoiceMessage = false
-        messageBuilder.quotedMessage = quotedMessage
+        messageBuilder.quotedMessage = quotedMessageBuilder?.info
         messageBuilder.contactShare = contactShare
         messageBuilder.linkPreview = linkPreview
         messageBuilder.messageSticker = messageSticker
@@ -3879,6 +3884,11 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let message = messageBuilder.build(transaction: transaction)
         message.anyInsert(transaction: transaction)
         message.update(withFakeMessageState: messageState, transaction: transaction)
+
+        try? quotedMessageBuilder?.finalize(
+            owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
+            tx: transaction.asV2Write
+        )
 
         let attachment: TSAttachment?
         if let fakeAssetLoader {
@@ -4072,7 +4082,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         messageBody messageBodyParam: String?,
         fakeAssetLoader fakeAssetLoaderParam: DebugUIMessagesAssetLoader?,
         isAttachmentDownloaded: Bool = false,
-        quotedMessage: TSQuotedMessage? = nil,
+        quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>? = nil,
         transaction: SDSAnyWriteTransaction
     ) -> TSIncomingMessage {
         owsAssertDebug(!messageBodyParam.isEmptyOrNil || fakeAssetLoaderParam != nil)
@@ -4093,10 +4103,15 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
         incomingMessageBuilder.authorAci = AciObjC(authorAci)
-        incomingMessageBuilder.quotedMessage = quotedMessage
+        incomingMessageBuilder.quotedMessage = quotedMessageBuilder?.info
         let message = incomingMessageBuilder.build()
         message.anyInsert(transaction: transaction)
         message.debugonly_markAsReadNow(transaction: transaction)
+
+        try? quotedMessageBuilder?.finalize(
+            owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
+            tx: transaction.asV2Write
+        )
 
         let attachment: TSAttachment?
         if let fakeAssetLoader {

@@ -70,7 +70,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         spoilerState: SpoilerRenderState,
         mediaCache: CVMediaCache,
         messageDraft: MessageBody?,
-        quotedReply: QuotedReplyModel?,
+        quotedReplyDraft: DraftQuotedReplyModel?,
         editTarget: TSOutgoingMessage?,
         inputToolbarDelegate: ConversationInputToolbarDelegate,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
@@ -93,7 +93,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         createContentsWithMessageDraft(
             messageDraft,
-            quotedReply: quotedReply,
+            quotedReplyDraft: quotedReplyDraft,
             inputTextViewDelegate: inputTextViewDelegate,
             mentionDelegate: mentionDelegate
         )
@@ -339,7 +339,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private func createContentsWithMessageDraft(
         _ messageDraft: MessageBody?,
-        quotedReply: QuotedReplyModel?,
+        quotedReplyDraft: DraftQuotedReplyModel?,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
         mentionDelegate: BodyRangesTextViewDelegate
     ) {
@@ -362,8 +362,8 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         editMessageLabelWrapper.isHidden = !shouldShowEditUI
 
-        quotedReplyWrapper.isHidden = quotedReply == nil
-        self.quotedReply = quotedReply
+        quotedReplyWrapper.isHidden = quotedReplyDraft == nil
+        self.quotedReplyDraft = quotedReplyDraft
 
         // Vertical stack of message component views in the center: Link Preview, Reply Quote, Text Input View.
         let messageContentVStack = UIStackView(arrangedSubviews: [
@@ -546,7 +546,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         // Show / hide Sticker or Keyboard buttons inside of the text input field.
         // Either buttons are only visible if there's no any text input, including whitespace-only.
-        let hideStickerOrKeyboardButton = shouldShowEditUI || !inputTextView.untrimmedText.isEmpty || isShowingVoiceMemoUI || quotedReply != nil
+        let hideStickerOrKeyboardButton = shouldShowEditUI || !inputTextView.untrimmedText.isEmpty || isShowingVoiceMemoUI || quotedReplyDraft != nil
         let hideStickerButton = hideStickerOrKeyboardButton || desiredKeyboardType == .sticker
         let hideKeyboardButton = hideStickerOrKeyboardButton || !hideStickerButton
         ConversationInputToolbar.setView(stickerButton, hidden: hideStickerButton, usingAnimator: animator)
@@ -1009,14 +1009,14 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     // MARK: Quoted Reply
 
-    var quotedReply: QuotedReplyModel? {
+    var quotedReplyDraft: DraftQuotedReplyModel? {
         didSet {
-            guard oldValue != quotedReply else { return }
+            guard oldValue != quotedReplyDraft else { return }
 
             layer.removeAllAnimations()
 
             let animateChanges = window != nil
-            if quotedReply != nil {
+            if quotedReplyDraft != nil {
                 showQuotedReplyView(animated: animateChanges)
             } else {
                 hideQuotedReplyView(animated: animateChanges)
@@ -1028,13 +1028,13 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }
 
     private func showQuotedReplyView(animated: Bool) {
-        guard let quotedReply else {
+        guard let quotedReplyDraft else {
             owsFailDebug("quotedReply == nil")
             return
         }
 
         let quotedMessagePreview = QuotedReplyPreview(
-            quotedReply: quotedReply,
+            quotedReplyDraft: quotedReplyDraft,
             conversationStyle: conversationStyle,
             spoilerState: spoilerState
         )
@@ -1051,7 +1051,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }
 
     private func hideQuotedReplyView(animated: Bool) {
-        owsAssertDebug(quotedReply == nil)
+        owsAssertDebug(quotedReplyDraft == nil)
         toggleMessageComponentVisibility(hide: true, component: quotedReplyWrapper, animated: animated) { _ in
             self.quotedReplyWrapper.removeAllSubviews()
         }
@@ -1083,14 +1083,18 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }
 
     var draftReply: ThreadReplyInfo? {
-        guard let quotedReply else { return nil }
-        guard let aci = quotedReply.authorAddress.aci else { return nil }
-        guard let timestamp = quotedReply.timestamp else { return nil }
-        return ThreadReplyInfo(timestamp: timestamp, author: aci)
+        guard let quotedReplyDraft else { return nil }
+        guard
+            let originalMessageTimestamp = quotedReplyDraft.originalMessageTimestamp,
+            let aci = quotedReplyDraft.originalMessageAuthorAddress.aci
+        else {
+            return nil
+        }
+        return ThreadReplyInfo(timestamp: originalMessageTimestamp, author: aci)
     }
 
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview) {
-        quotedReply = nil
+        quotedReplyDraft = nil
     }
 
     // MARK: Link Preview
@@ -1168,7 +1172,11 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             updateLinkPreviewConstraint()
         }
 
-        linkPreviewView.configureForNonCVC(state: state, isDraft: true, hasAsymmetricalRounding: quotedReply == nil)
+        linkPreviewView.configureForNonCVC(
+            state: state,
+            isDraft: true,
+            hasAsymmetricalRounding: quotedReplyDraft == nil
+        )
         UIView.performWithoutAnimation {
             self.mainPanelView.layoutIfNeeded()
         }
@@ -2055,7 +2063,7 @@ extension ConversationInputToolbar {
         ImpactHapticFeedback.impactOccurred(style: .light)
         if shouldShowEditUI {
             editTarget = nil
-            quotedReply = nil
+            quotedReplyDraft = nil
             clearTextMessage(animated: true)
         } else {
             toggleKeyboardType(.attachment, animated: true)

@@ -18,6 +18,30 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
     ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
         return nil
     }
+
+    open func buildDraftQuotedReply(
+        originalMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> DraftQuotedReplyModel? {
+        return nil
+    }
+
+    open func buildDraftQuotedReplyForEditing(
+        quotedReplyMessage: TSMessage,
+        quotedReply: TSQuotedMessage,
+        originalMessage: TSMessage?,
+        tx: DBReadTransaction
+    ) -> DraftQuotedReplyModel {
+        fatalError("Unimplemented!")
+    }
+
+    open func buildQuotedReplyForSending(
+        draft: DraftQuotedReplyModel,
+        threadUniqueId: String,
+        tx: DBWriteTransaction
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
+        fatalError("Unimplemented!")
+    }
 }
 
 #endif

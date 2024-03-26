@@ -79,6 +79,17 @@ public class OWSMediaUtils: NSObject {
     }
 
     @objc
+    public class func thumbnail(forImageData imageData: Data, maxDimensionPixels: CGFloat) throws -> UIImage {
+        guard imageData.ows_isValidImage else {
+            throw OWSMediaError.failure(description: "Invalid image.")
+        }
+        guard let originalImage = UIImage(data: imageData) else {
+            throw OWSMediaError.failure(description: "Could not load original image.")
+        }
+        return try thumbnail(forImage: originalImage, maxDimensionPixels: maxDimensionPixels)
+    }
+
+    @objc
     public class func thumbnail(forWebpAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")

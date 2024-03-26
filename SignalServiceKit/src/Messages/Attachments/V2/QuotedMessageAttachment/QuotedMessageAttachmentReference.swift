@@ -17,7 +17,7 @@ public enum QuotedMessageAttachmentReference {
     /// we use to render a stub at display time.
     case stub(Stub)
 
-    public struct Stub {
+    public struct Stub: Equatable {
         public let mimeType: String?
         public let sourceFilename: String?
 

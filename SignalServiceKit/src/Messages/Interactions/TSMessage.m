@@ -520,6 +520,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) { [message setLinkPreview:linkPreview]; }];
 }
 
+- (void)updateWithQuotedMessage:(TSQuotedMessage *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(linkPreview);
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) { [message setQuotedMessage:linkPreview]; }];
+}
+
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSticker);

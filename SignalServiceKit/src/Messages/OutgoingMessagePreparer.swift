@@ -34,6 +34,7 @@ public class OutgoingMessagePreparer: NSObject {
 
     public func insertMessage(
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
+        quotedReplyDraft: DraftQuotedReplyModel? = nil,
         transaction: SDSAnyWriteTransaction
     ) {
         let messageRowId: Int64
@@ -71,6 +72,24 @@ public class OutgoingMessagePreparer: NSObject {
                 )
             } catch {
                 Logger.error("error: \(error)")
+            }
+        }
+
+        // Discard quoted reply for view-once messages.
+        if let quotedReplyDraft, !message.isViewOnceMessage {
+            do {
+                let quotedReplyBuilder = DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
+                    draft: quotedReplyDraft,
+                    threadUniqueId: message.uniqueThreadId,
+                    tx: transaction.asV2Write
+                )
+                unpreparedMessage.update(with: quotedReplyBuilder.info, transaction: transaction)
+                try quotedReplyBuilder.finalize(
+                    owner: .quotedReplyAttachment(messageRowId: messageRowId),
+                    tx: transaction.asV2Write
+                )
+            } catch {
+                Logger.error("error creating quoted reply: \(error)")
             }
         }
     }

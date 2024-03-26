@@ -792,6 +792,7 @@
 		664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */; };
 		664165132BA4A27000C34F6A /* OwnedAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */; };
 		664165162BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664165152BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift */; };
+		66420F682BB2376100252B0D /* DraftQuotedReplyModel+Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66420F672BB2376100252B0D /* DraftQuotedReplyModel+Payments.swift */; };
 		6642A8702A8D7B4B00E591C2 /* OWSPaymentActivationRequestFinishedMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6642A8722A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */; };
 		6642A8742A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6642A8732A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -838,6 +839,7 @@
 		665C0D622AE0552900539A37 /* MessageBackupProtoStreamProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D612AE0552900539A37 /* MessageBackupProtoStreamProvider.swift */; };
 		665C0D6C2AE0776700539A37 /* Backup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D6B2AE0776700539A37 /* Backup.pb.swift */; };
 		665C0D6E2AE07A8A00539A37 /* BackupProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D6D2AE07A8A00539A37 /* BackupProto.swift */; };
+		665CBD052BADC87A0059EA4F /* DraftQuotedReplyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */; };
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
 		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
 		6660725E2BAB36960084B3D2 /* AttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */; };
@@ -3609,6 +3611,7 @@
 		664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAuth.swift; sourceTree = "<group>"; };
 		664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnedAttachmentBuilder.swift; sourceTree = "<group>"; };
 		664165152BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceRetrievalInfo.swift; sourceTree = "<group>"; };
+		66420F672BB2376100252B0D /* DraftQuotedReplyModel+Payments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DraftQuotedReplyModel+Payments.swift"; sourceTree = "<group>"; };
 		6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSPaymentActivationRequestFinishedMessage.h; sourceTree = "<group>"; };
 		6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSPaymentActivationRequestFinishedMessage.m; sourceTree = "<group>"; };
 		6642A8732A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSPaymentActivationRequestMessage.h; sourceTree = "<group>"; };
@@ -3655,6 +3658,7 @@
 		665C0D612AE0552900539A37 /* MessageBackupProtoStreamProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProtoStreamProvider.swift; sourceTree = "<group>"; };
 		665C0D6B2AE0776700539A37 /* Backup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backup.pb.swift; sourceTree = "<group>"; };
 		665C0D6D2AE07A8A00539A37 /* BackupProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProto.swift; sourceTree = "<group>"; };
+		665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftQuotedReplyModel.swift; sourceTree = "<group>"; };
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
 		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
 		6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDataSource.swift; sourceTree = "<group>"; };
@@ -6298,6 +6302,7 @@
 		34A955A0271B510500B05242 /* Sending */ = {
 			isa = PBXGroup;
 			children = (
+				66420F672BB2376100252B0D /* DraftQuotedReplyModel+Payments.swift */,
 				764FE0442A2F0C0F004D2804 /* QuotedReplyModel.swift */,
 				3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */,
 			);
@@ -7365,6 +7370,7 @@
 		669FAE0C2B744BA4009EE2FE /* Quotes */ = {
 			isa = PBXGroup;
 			children = (
+				665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */,
 				6635B8A42BA25D9F005C80EA /* QuotedReplyManager.swift */,
 				6635B8A62BA25DDD005C80EA /* QuotedReplyManagerImpl.swift */,
 				6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */,
@@ -12017,6 +12023,7 @@
 				3402A9DC271D95C10084CBAE /* Dependencies+SignalUI.swift in Sources */,
 				3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */,
 				3402AA82271D9E180084CBAE /* DisappearingTimerConfigurationView.swift in Sources */,
+				66420F682BB2376100252B0D /* DraftQuotedReplyModel+Payments.swift in Sources */,
 				3402AA49271D9DCD0084CBAE /* EditContactShareNameViewController.swift in Sources */,
 				B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */,
 				7628DDC1280750BC009AA53D /* ExpandableContactListView.swift in Sources */,
@@ -13165,6 +13172,7 @@
 				7254653C2BA01FCC00EABFD2 /* DonationUtilities.swift in Sources */,
 				F9C5CC14289453B300548EEE /* DownloadStickerOperation.swift in Sources */,
 				F9C5CC18289453B300548EEE /* DownloadStickerPackOperation.swift in Sources */,
+				665CBD052BADC87A0059EA4F /* DraftQuotedReplyModel.swift in Sources */,
 				5003BB43299F034D0037159B /* E164.swift in Sources */,
 				F9C5CC8A289453B300548EEE /* EarlyMessageManager.swift in Sources */,
 				503B47232AF0569B00978266 /* ECKeyPair.swift in Sources */,

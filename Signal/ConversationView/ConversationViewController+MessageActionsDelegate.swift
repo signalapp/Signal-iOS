@@ -19,7 +19,7 @@ extension ConversationViewController: MessageActionsDelegate {
         }
 
         var editValidationError: EditSendValidationError?
-        var quotedReplyModel: QuotedReplyModel?
+        var quotedReplyModel: DraftQuotedReplyModel?
         Self.databaseStorage.read { transaction in
 
             // If edit send validation fails (timeframe expired,
@@ -33,18 +33,40 @@ extension ConversationViewController: MessageActionsDelegate {
                 return
             }
 
-            if message.quotedMessage != nil {
-                quotedReplyModel = QuotedReplyModel(
-                    message: message,
-                    transaction: transaction
-                )
+            if let quotedMessage = message.quotedMessage {
+                let originalMessage = (quotedMessage.timestampValue?.uint64Value).flatMap {
+                    return InteractionFinder.findMessage(
+                        withTimestamp: $0,
+                        threadId: message.uniqueThreadId,
+                        author: quotedMessage.authorAddress,
+                        transaction: transaction
+                    )
+                }
+                if
+                    let originalMessage,
+                    originalMessage is OWSPaymentMessage
+                {
+                    quotedReplyModel = DraftQuotedReplyModel.forEditingOriginalPaymentMessage(
+                        originalMessage: originalMessage,
+                        replyMessage: message,
+                        quotedReply: quotedMessage,
+                        tx: transaction
+                    )
+                } else {
+                    quotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReplyForEditing(
+                        quotedReplyMessage: message,
+                        quotedReply: quotedMessage,
+                        originalMessage: originalMessage,
+                        tx: transaction.asV2Read
+                    )
+                }
             }
         }
 
         if let editValidationError {
             OWSActionSheets.showActionSheet(message: editValidationError.localizedDescription)
         } else {
-            inputToolbar?.quotedReply = quotedReplyModel
+            inputToolbar?.quotedReplyDraft = quotedReplyModel
             inputToolbar?.editTarget = message
 
             inputToolbar?.editThumbnail = nil
@@ -136,9 +158,18 @@ extension ConversationViewController: MessageActionsDelegate {
 
         self.uiMode = .normal
 
-        let load = {
-            Self.databaseStorage.read { transaction in
-                QuotedReplyModel.forSending(item: itemViewModel, transaction: transaction)
+        let load: () -> DraftQuotedReplyModel? = {
+            guard let message = itemViewModel.interaction as? TSMessage else {
+                return nil
+            }
+            return Self.databaseStorage.read { transaction in
+                if message is OWSPaymentMessage {
+                    return DraftQuotedReplyModel.fromOriginalPaymentMessage(message, tx: transaction)
+                }
+                return DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(
+                    originalMessage: message,
+                    tx: transaction.asV2Read
+                )
             }
         }
         guard let quotedReply = load() else {
@@ -147,7 +178,7 @@ extension ConversationViewController: MessageActionsDelegate {
         }
 
         inputToolbar.editTarget = nil
-        inputToolbar.quotedReply = quotedReply
+        inputToolbar.quotedReplyDraft = quotedReply
         inputToolbar.beginEditingMessage()
     }
 

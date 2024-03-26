@@ -175,17 +175,18 @@ public class AppSetup {
             tsResourceStore: tsResourceStore
         )
 
-        let quotedReplyManager = QuotedReplyManagerImpl(
-            attachmentManager: tsResourceManager,
-            attachmentStore: tsResourceStore
-        )
-
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
             dateProvider: dateProvider,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers
+        )
+
+        let quotedReplyManager = QuotedReplyManagerImpl(
+            attachmentManager: tsResourceManager,
+            attachmentStore: tsResourceStore,
+            tsAccountManager: tsAccountManager
         )
 
         let phoneNumberVisibilityFetcher = PhoneNumberVisibilityFetcherImpl(

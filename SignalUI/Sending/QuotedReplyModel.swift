@@ -4,13 +4,17 @@
 //
 
 import SignalServiceKit
+import LibSignalClient
 
-// View model which has already fetched any attachments.
-
+/// View model for an existing quoted reply which has already fetched any attachments.
+/// NOT used for draft quoted replies; this is for TSMessages with quoted replies (or story replies)
+/// that have already been created, for use rendering in a conversation.
 public class QuotedReplyModel: NSObject {
 
     public let timestamp: UInt64?
     public let authorAddress: SignalServiceAddress
+    /// The attachment stream on the reply message. May still point at the original
+    /// message's attachment if the thumbnail copy has not yet occured.
     public let attachmentStream: TSAttachmentStream?
     public let attachmentType: TSAttachmentType?
     public let canTapToDownload: Bool
@@ -48,7 +52,11 @@ public class QuotedReplyModel: NSObject {
     public let thumbnailImage: UIImage?
     public let thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)?
 
-    public convenience init?(storyMessage: StoryMessage, reactionEmoji: String? = nil, transaction: SDSAnyReadTransaction) {
+    public static func build(
+        replyingTo storyMessage: StoryMessage,
+        reactionEmoji: String? = nil,
+        transaction: SDSAnyReadTransaction
+    ) -> QuotedReplyModel {
         let thumbnailImage = storyMessage.thumbnailImage(transaction: transaction)
 
         let preloadedTextAttachment: PreloadedTextAttachment?
@@ -96,7 +104,7 @@ public class QuotedReplyModel: NSObject {
 
         let body = storyMessage.quotedBody(transaction: transaction)
 
-        self.init(
+        return QuotedReplyModel(
             timestamp: storyMessage.timestamp,
             authorAddress: storyMessage.authorAddress,
             bodySource: .story,
@@ -113,22 +121,21 @@ public class QuotedReplyModel: NSObject {
         )
      }
 
-    private convenience init?(storyReplyMessage message: TSMessage, transaction: SDSAnyReadTransaction) {
-        guard message.isStoryReply else { return nil }
-
-        guard let storyTimestamp = message.storyTimestamp?.uint64Value, let storyAuthorAci = message.storyAuthorAci else {
-            return nil
-        }
-
+    public static func build(
+        storyReplyMessage message: TSMessage,
+        storyTimestamp: UInt64,
+        storyAuthorAci: Aci,
+        transaction: SDSAnyReadTransaction
+    ) -> QuotedReplyModel {
         guard let storyMessage = StoryFinder.story(
             timestamp: storyTimestamp,
-            author: storyAuthorAci.wrappedAciValue,
+            author: storyAuthorAci,
             transaction: transaction
         ) else {
             // Story message does not exist, return generic reply.
-            self.init(
+            return QuotedReplyModel(
                 timestamp: storyTimestamp,
-                authorAddress: SignalServiceAddress(storyAuthorAci.wrappedAciValue),
+                authorAddress: SignalServiceAddress(storyAuthorAci),
                 bodySource: .story,
                 body: OWSLocalizedString(
                     "STORY_NO_LONGER_AVAILABLE",
@@ -137,23 +144,21 @@ public class QuotedReplyModel: NSObject {
                 bodyRanges: .empty,
                 reactionEmoji: message.storyReactionEmoji
             )
-            return
         }
 
-        self.init(storyMessage: storyMessage, reactionEmoji: message.storyReactionEmoji, transaction: transaction)
+        return QuotedReplyModel.build(
+            replyingTo: storyMessage,
+            reactionEmoji: message.storyReactionEmoji,
+            transaction: transaction
+        )
     }
 
     // Used for persisted quoted replies, both incoming and outgoing.
-    public convenience init?(message: TSMessage, transaction: SDSAnyReadTransaction) {
-        if message.isStoryReply {
-            self.init(storyReplyMessage: message, transaction: transaction)
-            return
-        }
-
-        guard let quotedMessage = message.quotedMessage else {
-            return nil
-        }
-
+    public static func build(
+        replyMessage message: TSMessage,
+        quotedMessage: TSQuotedMessage,
+        transaction: SDSAnyReadTransaction
+    ) -> QuotedReplyModel {
         let attachmentReference = DependenciesBridge.shared.tsResourceStore.quotedAttachmentReference(
             for: message,
             tx: transaction.asV2Read
@@ -231,7 +236,7 @@ public class QuotedReplyModel: NSObject {
             isPayment = false
         }
 
-        self.init(
+        return QuotedReplyModel(
             timestamp: quotedMessage.timestampValue?.uint64Value,
             authorAddress: quotedMessage.authorAddress,
             bodySource: quotedMessage.bodySource,
@@ -245,296 +250,6 @@ public class QuotedReplyModel: NSObject {
             canTapToDownload: canTapToDownload,
             isGiftBadge: quotedMessage.isGiftBadge,
             isPayment: isPayment
-        )
-    }
-
-    // Builds a not-yet-sent QuotedReplyModel
-    public static func forSending(item: CVItemViewModel, transaction: SDSAnyReadTransaction) -> QuotedReplyModel? {
-
-        guard let message = item.interaction as? TSMessage else {
-            owsFailDebug("unexpected reply message: \(item.interaction)")
-            return nil
-        }
-
-        let timestamp = message.timestamp
-
-        let authorAddress: SignalServiceAddress? = {
-            if message is TSOutgoingMessage {
-                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
-            }
-            if let incomingMessage = message as? TSIncomingMessage {
-                return incomingMessage.authorAddress
-            }
-            owsFailDebug("Unexpected message type: \(message.self)")
-            return nil
-        }()
-        guard let authorAddress, authorAddress.isValid else {
-            owsFailDebug("No authorAddress or address is not valid.")
-            return nil
-        }
-
-        if message.isViewOnceMessage {
-            // We construct a quote that does not include any of the quoted message's renderable content.
-            let body = OWSLocalizedString(
-                "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
-                comment: "inbox cell and notification text for an already viewed view-once media message."
-            )
-            return QuotedReplyModel(
-                timestamp: timestamp,
-                authorAddress: authorAddress,
-                bodySource: .local,
-                body: body
-            )
-        }
-
-        if let contactShare = item.contactShare {
-            // TODO We deliberately always pass `nil` for `thumbnailImage`, even though we might have a
-            // contactShare.avatarImage because the QuotedReplyViewModel has some hardcoded assumptions that only quoted
-            // attachments have thumbnails. Until we address that we want to be consistent about neither showing nor sending
-            // the contactShare avatar in the quoted reply.
-            return QuotedReplyModel(
-                timestamp: timestamp,
-                authorAddress: authorAddress,
-                bodySource: .local,
-                body: "👤 " + contactShare.displayName
-            )
-        }
-
-        if item.isGiftBadge {
-            return QuotedReplyModel(
-                timestamp: timestamp,
-                authorAddress: authorAddress,
-                bodySource: .local,
-                isGiftBadge: true
-            )
-        }
-
-        let isStickerMessage = item.stickerInfo != nil || item.stickerAttachment != nil || item.stickerMetadata != nil
-        if isStickerMessage {
-            guard
-                item.stickerInfo != nil,
-                let stickerAttachment = item.stickerAttachment,
-                let stickerMetadata = item.stickerMetadata
-            else {
-                owsFailDebug("Incomplete sticker message.")
-                return nil
-            }
-
-            guard let stickerData = try? Data(contentsOf: stickerMetadata.stickerDataUrl) else {
-                owsFailDebug("Couldn't load sticker data")
-                return nil
-            }
-
-            // Sticker type metadata isn't reliable, so determine the sticker type by examining the actual sticker data.
-            let stickerType: StickerType
-            let mimeType: String?
-            if stickerMetadata.stickerType == .webp {
-                let imageMetadata = (stickerData as NSData).imageMetadata(withPath: nil, mimeType: nil)
-                mimeType = imageMetadata.mimeType
-
-                switch imageMetadata.imageFormat {
-                case .png:
-                    stickerType = .apng
-
-                case .gif:
-                    stickerType = .gif
-
-                case .webp:
-                    stickerType = .webp
-
-                case .lottieSticker:
-                    stickerType = .signalLottie
-
-                case .unknown:
-                    owsFailDebug("Unknown sticker data format")
-                    return nil
-
-                default:
-                    owsFailDebug("Invalid sticker data format: \(NSStringForImageFormat(imageMetadata.imageFormat))")
-                    return nil
-                }
-            } else {
-                stickerType = stickerMetadata.stickerType
-                mimeType = stickerMetadata.contentType
-            }
-
-            let maxThumbnailSizePixels: CGFloat = 512
-            let thumbnailImage: UIImage? = {
-                switch stickerType {
-                case .webp:
-                    return (stickerData as NSData).stillForWebpData()
-                case .signalLottie:
-                    return nil
-                case .apng:
-                    return UIImage(data: stickerData)
-                case .gif:
-                    do {
-                        let image = try OWSMediaUtils.thumbnail(
-                            forImageAtPath: stickerMetadata.stickerDataUrl.path,
-                            maxDimensionPixels: maxThumbnailSizePixels
-                        )
-                        return image
-                    } catch {
-                        owsFailDebug("Error: \(error)")
-                        return nil
-                    }
-                }
-            }()
-            guard let resizedThumbnailImage = thumbnailImage?.resized(withMaxDimensionPixels: maxThumbnailSizePixels) else {
-                owsFailDebug("Couldn't generate thumbnail for sticker.")
-                return nil
-            }
-
-            let attachmentType: TSAttachmentType?
-            if let message = item.interaction as? TSMessage {
-               attachmentType = stickerAttachment.attachmentType(forContainingMessage: message, transaction: transaction)
-            } else {
-                attachmentType = nil
-            }
-
-            return QuotedReplyModel(
-                timestamp: timestamp,
-                authorAddress: authorAddress,
-                bodySource: .local,
-                thumbnailImage: resizedThumbnailImage,
-                mimeType: mimeType,
-                contentType: nil,
-                sourceFilename: stickerAttachment.sourceFilename,
-                attachmentStream: stickerAttachment,
-                attachmentType: attachmentType
-            )
-        }
-
-        var quotedText: String?
-        if let messageBody = message.body, !messageBody.isEmpty {
-            quotedText = messageBody
-        } else if let storyReactionEmoji = message.storyReactionEmoji, !storyReactionEmoji.isEmpty {
-            let formatString: String
-            if authorAddress.isLocalAddress {
-                formatString = OWSLocalizedString(
-                    "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON",
-                    comment: "quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}}"
-                )
-            } else {
-                formatString = OWSLocalizedString(
-                    "STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON",
-                    comment: "quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}}"
-                )
-            }
-            quotedText = String(
-                format: formatString,
-                storyReactionEmoji
-            )
-        }
-
-        var hasText = !quotedText.isEmptyOrNil
-
-        var quotedAttachment: TSAttachmentStream?
-        if let attachmentStream = message.bodyAttachments(transaction: transaction).first as? TSAttachmentStream {
-            // If the attachment is "oversize text", try the quote as a reply to text, not as
-            // a reply to an attachment.
-            if !hasText && attachmentStream.contentType == OWSMimeTypeOversizeTextMessage {
-                hasText = true
-                quotedText = ""
-
-                if  let originalFilePath = attachmentStream.originalFilePath,
-                    let oversizeTextData = try? Data(contentsOf: URL(fileURLWithPath: originalFilePath)),
-                    let oversizeText = String(data: oversizeTextData, encoding: .utf8) {
-                    // We don't need to include the entire text body of the message, just
-                    // enough to render a snippet.  kOversizeTextMessageSizeThreshold is our
-                    // limit on how long text should be in protos since they'll be stored in
-                    // the database. We apply this constant here for the same reasons.
-                    // First, truncate to the rough max characters.
-                    var truncatedText = oversizeText.substring(to: Int(kOversizeTextMessageSizeThreshold) - 1)
-                    // But kOversizeTextMessageSizeThreshold is in _bytes_, not characters,
-                    // so we need to continue to trim the string until it fits.
-                    var truncatedTextDataSize = truncatedText.data(using: .utf8)?.count ?? 0
-                    while truncatedText.count > 0 && truncatedTextDataSize >= kOversizeTextMessageSizeThreshold {
-                        // A very coarse binary search by halving is acceptable, since
-                        // kOversizeTextMessageSizeThreshold is much longer than our target
-                        // length of "three short lines of text on any device we might
-                        // display this on.
-                        //
-                        // The search will always converge since in the worst case (namely
-                        // a single character which in utf-8 is >= 1024 bytes) the loop will
-                        // exit when the string is empty.
-                        truncatedText = truncatedText.substring(to: truncatedText.count / 2)
-                        truncatedTextDataSize = truncatedText.data(using: .utf8)?.count ?? 0
-                    }
-                    if truncatedTextDataSize < kOversizeTextMessageSizeThreshold {
-                        quotedText = truncatedText
-                    } else {
-                        owsFailDebug("Missing valid text snippet.")
-                    }
-                }
-            } else {
-                quotedAttachment = attachmentStream
-            }
-        }
-
-        if  quotedAttachment == nil, item.linkPreview != nil,
-            let linkPreviewAttachment = item.linkPreviewAttachment as? TSAttachmentStream {
-
-            quotedAttachment = linkPreviewAttachment
-        }
-
-        let hasAttachment = quotedAttachment != nil
-        if !hasText && !hasAttachment {
-            owsFailDebug("quoted message has neither text nor attachment")
-        }
-
-        let thumbnailImage: UIImage?
-        if let quotedAttachment, quotedAttachment.isValidVisualMedia {
-            thumbnailImage = quotedAttachment.thumbnailImageSmallSync()
-        } else {
-            thumbnailImage = nil
-        }
-
-        let attachmentType: TSAttachmentType?
-        if let message = item.interaction as? TSMessage {
-           attachmentType = quotedAttachment?.attachmentType(forContainingMessage: message, transaction: transaction)
-        } else {
-            attachmentType = nil
-        }
-
-        return QuotedReplyModel(
-            timestamp: timestamp,
-            authorAddress: authorAddress,
-            bodySource: .local,
-            body: quotedText,
-            bodyRanges: message.bodyRanges,
-            thumbnailImage: thumbnailImage,
-            mimeType: quotedAttachment?.mimeType,
-            sourceFilename: quotedAttachment?.sourceFilename,
-            attachmentStream: quotedAttachment,
-            attachmentType: attachmentType
-        )
-    }
-
-    public func buildQuotedMessageForSending() -> TSQuotedMessage {
-        // TODO: use TSResourceManager for this.
-        let quotedAttachmentForSending: OWSAttachmentInfo? = attachmentStream.map { attachmentStream in
-            if MIMETypeUtil.canMakeThumbnail(attachmentStream.contentType) {
-                return OWSAttachmentInfo(
-                    legacyAttachmentId: attachmentStream.uniqueId,
-                    ofType: .originalForSend
-                )
-            } else {
-                return OWSAttachmentInfo(
-                    stubWithMimeType: attachmentStream.contentType,
-                    sourceFilename: attachmentStream.sourceFilename
-                )
-            }
-        }
-
-        // Legit usage of senderTimestamp to reference existing message
-        return TSQuotedMessage(
-            timestamp: timestamp.map { NSNumber(value: $0) },
-            authorAddress: authorAddress,
-            body: body,
-            bodyRanges: bodyRanges,
-            quotedAttachmentForSending: quotedAttachmentForSending,
-            isGiftBadge: isGiftBadge
         )
     }
 

@@ -49,7 +49,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         self.lastMessageSentDate = Date()
 
         loadCoordinator.clearUnreadMessagesIndicator()
-        inputToolbar?.quotedReply = nil
+        inputToolbar?.quotedReplyDraft = nil
 
         if self.preferences.soundInForeground,
            let soundId = Sounds.systemSoundIDForSound(.standard(.messageSent), quiet: true) {
@@ -156,7 +156,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             ThreadUtil.enqueueMessage(
                 body: messageBody,
                 thread: self.thread,
-                quotedReplyModel: inputToolbar.quotedReply,
+                quotedReplyDraft: inputToolbar.quotedReplyDraft,
                 linkPreviewDraft: inputToolbar.linkPreviewDraft,
                 editTarget: inputToolbar.editTarget,
                 persistenceCompletionHandler: {
@@ -295,7 +295,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         if !inputToolbar.isHidden {
             let thread = self.thread
             let currentDraft = inputToolbar.messageBodyForSending
-            let quotedReply = inputToolbar.quotedReply
+            let quotedReply = inputToolbar.quotedReplyDraft
             let editTarget = inputToolbar.editTarget
             Self.databaseStorage.asyncWrite { transaction in
                 // Reload a fresh instance of the thread model; our models are not
@@ -320,8 +320,15 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 }
 
                 let replyInfo: ThreadReplyInfoObjC?
-                if let quotedReply, let aci = quotedReply.authorAddress.aci, let timestamp = quotedReply.timestamp {
-                    replyInfo = ThreadReplyInfoObjC(ThreadReplyInfo(timestamp: timestamp, author: aci))
+                if
+                    let quotedReply,
+                    let originalMessageTimestamp = quotedReply.originalMessageTimestamp,
+                    let aci = quotedReply.originalMessageAuthorAddress.aci
+                {
+                    replyInfo = ThreadReplyInfoObjC(ThreadReplyInfo(
+                        timestamp: originalMessageTimestamp,
+                        author: aci
+                    ))
                 } else {
                     replyInfo = nil
                 }
@@ -341,7 +348,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
     private static func draftHasChanged(
         currentDraft: MessageBody?,
-        quotedReply: QuotedReplyModel?,
+        quotedReply: DraftQuotedReplyModel?,
         editTarget: TSOutgoingMessage?,
         thread: TSThread,
         transaction: SDSAnyReadTransaction
@@ -367,10 +374,10 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let threadReplyInfoStore = DependenciesBridge.shared.threadReplyInfoStore
         let persistedQuotedReply = threadReplyInfoStore.fetch(for: thread.uniqueId, tx: transaction.asV2Read)
-        if quotedReply?.timestamp != persistedQuotedReply?.timestamp {
+        if quotedReply?.originalMessageTimestamp != persistedQuotedReply?.timestamp {
             return true
         }
-        if quotedReply?.authorAddress.aci != persistedQuotedReply?.author {
+        if quotedReply?.originalMessageAuthorAddress.aci != persistedQuotedReply?.author {
             return true
         }
         return false
@@ -434,7 +441,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                     body: messageBody,
                     mediaAttachments: attachments,
                     thread: self.thread,
-                    quotedReplyModel: inputToolbar.quotedReply,
+                    quotedReplyDraft: inputToolbar.quotedReplyDraft,
                     editTarget: inputToolbar.editTarget,
                     persistenceCompletionHandler: {
                         AssertIsOnMainThread()

@@ -13,4 +13,22 @@ public protocol QuotedReplyManager {
         thread: TSThread,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<TSQuotedMessage>?
+
+    func buildDraftQuotedReply(
+        originalMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> DraftQuotedReplyModel?
+
+    func buildDraftQuotedReplyForEditing(
+        quotedReplyMessage: TSMessage,
+        quotedReply: TSQuotedMessage,
+        originalMessage: TSMessage?,
+        tx: DBReadTransaction
+    ) -> DraftQuotedReplyModel
+
+    func buildQuotedReplyForSending(
+        draft: DraftQuotedReplyModel,
+        threadUniqueId: String,
+        tx: DBWriteTransaction
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage>
 }

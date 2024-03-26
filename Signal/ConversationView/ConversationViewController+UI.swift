@@ -238,9 +238,9 @@ extension ConversationViewController {
         AssertIsOnMainThread()
         owsAssertDebug(hasViewWillAppearEverBegun)
 
-        let quotedReply: QuotedReplyModel?
+        let quotedReply: DraftQuotedReplyModel?
         if let draftReply = draftReply {
-            quotedReply = buildQuotedReply(draftReply)
+            quotedReply = buildDraftQuotedReply(draftReply)
         } else {
             quotedReply = nil
         }
@@ -250,7 +250,7 @@ extension ConversationViewController {
             spoilerState: viewState.spoilerState,
             mediaCache: mediaCache,
             messageDraft: messageDraft,
-            quotedReply: quotedReply,
+            quotedReplyDraft: quotedReply,
             editTarget: editTarget,
             inputToolbarDelegate: self,
             inputTextViewDelegate: self,
@@ -264,14 +264,7 @@ extension ConversationViewController {
         return inputToolbar
     }
 
-    // When responding to a message and quoting it, the input toolbar needs an QuotedReplyModel.
-    // Building this is a little tricky because we're putting a square peg in a round hole, and this method helps.
-    // Historically, a quoted reply comes from an already-rendered message that's available at the moment that you
-    // choose to reply to a message via the UI. For saved drafts, that UI component may not exist.
-    // This method re-creates the steps that the app goes through when constructing a quoted reply from a message
-    // by making a temporary `CVComponentState`. The ThreadReplyInfo identifies the message being responded to.
-    // Since timestamps aren't unique, this is nondeterministic when things go wrong.
-    func buildQuotedReply(_ draftReply: ThreadReplyInfo) -> QuotedReplyModel? {
+    func buildDraftQuotedReply(_ draftReply: ThreadReplyInfo) -> DraftQuotedReplyModel? {
         return Self.databaseStorage.read { transaction in
             guard let interaction = try? InteractionFinder.interactions(
                 withTimestamp: draftReply.timestamp,
@@ -286,20 +279,16 @@ extension ConversationViewController {
                     return false
                 },
                 transaction: transaction
-            ).first else {
+            ).first as? TSMessage else {
                 return nil
             }
-            guard let componentState = CVLoader.buildStandaloneComponentState(
-                interaction: interaction,
-                spoilerState: self.viewState.spoilerState,
-                transaction: transaction
-            ) else {
-                owsFailDebug("Failed to create component state.")
-                return nil
+            if interaction is OWSPaymentMessage {
+                return DraftQuotedReplyModel.fromOriginalPaymentMessage(interaction, tx: transaction)
             }
-            let wrapper = CVComponentStateWrapper(interaction: interaction,
-                                                  componentState: componentState)
-            return QuotedReplyModel.forSending(item: wrapper, transaction: transaction)
+            return DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(
+                originalMessage: interaction,
+                tx: transaction.asV2Read
+            )
 
         }
     }

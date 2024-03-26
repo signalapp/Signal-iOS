@@ -14,7 +14,7 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
 
     public weak var delegate: QuotedReplyPreviewDelegate?
 
-    private let quotedReply: QuotedReplyModel
+    private let quotedReplyDraft: DraftQuotedReplyModel
     private let conversationStyle: ConversationStyle
     private let spoilerState: SpoilerRenderState
     private var quotedMessageView: QuotedMessageSnippetView?
@@ -31,11 +31,11 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
     }
 
     init(
-        quotedReply: QuotedReplyModel,
+        quotedReplyDraft: DraftQuotedReplyModel,
         conversationStyle: ConversationStyle,
         spoilerState: SpoilerRenderState
     ) {
-        self.quotedReply = quotedReply
+        self.quotedReplyDraft = quotedReplyDraft
         self.conversationStyle = conversationStyle
         self.spoilerState = spoilerState
 
@@ -63,7 +63,7 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
         // every time contentSizeCategoryDidChange (i.e. when dynamic type
         // sizes changes).
         let quotedMessageView = QuotedMessageSnippetView(
-            quotedMessage: quotedReply,
+            quotedMessage: quotedReplyDraft,
             conversationStyle: conversationStyle,
             spoilerState: spoilerState
         )
@@ -111,7 +111,7 @@ private class QuotedMessageSnippetView: UIView {
 
     weak var delegate: QuotedMessageSnippetViewDelegate?
 
-    private let quotedMessage: QuotedReplyModel
+    private let quotedMessage: DraftQuotedReplyModel
     private let conversationStyle: ConversationStyle
     private let spoilerState: SpoilerRenderState
     private lazy var displayableQuotedText: DisplayableText? = {
@@ -122,7 +122,7 @@ private class QuotedMessageSnippetView: UIView {
     }()
 
     init(
-        quotedMessage: QuotedReplyModel,
+        quotedMessage: DraftQuotedReplyModel,
         conversationStyle: ConversationStyle,
         spoilerState: SpoilerRenderState
     ) {
@@ -153,11 +153,14 @@ private class QuotedMessageSnippetView: UIView {
 
     private lazy var quotedAuthorLabel: UILabel = {
         let quotedAuthor: String
-        if quotedMessage.authorAddress.isLocalAddress {
+        if quotedMessage.isOriginalMessageAuthorLocalUser {
             quotedAuthor = CommonStrings.you
         } else {
             let authorName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: quotedMessage.authorAddress, tx: tx).resolvedValue()
+                return contactsManager.displayName(
+                    for: quotedMessage.originalMessageAuthorAddress,
+                    tx: tx
+                ).resolvedValue()
             }
             quotedAuthor = String(
                 format: NSLocalizedString(
@@ -216,7 +219,7 @@ private class QuotedMessageSnippetView: UIView {
                     .foregroundColor: conversationStyle.quotedReplyAttachmentColor()
                 ]
             )
-        } else if let sourceFilename = quotedMessage.sourceFilename?.filterForDisplay {
+        } else if let sourceFilename = sourceFilenameForSnippet(quotedMessage.content)?.filterForDisplay {
             attributedText = NSAttributedString(
                 string: sourceFilename,
                 attributes: [
@@ -224,7 +227,7 @@ private class QuotedMessageSnippetView: UIView {
                     .foregroundColor: conversationStyle.quotedReplyAttachmentColor()
                 ]
             )
-        } else if quotedMessage.isGiftBadge {
+        } else if quotedMessage.content.isGiftBadge {
             attributedText = NSAttributedString(
                 string: NSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY",
@@ -375,78 +378,10 @@ private class QuotedMessageSnippetView: UIView {
 
         vStackView.addArrangedSubview(quotedTextLabel)
 
-        let hasQuotedAttachment: Bool = {
-            if let mimeType = quotedMessage.mimeType, mimeType != OWSMimeTypeOversizeTextMessage {
-                return true
-            }
-            if quotedMessage.isGiftBadge {
-                return true
-            }
-            return false
-        }()
-        if hasQuotedAttachment {
-            let quotedAttachmentView: UIView
-
-            if let thumbnailImage = quotedMessage.thumbnailImage {
-                let contentImageView = buildImageView(image: thumbnailImage)
-                contentImageView.clipsToBounds = true
-
-                if let mimeType = quotedMessage.mimeType, MIMETypeUtil.isVideo(mimeType) {
-                    let playIconImageView = buildImageView(image: UIImage(imageLiteralResourceName: "play-fill"))
-                    playIconImageView.tintColor = .white
-                    contentImageView.addSubview(playIconImageView)
-                    playIconImageView.autoCenterInSuperview()
-                }
-
-                quotedAttachmentView = contentImageView
-            } else if quotedMessage.canTapToDownload {
-                let contentImageView = buildImageView(image: UIImage(imageLiteralResourceName: "refresh"))
-                contentImageView.contentMode = .scaleAspectFit
-                contentImageView.tintColor = .white
-                contentImageView.autoSetDimensions(to: .square(Layout.quotedAttachmentSize * 0.5))
-
-                let containerView = UIView.container()
-                containerView.backgroundColor = conversationStyle.quotedReplyHighlightColor()
-                containerView.addSubview(contentImageView)
-                contentImageView.autoCenterInSuperview()
-
-                quotedAttachmentView = containerView
-            } else if quotedMessage.isGiftBadge {
-                let contentImageView = buildImageView(image: UIImage(imageLiteralResourceName: "gift-thumbnail"))
-                contentImageView.contentMode = .scaleAspectFit
-
-                let wrapper = UIView.transparentContainer()
-                wrapper.addSubview(contentImageView)
-                contentImageView.autoCenterInSuperview()
-                contentImageView.autoSetDimension(.width, toSize: Layout.quotedAttachmentSize)
-
-                quotedAttachmentView = wrapper
-            } else {
-                // TODO: Should we overlay the file extension like we do with CVComponentGenericAttachment?
-                let contentImageView = buildImageView(image: UIImage(imageLiteralResourceName: "generic-attachment"))
-                contentImageView.autoSetDimension(.width, toSize: Layout.quotedAttachmentSize * 0.5)
-                contentImageView.contentMode = .scaleAspectFit
-
-                let wrapper = UIView.transparentContainer()
-                wrapper.addSubview(contentImageView)
-                contentImageView.autoCenterInSuperview()
-
-                quotedAttachmentView = wrapper
-            }
-
-            quotedAttachmentView.autoSetDimensions(to: .square(Layout.quotedAttachmentSize))
-            hStackView.addArrangedSubview(quotedAttachmentView)
-        } else {
-            // If there's no attachment, add an empty view so that
-            // the stack view's spacing serves as a margin between
-            // the text views and the trailing edge.
-            let emptyView = UIView.transparentContainer()
-            emptyView.autoSetDimension(.width, toSize: 0)
-            hStackView.addArrangedSubview(emptyView)
-        }
+        self.createContentView(for: quotedMessage.content, in: hStackView)
 
         let contentView: UIView
-        if quotedMessage.isRemotelySourced {
+        if quotedMessage.content.isRemotelySourced {
             let quoteSourceWrapper = UIStackView(arrangedSubviews: [ hStackView, buildRemoteContentSourceView() ])
             quoteSourceWrapper.axis = .vertical
             contentView = quoteSourceWrapper
@@ -474,6 +409,87 @@ private class QuotedMessageSnippetView: UIView {
         cancelWrapper.autoPinEdgesToSuperviewEdges()
     }
 
+    private func createContentView(for content: DraftQuotedReplyModel.Content, in hStackView: UIStackView) {
+        switch content {
+        case let .attachment(_, _, attachment, thumbnailImage):
+            let quotedAttachmentView = self.createAttachmentView(attachment, thumbnailImage: thumbnailImage)
+            quotedAttachmentView.autoSetDimensions(to: .square(Layout.quotedAttachmentSize))
+            hStackView.addArrangedSubview(quotedAttachmentView)
+
+        case .attachmentStub:
+            let view = createStubAttachmentView()
+            view.autoSetDimensions(to: .square(Layout.quotedAttachmentSize))
+            hStackView.addArrangedSubview(view)
+
+        case let .edit(_, _, content):
+            return createContentView(for: content, in: hStackView)
+
+        case .giftBadge:
+            let contentImageView = buildImageView(image: UIImage(imageLiteralResourceName: "gift-thumbnail"))
+            contentImageView.contentMode = .scaleAspectFit
+
+            let wrapper = UIView.transparentContainer()
+            wrapper.addSubview(contentImageView)
+            contentImageView.autoCenterInSuperview()
+            contentImageView.autoSetDimension(.width, toSize: Layout.quotedAttachmentSize)
+
+            wrapper.autoSetDimensions(to: .square(Layout.quotedAttachmentSize))
+            hStackView.addArrangedSubview(wrapper)
+
+        case .payment, .text, .viewOnce, .contactShare, .storyReactionEmoji:
+            // If there's no attachment, add an empty view so that
+            // the stack view's spacing serves as a margin between
+            // the text views and the trailing edge.
+            let emptyView = UIView.transparentContainer()
+            emptyView.autoSetDimension(.width, toSize: 0)
+            hStackView.addArrangedSubview(emptyView)
+        }
+    }
+
+    private func createAttachmentView(_ attachment: TSResource, thumbnailImage: UIImage?) -> UIView {
+        let quotedAttachmentView: UIView
+        if let thumbnailImage {
+            let contentImageView = buildImageView(image: thumbnailImage)
+            contentImageView.clipsToBounds = true
+
+            if MIMETypeUtil.isVideo(attachment.mimeType) {
+                let playIconImageView = buildImageView(image: UIImage(imageLiteralResourceName: "play-fill"))
+                playIconImageView.tintColor = .white
+                contentImageView.addSubview(playIconImageView)
+                playIconImageView.autoCenterInSuperview()
+            }
+
+            quotedAttachmentView = contentImageView
+        } else if attachment.asTransitTierPointer() != nil {
+            let contentImageView = buildImageView(image: UIImage(imageLiteralResourceName: "refresh"))
+            contentImageView.contentMode = .scaleAspectFit
+            contentImageView.tintColor = .white
+            contentImageView.autoSetDimensions(to: .square(Layout.quotedAttachmentSize * 0.5))
+
+            let containerView = UIView.container()
+            containerView.backgroundColor = conversationStyle.quotedReplyHighlightColor()
+            containerView.addSubview(contentImageView)
+            contentImageView.autoCenterInSuperview()
+
+            quotedAttachmentView = containerView
+        } else {
+            quotedAttachmentView = createStubAttachmentView()
+        }
+        return quotedAttachmentView
+    }
+
+    private func createStubAttachmentView() -> UIView {
+        // TODO: Should we overlay the file extension like we do with CVComponentGenericAttachment?
+        let contentImageView = buildImageView(image: UIImage(imageLiteralResourceName: "generic-attachment"))
+        contentImageView.autoSetDimension(.width, toSize: Layout.quotedAttachmentSize * 0.5)
+        contentImageView.contentMode = .scaleAspectFit
+
+        let wrapper = UIView.transparentContainer()
+        wrapper.addSubview(contentImageView)
+        contentImageView.autoCenterInSuperview()
+        return wrapper
+    }
+
     @objc
     private func didTapCancel() {
         delegate?.didTapCancelInQuotedMessageSnippet(view: self)
@@ -481,9 +497,21 @@ private class QuotedMessageSnippetView: UIView {
 
     // MARK: -
 
+    private func mimeTypeAndIsLooping(_ content: DraftQuotedReplyModel.Content) -> (String, Bool)? {
+        switch content {
+        case .attachmentStub(_, let stub) where stub.mimeType != nil:
+            return (stub.mimeType!, false)
+        case .attachment(_, let reference, let attachment, _):
+            return (attachment.mimeType, reference.renderingFlag == .shouldLoop)
+        case .edit(_, _, let innerContent):
+            return mimeTypeAndIsLooping(innerContent)
+        case .giftBadge, .text, .payment, .attachmentStub, .viewOnce, .contactShare, .storyReactionEmoji:
+            return nil
+        }
+    }
+
     private var fileTypeForSnippet: String? {
-        // TODO: Are we going to use the filename?  For all mimetypes?
-        guard let mimeType = quotedMessage.mimeType, !mimeType.isEmpty else {
+        guard let (mimeType, isLoopingVideo) = mimeTypeAndIsLooping(quotedMessage.content) else {
             return nil
         }
 
@@ -504,11 +532,7 @@ private class QuotedMessageSnippetView: UIView {
                     comment: "Indicates this message is a quoted reply to an image file."
                 )
             }
-        } else if
-            let attachmentStream = quotedMessage.attachmentStream,
-            let attachmentType = quotedMessage.attachmentType,
-            attachmentStream.isLoopingVideo(attachmentType)
-        {
+        } else if isLoopingVideo && MIMETypeUtil.isVideo(mimeType) {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_GIF",
                 comment: "Indicates this message is a quoted reply to animated GIF file."
@@ -527,17 +551,32 @@ private class QuotedMessageSnippetView: UIView {
         return nil
     }
 
+    private func sourceFilenameForSnippet(_ content: DraftQuotedReplyModel.Content) -> String? {
+        switch content {
+        case .attachmentStub(_, let stub):
+            return stub.sourceFilename
+        case .attachment(_, let reference, _, _):
+            return reference.sourceFilename
+        case .edit(_, _, let innerContent):
+            return sourceFilenameForSnippet(innerContent)
+        case .giftBadge, .text, .payment, .contactShare, .viewOnce, .storyReactionEmoji:
+            return nil
+        }
+    }
+
     private static func displayableTextWithSneakyTransaction(
-        forPreview quotedMessage: QuotedReplyModel,
+        forPreview quotedMessage: DraftQuotedReplyModel,
         spoilerState: SpoilerRenderState
     ) -> DisplayableText? {
-        guard let text = quotedMessage.body, !text.isEmpty else {
+        guard
+            let body = quotedMessage.bodyForSending,
+            !body.text.isEmpty
+        else {
             return nil
         }
         return Self.databaseStorage.read { tx in
-            let messageBody = MessageBody(text: text, ranges: quotedMessage.bodyRanges ?? .empty)
             return DisplayableText.displayableText(
-                withMessageBody: messageBody,
+                withMessageBody: body,
                 transaction: tx
             )
         }
@@ -546,7 +585,7 @@ private class QuotedMessageSnippetView: UIView {
     private func styleDisplayableQuotedText(
         _ displayableQuotedText: DisplayableText,
         config: HydratedMessageBody.DisplayConfiguration,
-        quotedReplyModel: QuotedReplyModel,
+        quotedReplyModel: DraftQuotedReplyModel,
         spoilerState: SpoilerRenderState
     ) -> NSAttributedString {
         let baseAttributes: [NSAttributedString.Key: Any] = [
