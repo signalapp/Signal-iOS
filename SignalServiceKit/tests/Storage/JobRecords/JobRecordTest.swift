@@ -282,13 +282,11 @@ extension MessageSenderJobRecord: ValidatableModel {
     static let constants: [(MessageSenderJobRecord, base64JsonData: Data)] = [
         (
             MessageSenderJobRecord(
-                messageId: "houston",
                 threadId: "we",
-                invisibleMessage: TSOutgoingMessage(
+                messageType: .transient(TSOutgoingMessage(
                     uniqueId: "have",
                     thread: .init(uniqueId: "a")
-                ),
-                isMediaMessage: true,
+                )),
                 removeMessageAfterSending: false,
                 isHighPriority: true,
                 exclusiveProcessIdentifier: nil,
@@ -299,10 +297,8 @@ extension MessageSenderJobRecord: ValidatableModel {
         ),
         (
             MessageSenderJobRecord(
-                messageId: nil,
                 threadId: nil,
-                invisibleMessage: nil,
-                isMediaMessage: true,
+                messageType: .none,
                 removeMessageAfterSending: false,
                 isHighPriority: true,
                 exclusiveProcessIdentifier: nil,
@@ -315,13 +311,32 @@ extension MessageSenderJobRecord: ValidatableModel {
 
     func validate(against: MessageSenderJobRecord) throws {
         guard
-            messageId == against.messageId,
             threadId == against.threadId,
-            isMediaMessage == against.isMediaMessage,
-            invisibleMessage?.uniqueId == against.invisibleMessage?.uniqueId,
             removeMessageAfterSending == against.removeMessageAfterSending,
             isHighPriority == against.isHighPriority
         else {
+            throw ValidatableModelError.failedToValidate
+        }
+        switch (messageType, against.messageType) {
+        case let (.persisted(lhsId, lhsUseMediaQueue), .persisted(rhsId, rhsUseMediaQueue)):
+            guard
+                lhsId == rhsId,
+                lhsUseMediaQueue == rhsUseMediaQueue
+            else {
+                throw ValidatableModelError.failedToValidate
+            }
+        case let (.transient(lhsMessage), .transient(rhsMessage)):
+            guard
+                lhsMessage.uniqueId == rhsMessage.uniqueId
+            else {
+                throw ValidatableModelError.failedToValidate
+            }
+        case (.none, .none):
+            break
+        case
+            (.persisted, _),
+            (.transient, _),
+            (.none, _):
             throw ValidatableModelError.failedToValidate
         }
     }

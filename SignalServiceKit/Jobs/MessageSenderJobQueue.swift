@@ -139,25 +139,42 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public let isSetup = AtomicBool(false)
 
-    public func didMarkAsReady(oldJobRecord: MessageSenderJobRecord,
-                               transaction: SDSAnyWriteTransaction) {
-        if let messageId = oldJobRecord.messageId,
-           let message = TSOutgoingMessage.anyFetch(uniqueId: messageId,
-                                                    transaction: transaction) as? TSOutgoingMessage {
-            message.updateAllUnsentRecipientsAsSending(transaction: transaction)
+    public func didMarkAsReady(
+        oldJobRecord: MessageSenderJobRecord,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        switch oldJobRecord.messageType {
+        case .persisted(let messageId, _):
+            TSOutgoingMessage
+                .anyFetch(
+                    uniqueId: messageId,
+                    transaction: transaction
+                )
+                .flatMap { $0 as? TSOutgoingMessage }?
+                .updateAllUnsentRecipientsAsSending(transaction: transaction)
+        case .transient, .none:
+            break
         }
     }
 
     public func buildOperation(jobRecord: MessageSenderJobRecord,
                                transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
         let message: TSOutgoingMessage
-        if let invisibleMessage = jobRecord.invisibleMessage {
-            message = invisibleMessage
-        } else if let messageId = jobRecord.messageId,
-                  let fetchedMessage = TSOutgoingMessage.anyFetch(uniqueId: messageId,
-                                                                  transaction: transaction) as? TSOutgoingMessage {
-            message = fetchedMessage
-        } else {
+        switch jobRecord.messageType {
+        case .transient(let outgoingMessage):
+            message = outgoingMessage
+        case .persisted(let messageId, _):
+            if
+                let fetchedMessage = TSOutgoingMessage.anyFetch(
+                    uniqueId: messageId,
+                    transaction: transaction
+                ) as? TSOutgoingMessage
+            {
+                message = fetchedMessage
+            } else {
+                fallthrough
+            }
+        case .none:
             throw JobError.obsolete(description: "message no longer exists")
         }
 
@@ -177,11 +194,16 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         // message C should never send before A and B. However, if you send text
         // messages A, B, then media message C, followed by text message D, D cannot
         // send before A and B, but CAN send before C.
-        if jobRecord.isMediaMessage, let sendQueue = senderQueues[message.uniqueThreadId] {
-            let orderMaintainingOperation = Operation()
-            orderMaintainingOperation.queuePriority = operation.queuePriority
-            sendQueue.addOperation(orderMaintainingOperation)
-            operation.addDependency(orderMaintainingOperation)
+        switch jobRecord.messageType {
+        case .persisted(_, let useMediaQueue):
+            if useMediaQueue, let sendQueue = senderQueues[message.uniqueThreadId] {
+                let orderMaintainingOperation = Operation()
+                orderMaintainingOperation.queuePriority = operation.queuePriority
+                sendQueue.addOperation(orderMaintainingOperation)
+                operation.addDependency(orderMaintainingOperation)
+            }
+        case .transient, .none:
+            break
         }
 
         return operation
@@ -204,7 +226,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             return defaultQueue
         }
 
-        if jobRecord.isMediaMessage {
+        switch jobRecord.messageType {
+        case .persisted(_, let useMediaQueue) where useMediaQueue:
             guard let existingQueue = mediaSenderQueues[threadId] else {
                 let operationQueue = OperationQueue()
                 operationQueue.name = "MessageSenderJobQueue-Media"
@@ -216,7 +239,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             }
 
             return existingQueue
-        } else {
+        case .persisted, .transient, .none:
             guard let existingQueue = senderQueues[threadId] else {
                 let operationQueue = OperationQueue()
                 operationQueue.name = "MessageSenderJobQueue-Text"

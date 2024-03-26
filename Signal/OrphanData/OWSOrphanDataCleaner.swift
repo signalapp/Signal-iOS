@@ -139,14 +139,12 @@ extension OWSOrphanDataCleaner {
         for jobRecord: MessageSenderJobRecord,
         transaction: SDSAnyReadTransaction
     ) -> TSMessage? {
-        if let invisibleMessage = jobRecord.invisibleMessage {
-            return invisibleMessage
-        }
-
-        let fetchMessageForMessageId: () -> TSMessage? = {
-            guard let messageId = jobRecord.messageId else {
-                return nil
-            }
+        switch jobRecord.messageType {
+        case .none:
+            return nil
+        case .transient(let message):
+            return message
+        case .persisted(let messageId, _):
             guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
                 // Interaction may have been deleted.
                 Logger.warn("Missing interaction")
@@ -154,11 +152,6 @@ extension OWSOrphanDataCleaner {
             }
             return interaction as? TSMessage
         }
-        if let fetchedMessage = fetchMessageForMessageId() {
-            return fetchedMessage
-        }
-
-        return nil
     }
 
     // MARK: - Find

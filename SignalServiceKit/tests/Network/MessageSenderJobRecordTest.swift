@@ -18,9 +18,13 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
                 transaction: transaction
             )
 
-            XCTAssertNotNil(jobRecord.messageId)
+            switch jobRecord.messageType {
+            case .persisted:
+                break
+            case .transient, .none:
+                XCTFail("Incorrect message type")
+            }
             XCTAssertNotNil(jobRecord.threadId)
-            XCTAssertNil(jobRecord.invisibleMessage)
         }
     }
 
@@ -53,9 +57,13 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
                 transaction: transaction
             )
 
-            XCTAssertNil(jobRecord.messageId)
+            switch jobRecord.messageType {
+            case .transient:
+                break
+            case .persisted, .none:
+                XCTFail("Incorrect message type")
+            }
             XCTAssertNotNil(jobRecord.threadId)
-            XCTAssertNotNil(jobRecord.invisibleMessage)
         }
     }
 }
