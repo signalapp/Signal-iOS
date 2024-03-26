@@ -880,7 +880,7 @@ private extension GroupV2UpdatesImpl {
         // local user is a requesting member and the first
         // change action approves their request to join the
         // group.
-        if oldGroupModel.isPlaceholderModel {
+        if oldGroupModel.isJoinRequestPlaceholder {
             guard isFirstChange else {
                 throw GroupsV2Error.cantApplyChangesToPlaceholder
             }
@@ -949,7 +949,7 @@ private extension GroupV2UpdatesImpl {
         // local user is a requesting member and the first
         // change action approves their request to join the
         // group.
-        if oldGroupModel.isPlaceholderModel {
+        if oldGroupModel.isJoinRequestPlaceholder {
             guard newGroupModel.groupMembership.isFullMember(localIdentifiers.aci) else {
                 throw GroupsV2Error.cantApplyChangesToPlaceholder
             }

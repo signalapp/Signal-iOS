@@ -155,7 +155,7 @@ extension TSGroupThread {
                 avatarUrlPath: nil,
                 inviteLinkPassword: nil,
                 isAnnouncementsOnly: false,
-                isPlaceholderModel: false,
+                isJoinRequestPlaceholder: false,
                 wasJustMigrated: false,
                 didJustAddSelfViaGroupLink: false,
                 addedByAddress: nil,

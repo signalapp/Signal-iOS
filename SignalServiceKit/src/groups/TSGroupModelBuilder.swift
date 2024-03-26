@@ -20,7 +20,7 @@ public struct TSGroupModelBuilder: Dependencies {
     public var avatarUrlPath: String?
     public var inviteLinkPassword: Data?
     public var isAnnouncementsOnly: Bool = false
-    public var isPlaceholderModel: Bool = false
+    public var isJoinRequestPlaceholder: Bool = false
     public var addedByAddress: SignalServiceAddress?
     public var wasJustMigrated: Bool = false
     public var didJustAddSelfViaGroupLink: Bool = false
@@ -43,7 +43,7 @@ public struct TSGroupModelBuilder: Dependencies {
         self.avatarUrlPath = groupV2Snapshot.avatarUrlPath
         self.inviteLinkPassword = groupV2Snapshot.inviteLinkPassword
         self.isAnnouncementsOnly = groupV2Snapshot.isAnnouncementsOnly
-        self.isPlaceholderModel = false
+        self.isJoinRequestPlaceholder = false
         self.wasJustMigrated = false
         self.didJustAddSelfViaGroupLink = false
     }
@@ -156,7 +156,7 @@ public struct TSGroupModelBuilder: Dependencies {
             if !groupMembership.requestingMembers.isEmpty {
                 owsFailDebug("v1 group has pending request members.")
             }
-            owsAssertDebug(!isPlaceholderModel)
+            owsAssertDebug(!isJoinRequestPlaceholder)
             return TSGroupModel(groupId: groupId,
                                 name: name,
                                 avatarData: avatarData,
@@ -190,7 +190,7 @@ public struct TSGroupModelBuilder: Dependencies {
                                   avatarUrlPath: avatarUrlPath,
                                   inviteLinkPassword: inviteLinkPassword,
                                   isAnnouncementsOnly: isAnnouncementsOnly,
-                                  isPlaceholderModel: isPlaceholderModel,
+                                  isJoinRequestPlaceholder: isJoinRequestPlaceholder,
                                   wasJustMigrated: wasJustMigrated,
                                   didJustAddSelfViaGroupLink: didJustAddSelfViaGroupLink,
                                   addedByAddress: addedByAddress,
@@ -271,7 +271,7 @@ public extension TSGroupModel {
 
             // Do not copy transient properties:
             //
-            // * isPlaceholderModel
+            // * isJoinRequestPlaceholder
             // * wasJustMigrated
             // * didJustAddSelfViaGroupLink
             //

@@ -509,7 +509,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let detailsText = { () -> String? in
             if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2,
-               groupModelV2.isPlaceholderModel {
+               groupModelV2.isJoinRequestPlaceholder {
                 // Don't show details for a placeholder.
                 return nil
             }

@@ -1127,7 +1127,7 @@ private struct DiffingGroupUpdateItemBuilder {
         self.groupUpdateSource = groupUpdateSource
 
         if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
-            self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isPlaceholderModel
+            self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isJoinRequestPlaceholder
         } else {
             self.isReplacingJoinRequestPlaceholder = false
         }

@@ -29,10 +29,15 @@ public class TSGroupModelV2: TSGroupModel {
     public var inviteLinkPassword: Data?
     @objc
     public var isAnnouncementsOnly: Bool = false
-    // We sometimes create "placeholder" models to reflect
-    // groups that we don't have access to on the service.
-    @objc
-    public var isPlaceholderModel: Bool = false
+    /// Whether this group model is a placeholder for a group we've requested to
+    /// join, but don't yet have access to on the service. Other fields on this
+    /// group model may not be populated.
+    ///
+    /// - Important
+    /// The @objc name must remain as-is, so as to correctly deserialize
+    /// existing models that were ``NSKeyedArchiver``-ed in the past.
+    @objc(isPlaceholderModel)
+    public var isJoinRequestPlaceholder: Bool = false
     @objc
     public var wasJustMigrated: Bool = false
     @objc
@@ -54,7 +59,7 @@ public class TSGroupModelV2: TSGroupModel {
                          avatarUrlPath: String?,
                          inviteLinkPassword: Data?,
                          isAnnouncementsOnly: Bool,
-                         isPlaceholderModel: Bool,
+                         isJoinRequestPlaceholder: Bool,
                          wasJustMigrated: Bool,
                          didJustAddSelfViaGroupLink: Bool,
                          addedByAddress: SignalServiceAddress?,
@@ -67,7 +72,7 @@ public class TSGroupModelV2: TSGroupModel {
         self.avatarUrlPath = avatarUrlPath
         self.inviteLinkPassword = inviteLinkPassword
         self.isAnnouncementsOnly = isAnnouncementsOnly
-        self.isPlaceholderModel = isPlaceholderModel
+        self.isJoinRequestPlaceholder = isJoinRequestPlaceholder
         self.wasJustMigrated = wasJustMigrated
         self.didJustAddSelfViaGroupLink = didJustAddSelfViaGroupLink
         self.droppedMembers = droppedMembers
@@ -156,7 +161,7 @@ public class TSGroupModelV2: TSGroupModel {
         result += "inviteLinkPassword: \(inviteLinkPassword?.hexadecimalString ?? "None"),\n"
         result += "isAnnouncementsOnly: \(isAnnouncementsOnly),\n"
         result += "addedByAddress: \(addedByAddress?.debugDescription ?? "None"),\n"
-        result += "isPlaceholderModel: \(isPlaceholderModel),\n"
+        result += "isJoinRequestPlaceholder: \(isJoinRequestPlaceholder),\n"
         result += "wasJustMigrated: \(wasJustMigrated),\n"
         result += "didJustAddSelfViaGroupLink: \(didJustAddSelfViaGroupLink),\n"
         result += "droppedMembers: \(droppedMembers),\n"
@@ -204,7 +209,7 @@ public extension TSGroupModel {
         guard let groupModelV2 = self as? TSGroupModelV2 else {
             return false
         }
-        return groupModelV2.isPlaceholderModel
+        return groupModelV2.isJoinRequestPlaceholder
     }
 
     var wasJustMigratedToV2: Bool {

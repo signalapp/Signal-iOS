@@ -868,7 +868,7 @@ public class GroupManager: NSObject {
 
         if
             let groupModelV2 = groupModel as? TSGroupModelV2,
-            groupModelV2.isPlaceholderModel
+            groupModelV2.isJoinRequestPlaceholder
         {
             Logger.warn("Ignoring 403 for placeholder group.")
             Task {

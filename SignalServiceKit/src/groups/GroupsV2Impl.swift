@@ -1794,13 +1794,13 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 revisionForPlaceholderModel: revisionForPlaceholderModel
             )
 
-            let isPlaceholderModel: Bool
+            let isJoinRequestPlaceholder: Bool
             if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-                isPlaceholderModel = groupModel.isPlaceholderModel
+                isJoinRequestPlaceholder = groupModel.isJoinRequestPlaceholder
             } else {
-                isPlaceholderModel = false
+                isJoinRequestPlaceholder = false
             }
-            guard !isPlaceholderModel else {
+            guard !isJoinRequestPlaceholder else {
                 // There's no point in sending a group update for a placeholder
                 // group, since we don't know who to send it to.
                 return groupThread
@@ -1843,7 +1843,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                     return groupThread
                 }
                 var builder = oldGroupModel.asBuilder
-                builder.isPlaceholderModel = true
+                builder.isJoinRequestPlaceholder = true
                 builder.groupV2Revision = max(revision, oldGroupModel.revision)
                 var membershipBuilder = oldGroupMembership.asBuilder
                 membershipBuilder.remove(localIdentifiers.aci)
@@ -1882,7 +1882,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 builder.groupV2Revision = revision
                 builder.groupSecretParamsData = groupV2Params.groupSecretParamsData
                 builder.inviteLinkPassword = inviteLinkPassword
-                builder.isPlaceholderModel = true
+                builder.isJoinRequestPlaceholder = true
 
                 // The "group invite link" UI might not have downloaded
                 // the avatar. That's fine; this is just a placeholder
@@ -2041,7 +2041,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             }
 
             var builder = oldGroupModel.asBuilder
-            builder.isPlaceholderModel = true
+            builder.isJoinRequestPlaceholder = true
             builder.groupV2Revision = newRevision
 
             var membershipBuilder = oldGroupMembership.asBuilder
@@ -2144,7 +2144,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         groupModel: TSGroupModelV2,
         removeLocalUserBlock: @escaping (SDSAnyWriteTransaction) -> Void
     ) async throws {
-        guard groupModel.isPlaceholderModel else {
+        guard groupModel.isJoinRequestPlaceholder else {
             owsFailDebug("Invalid group model.")
             return
         }
@@ -2189,7 +2189,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")
                 }
-                guard oldGroupModel.isPlaceholderModel else {
+                guard oldGroupModel.isJoinRequestPlaceholder else {
                     // Not a placeholder model; no need to update.
                     return
                 }

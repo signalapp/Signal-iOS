@@ -65,7 +65,7 @@ public class GroupsV2IncomingChanges {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
         }
-        guard !oldGroupModel.isPlaceholderModel else {
+        guard !oldGroupModel.isJoinRequestPlaceholder else {
             throw GroupsV2Error.cantApplyChangesToPlaceholder
         }
         let groupV2Params = try oldGroupModel.groupV2Params()
@@ -468,7 +468,7 @@ public class GroupsV2IncomingChanges {
             // the service. This is one.
             let aci = try groupV2Params.aci(for: userId)
 
-            if oldGroupModel.isPlaceholderModel {
+            if oldGroupModel.isJoinRequestPlaceholder {
                 // We can't check permissions using a placeholder.
             } else if !canAddMembers && aci != changeAuthor {
                 owsFailDebug("Cannot add members.")
