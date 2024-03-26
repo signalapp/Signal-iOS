@@ -50,4 +50,6 @@ public class OutgoingGroupUpdateMessage: TSOutgoingMessage {
     }
 
     public override var isUrgent: Bool { false }
+
+    public override var shouldBeSaved: Bool { false }
 }
