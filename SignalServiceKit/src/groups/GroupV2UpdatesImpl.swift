@@ -825,7 +825,6 @@ private extension GroupV2UpdatesImpl {
                 newDisappearingMessageToken: newDisappearingMessageToken,
                 newlyLearnedPniToAciAssociations: [:],
                 groupUpdateSource: groupUpdateSource,
-                canInsert: true,
                 didAddLocalUserToV2Group: didAddLocalUserToV2Group,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: spamReportingMetadata,
@@ -1096,7 +1095,6 @@ private extension GroupV2UpdatesImpl {
                 newDisappearingMessageToken: newDisappearingMessageToken,
                 newlyLearnedPniToAciAssociations: [:], // Not available from snapshots
                 groupUpdateSource: groupUpdateSource,
-                canInsert: true,
                 didAddLocalUserToV2Group: false,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: spamReportingMetadata,

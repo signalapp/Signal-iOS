@@ -424,7 +424,6 @@ public class GroupManager: NSObject {
             newDisappearingMessageToken: disappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
             groupUpdateSource: groupUpdateSource,
-            canInsert: true,
             didAddLocalUserToV2Group: false,
             infoMessagePolicy: infoMessagePolicy,
             localIdentifiers: localIdentifiers,
@@ -1055,7 +1054,6 @@ public class GroupManager: NSObject {
         newDisappearingMessageToken: DisappearingMessageToken?,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
-        canInsert: Bool,
         didAddLocalUserToV2Group: Bool,
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
@@ -1067,10 +1065,6 @@ public class GroupManager: NSObject {
         let threadId = TSGroupThread.threadId(forGroupId: newGroupModel.groupId, transaction: transaction)
 
         guard TSGroupThread.anyExists(uniqueId: threadId, transaction: transaction) else {
-            guard canInsert else {
-                throw OWSAssertionError("Missing groupThread.")
-            }
-
             // When inserting a v2 group into the database for the
             // first time, we don't want to attribute all of the group
             // state to the author of the most recent revision.
