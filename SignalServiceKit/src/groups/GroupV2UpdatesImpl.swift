@@ -955,24 +955,6 @@ private extension GroupV2UpdatesImpl {
             }
         }
 
-        if changeRevision == oldGroupModel.revision {
-            if !oldGroupModel.isEqual(to: newGroupModel, comparisonMode: .compareAll) {
-                // Sometimes we re-apply the snapshot corresponding to the
-                // current revision when refreshing the group from the service.
-                // This should match the state in the database.  If it doesn't,
-                // this reflects a bug, perhaps a deviation in how the service
-                // and client apply the "group changes" to the local model.
-                //
-                // The one known exception is that if we know locally that a
-                // member joined via invite link, that state will not be present
-                // on the membership from the snapshot (as it is not stored in a
-                // group proto's membership). However, as differences only in
-                // "joined via invite link" are ignored when comparing
-                // memberships, getting here is a bug.
-                logger.warn("Local and server group models don't match.")
-            }
-        }
-
         groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,

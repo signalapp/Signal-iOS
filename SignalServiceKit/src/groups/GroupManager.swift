@@ -1124,7 +1124,6 @@ public class GroupManager: NSObject {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
     ) throws -> UpsertGroupResult {
-
         // Step 1: First reload latest thread state. This ensures:
         //
         // * The thread (still) exists in the database.
@@ -1132,9 +1131,15 @@ public class GroupManager: NSObject {
         //
         // We always have the groupThread at the call sites of this method, but this
         // future-proofs us against bugs.
-        let groupId = newGroupModel.groupId
-        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+        guard let groupThread = TSGroupThread.fetch(groupId: newGroupModel.groupId, transaction: transaction) else {
             throw OWSAssertionError("Missing groupThread.")
+        }
+
+        guard
+            let newGroupModel = newGroupModel as? TSGroupModelV2,
+            let oldGroupModel = groupThread.groupModel as? TSGroupModelV2
+        else {
+            owsFail("[GV1] Should be impossible to update a V1 group!")
         }
 
         // Step 2: Update DM configuration in database, if necessary.
@@ -1161,13 +1166,9 @@ public class GroupManager: NSObject {
         // If *we* were removed, check if the group contained any blocked
         // members and make a best-effort attempt to rotate our profile key if
         // this was our only mutual group with them.
-        let oldGroupModel = groupThread.groupModel
-        if
-            let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
-            let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2
-        {
-            let oldMembers = oldGroupModelV2.membership.allMembersOfAnyKindServiceIds
-            let newMembers = newGroupModelV2.membership.allMembersOfAnyKindServiceIds
+        do {
+            let oldMembers = oldGroupModel.membership.allMembersOfAnyKindServiceIds
+            let newMembers = newGroupModel.membership.allMembersOfAnyKindServiceIds
 
             if oldMembers.subtracting(newMembers).isEmpty == false {
                 senderKeyStore.resetSenderKeySession(for: groupThread, transaction: transaction)
@@ -1176,8 +1177,8 @@ public class GroupManager: NSObject {
             if
                 DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? true,
                 let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci,
-                oldGroupModelV2.membership.hasProfileKeyInGroup(serviceId: localAci),
-                !newGroupModelV2.membership.hasProfileKeyInGroup(serviceId: localAci)
+                oldGroupModel.membership.hasProfileKeyInGroup(serviceId: localAci),
+                !newGroupModel.membership.hasProfileKeyInGroup(serviceId: localAci)
             {
                 // If our profile key is no longer exposed to the group - for
                 // example, we've left the group - check if the group had any
@@ -1191,7 +1192,7 @@ public class GroupManager: NSObject {
                             blockingManager.isAddressBlocked(memberAddress, transaction: transaction)
                             || DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(memberAddress, tx: transaction.asV2Read)
                         ),
-                        newGroupModelV2.membership.canViewProfileKeys(serviceId: member)
+                        newGroupModel.membership.canViewProfileKeys(serviceId: member)
                     {
                         // Make a best-effort attempt to find other groups with
                         // this blocked user in which our profile key is
@@ -1224,30 +1225,19 @@ public class GroupManager: NSObject {
 
         // Step 4: Update group in database, if necessary.
         let updateThreadResult: UpsertGroupResult = {
-            if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
-               let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
-                guard newGroupModelV2.revision >= oldGroupModelV2.revision else {
-                    // This is a key check.  We never want to revert group state
-                    // in the database to an earlier revision. Races are
-                    // unavoidable: there are multiple triggers for group updates
-                    // and some of them require interacting with the service.
-                    // Ultimately it is safe to ignore stale writes and treat
-                    // them as successful.
-                    //
-                    // NOTE: As always, we return the group thread with the
-                    // latest group state.
-                    Logger.warn("Skipping stale update for v2 group.")
-                    return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
-                }
-            }
-
-            guard !oldGroupModel.isEqual(to: newGroupModel, comparisonMode: .compareAll) else {
-                // Skip redundant update.
+            guard newGroupModel.revision > oldGroupModel.revision else {
+                /// Local group state must never revert to an earlier revision.
+                ///
+                /// Races exist in the GV2 code, so if we find ourselves with a
+                /// redundant update we'll simply drop it.
+                ///
+                /// Note that (excepting bugs elsewhere in the GV2 code) no
+                /// matter which codepath learned about a particular revision,
+                /// the group models each codepath constructs for that revision
+                /// should be equivalent.
+                Logger.warn("Skipping redundant update for V2 group.")
                 return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
             }
-
-            let hasUserFacingChange = !oldGroupModel.isEqual(to: newGroupModel,
-                                                             comparisonMode: .userFacingOnly)
 
             autoWhitelistGroupIfNecessary(
                 oldGroupModel: oldGroupModel,
@@ -1257,13 +1247,28 @@ public class GroupManager: NSObject {
                 tx: transaction
             )
 
-            TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
+            TSGroupThread.ensureGroupIdMapping(
+                forGroupId: newGroupModel.groupId,
+                transaction: transaction
+            )
 
-            groupThread.update(with: newGroupModel, shouldUpdateChatListUi: hasUserFacingChange, transaction: transaction)
+            let hasUserFacingChange = newGroupModel.hasUserFacingChangeCompared(
+                to: oldGroupModel
+            )
 
-            let action: UpsertGroupResult.Action = (hasUserFacingChange
-                                                        ? .updatedWithUserFacingChanges
-                                                        : .updatedWithoutUserFacingChanges)
+            groupThread.update(
+                with: newGroupModel,
+                shouldUpdateChatListUi: hasUserFacingChange,
+                transaction: transaction
+            )
+
+            let action: UpsertGroupResult.Action = {
+                if hasUserFacingChange {
+                    return .updatedWithUserFacingChanges
+                }
+
+                return .updatedWithoutUserFacingChanges
+            }()
             return UpsertGroupResult(action: action, groupThread: groupThread)
         }()
 

@@ -118,52 +118,27 @@ public class TSGroupModelV2: TSGroupModel {
         return Array(groupMembership.fullMembers)
     }
 
-    public override func isEqual(to model: TSGroupModel,
-                                 comparisonMode: TSGroupModelComparisonMode) -> Bool {
-        guard super.isEqual(to: model, comparisonMode: comparisonMode) else {
+    public func hasUserFacingChangeCompared(
+        to otherGroupModel: TSGroupModelV2
+    ) -> Bool {
+        if self === otherGroupModel {
             return false
         }
-        guard let other = model as? TSGroupModelV2 else {
-            switch comparisonMode {
-            case .compareAll:
-                return false
-            case .userFacingOnly:
-                return descriptionText == nil
-            }
+
+        guard
+            groupName == otherGroupModel.groupName,
+            avatarHash == otherGroupModel.avatarHash,
+            addedByAddress == otherGroupModel.addedByAddress,
+            descriptionText == otherGroupModel.descriptionText,
+            membership == otherGroupModel.membership,
+            access == otherGroupModel.access,
+            isAnnouncementsOnly == otherGroupModel.isAnnouncementsOnly,
+            inviteLinkPassword == otherGroupModel.inviteLinkPassword
+        else {
+            return true
         }
-        guard other.descriptionText == descriptionText else {
-            return false
-        }
-        guard other.membership == membership else {
-            return false
-        }
-        guard other.access == access else {
-            return false
-        }
-        guard other.secretParamsData == secretParamsData else {
-            return false
-        }
-        guard comparisonMode != .compareAll || other.revision == revision else {
-            return false
-        }
-        guard other.avatarUrlPath == avatarUrlPath else {
-            return false
-        }
-        guard other.inviteLinkPassword == inviteLinkPassword else {
-            return false
-        }
-        guard other.isAnnouncementsOnly == isAnnouncementsOnly else {
-            return false
-        }
-        guard other.droppedMembers.stableSort() == droppedMembers.stableSort() else {
-            return false
-        }
-        // Ignore transient properties:
-        //
-        // * isPlaceholderModel
-        // * wasJustMigrated
-        // * didJustAddSelfViaGroupLink
-        return true
+
+        return false
     }
 
     @objc

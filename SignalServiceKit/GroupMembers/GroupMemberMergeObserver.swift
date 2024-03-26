@@ -64,9 +64,11 @@ class GroupMemberMergeObserverImpl: RecipientMergeObserver {
             Logger.warn("Couldn't merge V1 group members.")
             return
         }
-        if oldGroupModel == newGroupModel {
+
+        if oldGroupModel.groupMembership == newGroupModel.groupMembership {
             return
         }
+
         groupThread.update(with: newGroupModel, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
