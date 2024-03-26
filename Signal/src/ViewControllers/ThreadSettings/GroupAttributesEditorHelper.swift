@@ -12,6 +12,10 @@ protocol GroupAttributesEditorHelperDelegate: AnyObject {
     func presentFormSheet(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)?)
 }
 
+extension GroupAttributesEditorHelperDelegate {
+    func groupAttributesEditorSelectionDidChange() {}
+}
+
 // MARK: -
 
 // A helper class used to DRY up the common views/logic

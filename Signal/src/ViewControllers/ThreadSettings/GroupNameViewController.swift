@@ -122,6 +122,4 @@ extension GroupNameViewController: GroupAttributesEditorHelperDelegate {
     func groupAttributesEditorContentsDidChange() {
         updateNavigation()
     }
-
-    func groupAttributesEditorSelectionDidChange() {}
 }

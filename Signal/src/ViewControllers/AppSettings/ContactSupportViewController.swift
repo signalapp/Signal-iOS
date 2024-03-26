@@ -271,33 +271,14 @@ final class ContactSupportViewController: OWSTableViewController2 {
 // MARK: - <TextViewWithPlaceholderDelegate>
 
 extension ContactSupportViewController: TextViewWithPlaceholderDelegate {
-
-    func textViewDidUpdateSelection(_ textView: TextViewWithPlaceholder) {
-        textView.scrollToFocus(in: tableView, animated: true)
-    }
-
     func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
         updateRightBarButton()
 
         // Disable interactive presentation if the user has entered text
         isModalInPresentation = !textView.text.isEmptyOrNil
 
-        // Kick the tableview so it recalculates sizes
-        UIView.performWithoutAnimation {
-            tableView.performBatchUpdates(nil) { (_) in
-                // And when the size changes have finished, make sure we're scrolled
-                // to the focused line
-                textView.scrollToFocus(in: self.tableView, animated: false)
-            }
-        }
+        _textViewDidUpdateText(textView)
     }
-
-    func textView(
-        _ textView: TextViewWithPlaceholder,
-        uiTextView: UITextView,
-        shouldChangeTextIn range: NSRange,
-        replacementText text: String
-    ) -> Bool { true }
 }
 
 // MARK: - Table view content builders
@@ -338,14 +319,7 @@ extension ContactSupportViewController {
                 }),
 
                 // Description field
-                OWSTableItem(customCellBlock: { [weak self] in
-                    let cell = OWSTableItem.newCell()
-                    guard let self = self else { return cell }
-                    cell.contentView.addSubview(self.descriptionField)
-                    self.descriptionField.autoPinEdgesToSuperviewMargins()
-                    self.descriptionField.autoSetDimension(.height, toSize: 125, relation: .greaterThanOrEqual)
-                    return cell
-                }),
+                self.textViewItem(self.descriptionField, minimumHeight: 125),
 
                 // Debug log switch
                 OWSTableItem(customCellBlock: { [weak self] in

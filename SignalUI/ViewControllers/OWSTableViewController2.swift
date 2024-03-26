@@ -1226,3 +1226,87 @@ public class OWSTableView: UITableView {
         }
     }
 }
+
+// MARK: - TextViewWithPlaceholderDelegate
+
+extension TextViewWithPlaceholderDelegate where Self: OWSTableViewController2 {
+    /// Creates an ``OWSTableItem`` with the text view.
+    /// - Parameters:
+    ///   - textView: The ``TextViewWithPlaceholder`` to use in the cell.
+    ///   - minimumHeight: An optional minimum height to constrain the text view to.
+    ///   - dataDetectorTypes: The types of data that convert to tappable URLs in the text view.
+    /// - Returns: An ``OWSTableItem`` with the `textView` embedded.
+    public func textViewItem(
+        _ textView: TextViewWithPlaceholder,
+        minimumHeight: CGFloat? = nil,
+        dataDetectorTypes: UIDataDetectorTypes? = nil
+    ) -> OWSTableItem {
+        .init(customCellBlock: { [weak self] in
+            guard let self else { return OWSTableItem.newCell() }
+
+            let cell = OWSTableItem.newCell()
+            cell.selectionStyle = .none
+            cell.contentView.addSubview(textView)
+
+            /// `UITextView` has default top and bottom insets of 8 which we
+            /// need to subtract off. See ``TextViewWithPlaceholder``'s
+            /// `buildTextView()`  for why they can't just be set to 0.
+            let vMargin = Self.cellVInnerMargin - 8
+            textView.autoPinEdgesToSuperviewEdges(with: .init(
+                hMargin: self.cellOuterInsets.totalWidth,
+                vMargin: vMargin
+            ))
+
+            if let minimumHeight {
+                textView.autoSetDimension(
+                    .height,
+                    toSize: minimumHeight,
+                    relation: .greaterThanOrEqual
+                )
+            }
+
+            if let dataDetectorTypes {
+                textView.dataDetectorTypes = dataDetectorTypes
+            }
+
+            if textView.delegate == nil {
+                textView.delegate = self
+            }
+
+            return cell
+        }, actionBlock: {
+            textView.becomeFirstResponder()
+        })
+    }
+
+    /// A default handler for
+    /// `TextViewWithPlaceholderDelegate.textViewDidUpdateSelection(_:)`
+    /// when used within an ``OWSTableViewController2``.
+    public func _textViewDidUpdateSelection(_ textView: TextViewWithPlaceholder) {
+        textView.scrollToFocus(in: tableView, animated: true)
+    }
+
+    /// A default handler for
+    /// `TextViewWithPlaceholderDelegate.textViewDidUpdateText(_:)`
+    /// when used with an ``OWSTableViewController2``.
+    public func _textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
+        // Kick the tableview so it recalculates sizes
+        UIView.performWithoutAnimation {
+            tableView.performBatchUpdates(nil) { (_) in
+                // And when the size changes have finished, make sure we're
+                // scrolled to the focused line.
+                textView.scrollToFocus(in: self.tableView, animated: false)
+            }
+        }
+    }
+
+    // MARK: Default implementation
+
+    public func textViewDidUpdateSelection(_ textView: TextViewWithPlaceholder) {
+        _textViewDidUpdateSelection(textView)
+    }
+
+    public func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
+        _textViewDidUpdateText(textView)
+    }
+}

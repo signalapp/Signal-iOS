@@ -357,6 +357,4 @@ extension NewGroupConfirmViewController: GroupAttributesEditorHelperDelegate {
         newGroupState.groupName = helper.groupNameCurrent
         newGroupState.avatarData = helper.avatarCurrent?.imageData
     }
-
-    func groupAttributesEditorSelectionDidChange() {}
 }

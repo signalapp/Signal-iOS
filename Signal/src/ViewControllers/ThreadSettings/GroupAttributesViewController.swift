@@ -224,8 +224,6 @@ extension GroupAttributesViewController: GroupAttributesEditorHelperDelegate {
     func groupAttributesEditorContentsDidChange() {
         updateNavbar()
     }
-
-    func groupAttributesEditorSelectionDidChange() {}
 }
 
 extension GroupAttributesViewController: GroupDescriptionViewControllerDelegate {

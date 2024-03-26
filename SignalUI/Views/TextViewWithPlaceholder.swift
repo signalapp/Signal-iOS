@@ -18,6 +18,12 @@ public protocol TextViewWithPlaceholderDelegate: AnyObject {
     func textView(_ textView: TextViewWithPlaceholder, uiTextView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
 }
 
+public extension TextViewWithPlaceholderDelegate {
+    func textView(_ textView: TextViewWithPlaceholder, uiTextView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        return true
+    }
+}
+
 // MARK: -
 
 public class TextViewWithPlaceholder: UIView {

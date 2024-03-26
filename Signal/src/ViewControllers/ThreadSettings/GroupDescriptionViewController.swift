@@ -163,34 +163,13 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let descriptionTextView = helper.descriptionTextView
-        let isEditable = self.isEditable
 
         let section = OWSTableSection()
-        section.add(.init(
-            customCellBlock: {
-                let cell = OWSTableItem.newCell()
-
-                cell.selectionStyle = .none
-
-                cell.contentView.addSubview(descriptionTextView)
-                descriptionTextView.autoPinEdgesToSuperviewMargins()
-
-                if isEditable {
-                    descriptionTextView.isEditable = true
-                    descriptionTextView.dataDetectorTypes = []
-                    descriptionTextView.autoSetDimension(.height, toSize: 74, relation: .greaterThanOrEqual)
-                } else {
-                    descriptionTextView.isEditable = false
-                    descriptionTextView.dataDetectorTypes = .all
-                }
-
-                return cell
-            },
-            actionBlock: {
-                if isEditable {
-                    descriptionTextView.becomeFirstResponder()
-                }
-            }
+        descriptionTextView.isEditable = self.isEditable
+        section.add(self.textViewItem(
+            descriptionTextView,
+            minimumHeight: self.isEditable ? 74 : nil,
+            dataDetectorTypes: self.isEditable ? [] : .all
         ))
 
         if isEditable {
@@ -226,21 +205,13 @@ class GroupDescriptionViewController: OWSTableViewController2 {
     }
 }
 
-extension GroupDescriptionViewController: GroupAttributesEditorHelperDelegate {
+extension GroupDescriptionViewController: GroupAttributesEditorHelperDelegate, TextViewWithPlaceholderDelegate {
     func groupAttributesEditorContentsDidChange() {
         updateNavigation()
-
-        // Kick the tableview so it recalculates sizes
-        UIView.performWithoutAnimation {
-            tableView.performBatchUpdates(nil) { (_) in
-                // And when the size changes have finished, make sure we're scrolled
-                // to the focused line
-                self.helper.descriptionTextView.scrollToFocus(in: self.tableView, animated: false)
-            }
-        }
+        textViewDidUpdateText(helper.descriptionTextView)
     }
 
     func groupAttributesEditorSelectionDidChange() {
-        helper.descriptionTextView.scrollToFocus(in: tableView, animated: true)
+        textViewDidUpdateSelection(helper.descriptionTextView)
     }
 }
