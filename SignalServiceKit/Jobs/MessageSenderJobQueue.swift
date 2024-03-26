@@ -35,7 +35,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     // MARK: 
 
-    @objc(addMessage:transaction:)
     @available(swift, obsoleted: 1.0)
     public func add(message: OutgoingMessagePreparer, transaction: SDSAnyWriteTransaction) {
         self.add(
@@ -62,7 +61,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         )
     }
 
-    @objc
     @available(swift, obsoleted: 1.0)
     public func addPromise(
         message: OutgoingMessagePreparer,
