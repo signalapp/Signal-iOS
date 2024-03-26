@@ -2657,7 +2657,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "그룹 만들기 완료";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "카메라 전환이 여기로 이동했습니다. 영상을 탭하여 사용해 보세요.";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "연락처 전달";

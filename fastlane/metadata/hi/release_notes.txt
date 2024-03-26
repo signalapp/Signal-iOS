@@ -1,1 +1,1 @@
-• Improved picture-in-picture camera controls and animations during video calls. Tap on your outgoing video to quickly flip between showing them the look on your face or letting them look at what you're facing.
+• वीडियो कॉल के दौरान बेहतर पिक्चर-इन-पिक्चर कैमरा कंट्रोल और एनिमेशन। अपने आउटगोइंग वीडियो पर टैप करके उन्हें अपने चेहरे का लुक दिखाने के बीच तेज़ी से फ़्लिप करें या उन्हें यह देखने दें कि आपके सामने क्या है।

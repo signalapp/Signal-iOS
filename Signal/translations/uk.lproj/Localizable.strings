@@ -1526,7 +1526,7 @@
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "пошук";
 
 /* Label for button that sets 'send messages permission' for a group to 'all members'. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Всі учасники";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Усі учасники";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Оберіть, хто може відправити повідомлення та почати дзвінок у цій групі.";
@@ -2552,10 +2552,10 @@
 "ERROR_MESSAGE_NO_SESSION" = "Немає доступного сеансу для контакту.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Код безпеки змінено.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Код безпеки змінився.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Ваш код безпеки із %1$@ змінився.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Код безпеки для чату з %1$@ змінився.";
 
 /* Text notifying the user that their secure session has been reset */
 "ERROR_MESSAGE_SESSION_REFRESH" = "Сесію чату оновлено";
@@ -2564,7 +2564,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Виникла невідома помилка.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безпеки змінено.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безпеки змінився.";
 
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Помилка мережі";
@@ -2612,7 +2612,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Забагато помилок із цим контактом. Спробуйте пізніше.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ваш код безпеки із %1$@ недавно змінився. Можливо, його необхідно завірити перед тим, як надіслати це повідомлення знову.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ваш код безпеки для чату з %1$@ недавно змінився. Можливо, варто його перевірити, перш ніж надсилати це повідомлення знову.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
 "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Не вдалось активувати значок. Перевірте підключення до мережі і спробуйте знову.";
@@ -2657,7 +2657,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Завершити створення групи";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Тепер кнопка перемикання камери знаходиться тут. Торкніться свого відео, щоб спробувати";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Переслати контакт";
@@ -2753,7 +2753,7 @@
 "GROUP_ACCESS_LEVEL_ANY" = "Будь-який користувач";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "Всі учасники";
+"GROUP_ACCESS_LEVEL_MEMBER" = "Усі учасники";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Невідомо";
@@ -3869,7 +3869,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Переглянути одноразові медіафайли";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Очистити фільтр";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Скасувати фільтр";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Ця дія назавжди видалить вибрані файли. Текст повідомлень, пов'язаний із цими файлами, також буде видалено.";
@@ -5306,7 +5306,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Ми нагадаємо знову завтра.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Ми нагадаємо вам знов за пару тижнів.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Ми нагадаємо знов через кілька тижнів.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Ми нагадаємо знову через тижнь.";
@@ -6776,7 +6776,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Ваша кодова фраза — це 24 слова, що є унікальними для вас. Використовується для відновлення платіжного облікового запису.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Ввести кодову фразу";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Введіть кодову фразу";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Кодова фраза";
@@ -6791,7 +6791,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Слово введене неправильно.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Ввести кодову фразу";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Введіть кодову фразу";
 
 /* Title for the first step of the 'save payments passphrase' views. */
 "SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Зберегти кодову фразу";

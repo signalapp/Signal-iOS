@@ -2657,7 +2657,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Ολοκλήρωση δημιουργίας ομάδας";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Η Εναλλαγή κάμερας μεταφέρθηκε εδώ, πάτα στο βίντεο για να τη δοκιμάσεις";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Προώθηση επαφής";

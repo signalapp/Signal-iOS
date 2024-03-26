@@ -2657,7 +2657,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "गट तयार करणे संपवा";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "फ्लिप कॅमेरा या ठिकाणी हलवण्यात आले आहे, त्याला वापरून पाहण्यासाठी आपल्या व्हिडीओवर टॅप करा";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "संपर्क फॉर्वर्ड करा";

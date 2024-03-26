@@ -1,1 +1,1 @@
-• Improved picture-in-picture camera controls and animations during video calls. Tap on your outgoing video to quickly flip between showing them the look on your face or letting them look at what you're facing.
+• Görüntülü aramalar sırasında, resim içinde resim kamera kontrolleri ve animasyonları iyileştirildi. Yüzündeki ifadeyi göstermek veya neyle karşı karşıya olduğuna bakmalarını sağlamak arasında hızla geçiş yapmak için giden videona dokun.

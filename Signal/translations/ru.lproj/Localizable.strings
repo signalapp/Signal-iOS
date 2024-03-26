@@ -2657,7 +2657,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Завершить создание группы";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Флип-камера была перемещена сюда. Нажмите на ваше видео, чтобы попробовать её в действии";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Переслать контакт";

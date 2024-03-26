@@ -2657,7 +2657,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "完成開新谷";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "「切換鏡頭」已經搬咗嚟呢度，㩒一下視像畫面試吓啦";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "轉寄聯絡人";

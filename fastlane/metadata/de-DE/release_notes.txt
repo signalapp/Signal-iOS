@@ -1,1 +1,1 @@
-• Improved picture-in-picture camera controls and animations during video calls. Tap on your outgoing video to quickly flip between showing them the look on your face or letting them look at what you're facing.
+• Verbesserte Bild-im-Bild-Kamerasteuerung und Animationen bei Videoanrufen. Tippe auf dein ausgehendes Video, um schnell zwischen deinem Gesichtsausdruck und dem, was auf dich zukommt, umzuschalten.

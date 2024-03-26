@@ -2657,7 +2657,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Aanmaken van groep voltooien";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Het icoontje om van camera te wisselen is hierheen verplaatst. Tik op je video om het uit te proberen";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Contactinformatie doorsturen";
@@ -2867,7 +2867,7 @@
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Iemand heeft een groepsoproep gestart";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Veeg omhoog om veranderingen te zien";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Veeg omhoog om weergave te wijzigen";
 
 /* Tooltip highlighting group calls. */
 "GROUP_CALL_START_TOOLTIP" = "Tik hier om een groepsoproep te starten";

@@ -1,1 +1,1 @@
-• Improved picture-in-picture camera controls and animations during video calls. Tap on your outgoing video to quickly flip between showing them the look on your face or letting them look at what you're facing.
+• ビデオ通話中のピクチャー・イン・ピクチャーのカメラ操作とアニメーションを改良しました。

@@ -2657,7 +2657,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "গ্রুপ তৈরি শেষ করুন";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "ফ্লিপ ক্যামেরা সরিয়ে এখানে আনা হয়েছে, এটি ব্যবহার করে দেখতে আপনার ভিডিওতে ট্যাপ করুন";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "পরিচিতি ফরওয়ার্ড করুন";
