@@ -1138,11 +1138,10 @@ fileprivate extension CVComponentState.Builder {
             return
         }
         var displayableQuotedText: DisplayableText?
-        if let quotedBody = quotedReplyModel.body,
-           !quotedBody.isEmpty {
+        if let quotedBody = quotedReplyModel.originalMessageBody, !quotedBody.text.isEmpty {
             displayableQuotedText = CVComponentState.displayableQuotedText(
-                text: quotedBody,
-                ranges: quotedReplyModel.bodyRanges,
+                text: quotedBody.text,
+                ranges: quotedBody.ranges,
                 interaction: message,
                 revealedSpoilerIdsSnapshot: revealedSpoilerIdsSnapshot,
                 transaction: transaction

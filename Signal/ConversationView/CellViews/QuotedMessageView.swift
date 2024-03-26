@@ -26,12 +26,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let quotedAuthorName: String
 
         var quotedInteractionIdentifier: InteractionSnapshotIdentifier? {
-            guard let timestamp = quotedReplyModel.timestamp else {
+            guard let timestamp = quotedReplyModel.originalMessageTimestamp else {
                 return nil
             }
             return InteractionSnapshotIdentifier(
                 timestamp: timestamp,
-                authorAci: quotedReplyModel.authorAddress.aci
+                authorAci: quotedReplyModel.originalMessageAuthorAddress.aci
             )
         }
     }
@@ -72,7 +72,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             conversationStyle: conversationStyle,
             isOutgoing: isOutgoing,
             isForPreview: false,
-            quotedAuthorName: contactsManager.displayName(for: quotedReplyModel.authorAddress, tx: transaction).resolvedValue()
+            quotedAuthorName: contactsManager.displayName(
+                for: quotedReplyModel.originalMessageAuthorAddress,
+                tx: transaction
+            ).resolvedValue()
         )
     }
 
@@ -82,10 +85,9 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         transaction: SDSAnyReadTransaction
     ) -> State {
         var displayableQuotedText: DisplayableText?
-        if let body = quotedReplyModel.body, !body.isEmpty {
-            let messageBody = MessageBody(text: body, ranges: quotedReplyModel.bodyRanges ?? .empty)
+        if let body = quotedReplyModel.originalMessageBody, !body.text.isEmpty {
             displayableQuotedText = DisplayableText.displayableText(
-                withMessageBody: messageBody,
+                withMessageBody: body,
                 transaction: transaction
             )
         }
@@ -96,7 +98,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             conversationStyle: conversationStyle,
             isOutgoing: true,
             isForPreview: true,
-            quotedAuthorName: contactsManager.displayName(for: quotedReplyModel.authorAddress, tx: transaction).resolvedValue()
+            quotedAuthorName: contactsManager.displayName(
+                for: quotedReplyModel.originalMessageAuthorAddress,
+                tx: transaction
+            ).resolvedValue()
         )
     }
 
@@ -129,7 +134,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let quotedAttachmentSizeWithQuotedText: CGFloat = 72
         var quotedAttachmentSize: CGSize {
             let height = hasQuotedText ? quotedAttachmentSizeWithQuotedText : quotedAttachmentSizeWithoutQuotedText
-            if quotedReplyModel.isStory {
+            if quotedReplyModel.originalContent.isStory {
                 return CGSize(width: 0.625 * height, height: height)
             } else {
                 return CGSize(square: height)
@@ -179,15 +184,15 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var hasQuotedThumbnail: Bool {
-            mimeTypeWithThumbnail != nil || quotedReplyModel.thumbnailViewFactory != nil || quotedReplyModel.isGiftBadge
+            quotedReplyModel.hasQuotedThumbnail
         }
 
         var hasReaction: Bool {
-            quotedReplyModel.reactionEmoji != nil
+            quotedReplyModel.storyReactionEmoji != nil
         }
 
         var mimeType: String? {
-            guard let mimeType = quotedReplyModel.mimeType,
+            guard let mimeType = quotedReplyModel.originalContent.attachmentMimeType,
                   !mimeType.isEmpty else {
                 return nil
             }
@@ -205,7 +210,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var isAudioAttachment: Bool {
-            switch quotedReplyModel.contentType {
+            switch quotedReplyModel.originalContent.attachmentCachedContentType {
             case .file, .image, .video, .animatedImage:
                 return false
             case .audio:
@@ -220,7 +225,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var isVideoAttachment: Bool {
-            switch quotedReplyModel.contentType {
+            switch quotedReplyModel.originalContent.attachmentCachedContentType {
             case .file, .image, .audio, .animatedImage:
                 return false
             case .video:
@@ -240,14 +245,14 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         var quotedAuthorLabelConfig: CVLabelConfig {
             let authorName: String
-            if quotedReplyModel.authorAddress.isLocalAddress {
+            if quotedReplyModel.originalMessageAuthorAddress.isLocalAddress {
                 authorName = CommonStrings.you
             } else {
                 authorName = quotedAuthorName
             }
 
             let text: String
-            if quotedReplyModel.isStory {
+            if quotedReplyModel.originalContent.isStory {
                 let format = OWSLocalizedString("QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
                                                comment: "Message header when you are quoting a story. Embeds {{ story author name }}")
                 text = String(format: format, authorName)
@@ -302,7 +307,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                             .foregroundColor: fileTypeTextColor
                         ]
                     ))
-                } else if let sourceFilename = quotedReplyModel.sourceFilename?.filterStringForDisplay() {
+                } else if let sourceFilename = quotedReplyModel.originalAttachmentSourceFilename?.filterStringForDisplay() {
                     labelText = .attributedText(NSAttributedString(
                         string: sourceFilename,
                         attributes: [
@@ -310,7 +315,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                             .foregroundColor: filenameTextColor
                         ]
                     ))
-                } else if self.quotedReplyModel.isGiftBadge {
+                } else if self.quotedReplyModel.originalContent.isGiftBadge {
                     labelText = .attributedText(NSAttributedString(
                         string: OWSLocalizedString(
                             "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY",
@@ -362,7 +367,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         var quoteReactionHeaderLabelConfig: CVLabelConfig {
             let text: String
-            if quotedReplyModel.authorAddress.isLocalAddress {
+            if quotedReplyModel.originalMessageAuthorAddress.isLocalAddress {
                 text = OWSLocalizedString("QUOTED_REPLY_REACTION_TO_OWN_STORY",
                                          comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to your own story.")
             } else {
@@ -381,7 +386,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var quoteReactionLabelConfig: CVLabelConfig {
             let font = UIFont.systemFont(ofSize: 28)
             return CVLabelConfig(
-                text: .attributedText((quotedReplyModel.reactionEmoji ?? "").styled(with: .lineHeightMultiple(0.6))),
+                text: .attributedText((quotedReplyModel.storyReactionEmoji ?? "").styled(with: .lineHeightMultiple(0.6))),
                 displayConfig: .forUnstyledText(font: font, textColor: quotedTextColor),
                 font: font,
                 textColor: quotedTextColor
@@ -506,12 +511,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                               subviews: innerVStackSubviews)
         hStackSubviews.append(innerVStack)
 
-        let thumbnailView: UIView? = {
+        let thumbnailView: UIView? = { () -> UIView? in
             guard configurator.hasQuotedThumbnail else { return nil }
-
-            if let thumbnailView = configurator.quotedReplyModel.thumbnailViewFactory?(
-                componentDelegate.spoilerState
-            ) { return thumbnailView }
 
             let quotedImageView = self.quotedImageView
             // Use trilinear filters for better scaling quality at
@@ -520,45 +521,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             quotedImageView.layer.magnificationFilter = .trilinear
             quotedImageView.layer.mask = nil
 
-            // TODO: should be able to show a blurhash _and_ tap to download.
-            if let thumbnailImage = quotedReplyModel.thumbnailImage {
-                quotedImageView.image = thumbnailImage
-                // We need to specify a contentMode since the size of the image
-                // might not match the aspect ratio of the view.
-                quotedImageView.contentMode = .scaleAspectFill
-                quotedImageView.clipsToBounds = true
+            switch configurator.quotedReplyModel.originalContent {
+            case .textStory(let rendererFn):
+                return rendererFn(componentDelegate.spoilerState)
 
-                let wrapper = ManualLayoutView(name: "thumbnailImageWrapper")
-                wrapper.addSubviewToFillSuperviewEdges(quotedImageView)
-
-                if configurator.isVideoAttachment {
-                    let overlayView = ManualLayoutViewWithLayer(name: "video_overlay")
-                    overlayView.backgroundColor = .ows_black.withAlphaComponent(0.20)
-                    wrapper.addSubviewToFillSuperviewEdges(overlayView)
-
-                    let contentImageView = CVImageView()
-                    contentImageView.setTemplateImageName("play-fill", tintColor: .ows_white)
-                    contentImageView.setShadow(radius: 6, opacity: 0.24, offset: .zero, color: .ows_black)
-                    wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
-                }
-                return wrapper
-            } else if quotedReplyModel.canTapToDownload {
-                let wrapper = ManualLayoutViewWithLayer(name: "thumbnailDownloadFailedWrapper")
-                wrapper.backgroundColor = configurator.highlightColor
-
-                // TODO: design review icon and color
-                quotedImageView.setTemplateImageName("refresh", tintColor: .white)
-                quotedImageView.contentMode = .scaleAspectFit
-                quotedImageView.clipsToBounds = false
-                let iconSize = CGSize.square(configurator.quotedAttachmentSize.width * 0.5)
-                wrapper.addSubviewToCenterOnSuperview(quotedImageView, size: iconSize)
-
-                wrapper.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                                    action: #selector(didTapFailedThumbnailDownload)))
-                wrapper.isUserInteractionEnabled = true
-
-                return wrapper
-            } else if quotedReplyModel.isGiftBadge {
+            case .giftBadge:
                 quotedImageView.image = UIImage(named: "gift-thumbnail")
                 quotedImageView.contentMode = .scaleAspectFit
                 quotedImageView.clipsToBounds = false
@@ -577,7 +544,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     // the common case, we'll be pressing against the top, trailing, and bottom
                     // edges, so we round the .topTrailing and .bottomTrailing corners.
                     var eligibleCorners: OWSDirectionalRectCorner = [.topTrailing, .bottomTrailing]
-                    if quotedReplyModel.isRemotelySourced {
+                    if quotedReplyModel.sourceOfOriginal == .remote {
                         eligibleCorners.remove(.bottomTrailing)
                     }
                     let maskLayer = CAShapeLayer()
@@ -602,7 +569,49 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     wrapper.backgroundColor = .ows_white
                 }
                 return wrapper
-            } else {
+
+            case .attachment(_, let attachment, let thumbnailImage), .mediaStory(_, let attachment, let thumbnailImage):
+                if let thumbnailImage {
+                    quotedImageView.image = thumbnailImage
+                    // We need to specify a contentMode since the size of the image
+                    // might not match the aspect ratio of the view.
+                    quotedImageView.contentMode = .scaleAspectFill
+                    quotedImageView.clipsToBounds = true
+
+                    let wrapper = ManualLayoutView(name: "thumbnailImageWrapper")
+                    wrapper.addSubviewToFillSuperviewEdges(quotedImageView)
+
+                    if configurator.isVideoAttachment {
+                        let overlayView = ManualLayoutViewWithLayer(name: "video_overlay")
+                        overlayView.backgroundColor = .ows_black.withAlphaComponent(0.20)
+                        wrapper.addSubviewToFillSuperviewEdges(overlayView)
+
+                        let contentImageView = CVImageView()
+                        contentImageView.setTemplateImageName("play-fill", tintColor: .ows_white)
+                        contentImageView.setShadow(radius: 6, opacity: 0.24, offset: .zero, color: .ows_black)
+                        wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
+                    }
+                    return wrapper
+                } else if attachment.attachment.asResourceStream() == nil, attachment.attachment.asTransitTierPointer() != nil {
+                    let wrapper = ManualLayoutViewWithLayer(name: "thumbnailDownloadFailedWrapper")
+                    wrapper.backgroundColor = configurator.highlightColor
+
+                    // TODO: design review icon and color
+                    quotedImageView.setTemplateImageName("refresh", tintColor: .white)
+                    quotedImageView.contentMode = .scaleAspectFit
+                    quotedImageView.clipsToBounds = false
+                    let iconSize = CGSize.square(configurator.quotedAttachmentSize.width * 0.5)
+                    wrapper.addSubviewToCenterOnSuperview(quotedImageView, size: iconSize)
+
+                    wrapper.addGestureRecognizer(UITapGestureRecognizer(target: self,
+                                                                        action: #selector(didTapFailedThumbnailDownload)))
+                    wrapper.isUserInteractionEnabled = true
+
+                    return wrapper
+                } else {
+                    fallthrough
+                }
+            default:
                 // TODO: Should we overlay the file extension like we do with CVComponentGenericAttachment
                 quotedImageView.setTemplateImageName("generic-attachment", tintColor: .clear)
                 quotedImageView.contentMode = .scaleAspectFit
@@ -675,7 +684,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         outerVStackSubviews.append(hStack)
 
-        if quotedReplyModel.isRemotelySourced {
+        if quotedReplyModel.sourceOfOriginal == .remote {
             remotelySourcedContentIconView.setTemplateImageName("link-slash-compact", tintColor: Theme.lightThemePrimaryColor)
 
             let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
@@ -813,7 +822,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         outerVStackSubviewInfos.append(hStackMeasurement.measuredSize.asManualSubviewInfo)
 
-        if quotedReplyModel.isRemotelySourced {
+        if quotedReplyModel.sourceOfOriginal == .remote {
             let remotelySourcedContentIconSize = CGSize.square(configurator.remotelySourcedContentIconSize)
 
             let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig

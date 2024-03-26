@@ -47,23 +47,4 @@ extension StoryMessage {
             ranges: MessageBodyRanges(mentions: [:], orderedMentions: [], collapsedStyles: captionStyles)
         )
     }
-
-    func thumbnailImage(transaction: SDSAnyReadTransaction) -> UIImage? {
-        switch attachment {
-        case .text:
-            return nil
-        case .file, .foreignReferenceAttachment:
-            guard let attachment = self.fileAttachment(tx: transaction) else {
-                owsFailDebug("Missing attachment for story message \(timestamp)")
-                return nil
-            }
-            if let stream = attachment as? TSAttachmentStream {
-                return stream.thumbnailImageSmallSync()
-            } else if let blurHash = attachment.blurHash {
-                return BlurHash.image(for: blurHash)
-            } else {
-                return nil
-            }
-        }
-    }
 }

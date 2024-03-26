@@ -9,116 +9,271 @@ import LibSignalClient
 /// View model for an existing quoted reply which has already fetched any attachments.
 /// NOT used for draft quoted replies; this is for TSMessages with quoted replies (or story replies)
 /// that have already been created, for use rendering in a conversation.
-public class QuotedReplyModel: NSObject {
+public class QuotedReplyModel {
 
-    public let timestamp: UInt64?
-    public let authorAddress: SignalServiceAddress
-    /// The attachment stream on the reply message. May still point at the original
-    /// message's attachment if the thumbnail copy has not yet occured.
-    public let attachmentStream: TSAttachmentStream?
-    public let attachmentType: TSAttachmentType?
-    public let canTapToDownload: Bool
+    /// Timestamp of the original message, be it StoryMessage or TSMessage.
+    public let originalMessageTimestamp: UInt64?
 
-    // This property should be set IFF we are quoting a text message
-    // or attachment with caption.
-    public let body: String?
-    public let bodyRanges: MessageBodyRanges?
-    private let bodySource: TSQuotedMessageContentSource
-    public let reactionEmoji: String?
+    /// Address of the original message's author, be it StoryMessage or TSMessage.
+    public let originalMessageAuthorAddress: SignalServiceAddress
 
-    public var isRemotelySourced: Bool { bodySource == .remote }
+    public let isOriginalMessageAuthorLocalUser: Bool
 
-    public var isStory: Bool { bodySource == .story }
+    /// IFF the original's content was a story message, the emoji used
+    /// _on the reply body_ to that story message.
+    /// Ignored for other original content types.
+    public let storyReactionEmoji: String?
 
-    public let isGiftBadge: Bool
+    /// The content on the _original_ message being replied to.
+    public enum OriginalContent {
 
-    public let isPayment: Bool
+        /// The original message had text with no attachment
+        case text(MessageBody?)
 
-    // MARK: Attachments
+        // MARK: - "Special" types
 
-    // This mime type comes from the sender and is not validated.
-    //
-    // This property should be set IFF we are quoting an attachment message.
-    public let mimeType: String?
+        /// The original message was a gift badge
+        case giftBadge
+        /// The original message is itself a reply to a story
+        /// with an emoji.
+        case storyReactionEmoji(String)
 
-    // This content type comes from our local device and is validated.
-    // Should be preferred to the mimeType if available.
-    //
-    // This property should be set IFF we are quoting an attachment message.
-    public let contentType: TSResourceContentType?
+        // MARK: - Attachment types
 
-    public let sourceFilename: String?
+        /// The original message had an attachment, but it could not
+        /// be thumbnail-ed
+        case attachmentStub(
+            MessageBody?,
+            QuotedMessageAttachmentReference.Stub
+        )
+        /// The original message had an attachment that can be thumbnail-ed,
+        /// though it may not actually be thumbnail-ed *yet*.
+        case attachment(
+            MessageBody?,
+            attachment: ReferencedTSResource,
+            thumbnailImage: UIImage?
+        )
 
-    public let thumbnailImage: UIImage?
-    public let thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)?
+        // MARK: - Story types
+
+        case mediaStory(
+            body: StyleOnlyMessageBody?,
+            attachment: ReferencedTSResource,
+            thumbnailImage: UIImage?
+        )
+
+        public typealias TextStoryThumbnailRenderer = (SpoilerRenderState) -> UIView
+        case textStory(TextStoryThumbnailRenderer)
+
+        /// Used if the story has expired; we do not retain a copy.
+        case expiredStory
+
+        // MARK: - Convenience
+
+        public var isGiftBadge: Bool {
+            switch self {
+            case .giftBadge:
+                return true
+            default:
+                return false
+            }
+        }
+
+        public var isStory: Bool {
+            switch self {
+            case .mediaStory, .textStory, .expiredStory:
+                return true
+            default:
+                return false
+            }
+        }
+
+        public var attachmentMimeType: String? {
+            switch self {
+            case .text(_):
+                return nil
+            case .giftBadge:
+                return nil
+            case .storyReactionEmoji(_):
+                return nil
+            case .attachmentStub(_, let stub):
+                return stub.mimeType
+            case .attachment(_, let attachment, _):
+                return attachment.attachment.mimeType
+            case .mediaStory(_, let attachment, _):
+                return attachment.attachment.mimeType
+            case .textStory(_):
+                return nil
+            case .expiredStory:
+                return nil
+            }
+        }
+
+        public var attachmentCachedContentType: TSResourceContentType? {
+            switch self {
+            case .text(_):
+                return nil
+            case .giftBadge:
+                return nil
+            case .storyReactionEmoji(_):
+                return nil
+            case .attachmentStub(_, _):
+                return nil
+            case .attachment(_, let attachment, _):
+                return attachment.attachment.asResourceStream()?.cachedContentType
+            case .mediaStory(_, let attachment, _):
+                return attachment.attachment.asResourceStream()?.cachedContentType
+            case .textStory(_):
+                return nil
+            case .expiredStory:
+                return nil
+            }
+        }
+    }
+
+    public let originalContent: OriginalContent
+
+    /// Where we got the origina's content from.
+    /// In plain english: did we have the original message (NOT its attachment,
+    /// the TSMessage itself) locally when we created the TSQuotedMessage?
+    public let sourceOfOriginal: TSQuotedMessageContentSource
+
+    // MARK: Convenience
+
+    public var originalMessageBody: MessageBody? {
+        switch originalContent {
+        case .text(let messageBody):
+            return messageBody
+        case .giftBadge:
+            return nil
+        case .storyReactionEmoji(let string):
+            return MessageBody(text: string, ranges: .empty)
+        case .attachmentStub(let messageBody, _):
+            return messageBody
+        case .attachment(let messageBody, _, _):
+            return messageBody
+        case .mediaStory(let body, _, _):
+            return body?.asMessageBody()
+        case .textStory(_):
+            return nil
+        case .expiredStory:
+            return MessageBody(
+                text: OWSLocalizedString(
+                    "STORY_NO_LONGER_AVAILABLE",
+                    comment: "Text indicating a story that was replied to is no longer available."
+                ),
+                ranges: .empty
+            )
+        }
+    }
+
+    public var originalAttachmentSourceFilename: String? {
+        switch originalContent {
+        case .text(_):
+            return nil
+        case .giftBadge:
+            return nil
+        case .storyReactionEmoji(_):
+            return nil
+        case .attachmentStub(_, let stub):
+            return stub.sourceFilename
+        case .attachment(_, let attachment, _):
+            return attachment.reference.sourceFilename
+        case .mediaStory(_, _, _):
+            return nil
+        case .textStory(_):
+            return nil
+        case .expiredStory:
+            return nil
+        }
+    }
+
+    public var hasQuotedThumbnail: Bool {
+        switch originalContent {
+        case .text(_):
+            return false
+        case .giftBadge:
+            // This pretends to be a thumbnail
+            return true
+        case .storyReactionEmoji(_):
+            return false
+        case .attachmentStub(_, _):
+            return false
+        case .attachment(_, _, let thumbnailImage):
+            return thumbnailImage != nil
+        case .mediaStory(_, _, _):
+            return true
+        case .textStory(_):
+            return true
+        case .expiredStory:
+            return false
+        }
+    }
 
     public static func build(
         replyingTo storyMessage: StoryMessage,
         reactionEmoji: String? = nil,
         transaction: SDSAnyReadTransaction
     ) -> QuotedReplyModel {
-        let thumbnailImage = storyMessage.thumbnailImage(transaction: transaction)
+        let isOriginalAuthorLocalUser = DependenciesBridge.shared.tsAccountManager
+            .localIdentifiers(tx: transaction.asV2Read)?
+            .aciAddress
+            .isEqualToAddress(storyMessage.authorAddress)
+            ?? false
 
-        let preloadedTextAttachment: PreloadedTextAttachment?
+        func buildQuotedReplyModel(
+            originalContent: OriginalContent
+        ) -> QuotedReplyModel {
+            return QuotedReplyModel(
+                originalMessageTimestamp: storyMessage.timestamp,
+                originalMessageAuthorAddress: storyMessage.authorAddress,
+                isOriginalMessageAuthorLocalUser: isOriginalAuthorLocalUser,
+                storyReactionEmoji: reactionEmoji,
+                originalContent: originalContent,
+                sourceOfOriginal: .story
+            )
+        }
+
         switch storyMessage.attachment {
         case .file, .foreignReferenceAttachment:
-            preloadedTextAttachment = nil
+            let attachmentReference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: storyMessage, tx: transaction.asV2Read)
+            let attachment = attachmentReference?.fetch(tx: transaction)
+
+            let referencedAttachment: ReferencedTSResource
+            let thumbnailImage: UIImage?
+            if let attachmentReference, let attachment {
+                referencedAttachment = .init(reference: attachmentReference, attachment: attachment)
+
+                if let stream = attachment.asResourceStream() {
+                    thumbnailImage = stream.thumbnailImageSync(quality: .small)
+                } else if let blurHash = attachment.resourceBlurHash {
+                    thumbnailImage = BlurHash.image(for: blurHash)
+                } else {
+                    thumbnailImage = nil
+                }
+            } else {
+                return buildQuotedReplyModel(originalContent: .expiredStory)
+            }
+            return buildQuotedReplyModel(originalContent: .mediaStory(
+                body: attachmentReference?.storyMediaCaption,
+                attachment: referencedAttachment,
+                thumbnailImage: thumbnailImage
+            ))
+
         case .text(let textAttachment):
-            preloadedTextAttachment = PreloadedTextAttachment.from(
+            let preloadedTextAttachment = PreloadedTextAttachment.from(
                 textAttachment,
                 storyMessage: storyMessage,
                 tx: transaction
             )
-        }
-
-        let thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)?
-        if thumbnailImage == nil, let preloadedTextAttachment  {
-            thumbnailViewFactory = { spoilerState in
+            return buildQuotedReplyModel(originalContent: .textStory({ spoilerState in
                 return TextAttachmentView(
                     attachment: preloadedTextAttachment,
                     interactionIdentifier: .fromStoryMessage(storyMessage),
                     spoilerState: spoilerState
                 ).asThumbnailView()
-            }
-        } else {
-            thumbnailViewFactory = nil
+            }))
         }
-
-        let attachmentStream: TSAttachmentStream?
-        let canTapToDownload: Bool
-        let quotedAttachment = storyMessage.fileAttachment(tx: transaction)
-        if let quotedAttachmentStream = quotedAttachment as? TSAttachmentStream {
-            attachmentStream = quotedAttachmentStream
-            canTapToDownload = false
-        } else if let attachmentPointer = quotedAttachment as? TSAttachmentPointer {
-            attachmentStream = nil
-            canTapToDownload = true
-        } else {
-            attachmentStream = nil
-            canTapToDownload = false
-        }
-
-        let attachmentType: TSAttachmentType? = quotedAttachment?
-            .isLoopingVideo(inContainingStoryMessage: storyMessage, transaction: transaction) ?? false
-            ? .GIF : .default
-
-        let body = storyMessage.quotedBody(transaction: transaction)
-
-        return QuotedReplyModel(
-            timestamp: storyMessage.timestamp,
-            authorAddress: storyMessage.authorAddress,
-            bodySource: .story,
-            body: body?.text,
-            bodyRanges: body?.ranges,
-            thumbnailImage: thumbnailImage,
-            thumbnailViewFactory: thumbnailViewFactory,
-            mimeType: attachmentStream?.mimeType,
-            contentType: attachmentStream?.cachedContentType,
-            attachmentStream: attachmentStream,
-            attachmentType: attachmentType,
-            canTapToDownload: canTapToDownload,
-            reactionEmoji: reactionEmoji
-        )
      }
 
     public static func build(
@@ -132,20 +287,18 @@ public class QuotedReplyModel: NSObject {
             author: storyAuthorAci,
             transaction: transaction
         ) else {
-            // Story message does not exist, return generic reply.
+            let isOriginalMessageAuthorLocalUser = DependenciesBridge.shared.tsAccountManager
+                .localIdentifiers(tx: transaction.asV2Read)?
+                .aci == storyAuthorAci
             return QuotedReplyModel(
-                timestamp: storyTimestamp,
-                authorAddress: SignalServiceAddress(storyAuthorAci),
-                bodySource: .story,
-                body: OWSLocalizedString(
-                    "STORY_NO_LONGER_AVAILABLE",
-                    comment: "Text indicating a story that was replied to is no longer available."
-                ),
-                bodyRanges: .empty,
-                reactionEmoji: message.storyReactionEmoji
+                originalMessageTimestamp: storyTimestamp,
+                originalMessageAuthorAddress: SignalServiceAddress(storyAuthorAci),
+                isOriginalMessageAuthorLocalUser: isOriginalMessageAuthorLocalUser,
+                storyReactionEmoji: message.storyReactionEmoji,
+                originalContent: .expiredStory,
+                sourceOfOriginal: .story
             )
         }
-
         return QuotedReplyModel.build(
             replyingTo: storyMessage,
             reactionEmoji: message.storyReactionEmoji,
@@ -159,134 +312,142 @@ public class QuotedReplyModel: NSObject {
         quotedMessage: TSQuotedMessage,
         transaction: SDSAnyReadTransaction
     ) -> QuotedReplyModel {
+        func buildQuotedReplyModel(
+            originalContent: OriginalContent
+        ) -> QuotedReplyModel {
+            return QuotedReplyModel(
+                originalMessageTimestamp: quotedMessage.timestampValue?.uint64Value,
+                originalMessageAuthorAddress: quotedMessage.authorAddress,
+                isOriginalMessageAuthorLocalUser: message.isOutgoing,
+                storyReactionEmoji: nil,
+                originalContent: originalContent,
+                sourceOfOriginal: quotedMessage.bodySource
+            )
+        }
+
+        let originalMessageBody: MessageBody? = quotedMessage.body.map {
+            MessageBody(text: $0, ranges: quotedMessage.bodyRanges ?? .empty)
+        }
+
+        if quotedMessage.isGiftBadge {
+            return buildQuotedReplyModel(originalContent: .giftBadge)
+        }
+
         let attachmentReference = DependenciesBridge.shared.tsResourceStore.quotedAttachmentReference(
             for: message,
             tx: transaction.asV2Read
         )
-        let mimeType: String?
-        let contentType: TSResourceContentType?
-        let sourceFilename: String?
-        let renderingFlag: AttachmentReference.RenderingFlag?
-        let canTapToDownload: Bool
-        let thumbnailImage: UIImage?
+
         switch attachmentReference {
         case nil:
-            mimeType = nil
-            contentType = nil
-            sourceFilename = nil
-            renderingFlag = nil
-            canTapToDownload = false
-            thumbnailImage = nil
+            break
         case .stub(let stub):
-            mimeType = stub.mimeType
-            contentType = nil
-            sourceFilename = stub.sourceFilename
-            renderingFlag = nil
-            canTapToDownload = false
-            thumbnailImage = nil
+            return buildQuotedReplyModel(originalContent: .attachmentStub(originalMessageBody, stub))
         case .thumbnail(let attachmentRef):
-            sourceFilename = attachmentRef.sourceFilename
-            renderingFlag = attachmentRef.renderingFlag
-
             // Fetch the full attachment.
             let thumbnailAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
                 attachmentRef.resourceId,
                 tx: transaction.asV2Read
             )
-            mimeType = thumbnailAttachment?.mimeType
-            if
-                let thumbnailAttachment,
-                let image = DependenciesBridge.shared.tsResourceManager.thumbnailImage(
-                    attachment: thumbnailAttachment,
-                    parentMessage: message,
-                    tx: transaction.asV2Read
-                )
-            {
-                contentType = thumbnailAttachment.asResourceStream()?.cachedContentType
-                thumbnailImage = image
-                canTapToDownload = false
-            } else if thumbnailAttachment?.asTransitTierPointer() != nil {
-                if let blurHash = thumbnailAttachment?.resourceBlurHash {
-                    thumbnailImage = BlurHash.image(for: blurHash)
+            let image: UIImage? = {
+                if
+                    let thumbnailAttachment,
+                    let image = DependenciesBridge.shared.tsResourceManager.thumbnailImage(
+                        attachment: thumbnailAttachment,
+                        parentMessage: message,
+                        tx: transaction.asV2Read
+                    )
+                {
+                    return image
+                } else if
+                    let blurHash = thumbnailAttachment?.resourceBlurHash,
+                    let image = BlurHash.image(for: blurHash)
+                {
+                    return image
                 } else {
-                    thumbnailImage = nil
+                    return nil
                 }
-                contentType = thumbnailAttachment?.asResourceStream()?.cachedContentType
-                canTapToDownload = true
+            }()
+            if let thumbnailAttachment {
+                return buildQuotedReplyModel(originalContent: .attachment(
+                    originalMessageBody,
+                    attachment: .init(reference: attachmentRef, attachment: thumbnailAttachment),
+                    thumbnailImage: image
+                ))
             } else {
-                contentType = nil
-                thumbnailImage = nil
-                canTapToDownload = false
+                break
             }
         }
 
-        var body: String? = quotedMessage.body
-        var bodyRanges: MessageBodyRanges? = quotedMessage.bodyRanges
-
-        let isPayment: Bool
-        if let paymentMessage = message as? OWSPaymentMessage {
-            isPayment = true
-            body = PaymentsFormat.paymentPreviewText(
-                paymentMessage: paymentMessage,
-                type: message.interactionType,
-                transaction: transaction
-            )
-            bodyRanges = nil
-        } else {
-            isPayment = false
-        }
-
-        return QuotedReplyModel(
-            timestamp: quotedMessage.timestampValue?.uint64Value,
-            authorAddress: quotedMessage.authorAddress,
-            bodySource: quotedMessage.bodySource,
-            body: body,
-            bodyRanges: bodyRanges,
-            thumbnailImage: thumbnailImage,
-            mimeType: mimeType,
-            contentType: contentType,
-            sourceFilename: sourceFilename,
-            attachmentType: renderingFlag?.tsAttachmentType,
-            canTapToDownload: canTapToDownload,
-            isGiftBadge: quotedMessage.isGiftBadge,
-            isPayment: isPayment
-        )
+        return buildQuotedReplyModel(originalContent: .text(originalMessageBody))
     }
 
     private init(
-        timestamp: UInt64?,
-        authorAddress: SignalServiceAddress,
-        bodySource: TSQuotedMessageContentSource,
-        body: String? = nil,
-        bodyRanges: MessageBodyRanges? = nil,
-        thumbnailImage: UIImage? = nil,
-        thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)? = nil,
-        mimeType: String? = nil,
-        contentType: TSResourceContentType? = nil,
-        sourceFilename: String? = nil,
-        attachmentStream: TSAttachmentStream? = nil,
-        attachmentType: TSAttachmentType? = nil,
-        canTapToDownload: Bool = false,
-        reactionEmoji: String? = nil,
-        isGiftBadge: Bool = false,
-        isPayment: Bool = false
+        originalMessageTimestamp: UInt64?,
+        originalMessageAuthorAddress: SignalServiceAddress,
+        isOriginalMessageAuthorLocalUser: Bool,
+        storyReactionEmoji: String?,
+        originalContent: OriginalContent,
+        sourceOfOriginal: TSQuotedMessageContentSource
     ) {
-        self.timestamp = timestamp
-        self.authorAddress = authorAddress
-        self.bodySource = bodySource
-        self.body = body
-        self.bodyRanges = bodyRanges
-        self.thumbnailImage = thumbnailImage
-        self.thumbnailViewFactory = thumbnailViewFactory
-        self.mimeType = mimeType
-        self.contentType = contentType
-        self.sourceFilename = sourceFilename
-        self.attachmentStream = attachmentStream
-        self.attachmentType = attachmentType
-        self.canTapToDownload = canTapToDownload
-        self.reactionEmoji = reactionEmoji
-        self.isGiftBadge = isGiftBadge
-        self.isPayment = isPayment
-        super.init()
+        self.originalMessageTimestamp = originalMessageTimestamp
+        self.originalMessageAuthorAddress = originalMessageAuthorAddress
+        self.isOriginalMessageAuthorLocalUser = isOriginalMessageAuthorLocalUser
+        self.storyReactionEmoji = storyReactionEmoji
+        self.originalContent = originalContent
+        self.sourceOfOriginal = sourceOfOriginal
     }
+}
+
+// MARK: - Equatable
+
+extension QuotedReplyModel: Equatable {
+    public static func == (lhs: QuotedReplyModel, rhs: QuotedReplyModel) -> Bool {
+        return lhs.originalMessageTimestamp == rhs.originalMessageTimestamp
+            && lhs.originalMessageAuthorAddress == rhs.originalMessageAuthorAddress
+            && lhs.isOriginalMessageAuthorLocalUser == rhs.isOriginalMessageAuthorLocalUser
+            && lhs.storyReactionEmoji == rhs.storyReactionEmoji
+            && lhs.originalContent == rhs.originalContent
+            && lhs.sourceOfOriginal == rhs.sourceOfOriginal
+    }
+}
+
+extension QuotedReplyModel.OriginalContent: Equatable {
+    public static func == (lhs: QuotedReplyModel.OriginalContent, rhs: QuotedReplyModel.OriginalContent) -> Bool {
+        switch (lhs, rhs) {
+        case let (.text(lhsBody), .text(rhsBody)):
+            return lhsBody == rhsBody
+        case (.giftBadge, .giftBadge):
+            return true
+        case let (.storyReactionEmoji(lhsString), .storyReactionEmoji(rhsString)):
+            return lhsString == rhsString
+        case let (.attachmentStub(lhsBody, lhsStub), .attachmentStub(rhsBody, rhsStub)):
+            return lhsBody == rhsBody && lhsStub == rhsStub
+        case let (.attachment(lhsBody, lhsAttachment, lhsImage), .attachment(rhsBody, rhsAttachment, rhsImage)):
+            return lhsBody == rhsBody
+                && lhsAttachment.attachment.resourceId == rhsAttachment.attachment.resourceId
+                && lhsImage == rhsImage
+        case let (.mediaStory(lhsBody, lhsAttachment, lhsImage), .mediaStory(rhsBody, rhsAttachment, rhsImage)):
+            return lhsBody == rhsBody
+                && lhsAttachment.attachment.resourceId == rhsAttachment.attachment.resourceId
+                && lhsImage == rhsImage
+        case (.textStory(_), .textStory(_)):
+            /// Defensively re-render every time.
+            return false
+        case (.expiredStory, .expiredStory):
+            return true
+
+        case
+            (.text, _),
+            (.giftBadge, _),
+            (.storyReactionEmoji, _),
+            (.attachmentStub, _),
+            (.attachment, _),
+            (.mediaStory, _),
+            (.textStory, _),
+            (.expiredStory, _):
+            return false
+        }
+    }
+
 }

@@ -278,17 +278,17 @@ extension ConversationViewController {
     }
 
     func scrollToQuotedMessage(_ quotedReply: QuotedReplyModel, isAnimated: Bool) {
-        if quotedReply.isRemotelySourced {
+        if quotedReply.sourceOfOriginal == .remote {
             presentRemotelySourcedQuotedReplyToast()
             return
         }
         let quotedMessage: TSMessage?
-        if let timestamp = quotedReply.timestamp {
+        if let timestamp = quotedReply.originalMessageTimestamp {
             quotedMessage = databaseStorage.read { transaction in
                 InteractionFinder.findMessage(
                     withTimestamp: timestamp,
                     threadId: self.thread.uniqueId,
-                    author: quotedReply.authorAddress,
+                    author: quotedReply.originalMessageAuthorAddress,
                     transaction: transaction
                 )
             }

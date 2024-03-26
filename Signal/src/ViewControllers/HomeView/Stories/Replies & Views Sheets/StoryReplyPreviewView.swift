@@ -41,16 +41,16 @@ class StoryReplyPreviewView: UIView {
         authorLabel.setCompressionResistanceHigh()
 
         let authorName: String
-        if quotedReplyModel.authorAddress.isLocalAddress {
+        if quotedReplyModel.isOriginalMessageAuthorLocalUser {
             authorName = CommonStrings.you
         } else {
             authorName = databaseStorage.read { tx in
-                return contactsManager.displayName(for: quotedReplyModel.authorAddress, tx: tx).resolvedValue()
+                return contactsManager.displayName(for: quotedReplyModel.originalMessageAuthorAddress, tx: tx).resolvedValue()
             }
         }
 
         let authorText: String
-        if quotedReplyModel.isStory {
+        if quotedReplyModel.originalContent.isStory {
             let format = OWSLocalizedString(
                 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
                 comment: "Message header when you are quoting a story. Embeds {{ story author name }}")
@@ -68,12 +68,12 @@ class StoryReplyPreviewView: UIView {
         descriptionLabel.numberOfLines = 2
         descriptionLabel.setCompressionResistanceHigh()
 
-        if let body = quotedReplyModel.body?.nilIfEmpty {
+        if let body = quotedReplyModel.originalMessageBody?.text.nilIfEmpty {
             descriptionLabel.font = .dynamicTypeSubheadline
             descriptionLabel.text = body
         } else {
             descriptionLabel.font = UIFont.dynamicTypeSubheadline.italic()
-            descriptionLabel.text = description(forMimeType: quotedReplyModel.mimeType)
+            descriptionLabel.text = description(forMimeType: quotedReplyModel.originalContent.attachmentMimeType)
         }
 
         vStack.addArrangedSubview(descriptionLabel)
@@ -81,14 +81,19 @@ class StoryReplyPreviewView: UIView {
         vStack.addArrangedSubview(.vStretchingSpacer())
 
         let trailingView: UIView
-        if let thumbnailImage = quotedReplyModel.thumbnailImage {
-            let imageView = UIImageView()
-            imageView.contentMode = .scaleAspectFill
-            imageView.image = thumbnailImage
-            trailingView = imageView
-        } else if let thumbnailView = quotedReplyModel.thumbnailViewFactory?(spoilerState) {
-            trailingView = thumbnailView
-        } else {
+        switch quotedReplyModel.originalContent {
+        case .textStory(let rendererFn):
+            trailingView = rendererFn(spoilerState)
+        case .attachment(_, _, let thumbnailImage), .mediaStory(_, _, let thumbnailImage):
+            if let thumbnailImage {
+                let imageView = UIImageView()
+                imageView.contentMode = .scaleAspectFill
+                imageView.image = thumbnailImage
+                trailingView = imageView
+            } else {
+                fallthrough
+            }
+        default:
             owsFailDebug("Missing trailingView for quote")
             trailingView = UIView()
         }
