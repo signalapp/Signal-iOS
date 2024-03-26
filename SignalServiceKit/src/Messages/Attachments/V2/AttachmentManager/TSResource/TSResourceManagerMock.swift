@@ -60,6 +60,10 @@ public class TSResourceManagerMock: TSResourceManager {
         // Do nothing
     }
 
+    public func removeAttachments(from storyMessage: StoryMessage, tx: DBWriteTransaction) {
+        // Do nothing
+    }
+
     public func createThumbnailAndUpdateMessageIfNecessary(
         quotedMessage: TSQuotedMessage,
         parentMessage: TSMessage,

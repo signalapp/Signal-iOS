@@ -132,7 +132,13 @@ public class OutgoingMessagePreparer: NSObject {
     private static func prepareAttachments(message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) -> [String] {
         var attachmentIds = [String]()
 
-        attachmentIds.append(contentsOf: message.bodyAttachmentIds(transaction: tx))
+        if message is OutgoingStoryMessage {
+            let storyAttachmentIds = message.bodyAttachmentIds(transaction: tx)
+            owsAssertDebug(storyAttachmentIds.count <= 1, "Stories can only have one attachment")
+            attachmentIds.append(contentsOf: storyAttachmentIds)
+        } else {
+            attachmentIds.append(contentsOf: message.bodyAttachmentIds(transaction: tx))
+        }
 
         // TODO: this whole class will be exclusive to v1 attachments, and will have no need to go through TSResource.
         let quotedReplyRef = DependenciesBridge.shared.tsResourceStore.quotedAttachmentReference(for: message, tx: tx.asV2Read)

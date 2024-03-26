@@ -117,6 +117,15 @@ public protocol TSResourceManager {
         tx: DBWriteTransaction
     )
 
+    /// Deletes references to the attachment(s) from the provided StoryMessage, potentially
+    /// deleting the attachment in the db and on disk if not referenced from anywhere else.
+    ///
+    /// Does _not_ update the story message.
+    func removeAttachments(
+        from storyMessage: StoryMessage,
+        tx: DBWriteTransaction
+    )
+
     // MARK: - Quoted reply thumbnails
 
     /// If the currently referenced quoted attachment is

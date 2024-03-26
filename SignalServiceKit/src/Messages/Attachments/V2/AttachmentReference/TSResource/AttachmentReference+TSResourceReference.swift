@@ -24,6 +24,15 @@ extension AttachmentReference: TSResourceReference {
             return .default
         }
     }
+
+    public var storyMediaCaption: StyleOnlyMessageBody? {
+        switch owner {
+        case .storyMessage(.media(let metadata)):
+            return metadata.caption
+        default:
+            return nil
+        }
+    }
 }
 
 extension AttachmentReference.RenderingFlag {

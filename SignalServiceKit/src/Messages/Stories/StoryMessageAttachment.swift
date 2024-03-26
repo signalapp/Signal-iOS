@@ -103,17 +103,4 @@ public enum StoryMessageAttachment {
             return .foreignReferenceAttachment
         }
     }
-
-    public func fileAttachment(storyMessage: StoryMessage, tx: SDSAnyReadTransaction) -> TSAttachment? {
-        switch self {
-        case .file(let file):
-            return TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: tx)
-        case .foreignReferenceAttachment:
-            return StoryMessageResource
-                .fetch(storyMessage: storyMessage, tx: tx)?
-                .fetchAttachment(tx: tx)
-        case .text:
-            return nil
-        }
-    }
 }

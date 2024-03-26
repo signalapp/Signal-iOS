@@ -104,7 +104,7 @@ extension AttachmentReference {
 
             public class MediaMetadata: Metadata {
                 public var contentType: ContentType? { _contentType }
-                public var caption: MessageBody? { _caption }
+                public var caption: StyleOnlyMessageBody? { _caption.map(StyleOnlyMessageBody.init(messageBody:)) }
                 public var shouldLoop: Bool { _renderingFlag == .shouldLoop }
             }
         }

@@ -426,7 +426,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                           if (![message isKindOfClass:[StoryMessage class]]) {
                                               return;
                                           }
-                                          NSString *attachmentUniqueId = [message attachmentUniqueIdWithTx:transaction];
+                                          NSString *attachmentUniqueId =
+                                              [message legacyAttachmentUniqueIdWithTx:transaction];
                                           if (attachmentUniqueId != nil) {
                                               [allStoryAttachmentIds addObject:attachmentUniqueId];
                                           }

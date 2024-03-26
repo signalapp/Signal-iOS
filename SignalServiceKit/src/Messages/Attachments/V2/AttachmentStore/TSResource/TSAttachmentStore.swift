@@ -153,6 +153,20 @@ public class TSAttachmentStore {
         return nil
     }
 
+    public func storyAttachmentReference(
+        _ storyFileAttachment: StoryMessageFileAttachment,
+        tx: SDSAnyReadTransaction
+    ) -> StoryMessageTSAttachmentReference? {
+        let attachment = self.attachments(withAttachmentIds: [storyFileAttachment.attachmentId], tx: tx).first
+        return StoryMessageTSAttachmentReference(
+            uniqueId: storyFileAttachment.attachmentId,
+            attachment: attachment,
+            caption: (attachment?.caption).map { caption in
+                return StyleOnlyMessageBody(text: caption, collapsedStyles: storyFileAttachment.captionStyles)
+            }
+        )
+    }
+
     // MARK: - Helpers
 
     private func attachments(

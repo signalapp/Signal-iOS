@@ -335,19 +335,13 @@ class StoryContextViewController: OWSViewController {
         let captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]
         let isLoopingVideo: Bool
         switch message.attachment {
-        case .file(let file):
-            attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction)
-            caption = attachment?.caption(forContainingStoryMessage: message, transaction: transaction)
-            captionStyles = file.captionStyles
-            isLoopingVideo = (attachment as? TSAttachmentStream)?
-                .isLoopingVideo(inContainingStoryMessage: message, transaction: transaction)
-                ?? false
-        case .foreignReferenceAttachment:
-            let resource = StoryMessageResource.fetch(storyMessage: message, tx: transaction)
-            attachment = resource?.fetchAttachment(tx: transaction)
-            caption = resource?.caption
-            captionStyles = resource?.captionStyles ?? []
-            isLoopingVideo = resource?.isLoopingVideo ?? false
+        case .file, .foreignReferenceAttachment:
+            let attachmentReference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: message, tx: transaction.asV2Read)
+            attachment = attachmentReference?.fetch(tx: transaction)?.bridge
+            let styledCaption = attachmentReference?.storyMediaCaption
+            caption = styledCaption?.text
+            captionStyles = styledCaption?.collapsedStyles ?? []
+            isLoopingVideo = attachmentReference?.renderingFlag == .shouldLoop
 
         case .text(let attachment):
             let preloadedAttachment = PreloadedTextAttachment.from(

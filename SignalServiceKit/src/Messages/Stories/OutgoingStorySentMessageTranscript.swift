@@ -107,43 +107,29 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         let builder = SSKProtoStoryMessage.builder()
 
         switch storyMessage.attachment {
-        case .file(let file):
+        case .file, .foreignReferenceAttachment:
             guard
-                let stream = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: file.attachmentId, transaction: transaction),
-                stream.cdnKey.isEmpty.negated,
-                stream.cdnNumber > 0
+                let attachmentReference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(
+                    for: storyMessage,
+                    tx: transaction.asV2Read
+                ),
+                let attachment = attachmentReference.fetch(tx: transaction),
+                let pointer = attachment.asTransitTierPointer()
             else {
                 owsFailDebug("Missing attachment for outgoing story message")
                 return nil
             }
-            let resourceReference = TSAttachmentReference(uniqueId: file.attachmentId, attachment: stream)
-            let pointer = TSResourcePointer(resource: stream, cdnNumber: stream.cdnNumber, cdnKey: stream.cdnKey)
             guard let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
-                from: resourceReference,
+                from: attachmentReference,
                 pointer: pointer
             ) else {
                 owsFailDebug("Missing attachment for outgoing story message")
                 return nil
             }
             builder.setFileAttachment(attachmentProto)
-            builder.setBodyRanges(file.captionProtoBodyRanges())
-        case .foreignReferenceAttachment:
-            guard
-                let resource = StoryMessageResource.fetch(storyMessage: storyMessage, tx: transaction),
-                let attachment = resource.fetchAttachment(tx: transaction),
-                let stream = attachment as? TSAttachmentStream,
-                stream.cdnKey.isEmpty.negated,
-                stream.cdnNumber > 0,
-                let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
-                    from: TSAttachmentReference(uniqueId: stream.uniqueId, attachment: stream),
-                    pointer: TSResourcePointer(resource: stream, cdnNumber: stream.cdnNumber, cdnKey: stream.cdnKey)
-                )
-            else {
-                owsFailDebug("Missing attachment for outgoing story message")
-                return nil
+            if let storyMediaCaption = attachmentReference.storyMediaCaption {
+                builder.setBodyRanges(storyMediaCaption.toProtoBodyRanges())
             }
-            builder.setFileAttachment(attachmentProto)
-            builder.setBodyRanges(resource.captionProtoBodyRanges())
         case .text(let attachment):
             guard let attachmentProto = try? attachment.buildProto(
                 parentStoryMessage: storyMessage,

@@ -122,7 +122,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     }
 
     @objc
-    public func attachmentUniqueId(tx: SDSAnyReadTransaction) -> String? {
+    public func legacyAttachmentUniqueId(tx: SDSAnyReadTransaction) -> String? {
         switch attachment {
         case .file(let file):
             return file.attachmentId
@@ -132,19 +132,12 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 tx: tx.asV2Read
             )?.resourceId.bridgeUniqueId
         case .foreignReferenceAttachment:
-            guard
-                let resource = StoryMessageResource.fetch(storyMessage: self, tx: tx),
-                let attachment = resource.fetchAttachment(tx: tx)
-            else {
-                owsFailDebug("Missing attachment for story message \(timestamp)")
-                return nil
-            }
-            return attachment.uniqueId
+            return nil
         }
     }
 
     public func fileAttachment(tx: SDSAnyReadTransaction) -> TSAttachment? {
-        return attachment.fileAttachment(storyMessage: self, tx: tx)
+        return DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: tx.asV2Read)?.fetch(tx: tx)?.bridge
     }
 
     public var replyCount: UInt64
@@ -775,26 +768,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     public func downloadIfNecessary(transaction: SDSAnyWriteTransaction) {
         switch attachment {
-        case .file(let file):
-            guard
-                let pointer = TSAttachment.anyFetch(
-                    uniqueId: file.attachmentId,
-                    transaction: transaction
-                ) as? TSAttachmentPointer,
-                ![.enqueued, .downloading].contains(pointer.state)
-            else {
-                return
-            }
-            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(self, tx: transaction.asV2Write)
-        case .foreignReferenceAttachment:
-            guard
-                let resource = StoryMessageResource.fetch(storyMessage: self, tx: transaction),
-                let pointer = resource.fetchAttachment(tx: transaction) as? TSAttachmentPointer,
-                ![.enqueued, .downloading].contains(pointer.state)
-            else {
-                owsFailDebug("Missing attachment for story message \(timestamp)")
-                return
-            }
+        case .file, .foreignReferenceAttachment:
             DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(self, tx: transaction.asV2Write)
         case .text:
             return
@@ -939,13 +913,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
 
         // Delete all attachments for the message.
-        if let id = attachmentUniqueId(tx: transaction) {
-            if let attachment = TSAttachment.anyFetch(uniqueId: id, transaction: transaction) {
-                attachment.anyRemove(transaction: transaction)
-            } else {
-                owsFailDebug("Missing attachment for StoryMessage \(id)")
-            }
-        }
+        DependenciesBridge.shared.tsResourceManager.removeAttachments(from: self, tx: transaction.asV2Write)
 
         // Reload latest unexpired timestamp for the context.
         self.context.associatedData(transaction: transaction)?.recomputeLatestUnexpiredTimestamp(transaction: transaction)

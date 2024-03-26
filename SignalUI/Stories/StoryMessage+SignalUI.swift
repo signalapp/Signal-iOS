@@ -24,20 +24,16 @@ extension StoryMessage {
                 return MessageBody(text: urlString, ranges: .empty)
             }
 
-        case .file(let file):
-            guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
+        case .file, .foreignReferenceAttachment:
+            guard
+                let attachmentPointer = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: transaction.asV2Read)
+            else {
                 owsFailDebug("Missing attachment for story message \(timestamp)")
                 return nil
             }
-            caption = attachment.caption(forContainingStoryMessage: self, transaction: transaction)
-            captionStyles = file.captionStyles
-        case .foreignReferenceAttachment:
-            guard let resource = StoryMessageResource.fetch(storyMessage: self, tx: transaction) else {
-                owsFailDebug("Missing attachment for story message \(timestamp)")
-                return nil
-            }
-            caption = resource.caption
-            captionStyles = resource.captionStyles
+            let styledCaption = attachmentPointer.storyMediaCaption
+            caption = styledCaption?.text
+            captionStyles = styledCaption?.collapsedStyles ?? []
         }
 
         guard let caption else {

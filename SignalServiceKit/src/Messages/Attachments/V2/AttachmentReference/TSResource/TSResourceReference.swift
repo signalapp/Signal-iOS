@@ -23,6 +23,9 @@ public protocol TSResourceReference {
     /// Hint from the sender telling us how to render the attachment.
     var renderingFlag: AttachmentReference.RenderingFlag { get }
 
+    /// Caption for story message media attachments
+    var storyMediaCaption: StyleOnlyMessageBody? { get }
+
     // NOTE: mimeType and contentType are deliberately excluded from
     // this protocol; they have wildly different meanings in v1 and v2
     // and are safe to use in entirely different circumstances.

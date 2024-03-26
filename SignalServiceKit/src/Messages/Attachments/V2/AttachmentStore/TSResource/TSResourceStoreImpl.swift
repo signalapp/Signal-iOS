@@ -262,6 +262,30 @@ public class TSResourceStoreImpl: TSResourceStore {
 
     // MARK: - Story Message Attachment Fetching
 
+    public func mediaAttachment(
+        for storyMessage: StoryMessage,
+        tx: DBReadTransaction
+    ) -> TSResourceReference? {
+        switch storyMessage.attachment {
+        case .text:
+            return nil
+        case .file(let storyMessageFileAttachment):
+            return tsAttachmentStore.storyAttachmentReference(storyMessageFileAttachment, tx: SDSDB.shimOnlyBridge(tx))
+        case .foreignReferenceAttachment:
+            guard FeatureFlags.readV2Attachments else {
+                return nil
+            }
+            guard let storyMessageRowId = storyMessage.id else {
+                owsFailDebug("Fetching attachments for an un-inserted story message!")
+                return nil
+            }
+            return attachmentStore.fetchFirstReference(
+                owner: .storyMessageMedia(storyMessageRowId: storyMessageRowId),
+                tx: tx
+            )
+        }
+    }
+
     public func linkPreviewAttachment(
         for storyMessage: StoryMessage,
         tx: DBReadTransaction

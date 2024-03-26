@@ -838,7 +838,7 @@ public extension TSAttachmentDownloadManager {
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
         // No attachment, nothing to do.
-        guard message.attachmentUniqueId(tx: transaction) != nil else { return .value(()) }
+        guard message.legacyAttachmentUniqueId(tx: transaction) != nil else { return .value(()) }
 
         return enqueueDownloadOfAttachmentsForStoryMessageId(
             message.uniqueId,

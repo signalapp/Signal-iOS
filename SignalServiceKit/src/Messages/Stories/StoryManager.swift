@@ -230,15 +230,29 @@ public class StoryManager: NSObject {
     /// * The context has been recently interacted with (sent message to group, 1:1, viewed story, etc), is associated with a pinned thread, or has been recently viewed
     /// * We have not already exceeded the limit for how many unviewed stories we should download for this context
     private class func startAutomaticDownloadIfNecessary(for message: StoryMessage, transaction: SDSAnyWriteTransaction) {
-        guard case .file(let file) = message.attachment else {
+
+        let attachmentPointerToDownload: TSResourcePointer?
+        switch message.attachment {
+        case .file, .foreignReferenceAttachment:
+            let attachment = DependenciesBridge.shared.tsResourceStore.mediaAttachment(
+                for: message,
+                tx: transaction.asV2Read
+            )?.fetch(tx: transaction)
+            if attachment?.asResourceStream() != nil {
+                // Already downloaded!
+                return
+            } else {
+                attachmentPointerToDownload = attachment?.asTransitTierPointer()
+            }
+        case .text:
             // We always auto-download non-file story attachments, this will generally only be link preview thumbnails.
             Logger.info("Automatically enqueueing download of non-file based story with timestamp \(message.timestamp)")
             DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
             return
         }
 
-        guard let attachmentPointer = TSAttachmentPointer.anyFetchAttachmentPointer(uniqueId: file.attachmentId, transaction: transaction) else {
-            // Already downloaded, nothing to do.
+        guard let attachmentPointer = attachmentPointerToDownload?.resource.bridge as? TSAttachmentPointer else {
+            // Already downloaded or couldn't find it, nothing to do.
             return
         }
 
@@ -250,7 +264,7 @@ public class StoryManager: NSObject {
                 unviewedDownloadedStoriesForContext += 1
             case .file, .foreignReferenceAttachment:
                 guard let attachment = otherMessage.fileAttachment(tx: transaction) else {
-                    owsFailDebug("Missing attachment for attachmentId \(file.attachmentId)")
+                    owsFailDebug("Missing attachment")
                     return
                 }
                 if let pointer = attachment as? TSAttachmentPointer, [.downloading, .enqueued].contains(pointer.state) {

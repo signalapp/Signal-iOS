@@ -28,7 +28,7 @@ import Foundation
 /// So a TSAttachmentReference is actually a required unique id (the reference),
 /// _plus_ an optional attachment, if we found it, that we use for metadata that
 /// in v2-land exists on the AttachmentReferences table.
-public struct TSAttachmentReference: TSResourceReference {
+public class TSAttachmentReference: TSResourceReference {
 
     private let uniqueId: String
     public let attachment: TSAttachment?
@@ -43,6 +43,8 @@ public struct TSAttachmentReference: TSResourceReference {
     public var concreteType: ConcreteTSResourceReference { .legacy(self) }
 
     public var sourceFilename: String? { attachment?.sourceFilename }
+
+    public var storyMediaCaption: StyleOnlyMessageBody? { nil }
 
     public var renderingFlag: AttachmentReference.RenderingFlag {
         switch attachment?.attachmentType {

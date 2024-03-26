@@ -262,6 +262,38 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
+    public func removeAttachments(from storyMessage: StoryMessage, tx: DBWriteTransaction) {
+        switch storyMessage.attachment {
+        case .file(let storyMessageFileAttachment):
+            tsAttachmentManager.removeAttachment(
+                attachmentId: storyMessageFileAttachment.attachmentId,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
+        case .text(let textAttachment):
+            if let attachmentId = textAttachment.preview?.legacyImageAttachmentId {
+                tsAttachmentManager.removeAttachment(
+                    attachmentId: attachmentId,
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )
+            }
+        case .foreignReferenceAttachment:
+            break
+        }
+        if FeatureFlags.readV2Attachments {
+            guard let storyMessageRowId = storyMessage.id else {
+                owsFailDebug("Removing attachments from an un-inserted message")
+                return
+            }
+            attachmentManager.removeAllAttachments(
+                from: [
+                    .storyMessageMedia(storyMessageRowId: storyMessageRowId),
+                    .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId)
+                ],
+                tx: tx
+            )
+        }
+    }
+
     // MARK: - Quoted reply thumbnails
 
     public func createThumbnailAndUpdateMessageIfNecessary(

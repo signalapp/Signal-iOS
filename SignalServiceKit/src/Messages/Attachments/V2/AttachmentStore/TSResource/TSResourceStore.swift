@@ -78,6 +78,11 @@ public protocol TSResourceStore {
 
     // MARK: - Story Message Attachment Fetching
 
+    func mediaAttachment(
+        for storyMessage: StoryMessage,
+        tx: DBReadTransaction
+    ) -> TSResourceReference?
+
     func linkPreviewAttachment(
         for storyMessage: StoryMessage,
         tx: DBReadTransaction
