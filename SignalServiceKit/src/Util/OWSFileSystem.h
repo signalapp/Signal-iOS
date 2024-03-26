@@ -48,8 +48,6 @@ void ClearOldTemporaryDirectories(void);
 
 + (nullable NSNumber *)fileSizeOfUrl:(NSURL *)fileUrl;
 
-+ (void)logAttributesOfItemAtPathRecursively:(NSString *)path;
-
 @end
 
 NS_ASSUME_NONNULL_END

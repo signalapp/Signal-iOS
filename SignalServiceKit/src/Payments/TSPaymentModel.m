@@ -171,11 +171,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateWithPaymentState:(TSPaymentState)paymentState transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSLogVerbose(@"[%@] paymentState: %@ -> %@",
-        self.uniqueId,
-        NSStringFromTSPaymentState(self.paymentState),
-        NSStringFromTSPaymentState(paymentState));
-
     [self anyUpdateWithTransaction:transaction
                              block:^(TSPaymentModel *paymentModel) {
                                  OWSAssertDebug([PaymentUtils isIncomingPaymentState:paymentModel.paymentState] ==
@@ -223,11 +218,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(paymentFailure != TSPaymentFailureNone);
     OWSAssertDebug(paymentState == TSPaymentStateIncomingFailed || paymentState == TSPaymentStateOutgoingFailed);
-
-    OWSLogVerbose(@"[%@] paymentState: %@, paymentFailure: %@",
-        self.uniqueId,
-        NSStringFromTSPaymentState(paymentState),
-        NSStringFromTSPaymentFailure(paymentFailure));
 
     [self anyUpdateWithTransaction:transaction
                              block:^(TSPaymentModel *paymentModel) {

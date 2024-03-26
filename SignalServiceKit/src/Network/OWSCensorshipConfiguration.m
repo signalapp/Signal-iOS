@@ -144,7 +144,6 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     } else if ([domain isEqualToString:OWSFrontingHost_Default]) {
         return self.googlePinningPolicy;
     } else {
-        OWSLogVerbose(@"domain: %@", domain);
         OWSFailDebug(@"Unknown pinning domain.");
         return self.googlePinningPolicy;
     }
@@ -198,7 +197,6 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
         return nil;
     }
 
-    OWSLogVerbose(@"read cert data with name: %@ length: %lu", name, (unsigned long)certData.length);
     return certData;
 }
 

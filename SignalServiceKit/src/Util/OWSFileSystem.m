@@ -29,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (NSString *relativePath in directoryEnumerator) {
         NSString *filePath = [dirPath stringByAppendingPathComponent:relativePath];
-        OWSLogDebug(@"path: %@ had attributes: %@", filePath, directoryEnumerator.fileAttributes);
-
         success = [self protectFileOrFolderAtPath:filePath] && success;
     }
 
@@ -83,32 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-+ (void)logAttributesOfItemAtPathRecursively:(NSString *)path
-{
-    BOOL isDirectory;
-    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory];
-    if (!exists) {
-        OWSFailDebug(@"error retrieving file attributes for missing file");
-        return;
-    }
-
-    if (isDirectory) {
-        NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:(NSString *)path];
-        for (NSString *dirPath in directoryEnumerator) {
-            OWSLogDebug(@"path: %@ has attributes: %@", dirPath, directoryEnumerator.fileAttributes);
-        }
-    } else {
-        NSError *error;
-        NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
-            [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
-        if (error) {
-            OWSFailDebug(@"error retrieving file attributes: %@", error);
-        } else {
-            OWSLogDebug(@"path: %@ has attributes: %@", path, attributes);
-        }
-    }
-}
-
 + (NSString *)appLibraryDirectoryPath
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -159,7 +131,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        OWSLogDebug(@"Could not move file or directory from: %@ to: %@, error: %@", oldFilePath, newFilePath, error);
         OWSFailDebug(@"Could not move file or directory with error: %@", error);
         return error;
     }
@@ -185,29 +156,22 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([fileManager fileExistsAtPath:newFilePath]) {
-        OWSLogDebug(
-            @"Can't move file or directory from: %@ to: %@; destination already exists.", oldFilePath, newFilePath);
         OWSFailDebug(@"Can't move file or directory; destination already exists.");
         return [OWSError withError:OWSErrorCodeMoveFileToSharedDataContainerError
                        description:@"Can't move file; destination already exists."
                        isRetryable:NO];
     }
-    
+
     NSDate *startDate = [NSDate new];
     
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        OWSLogDebug(@"Could not move file or directory from: %@ to: %@, error: %@", oldFilePath, newFilePath, error);
         OWSFailDebug(@"Could not move file or directory with error: %@", error);
         return error;
     }
 
     OWSLogInfo(@"Moved file or directory in: %f", fabs([startDate timeIntervalSinceNow]));
-    OWSLogDebug(@"Moved file or directory from: %@ to: %@ in: %f",
-        oldFilePath,
-        newFilePath,
-        fabs([startDate timeIntervalSinceNow]));
 
     // Ensure all files moved have the proper data protection class.
     // On large directories this can take a while, so we dispatch async
@@ -396,7 +360,6 @@ static void ClearOldTemporaryDirectoriesSync(void)
             OWSLogWarn(@"Could not delete old temp directory: %@", filePath);
         }
     }
-    OWSLogDebug(@"Removed %lu temporary directories", (unsigned long)fileCount);
 }
 
 // NOTE: We need to call this method on launch _and_ every time the app becomes active,

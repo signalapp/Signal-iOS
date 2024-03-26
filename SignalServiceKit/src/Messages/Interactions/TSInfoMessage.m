@@ -416,8 +416,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         return;
     }
 
-    OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
-
     [self anyUpdateInfoMessageWithTransaction:transaction
                                         block:^(TSInfoMessage *message) {
                                             message.read = YES;

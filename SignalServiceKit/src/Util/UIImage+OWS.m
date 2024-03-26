@@ -305,12 +305,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSData *jpegData = UIImageJPEGRepresentation(avatarImage, 0.9);
-    OWSLogVerbose(@"Converted avatar to JPEG: %lu -> %lu, %@ %@.",
-        (unsigned long)avatarData.length,
-        (unsigned long)jpegData.length,
-        NSStringForImageFormat(imageMetadata.imageFormat),
-        NSStringFromCGSize(imageMetadata.pixelSize));
-
     return jpegData;
 }
 

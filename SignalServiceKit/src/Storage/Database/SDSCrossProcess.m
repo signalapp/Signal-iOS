@@ -72,7 +72,6 @@ static pid_t localPid(void)
         return;
     }
 
-    OWSLogVerbose(@"Cross process write from %llu", fromPid);
     if (self.callback) {
         self.callback();
     }

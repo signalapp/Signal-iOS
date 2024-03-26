@@ -274,7 +274,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)setExpireStartedAt:(uint64_t)expireStartedAt
 {
     if (_expireStartedAt != 0 && _expireStartedAt < expireStartedAt) {
-        OWSLogDebug(@"ignoring later startedAt time");
         return;
     }
 

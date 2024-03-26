@@ -214,14 +214,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
         return;
     }
 
-    NSTimeInterval secondsAgoRead = ((NSTimeInterval)[NSDate ows_millisecondTimeStamp] - (NSTimeInterval)readTimestamp) / 1000;
-    if (!SSKDebugFlags.reduceLogChatter) {
-        OWSLogDebug(@"marking uniqueId: %@  which has timestamp: %llu as read: %f seconds ago",
-            self.uniqueId,
-            self.timestamp,
-            secondsAgoRead);
-    }
-
     [self anyUpdateIncomingMessageWithTransaction:transaction
                                             block:^(TSIncomingMessage *message) {
                                                 message.read = YES;
@@ -251,15 +243,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
     if (self.viewed) {
         return;
-    }
-
-    NSTimeInterval secondsAgoViewed
-        = ((NSTimeInterval)[NSDate ows_millisecondTimeStamp] - (NSTimeInterval)viewedTimestamp) / 1000;
-    if (!SSKDebugFlags.reduceLogChatter) {
-        OWSLogDebug(@"marking uniqueId: %@  which has timestamp: %llu as viewed: %f seconds ago",
-            self.uniqueId,
-            self.timestamp,
-            secondsAgoViewed);
     }
 
     [self anyUpdateIncomingMessageWithTransaction:transaction

@@ -130,7 +130,6 @@ public class MessagePipelineSupervisor: NSObject {
 
         // Make a copy so we don't need to hold the lock while we call out
         let toNotify = lock.withLock { return Array(pipelineStages.allObjects) }
-        Logger.debug("\(isSuspended ? "Suspending" : "Resuming") message processing...")
 
         toNotify.forEach { (stage) in
             if isSuspended {

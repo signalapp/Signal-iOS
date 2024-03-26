@@ -152,7 +152,6 @@ extension ExperienceUpgrade {
     /// ourself. Skips calling `block` if this upgrade should not be saved.
     private func upsert(withTransaction transaction: SDSAnyWriteTransaction, inBlock block: (ExperienceUpgrade) -> Void) {
         guard manifest.shouldSave else {
-            Logger.debug("Skipping save for experience upgrade: \(String(describing: id))")
             return
         }
 

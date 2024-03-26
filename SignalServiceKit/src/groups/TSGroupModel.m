@@ -134,7 +134,6 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
         image = [image resizedImageToFillPixelSize:CGSizeMake(thumbnailSizePixels, thumbnailSizePixels)];
     }
     if (image.pixelWidth > kMaxAvatarDimension || image.pixelHeight > kMaxAvatarDimension) {
-        OWSLogVerbose(@"Could not resize group avatar: %@", NSStringFromCGSize(image.pixelSize));
         OWSFailDebug(@"Could not resize group avatar.");
         return nil;
     }

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public protocol ProvisioningSocketDelegate: AnyObject {
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveDeviceId deviceID: String)
@@ -61,7 +62,6 @@ public class ProvisioningSocket {
 
 extension ProvisioningSocket: SSKWebSocketDelegate {
     public func websocketDidConnect(socket: SSKWebSocket) {
-        Logger.debug("")
     }
 
     public func websocketDidDisconnectOrFail(socket: SSKWebSocket, error: Error) {
@@ -91,7 +91,6 @@ extension ProvisioningSocket: SSKWebSocketDelegate {
     }
 
     private func handleRequest(_ request: WebSocketProtoWebSocketRequestMessage) throws {
-        Logger.debug("message: \(request.verb) \(request.path)")
         switch (request.verb, request.path) {
         case ("PUT", "/v1/address"):
             guard let body = request.body else {

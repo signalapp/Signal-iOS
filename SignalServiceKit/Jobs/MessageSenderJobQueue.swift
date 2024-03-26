@@ -300,8 +300,6 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didReportError(_ error: Error) {
-        Logger.debug("remainingRetries: \(self.remainingRetries)")
-
         databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didReportError: error,
                                                             transaction: transaction)

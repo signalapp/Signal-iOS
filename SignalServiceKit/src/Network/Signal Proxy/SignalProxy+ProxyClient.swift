@@ -5,6 +5,7 @@
 
 import Foundation
 import Network
+import SignalCoreKit
 
 extension SignalProxy {
     /// Establishes a connection to a Signal TLS Proxy and relays transmitted data via the provided `RelayClient`
@@ -26,8 +27,6 @@ extension SignalProxy {
         func start() {
             guard !isStarted else { return }
             isStarted = true
-
-            Logger.debug("Proxy client \(id) starting...")
 
             guard let proxyHostComponents = SignalProxy.host?.components(separatedBy: ":"), let proxyHost = proxyHostComponents[safe: 0] else {
                 return stop(error: OWSAssertionError("Unexpectedly missing proxy host!"))
@@ -58,8 +57,6 @@ extension SignalProxy {
 
             if let error = error {
                 owsFailDebug("Proxy client \(id) did fail with error \(error)")
-            } else {
-                Logger.debug("Proxy client \(id) did stop")
             }
 
             connection?.stateUpdateHandler = nil
@@ -85,7 +82,6 @@ extension SignalProxy {
         private func stateDidChange(to state: NWConnection.State) {
             switch state {
             case .ready:
-                Logger.debug("Proxy client \(id) ready!")
                 relayClient?.send("HTTP/1.1 200\r\n\r\n".data(using: .utf8)!)
             case .failed(let error), .waiting(let error):
                 relayClient?.send("HTTP/1.1 503\r\n\r\n".data(using: .utf8)!)

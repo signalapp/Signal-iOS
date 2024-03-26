@@ -308,12 +308,10 @@ extension GroupUpdateInfoMessageInserterImpl {
         }
 
         guard let mostRecentInfoMessage = mostRecentVisibleInteraction as? TSInfoMessage else {
-            Logger.debug("Most recent visible interaction not found as info message")
             return nil
         }
 
         guard let secondMostRecentInfoMessage = secondMostRecentVisibleInteraction as? TSInfoMessage else {
-            Logger.debug("Second most recent visible interaction not found as info message")
             return (mostRecentInfoMessage, nil)
         }
 

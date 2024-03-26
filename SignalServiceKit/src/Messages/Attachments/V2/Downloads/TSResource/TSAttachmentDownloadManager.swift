@@ -825,9 +825,7 @@ public extension TSAttachmentDownloadManager {
         Promise.when(
             on: schedulers.sync,
             fulfilled: jobRequest.jobs.map(\.promise)
-        ).done(on: schedulers.sync) { _ in
-            Logger.debug("Successfully fetched \(jobCount) attachment(s) for message: \(messageId)")
-        }.catch(on: schedulers.sync) { error in
+        ).catch(on: schedulers.sync) { error in
             Logger.warn("Failed to fetch attachments for message: \(messageId) with error: \(error)")
         }.cauterize()
     }
@@ -923,9 +921,7 @@ public extension TSAttachmentDownloadManager {
         return Promise.when(
             on: schedulers.sync,
             fulfilled: jobRequest.jobs.map(\.promise)
-        ).done(on: schedulers.sync) { attachmentStreams in
-            Logger.debug("Successfully fetched attachment for StoryMessage: \(storyMessageId)")
-        }.catch(on: schedulers.sync) { error in
+        ).catch(on: schedulers.sync) { error in
             Logger.warn("Failed to fetch attachments for StoryMessage: \(storyMessageId) with error: \(error)")
         }
     }

@@ -312,7 +312,6 @@ private class SystemSound: NSObject {
     }
 
     deinit {
-        Logger.debug("in dealloc disposing sound: \(soundUrl.lastPathComponent))")
         let status = AudioServicesDisposeSystemSoundID(id)
         owsAssertDebug(status == kAudioServicesNoError)
     }
@@ -442,8 +441,6 @@ public class Sounds: Dependencies {
         // a fallback notification.
 
         let defaultSoundUrl = URL(fileURLWithPath: soundsDirectory, isDirectory: true).appendingPathComponent(defaultNotificationSoundFilename)
-
-        Logger.debug("writing new default sound to \(defaultSoundUrl)")
 
         let soundUrl = sound.soundUrl(quiet: false)
         let soundData: Data = {

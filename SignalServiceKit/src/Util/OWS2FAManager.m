@@ -252,7 +252,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (void)setLastCompletedReminderDate:(nullable NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSLogDebug(@"Setting setLastCompletedReminderDate:%@", date);
     [OWS2FAManager.keyValueStore setDate:date key:kOWS2FAManager_LastSuccessfulReminderDateKey transaction:transaction];
 }
 

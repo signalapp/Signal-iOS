@@ -109,7 +109,6 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             }
 
             if ([self areReadReceiptsEnabled]) {
-                OWSLogVerbose(@"Enqueuing read receipt for sender.");
                 ReceiptSender *receiptSender = SSKEnvironment.shared.receiptSenderRef;
                 [receiptSender enqueueReadReceiptFor:message.authorAddress
                                            timestamp:message.timestamp
@@ -155,7 +154,6 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             }
 
             if ([self areReadReceiptsEnabled]) {
-                OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
                 ReceiptSender *receiptSender = SSKEnvironment.shared.receiptSenderRef;
                 [receiptSender enqueueViewedReceiptFor:message.authorAddress
                                              timestamp:message.timestamp
@@ -214,7 +212,6 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 
             if (StoryManager.areViewReceiptsEnabled) {
-                OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
                 [self enqueueSenderViewedReceiptForStoryMessage:storyMessage transaction:transaction];
             }
             break;

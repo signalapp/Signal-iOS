@@ -128,7 +128,6 @@ NS_ASSUME_NONNULL_BEGIN
             if ([self writeToUrl:fileUrl error:nil]) {
                 self.cachedFileUrl = fileUrl;
             } else {
-                OWSLogDebug(@"Could not write data to disk: %@", self.fileExtension);
                 OWSFailDebug(@"Could not write data to disk.");
             }
         }
@@ -364,7 +363,6 @@ NS_ASSUME_NONNULL_BEGIN
             self.cachedData = [NSData dataWithContentsOfFile:self.fileUrl.path];
         }
         if (!self.cachedData) {
-            OWSLogDebug(@"Could not read data from disk: %@", self.fileUrl);
             OWSFailDebug(@"Could not read data from disk.");
             self.cachedData = [NSData new];
         }
@@ -383,7 +381,6 @@ NS_ASSUME_NONNULL_BEGIN
                             forKey:NSURLFileSizeKey
                              error:&error];
     if (error != nil) {
-        OWSLogDebug(@"Could not read data length from disk: %@, %@", self.fileUrl, error);
         OWSFailDebug(@"Could not read data length from disk with error: %@", error);
         return 0;
     }

@@ -261,7 +261,6 @@ public class SystemContactsFetcher: NSObject {
         case .authorized:
             self.updateContacts(completion: completion)
         case .denied, .restricted:
-            Logger.debug("contacts were \(rawAuthorizationStatus)")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus)
             completion(nil)
         }
