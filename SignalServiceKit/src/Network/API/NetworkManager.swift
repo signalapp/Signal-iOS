@@ -34,7 +34,9 @@ public class NetworkManager: NSObject {
     }
 
     private func websocketRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
-        DependenciesBridge.shared.chatConnectionManager.makeRequestPromise(request: request)
+        Promise.wrapAsync {
+            try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
+        }
     }
 }
 

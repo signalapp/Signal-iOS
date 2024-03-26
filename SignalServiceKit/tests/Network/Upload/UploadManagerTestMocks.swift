@@ -82,7 +82,7 @@ class _UploadManager_ChatConnectionManagerMock: ChatConnectionManager {
     func waitForIdentifiedConnectionToOpen() async throws { }
     func cycleSocket() { }
     func canMakeRequests(connectionType: OWSChatConnectionType) -> Bool { true }
-    func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> { fatalError() }
+    func makeRequest(_ request: TSRequest) async throws -> HTTPResponse { fatalError() }
     func didReceivePush() { }
 }
 

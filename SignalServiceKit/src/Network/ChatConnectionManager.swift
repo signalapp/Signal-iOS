@@ -12,7 +12,7 @@ public protocol ChatConnectionManager {
     var hasEmptiedInitialQueue: Bool { get }
 
     func canMakeRequests(connectionType: OWSChatConnectionType) -> Bool
-    func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse>
+    func makeRequest(_ request: TSRequest) async throws -> HTTPResponse
 
     func didReceivePush()
 }
@@ -55,52 +55,36 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     public typealias RequestSuccess = OWSChatConnection.RequestSuccess
     public typealias RequestFailure = OWSChatConnection.RequestFailure
 
-    private func makeRequest(_ request: TSRequest,
-                             unsubmittedRequestToken: OWSChatConnection.UnsubmittedRequestToken,
-                             connectionType: OWSChatConnectionType,
-                             success: @escaping RequestSuccess,
-                             failure: @escaping RequestFailure) {
-        assertOnQueue(OWSChatConnection.serialQueue)
-
-        let connection = self.connection(ofType: connectionType)
-        connection.makeRequest(request,
-                               unsubmittedRequestToken: unsubmittedRequestToken,
-                               success: success,
-                               failure: failure)
-    }
-
     public func waitForIdentifiedConnectionToOpen() async throws {
-        let (waiterPromise, waiterFuture) = Promise<Void>.pending()
-        try await withTaskCancellationHandler(
-            operation: {
-                let openGuarantee = connectionIdentified.waitForOpen()
-                waiterFuture.resolve(on: SyncScheduler(), with: openGuarantee)
-                try await waiterPromise.awaitable()
-            },
-            onCancel: { waiterFuture.reject(CancellationError()) }
-        )
+        try await self.connectionIdentified.waitForOpen()
     }
 
     private func waitForSocketToOpenIfItShouldBeOpen(
         connectionType: OWSChatConnectionType
-    ) -> Promise<Void> {
-        assertOnQueue(OWSChatConnection.serialQueue)
-
+    ) async {
         let connection = self.connection(ofType: connectionType)
         guard connection.shouldSocketBeOpen else {
             // The socket wants to be open, but isn't.
             // Proceed even though we will probably fail.
-            return Promise.value(())
+            return
         }
         // After 30 seconds, we try anyways. We'll probably fail.
         let maxWaitInterval = 30 * kSecondInterval
-        return connection
-            .waitForOpen()
-            .timeout(on: OWSChatConnection.serialQueue, seconds: maxWaitInterval)
+        return await withTaskGroup(of: Void.self) { group in
+            defer { group.cancelAll() }
+            // For both tasks, treat cancellation as success (or at least "go ahead").
+            group.addTask {
+                _ = try? await connection.waitForOpen()
+            }
+            group.addTask {
+                _ = try? await Task.sleep(nanoseconds: UInt64(maxWaitInterval) * NSEC_PER_SEC)
+            }
+            await group.next()!
+        }
     }
 
     // This method can be called from any thread.
-    public func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
+    public func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
         let connectionType: OWSChatConnectionType = {
             if request.isUDRequest {
                 return .unidentified
@@ -110,12 +94,6 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
                 return .identified
             }
         }()
-        return makeRequestPromise(request: request, connectionType: connectionType)
-    }
-
-    // This method can be called from any thread.
-    private func makeRequestPromise(request: TSRequest,
-                                    connectionType: OWSChatConnectionType) -> Promise<HTTPResponse> {
 
         // connectionType, isUDRequest and shouldHaveAuthorizationHeaders
         // should be (mostly?) aligned.
@@ -136,21 +114,9 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         // Request that the websocket open to make this request, if necessary.
         let unsubmittedRequestToken = connection(ofType: connectionType).makeUnsubmittedRequestToken()
 
-        return firstly(on: OWSChatConnection.serialQueue) {
-            self.waitForSocketToOpenIfItShouldBeOpen(connectionType: connectionType)
-        }.then(on: OWSChatConnection.serialQueue) { () -> Promise<HTTPResponse> in
-            let (promise, future) = Promise<HTTPResponse>.pending()
-            self.makeRequest(request,
-                             unsubmittedRequestToken: unsubmittedRequestToken,
-                             connectionType: connectionType,
-                             success: { (response: HTTPResponse) in
-                                future.resolve(response)
-                             },
-                             failure: { (failure: OWSHTTPError) in
-                                future.reject(failure)
-                             })
-            return promise
-        }
+        await self.waitForSocketToOpenIfItShouldBeOpen(connectionType: connectionType)
+
+        return try await connection(ofType: connectionType).makeRequest(request, unsubmittedRequestToken: unsubmittedRequestToken)
     }
 
     // This method can be called from any thread.
@@ -188,12 +154,12 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
         return canMakeRequestsPerType[connectionType] ?? true
     }
 
-    public var requestFactory: (_ request: TSRequest) -> Promise<HTTPResponse> = { _ in
+    public var requestHandler: (_ request: TSRequest) async throws -> HTTPResponse = { _ in
         fatalError("must override for tests")
     }
 
-    public func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
-        return requestFactory(request)
+    public func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
+        return try await requestHandler(request)
     }
 
     public func didReceivePush() {

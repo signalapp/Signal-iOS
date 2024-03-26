@@ -114,8 +114,8 @@ public final class RequestMaker: Dependencies {
         }
 
         if shouldUseWebsocket {
-            return firstly {
-                DependenciesBridge.shared.chatConnectionManager.makeRequestPromise(request: request)
+            return Promise.wrapAsync {
+                try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
             }.map(on: DispatchQueue.global()) { response in
                 self.requestSucceeded(udAccess: udAccess)
                 return RequestMakerResult(response: response, wasSentByUD: isUDRequest, wasSentByWebsocket: true)

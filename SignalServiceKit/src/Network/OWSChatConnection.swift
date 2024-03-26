@@ -47,8 +47,7 @@ public class OWSChatConnection: NSObject {
 
     public static let chatConnectionStateDidChange = Notification.Name("chatConnectionStateDidChange")
 
-    public static let serialQueue = DispatchQueue(label: "org.signal.chat-connection")
-    fileprivate var serialQueue: DispatchQueue { Self.serialQueue }
+    fileprivate let serialQueue: DispatchQueue
 
     // TODO: Should we use a higher-priority queue?
     fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.chat-connection.message-processing")
@@ -182,7 +181,7 @@ public class OWSChatConnection: NSObject {
         if didChange {
             var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "applicationWillResignActive")
             applyDesiredSocketState {
-                assertOnQueue(Self.serialQueue)
+                assertOnQueue(self.serialQueue)
                 owsAssertDebug(backgroundTask != nil)
                 backgroundTask = nil
             }
@@ -214,9 +213,10 @@ public class OWSChatConnection: NSObject {
 
     // MARK: -
 
-    public required init(type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
+    public init(type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
         AssertIsOnMainThread()
 
+        self.serialQueue = DispatchQueue(label: "org.signal.chat-connection-\(type)")
         self.type = type
         self.appExpiry = appExpiry
         self.db = db
@@ -274,51 +274,79 @@ public class OWSChatConnection: NSObject {
 
     private struct StateObservation {
         var currentState: OWSChatConnectionState
-        var onOpen: (guarantee: Guarantee<Void>, future: GuaranteeFuture<Void>)?
+        var onOpen: [NSObject: CheckedContinuation<Void, Error>]
     }
 
+    /// This lock is sometimes waited on within an async context; make sure *all* uses release the lock quickly.
     private let stateObservation = AtomicValue(
-        StateObservation(currentState: .closed, onOpen: nil),
+        StateObservation(currentState: .closed, onOpen: [:]),
         lock: AtomicLock()
     )
 
     private func notifyStatusChange() {
         let newState = self.currentState
-        let (oldState, futureToResolve): (OWSChatConnectionState, GuaranteeFuture<Void>?)
-        (oldState, futureToResolve) = stateObservation.update {
+        let (oldState, continuationsToResolve): (OWSChatConnectionState, [NSObject: CheckedContinuation<Void, Error>])
+        (oldState, continuationsToResolve) = stateObservation.update {
             let oldState = $0.currentState
             if newState == oldState {
-                return (oldState, nil)
+                return (oldState, [:])
             }
             $0.currentState = newState
 
-            var futureToResolve: GuaranteeFuture<Void>?
+            var continuationsToResolve: [NSObject: CheckedContinuation<Void, Error>] = [:]
             if case .open = newState {
-                futureToResolve = $0.onOpen?.future
-                $0.onOpen = nil
+                continuationsToResolve = $0.onOpen
+                $0.onOpen = [:]
             }
 
-            return (oldState, futureToResolve)
+            return (oldState, continuationsToResolve)
         }
         if newState != oldState {
             Logger.info("\(logPrefix): \(oldState) -> \(newState)")
         }
-        futureToResolve?.resolve()
+        for (_, waiter) in continuationsToResolve {
+            waiter.resume()
+        }
         NotificationCenter.default.postNotificationNameAsync(Self.chatConnectionStateDidChange, object: nil)
     }
 
-    func waitForOpen() -> Guarantee<Void> {
-        return stateObservation.update {
-            if $0.currentState == .open {
-                return .value(())
+    /// Only throws on cancellation.
+    func waitForOpen() async throws {
+        // There are three events that are relevant here:
+        // A) The socket becomes open (or is already open)
+        // B) The continuation is registered in the onOpen list
+        // C) This task is cancelled.
+        //
+        // Let's exhaustively make sure all three are handled no matter the ordering:
+        // - ABC: The continuation is resumed immediately at (1).
+        // - ACB: The cancellation is ignored, and the continuation is resumed at (1). (This is fine.)
+        // - BAC: The continuation is resumed within notifyStatusChange.
+        // - BCA: The continuation is removed from the list and cancelled at (3).
+        // - CAB: The cancellation is ignored, and the continuation is resumed at (1). (This is fine.)
+        // - CBA: The cancellation is checked and propagated at (2).
+        let cancellationToken = NSObject()
+        try await withTaskCancellationHandler(operation: {
+            try await withCheckedThrowingContinuation { continuation in
+                // We are locking during an async task! *gasp*
+                // This is only okay because *every* use of this lock does a short and finite amount of work.
+                stateObservation.update {
+                    if $0.currentState == .open {
+                        continuation.resume() // (1)
+                        return
+                    }
+                    if Task.isCancelled {
+                        continuation.resume(throwing: CancellationError()) // (2)
+                        return
+                    }
+                    $0.onOpen[cancellationToken] = continuation
+                }
             }
-            if let onOpen = $0.onOpen {
-                return onOpen.guarantee
+        }, onCancel: {
+            stateObservation.update {
+                let continuation = $0.onOpen.removeValue(forKey: cancellationToken)
+                continuation?.resume(throwing: CancellationError()) // (3)
             }
-            let (guarantee, future) = Guarantee<Void>.pending()
-            $0.onOpen = (guarantee, future)
-            return guarantee
-        }
+        })
     }
 
     // MARK: - Message Sending
@@ -331,7 +359,7 @@ public class OWSChatConnection: NSObject {
                                          unsubmittedRequestToken: UnsubmittedRequestToken,
                                          success: @escaping RequestSuccessInternal,
                                          failure: @escaping RequestFailure) {
-        assertOnQueue(OWSChatConnection.serialQueue)
+        assertOnQueue(self.serialQueue)
 
         defer {
             removeUnsubmittedRequestToken(unsubmittedRequestToken)
@@ -480,7 +508,7 @@ public class OWSChatConnection: NSObject {
 
     fileprivate func processWebSocketRequestMessage(_ message: WebSocketProtoWebSocketRequestMessage,
                                                     currentWebSocket: WebSocketConnection) {
-        assertOnQueue(Self.serialQueue)
+        assertOnQueue(self.serialQueue)
 
         let httpMethod = message.verb.nilIfEmpty ?? ""
         let httpPath = message.path.nilIfEmpty ?? ""
@@ -511,7 +539,7 @@ public class OWSChatConnection: NSObject {
 
     private func handleIncomingMessage(_ message: WebSocketProtoWebSocketRequestMessage,
                                        currentWebSocket: WebSocketConnection) {
-        assertOnQueue(Self.serialQueue)
+        assertOnQueue(self.serialQueue)
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "handleIncomingMessage")
 
@@ -563,7 +591,7 @@ public class OWSChatConnection: NSObject {
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 envelopeSource: envelopeSource
             ) { error in
-                Self.serialQueue.async {
+                self.serialQueue.async {
                     ackMessage(error, serverDeliveryTimestamp)
                 }
             }
@@ -572,7 +600,7 @@ public class OWSChatConnection: NSObject {
 
     private func handleEmptyQueueMessage(_ message: WebSocketProtoWebSocketRequestMessage,
                                          currentWebSocket: WebSocketConnection) {
-        assertOnQueue(Self.serialQueue)
+        assertOnQueue(self.serialQueue)
 
         // Queue is drained.
 
@@ -590,7 +618,7 @@ public class OWSChatConnection: NSObject {
         // flushing the queues. Therefore we capture currentWebSocket
         // flushing to ensure that we handle this case correctly.
         Self.messageProcessingQueue.async { [weak self] in
-            Self.serialQueue.async {
+            self?.serialQueue.async {
                 guard let self = self else { return }
                 if currentWebSocket.hasEmptiedInitialQueue.tryToSetFlag() {
                     self.notifyStatusChange()
@@ -605,7 +633,7 @@ public class OWSChatConnection: NSObject {
 
     private func sendWebSocketMessageAcknowledgement(_ request: WebSocketProtoWebSocketRequestMessage,
                                                      currentWebSocket: WebSocketConnection) {
-        assertOnQueue(Self.serialQueue)
+        assertOnQueue(self.serialQueue)
 
         do {
             try currentWebSocket.sendResponse(for: request,
@@ -835,7 +863,7 @@ public class OWSChatConnection: NSObject {
 
         guard let webSocket = GlobalDependencies.webSocketFactory.buildSocket(
             request: request,
-            callbackScheduler: OWSChatConnection.serialQueue
+            callbackScheduler: self.serialQueue
         ) else {
             owsFailDebug("Missing webSocket.")
             return
@@ -849,7 +877,7 @@ public class OWSChatConnection: NSObject {
         // _before_ calling it, not after.
         webSocket.connect()
 
-        Self.serialQueue.asyncAfter(deadline: .now() + 30) { [weak self, weak newWebSocket] in
+        self.serialQueue.asyncAfter(deadline: .now() + 30) { [weak self, weak newWebSocket] in
             guard let self, let newWebSocket, self.currentWebSocket?.id == newWebSocket.id else {
                 return
             }
@@ -977,21 +1005,14 @@ extension OWSChatConnection {
     }
 
     public func makeRequest(_ request: TSRequest,
-                            unsubmittedRequestToken: UnsubmittedRequestToken,
-                            success successParam: @escaping RequestSuccess,
-                            failure failureParam: @escaping RequestFailure) {
-        assertOnQueue(OWSChatConnection.serialQueue)
-
+                            unsubmittedRequestToken: UnsubmittedRequestToken) async throws -> HTTPResponse {
         guard !appExpiry.isExpired else {
             removeUnsubmittedRequestToken(unsubmittedRequestToken)
 
-            DispatchQueue.global().async {
-                guard let requestUrl = request.url else {
-                    owsFail("Missing requestUrl.")
-                }
-                failureParam(.invalidAppState(requestUrl: requestUrl))
+            guard let requestUrl = request.url else {
+                owsFail("Missing requestUrl.")
             }
-            return
+            throw OWSHTTPError.invalidAppState(requestUrl: requestUrl)
         }
 
         let connectionType = self.type
@@ -1000,18 +1021,22 @@ extension OWSChatConnection {
         let isIdentifiedRequest = request.shouldHaveAuthorizationHeaders && !request.isUDRequest
         owsAssertDebug(isIdentifiedConnection == isIdentifiedRequest)
 
-        self.makeRequestInternal(
-            request,
-            unsubmittedRequestToken: unsubmittedRequestToken,
-            success: { (response: HTTPResponse, requestInfo: RequestInfo) in
-                let label = Self.label(forRequest: request, connectionType: connectionType, requestInfo: requestInfo)
-                Logger.info("\(label): Request Succeeded (\(response.responseStatusCode))")
+        let (response, requestInfo) = try await withCheckedThrowingContinuation { continuation in
+            self.serialQueue.async {
+                self.makeRequestInternal(
+                    request,
+                    unsubmittedRequestToken: unsubmittedRequestToken,
+                    success: { continuation.resume(returning: ($0, $1)) },
+                    failure: { continuation.resume(throwing: $0) }
+                )
+            }
+        }
 
-                successParam(response)
+        let label = Self.label(forRequest: request, connectionType: connectionType, requestInfo: requestInfo)
+        Logger.info("\(label): Request Succeeded (\(response.responseStatusCode))")
 
-                Self.outageDetection.reportConnectionSuccess()
-            },
-            failure: failureParam)
+        Self.outageDetection.reportConnectionSuccess()
+        return response
     }
 }
 
@@ -1084,9 +1109,7 @@ private class RequestInfo {
         case .complete:
             return
         case .incomplete(let success, _):
-            DispatchQueue.global().async {
-                success(response, self)
-            }
+            success(response, self)
         }
     }
 
@@ -1110,10 +1133,8 @@ private class RequestInfo {
         case .complete:
             return false
         case .incomplete(_, let failure):
-            DispatchQueue.global().async {
-                Logger.warn("\(error)")
-                failure(error as! OWSHTTPError)
-            }
+            Logger.warn("\(error)")
+            failure(error as! OWSHTTPError)
             return true
         }
     }
@@ -1124,7 +1145,7 @@ private class RequestInfo {
 extension OWSChatConnection: SSKWebSocketDelegate {
 
     public func websocketDidConnect(socket eventSocket: SSKWebSocket) {
-        assertOnQueue(Self.serialQueue)
+        assertOnQueue(self.serialQueue)
 
         guard let currentWebSocket = self.currentWebSocket,
               currentWebSocket.id == eventSocket.id else {
@@ -1150,7 +1171,7 @@ extension OWSChatConnection: SSKWebSocketDelegate {
     }
 
     public func websocketDidDisconnectOrFail(socket eventSocket: SSKWebSocket, error: Error) {
-        assertOnQueue(Self.serialQueue)
+        assertOnQueue(self.serialQueue)
 
         guard let currentWebSocket = self.currentWebSocket,
               currentWebSocket.id == eventSocket.id else {
@@ -1180,7 +1201,7 @@ extension OWSChatConnection: SSKWebSocketDelegate {
     }
 
     public func websocket(_ eventSocket: SSKWebSocket, didReceiveData data: Data) {
-        assertOnQueue(Self.serialQueue)
+        assertOnQueue(self.serialQueue)
         let message: WebSocketProtoWebSocketMessage
         do {
             message = try WebSocketProtoWebSocketMessage(serializedData: data)
