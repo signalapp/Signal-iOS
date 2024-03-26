@@ -187,7 +187,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         let stream: MessageBackupProtoInputStream
-        switch streamProvider.openInputFileStream(fileURL: fileUrl) {
+        switch streamProvider.openInputFileStream(fileURL: fileUrl, tx: tx) {
         case .success(let streamResult):
             stream = streamResult
         case .fileNotFound:

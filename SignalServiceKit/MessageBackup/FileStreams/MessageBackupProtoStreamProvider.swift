@@ -37,7 +37,7 @@ public protocol MessageBackupProtoStreamProvider {
 
     /// Open an input stream to read a backup from a file on disk.
     /// The caller becomes the owner of the stream, and is responsible for closing it once finished.
-    func openInputFileStream(fileURL: URL) -> MessageBackup.OpenProtoInputStreamResult
+    func openInputFileStream(fileURL: URL, tx: DBReadTransaction) -> MessageBackup.OpenProtoInputStreamResult
 }
 
 public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvider {
@@ -64,8 +64,8 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         do {
             let transformingOutputStream = TransformingOutputStream(
                 transforms: [
-                    ChunkedStreamTransform(),
-                    try GzipStreamTransform(),
+                    ChunkedOutputStreamTransform(),
+                    try GzipCompressingStreamTransform(),
                     try backupKeyMaterial.createEncryptingStreamTransform(tx: tx)
                 ],
                 outputStream: outputStream,
@@ -83,7 +83,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         }
     }
 
-    public func openInputFileStream(fileURL: URL) -> MessageBackup.OpenProtoInputStreamResult {
+    public func openInputFileStream(fileURL: URL, tx: DBReadTransaction) -> MessageBackup.OpenProtoInputStreamResult {
         guard OWSFileSystem.fileOrFolderExists(url: fileURL) else {
             return .fileNotFound
         }
@@ -99,12 +99,25 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
             return .unableToOpenFileStream
         }
 
-        let messageBackupInputStream = MessageBackupProtoInputStreamImpl(
-            inputStream: inputStream,
-            streamRunloop: streamRunloop,
-            inputStreamDelegate: inputStreamDelegate
-        )
-        return .success(messageBackupInputStream)
+        do {
+            let transformableInputStream = TransformingInputStream(
+                transforms: [
+                    try backupKeyMaterial.createDecryptingStreamTransform(tx: tx),
+                    try GzipDecompressingStreamTransform(),
+                    ChunkedInputStreamTransform(),
+                ],
+                inputStream: inputStream,
+                runLoop: streamRunloop
+            )
+
+            let messageBackupInputStream = MessageBackupProtoInputStreamImpl(
+                inputStream: transformableInputStream,
+                inputStreamDelegate: inputStreamDelegate
+            )
+            return .success(messageBackupInputStream)
+        } catch {
+            return .unableToOpenFileStream
+        }
     }
 
     fileprivate class StreamDelegate: NSObject, Foundation.StreamDelegate {

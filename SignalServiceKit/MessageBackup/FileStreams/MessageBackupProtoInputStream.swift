@@ -36,17 +36,14 @@ public protocol MessageBackupProtoInputStream {
 
 internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream {
 
-    private var inputStream: InputStream
-    private var streamRunloop: RunLoop
+    private var inputStream: InputStreamable
     private var inputStreamDelegate: StreamDelegate
 
     internal init(
-        inputStream: InputStream,
-        streamRunloop: RunLoop,
+        inputStream: InputStreamable,
         inputStreamDelegate: StreamDelegate
     ) {
         self.inputStream = inputStream
-        self.streamRunloop = streamRunloop
         self.inputStreamDelegate = inputStreamDelegate
     }
 
@@ -59,54 +56,18 @@ internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream 
     }
 
     public func closeFileStream() {
-        inputStream.remove(from: streamRunloop, forMode: .default)
-        inputStream.close()
+        try? inputStream.close()
     }
 
     private func readProto<T>(
         _ initializer: (Data) throws -> T
     ) -> MessageBackup.ProtoInputStreamReadResult<T> {
-        guard let protoByteLengthRaw = decodeVarint() else {
-            return .invalidByteLengthDelimiter
-        }
-        let protoByteLength = Int(protoByteLengthRaw)
-        let bytes = UnsafeMutablePointer<UInt8>.allocate(capacity: protoByteLength)
-        let actualByteLength = inputStream.read(bytes, maxLength: protoByteLength)
-        guard actualByteLength == protoByteLength else {
-            return .invalidByteLengthDelimiter
-        }
-        let protoBytes = Data(bytes: bytes, count: protoByteLength)
         do {
-            let protoObject = try initializer(protoBytes)
+            let data = try inputStream.read(maxLength: 8192)
+            let protoObject = try initializer(data)
             return .success(protoObject, moreBytesAvailable: inputStream.hasBytesAvailable)
         } catch {
             return .protoDeserializationError(error)
-        }
-    }
-
-    /// Private: Parse the next raw varint from the input.
-    ///
-    /// Based on SwiftProtobuf.BinaryDecoder.decodeVarint()
-    private func decodeVarint() -> UInt64? {
-        let nextByte = UnsafeMutablePointer<UInt8>.allocate(capacity: 1)
-        inputStream.read(nextByte, maxLength: 1)
-        var c = nextByte[0]
-        if c & 0x80 == 0 {
-            return UInt64(c)
-        }
-        var value = UInt64(c & 0x7f)
-        var shift = UInt64(7)
-        while true {
-            if !inputStream.hasBytesAvailable || shift > 63 {
-                return nil
-            }
-            inputStream.read(nextByte, maxLength: 1)
-            c = nextByte[0]
-            value |= UInt64(c & 0x7f) << shift
-            if c & 0x80 == 0 {
-                return value
-            }
-            shift += 7
         }
     }
 }

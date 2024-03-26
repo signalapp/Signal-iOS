@@ -15,6 +15,11 @@ public class EncryptingStreamTransform: StreamTransform {
     private let encryptionKey: Data
     private let hmacKey: Data
 
+    public var hasPendingBytes: Bool { return false }
+
+    private var finalized = false
+    public var hasFinalized: Bool { finalized }
+
     init(iv: Data, encryptionKey: Data, hmacKey: Data) throws {
         self.iv = iv
         self.encryptionKey = encryptionKey
@@ -30,15 +35,11 @@ public class EncryptingStreamTransform: StreamTransform {
         )
     }
 
-    public func initializeAndReturnHeaderData() throws -> Data {
+    public func transform(data: Data) throws -> Data {
         // Current message backup format doesn't output the iv since
         // it's derived from the encryption material.  If this is used
         // for attachments, the option to include the iv in the header
         // will need to be passed in as part of the initialization.
-        return Data()
-    }
-
-    public func transform(data: Data) throws -> Data {
 
         // Get the next block of ciphertext
         let ciphertextBlock = try cipherContext.update(data)
@@ -57,7 +58,10 @@ public class EncryptingStreamTransform: StreamTransform {
         return ciphertextBlock
     }
 
-    public func finalizeAndReturnFooterData() throws -> Data {
+    public func finalize() throws -> Data {
+        guard !finalized else { return Data() }
+        finalized = true
+
         // Finalize the encryption and write out the last block.
         // Every time we "update" the cipher context, it returns
         // the ciphertext for the previous block so there will
@@ -78,4 +82,6 @@ public class EncryptingStreamTransform: StreamTransform {
         footer.append(hmac)
         return footer
     }
+
+    public func readBufferedData() throws -> Data { Data() }
 }

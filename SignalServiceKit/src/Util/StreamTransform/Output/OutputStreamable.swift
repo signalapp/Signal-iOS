@@ -8,14 +8,8 @@ import Foundation
 /// Simple protocol for writing chunks of data. This is effectively a protocol
 /// wrapper around OutputStream, but allows for easier testing and
 /// proxying of the OutputStream class itself.
-public protocol OutputStreamable {
+public protocol OutputStreamable: Streamable {
     func write(data: Data) throws
-
-    func close() throws
-
-    func remove(from: RunLoop, forMode: RunLoop.Mode)
-
-    func schedule(in: RunLoop, forMode: RunLoop.Mode)
 }
 
 extension OutputStream: OutputStreamable {

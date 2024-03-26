@@ -5,9 +5,12 @@
 
 import Foundation
 
-public struct ChunkedStreamTransform: StreamTransform {
+public class ChunkedOutputStreamTransform: StreamTransform {
 
-    public func initializeAndReturnHeaderData() throws -> Data { Data() }
+    public var hasPendingBytes: Bool { false }
+
+    private var finalized = false
+    public var hasFinalized: Bool { finalized }
 
     public func transform(data: Data) throws -> Data {
         let byteLength = UInt32(data.count)
@@ -16,8 +19,6 @@ public struct ChunkedStreamTransform: StreamTransform {
         result.append(data)
         return result
     }
-
-    public func finalizeAndReturnFooterData() throws -> Data { Data() }
 
     public func writeVariableLengthUInt32(_ value: UInt32) -> Data {
         var result = Data()
@@ -29,4 +30,11 @@ public struct ChunkedStreamTransform: StreamTransform {
         result.append(contentsOf: [UInt8(v)])
         return result
     }
+
+    public func finalize() throws -> Data {
+        finalized = true
+        return Data()
+    }
+
+    public func readBufferedData() throws -> Data { Data() }
 }

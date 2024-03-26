@@ -6,11 +6,10 @@
 import Foundation
 import Compression
 
-public class GzipStreamTransform: StreamTransform {
+public class GzipCompressingStreamTransform: StreamTransform {
 
     public enum Error: Swift.Error {
-        case streamInitializationFailed
-        case streamOutputError
+        case StreamOutputError
     }
 
     private enum Constants {
@@ -23,6 +22,11 @@ public class GzipStreamTransform: StreamTransform {
     private var crc = CRC32()
     private var count: UInt32 = 0
 
+    private var initialized = false
+    private var finalized = false
+    public var hasFinalized: Bool { finalized }
+    public var hasPendingBytes: Bool { return false }
+
     init() throws {
         self.destinationBufferPointer = UnsafeMutablePointer<UInt8>.allocate(capacity: Constants.BufferSize)
         self.streamPointer = UnsafeMutablePointer<compression_stream>.allocate(capacity: 1)
@@ -32,7 +36,7 @@ public class GzipStreamTransform: StreamTransform {
     private func initializeCompressionStream() throws {
         let status = compression_stream_init(streamPointer, COMPRESSION_STREAM_ENCODE, COMPRESSION_ZLIB)
         guard status != COMPRESSION_STATUS_ERROR else {
-            throw Error.streamOutputError
+            throw Error.StreamOutputError
         }
 
         // Set up the initial destination buffer state
@@ -42,7 +46,7 @@ public class GzipStreamTransform: StreamTransform {
 
     /// Write the necessary uncompressed Gzip header to the output stream before starting to
     /// write the zlib compressed body
-    public func initializeAndReturnHeaderData() throws -> Data {
+    private func initializeAndReturnHeaderData() throws -> Data {
 
         // magic, magic, deflate, noflags
         var header = Data([0x1f, 0x8b, 0x08, 0x00])
@@ -54,6 +58,7 @@ public class GzipStreamTransform: StreamTransform {
         // normal compression, UNIX file type
         header.append(contentsOf: [0x00, 0x03])
 
+        initialized = true
         return header
     }
 
@@ -64,7 +69,14 @@ public class GzipStreamTransform: StreamTransform {
         // Original filesize recorded in the footer is wrapped if the size is larger than 2^32
         (count, _) = count.addingReportingOverflow(UInt32(data.count))
 
-        return try compress(data: data)
+        let compressedData = try compress(data: data)
+        if !initialized {
+            var result = try initializeAndReturnHeaderData()
+            result.append(compressedData)
+            return result
+        } else {
+            return compressedData
+        }
     }
 
     private func compress(data: Data, finalize: Bool = false) throws -> Data {
@@ -105,13 +117,15 @@ public class GzipStreamTransform: StreamTransform {
 
             return outputData
         case COMPRESSION_STATUS_ERROR:
-            throw Error.streamOutputError
+            throw Error.StreamOutputError
         default:
-            throw Error.streamOutputError
+            throw Error.StreamOutputError
         }
     }
 
-    public func finalizeAndReturnFooterData() throws -> Data {
+    public func finalize() throws -> Data {
+        guard !finalized else { return Data() }
+        finalized = true
 
         // Pass in `finalize` with an empty write to signal to the compression
         // layer that processing is finished and any remaining data should
@@ -132,4 +146,6 @@ public class GzipStreamTransform: StreamTransform {
 
         return footer
     }
+
+    public func readBufferedData() throws -> Data { Data() }
 }

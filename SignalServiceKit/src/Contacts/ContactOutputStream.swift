@@ -7,7 +7,7 @@ import LibSignalClient
 
 final class ContactOutputStream {
 
-    let chunkedOutputTransform = ChunkedStreamTransform()
+    let chunkedOutputTransform = ChunkedOutputStreamTransform()
     let outputStream: OutputStream
 
     init(outputStream: OutputStream) {

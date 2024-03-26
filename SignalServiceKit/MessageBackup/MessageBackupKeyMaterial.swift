@@ -22,4 +22,6 @@ public protocol MessageBackupKeyMaterial {
 
     /// Builds an encrypting StreamTransform object derived from the backup master key and the backupID
     func createEncryptingStreamTransform(tx: DBReadTransaction) throws -> EncryptingStreamTransform
+
+    func createDecryptingStreamTransform(tx: DBReadTransaction) throws -> DecryptingStreamTransform
 }

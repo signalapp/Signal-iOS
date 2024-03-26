@@ -71,4 +71,32 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             hmacKey: Data(Array(keyBytes[0..<32]))
         )
     }
+
+    public func createDecryptingStreamTransform(tx: DBReadTransaction) throws -> DecryptingStreamTransform {
+        guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
+            throw MessageBackupKeyMaterialError.missingMasterKey
+        }
+        let backupId = try backupID(tx: tx)
+        guard let infoData = Constants.MessageBackupEncryptionInfoString.data(using: .utf8) else {
+            owsFailDebug("Failed to encode data")
+            throw MessageBackupKeyMaterialError.invalidKeyInfo
+        }
+
+        let keyBytes = try hkdf(
+            outputLength: Constants.MessageBackupEncryptionDataLength,
+            inputKeyMaterial: backupKey.rawData,
+            salt: backupId,
+            info: infoData
+        )
+
+        guard keyBytes.count == 80 else {
+            throw MessageBackupKeyMaterialError.invalidEncryptionKey
+        }
+
+        return try DecryptingStreamTransform(
+            iv: Data(Array(keyBytes[64..<80])),
+            encryptionKey: Data(Array(keyBytes[32..<64])),
+            hmacKey: Data(Array(keyBytes[0..<32]))
+        )
+    }
 }
