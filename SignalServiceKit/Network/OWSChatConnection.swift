@@ -365,56 +365,40 @@ public class OWSChatConnection: NSObject {
             removeUnsubmittedRequestToken(unsubmittedRequestToken)
         }
 
-        var label = Self.label(forRequest: request,
+        guard let requestInfo = RequestInfo(request: request,
+                                            connectionType: type,
+                                            success: success,
+                                            failure: failure) else {
+            // Failure already reported
+            return
+        }
+        let label = Self.label(forRequest: request,
                                connectionType: type,
-                               requestInfo: nil)
-        guard let requestUrl = request.url else {
-            owsFailDebug("\(label) Missing requestUrl.")
-            DispatchQueue.global().async {
-                failure(.invalidRequest(requestUrl: request.url!))
-            }
-            return
-        }
-        guard let httpMethod = request.httpMethod.nilIfEmpty else {
-            owsFailDebug("\(label) Missing httpMethod.")
-            DispatchQueue.global().async {
-                failure(.invalidRequest(requestUrl: requestUrl))
-            }
-            return
-        }
+                               requestInfo: requestInfo)
+        let requestUrl = requestInfo.requestUrl
+
         guard let currentWebSocket = currentWebSocket,
               currentWebSocket.state == .open else {
             owsFailDebug("\(label) Missing currentWebSocket.")
-            DispatchQueue.global().async {
-                failure(.networkFailure(requestUrl: requestUrl))
-            }
+            failure(.networkFailure(requestUrl: requestUrl))
             return
         }
-
-        let requestInfo = RequestInfo(request: request,
-                                      requestUrl: requestUrl,
-                                      connectionType: type,
-                                      success: success,
-                                      failure: failure)
-        label = Self.label(forRequest: request,
-                           connectionType: type,
-                           requestInfo: requestInfo)
 
         owsAssertDebug(requestUrl.scheme == nil)
         owsAssertDebug(requestUrl.host == nil)
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
-        let requestBuilder = WebSocketProtoWebSocketRequestMessage.builder(verb: httpMethod,
+        let requestBuilder = WebSocketProtoWebSocketRequestMessage.builder(verb: requestInfo.httpMethod,
                                                                            path: "/\(requestUrl)",
                                                                            requestID: requestInfo.requestId)
 
-        let httpHeaders = OWSHttpHeaders()
-        httpHeaders.addHeaderMap(request.allHTTPHeaderFields, overwriteOnConflict: false)
+        let httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
+        httpHeaders.addDefaultHeaders()
 
         if let existingBody = request.httpBody {
             requestBuilder.setBody(existingBody)
         } else {
             // TODO: Do we need body & headers for requests with no parameters?
-            let jsonData: Data?
+            let jsonData: Data
             do {
                 jsonData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
             } catch {
@@ -423,22 +407,16 @@ public class OWSChatConnection: NSObject {
                 return
             }
 
-            if let jsonData = jsonData {
-                requestBuilder.setBody(jsonData)
-                // If we're going to use the json serialized parameters as our body, we should overwrite
-                // the Content-Type on the request.
-                httpHeaders.addHeader("Content-Type",
-                                      value: "application/json",
-                                      overwriteOnConflict: true)
-            }
+            requestBuilder.setBody(jsonData)
+            // If we're going to use the json serialized parameters as our body, we should overwrite
+            // the Content-Type on the request.
+            httpHeaders.addHeader("Content-Type",
+                                  value: "application/json",
+                                  overwriteOnConflict: true)
         }
 
-        // Set User-Agent and Accept-Language headers.
-        httpHeaders.addDefaultHeaders()
-
         for (key, value) in httpHeaders.headers {
-            let header = String(format: "%@:%@", key, value)
-            requestBuilder.addHeaders(header)
+            requestBuilder.addHeaders("\(key):\(value)")
         }
 
         do {
@@ -1043,6 +1021,8 @@ private class RequestInfo {
 
     let requestUrl: URL
 
+    let httpMethod: String
+
     let requestId: UInt64 = Cryptography.randomUInt64()
 
     let connectionType: OWSChatConnectionType
@@ -1067,13 +1047,28 @@ private class RequestInfo {
     typealias RequestSuccess = OWSChatConnection.RequestSuccessInternal
     typealias RequestFailure = OWSChatConnection.RequestFailure
 
-    init(request: TSRequest,
-         requestUrl: URL,
-         connectionType: OWSChatConnectionType,
-         success: @escaping RequestSuccess,
-         failure: @escaping RequestFailure) {
+    init?(request: TSRequest,
+          connectionType: OWSChatConnectionType,
+          success: @escaping RequestSuccess,
+          failure: @escaping RequestFailure) {
+        let fallbackLabel: () -> String = {
+            OWSChatConnection.label(forRequest: request, connectionType: connectionType, requestInfo: nil)
+        }
+
+        guard let requestUrl = request.url else {
+            owsFailDebug("\(fallbackLabel()) Missing requestUrl.")
+            failure(.invalidRequest(requestUrl: request.url!))
+            return nil
+        }
+        guard let httpMethod = request.httpMethod.nilIfEmpty else {
+            owsFailDebug("\(fallbackLabel()) Missing httpMethod.")
+            failure(.invalidRequest(requestUrl: request.url!))
+            return nil
+        }
+
         self.request = request
         self.requestUrl = requestUrl
+        self.httpMethod = httpMethod
         self.connectionType = connectionType
         self.status = AtomicValue(.incomplete(success: success, failure: failure), lock: .sharedGlobal)
         self.backgroundTask = OWSBackgroundTask(label: "ChatRequestInfo")
