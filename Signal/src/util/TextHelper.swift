@@ -4,23 +4,12 @@
 //
 
 import SignalServiceKit
+import SignalUI
 
-public class TextFieldHelper {
-
-    // Used to implement the UITextFieldDelegate method: `textField:shouldChangeCharactersInRange:replacementString`
-    // Takes advantage of Swift's superior unicode handling to append partial pasted text without splitting multi-byte characters.
-    public class func textField(_ textField: UITextField,
-                                shouldChangeCharactersInRange editingRange: NSRange,
-                                replacementString: String,
-                                maxByteCount: Int) -> Bool {
-        self.textField(textField,
-                       shouldChangeCharactersInRange: editingRange,
-                       replacementString: replacementString,
-                       maxByteCount: maxByteCount,
-                       maxGlyphCount: nil)
-    }
-
-    public class func textField(
+public enum TextFieldHelper {
+    /// Used to implement the UITextFieldDelegate method: `textField:shouldChangeCharactersInRange:replacementString`
+    /// Takes advantage of Swift's superior unicode handling to append partial pasted text without splitting multi-byte characters.
+    public static func textField(
         _ textField: UITextField,
         shouldChangeCharactersInRange editingRange: NSRange,
         replacementString: String,
@@ -46,26 +35,16 @@ public class TextFieldHelper {
     }
 }
 
-public class TextViewHelper {
-
-    // Used to implement the UITextViewDelegate method: `textView:shouldChangeTextIn:replacementText`
-    // Takes advantage of Swift's superior unicode handling to append partial pasted text without splitting multi-byte characters.
-    public class func textView(_ textView: UITextView,
-                               shouldChangeTextIn range: NSRange,
-                               replacementText: String,
-                               maxByteCount: Int) -> Bool {
-        self.textView(textView,
-                      shouldChangeTextIn: range,
-                      replacementText: replacementText,
-                      maxByteCount: maxByteCount,
-                      maxGlyphCount: nil)
-    }
-
-    public class func textView(_ textView: UITextView,
-                               shouldChangeTextIn range: NSRange,
-                               replacementText: String,
-                               maxByteCount: Int? = nil,
-                               maxGlyphCount: Int? = nil) -> Bool {
+public enum TextViewHelper {
+    /// Used to implement the UITextViewDelegate method: `textView:shouldChangeTextIn:replacementText`
+    /// Takes advantage of Swift's superior unicode handling to append partial pasted text without splitting multi-byte characters.
+    public static func textView(
+        _ textView: UITextView,
+        shouldChangeTextIn range: NSRange,
+        replacementText: String,
+        maxByteCount: Int? = nil,
+        maxGlyphCount: Int? = nil
+    ) -> Bool {
         let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
             with: textView.text,
             editingRange: range,
@@ -78,6 +57,29 @@ public class TextViewHelper {
             owsAssertDebug(!shouldChange)
             textView.text = changedString
             textView.delegate?.textViewDidChange?(textView)
+        }
+
+        return shouldChange
+    }
+
+    public static func textView(
+        _ textView: TextViewWithPlaceholder,
+        shouldChangeTextIn range: NSRange,
+        replacementText: String,
+        maxByteCount: Int? = nil,
+        maxGlyphCount: Int? = nil
+    ) -> Bool {
+        let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
+            with: textView.text,
+            editingRange: range,
+            replacementString: replacementText,
+            maxByteCount: maxByteCount,
+            maxGlyphCount: maxGlyphCount
+        )
+
+        if let changedString = changedString {
+            owsAssertDebug(!shouldChange)
+            textView.text = changedString
         }
 
         return shouldChange

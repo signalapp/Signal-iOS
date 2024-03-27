@@ -854,9 +854,9 @@ extension ProfileSettingsViewController: ProfileBioViewControllerDelegate {
 }
 
 extension ProfileSettingsViewController: ProfileNameViewControllerDelegate {
-    func profileNameViewDidComplete(givenName: OWSUserProfile.NameComponent, familyName: OWSUserProfile.NameComponent?) {
-        profileValues.givenName.changedValue = .setTo(givenName)
-        profileValues.familyName.changedValue = .setTo(familyName)
+    func profileNameViewDidComplete(with profileName: ProfileName) {
+        profileValues.givenName.changedValue = .setTo(profileName.givenNameComponent)
+        profileValues.familyName.changedValue = .setTo(profileName.familyNameComponent)
         updateTableContents()
         updateNavigationItem()
     }

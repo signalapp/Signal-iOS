@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 protocol ProfileNameViewControllerDelegate: AnyObject {
-    func profileNameViewDidComplete(givenName: OWSUserProfile.NameComponent, familyName: OWSUserProfile.NameComponent?)
+    func profileNameViewDidComplete(with profileName: ProfileName)
 }
 
 // MARK: -
@@ -75,19 +75,17 @@ class ProfileNameViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    private func givenNameComponent() -> (value: OWSUserProfile.NameComponent, didTruncate: Bool)? {
-        givenNameTextField.text.flatMap { OWSUserProfile.NameComponent.parse(truncating: $0) }
+    private func givenNameComponent() -> ProfileName.NameComponent? {
+        givenNameTextField.text.flatMap(OWSUserProfile.NameComponent.parse(truncating:))?.nameComponent
     }
 
-    private func familyNameComponent() -> (value: OWSUserProfile.NameComponent, didTruncate: Bool)? {
-        familyNameTextField.text.flatMap { OWSUserProfile.NameComponent.parse(truncating: $0) }
+    private func familyNameComponent() -> ProfileName.NameComponent? {
+        familyNameTextField.text.flatMap(OWSUserProfile.NameComponent.parse(truncating:))?.nameComponent
     }
 
     private var hasUnsavedChanges: Bool {
-        return (
-            givenNameComponent()?.value.stringValue.rawValue != originalGivenName
-            || familyNameComponent()?.value.stringValue.rawValue != originalFamilyName
-        )
+        givenNameComponent()?.stringValue.rawValue != originalGivenName
+        || familyNameComponent()?.stringValue.rawValue != originalFamilyName
     }
 
     // Don't allow interactive dismiss when there are unsaved changes.
@@ -159,33 +157,29 @@ class ProfileNameViewController: OWSTableViewController2 {
     }
 
     private func didTapDone() {
-        guard let (givenName, didTruncateGivenName) = givenNameComponent() else {
+        switch ProfileName.createNameFrom(
+            givenName: givenNameTextField.text,
+            familyName: familyNameTextField.text
+        ) {
+        case .failure(.givenNameMissing):
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
                 comment: "Error message shown when user tries to update profile without a given name"
             ))
-            return
-        }
-
-        if didTruncateGivenName {
+        case .failure(.givenNameTooLong):
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
                 comment: "Error message shown when user tries to update profile with a given name that is too long."
             ))
-            return
-        }
-
-        let familyNameComponent = self.familyNameComponent()
-        if let familyNameComponent, familyNameComponent.didTruncate {
+        case .failure(.familyNameTooLong):
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG",
                 comment: "Error message shown when user tries to update profile with a family name that is too long."
             ))
-            return
+        case let .success(profileName):
+            profileDelegate?.profileNameViewDidComplete(with: profileName)
+            dismiss(animated: true)
         }
-
-        profileDelegate?.profileNameViewDidComplete(givenName: givenName, familyName: familyNameComponent?.value)
-        dismiss(animated: true)
     }
 }
 
@@ -212,5 +206,15 @@ extension ProfileNameViewController: UITextFieldDelegate {
 
     func textFieldDidChange() {
         updateNavigation()
+    }
+
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        TextFieldHelper.textField(
+            textField,
+            shouldChangeCharactersInRange: range,
+            replacementString: string,
+            maxByteCount: OWSUserProfile.Constants.maxNameLengthBytes,
+            maxGlyphCount: OWSUserProfile.Constants.maxNameLengthGlyphs
+        )
     }
 }

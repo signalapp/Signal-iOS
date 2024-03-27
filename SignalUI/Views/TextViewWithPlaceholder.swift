@@ -146,7 +146,7 @@ public class TextViewWithPlaceholder: UIView {
 
     @objc
     private func applyTheme() {
-        placeholderTextView.textColor = Theme.placeholderColor
+        placeholderTextView.textColor = .placeholderText
         textView.textColor = Theme.primaryTextColor
     }
 

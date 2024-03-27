@@ -93,6 +93,8 @@ public class FeatureFlags: NSObject {
     public static let newAttachmentsUseV2 = false
 
     public static let callLinkJoin = build.includes(.dev)
+
+    public static let nicknames = build.includes(.dev)
 }
 
 // MARK: -

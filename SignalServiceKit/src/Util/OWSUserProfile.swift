@@ -150,8 +150,8 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         // run into either limit (eg 5 emoji might hit the byte limit and 26 ASCII
         // characters might hit the glyph limit).
 
-        fileprivate static let maxNameLengthGlyphs: Int = 26
-        fileprivate static let maxNameLengthBytes: Int = 128
+        public static let maxNameLengthGlyphs: Int = 26
+        public static let maxNameLengthBytes: Int = 128
 
         public static let maxBioLengthGlyphs: Int = 140
         public static let maxBioLengthBytes: Int = 512
@@ -891,7 +891,7 @@ extension OWSUserProfile {
             self = parsedValue
         }
 
-        public static func parse(truncating: String) -> (Self, didTruncate: Bool)? {
+        public static func parse(truncating: String) -> (nameComponent: Self, didTruncate: Bool)? {
             // We need to truncate to the required limit. Before doing so, we strip the
             // string in case there's any leading whitespace. For example, if the limit
             // is 3 characters, " Alice" should become "Ali" instead of "Al".

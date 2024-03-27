@@ -311,7 +311,7 @@ extension ContactSupportViewController {
                             "CONTACT_SUPPORT_SELECT_A_FILTER",
                             comment: "Placeholder telling user they must select a filter."
                         ),
-                        accessoryTextColor: self.selectedFilter == nil ? Theme.placeholderColor : nil
+                        accessoryTextColor: self.selectedFilter == nil ? .placeholderText : nil
                     )
                 },
                 actionBlock: { [weak self] in

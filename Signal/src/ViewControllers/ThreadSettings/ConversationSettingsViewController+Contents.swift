@@ -49,6 +49,7 @@ extension ConversationSettingsViewController {
 
         // Main section.
         addDisappearingMessagesItem(to: mainSection)
+        addNicknameItemIfNecessary(to: mainSection)
         addColorAndWallpaperSettingsItem(to: mainSection)
         if !isNoteToSelf { addSoundAndNotificationSettingsItem(to: mainSection) }
         addSystemContactItemIfNecessary(to: mainSection)
@@ -457,6 +458,30 @@ extension ConversationSettingsViewController {
                 self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
+    }
+
+    private func addNicknameItemIfNecessary(to section: OWSTableSection) {
+        guard
+            FeatureFlags.nicknames,
+            !self.thread.isNoteToSelf,
+            let thread = self.thread as? TSContactThread
+        else { return }
+        section.add(.init(customCellBlock: {
+            let cell = OWSTableItem.buildCell(
+                icon: .buttonEdit,
+                itemName: OWSLocalizedString(
+                    "NICKNAME_BUTTON_TITLE",
+                    comment: "Title for the table cell in conversation settings for presenting the profile nickname editor."
+                ),
+                accessoryType: .disclosureIndicator
+            )
+            return cell
+        }, actionBlock: { [weak self] in
+            // [Nicknames] TODO: Pass in initial state
+            let nicknameEditor = NicknameEditorViewController(thread: thread)
+            let navigationController = OWSNavigationController(rootViewController: nicknameEditor)
+            self?.presentFormSheet(navigationController, animated: true)
+        }))
     }
 
     // MARK: Bottom sections

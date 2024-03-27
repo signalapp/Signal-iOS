@@ -25,6 +25,7 @@ open class OWSTextField: UITextField {
         autocorrectionType: UITextAutocorrectionType = .default,
         // .sentences is default for UITextField
         autocapitalizationType: UITextAutocapitalizationType = .sentences,
+        clearButtonMode: UITextField.ViewMode = .never,
         delegate: UITextFieldDelegate? = nil,
         editingChanged: (() -> Void)? = nil,
         returnPressed: (() -> Void)? = nil
@@ -37,6 +38,7 @@ open class OWSTextField: UITextField {
         self.spellCheckingType = spellCheckingType
         self.autocorrectionType = autocorrectionType
         self.autocapitalizationType = autocapitalizationType
+        self.clearButtonMode = clearButtonMode
         self.delegate = delegate
         if let editingChanged {
             self.editingChangedAction = editingChanged
