@@ -725,8 +725,6 @@ public class OWSChatConnection: NSObject {
         self.ensureBackgroundKeepAlive(.didReceivePush)
     }
 
-    private let lastDesiredSocketState = AtomicValue<DesiredSocketState>(.closed(reason: "App launched"), lock: .sharedGlobal)
-
     // This method aligns the socket state with the "desired" socket state.
     //
     // This method is thread-safe.
@@ -745,11 +743,8 @@ public class OWSChatConnection: NSObject {
                 return
             }
 
-            let desiredSocketStateNew = self.desiredSocketState
-            _ = self.lastDesiredSocketState.swap(desiredSocketStateNew)
-
             var shouldHaveBackgroundKeepAlive = false
-            if desiredSocketStateNew.shouldSocketBeOpen {
+            if self.desiredSocketState.shouldSocketBeOpen {
                 self.ensureWebsocketExists()
 
                 if self.currentState != .open {
