@@ -400,16 +400,11 @@ public class OWSChatConnection: NSObject {
                            connectionType: type,
                            requestInfo: requestInfo)
 
+        owsAssertDebug(requestUrl.scheme == nil)
+        owsAssertDebug(requestUrl.host == nil)
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
-        var requestPath = "/".appending(requestUrl.path)
-        if let query = requestUrl.query?.nilIfEmpty {
-            requestPath += "?" + query
-        }
-        if let fragment = requestUrl.fragment?.nilIfEmpty {
-            requestPath += "#" + fragment
-        }
         let requestBuilder = WebSocketProtoWebSocketRequestMessage.builder(verb: httpMethod,
-                                                                           path: requestPath,
+                                                                           path: "/\(requestUrl)",
                                                                            requestID: requestInfo.requestId)
 
         let httpHeaders = OWSHttpHeaders()
