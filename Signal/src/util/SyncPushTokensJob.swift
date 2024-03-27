@@ -22,7 +22,7 @@ class SyncPushTokensJob: NSObject {
         self.auth = auth
     }
 
-    private static let hasUploadedTokensOnce = AtomicBool(false)
+    private static let hasUploadedTokensOnce = AtomicBool(false, lock: .sharedGlobal)
 
     func run() async throws {
         switch mode {

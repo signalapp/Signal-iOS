@@ -160,7 +160,7 @@ public class LinkPreviewDraft: LinkPreviewState {
         return "\(urlString).\(NSStringForAttachmentThumbnailQuality(thumbnailQuality))"
     }
 
-    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
+    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil, lock: .sharedGlobal)
 
     public var imagePixelSize: CGSize {
         if let cachedValue = imagePixelSizeCache.get() {
@@ -298,7 +298,7 @@ public class LinkPreviewSent: LinkPreviewState {
         return "\(attachmentStream.uniqueId).\(NSStringForAttachmentThumbnailQuality(thumbnailQuality))"
     }
 
-    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
+    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil, lock: .sharedGlobal)
 
     public var imagePixelSize: CGSize {
         if let cachedValue = imagePixelSizeCache.get() {

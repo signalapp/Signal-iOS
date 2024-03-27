@@ -1712,7 +1712,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         avatarData: Data?
     ) async throws -> TSGroupThread {
 
-        let revisionForPlaceholderModel = AtomicOptional<UInt32>(nil)
+        let revisionForPlaceholderModel = AtomicOptional<UInt32>(nil, lock: .sharedGlobal)
 
         let requestBuilder: RequestBuilder = { (authCredential) in
             let groupChangeProto = try await self.buildChangeActionsProtoToJoinGroupLink(
@@ -2076,7 +2076,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         inviteLinkPassword: Data?
     ) async throws -> UInt32 {
 
-        let revisionForPlaceholderModel = AtomicOptional<UInt32>(nil)
+        let revisionForPlaceholderModel = AtomicOptional<UInt32>(nil, lock: .sharedGlobal)
 
         // We re-fetch the GroupInviteLinkPreview with every attempt in order to get the latest:
         //

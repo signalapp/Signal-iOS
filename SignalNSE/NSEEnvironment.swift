@@ -16,7 +16,7 @@ class NSEEnvironment: Dependencies {
 
     // MARK: -
 
-    var processingMessageCounter = AtomicUInt(0)
+    var processingMessageCounter = AtomicUInt(0, lock: .sharedGlobal)
     var isProcessingMessages: Bool {
         processingMessageCounter.get() > 0
     }
@@ -34,7 +34,7 @@ class NSEEnvironment: Dependencies {
             // we only notify the caller once and avoid any races that may
             // occur between the notification observer and the dispatch
             // after block.
-            let hasCalledBack = AtomicBool(false)
+            let hasCalledBack = AtomicBool(false, lock: .sharedGlobal)
 
             // Listen for an indication that the main app is going to handle
             // this notification. If the main app is active we don't want to

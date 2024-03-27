@@ -95,7 +95,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     private static let paymentsEntropyKey = "paymentsEntropy"
     private static let lastKnownLocalPaymentAddressProtoDataKey = "lastKnownLocalPaymentAddressProtoData"
 
-    private let paymentStateCache = AtomicOptional<PaymentsState>(nil)
+    private let paymentStateCache = AtomicOptional<PaymentsState>(nil, lock: .sharedGlobal)
 
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
@@ -297,7 +297,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
 
     // MARK: - Version Compatibility
 
-    private let isPaymentsVersionOutdatedCache = AtomicValue<Bool>(false)
+    private let isPaymentsVersionOutdatedCache = AtomicValue<Bool>(false, lock: .sharedGlobal)
 
     public var isPaymentsVersionOutdated: Bool {
         isPaymentsVersionOutdatedCache.get()

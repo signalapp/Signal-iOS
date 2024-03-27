@@ -68,7 +68,7 @@ public class AnyLRUCache: NSObject {
 public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     private let cache = NSCache<AnyObject, AnyObject>()
-    private let _resetCount = AtomicUInt(0)
+    private let _resetCount = AtomicUInt(0, lock: .sharedGlobal)
     public var resetCount: UInt {
         _resetCount.get()
     }

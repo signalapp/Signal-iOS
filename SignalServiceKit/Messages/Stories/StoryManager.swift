@@ -316,7 +316,7 @@ extension StoryManager {
     private static let keyValueStore = SDSKeyValueStore(collection: "StoryManager")
     private static let areStoriesEnabledKey = "areStoriesEnabled"
 
-    private static var areStoriesEnabledCache = AtomicBool(true)
+    private static var areStoriesEnabledCache = AtomicBool(true, lock: .sharedGlobal)
 
     /// A cache of if stories are enabled for the local user. For convenience, this also factors in whether the overall feature is available to the user.
     @objc

@@ -95,7 +95,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
     }
 
-    private var jobFutures = AtomicDictionary<String, Future<Void>>()
+    private var jobFutures = AtomicDictionary<String, Future<Void>>(lock: .sharedGlobal)
     private func add(
         message: OutgoingMessagePreparer,
         exclusiveToCurrentProcessIdentifier: Bool,
@@ -128,14 +128,14 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = MessageSenderOperation
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { true }
-    public var runningOperations = AtomicArray<MessageSenderOperation>()
+    public var runningOperations = AtomicArray<MessageSenderOperation>(lock: .sharedGlobal)
 
     @objc
     public func setup() {
         defaultSetup()
     }
 
-    public let isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false, lock: .sharedGlobal)
 
     public func didMarkAsReady(
         oldJobRecord: MessageSenderJobRecord,

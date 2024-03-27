@@ -13,7 +13,7 @@ import Foundation
 public extension Paypal {
     /// We are required to hold a strong reference to any
     /// in-progress ``ASWebAuthenticationSession``s.
-    private static let _runningAuthSession: AtomicOptional<ASWebAuthenticationSession> = AtomicOptional(nil)
+    private static let _runningAuthSession: AtomicOptional<ASWebAuthenticationSession> = AtomicOptional(nil, lock: .sharedGlobal)
 
     /// Creates and presents a new auth session. Only one auth session should
     /// be able to exist at once.

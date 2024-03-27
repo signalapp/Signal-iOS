@@ -15,7 +15,7 @@ open class CDNDownloadOperation: OWSOperation {
 
     // MARK: -
 
-    private let _task = AtomicOptional<URLSessionTask>(nil)
+    private let _task = AtomicOptional<URLSessionTask>(nil, lock: .sharedGlobal)
     private var task: URLSessionTask? {
         get {
             _task.get()
@@ -47,7 +47,7 @@ open class CDNDownloadOperation: OWSOperation {
         // We use a separate promise so that we can cancel from the progress block.
         let (promise, future) = Promise<URL>.pending()
 
-        let hasCheckedContentLength = AtomicBool(false)
+        let hasCheckedContentLength = AtomicBool(false, lock: .sharedGlobal)
         firstly(on: DispatchQueue.global()) { () -> Promise<OWSUrlDownloadResponse> in
             let headers = ["Content-Type": OWSMimeTypeApplicationOctetStream]
             let urlSession = self.cdn0urlSession

@@ -109,7 +109,7 @@ struct CVLoadRequest {
     //
     // `CVLoadRequest.Builder` will handle these responsibilties.
     struct Builder {
-        private static let requestIdCounter = AtomicUInt()
+        private static let requestIdCounter = AtomicUInt(lock: .sharedGlobal)
         let requestId = Self.requestIdCounter.increment()
 
         // Has any load been requested?

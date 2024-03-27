@@ -342,7 +342,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // `nextModelGeneration` can be read on a background thread, so it needs to be atomic.
     // All updates are performed on the main thread.
     private var currentModelGeneration: UInt = 0
-    private var nextModelGeneration = AtomicUInt(0)
+    private var nextModelGeneration = AtomicUInt(0, lock: .sharedGlobal)
     @discardableResult
     private func setNeedsModelUpdate() -> UInt { nextModelGeneration.increment() }
 

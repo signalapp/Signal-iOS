@@ -65,7 +65,7 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
             Token(isReachable: false, isReachableViaWiFi: false, isReachableViaWWAN: false)
         }
     }
-    private let token = AtomicValue<Token>(.empty)
+    private let token = AtomicValue<Token>(.empty, lock: .sharedGlobal)
 
     // This property can be safely accessed from any thread.
     public var isReachable: Bool {

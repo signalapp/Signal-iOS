@@ -19,7 +19,7 @@ public class DisplayableText: NSObject {
         set { _fullContent.set(newValue) }
     }
 
-    private let _truncatedContent = AtomicOptional<Content>(nil)
+    private let _truncatedContent = AtomicOptional<Content>(nil, lock: .sharedGlobal)
     private var truncatedContent: Content? {
         get { _truncatedContent.get() }
         set { _truncatedContent.set(newValue) }
@@ -75,7 +75,7 @@ public class DisplayableText: NSObject {
     // MARK: Initializers
 
     private init(fullContent: Content, truncatedContent: Content?) {
-        self._fullContent = AtomicValue(fullContent)
+        self._fullContent = AtomicValue(fullContent, lock: .sharedGlobal)
         self._truncatedContent.set(truncatedContent)
         switch fullContent.textValue {
         case .text(let text):

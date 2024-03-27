@@ -14,7 +14,7 @@ class CVRenderState {
 
     public static let renderStateId_unknown: UInt = 0
 
-    private static let idCounter = AtomicUInt(1)
+    private static let idCounter = AtomicUInt(1, lock: .sharedGlobal)
 
     let renderStateId: UInt
 

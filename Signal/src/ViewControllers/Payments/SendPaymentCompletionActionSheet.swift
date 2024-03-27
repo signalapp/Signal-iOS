@@ -566,7 +566,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         helper.updateBalanceLabel(balanceLabel)
     }
 
-    private let preparedPaymentPromise = AtomicOptional<Promise<PreparedPayment>>(nil)
+    private let preparedPaymentPromise = AtomicOptional<Promise<PreparedPayment>>(nil, lock: .sharedGlobal)
 
     private func tryToPreparePayment(paymentInfo: PaymentInfo) {
         let promise: Promise<PreparedPayment> = firstly(on: DispatchQueue.global()) { () -> Promise<PreparedPayment> in

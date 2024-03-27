@@ -317,7 +317,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
 
     // MARK: -
 
-    private let isDrainingQueue = AtomicBool(false)
+    private let isDrainingQueue = AtomicBool(false, lock: .sharedGlobal)
 
     private func tryToProcess(retryDelayAfterFailure: TimeInterval = 1.0) {
         guard isDrainingQueue.tryToSetFlag() else {

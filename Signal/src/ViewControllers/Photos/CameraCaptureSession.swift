@@ -1149,7 +1149,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     private var audioWriterInput: AVAssetWriterInput?
 
     private var isAssetWriterSessionStarted = false
-    private var isAssetWriterAcceptingSampleBuffers = AtomicBool(false)
+    private var isAssetWriterAcceptingSampleBuffers = AtomicBool(false, lock: .sharedGlobal)
     private var needsFinishAssetWriterSession = false
 
     weak var delegate: VideoCaptureDelegate?

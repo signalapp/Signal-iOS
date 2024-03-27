@@ -293,7 +293,7 @@ public class WallpaperBlurState: NSObject {
     public let referenceView: UIView
     fileprivate let token: WallpaperBlurToken
 
-    private static let idCounter = AtomicUInt(0)
+    private static let idCounter = AtomicUInt(0, lock: .sharedGlobal)
     public let id: UInt = WallpaperBlurState.idCounter.increment()
 
     fileprivate init(image: UIImage,

@@ -74,7 +74,7 @@ public class ReusableMediaView: NSObject {
     // to this box (rather than self) and a) safely access
     // if off the main thread b) not prevent deallocation of
     // self.
-    private let _loadState = AtomicValue(LoadState.unloaded)
+    private let _loadState = AtomicValue(LoadState.unloaded, lock: .sharedGlobal)
     private var loadState: LoadState {
         get {
             return _loadState.get()

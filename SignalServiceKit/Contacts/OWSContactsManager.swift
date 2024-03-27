@@ -188,7 +188,7 @@ public class OWSContactsManagerSwiftValues {
     fileprivate let intersectionQueue = DispatchQueue(label: "org.signal.contacts.intersection")
     fileprivate let skipContactAvatarBlurByServiceIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
     fileprivate let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
-    fileprivate let systemContactsDataProvider = AtomicOptional<SystemContactsDataProvider>(nil)
+    fileprivate let systemContactsDataProvider = AtomicOptional<SystemContactsDataProvider>(nil, lock: .sharedGlobal)
 
     fileprivate let usernameLookupManager: UsernameLookupManager
 
@@ -204,15 +204,15 @@ public class OWSContactsManagerSwiftValues {
 // MARK: -
 
 private class SystemContactsCache {
-    let unsortedSignalAccounts = AtomicOptional<[SignalAccount]>(nil)
-    let contactsMaps = AtomicOptional<ContactsMaps>(nil)
+    let unsortedSignalAccounts = AtomicOptional<[SignalAccount]>(nil, lock: .sharedGlobal)
+    let contactsMaps = AtomicOptional<ContactsMaps>(nil, lock: .sharedGlobal)
 }
 
 // MARK: -
 
 private class LowTrustCache {
-    let contactCache = AtomicSet<ServiceId>()
-    let groupCache = AtomicSet<Data>()
+    let contactCache = AtomicSet<ServiceId>(lock: .sharedGlobal)
+    let groupCache = AtomicSet<Data>(lock: .sharedGlobal)
 
     func contains(groupThread: TSGroupThread) -> Bool {
         groupCache.contains(groupThread.groupId)
@@ -1128,7 +1128,7 @@ extension OWSContactsManager: ContactManager {
         }
     }
 
-    private static let unknownAddressFetchDateMap = AtomicDictionary<Aci, Date>()
+    private static let unknownAddressFetchDateMap = AtomicDictionary<Aci, Date>(lock: .sharedGlobal)
 
     @objc(fetchProfileForUnknownAddress:)
     func fetchProfile(forUnknownAddress address: SignalServiceAddress) {

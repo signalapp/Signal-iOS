@@ -39,7 +39,7 @@ public class ChainedPromiseTest: XCTestCase {
             return firstPromise
         }
 
-        let failIfExecuteSecondPromise = AtomicBool(true)
+        let failIfExecuteSecondPromise = AtomicBool(true, lock: .sharedGlobal)
         let (secondPromise, secondFuture) = Promise<Void>.pending()
         let secondResultPromise = chainedPromise.enqueue {
             XCTAssertFalse(failIfExecuteSecondPromise.get())
@@ -61,7 +61,7 @@ public class ChainedPromiseTest: XCTestCase {
             return firstPromise
         }
 
-        let failIfExecuteSecondPromise = AtomicBool(true)
+        let failIfExecuteSecondPromise = AtomicBool(true, lock: .sharedGlobal)
         let (secondPromise, secondFuture) = Promise<Void>.pending()
         let secondResultPromise = chainedPromise.enqueue {
             XCTAssertFalse(failIfExecuteSecondPromise.get())
@@ -108,7 +108,7 @@ public class ChainedPromiseTest: XCTestCase {
             return firstPromise
         }
 
-        let hasResolvedUpTo = AtomicUInt(0)
+        let hasResolvedUpTo = AtomicUInt(0, lock: .sharedGlobal)
         var pendingFutures = [Future<Void>]()
         var resultPromises = [Promise<Void>]()
         var enqueuePromises = [Promise<Void>]()

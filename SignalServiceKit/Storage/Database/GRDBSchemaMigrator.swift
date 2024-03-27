@@ -10,7 +10,7 @@ import SignalCoreKit
 @objc
 public class GRDBSchemaMigrator: NSObject {
 
-    private static let _areMigrationsComplete = AtomicBool(false)
+    private static let _areMigrationsComplete = AtomicBool(false, lock: .sharedGlobal)
     @objc
     public static var areMigrationsComplete: Bool { _areMigrationsComplete.get() }
     public static let migrationSideEffectsCollectionName = "MigrationSideEffects"

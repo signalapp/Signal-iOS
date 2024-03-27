@@ -8,7 +8,7 @@ import Foundation
 /// Handles fetching and parsing remote megaphones.
 @objc
 public class RemoteMegaphoneFetcher: NSObject, Dependencies {
-    private let isSyncInFlight = AtomicBool(false)
+    private let isSyncInFlight = AtomicBool(false, lock: .sharedGlobal)
 
     override public init() {
         super.init()

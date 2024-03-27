@@ -387,7 +387,7 @@ public class TestableFlag: NSObject {
         self.title = title
         self.details = details
         self.affectsCapabilities = affectsCapabilities
-        self.flag = AtomicBool(defaultValue)
+        self.flag = AtomicBool(defaultValue, lock: .sharedGlobal)
         self.toggleHandler = toggleHandler
 
         super.init()

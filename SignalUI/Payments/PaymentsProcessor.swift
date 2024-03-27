@@ -182,7 +182,7 @@ public class PaymentsProcessor: NSObject {
         private let paymentModel: TSPaymentModel
         private let nextRetryDelayInteral: TimeInterval
         private weak var delegate: PaymentProcessingOperationDelegate?
-        private let hasScheduled = AtomicBool(false)
+        private let hasScheduled = AtomicBool(false, lock: .sharedGlobal)
         private var timer: Timer?
 
         var paymentId: String { paymentModel.uniqueId }

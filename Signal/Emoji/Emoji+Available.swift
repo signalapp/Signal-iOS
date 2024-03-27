@@ -6,7 +6,7 @@
 import SignalServiceKit
 
 extension Emoji {
-    private static let availableCache = AtomicDictionary<Emoji, Bool>()
+    private static let availableCache = AtomicDictionary<Emoji, Bool>(lock: .sharedGlobal)
     private static let iosVersionKey = "iosVersion"
     private static let cacheUrl = OWSFileSystem.appSharedDataDirectoryURL()
         .appendingPathComponent("Library")

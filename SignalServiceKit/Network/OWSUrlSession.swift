@@ -273,15 +273,15 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     // MARK: Backing Vars
 
-    private let _failOnError = AtomicBool(true)
+    private let _failOnError = AtomicBool(true, lock: .sharedGlobal)
 
-    private let _require2xxOr3xx = AtomicBool(true)
+    private let _require2xxOr3xx = AtomicBool(true, lock: .sharedGlobal)
 
-    private let _shouldHandleRemoteDeprecation = AtomicBool(false)
+    private let _shouldHandleRemoteDeprecation = AtomicBool(false, lock: .sharedGlobal)
 
-    private let _allowRedirects = AtomicBool(true)
+    private let _allowRedirects = AtomicBool(true, lock: .sharedGlobal)
 
-    private let _customRedirectHandler = AtomicOptional<(URLRequest) -> URLRequest?>(nil)
+    private let _customRedirectHandler = AtomicOptional<(URLRequest) -> URLRequest?>(nil, lock: .sharedGlobal)
 
     // MARK: Internal vars
 

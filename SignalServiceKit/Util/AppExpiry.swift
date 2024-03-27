@@ -69,7 +69,8 @@ public class AppExpiryImpl: AppExpiry {
         self.schedulers = schedulers
 
         self.expirationState = AtomicValue(
-            .init(appVersion: appVersion.currentAppVersion, mode: .default)
+            .init(appVersion: appVersion.currentAppVersion, mode: .default),
+            lock: .sharedGlobal
         )
     }
 

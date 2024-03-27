@@ -180,7 +180,7 @@ extension MessageSender {
         // Because of the way promises are combined further up the chain, we need to ensure that if
         // *any* send fails, the entire Promise rejcts. The error it rejects with doesn't really matter
         // and isn't consulted.
-        let didHitAnyFailure = AtomicBool(false)
+        let didHitAnyFailure = AtomicBool(false, lock: .sharedGlobal)
         let wrappedSendErrorBlock = { (serviceId: ServiceId, error: Error) -> Void in
             Logger.info("Sender key send failed for \(serviceId): \(error)")
             _ = didHitAnyFailure.tryToSetFlag()

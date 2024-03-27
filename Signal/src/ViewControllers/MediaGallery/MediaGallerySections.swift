@@ -809,8 +809,8 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         private var mutableState: State
         private var snapshot: State
         private(set) var pendingUpdate = AtomicValue(Update.noop, lock: AtomicLock())
-        private var highPriorityStack: AtomicArray<() -> Void> = AtomicArray()
-        private var lowPriorityStack: AtomicArray<() -> Void> = AtomicArray()
+        private var highPriorityStack: AtomicArray<() -> Void> = AtomicArray(lock: .sharedGlobal)
+        private var lowPriorityStack: AtomicArray<() -> Void> = AtomicArray(lock: .sharedGlobal)
         // We tried to use an OperationQueue for this. It was a good fit because it can prioritize
         // synchronous operations ahead of async ones. We ended up getting weird crashes in the Swift
         // runtime. The best theory was that OperationQueue is missing a memory barrier, but that isn't

@@ -215,7 +215,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     public static let currentPaymentBalanceDidChange = Notification.Name("currentPaymentBalanceDidChange")
 
-    private let paymentBalanceCache = AtomicOptional<PaymentBalance>(nil)
+    private let paymentBalanceCache = AtomicOptional<PaymentBalance>(nil, lock: .sharedGlobal)
 
     public var currentPaymentBalance: PaymentBalance? {
         paymentBalanceCache.get()

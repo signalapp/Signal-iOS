@@ -283,7 +283,7 @@ public class AudioWaveform: NSObject {
     // MARK: - Sampling
 
     /// The recorded samples for this waveform.
-    private var _decibelSamples = AtomicOptional<[Float]>(nil)
+    private var _decibelSamples = AtomicOptional<[Float]>(nil, lock: .sharedGlobal)
     private var decibelSamples: [Float]? {
         get { _decibelSamples.get() }
         set { _decibelSamples.set(newValue) }
@@ -309,7 +309,7 @@ public class AudioWaveform: NSObject {
     fileprivate static let maximumDuration: TimeInterval = 15 * kMinuteInterval
 
     private weak var sampleOperation: Operation?
-    private static var operationDequeue = AtomicArray<AudioWaveformSamplingOperation>()
+    private static var operationDequeue = AtomicArray<AudioWaveformSamplingOperation>(lock: .sharedGlobal)
 
     fileprivate func beginSampling(for asset: AVAsset, highPriority: Bool) {
         owsAssertDebug(sampleOperation == nil)

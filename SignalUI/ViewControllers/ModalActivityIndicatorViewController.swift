@@ -14,7 +14,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     private let isInvisible: Bool
 
-    private let _wasCancelled = AtomicBool(false)
+    private let _wasCancelled = AtomicBool(false, lock: .sharedGlobal)
     public var wasCancelled: Bool {
         _wasCancelled.get()
     }

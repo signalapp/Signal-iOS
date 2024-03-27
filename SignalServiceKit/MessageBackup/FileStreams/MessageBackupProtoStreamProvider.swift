@@ -121,7 +121,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
     }
 
     fileprivate class StreamDelegate: NSObject, Foundation.StreamDelegate {
-        private let _hadError = AtomicBool(false)
+        private let _hadError = AtomicBool(false, lock: .sharedGlobal)
         public var hadError: Bool { _hadError.get() }
 
         @objc

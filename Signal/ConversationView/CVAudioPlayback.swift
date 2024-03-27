@@ -315,7 +315,7 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
 
     private let audioPlayer: AudioPlayer
 
-    private let _playbackState = AtomicValue<AudioPlaybackState>(AudioPlaybackState.stopped)
+    private let _playbackState = AtomicValue<AudioPlaybackState>(AudioPlaybackState.stopped, lock: .sharedGlobal)
     public var audioPlaybackState: AudioPlaybackState {
         get {
             AssertIsOnMainThread()
@@ -339,7 +339,7 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
         }
     }
 
-    private let audioTiming = AtomicValue<AudioTiming>(AudioTiming.unknown)
+    private let audioTiming = AtomicValue<AudioTiming>(AudioTiming.unknown, lock: .sharedGlobal)
     public var progress: TimeInterval {
         AssertIsOnMainThread()
 

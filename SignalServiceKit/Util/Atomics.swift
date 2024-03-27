@@ -14,7 +14,7 @@ public enum AtomicError: Int, Error {
 
 public class AtomicLock {
     // The default lock shared by _all_ atomics.
-    fileprivate static let shared = AtomicLock()
+    public static let sharedGlobal = AtomicLock()
 
     public init() {}
 
@@ -30,7 +30,7 @@ public class AtomicLock {
 public class AtomicBool: NSObject {
     private let value: AtomicValue<Bool>
 
-    public required init(_ value: Bool, lock: AtomicLock? = nil) {
+    public init(_ value: Bool, lock: AtomicLock) {
         self.value = AtomicValue(value, lock: lock)
     }
 
@@ -73,44 +73,32 @@ public class AtomicBool: NSObject {
 
 // MARK: -
 
-@objc
-public class AtomicUInt: NSObject {
+public class AtomicUInt {
     private let value: AtomicValue<UInt>
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public required convenience init(_ value: UInt) {
-        self.init(value, lock: nil)
-    }
-
-    public required init(_ value: UInt = 0, lock: AtomicLock? = nil) {
+    public init(_ value: UInt = 0, lock: AtomicLock) {
         self.value = AtomicValue(value, lock: lock)
     }
 
-    @objc
     public func get() -> UInt {
         value.get()
     }
 
-    @objc
     public func set(_ value: UInt) {
         self.value.set(value)
     }
 
     @discardableResult
-    @objc
     public func increment() -> UInt {
         value.map { $0 + 1 }
     }
 
     @discardableResult
-    @objc
     public func decrementOrZero() -> UInt {
         value.map { max($0, 1) - 1 }
     }
 
     @discardableResult
-    @objc
     public func add(_ delta: UInt) -> UInt {
         value.map { $0 + delta }
     }
@@ -139,9 +127,9 @@ public final class AtomicValue<T> {
     private let lock: AtomicLock
     private var value: T
 
-    public init(_ value: T, lock: AtomicLock? = nil) {
+    public init(_ value: T, lock: AtomicLock) {
         self.value = value
-        self.lock = lock ?? .shared
+        self.lock = lock
     }
 
     public func get() -> T {
@@ -180,20 +168,6 @@ public final class AtomicValue<T> {
     }
 }
 
-// MARK: - 
-
-extension AtomicValue: Codable where T: Codable {
-    public convenience init(from decoder: Decoder) throws {
-        let singleValueContainer = try decoder.singleValueContainer()
-        self.init(try singleValueContainer.decode(T.self))
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var singleValueContainer = encoder.singleValueContainer()
-        try singleValueContainer.encode(self.get())
-    }
-}
-
 // MARK: -
 
 extension AtomicValue where T: Equatable {
@@ -214,7 +188,7 @@ extension AtomicValue where T: Equatable {
 public final class AtomicOptional<T> {
     fileprivate let value: AtomicValue<T?>
 
-    public required init(_ value: T?, lock: AtomicLock? = nil) {
+    public init(_ value: T?, lock: AtomicLock) {
         self.value = AtomicValue(value, lock: lock)
     }
 
@@ -233,23 +207,6 @@ public final class AtomicOptional<T> {
 
     public func map(_ block: (T?) -> T?) -> T? {
         value.map(block)
-    }
-}
-
-extension AtomicOptional: Codable where T: Codable {
-    public convenience init(from decoder: Decoder) throws {
-        let singleValueContainer = try decoder.singleValueContainer()
-
-        if singleValueContainer.decodeNil() {
-            self.init(nil)
-        } else {
-            self.init(try singleValueContainer.decode(T.self))
-        }
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var singleValueContainer = encoder.singleValueContainer()
-        try singleValueContainer.encode(value)
     }
 }
 
@@ -294,9 +251,9 @@ public class AtomicArray<T> {
     private let lock: AtomicLock
     private var values: [T]
 
-    public required init(_ values: [T] = [], lock: AtomicLock? = nil) {
+    public init(_ values: [T] = [], lock: AtomicLock) {
         self.values = values
-        self.lock = lock ?? .shared
+        self.lock = lock
     }
 
     public func get() -> [T] {
@@ -387,9 +344,9 @@ public class AtomicDictionary<Key: Hashable, Value> {
     private let lock: AtomicLock
     private var values: [Key: Value]
 
-    public required init(_ values: [Key: Value] = [:], lock: AtomicLock? = nil) {
+    public init(_ values: [Key: Value] = [:], lock: AtomicLock) {
         self.values = values
-        self.lock = lock ?? .shared
+        self.lock = lock
     }
 
     public subscript(_ key: Key) -> Value? {
@@ -448,8 +405,8 @@ public class AtomicSet<T: Hashable> {
     private let lock: AtomicLock
     private var values = Set<T>()
 
-    public required init(lock: AtomicLock? = nil) {
-        self.lock = lock ?? .shared
+    public init(lock: AtomicLock) {
+        self.lock = lock
     }
 
     public func insert(_ value: T) {

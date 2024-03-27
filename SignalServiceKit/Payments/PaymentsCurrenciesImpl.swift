@@ -160,7 +160,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
         }
     }
 
-    private let isUpdateInFlight = AtomicBool(false)
+    private let isUpdateInFlight = AtomicBool(false, lock: .sharedGlobal)
 
     func updateConversationRates() {
         guard

@@ -126,9 +126,9 @@ public final class MediaGalleryManager: NSObject {
     public static let newAttachmentsAvailableNotification =
         Notification.Name(rawValue: "SSKMediaGalleryFinderNewAttachmentsAvailable")
 
-    private static let recentlyChangedMessageTimestampsByRowId = AtomicDictionary<Int64, UInt64>()
-    private static let recentlyInsertedAttachments = AtomicArray<ChangedAttachmentInfo>()
-    private static let recentlyRemovedAttachments = AtomicArray<ChangedAttachmentInfo>()
+    private static let recentlyChangedMessageTimestampsByRowId = AtomicDictionary<Int64, UInt64>(lock: .sharedGlobal)
+    private static let recentlyInsertedAttachments = AtomicArray<ChangedAttachmentInfo>(lock: .sharedGlobal)
+    private static let recentlyRemovedAttachments = AtomicArray<ChangedAttachmentInfo>(lock: .sharedGlobal)
 
     @objc(didInsertAttachmentStream:transaction:)
     public class func didInsert(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {

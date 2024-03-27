@@ -162,7 +162,7 @@ public class WebSocketFactoryNative: NSObject, WebSocketFactory {
 
 public class SSKWebSocketNative: SSKWebSocket {
 
-    private static let idCounter = AtomicUInt()
+    private static let idCounter = AtomicUInt(lock: .sharedGlobal)
     public let id = SSKWebSocketNative.idCounter.increment()
 
     private let requestUrl: URL

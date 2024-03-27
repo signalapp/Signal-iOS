@@ -16,8 +16,8 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
     public let requiresInternet: Bool = false
     public let isEnabled: Bool = true
 
-    public var runningOperations = AtomicArray<IncomingGroupSyncOperation>()
-    public let isSetup = AtomicBool(false)
+    public var runningOperations = AtomicArray<IncomingGroupSyncOperation>(lock: .sharedGlobal)
+    public let isSetup = AtomicBool(false, lock: .sharedGlobal)
 
     private let defaultQueue: OperationQueue = {
         let operationQueue = OperationQueue()

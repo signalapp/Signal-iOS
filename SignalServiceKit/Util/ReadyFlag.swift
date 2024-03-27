@@ -57,7 +57,7 @@ public class ReadyFlag: NSObject {
 
     // This property should only be set with unfairLock.
     // It can be read from any queue.
-    private let flag = AtomicBool(false)
+    private let flag = AtomicBool(false, lock: .sharedGlobal)
 
     // This property should only be accessed with unfairLock.
     private var willBecomeReadyTasks = [ReadyTask]()

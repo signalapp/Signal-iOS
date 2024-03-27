@@ -36,7 +36,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         let accessoryText: String
         let displayUDIndicator: Bool
     }
-    private let messageRecipients = AtomicOptional<[MessageReceiptStatus: [MessageRecipientModel]]>(nil)
+    private let messageRecipients = AtomicOptional<[MessageReceiptStatus: [MessageRecipientModel]]>(nil, lock: .sharedGlobal)
 
     private let cellView = CVCellView()
 

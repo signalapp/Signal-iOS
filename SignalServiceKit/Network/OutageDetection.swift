@@ -15,7 +15,7 @@ public class OutageDetection: NSObject {
     @objc
     public static let outageStateDidChange = Notification.Name("OutageStateDidChange")
 
-    private let _hasOutage = AtomicBool(false)
+    private let _hasOutage = AtomicBool(false, lock: .sharedGlobal)
     @objc
     public private(set) var hasOutage: Bool {
         get {
@@ -31,7 +31,7 @@ public class OutageDetection: NSObject {
             }
         }
     }
-    private let _shouldCheckForOutage = AtomicBool(false)
+    private let _shouldCheckForOutage = AtomicBool(false, lock: .sharedGlobal)
     private var shouldCheckForOutage: Bool {
         get {
             _shouldCheckForOutage.get()

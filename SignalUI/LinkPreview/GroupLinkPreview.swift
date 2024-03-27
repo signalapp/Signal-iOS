@@ -91,7 +91,7 @@ public class LinkPreviewGroupLink: LinkPreviewState {
         return "\(urlString).\(NSStringForAttachmentThumbnailQuality(thumbnailQuality))"
     }
 
-    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
+    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil, lock: .sharedGlobal)
 
     public var imagePixelSize: CGSize {
         if let cachedValue = imagePixelSizeCache.get() {

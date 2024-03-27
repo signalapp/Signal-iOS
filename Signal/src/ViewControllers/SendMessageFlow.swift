@@ -605,7 +605,7 @@ public class SendMessageController: SendMessageDelegate {
 
     private weak var fromViewController: UIViewController?
 
-    let sendMessageFlow = AtomicOptional<SendMessageFlow>(nil)
+    let sendMessageFlow = AtomicOptional<SendMessageFlow>(nil, lock: .sharedGlobal)
 
     public required init(fromViewController: UIViewController) {
         self.fromViewController = fromViewController

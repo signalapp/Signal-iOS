@@ -149,8 +149,8 @@ public class DatabaseChangeObserver: NSObject {
         }
     }
 
-    private let isDisplayLinkActive = AtomicBool(false)
-    private let willRequestDisplayLinkActive = AtomicBool(false)
+    private let isDisplayLinkActive = AtomicBool(false, lock: .sharedGlobal)
+    private let willRequestDisplayLinkActive = AtomicBool(false, lock: .sharedGlobal)
 
     private func didModifyPendingChanges() {
         guard !isDisplayLinkActive.get(),

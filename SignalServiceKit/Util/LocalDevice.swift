@@ -53,7 +53,7 @@ public class LocalDevice: NSObject {
         }
     }
 
-    private static var _memoryStatus = AtomicOptional<MemoryStatus>(nil)
+    private static var _memoryStatus = AtomicOptional<MemoryStatus>(nil, lock: .sharedGlobal)
     public static func currentMemoryStatus(forceUpdate: Bool = false) -> MemoryStatus? {
         // If we don't have a cached status, we must fetch
         guard let currentStatus = _memoryStatus.get() else {

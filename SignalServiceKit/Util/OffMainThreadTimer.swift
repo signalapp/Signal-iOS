@@ -16,7 +16,7 @@ public class OffMainThreadTimer {
     public typealias Block = (OffMainThreadTimer) -> Void
     private let block: Block
 
-    private let _isValid = AtomicBool(true)
+    private let _isValid = AtomicBool(true, lock: .sharedGlobal)
     public var isValid: Bool {
         get { _isValid.get() }
         set { _isValid.set(newValue) }

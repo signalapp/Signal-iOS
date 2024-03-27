@@ -382,7 +382,7 @@ extension SenderKeyStore {
 
     // MARK: Logging
 
-    static private var logThrottleExpiration = AtomicValue<Date>(Date.distantPast)
+    static private var logThrottleExpiration = AtomicValue<Date>(Date.distantPast, lock: .sharedGlobal)
 
     // This method traverses all groups where `recipient` is a member and logs out information on any sent
     // sender key distribution messages.

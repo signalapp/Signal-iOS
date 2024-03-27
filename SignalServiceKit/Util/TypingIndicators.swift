@@ -59,7 +59,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
     private let kDatabaseKey_TypingIndicatorsEnabled = "kDatabaseKey_TypingIndicatorsEnabled"
 
-    private let _areTypingIndicatorsEnabled = AtomicBool(false)
+    private let _areTypingIndicatorsEnabled = AtomicBool(false, lock: .sharedGlobal)
 
     @objc
     public let keyValueStore = SDSKeyValueStore(collection: "TypingIndicators")

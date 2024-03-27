@@ -29,11 +29,11 @@ import SignalServiceKit
 // database, logging, etc. are only ever setup once per *process*
 private let globalEnvironment = NSEEnvironment()
 
-private let hasShownFirstUnlockError = AtomicBool(false)
+private let hasShownFirstUnlockError = AtomicBool(false, lock: .sharedGlobal)
 
 class NotificationService: UNNotificationServiceExtension {
     private typealias ContentHandler = (UNNotificationContent) -> Void
-    private let contentHandler = AtomicOptional<ContentHandler>(nil)
+    private let contentHandler = AtomicOptional<ContentHandler>(nil, lock: .sharedGlobal)
 
     // MARK: -
 

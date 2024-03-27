@@ -11,7 +11,7 @@ public class PendingTasks: NSObject {
 
     fileprivate let label: String
 
-    private let pendingTasks = AtomicDictionary<UInt, PendingTask>()
+    private let pendingTasks = AtomicDictionary<UInt, PendingTask>(lock: .sharedGlobal)
 
     @objc
     public required init(label: String) {
@@ -48,7 +48,7 @@ public class PendingTasks: NSObject {
 
 @objc
 public class PendingTask: NSObject {
-    private static let idCounter = AtomicUInt()
+    private static let idCounter = AtomicUInt(lock: .sharedGlobal)
     fileprivate let id = PendingTask.idCounter.increment()
 
     private weak var pendingTasks: PendingTasks?
@@ -58,7 +58,7 @@ public class PendingTask: NSObject {
     public let promise: Promise<Void>
     fileprivate let future: Future<Void>
 
-    let isComplete = AtomicBool(false)
+    let isComplete = AtomicBool(false, lock: .sharedGlobal)
 
     init(pendingTasks: PendingTasks, label: String) {
         self.pendingTasks = pendingTasks

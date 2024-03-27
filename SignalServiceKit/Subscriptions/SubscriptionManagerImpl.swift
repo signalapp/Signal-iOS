@@ -1065,7 +1065,7 @@ extension SubscriptionManagerImpl {
         return subscriptionKVS.getBool(displayBadgesOnProfileKey, transaction: transaction) ?? false
     }
 
-    private static var displayBadgesOnProfileCache = AtomicBool(false)
+    private static var displayBadgesOnProfileCache = AtomicBool(false, lock: .sharedGlobal)
     private static func setDisplayBadgesOnProfile(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
         guard value != displayBadgesOnProfile(transaction: transaction) else { return }
         displayBadgesOnProfileCache.set(value)

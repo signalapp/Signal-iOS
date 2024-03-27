@@ -330,7 +330,7 @@ public class MessageFetcherJob: NSObject {
         return true
     }
 
-    private static let lastIncompleteEnvelopeCount = AtomicValue<Int>(0)
+    private static let lastIncompleteEnvelopeCount = AtomicValue<Int>(0, lock: .sharedGlobal)
 
     // MARK: - Run Loop
 
@@ -506,7 +506,7 @@ private class MessageAckOperation: OWSOperation {
 
     // A heuristic to quickly filter out multiple ack attempts for the same message
     // This doesn't affect correctness, just tries to guard against backing up our operation queue with repeat work
-    static private var inFlightAcks = AtomicSet<String>()
+    static private var inFlightAcks = AtomicSet<String>(lock: .sharedGlobal)
     private var didRecordAckId = false
     private let inFlightAckId: String
 

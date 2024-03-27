@@ -29,7 +29,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // Coordinates blocking of the calloutQueue while we wait for an incoming call
     private let pendingCallSignal = DispatchSemaphore(value: 0)
-    private let isWaitingForSignal = AtomicBool(false)
+    private let isWaitingForSignal = AtomicBool(false, lock: .sharedGlobal)
 
     // Private callout queue that we can use to synchronously wait for our call to start
     // TODO: Rewrite call message routing to be able to synchronously report calls
@@ -176,7 +176,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
             callService.earlyRingNextIncomingCall = true
         }
 
-        let isUnexpectedPush = AtomicBool(false)
+        let isUnexpectedPush = AtomicBool(false, lock: .sharedGlobal)
 
         // One of the few places we dispatch_sync, this should be safe since we can only block our
         // private calloutQueue while waiting for a chance to run on the main thread.

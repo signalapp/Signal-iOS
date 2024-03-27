@@ -60,7 +60,7 @@ public class OWSChatConnection: NSObject {
 
     private static let socketReconnectDelaySeconds: TimeInterval = 5
 
-    private var _currentWebSocket = AtomicOptional<WebSocketConnection>(nil)
+    private var _currentWebSocket = AtomicOptional<WebSocketConnection>(nil, lock: .sharedGlobal)
     private var currentWebSocket: WebSocketConnection? {
         get {
             _currentWebSocket.get()
@@ -109,9 +109,9 @@ public class OWSChatConnection: NSObject {
     // We cache this value instead of consulting [UIApplication sharedApplication].applicationState,
     // because UIKit only provides a "will resign active" notification, not a "did resign active"
     // notification.
-    private let appIsActive = AtomicBool(false)
+    private let appIsActive = AtomicBool(false, lock: .sharedGlobal)
 
-    private static let unsubmittedRequestTokenCounter = AtomicUInt()
+    private static let unsubmittedRequestTokenCounter = AtomicUInt(lock: .sharedGlobal)
     public typealias UnsubmittedRequestToken = UInt
     // This method is thread-safe.
     public func makeUnsubmittedRequestToken() -> UnsubmittedRequestToken {
@@ -120,7 +120,7 @@ public class OWSChatConnection: NSObject {
         applyDesiredSocketState()
         return token
     }
-    private let unsubmittedRequestTokens = AtomicSet<UnsubmittedRequestToken>()
+    private let unsubmittedRequestTokens = AtomicSet<UnsubmittedRequestToken>(lock: .sharedGlobal)
     // This method is thread-safe.
     fileprivate func removeUnsubmittedRequestToken(_ token: UnsubmittedRequestToken) {
         owsAssertDebug(unsubmittedRequestTokens.contains(token))
@@ -752,7 +752,7 @@ public class OWSChatConnection: NSObject {
         self.ensureBackgroundKeepAlive(.didReceivePush)
     }
 
-    private let lastDesiredSocketState = AtomicValue<DesiredSocketState>(.closed(reason: "App launched"))
+    private let lastDesiredSocketState = AtomicValue<DesiredSocketState>(.closed(reason: "App launched"), lock: .sharedGlobal)
 
     // This method aligns the socket state with the "desired" socket state.
     //
@@ -1080,7 +1080,7 @@ private class RequestInfo {
         self.request = request
         self.requestUrl = requestUrl
         self.connectionType = connectionType
-        self.status = AtomicValue(.incomplete(success: success, failure: failure))
+        self.status = AtomicValue(.incomplete(success: success, failure: failure), lock: .sharedGlobal)
         self.backgroundTask = OWSBackgroundTask(label: "ChatRequestInfo")
     }
 
@@ -1272,17 +1272,17 @@ private class WebSocketConnection {
 
     public var id: UInt { webSocket.id }
 
-    public let hasEmptiedInitialQueue = AtomicBool(false)
+    public let hasEmptiedInitialQueue = AtomicBool(false, lock: .sharedGlobal)
 
     public var state: SSKWebSocketState { webSocket.state }
 
-    private var requestInfoMap = AtomicDictionary<UInt64, RequestInfo>()
+    private var requestInfoMap = AtomicDictionary<UInt64, RequestInfo>(lock: .sharedGlobal)
 
     public var hasPendingRequests: Bool {
         !requestInfoMap.isEmpty
     }
 
-    public let hasConnected = AtomicBool(false)
+    public let hasConnected = AtomicBool(false, lock: .sharedGlobal)
 
     public var logPrefix: String {
         "[\(connectionType): \(id)]"

@@ -20,7 +20,7 @@ public final class CachedBadge: Equatable, Dependencies {
     }
 
     // If set, the badge and its assets are populated and ready to use.
-    private var _cachedValue = AtomicOptional<Value>(nil)
+    private var _cachedValue = AtomicOptional<Value>(nil, lock: .sharedGlobal)
     public var cachedValue: Value? { self._cachedValue.get() }
 
     // If set, there's an ongoing request to populate the badge. New callers

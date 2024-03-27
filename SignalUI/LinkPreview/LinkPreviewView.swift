@@ -1208,7 +1208,7 @@ private class LinkPreviewImageView: CVImageView {
     // the input toolbar curve.
     private let asymmetricCornerMask = CAShapeLayer()
 
-    private static let configurationIdCounter = AtomicUInt(0)
+    private static let configurationIdCounter = AtomicUInt(0, lock: .sharedGlobal)
     private var configurationId: UInt = 0
 
     init() {

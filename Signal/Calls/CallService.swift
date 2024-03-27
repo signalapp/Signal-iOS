@@ -156,7 +156,7 @@ public final class CallService: LightweightGroupCallManager {
     /// which will let us know which one, if any, should become the "current call". But in the
     /// meanwhile, we still want to track that calls are in-play so we can prevent the user from
     /// placing an outgoing call.
-    private let _calls = AtomicSet<SignalCall>()
+    private let _calls = AtomicSet<SignalCall>(lock: .sharedGlobal)
     private var calls: Set<SignalCall> { _calls.allValues }
 
     private func addCall(_ call: SignalCall) {
