@@ -27,7 +27,7 @@ def execute_command(command):
 
 
 def get_feature_flag():
-    flags_path = "SignalServiceKit/src/Util/FeatureFlags.swift"
+    flags_path = "SignalServiceKit/Util/FeatureFlags.swift"
     fd = open(flags_path, "rt")
     regex = re.compile(r"([^\.\s]+)$")
 
@@ -48,7 +48,7 @@ def set_feature_flags(new_flags_level):
         print(output)
         fail("Git repository has untracked files.")
 
-    flags_path = "SignalServiceKit/src/Util/FeatureFlags.swift"
+    flags_path = "SignalServiceKit/Util/FeatureFlags.swift"
     with open(flags_path, "rt") as f:
         text = f.read()
     lines = text.split("\n")

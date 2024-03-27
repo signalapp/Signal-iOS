@@ -23,7 +23,7 @@ REPO_ROOT=`git rev-parse --show-toplevel`
 # $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift.py --src-path SignalDataStoreCommon/
 
 # We generate Swift extensions to handle serialization, etc. for models.
-RECORD_TYPE_SWIFT="SignalServiceKit/src/Storage/Database/SDSRecordType.swift"
+RECORD_TYPE_SWIFT="SignalServiceKit/Storage/Database/SDSRecordType.swift"
 RECORD_TYPE_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds_record_type_map.json"
 CONFIG_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds-config.json"
 PROPERTY_ORDER_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds-property_order.json"
