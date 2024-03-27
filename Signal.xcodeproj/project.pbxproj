@@ -628,6 +628,9 @@
 		504F397C29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */; };
 		5050A8792B76E2E100E9BFA4 /* PreKeyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */; };
 		5050A87B2B76EEC500E9BFA4 /* PreKeyIdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5050A87A2B76EEC500E9BFA4 /* PreKeyIdTest.swift */; };
+		505166D62BB37DA700FF6B4A /* IncomingCallEventSyncMessageParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC252AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift */; };
+		505166D72BB37DAE00FF6B4A /* IncomingCallEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */; };
+		505166D82BB37DB400FF6B4A /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
 		5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */; };
 		50552C2A2BAB8E7D00815474 /* AuthCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C292BAB8E7D00815474 /* AuthCredentialManager.swift */; };
 		50552C2C2BAB8E8500815474 /* AuthCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C2B2BAB8E8500815474 /* AuthCredentialStore.swift */; };
@@ -1068,7 +1071,6 @@
 		725465202BA016A200EABFD2 /* GroupsV2AvatarDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */; };
 		725465242BA017D500EABFD2 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
 		725465252BA017EF00EABFD2 /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
-		725465282BA01A3800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
 		7254652A2BA01B4800EABFD2 /* PaymentsHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */; };
 		725465382BA01FAA00EABFD2 /* SignalMessagingJobQueues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */; };
 		725465392BA01FAA00EABFD2 /* SendGiftBadgeJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */; };
@@ -1628,11 +1630,9 @@
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
 		D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */; };
-		D979CC272AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */; };
 		D979CC282AD3933B006AAC49 /* ThreadStore+CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */; };
 		D979CC292AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC222AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift */; };
 		D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */; };
-		D979CC2C2AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC252AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift */; };
 		D979CC3A2AD3964E006AAC49 /* Numbers+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC392AD3964E006AAC49 /* Numbers+Random.swift */; };
 		D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC472AD4DECA006AAC49 /* IndividualCallRecordManagerTest.swift */; };
 		D979CC4D2AD4DECB006AAC49 /* CallRecordStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC482AD4DECA006AAC49 /* CallRecordStoreTest.swift */; };
@@ -1676,7 +1676,6 @@
 		D9A81C6D2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C6C2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift */; };
 		D9A81C6F2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C6E2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift */; };
 		D9A81C712BAB443600C07D2B /* MockCallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C702BAB443600C07D2B /* MockCallRecordQuerier.swift */; };
-		D9A81C752BB1F8D400C07D2B /* Backup.proto in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C742BB1F8D400C07D2B /* Backup.proto */; };
 		D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */; };
 		D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
@@ -13094,7 +13093,6 @@
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,
 				665C0D6C2AE0776700539A37 /* Backup.pb.swift in Sources */,
-				D9A81C752BB1F8D400C07D2B /* Backup.proto in Sources */,
 				665C0D6E2AE07A8A00539A37 /* BackupProto.swift in Sources */,
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
 				D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */,
@@ -13302,14 +13300,11 @@
 				F9C5CDB4289453B400548EEE /* HTTPUtils.swift in Sources */,
 				66FC637C29DF8FF200F00DAC /* HydratedMessageBody.swift in Sources */,
 				F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */,
-				D979CC272AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift in Sources */,
-				D979CC272AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift in Sources */,
-				D979CC2C2AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift in Sources */,
-				D979CC2C2AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift in Sources */,
+				505166D72BB37DAE00FF6B4A /* IncomingCallEventSyncMessageManager.swift in Sources */,
+				505166D62BB37DA700FF6B4A /* IncomingCallEventSyncMessageParams.swift in Sources */,
 				D958C6792B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift in Sources */,
 				D958C67B2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift in Sources */,
-				725465282BA01A3800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */,
-				725465282BA01A3800EABFD2 /* IncomingContactSyncJobQueue.swift in Sources */,
+				505166D82BB37DB400FF6B4A /* IncomingContactSyncJobQueue.swift in Sources */,
 				D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */,
 				F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */,
 				F9C5CDA0289453B400548EEE /* IncomingGroupsV2MessageJob.m in Sources */,
