@@ -84,6 +84,9 @@ public class LocalDevice: NSObject {
         let criticalThreshold = UInt64(1.5 * 1024 * 1024)
 
         switch freeBytes {
+        case 0:
+            // The simulator doesn't report available bytes anymore.
+            return "\(currentFootprint)"
         case ..<criticalThreshold:
             return "\(currentFootprint) - CRITICAL - \(freeBytes) remaining — mallocUsage: \(mallocUsage) / \(mallocAllocations)"
         case ..<warnThreshold:
