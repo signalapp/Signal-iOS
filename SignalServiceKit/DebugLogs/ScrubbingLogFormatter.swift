@@ -80,11 +80,11 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         /// IPv6 addresses are _hard_.
         ///
         /// This regex was borrowed from RingRTC:
-        /// https://github.com/signalapp/ringrtc/blob/cfe07c57888d930d1114ddccbdd73d3f556b3b40/src/rust/src/core/util.rs#L149-L197
+        /// https://github.com/signalapp/ringrtc/blob/1ae8110dfe2693f6e3c05d4d9deb449b9df73d79/src/rust/src/core/util.rs#L184-L198
         static let ipv6Address: Replacement = Replacement(
             pattern: (
                "[Ff][Ee]80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|"
-               + "(::)?([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|"
+               + "(::)?([0-9a-fA-F]{1,4}:){1,4}:([0-9]{1,3}\\.){3,3}[0-9]{1,3}|"
                + "([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|"
                + "([0-9a-fA-F]{1,4}:){1,1}(:[0-9a-fA-F]{1,4}){1,6}|"
                + "([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|"
@@ -93,7 +93,7 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
                + "([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|"
                + "([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|"
                + "([0-9a-fA-F]{1,4}:){1,7}:|"
-               + "::([fF]{4}(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|"
+               + "::([fF]{4}(:0{1,4}){0,1}:){0,1}([0-9]{1,3}\\.){3,3}[0-9]{1,3}|"
                + ":((:[0-9a-fA-F]{1,4}){1,7}|:)"
             ),
             replacementTemplate: "[ REDACTED_IPV6_ADDRESS ]"
