@@ -17,9 +17,7 @@ static pid_t localPid(void)
 {
     static dispatch_once_t onceToken;
     static pid_t pid;
-    dispatch_once(&onceToken, ^{
-        pid = getpid();
-    });
+    dispatch_once(&onceToken, ^{ pid = getpid(); });
     return pid;
 }
 
@@ -55,11 +53,10 @@ static pid_t localPid(void)
     [self stop];
 
     __weak SDSCrossProcess *weakSelf = self;
-    self.notifyToken = [DarwinNotificationCenter addObserverForName:DarwinNotificationName.sdsCrossProcess
-                                                              queue:dispatch_get_main_queue()
-                                                         usingBlock:^(int token) {
-                                                             [weakSelf handleNotification:token];
-                                                         }];
+    self.notifyToken =
+        [DarwinNotificationCenter addObserverForName:DarwinNotificationName.sdsCrossProcess
+                                               queue:dispatch_get_main_queue()
+                                          usingBlock:^(int token) { [weakSelf handleNotification:token]; }];
 }
 
 - (void)handleNotification:(int)token
@@ -87,9 +84,7 @@ static pid_t localPid(void)
 
 - (void)notifyChangedAsync
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self notifyChanged];
-    });
+    dispatch_async(dispatch_get_main_queue(), ^{ [self notifyChanged]; });
 }
 
 - (void)notifyChanged

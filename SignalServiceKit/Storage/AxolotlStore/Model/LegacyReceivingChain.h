@@ -9,10 +9,10 @@
 
 @interface LegacyReceivingChain : NSObject <NSSecureCoding>
 
-- (instancetype)initWithChainKey:(LegacyChainKey*)chainKey senderRatchetKey:(NSData*)senderRatchet;
+- (instancetype)initWithChainKey:(LegacyChainKey *)chainKey senderRatchetKey:(NSData *)senderRatchet;
 
 @property NSMutableArray *messageKeysList;
 @property NSData *senderRatchetKey;
-@property(readonly,nonatomic) LegacyChainKey *chainKey;
+@property (readonly, nonatomic) LegacyChainKey *chainKey;
 
 @end

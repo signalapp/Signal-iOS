@@ -13,12 +13,12 @@
 
 - (instancetype)init;
 
-- (LegacySessionState*)sessionState;
+- (LegacySessionState *)sessionState;
 - (NSArray<LegacySessionState *> *)previousSessionStates;
 
 - (BOOL)isFresh;
 - (void)markAsUnFresh;
 - (void)archiveCurrentState;
-- (void)setState:(LegacySessionState*)sessionState;
+- (void)setState:(LegacySessionState *)sessionState;
 
 @end

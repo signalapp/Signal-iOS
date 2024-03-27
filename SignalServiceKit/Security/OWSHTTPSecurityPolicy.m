@@ -10,7 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSHTTPSecurityPolicy
 
-+ (instancetype)sharedPolicy {
++ (instancetype)sharedPolicy
+{
     static OWSHTTPSecurityPolicy *httpSecurityPolicy = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -20,11 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
     return httpSecurityPolicy;
 }
 
-+ (instancetype)systemDefault {
++ (instancetype)systemDefault
+{
     return [[self alloc] initWithPinnedCertificates:[NSSet set]];
 }
 
-- (instancetype)initWithPinnedCertificates:(NSSet<NSData *> *)certificates {
+- (instancetype)initWithPinnedCertificates:(NSSet<NSData *> *)certificates
+{
     self = [super init];
     if (self) {
         _pinnedCertificates = [certificates copy];
@@ -32,7 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (NSData *)dataFromCertificateFileForService:(NSString *)service {
++ (NSData *)dataFromCertificateFileForService:(NSString *)service
+{
     NSBundle *bundle = [NSBundle bundleForClass:self.class];
     NSString *path = [bundle pathForResource:service ofType:@"cer"];
 
@@ -42,25 +46,28 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *data = [NSData dataWithContentsOfFile:path];
     OWSAssert(data.length > 0);
-    
+
     return data;
 }
 
-+ (NSData *)certificateDataForService:(NSString *)service {
++ (NSData *)certificateDataForService:(NSString *)service
+{
     SecCertificateRef certRef = [self newCertificateForService:service];
     NSData *result = (__bridge_transfer NSData *)SecCertificateCopyData(certRef);
     CFRelease(certRef);
     return result;
 }
 
-+ (SecCertificateRef)newCertificateForService:(NSString *)service CF_RETURNS_RETAINED {
++ (SecCertificateRef)newCertificateForService:(NSString *)service CF_RETURNS_RETAINED
+{
     NSData *certificateData = [self dataFromCertificateFileForService:service];
     SecCertificateRef certRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateData));
     OWSAssert(certRef);
     return certRef;
 }
 
-- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(nullable NSString *)domain {
+- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(nullable NSString *)domain
+{
     NSMutableArray *policies = [NSMutableArray array];
     [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
 
@@ -91,7 +98,8 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-static BOOL AFServerTrustIsValid(SecTrustRef serverTrust) {
+static BOOL AFServerTrustIsValid(SecTrustRef serverTrust)
+{
     BOOL isValid = NO;
     SecTrustResultType result;
     __Require_noErr_Quiet(SecTrustEvaluate(serverTrust, &result), _out);

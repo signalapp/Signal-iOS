@@ -49,7 +49,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
 @end
 
-#pragma mark - 
+#pragma mark -
 
 @implementation SSKPreKeyStore
 
@@ -98,9 +98,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
         OWSLogInfo(@"building %d new preKeys starting from preKeyId: %d", BATCH_SIZE, preKeyId);
         for (int i = 0; i < BATCH_SIZE; i++) {
             ECKeyPair *keyPair = [ECKeyPair generateKeyPair];
-            PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId
-                                                            keyPair:keyPair
-                                                          createdAt:[NSDate date]];
+            PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId keyPair:keyPair createdAt:[NSDate date]];
 
             [preKeyRecords addObject:record];
             preKeyId++;
@@ -118,20 +116,17 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
     }
 }
 
-- (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
-                          transaction:(SDSAnyReadTransaction *)transaction
+- (nullable PreKeyRecord *)loadPreKey:(int)preKeyId transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.keyStore preKeyRecordForKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
 }
 
-- (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record
-        transaction:(SDSAnyWriteTransaction *)transaction
+- (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self.keyStore setPreKeyRecord:record forKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
 }
 
-- (void)removePreKey:(int)preKeyId
-         transaction:(SDSAnyWriteTransaction *)transaction
+- (void)removePreKey:(int)preKeyId transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSLogInfo(@"Removing prekeyID: %lu", (unsigned long)preKeyId);
 

@@ -37,8 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path
 {
-    return
-        [self protectFileOrFolderAtPath:path fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
+    return [self protectFileOrFolderAtPath:path
+                        fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
 }
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType
@@ -84,8 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)appLibraryDirectoryPath
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *documentDirectoryURL =
-        [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *documentDirectoryURL = [[fileManager URLsForDirectory:NSLibraryDirectory
+                                                       inDomains:NSUserDomainMask] lastObject];
     return [documentDirectoryURL path];
 }
 
@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSDate *startDate = [NSDate new];
-    
+
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
@@ -176,9 +176,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Ensure all files moved have the proper data protection class.
     // On large directories this can take a while, so we dispatch async
     // since we're in the launch path.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self protectRecursiveContentsAtPath:newFilePath];
-    });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{ [self protectRecursiveContentsAtPath:newFilePath]; });
 
     return nil;
 }
@@ -206,9 +205,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Ensure all files moved have the proper data protection class.
     // On large directories this can take a while, so we dispatch async
     // since we're in the launch path.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self protectRecursiveContentsAtPath:newFilePath];
-    });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{ [self protectRecursiveContentsAtPath:newFilePath]; });
 
     return YES;
 }
@@ -273,8 +271,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *_Nullable error;
-    unsigned long long fileSize =
-        [[fileManager attributesOfItemAtPath:filePath error:&error][NSFileSize] unsignedLongLongValue];
+    unsigned long long fileSize = [[fileManager attributesOfItemAtPath:filePath
+                                                                 error:&error][NSFileSize] unsignedLongLongValue];
     if (error) {
         OWSLogError(@"Couldn't fetch file size: %@", error.shortDescription);
         return nil;

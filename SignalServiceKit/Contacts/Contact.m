@@ -67,7 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (cnContact.phoneNumbers.count <= kMaxPhoneNumbersConsidered) {
         consideredPhoneNumbers = cnContact.phoneNumbers;
     } else {
-        OWSLogInfo(@"For perf, only considering the first %lu phone numbers for contact with many numbers.", (unsigned long)kMaxPhoneNumbersConsidered);
+        OWSLogInfo(@"For perf, only considering the first %lu phone numbers for contact with many numbers.",
+            (unsigned long)kMaxPhoneNumbersConsidered);
         consideredPhoneNumbers = [cnContact.phoneNumbers subarrayWithRange:NSMakeRange(0, kMaxPhoneNumbersConsidered)];
     }
     for (CNLabeledValue *phoneNumberField in consideredPhoneNumbers) {
@@ -199,7 +200,8 @@ NS_ASSUME_NONNULL_BEGIN
     *outParsedPhoneNumberNameMap = [parsedPhoneNumberNameMap copy];
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
     return [NSString stringWithFormat:@"%@: %@", self.fullName, self.userTextPhoneNumbers];
 }
 
@@ -252,9 +254,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"mergedCNContact was unexpectedly nil");
         return [CNContact new];
     }
-    
+
     // Name
-    NSString *formattedFullName =  [self.class formattedFullNameWithCNContact:mergedCNContact];
+    NSString *formattedFullName = [self.class formattedFullNameWithCNContact:mergedCNContact];
 
     // merged all or nothing - do not try to piece-meal merge.
     if (formattedFullName.length == 0) {
@@ -290,7 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
         [mergedPhoneNumbers addObject:labeledPhoneNumber];
     }
     mergedCNContact.phoneNumbers = mergedPhoneNumbers;
-    
+
     // Emails
     NSSet<NSString *> *existingEmailSet = [NSSet setWithArray:oldContact.emails];
     NSMutableArray<CNLabeledValue<NSString *> *> *mergedEmailAddresses = [mergedCNContact.emailAddresses mutableCopy];
@@ -301,7 +303,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     mergedCNContact.emailAddresses = mergedEmailAddresses;
-    
+
     // Address
     // merged all or nothing - do not try to piece-meal merge.
     if (mergedCNContact.postalAddresses.count == 0) {

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import "UIImage+OWS.h"
 #import "NSData+Image.h"
+#import "UIImage+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     UIGraphicsBeginImageContextWithOptions(self.size, NO, self.scale);
-    [self drawInRect:(CGRect){ { 0, 0 }, self.size }];
+    [self drawInRect:(CGRect) { { 0, 0 }, self.size }];
     UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return normalizedImage;
@@ -308,7 +308,8 @@ NS_ASSUME_NONNULL_BEGIN
     return jpegData;
 }
 
-- (size_t)pixelWidth {
+- (size_t)pixelWidth
+{
     switch (self.imageOrientation) {
         case UIImageOrientationUp:
         case UIImageOrientationDown:
@@ -323,7 +324,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (size_t)pixelHeight {
+- (size_t)pixelHeight
+{
     switch (self.imageOrientation) {
         case UIImageOrientationUp:
         case UIImageOrientationDown:
@@ -338,7 +340,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (CGSize)pixelSize {
+- (CGSize)pixelSize
+{
     return CGSizeMake(self.pixelWidth, self.pixelHeight);
 }
 

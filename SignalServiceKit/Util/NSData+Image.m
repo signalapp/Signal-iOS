@@ -387,10 +387,20 @@ typedef struct {
     [self getBytes:&bytes range:NSMakeRange(0, kBufferLength)];
 
     unsigned char kGif87APrefix[kPrefixLength] = {
-        0x47, 0x49, 0x46, 0x38, 0x37, 0x61,
+        0x47,
+        0x49,
+        0x46,
+        0x38,
+        0x37,
+        0x61,
     };
     unsigned char kGif89APrefix[kPrefixLength] = {
-        0x47, 0x49, 0x46, 0x38, 0x39, 0x61,
+        0x47,
+        0x49,
+        0x46,
+        0x38,
+        0x39,
+        0x61,
     };
     if (![NSData ows_areByteArraysEqual:kPrefixLength left:bytes right:kGif87APrefix]
         && ![NSData ows_areByteArraysEqual:kPrefixLength left:bytes right:kGif89APrefix]) {

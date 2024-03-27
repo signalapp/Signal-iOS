@@ -47,11 +47,12 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
-+ (NSDictionary *)supportedVideoMIMETypesToExtensionTypes {
++ (NSDictionary *)supportedVideoMIMETypesToExtensionTypes
+{
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        result = @ {
             @"video/3gpp" : @"3gp",
             @"video/3gpp2" : @"3g2",
             @"video/mp4" : @"mp4",
@@ -63,11 +64,12 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return result;
 }
 
-+ (NSDictionary *)supportedAudioMIMETypesToExtensionTypes {
++ (NSDictionary *)supportedAudioMIMETypesToExtensionTypes
+{
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        result = @ {
             @"audio/aac" : @"m4a",
             @"audio/x-m4p" : @"m4p",
             @"audio/x-m4b" : @"m4b",
@@ -90,7 +92,8 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return result;
 }
 
-+ (NSDictionary *)supportedImageMIMETypesToExtensionTypes {
++ (NSDictionary *)supportedImageMIMETypesToExtensionTypes
+{
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -147,18 +150,19 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        result = @ {
             OWSMimeTypeApplicationOctetStream : @"dat",
         };
     });
     return result;
 }
 
-+ (NSDictionary *)supportedVideoExtensionTypesToMIMETypes {
++ (NSDictionary *)supportedVideoExtensionTypesToMIMETypes
+{
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        result = @ {
             @"3gp" : @"video/3gpp",
             @"3gpp" : @"video/3gpp",
             @"3gp2" : @"video/3gpp2",
@@ -174,11 +178,12 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return result;
 }
 
-+ (NSDictionary *)supportedAudioExtensionTypesToMIMETypes {
++ (NSDictionary *)supportedAudioExtensionTypesToMIMETypes
+{
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        result = @ {
             @"3gp" : @"audio/3gpp",
             @"3gpp" : @"@audio/3gpp",
             @"3g2" : @"audio/3gpp2",
@@ -200,7 +205,8 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return result;
 }
 
-+ (NSDictionary *)supportedImageExtensionTypesToMIMETypes {
++ (NSDictionary *)supportedImageExtensionTypesToMIMETypes
+{
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -222,7 +228,8 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return result;
 }
 
-+ (NSDictionary *)supportedAnimatedExtensionTypesToMIMETypes {
++ (NSDictionary *)supportedAnimatedExtensionTypesToMIMETypes
+{
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -237,15 +244,18 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return result;
 }
 
-+ (BOOL)isSupportedVideoMIMEType:(NSString *)contentType {
++ (BOOL)isSupportedVideoMIMEType:(NSString *)contentType
+{
     return [[self supportedVideoMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
-+ (BOOL)isSupportedAudioMIMEType:(NSString *)contentType {
++ (BOOL)isSupportedAudioMIMEType:(NSString *)contentType
+{
     return [[self supportedAudioMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
-+ (BOOL)isSupportedImageMIMEType:(NSString *)contentType {
++ (BOOL)isSupportedImageMIMEType:(NSString *)contentType
+{
     return [[self supportedImageMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
@@ -254,19 +264,23 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return [[self supportedBinaryDataMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
-+ (BOOL)isSupportedVideoFile:(NSString *)filePath {
++ (BOOL)isSupportedVideoFile:(NSString *)filePath
+{
     return [[self supportedVideoExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
-+ (BOOL)isSupportedAudioFile:(NSString *)filePath {
++ (BOOL)isSupportedAudioFile:(NSString *)filePath
+{
     return [[self supportedAudioExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
-+ (BOOL)isSupportedImageFile:(NSString *)filePath {
++ (BOOL)isSupportedImageFile:(NSString *)filePath
+{
     return [[self supportedImageExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
-+ (BOOL)isSupportedAnimatedFile:(NSString *)filePath {
++ (BOOL)isSupportedAnimatedFile:(NSString *)filePath
+{
     return
         [[self supportedAnimatedExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
@@ -313,15 +327,18 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return [MIMETypeUtil isSupportedBinaryDataMIMEType:contentType];
 }
 
-+ (BOOL)isImage:(NSString *)contentType {
++ (BOOL)isImage:(NSString *)contentType
+{
     return [MIMETypeUtil isSupportedImageMIMEType:contentType];
 }
 
-+ (BOOL)isVideo:(NSString *)contentType {
++ (BOOL)isVideo:(NSString *)contentType
+{
     return [MIMETypeUtil isSupportedVideoMIMEType:contentType];
 }
 
-+ (BOOL)isAudio:(NSString *)contentType {
++ (BOOL)isAudio:(NSString *)contentType
+{
     return [MIMETypeUtil isSupportedAudioMIMEType:contentType];
 }
 
@@ -369,7 +386,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
             normalizedFilename = [[normalizedFilename componentsSeparatedByCharactersInSet:invalidCharacterSet]
                 componentsJoinedByString:@"_"];
         }
-        
+
         // Remove leading periods to prevent hidden files,
         // "." and ".." special file names.
         while ([normalizedFilename hasPrefix:@"."]) {
@@ -436,25 +453,29 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return [self filePathForData:uniqueId withFileExtension:kDefaultFileExtension inFolder:folder];
 }
 
-+ (NSString *)filePathForImage:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
++ (NSString *)filePathForImage:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
+{
     return [self filePathForData:uniqueId
                withFileExtension:[self getSupportedExtensionFromImageMIMEType:contentType]
                         inFolder:folder];
 }
 
-+ (NSString *)filePathForVideo:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
++ (NSString *)filePathForVideo:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
+{
     return [self filePathForData:uniqueId
                withFileExtension:[self getSupportedExtensionFromVideoMIMEType:contentType]
                         inFolder:folder];
 }
 
-+ (NSString *)filePathForAudio:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
++ (NSString *)filePathForAudio:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
+{
     return [self filePathForData:uniqueId
                withFileExtension:[self getSupportedExtensionFromAudioMIMEType:contentType]
                         inFolder:folder];
 }
 
-+ (NSString *)filePathForAnimated:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
++ (NSString *)filePathForAnimated:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
+{
     return [self filePathForData:uniqueId
                withFileExtension:[self getSupportedExtensionFromAnimatedMIMEType:contentType]
                         inFolder:folder];
@@ -537,9 +558,8 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 {
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = [self utiTypesForMIMETypes:[self supportedVideoMIMETypesToExtensionTypes].allKeys];
-    });
+    dispatch_once(
+        &onceToken, ^{ result = [self utiTypesForMIMETypes:[self supportedVideoMIMETypesToExtensionTypes].allKeys]; });
     return result;
 }
 
@@ -547,9 +567,8 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 {
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = [self utiTypesForMIMETypes:[self supportedAudioMIMETypesToExtensionTypes].allKeys];
-    });
+    dispatch_once(
+        &onceToken, ^{ result = [self utiTypesForMIMETypes:[self supportedAudioMIMETypesToExtensionTypes].allKeys]; });
     return result;
 }
 
@@ -557,9 +576,8 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 {
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = [self utiTypesForMIMETypes:[self supportedImageMIMETypesToExtensionTypes].allKeys];
-    });
+    dispatch_once(
+        &onceToken, ^{ result = [self utiTypesForMIMETypes:[self supportedImageMIMETypesToExtensionTypes].allKeys]; });
     return result;
 }
 

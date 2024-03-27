@@ -31,9 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
         [AppReadiness runNowOrWhenMainAppDidBecomeReadyAsync:block label:AppReadinessLogPrefix()];                     \
     } while (0)
 
-#define AppReadinessRunNowOrWhenUIDidBecomeReadySync(block)                                                           \
+#define AppReadinessRunNowOrWhenUIDidBecomeReadySync(block)                                                            \
     do {                                                                                                               \
-        [AppReadiness runNowOrWhenUIDidBecomeReadySync:block label:AppReadinessLogPrefix()];                          \
+        [AppReadiness runNowOrWhenUIDidBecomeReadySync:block label:AppReadinessLogPrefix()];                           \
     } while (0)
 
 NS_ASSUME_NONNULL_END

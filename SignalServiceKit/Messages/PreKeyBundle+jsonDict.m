@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable PreKeyBundle *)preKeyBundleFromDictionary:(NSDictionary *)dictionary forDeviceNumber:(NSNumber *)number
 {
-    PreKeyBundle *bundle        = nil;
+    PreKeyBundle *bundle = nil;
 
     id identityKeyObject = [dictionary objectForKey:@"identityKey"];
     if (![identityKeyObject isKindOfClass:[NSString class]]) {
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (NSDictionary *deviceDict in devicesArray) {
         NSNumber *registrationIdString = [deviceDict objectForKey:@"registrationId"];
-        NSNumber *deviceIdString       = [deviceDict objectForKey:@"deviceId"];
+        NSNumber *deviceIdString = [deviceDict objectForKey:@"deviceId"];
 
         if (!(registrationIdString && deviceIdString)) {
             OWSLogError(@"Failed to get the registration id and device id");
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         int registrationId = [registrationIdString intValue];
-        int deviceId       = [deviceIdString intValue];
+        int deviceId = [deviceIdString intValue];
 
         NSDictionary *_Nullable preKeyDict;
         id optionalPreKeyDict = [deviceDict objectForKey:@"preKey"];
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             prekeyId = [[preKeyDict objectForKey:@"keyId"] intValue];
             NSString *preKeyPublicString = [preKeyDict objectForKey:@"publicKey"];
-            preKeyPublic                 = [NSData dataFromBase64StringNoPadding:preKeyPublicString];
+            preKeyPublic = [NSData dataFromBase64StringNoPadding:preKeyPublicString];
         }
 
         NSDictionary *signedPrekey = [deviceDict objectForKey:@"signedPreKey"];
@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
 
-        NSNumber *signedKeyIdNumber     = [signedPrekey objectForKey:@"keyId"];
+        NSNumber *signedKeyIdNumber = [signedPrekey objectForKey:@"keyId"];
         NSString *signedSignatureString = [signedPrekey objectForKey:@"signature"];
         NSString *signedPublicKeyString = [signedPrekey objectForKey:@"publicKey"];
 
@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
 
-        NSData *signedPrekeyPublic    = [NSData dataFromBase64StringNoPadding:signedPublicKeyString];
+        NSData *signedPrekeyPublic = [NSData dataFromBase64StringNoPadding:signedPublicKeyString];
         NSData *signedPreKeySignature = [NSData dataFromBase64StringNoPadding:signedSignatureString];
 
         if (!(signedPrekeyPublic && signedPreKeySignature)) {

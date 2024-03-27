@@ -129,7 +129,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
         [self reportCancelled];
         return;
     }
-    
+
     [self run];
 }
 
@@ -245,8 +245,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     [self willChangeValueForKey:OWSOperationKeyIsFinished];
 
     // Ensure we call the success or failure handler exactly once.
-    @synchronized(self)
-    {
+    @synchronized(self) {
         OWSAssertDebug(self.operationState != OWSOperationStateFinished);
 
         self.operationState = OWSOperationStateFinished;

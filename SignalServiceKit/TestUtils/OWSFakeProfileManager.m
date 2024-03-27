@@ -263,7 +263,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {
+- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size
+{
     return nil;
 }
 
@@ -298,7 +299,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (nullable NSURL *)writeAvatarDataToFile:(nonnull NSData *)avatarData {
+- (nullable NSURL *)writeAvatarDataToFile:(nonnull NSData *)avatarData
+{
     return nil;
 }
 

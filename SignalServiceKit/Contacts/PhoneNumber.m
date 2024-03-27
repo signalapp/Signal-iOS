@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const RPDefaultsKeyPhoneNumberString    = @"RPDefaultsKeyPhoneNumberString";
+static NSString *const RPDefaultsKeyPhoneNumberString = @"RPDefaultsKeyPhoneNumberString";
 static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneNumberCanonical";
 
 @interface PhoneNumber ()
@@ -39,14 +39,16 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return self;
 }
 
-+ (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input {
++ (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input
+{
     return [PhoneNumber
         bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:input
                                                withSpecifiedRegionCode:[PhoneNumberUtil defaultCountryCode]];
 }
 
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input
-                                              withSpecifiedCountryCodeString:(NSString *)countryCodeString {
+                                              withSpecifiedCountryCodeString:(NSString *)countryCodeString
+{
     return [PhoneNumber
         bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:input
                                                withSpecifiedRegionCode:
@@ -54,7 +56,8 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input
-                                                     withSpecifiedRegionCode:(NSString *)regionCode {
+                                                     withSpecifiedRegionCode:(NSString *)regionCode
+{
 
     static AnyLRUCache *cache = nil;
     static dispatch_once_t onceToken;
@@ -111,14 +114,16 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return formattedPhoneNumber;
 }
 
-+ (nullable NSString *)regionCodeFromCountryCodeString:(NSString *)countryCodeString {
++ (nullable NSString *)regionCodeFromCountryCodeString:(NSString *)countryCodeString
+{
     NSNumber *countryCallingCode = @([[countryCodeString substringFromIndex:1] integerValue]);
     return [self.phoneNumberUtil getRegionCodeForCountryCode:countryCallingCode];
 }
 
 #pragma mark -
 
-- (NSString *)toE164 {
+- (NSString *)toE164
+{
     return self.e164;
 }
 
@@ -132,11 +137,13 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return [self.phoneNumberUtil isValidNumber:self.nbPhoneNumber];
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
     return self.e164;
 }
 
-- (void)encodeWithCoder:(NSCoder *)encoder {
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
     [encoder encodeObject:self.nbPhoneNumber forKey:RPDefaultsKeyPhoneNumberString];
     [encoder encodeObject:self.e164 forKey:RPDefaultsKeyPhoneNumberCanonical];
 }

@@ -50,9 +50,7 @@ typedef NSNumber *OWSTaskId;
 {
     static OWSBackgroundTaskManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
+    dispatch_once(&onceToken, ^{ sharedMyManager = [[self alloc] initDefault]; });
     return sharedMyManager;
 }
 
@@ -95,8 +93,7 @@ typedef NSNumber *OWSTaskId;
 {
     OWSAssertIsOnMainThread();
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         self.isAppActive = YES;
 
         [self ensureBackgroundTaskState];
@@ -107,8 +104,7 @@ typedef NSNumber *OWSTaskId;
 {
     OWSAssertIsOnMainThread();
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         self.isAppActive = NO;
 
         [self ensureBackgroundTaskState];
@@ -128,8 +124,7 @@ typedef NSNumber *OWSTaskId;
 
     OWSTaskId _Nullable taskId;
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         self.idCounter = self.idCounter + 1;
         taskId = @(self.idCounter);
         self.expirationMap[taskId] = expirationBlock;
@@ -149,8 +144,7 @@ typedef NSNumber *OWSTaskId;
 
     BOOL shouldMaintainContinuity = NO;
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         OWSAssertDebug(self.expirationMap[taskId] != nil);
 
         [self.expirationMap removeObjectForKey:taskId];
@@ -178,8 +172,7 @@ typedef NSNumber *OWSTaskId;
         return YES;
     }
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         // We only want to have a background task if we are:
         // a) "not active" AND
         // b1) there is one or more active instance of OWSBackgroundTask OR...
@@ -210,8 +203,7 @@ typedef NSNumber *OWSTaskId;
 {
     OWSAssertDebug(CurrentAppContext().isMainApp);
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         OWSAssertDebug(self.backgroundTaskId == UIBackgroundTaskInvalid);
 
         self.backgroundTaskId = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
@@ -241,8 +233,7 @@ typedef NSNumber *OWSTaskId;
     UIBackgroundTaskIdentifier backgroundTaskId;
     NSDictionary<OWSTaskId, BackgroundTaskExpirationBlock> *expirationMap;
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         backgroundTaskId = self.backgroundTaskId;
         self.backgroundTaskId = UIBackgroundTaskInvalid;
 
@@ -385,8 +376,7 @@ typedef NSNumber *OWSTaskId;
             // exactly once.
             BackgroundTaskCompletionBlock _Nullable completionBlock = nil;
 
-            @synchronized(strongSelf)
-            {
+            @synchronized(strongSelf) {
                 if (!strongSelf.taskId) {
                     return;
                 }
@@ -408,15 +398,12 @@ typedef NSNumber *OWSTaskId;
         // Make a local copy of completionBlock to ensure that it is called
         // exactly once.
         BackgroundTaskCompletionBlock _Nullable completionBlock;
-        @synchronized(self)
-        {
+        @synchronized(self) {
             completionBlock = self.completionBlock;
             self.completionBlock = nil;
         }
         if (completionBlock) {
-            DispatchMainThreadSafe(^{
-                completionBlock(BackgroundTaskState_CouldNotStart);
-            });
+            DispatchMainThreadSafe(^{ completionBlock(BackgroundTaskState_CouldNotStart); });
         }
     }
 }
@@ -426,8 +413,7 @@ typedef NSNumber *OWSTaskId;
     // Make a local copy of this state, since this method is called by `dealloc`.
     BackgroundTaskCompletionBlock _Nullable completionBlock;
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         if (!self.taskId) {
             return;
         }

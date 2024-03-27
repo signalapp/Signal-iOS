@@ -15,7 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *signature;
 @property (nonatomic, readonly) NSDate *generatedAt;
 
-- (instancetype)initWithId:(int)identifier keyPair:(ECKeyPair *)keyPair signature:(NSData*)signature generatedAt:(NSDate*)generatedAt;
+- (instancetype)initWithId:(int)identifier
+                   keyPair:(ECKeyPair *)keyPair
+                 signature:(NSData *)signature
+               generatedAt:(NSDate *)generatedAt;
 - (instancetype)initWithId:(int)identifier keyPair:(ECKeyPair *)keyPair NS_UNAVAILABLE;
 
 @end

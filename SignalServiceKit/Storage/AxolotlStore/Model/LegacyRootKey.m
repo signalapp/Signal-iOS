@@ -6,29 +6,33 @@
 #import "LegacyRootKey.h"
 #import "LegacyChainKey.h"
 
-static NSString* const kCoderData      = @"kCoderData";
+static NSString *const kCoderData = @"kCoderData";
 
 @implementation LegacyRootKey
 
-+(BOOL)supportsSecureCoding{
++ (BOOL)supportsSecureCoding
+{
     return YES;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder{
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
     [aCoder encodeObject:_keyData forKey:kCoderData];
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder{
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
     self = [super init];
-    
+
     if (self) {
         _keyData = [aDecoder decodeObjectOfClass:[NSData class] forKey:kCoderData];
     }
-    
+
     return self;
 }
 
-- (instancetype)initWithData:(NSData *)data{
+- (instancetype)initWithData:(NSData *)data
+{
     self = [super init];
 
     OWSAssert(data.length == 32);
@@ -36,7 +40,7 @@ static NSString* const kCoderData      = @"kCoderData";
     if (self) {
         _keyData = data;
     }
-    
+
     return self;
 }
 

@@ -20,8 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread
-                             transaction:(SDSAnyReadTransaction *)transaction
++ (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);

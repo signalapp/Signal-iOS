@@ -39,9 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
-    
+
     _verificationStateSyncMessage = verificationStateSyncMessage;
-    
+
     return self;
 }
 

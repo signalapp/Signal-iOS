@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoSyncMessageKeysBuilder *keysBuilder = [SSKProtoSyncMessageKeys builder];
-    
+
     if (self.storageServiceKey) {
         keysBuilder.storageService = self.storageServiceKey;
     }

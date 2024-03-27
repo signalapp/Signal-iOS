@@ -320,7 +320,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSURL *url = [NSURL URLWithString:urlString];
     TSRequest *request = [[TSRequest alloc] initWithURL:url];
     request.HTTPMethod = @"PUT";
-    
+
     return request;
 }
 

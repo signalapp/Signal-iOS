@@ -11,13 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PreKeyRecord : NSObject <NSSecureCoding>
 
-@property (nonatomic, readonly) int       Id;
+@property (nonatomic, readonly) int Id;
 @property (nonatomic, readonly) ECKeyPair *keyPair;
 @property (nonatomic, readonly, nullable) NSDate *createdAt;
 
-- (instancetype)initWithId:(int)identifier
-                   keyPair:(ECKeyPair *)keyPair
-                 createdAt:(NSDate *)createdAt;
+- (instancetype)initWithId:(int)identifier keyPair:(ECKeyPair *)keyPair createdAt:(NSDate *)createdAt;
 
 - (void)setCreatedAtToNow;
 

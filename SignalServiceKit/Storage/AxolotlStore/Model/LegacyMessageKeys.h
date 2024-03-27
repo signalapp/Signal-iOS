@@ -7,11 +7,11 @@
 
 @interface LegacyMessageKeys : NSObject <NSSecureCoding>
 
-- (instancetype)initWithCipherKey:(NSData*)cipherKey macKey:(NSData*)macKey iv:(NSData*)data index:(int)index;
+- (instancetype)initWithCipherKey:(NSData *)cipherKey macKey:(NSData *)macKey iv:(NSData *)data index:(int)index;
 
-@property (readonly)NSData *cipherKey;
-@property (readonly)NSData *macKey;
-@property (readonly)NSData *iv;
-@property (readonly)int    index;
+@property (readonly) NSData *cipherKey;
+@property (readonly) NSData *macKey;
+@property (readonly) NSData *iv;
+@property (readonly) int index;
 
 @end

@@ -183,9 +183,8 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
 
 - (NSArray<SignalServiceAddress *> *)nonLocalGroupMembers
 {
-    return [self.groupMembers filter:^BOOL(SignalServiceAddress *groupMemberId) {
-        return !groupMemberId.isLocalAddress;
-    }];
+    return
+        [self.groupMembers filter:^BOOL(SignalServiceAddress *groupMemberId) { return !groupMemberId.isLocalAddress; }];
 }
 
 - (NSString *)debugDescription

@@ -147,9 +147,7 @@ void AssertIsOnDisappearingMessagesQueue(void)
 #ifdef TESTABLE_BUILD
 - (void)syncPassForTests
 {
-    dispatch_sync(OWSDisappearingMessagesJob.serialQueue, ^{
-        [self runLoop];
-    });
+    dispatch_sync(OWSDisappearingMessagesJob.serialQueue, ^{ [self runLoop]; });
 }
 #endif
 

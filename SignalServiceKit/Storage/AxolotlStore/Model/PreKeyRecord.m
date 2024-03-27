@@ -8,40 +8,41 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString* const kCoderPreKeyId        = @"kCoderPreKeyId";
-static NSString* const kCoderPreKeyPair      = @"kCoderPreKeyPair";
-static NSString* const kCoderCreatedAt       = @"kCoderCreatedAt";
+static NSString *const kCoderPreKeyId = @"kCoderPreKeyId";
+static NSString *const kCoderPreKeyPair = @"kCoderPreKeyPair";
+static NSString *const kCoderCreatedAt = @"kCoderCreatedAt";
 
 @implementation PreKeyRecord
 
-+ (BOOL)supportsSecureCoding{
++ (BOOL)supportsSecureCoding
+{
     return YES;
 }
 
-- (instancetype)initWithId:(int)identifier
-                   keyPair:(ECKeyPair*)keyPair
-                 createdAt:(NSDate *)createdAt
+- (instancetype)initWithId:(int)identifier keyPair:(ECKeyPair *)keyPair createdAt:(NSDate *)createdAt
 {
     OWSAssert(keyPair);
 
     self = [super init];
-    
+
     if (self) {
-        _Id      = identifier;
+        _Id = identifier;
         _keyPair = keyPair;
         _createdAt = createdAt;
     }
-    
+
     return self;
 }
 
-- (nullable id)initWithCoder:(NSCoder *)aDecoder {
+- (nullable id)initWithCoder:(NSCoder *)aDecoder
+{
     return [self initWithId:[aDecoder decodeIntForKey:kCoderPreKeyId]
                     keyPair:[aDecoder decodeObjectOfClass:[ECKeyPair class] forKey:kCoderPreKeyPair]
                   createdAt:[aDecoder decodeObjectOfClass:[NSDate class] forKey:kCoderCreatedAt]];
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder{
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
     [aCoder encodeInteger:_Id forKey:kCoderPreKeyId];
     [aCoder encodeObject:_keyPair forKey:kCoderPreKeyPair];
     if (_createdAt != nil) {
@@ -49,7 +50,8 @@ static NSString* const kCoderCreatedAt       = @"kCoderCreatedAt";
     }
 }
 
-- (void)setCreatedAtToNow {
+- (void)setCreatedAtToNow
+{
     _createdAt = [NSDate date];
 }
 

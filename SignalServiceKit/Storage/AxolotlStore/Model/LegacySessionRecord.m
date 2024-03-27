@@ -11,37 +11,40 @@
 
 #define ARCHIVED_STATES_MAX_LENGTH 40
 
-@interface LegacySessionRecord()
+@interface LegacySessionRecord ()
 
-@property (nonatomic, retain) LegacySessionState* sessionState;
-@property (nonatomic, retain) NSMutableArray* previousStates;
+@property (nonatomic, retain) LegacySessionState *sessionState;
+@property (nonatomic, retain) NSMutableArray *previousStates;
 @property (nonatomic) BOOL fresh;
 
 @end
 
-#define currentSessionStateKey   @"currentSessionStateKey"
+#define currentSessionStateKey @"currentSessionStateKey"
 #define previousSessionsStateKey @"previousSessionStateKeys"
 
 @implementation LegacySessionRecord
 
-- (instancetype)init{
+- (instancetype)init
+{
     self = [super init];
-    
+
     if (self) {
         _fresh = YES;
         _sessionState = [LegacySessionState new];
         _previousStates = [NSMutableArray new];
     }
-    
+
     return self;
 }
 
-+ (void)initialize {
-#define REGISTER(X) {\
-    Class cls = [Legacy##X class];\
-    [NSKeyedArchiver setClassName:@#X forClass:cls];\
-    [NSKeyedUnarchiver setClass:cls forClassName:@#X];\
-}
++ (void)initialize
+{
+#define REGISTER(X)                                                                                                    \
+    {                                                                                                                  \
+        Class cls = [Legacy##X class];                                                                                 \
+        [NSKeyedArchiver setClassName:@ #X forClass:cls];                                                              \
+        [NSKeyedUnarchiver setClass:cls forClassName:@ #X];                                                            \
+    }
     REGISTER(ChainKey)
     REGISTER(MessageKeys)
     REGISTER(PendingPreKey)
@@ -55,31 +58,36 @@
 
 #pragma mark Serialization
 
-+ (void)setUpKeyedArchiverSubstitutions {
++ (void)setUpKeyedArchiverSubstitutions
+{
     // +initialize will have been called by this point, so we don't actually need any extra work.
 }
 
-+ (BOOL)supportsSecureCoding{
++ (BOOL)supportsSecureCoding
+{
     return YES;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder{
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
     [aCoder encodeObject:self.previousStates forKey:previousSessionsStateKey];
-    [aCoder encodeObject:self.sessionState   forKey:currentSessionStateKey];
+    [aCoder encodeObject:self.sessionState forKey:currentSessionStateKey];
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder{
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
     self = [self init];
-    
+
     self.fresh = false;
-    
+
     self.previousStates = [aDecoder decodeObjectOfClass:[NSMutableArray class] forKey:previousSessionsStateKey];
-    self.sessionState   = [aDecoder decodeObjectOfClass:[LegacySessionState class]   forKey:currentSessionStateKey];
-    
+    self.sessionState = [aDecoder decodeObjectOfClass:[LegacySessionState class] forKey:currentSessionStateKey];
+
     return self;
 }
 
-- (LegacySessionState*)sessionState{
+- (LegacySessionState *)sessionState
+{
     return _sessionState;
 }
 
@@ -88,7 +96,8 @@
     return _previousStates;
 }
 
-- (BOOL)isFresh{
+- (BOOL)isFresh
+{
     return _fresh;
 }
 
@@ -97,7 +106,8 @@
     self.fresh = false;
 }
 
-- (void)archiveCurrentState{
+- (void)archiveCurrentState
+{
     if (self.sessionState.isFresh) {
         OWSLogInfo(@"Skipping archive, current session state is fresh.");
         return;
@@ -105,10 +115,11 @@
     [self promoteState:[LegacySessionState new]];
 }
 
-- (void)promoteState:(LegacySessionState *)promotedState{
+- (void)promoteState:(LegacySessionState *)promotedState
+{
     [self.previousStates insertObject:self.sessionState atIndex:0];
     self.sessionState = promotedState;
-    
+
     if (self.previousStates.count > ARCHIVED_STATES_MAX_LENGTH) {
         NSUInteger deleteCount;
         ows_sub_overflow(self.previousStates.count, ARCHIVED_STATES_MAX_LENGTH, &deleteCount);
@@ -118,7 +129,8 @@
     }
 }
 
-- (void)setState:(LegacySessionState *)sessionState{
+- (void)setState:(LegacySessionState *)sessionState
+{
     self.sessionState = sessionState;
 }
 

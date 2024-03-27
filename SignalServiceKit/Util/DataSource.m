@@ -35,14 +35,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSURL *_Nullable fileUrl = self.cachedFileUrl;
     if (fileUrl != nil) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [OWSFileSystem deleteFileIfExists:fileUrl.path];
-        });
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+            ^{ [OWSFileSystem deleteFileIfExists:fileUrl.path]; });
     }
 }
 
-- (instancetype)initWithData:(NSData *)data
-               fileExtension:(NSString *)fileExtension
+- (instancetype)initWithData:(NSData *)data fileExtension:(NSString *)fileExtension
 {
     self = [super init];
     if (!self) {
@@ -54,15 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Ensure that value is backed by file on disk.
     __weak DataSourceValue *weakValue = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [weakValue dataUrl];
-    });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ [weakValue dataUrl]; });
 
     return self;
 }
 
-+ (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data
-                                 fileExtension:(NSString *)fileExtension
++ (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension
 {
     OWSAssertDebug(data);
 
@@ -120,8 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.data);
     OWSAssertDebug(!self.isConsumed);
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         if (!self.cachedFileUrl) {
             NSURL *fileUrl = [OWSFileSystem temporaryFileUrlWithFileExtension:self.fileExtension
                                                  isAvailableWhileDeviceLocked:YES];
@@ -302,9 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
                    shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
                                         error:(NSError **)error
 {
-    return [[self alloc] initWithFileUrl:fileUrl
-              shouldDeleteOnDeallocation:shouldDeleteOnDeallocation
-                                   error:error];
+    return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:shouldDeleteOnDeallocation error:error];
 }
 
 + (_Nullable id<DataSource>)dataSourceWithFilePath:(NSString *)filePath
@@ -320,9 +312,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-    return [[self alloc] initWithFileUrl:fileUrl
-              shouldDeleteOnDeallocation:shouldDeleteOnDeallocation
-                                   error:error];
+    return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:shouldDeleteOnDeallocation error:error];
 }
 
 + (_Nullable id<DataSource>)dataSourceWritingTempFileData:(NSData *)data
@@ -357,8 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(!self.isConsumed);
     OWSAssertDebug(self.fileUrl);
 
-    @synchronized(self)
-    {
+    @synchronized(self) {
         if (!self.cachedData) {
             self.cachedData = [NSData dataWithContentsOfFile:self.fileUrl.path];
         }
@@ -377,9 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSNumber *fileSizeValue;
     NSError *error;
-    [self.fileUrl getResourceValue:&fileSizeValue
-                            forKey:NSURLFileSizeKey
-                             error:&error];
+    [self.fileUrl getResourceValue:&fileSizeValue forKey:NSURLFileSizeKey error:&error];
     if (error != nil) {
         OWSFailDebug(@"Could not read data length from disk with error: %@", error);
         return 0;

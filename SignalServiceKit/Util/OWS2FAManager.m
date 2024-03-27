@@ -125,7 +125,8 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 - (void)markDisabledWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
-    [OWS2FAManager.keyValueStore removeValueForKey:OWS2FAManager.isRegistrationLockV2EnabledKey transaction:transaction];
+    [OWS2FAManager.keyValueStore removeValueForKey:OWS2FAManager.isRegistrationLockV2EnabledKey
+                                       transaction:transaction];
 
     [transaction addSyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
@@ -206,16 +207,14 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 - (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure
 {
     switch (self.mode) {
-        case OWS2FAMode_V2:
-        {
+        case OWS2FAMode_V2: {
             [self deleteKeys]
                 .then(^(id value) { return [self disableRegistrationLockV2]; })
                 .ensure(^{
                     OWSAssertIsOnMainThread();
 
-                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        [self markDisabledWithTransaction:transaction];
-                    });
+                    DatabaseStorageWrite(self.databaseStorage,
+                        ^(SDSAnyWriteTransaction *transaction) { [self markDisabledWithTransaction:transaction]; });
                 })
                 .done(^(id value) {
                     OWSAssertIsOnMainThread();
@@ -303,9 +302,8 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     // We don't need to migrate this pin, either because it's v2 or short enough that
     // we never truncated it. Mark it as complete so we don't need to check again.
 
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self markLegacyPinAsMigratedWithTransaction:transaction];
-    });
+    DatabaseStorageWrite(self.databaseStorage,
+        ^(SDSAnyWriteTransaction *transaction) { [self markLegacyPinAsMigratedWithTransaction:transaction]; });
 
     return NO;
 }
@@ -320,39 +318,39 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     NSString *pinToMatch = self.pinCode;
 
     switch (self.mode) {
-    case OWS2FAMode_V2:
-        if (pinToMatch.length > 0) {
-            result([pinToMatch isEqualToString:[SVRUtil normalizePin:pin]]);
-        } else {
-            [self verifyKBSPin:pin
-                 resultHandler:^(BOOL isValid) {
-                     result(isValid);
+        case OWS2FAMode_V2:
+            if (pinToMatch.length > 0) {
+                result([pinToMatch isEqualToString:[SVRUtil normalizePin:pin]]);
+            } else {
+                [self verifyKBSPin:pin
+                     resultHandler:^(BOOL isValid) {
+                         result(isValid);
 
-                     if (isValid) {
-                         DatabaseStorageWrite(self.databaseStorage,
-                             ^(SDSAnyWriteTransaction *transaction) { [self setPinCode:pin transaction:transaction]; });
-                     }
-                 }];
-        }
-        break;
-    case OWS2FAMode_V1:
-        // Convert the pin to arabic numerals, we never want to
-        // operate with pins in other numbering systems.
-        result([pinToMatch.ensureArabicNumerals isEqualToString:pin.ensureArabicNumerals]);
-        break;
-    case OWS2FAMode_Disabled:
-        OWSFailDebug(@"unexpectedly attempting to verify pin when 2fa is disabled");
-        result(NO);
-        break;
+                         if (isValid) {
+                             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                                 [self setPinCode:pin transaction:transaction];
+                             });
+                         }
+                     }];
+            }
+            break;
+        case OWS2FAMode_V1:
+            // Convert the pin to arabic numerals, we never want to
+            // operate with pins in other numbering systems.
+            result([pinToMatch.ensureArabicNumerals isEqualToString:pin.ensureArabicNumerals]);
+            break;
+        case OWS2FAMode_Disabled:
+            OWSFailDebug(@"unexpectedly attempting to verify pin when 2fa is disabled");
+            result(NO);
+            break;
     }
 }
 
 - (NSDate *)nextReminderDate
 {
     __block NSDate *_Nullable value;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        value = [self nextReminderDateWithTransaction:transaction];
-    }];
+    [self.databaseStorage readWithBlock:^(
+        SDSAnyReadTransaction *transaction) { value = [self nextReminderDateWithTransaction:transaction]; }];
     return value;
 }
 
@@ -385,9 +383,8 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 - (NSTimeInterval)repetitionInterval
 {
     __block NSTimeInterval value;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        value = [self repetitionIntervalWithTransaction:transaction];
-    }];
+    [self.databaseStorage readWithBlock:^(
+        SDSAnyReadTransaction *transaction) { value = [self repetitionIntervalWithTransaction:transaction]; }];
     return value;
 }
 

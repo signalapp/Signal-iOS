@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation NSNull(NSStringSSK)
+@implementation NSNull (NSStringSSK)
 
 - (NSString *_Nullable)stringOrNil
 {

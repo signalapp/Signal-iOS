@@ -9,17 +9,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FUBadArgument : NSException
 
-+ (FUBadArgument *) new:(NSString *)reason;
++ (FUBadArgument *)new:(NSString *)reason;
 + (void)raise:(NSString *)message;
 
 @end
 
 @implementation FUBadArgument
 
-+ (FUBadArgument *) new:(NSString *)reason {
++ (FUBadArgument *)new:(NSString *)reason
+{
     return [[FUBadArgument alloc] initWithName:@"Invalid Argument" reason:reason userInfo:nil];
 }
-+ (void)raise:(NSString *)message {
++ (void)raise:(NSString *)message
+{
     [FUBadArgument raise:@"Invalid Argument" format:@"%@", message];
 }
 
@@ -36,7 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation NSArray (FunctionalUtil)
 
-- (NSArray *)map:(id (^)(id item))projection {
+- (NSArray *)map:(id (^)(id item))projection
+{
     tskit_require(projection != nil);
 
     NSMutableArray *r = [NSMutableArray arrayWithCapacity:self.count];

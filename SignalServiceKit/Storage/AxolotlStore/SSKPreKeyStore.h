@@ -29,14 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeAll:(SDSAnyWriteTransaction *)transaction;
 #endif
 
-- (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
-                          transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable PreKeyRecord *)loadPreKey:(int)preKeyId transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record
-        transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)removePreKey:(int)preKeyId
-         transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)removePreKey:(int)preKeyId transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)cullPreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(cullPreKeyRecords(transaction:));
