@@ -76,10 +76,6 @@ public class MessageProcessor: NSObject {
         }
 
         if shouldWaitForMessageProcessing {
-            if DebugFlags.internalLogging {
-                Logger.info("hasPendingEnvelopes, queuedContentCount: \(self.queuedContentCount)")
-            }
-
             return NotificationCenter.default.observe(
                 once: Self.messageProcessorDidDrainQueue
             ).then { _ in
@@ -87,14 +83,6 @@ public class MessageProcessor: NSObject {
                 self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
             }.asVoid()
         } else if shouldWaitForGV2MessageProcessing {
-            if DebugFlags.internalLogging {
-                let pendingJobCount = databaseStorage.read {
-                    Self.groupsV2MessageProcessor.pendingJobCount(tx: $0)
-                }
-
-                Logger.info("groupsV2MessageProcessor.hasPendingJobs, pendingJobCount: \(pendingJobCount)")
-            }
-
             return NotificationCenter.default.observe(
                 once: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue
             ).then { _ in
@@ -131,10 +119,8 @@ public class MessageProcessor: NSObject {
         suspensionBehavior: SuspensionBehavior = .alwaysWait
     ) -> Guarantee<Void> {
         return firstly { () -> Guarantee<Void> in
-            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] waitForFetchingComplete") }
             return Self.messageFetcherJob.waitForFetchingComplete()
         }.then { () -> Guarantee<Void> in
-            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] waitForProcessingComplete") }
             return self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
         }
     }
@@ -630,10 +616,6 @@ private struct ProcessingRequestBuilder {
     ) -> ProcessingRequest.State {
         owsAssert(CurrentAppContext().shouldProcessIncomingMessages)
 
-        // NOTE: We use the envelope from the decrypt result, not the pending envelope,
-        // since the envelope may be altered by the decryption process in the UD case.
-        Logger.info("Decrypted envelope \(OWSMessageHandler.description(for: decryptedEnvelope.envelope))")
-
         // Pre-processing has to happen during the same transaction that performed
         // decryption.
         messageReceiver.preprocessEnvelope(decryptedEnvelope, tx: tx)
@@ -755,8 +737,6 @@ private struct ReceivedEnvelope {
         localDeviceId: UInt32,
         tx: SDSAnyWriteTransaction
     ) throws -> DecryptionResult {
-        Logger.info("Processing envelope: \(OWSMessageDecrypter.description(for: envelope))")
-
         // Figure out what type of envelope we're dealing with.
         let validatedEnvelope = try ValidatedIncomingEnvelope(envelope, localIdentifiers: localIdentifiers)
 

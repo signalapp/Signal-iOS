@@ -93,11 +93,9 @@ fileprivate extension RemoteAttestation.Auth {
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
-            if DebugFlags.internalLogging {
-                #if TESTABLE_BUILD
-                HTTPUtils.logCurl(for: request as URLRequest)
-                #endif
-            }
+#if TESTABLE_BUILD
+            HTTPUtils.logCurl(for: request as URLRequest)
+#endif
 
             guard let json = response.responseBodyJson else {
                 throw attestationError(reason: "Missing or invalid JSON")

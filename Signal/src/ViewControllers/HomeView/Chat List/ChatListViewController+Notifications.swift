@@ -251,9 +251,6 @@ extension ChatListViewController: DatabaseChangeDelegate {
         }
 
         if !databaseChanges.threadUniqueIdsForChatListUpdate.isEmpty {
-            if DebugFlags.internalLogging {
-                Logger.info("[Scroll Perf Debug] Scheduling load for threadIds (count \(databaseChanges.threadUniqueIdsForChatListUpdate.count): \(databaseChanges.threadUniqueIdsForChatListUpdate)")
-            }
             self.loadCoordinator.scheduleLoad(updatedThreadIds: databaseChanges.threadUniqueIdsForChatListUpdate)
         }
     }

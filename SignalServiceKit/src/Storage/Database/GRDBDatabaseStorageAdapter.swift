@@ -764,7 +764,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                 Logger.warn("Skipping checkpoint for database that's already closed.")
                 return
             }
-            Bench(title: "Checkpoint", logIfLongerThan: 0.005, logInProduction: true) {
+            Bench(title: "Checkpoint", logIfLongerThan: 0.25, logInProduction: true) {
                 do {
                     try database.checkpoint(.truncate)
 

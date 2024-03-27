@@ -113,14 +113,6 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     return [content contentDescription];
 }
 
-/**
- * We don't want to just log `dataMessage.description` because we'd potentially log message contents
- */
-- (NSString *)descriptionForDataMessage:(SSKProtoDataMessage *)dataMessage
-{
-    return [dataMessage contentDescription];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -6,25 +6,35 @@
 import SignalCoreKit
 
 public class IncompleteCallsJob {
-    private var count: UInt = 0
-    private let cutoffTimestamp = CurrentAppContext().appLaunchTime.ows_millisecondsSince1970
-    public init() {}
+    private let cutoffTimestamp: UInt64
+
+    public convenience init() {
+        self.init(cutoffDate: CurrentAppContext().appLaunchTime)
+    }
+
+    public init(cutoffDate: Date) {
+        self.cutoffTimestamp = cutoffDate.ows_millisecondsSince1970
+    }
 
     public func runSync(databaseStorage: SDSDatabaseStorage) {
+        var count = 0
         databaseStorage.write { writeTx in
             InteractionFinder.incompleteCallIds(transaction: writeTx).forEach { incompleteCallId in
                 // Since we can't directly mutate the enumerated "incomplete" calls, we store only their ids in hopes
                 // of saving a little memory and then enumerate the (larger) TSCall objects one at a time.
                 autoreleasepool {
-                    updateIncompleteCallIfNecessary(incompleteCallId, transaction: writeTx)
+                    updateIncompleteCallIfNecessary(incompleteCallId, count: &count, transaction: writeTx)
                 }
             }
         }
-        Logger.info("Finished job. Updated \(count) incomplete calls")
+        if count > 0 {
+            Logger.info("Finished job. Updated \(count) incomplete calls")
+        }
     }
 
     private func updateIncompleteCallIfNecessary(
         _ uniqueId: String,
+        count: inout Int,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
         // Preconditions: Must be a valid call that started before the app launched.

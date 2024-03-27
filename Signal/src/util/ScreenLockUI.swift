@@ -31,8 +31,6 @@ class ScreenLockUI: Dependencies {
                 }
             } else {
                 tryToActivateScreenLockBasedOnCountdown()
-
-                Logger.info("setAppIsInactiveOrBackground clear screenLockCountdownTimestamp.")
                 screenLockCountdownTimestamp = nil
             }
 
@@ -362,7 +360,6 @@ class ScreenLockUI: Dependencies {
 
     private func startScreenLockCountdownIfNecessary() {
         if screenLockCountdownTimestamp == nil {
-            Logger.info("startScreenLockCountdown.")
             screenLockCountdownTimestamp = monotonicTimestamp()
         }
 

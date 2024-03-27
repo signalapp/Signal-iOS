@@ -212,14 +212,11 @@ class ConversationInputTextView: BodyRangesTextView {
 
     @objc
     private func unmodifiedReturnPressed(_ sender: UIKeyCommand) {
-        Logger.info("unmodifedReturnPressed: \(String(describing: sender.input))")
         inputTextViewDelegate?.inputTextViewSendMessagePressed()
     }
 
     @objc
     private func modifiedReturnPressed(_ sender: UIKeyCommand) {
-        Logger.info("modifedReturnPressed: \(String(describing: sender.input))")
-
         replace(selectedTextRange ?? UITextRange(), withText: "\n")
 
         inputTextViewDelegate?.textViewDidChange(self)

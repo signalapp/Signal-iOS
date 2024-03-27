@@ -25,8 +25,6 @@ class SyncPushTokensJob: NSObject {
     private static let hasUploadedTokensOnce = AtomicBool(false)
 
     func run() async throws {
-        Logger.info("Starting.")
-
         switch mode {
         case .normal, .forceUpload:
             // Don't rotate.

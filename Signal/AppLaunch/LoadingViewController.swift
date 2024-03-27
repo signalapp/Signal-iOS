@@ -113,8 +113,6 @@ public class LoadingViewController: UIViewController {
     private func didBecomeActive() {
         AssertIsOnMainThread()
 
-        Logger.info("")
-
         guard viewHasEnteredBackground else {
             // If the app is returning from background, skip any
             // animations and show the top and bottom labels.
@@ -138,8 +136,6 @@ public class LoadingViewController: UIViewController {
     @objc
     private func didEnterBackground() {
         AssertIsOnMainThread()
-
-        Logger.info("")
 
         viewHasEnteredBackground = true
     }

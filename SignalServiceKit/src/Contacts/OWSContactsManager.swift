@@ -719,7 +719,9 @@ extension OWSContactsManager: ContactManager {
                 )
             }
 
-            Logger.info("Updated \(signalAccountChanges.count) SignalAccounts; now have \(newSignalAccountsMap.count) total")
+            if !signalAccountChanges.isEmpty {
+                Logger.info("Updated \(signalAccountChanges.count) SignalAccounts; now have \(newSignalAccountsMap.count) total")
+            }
 
             // Add system contacts to the profile whitelist immediately so that they do
             // not see the "message request" UI.

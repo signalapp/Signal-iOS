@@ -139,7 +139,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     @objc
     public func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32) {
         AssertIsOnMainThread()
-        Logger.info("")
         ensureIncomingIndicators(forThread: thread, senderAci: senderAci.wrappedAciValue, deviceId: deviceId)
             .didReceiveTypingStartedMessage()
     }
@@ -147,7 +146,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     @objc
     public func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32) {
         AssertIsOnMainThread()
-        Logger.info("")
         ensureIncomingIndicators(forThread: thread, senderAci: senderAci.wrappedAciValue, deviceId: deviceId)
             .didReceiveTypingStoppedMessage()
     }
@@ -155,7 +153,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     @objc
     public func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32) {
         AssertIsOnMainThread()
-        Logger.info("")
         ensureIncomingIndicators(forThread: thread, senderAci: senderAci.wrappedAciValue, deviceId: deviceId)
             .didReceiveIncomingMessage()
     }

@@ -345,8 +345,6 @@ public class SDSDatabaseStorage: NSObject {
     private func handleCrossProcessWrite() {
         AssertIsOnMainThread()
 
-        Logger.info("")
-
         guard CurrentAppContext().isMainApp else {
             return
         }
@@ -476,12 +474,6 @@ public class SDSDatabaseStorage: NSObject {
         line: Int = #line,
         block: (SDSAnyWriteTransaction) -> Void
     ) {
-        #if TESTABLE_BUILD
-        if Thread.isMainThread && AppReadiness.isAppReady {
-            Logger.warn("Database write on main thread.")
-        }
-        #endif
-
         #if DEBUG
         // When running in a Task, we should ensure that callers don't use
         // synchronous writes, as that could block forward progress for other

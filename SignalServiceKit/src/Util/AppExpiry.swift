@@ -73,17 +73,6 @@ public class AppExpiryImpl: AppExpiry {
         )
     }
 
-    private func logExpirationState() {
-        if isExpired {
-            Logger.info("Build is expired.")
-        } else {
-            let oneDayInSeconds: TimeInterval = 86400
-            let now = dateProvider()
-            let daysUntilExpiry = Int(floor(expirationDate.timeIntervalSince(now) / oneDayInSeconds))
-            Logger.info("Build expires in \(daysUntilExpiry) day(s)")
-        }
-    }
-
     public func warmCaches(with tx: DBReadTransaction) {
         let persistedExpirationState: ExpirationState? = try? self.keyValueStore.getCodableValue(
             forKey: Self.keyValueKey,
@@ -99,14 +88,10 @@ public class AppExpiryImpl: AppExpiry {
         }
 
         expirationState.set(persistedExpirationState)
-
-        logExpirationState()
     }
 
     private func updateExpirationState(_ state: ExpirationState, db: DB) {
         expirationState.set(state)
-
-        logExpirationState()
 
         db.asyncWrite { transaction in
             do {
@@ -149,11 +134,13 @@ public class AppExpiryImpl: AppExpiry {
 
     public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: DB) {
         guard !isExpired else {
-            return owsFailDebug("Ignoring expiration date change for expired build.")
+            owsFailDebug("Ignoring expiration date change for expired build.")
+            return
         }
 
         let newState: ExpirationState
         if let newExpirationDate {
+            Logger.warn("Considering remote expiration of \(newExpirationDate)")
             // Ignore any expiration date that is later than when the app expires by default.
             guard newExpirationDate < AppVersionImpl.shared.defaultExpirationDate else { return }
             newState = .init(

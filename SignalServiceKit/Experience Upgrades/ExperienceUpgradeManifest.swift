@@ -496,11 +496,8 @@ extension ExperienceUpgradeManifest {
     private static func checkPreconditionsForNotificationsPermissionsReminder() -> Bool {
         let (promise, future) = Promise<Bool>.pending()
 
-        Logger.info("Checking notification authorization")
-
         DispatchQueue.global(qos: .userInitiated).async {
             UNUserNotificationCenter.current().getNotificationSettings { settings in
-                Logger.info("Checked notification authorization \(settings.authorizationStatus)")
                 future.resolve(settings.authorizationStatus == .authorized)
             }
         }

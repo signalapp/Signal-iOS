@@ -6,31 +6,33 @@
 import Foundation
 
 public class FailedMessagesJob {
-    /// Used for logging the total number of messages modified
-    private var count: UInt = 0
     public init() {}
 
     public func runSync(databaseStorage: SDSDatabaseStorage) {
+        var count = 0
         databaseStorage.write { writeTx in
             InteractionFinder.attemptingOutInteractionIds(transaction: writeTx).forEach { failedInteractionId in
                 // Since we can't directly mutate the enumerated "attempting out" expired messages, we store
                 // only their ids in hopes of saving a little memory and then enumerate the (larger)
                 // TSMessage objects one at a time.
                 autoreleasepool {
-                    updateFailedMessageIfNecessary(failedInteractionId, transaction: writeTx)
+                    updateFailedMessageIfNecessary(failedInteractionId, count: &count, transaction: writeTx)
                 }
             }
 
             StoryFinder.enumerateSendingStories(transaction: writeTx) { storyMessage, _ in
                 storyMessage.updateWithAllSendingRecipientsMarkedAsFailed(transaction: writeTx)
-                self.count += 1
+                count += 1
             }
         }
-        Logger.info("Finished job. Marked \(count) incomplete sends as failed")
+        if count > 0 {
+            Logger.info("Finished job. Marked \(count) incomplete sends as failed")
+        }
     }
 
     private func updateFailedMessageIfNecessary(
         _ uniqueId: String,
+        count: inout Int,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
         // Preconditions

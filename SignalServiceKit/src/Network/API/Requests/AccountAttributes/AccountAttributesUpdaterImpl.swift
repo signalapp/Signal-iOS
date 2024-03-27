@@ -126,7 +126,6 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             let isRegistered = registrationState.isRegistered
 
             guard isRegistered else {
-                Logger.info("Aborting; not registered.")
                 return .no
             }
 
@@ -165,7 +164,6 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                     registrationState: registrationState
                 )
             }
-            Logger.info("Skipping; lastAppVersion: \(String(describing: lastUpdateAppVersion)), currentAppVersion: \(currentAppVersion).")
             return .no
         }
         switch shouldUpdate {

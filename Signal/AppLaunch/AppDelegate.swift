@@ -476,12 +476,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let tsRegistrationState: TSRegistrationState = databaseStorage.read { tx in
             let registrationState = tsAccountManager.registrationState(tx: tx.asV2Read)
-            if registrationState.isRegistered {
-                let localAddress = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
+            if registrationState.isRegistered, let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
                 let deviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
                 let deviceCount = OWSDevice.anyCount(transaction: tx)
                 let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
-                Logger.info("localAddress: \(String(describing: localAddress)), deviceId: \(deviceId) (\(linkedDeviceMessage))")
+                Logger.info("localAci: \(localIdentifiers.aci), deviceId: \(deviceId) (\(linkedDeviceMessage))")
             }
             return registrationState
         }
@@ -933,7 +932,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        Logger.info("")
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             // We need to respect the in-app notification sound preference. This method, which is called
             // for modern UNUserNotification users, could be a place to do that, but since we'd still
@@ -1431,7 +1429,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        Logger.info("")
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             NotificationActionHandler.handleNotificationResponse(response, completionHandler: completionHandler)
         }

@@ -62,7 +62,6 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 // because we're in a read-only transaction. When we try and
                 // fetch a new credential for this address we'll overwrite this
                 // expired one.
-                Logger.info("Found expired credential for serviceId \(aci)")
                 return nil
             }
 

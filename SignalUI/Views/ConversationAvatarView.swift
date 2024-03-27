@@ -361,13 +361,11 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
         Self.serialQueue.async { [weak self] in
             guard let self = self, self.nextModelGeneration.get() == generationAtEnqueue else {
-                Logger.info("Model generation updated while performing async model update. Dropping results.")
                 return
             }
 
             let (updatedAvatar, updatedBadge) = Self.databaseStorage.read { transaction -> (UIImage?, UIImage?) in
                 guard self.nextModelGeneration.get() == generationAtEnqueue else {
-                    // will be logged below
                     return (nil, nil)
                 }
 
@@ -378,7 +376,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
             DispatchQueue.main.async {
                 guard self.nextModelGeneration.get() == generationAtEnqueue else {
-                    Logger.info("Model generation updated while performing async model update. Dropping results.")
                     return
                 }
                 self.updateViewContent(avatarImage: updatedAvatar, primaryBadgeImage: updatedBadge)

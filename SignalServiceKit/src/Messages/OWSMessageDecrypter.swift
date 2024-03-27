@@ -684,8 +684,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     private func _cleanUpExpiredPlaceholders() async {
-        Logger.info("Cleaning up placeholders")
-
         let (expiredPlaceholderIds, nextExpirationDate) = databaseStorage.read { tx in
             var expiredPlaceholderIds = [String]()
             var nextExpirationDate: Date?

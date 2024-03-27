@@ -92,7 +92,7 @@ public class MessageFetchBGRefreshTask {
                 // This means a task with a different identifier was scheduled (not allowed).
                 Logger.error("Too many pending bg tasks; only one app refresh task identifier is allowed at any time.")
             case BGTaskScheduler.Error.Code.unavailable.rawValue:
-                Logger.error("Trying to schedule bg task from an extension?")
+                Logger.warn("Trying to schedule bg task from an extension or simulator?")
             default:
                 Logger.error("Unknown error code scheduling bg task: \(errorCode)")
             }

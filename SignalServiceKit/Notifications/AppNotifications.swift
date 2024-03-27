@@ -538,9 +538,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
         let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction.unwrapGrdbRead)
         let localUserIsQuoted = incomingMessage.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
         guard mentionedAddresses.contains(localAddress) || localUserIsQuoted else {
-            if DebugFlags.internalLogging {
-                Logger.info("Not notifying; no mention.")
-            }
             return false
         }
 
@@ -548,9 +545,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
         case .default, .always:
             return true
         case .never:
-            if DebugFlags.internalLogging {
-                Logger.info("Not notifying; mentionNotificationMode .never.")
-            }
             return false
         }
     }
@@ -1336,12 +1330,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
     // This method is thread-safe.
     private func checkIfShouldPlaySound() -> Bool {
         guard CurrentAppContext().isMainAppAndActive else {
-            Logger.info("[Notification Sounds] not playing sound, app inactive")
             return true
         }
 
         guard preferences.soundInForeground else {
-            Logger.info("[Notification Sounds] foreground sound disabled")
             return false
         }
 
@@ -1352,7 +1344,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
             let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }
 
             guard recentNotifications.count < kAudioNotificationsThrottleCount else {
-                Logger.info("[Notification Sounds] sound throttled")
                 return false
             }
 

@@ -177,11 +177,6 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
         })
 
         guard !groupIdsWithJobs.isEmpty else {
-            if DebugFlags.internalLogging {
-                Logger.info("Queue is drained")
-            } else {
-                Logger.verbose("Queue is drained")
-            }
             NotificationCenter.default.postNotificationNameAsync(GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue, object: nil)
             return
         }

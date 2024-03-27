@@ -1037,9 +1037,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
         //
         // If we prefer continuity with regard to the bottom
         // of the conversation, start with the last items.
-        let afterItemLayouts = (isRelativeToTop
-                                    ? layoutInfoAfterUpdate.itemLayouts
-                                    : layoutInfoAfterUpdate.itemLayouts.reversed())
+        let afterItemLayouts = (
+            isRelativeToTop
+            ? layoutInfoAfterUpdate.itemLayouts
+            : layoutInfoAfterUpdate.itemLayouts.reversed()
+        )
 
         for afterItemLayout in afterItemLayouts {
             guard afterItemLayout.canBeUsedForContinuity,
@@ -1049,8 +1051,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             let frameBeforeUpdate = beforeItemLayout.frame
             let frameAfterUpdate = afterItemLayout.frame
             let offset = frameAfterUpdate.origin - frameBeforeUpdate.origin
-            let updatedContentOffset = CGPoint(x: 0,
-                                               y: (contentOffsetBeforeUpdate + offset).y)
+            let updatedContentOffset = CGPoint(x: 0, y: (contentOffsetBeforeUpdate + offset).y)
             return updatedContentOffset
         }
 

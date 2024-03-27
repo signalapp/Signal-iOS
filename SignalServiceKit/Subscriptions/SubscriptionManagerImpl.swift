@@ -216,7 +216,6 @@ public class SubscriptionManagerImpl: NSObject {
     }
 
     private static func warmCaches() {
-        Logger.info("[Donations] Warming caches")
         let value = databaseStorage.read { displayBadgesOnProfile(transaction: $0) }
         displayBadgesOnProfileCache.set(value)
     }
@@ -848,7 +847,10 @@ public class SubscriptionManagerImpl: NSObject {
     // MARK: Heartbeat
 
     public class func performSubscriptionKeepAliveIfNecessary() {
-        Logger.info("[Donations] Checking for subscription heartbeat")
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false else {
+            return
+        }
 
         // Fetch subscriberID / subscriber currencyCode
         var lastKeepAliveHeartbeat: Date?
@@ -862,31 +864,19 @@ public class SubscriptionManagerImpl: NSObject {
             currencyCode = self.getSubscriberCurrencyCode(transaction: transaction)
         }
 
-        let lastSubscriptionExpirationForLogging: String = {
-            guard let lastSubscriptionExpiration = lastSubscriptionExpiration else { return "nil" }
-            return String(lastSubscriptionExpiration.timeIntervalSince1970)
-        }()
-        Logger.info("[Donations] Last subscription expiration: \(lastSubscriptionExpirationForLogging)")
-
         var performHeartbeat: Bool = true
         if let lastKeepAliveHeartbeat = lastKeepAliveHeartbeat, Date().timeIntervalSince(lastKeepAliveHeartbeat) < heartbeatInterval {
             performHeartbeat = false
         }
 
         guard performHeartbeat else {
-            Logger.info("[Donations] Not performing subscription heartbeat, last heartbeat within allowed interval")
             return
         }
 
         Logger.info("[Donations] Performing subscription heartbeat")
 
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false else {
-            Logger.info("[Donations] Bailing out of remaining heartbeat tasks, this is not the primary device")
-            return
-        }
-
         guard let subscriberID = subscriberID, currencyCode != nil else {
-            Logger.info("[Donations] No subscription + currency code found")
+            Logger.warn("[Donations] No subscription + currency code found")
             self.updateSubscriptionHeartbeatDate()
             return
         }

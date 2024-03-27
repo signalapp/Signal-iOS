@@ -81,7 +81,6 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         } else {
-            Logger.info("Nothing to download!")
             return .value(())
         }
     }

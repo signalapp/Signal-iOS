@@ -178,7 +178,7 @@ public final class MessageReceiver: Dependencies {
 
     func handleRequest(_ request: MessageReceiverRequest, context: DeliveryReceiptContext, tx: SDSAnyWriteTransaction) {
         let protoContent = request.protoContent
-        Logger.info("handling content: \(protoContent.contentDescription)")
+        Logger.info("Received \(protoContent.contentDescription) from \(request.decryptedEnvelope.sourceAci)")
 
         switch request.messageType {
         case .syncMessage(let syncMessage):
@@ -305,7 +305,6 @@ public final class MessageReceiver: Dependencies {
             return
         }
 
-        Logger.info("Saving spam reporting token. Envelope timestamp: \(decryptedEnvelope.timestamp)")
         do {
             try SpamReportingTokenRecord(
                 sourceAci: decryptedEnvelope.sourceAci,
@@ -530,7 +529,6 @@ public final class MessageReceiver: Dependencies {
             Logger.info("Received blocked sync message.")
             handleSyncedBlocklist(blocked, tx: tx)
         } else if !syncMessage.read.isEmpty {
-            Logger.info("Received \(syncMessage.read.count) read receipt(s) in sync message")
             let earlyReceipts = receiptManager.processReadReceiptsFromLinkedDevice(
                 syncMessage.read, readTimestamp: decryptedEnvelope.timestamp, tx: tx
             )
@@ -544,7 +542,6 @@ public final class MessageReceiver: Dependencies {
                 )
             }
         } else if !syncMessage.viewed.isEmpty {
-            Logger.info("Received \(syncMessage.viewed.count) viewed receipt(s) in sync message")
             let earlyReceipts = receiptManager.processViewedReceiptsFromLinkedDevice(
                 syncMessage.viewed, viewedTimestamp: decryptedEnvelope.timestamp, tx: tx
             )
@@ -661,12 +658,11 @@ public final class MessageReceiver: Dependencies {
                 self.syncManager.syncAllContacts().ensure(on: DispatchQueue.global()) {
                     pendingTask.complete()
                 }.catch(on: DispatchQueue.global()) { error in
-                    Logger.error("Error: \(error)")
+                    Logger.warn("Error: \(error)")
                 }
             }
 
         case .blocked:
-            Logger.info("Received request for block list")
             let pendingTask = Self.buildPendingTask(label: "syncBlockList")
             blockingManager.syncBlockList { pendingTask.complete() }
 
@@ -706,10 +702,6 @@ public final class MessageReceiver: Dependencies {
         tx: SDSAnyWriteTransaction
     ) {
         let envelope = request.decryptedEnvelope
-
-        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-            Logger.info("timestamp: \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp), \(Self.descriptionForDataMessageContents(dataMessage))")
-        }
 
         if let groupId = self.groupId(for: dataMessage) {
             TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: tx)
@@ -855,14 +847,7 @@ public final class MessageReceiver: Dependencies {
             messageDescription = "Incoming message from \(deviceAddress) w/ts \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp)"
         }
 
-        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-            Logger.info(messageDescription)
-        }
-
         if let reaction = dataMessage.reaction {
-            if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-                Logger.info("Reaction: \(messageDescription)")
-            }
             let result = ReactionManager.processIncomingReaction(
                 reaction,
                 thread: thread,
@@ -1492,7 +1477,6 @@ public final class MessageReceiver: Dependencies {
                     sessionStore.archiveSession(for: sourceAci, deviceId: sourceDeviceId, tx: tx.asV2Write)
                     didPerformSessionReset = true
                 } else {
-                    Logger.info("Ratchet key mismatch. Leaving session as-is.")
                     didPerformSessionReset = false
                 }
             } else {
@@ -1716,59 +1700,6 @@ public final class MessageReceiver: Dependencies {
         return message
     }
 
-    public static func descriptionForDataMessageContents(_ dataMessage: SSKProtoDataMessage) -> String {
-        var splits = [String]()
-        if !dataMessage.attachments.isEmpty {
-            splits.append("attachments: \(dataMessage.attachments.count)")
-        }
-        if dataMessage.groupV2 != nil {
-            splits.append("groupV2")
-        }
-        if dataMessage.quote != nil {
-            splits.append("quote")
-        }
-        if !dataMessage.contact.isEmpty {
-            splits.append("contacts: \(dataMessage.contact.count)")
-        }
-        if !dataMessage.preview.isEmpty {
-            splits.append("previews: \(dataMessage.preview.count)")
-        }
-        if dataMessage.sticker != nil {
-            splits.append("sticker")
-        }
-        if dataMessage.reaction != nil {
-            splits.append("reaction")
-        }
-        if dataMessage.delete != nil {
-            splits.append("delete")
-        }
-        if !dataMessage.bodyRanges.isEmpty {
-            splits.append("bodyRanges: \(dataMessage.bodyRanges.count)")
-        }
-        if dataMessage.groupCallUpdate != nil {
-            splits.append("groupCallUpdate")
-        }
-        if dataMessage.payment != nil {
-            splits.append("payment")
-        }
-        if dataMessage.body?.nilIfEmpty != nil {
-            splits.append("body")
-        }
-        if dataMessage.expireTimer > 0 {
-            splits.append("expireTimer")
-        }
-        if dataMessage.profileKey != nil {
-            splits.append("profileKey")
-        }
-        if dataMessage.isViewOnce {
-            splits.append("isViewOnce")
-        }
-        if dataMessage.flags > 0 {
-            splits.append("flags: \(dataMessage.flags)")
-        }
-        return "[" + splits.joined(separator: ", ") + "]"
-    }
-
     func checkForUnknownLinkedDevice(in envelope: DecryptedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
         let aci = envelope.sourceAci
         let deviceId = envelope.sourceDeviceId
@@ -1828,43 +1759,44 @@ extension SSKProtoEnvelope {
 extension SSKProtoContent {
     @objc
     var contentDescription: String {
-        var message = String()
+        var parts = [String]()
+        if let dataMessage = self.dataMessage {
+            parts.append("data \(dataMessage.contentDescription)")
+        }
         if let syncMessage = self.syncMessage {
-            message.append("<SyncMessage: \(syncMessage.contentDescription) />")
-        } else if let dataMessage = self.dataMessage {
-            message.append("<DataMessage: \(dataMessage.contentDescription) />")
-        } else if let callMessage = self.callMessage {
-            message.append("<CallMessage \(callMessage.contentDescription) />")
-        } else if let nullMessage = self.nullMessage {
-            message.append("<NullMessage: \(nullMessage) />")
-        } else if let receiptMessage = self.receiptMessage {
-            message.append("<ReceiptMessage: \(receiptMessage) />")
-        } else if let typingMessage = self.typingMessage {
-            message.append("<TypingMessage: \(typingMessage) />")
-        } else if let decryptionErrorMessage = self.decryptionErrorMessage {
-            message.append("<DecryptionErrorMessage: \(decryptionErrorMessage) />")
-        } else if let storyMessage = self.storyMessage {
-            message.append("<StoryMessage: \(storyMessage) />")
-        } else if let editMessage = self.editMessage {
-            message.append("<EditMessage: \(editMessage) />")
+            parts.append("sync \(syncMessage.contentDescription)")
         }
-
-         // SKDM's are not mutually exclusive with other content types
-         if hasSenderKeyDistributionMessage {
-             if !message.isEmpty {
-                 message.append(" + ")
-             }
-             message.append("SenderKeyDistributionMessage")
-         }
-
-        if message.isEmpty {
-            // Don't fire an analytics event; if we ever add a new content type, we'd generate a ton of
-            // analytics traffic.
-            owsFailDebug("Unknown content type.")
-            return "UnknownContent"
-
+        if let callMessage = self.callMessage {
+            parts.append("call \(callMessage.contentDescription)")
         }
-        return message
+        if nullMessage != nil {
+            parts.append("null")
+        }
+        if receiptMessage != nil {
+            parts.append("receipt")
+        }
+        if typingMessage != nil {
+            parts.append("typing")
+        }
+        if storyMessage != nil {
+            parts.append("story")
+        }
+        if pniSignatureMessage != nil {
+            parts.append("pniSignature")
+        }
+        if editMessage != nil {
+            parts.append("edit")
+        }
+        if senderKeyDistributionMessage != nil {
+            parts.append("senderKeyDistribution")
+        }
+        if decryptionErrorMessage != nil {
+            parts.append("decryptionError")
+        }
+        if hasUnknownFields {
+            parts.append("unknown fields")
+        }
+        return "[\(parts.joined(separator: ", "))]"
     }
 }
 
@@ -1875,34 +1807,34 @@ extension SSKProtoCallMessage {
         let callId: UInt64
 
         if let offer = self.offer {
-            messageType = "Offer"
+            messageType = "offer"
             callId = offer.id
         } else if let busy = self.busy {
-            messageType = "Busy"
+            messageType = "busy"
             callId = busy.id
         } else if let answer = self.answer {
-            messageType = "Answer"
+            messageType = "answer"
             callId = answer.id
         } else if let hangup = self.hangup {
-            messageType = "Hangup"
+            messageType = "hangup"
             callId = hangup.id
         } else if let firstICEUpdate = iceUpdate.first {
-            messageType = "Ice Updates \(iceUpdate.count)"
+            messageType = "ice updates \(iceUpdate.count)"
             callId = firstICEUpdate.id
         } else if let opaque = self.opaque {
             if opaque.hasUrgency {
-                messageType = "Opaque (\(opaque.unwrappedUrgency.contentDescription))"
+                messageType = "opaque \(opaque.unwrappedUrgency.contentDescription)"
             } else {
-                messageType = "Opaque"
+                messageType = "opaque"
             }
             callId = 0
         } else {
             owsFailDebug("failure: unexpected call message type: \(self)")
-            messageType = "Unknown"
+            messageType = "unknown"
             callId = 0
         }
 
-        return "type: \(messageType), id: \(callId)"
+        return "[type: \(messageType), id: \(callId)]"
     }
 }
 
@@ -1910,11 +1842,11 @@ extension SSKProtoCallMessageOpaqueUrgency {
     var contentDescription: String {
         switch self {
         case .droppable:
-            return "Droppable"
+            return "droppable"
         case .handleImmediately:
-            return "HandleImmediately"
+            return "handleImmediately"
         default:
-            return "Unknown"
+            return "unknown"
         }
     }
 }
@@ -1923,117 +1855,156 @@ extension SSKProtoDataMessage {
     @objc
     var contentDescription: String {
         var parts = [String]()
-        if Int64(flags) & Int64(SSKProtoDataMessageFlags.endSession.rawValue) != 0 {
-            parts.append("EndSession")
-        } else if Int64(flags) & Int64(SSKProtoDataMessageFlags.expirationTimerUpdate.rawValue) != 0 {
-            parts.append("ExpirationTimerUpdate")
-        } else if Int64(flags) & Int64(SSKProtoDataMessageFlags.profileKeyUpdate.rawValue) != 0 {
-            parts.append("ProfileKey")
-        } else if attachments.count > 0 {
-            parts.append("MessageWithAttachment")
-        } else {
-            parts.append("Plain")
+        if !attachments.isEmpty {
+            parts.append("attachments")
         }
-        return "<\(parts.joined(separator: " ")) />"
+        if groupV2 != nil {
+            parts.append("group")
+        }
+        if quote != nil {
+            parts.append("quote")
+        }
+        if !contact.isEmpty {
+            parts.append("contacts")
+        }
+        if !preview.isEmpty {
+            parts.append("linkPreviews")
+        }
+        if sticker != nil {
+            parts.append("stickers")
+        }
+        if reaction != nil {
+            parts.append("reaction")
+        }
+        if delete != nil {
+            parts.append("delete")
+        }
+        if !bodyRanges.isEmpty {
+            parts.append("bodyRanges")
+        }
+        if groupCallUpdate != nil {
+            parts.append("groupCallUpdate")
+        }
+        if payment != nil {
+            parts.append("payment")
+        }
+        if giftBadge != nil {
+            parts.append("giftBadge")
+        }
+        if body != nil {
+            parts.append("body")
+        }
+        if expireTimer > 0 {
+            parts.append("expireTimer")
+        }
+        if profileKey != nil {
+            parts.append("profileKey")
+        }
+        if isViewOnce {
+            parts.append("viewOnce")
+        }
+        if flags > 0 {
+            parts.append("flags \(flags)")
+        }
+        if hasUnknownFields {
+            parts.append("unknown fields")
+        }
+        return "[\(parts.joined(separator: ", "))]"
     }
 }
 
 extension SSKProtoSyncMessage {
     @objc
     var contentDescription: String {
+        var parts = [String]()
         if sent != nil {
-            return "SentTranscript"
+            parts.append("sentTranscript")
         }
         if contacts != nil {
-            return "Contacts"
+            parts.append("contacts")
         }
-        if let request = self.request {
-            if !request.hasType {
-                return "Unknown sync request."
-            }
-            switch request.unwrappedType {
+        if let request {
+            switch request.type {
             case .contacts:
-                return "ContactRequest"
+                parts.append("request: contacts")
             case .blocked:
-                return "BlockedRequest"
+                parts.append("request: blocked")
             case .configuration:
-                return "ConfigurationRequest"
+                parts.append("request: configuration")
             case .keys:
-                return "KeysRequest"
-            default:
-                owsFailDebug("Unknown sync message request type: \(request.unwrappedType)")
-                return "UnknownRequest"
+                parts.append("request: keys")
+            case .unknown, .none: fallthrough
+            @unknown default:
+                parts.append("request: unknown")
             }
         }
         if !read.isEmpty {
-            return "ReadReceipt"
+            parts.append("readReceipts")
         }
         if blocked != nil {
-            return "Blocked"
+            parts.append("blocked")
         }
         if verified != nil {
-            return "Verification"
+            parts.append("verified")
         }
         if configuration != nil {
-            return "Configuration"
+            parts.append("configuration")
         }
         if !stickerPackOperation.isEmpty {
-            var operationTypes = [String]()
             for packOperationProto in stickerPackOperation {
-                if !packOperationProto.hasType {
-                    operationTypes.append("unknown")
-                    continue
-                }
-                switch packOperationProto.unwrappedType {
+                switch packOperationProto.type {
                 case .install:
-                    operationTypes.append("install")
+                    parts.append("stickerPack: install")
                 case .remove:
-                    operationTypes.append("remove")
-                default:
-                    operationTypes.append("unknown")
+                    parts.append("stickerPack: remove")
+                case .none: fallthrough
+                @unknown default:
+                    parts.append("stickerPack: unknown")
                 }
             }
-            return "StickerPackOperation: \(operationTypes.joined(separator: ", "))"
         }
         if viewOnceOpen != nil {
-            return "ViewOnceOpen"
+            parts.append("viewOnceOpen")
         }
-        if let fetchLatest = fetchLatest {
-            switch fetchLatest.unwrappedType {
-            case .unknown:
-                return "FetchLatest_Unknown"
+        if let fetchLatest {
+            switch fetchLatest.type {
             case .localProfile:
-                return "FetchLatest_LocalProfile"
+                parts.append("fetchLatest: profile")
             case .storageManifest:
-                return "FetchLatest_StorageManifest"
+                parts.append("fetchLatest: storageService")
             case .subscriptionStatus:
-                return "FetchLatest_SubscriptionStatus"
+                parts.append("fetchLatest: subscription")
+            case .unknown, .none: fallthrough
+            @unknown default:
+                parts.append("fetchLatest: unknown")
             }
         }
         if keys != nil {
-            return "Keys"
+            parts.append("keys")
         }
         if messageRequestResponse != nil {
-            return "MessageRequestResponse"
+            parts.append("messageRequestResponse")
         }
         if outgoingPayment != nil {
-            return "OutgoingPayment"
+            parts.append("outgoingPayment")
         }
         if !viewed.isEmpty {
-            return "ViewedReceipt"
-        }
-        if callEvent != nil {
-            return "CallDispositionEvent"
-        }
-        if callLogEvent != nil {
-            return "CallLogEvent"
+            parts.append("viewedReceipt")
         }
         if pniChangeNumber != nil {
-            return "PniChangeNumber"
+            parts.append("pniChangeNumber")
         }
-        owsFailDebug("Unknown sync message type")
-        return "Unknown"
-
+        if callEvent != nil {
+            parts.append("callEvent")
+        }
+        if callLogEvent != nil {
+            parts.append("callLogEvent")
+        }
+        if hasUnknownFields {
+            parts.append("unknown fields")
+        }
+        owsAssertDebug(!parts.isEmpty, "unknown sync message type")
+        return "[\(parts.joined(separator: ", "))]"
     }
 }
 

@@ -114,7 +114,7 @@ public class SignalRecipientManagerImpl: SignalRecipientManager {
             return
         }
 
-        Logger.info("Updating \(recipient.addressComponentsDescription)'s devices. Added \(newDeviceIds.subtracting(oldDeviceIds).sorted()). Removed \(oldDeviceIds.subtracting(newDeviceIds).sorted()).")
+        Logger.info("Updating \(recipient.aci?.logString ?? recipient.pni?.logString ?? "<>")'s devices. Added \(newDeviceIds.subtracting(oldDeviceIds).sorted()). Removed \(oldDeviceIds.subtracting(newDeviceIds).sorted()).")
 
         setDeviceIds(newDeviceIds, for: recipient, shouldUpdateStorageService: shouldUpdateStorageService)
         recipientDatabaseTable.updateRecipient(recipient, transaction: tx)

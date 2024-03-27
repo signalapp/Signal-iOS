@@ -68,7 +68,7 @@ class NotificationService: UNNotificationServiceExtension {
     // MARK: -
 
     // This method is thread-safe.
-    func completeSilently(timeHasExpired: Bool = false, badgeCount: BadgeCount? = nil, logger: NSELogger) {
+    func completeSilently(badgeCount: BadgeCount? = nil, logger: NSELogger) {
         defer { logger.flush() }
 
         guard let contentHandler = contentHandler.swap(nil) else {
@@ -80,25 +80,7 @@ class NotificationService: UNNotificationServiceExtension {
         let content = UNMutableNotificationContent()
         content.badge = badgeCount.map { NSNumber(value: $0.unreadTotalCount) }
 
-        if timeHasExpired {
-            contentHandler(content)
-        } else {
-            // If we have some time left, query current notification state
-            logger.info("Querying existing notifications")
-
-            let notificationCenter = UNUserNotificationCenter.current()
-            notificationCenter.getPendingNotificationRequests { requests in
-                defer { logger.flush() }
-                logger.info("Found \(requests.count) pending notification requests with identifiers: \(requests.map { $0.identifier }.joined(separator: ", "))")
-
-                notificationCenter.getDeliveredNotifications { notifications in
-                    defer { logger.flush() }
-                    logger.info("Found \(notifications.count) delivered notifications with identifiers: \(notifications.map { $0.request.identifier }.joined(separator: ", "))")
-
-                    contentHandler(content)
-                }
-            }
-        }
+        contentHandler(content)
     }
 
     override func didReceive(
@@ -150,8 +132,6 @@ class NotificationService: UNNotificationServiceExtension {
                     return
                 }
 
-                logger.info("Processing received notification, memoryUsage: \(LocalDevice.memoryUsageString).")
-
                 self?.fetchAndProcessMessages(logger: logger)
             }
         }
@@ -164,7 +144,7 @@ class NotificationService: UNNotificationServiceExtension {
         // We complete silently here so that nothing is presented to the user.
         // By default the OS will present whatever the raw content of the original
         // notification is to the user otherwise.
-        completeSilently(timeHasExpired: true, logger: .uncorrelated)
+        completeSilently(logger: .uncorrelated)
     }
 
     // This method is thread-safe.
@@ -190,48 +170,30 @@ class NotificationService: UNNotificationServiceExtension {
 
         globalEnvironment.processingMessageCounter.increment()
 
-        logger.info("Beginning message fetch.")
-
         firstly {
             messageFetcherJob.run().promise
         }.then(on: DispatchQueue.global()) { [weak self] () -> Promise<Void> in
-            logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
 
-            let runningAndCompletedPromises = AtomicArray<(String, Promise<Void>)>()
-
             return firstly { () -> Promise<Void> in
-                let promise = self.messageProcessor.waitForProcessingComplete().asPromise()
-                runningAndCompletedPromises.append(("MessageProcessorCompletion", promise))
-                return promise
+                return self.messageProcessor.waitForProcessingComplete().asPromise()
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                logger.info("Initial message processing complete.")
-                // Wait until all async side effects of message processing are complete.
-                let completionPromises: [(String, Promise<Void>)] = [
+                return Promise.when(on: SyncScheduler(), resolved: [
                     // Wait until all ACKs are complete.
-                    ("Pending messageFetch ack", Self.messageFetcherJob.pendingAcksPromise()),
+                    Self.messageFetcherJob.pendingAcksPromise(),
                     // Wait until all outgoing receipt sends are complete.
-                    ("Pending receipt sends", SSKEnvironment.shared.receiptSenderRef.pendingSendsPromise()),
+                    SSKEnvironment.shared.receiptSenderRef.pendingSendsPromise(),
                     // Wait until all outgoing messages are sent.
-                    ("Pending outgoing message", Self.messageSender.pendingSendsPromise()),
+                    Self.messageSender.pendingSendsPromise(),
                     // Wait until all sync requests are fulfilled.
-                    ("Pending sync request", MessageReceiver.pendingTasksPromise())
-                ]
-                let joinedPromise = Promise.when(resolved: completionPromises.map { (name, promise) in
-                    promise.done(on: DispatchQueue.global()) {
-                        logger.info("\(name) complete")
-                    }
-                })
-                completionPromises.forEach { runningAndCompletedPromises.append($0) }
-                return joinedPromise.asVoid()
+                    MessageReceiver.pendingTasksPromise(),
+                ]).asVoid()
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 // Finally, wait for any notifications to finish posting
-                let promise = NotificationPresenter.pendingNotificationsPromise()
-                runningAndCompletedPromises.append(("Pending notification post", promise))
-                return promise
+                return NotificationPresenter.pendingNotificationsPromise()
             }
         }.ensure(on: DispatchQueue.global()) { [weak self] in
-            logger.info("Message fetch completed.")
+            logger.info("Message fetching & processing completed.")
             SignalProxy.stopRelayServer()
             globalEnvironment.processingMessageCounter.decrementOrZero()
             // If we're completing normally, try to update the badge on the app icon.

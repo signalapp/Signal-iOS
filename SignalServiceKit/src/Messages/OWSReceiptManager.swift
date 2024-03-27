@@ -286,6 +286,8 @@ public extension OWSReceiptManager {
         markStoryMessage: (StoryMessage) -> Void
     ) -> [T] {
         var earlyReceiptProtos = [T]()
+        let messageTimestamps = receiptProtos.map { $0[keyPath: messageTimestamp] }
+        Logger.info("Handling \(receiptProtos.count) \(T.self)(s) w/timestamps: \(messageTimestamps)")
         for receiptProto in receiptProtos {
             guard let senderAci = Aci.parseFrom(aciString: receiptProto[keyPath: senderAci]) else {
                 owsFailDebug("Missing ACI.")
@@ -319,8 +321,6 @@ public extension OWSReceiptManager {
                     return false
                 }
             }
-
-            Logger.info("Handling receipts from linked device for \(messages.count) messages with timestamp \(messageTimestamp)")
 
             if !messages.isEmpty {
                 messages.forEach { markMessage($0) }

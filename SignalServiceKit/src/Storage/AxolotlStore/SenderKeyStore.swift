@@ -392,7 +392,6 @@ extension SenderKeyStore {
         // To avoid doing too much work for a flood of failed decryptions, we'll only honor an SKDM log
         // dump request every 10s. That's frequent enough to be captured in a log zip.
         guard Self.logThrottleExpiration.get().isBeforeNow else {
-            Logger.info("Dumped SKDM logs recently. Ignoring request for \(recipient)...")
             return
         }
         Self.logThrottleExpiration.set(Date() + 10.0)

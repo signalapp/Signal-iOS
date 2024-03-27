@@ -883,22 +883,16 @@ extension CLVTableDataSource {
         }.done(on: DispatchQueue.main) { (threadViewModel: ThreadViewModel, contentToken: CLVCellContentToken) in
             // Commit the preloaded values to their respective caches.
             guard cellContentCacheResetCount == cellContentCache.resetCount else {
-                Logger.info("cellContentCache was reset.")
                 return
             }
             guard threadViewModelCacheResetCount == threadViewModelCache.resetCount else {
-                Logger.info("cellContentCache was reset.")
                 return
             }
             if nil == threadViewModelCache.get(key: cacheKey) {
                 threadViewModelCache.set(key: cacheKey, value: threadViewModel)
-            } else {
-                Logger.info("threadViewModel already loaded.")
             }
             if nil == cellContentCache.get(key: cacheKey) {
                 cellContentCache.set(key: cacheKey, value: contentToken)
-            } else {
-                Logger.info("contentToken already loaded.")
             }
         }.catch(on: DispatchQueue.global()) { error in
             if case CLVPreloadError.alreadyLoaded = error {

@@ -23,17 +23,8 @@ public class PendingTasks: NSObject {
         // but will not block on new tasks added after this promise
         // is created.
         let label = self.label
-        if DebugFlags.internalLogging {
-            Logger.info("Waiting \(label).")
-        }
         let promises = pendingTasks.allValues.map { $0.promise }
-        return firstly(on: DispatchQueue.global()) {
-            Promise.when(resolved: promises).asVoid()
-        }.map(on: DispatchQueue.global()) {
-            if DebugFlags.internalLogging {
-                Logger.info("Complete \(label) (memoryUsage: \(LocalDevice.memoryUsageString)).")
-            }
-        }
+        return Promise.when(on: SyncScheduler(), resolved: promises).asVoid()
     }
 
     @objc
@@ -49,9 +40,6 @@ public class PendingTasks: NSObject {
         }
         let wasRemoved = nil != pendingTasks.removeValue(forKey: pendingTask.id)
         owsAssertDebug(wasRemoved)
-        if DebugFlags.internalLogging {
-            Logger.info("Completed: \(self.label).\(pendingTask.label) (memoryUsage: \(LocalDevice.memoryUsageString))")
-        }
         pendingTask.future.resolve(())
     }
 }

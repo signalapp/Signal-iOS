@@ -200,10 +200,7 @@ class UserNotificationPresenter: Dependencies {
         content.userInfo = userInfo
         let isAppActive = CurrentAppContext().isMainAppAndActive
         if let sound, sound != .standard(.none) {
-            Logger.info("[Notification Sounds] presenting notification with sound")
             content.sound = sound.notificationSound(isQuiet: isAppActive)
-        } else {
-            Logger.info("[Notification Sounds] presenting notification without sound")
         }
 
         var notificationIdentifier: String = UUID().uuidString
@@ -241,29 +238,16 @@ class UserNotificationPresenter: Dependencies {
 
         var contentToUse: UNNotificationContent = content
         if #available(iOS 15, *), let interaction = interaction {
-            if DebugFlags.internalLogging {
-                Logger.info("Will donate interaction")
-            }
-
             interaction.donate(completion: { error in
-                if DebugFlags.internalLogging { Logger.info("Did donate interaction") }
-
                 if let error = error {
                     owsFailDebug("Failed to donate incoming message intent \(error)")
                     return
                 }
             })
 
-            if DebugFlags.internalLogging {
-                Logger.info("Will update notification content with intent")
-            }
-
             if let intent = interaction.intent as? UNNotificationContentProviding {
                 do {
                     try contentToUse = content.updating(from: intent)
-                    if DebugFlags.internalLogging {
-                        Logger.info("Did update notification content with intent")
-                    }
                 } catch {
                     owsFailDebug("Failed to update UNNotificationContent for comm style notification")
                 }
@@ -272,14 +256,10 @@ class UserNotificationPresenter: Dependencies {
 
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
-        Logger.info("Presenting notification with identifier \(notificationIdentifier)")
         Self.notificationCenter.add(request) { (error: Error?) in
             if let error = error {
                 owsFailDebug("Error presenting notification with identifier \(notificationIdentifier): \(error)")
-            } else {
-                Logger.info("Presented notification with identifier \(notificationIdentifier)")
             }
-
             completion?()
         }
     }

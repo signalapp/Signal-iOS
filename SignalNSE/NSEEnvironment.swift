@@ -36,10 +36,6 @@ class NSEEnvironment: Dependencies {
             // after block.
             let hasCalledBack = AtomicBool(false)
 
-            if DebugFlags.internalLogging {
-                logger.info("Requesting main app to handle incoming message.")
-            }
-
             // Listen for an indication that the main app is going to handle
             // this notification. If the main app is active we don't want to
             // process any messages here.
@@ -69,10 +65,6 @@ class NSEEnvironment: Dependencies {
 
                 if DarwinNotificationCenter.isValidObserver(token) {
                     DarwinNotificationCenter.removeObserver(token)
-                }
-
-                if DebugFlags.internalLogging {
-                    logger.info("Did timeout.")
                 }
 
                 // If we haven't called back yet and removed the observer token,

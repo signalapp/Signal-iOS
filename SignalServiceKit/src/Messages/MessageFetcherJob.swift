@@ -78,8 +78,6 @@ public class MessageFetcherJob: NSObject {
 
     @discardableResult
     public func run() -> MessageFetchCycle {
-        Logger.info("")
-
         // Use an operation queue to ensure that only one fetch cycle is done
         // at a time.
         let fetchOperation = MessageFetchOperation()
@@ -217,11 +215,9 @@ public class MessageFetcherJob: NSObject {
         }
 
         if shouldUseWebSocket {
-            Logger.info("Fetching messages via Web Socket.")
             DependenciesBridge.shared.chatConnectionManager.didReceivePush()
             // Should we wait to resolve the future until we know the WebSocket is open? Wait until it empties?
         } else {
-            Logger.info("Fetching messages via REST.")
             try await fetchMessagesViaRestWhenReady()
         }
     }
@@ -597,19 +593,8 @@ private class MessageAckOperation: OWSOperation {
             self.networkManager.makePromise(request: request)
         }.done(on: DispatchQueue.global()) { _ in
             Self.didAck(inFlightAckId: inFlightAckId)
-
-            if DebugFlags.internalLogging {
-                Logger.info("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
-            } else {
-                Logger.debug("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
-            }
             self.reportSuccess()
         }.catch(on: DispatchQueue.global()) { error in
-            if DebugFlags.internalLogging {
-                Logger.info("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp) failed with error: \(error)")
-            } else {
-                Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp) failed with error: \(error)")
-            }
             self.reportError(error)
         }
     }

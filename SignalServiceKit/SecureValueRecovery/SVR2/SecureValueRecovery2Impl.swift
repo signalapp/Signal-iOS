@@ -153,7 +153,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 return self.getNeedsCredentialRefreshBasedOnVersion(tx: tx)
             }
             guard needsRefresh else {
-                Logger.info("No periodic credential refresh necessary.")
                 return
             }
             // Force refresh a credential, even if we have one cached, to ensure we
@@ -386,7 +385,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         data: Data,
         transaction: DBReadTransaction
     ) -> SVR.ApplyDerivedKeyResult {
-        Logger.info("")
         guard let keyData = self.data(for: keyType, transaction: transaction) else {
             return .masterKeyMissing
         }
@@ -402,7 +400,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         encryptedData: Data,
         transaction: DBReadTransaction
     ) -> SVR.ApplyDerivedKeyResult {
-        Logger.info("")
         guard let keyData = self.data(for: keyType, transaction: transaction) else {
             return .masterKeyMissing
         }
@@ -481,7 +478,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // MARK: - Value Derivation
 
     public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData? {
-        Logger.info("")
         func withMasterKey(_ handler: (Data) -> SVR.DerivedKeyData?) -> SVR.DerivedKeyData? {
             guard let masterKey = self.localStorage.getMasterKey(transaction) else {
                 return nil

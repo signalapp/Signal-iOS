@@ -263,7 +263,6 @@ public class MessageSender: Dependencies {
         }
 
         do {
-            Logger.info("Process prekey bundle")
             let identityManager = DependenciesBridge.shared.identityManager
             let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
             try processPreKeyBundle(

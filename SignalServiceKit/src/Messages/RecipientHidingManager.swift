@@ -107,12 +107,11 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
                     AS hiddenRecipient
                     ON hiddenRecipient.recipientId = \(signalRecipientColumn: .id)
             """
-            Logger.info("[Recipient hiding] Fetching all hidden recipients.")
             return Set(
                 try SignalRecipient.fetchAll(SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, sql: sql)
             )
         } catch {
-            Logger.warn("Could not fetch hidden recipient records.")
+            Logger.warn("Could not fetch hidden recipient records: \(error.grdbErrorForLogging)")
             return Set()
         }
     }
@@ -143,7 +142,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) throws {
-        Logger.info("[Recipient hiding] Initiating recipient hide.")
+        Logger.info("Hiding recipient")
         guard !isHiddenRecipient(recipient, tx: tx) else {
             // This is a perhaps extraneous safeguard against
             // hiding an already-hidden address. I say extraneous
@@ -151,7 +150,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             // hide an already-hidden recipient. However, we return here,
             // just in case, in order to avoid the side-effects of
             // `didSetAsHidden`.
-            Logger.warn("[Recipient hiding] Cannot hide already-hidden recipient.")
+            Logger.warn("Cannot hide already-hidden recipient.")
             throw RecipientHidingError.recipientAlreadyHidden
         }
         if let id = recipient.id {
@@ -169,7 +168,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         tx: DBWriteTransaction
     ) {
         if let id = recipient.id, isHiddenRecipient(recipient, tx: tx) {
-            Logger.info("[Recipient hiding] Initiating recipient unhide.")
+            Logger.info("Unhiding recipient")
             let sql = """
                 DELETE FROM \(HiddenRecipient.databaseTableName)
                 WHERE \(HiddenRecipient.CodingKeys.recipientId.stringValue) = ?

@@ -19,7 +19,6 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope);
 - (NSString *)descriptionForEnvelope:(SSKProtoEnvelope *)envelope;
 
 - (NSString *)descriptionForContent:(SSKProtoContent *)content;
-- (NSString *)descriptionForDataMessage:(SSKProtoDataMessage *)dataMessage;
 + (void)logInvalidEnvelope:(SSKProtoEnvelope *)envelope;
 
 @end

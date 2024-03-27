@@ -25,7 +25,7 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
         static let lastKeysSyncRequestMessageDateKey = "lastKeysSyncRequestMessageDateKey"
     }
 
-    private let logger = PrefixedLogger(prefix: "MKOTSM")
+    private let logger = PrefixedLogger(prefix: "MKSM")
 
     private let dateProvider: DateProvider
     private let keyValueStore: KeyValueStore
@@ -63,8 +63,6 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
     }
 
     private func runStartupJobsForPrimaryDevice(tx: DBWriteTransaction) {
-        logger.info("")
-
         guard !keyValueStore.getBool(
             StoreConstants.hasDistributedMasterKey,
             defaultValue: false,
@@ -84,8 +82,6 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
     }
 
     private func runStartupJobsForLinkedDevice(tx: DBWriteTransaction) {
-        logger.info("")
-
         if svr.hasMasterKey(transaction: tx) {
             // No need to sync; we have the master key.
             return

@@ -31,7 +31,6 @@ public class SDSKeyValueStore: NSObject {
     static let collectionColumn = SDSColumnMetadata(columnName: "collection", columnType: .unicodeString, isOptional: false)
     static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
     static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
-    // TODO: For now, store all key-value in a single table.
     public static let table = SDSTableMetadata(
         collection: SDSKeyValueStore.dataStoreCollection,
         tableName: SDSKeyValueStore.tableName,
@@ -44,7 +43,6 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public required init(collection: String) {
-        // TODO: Verify that collection is a valid table name _OR_ convert to valid name.
         self.collection = collection
 
         super.init()

@@ -248,8 +248,6 @@ public extension TSMessage {
         sortOrder: UInt64,
         tx: SDSAnyWriteTransaction
     ) -> OWSReaction? {
-        Logger.info("")
-
         guard !wasRemotelyDeleted else {
             owsFailDebug("attempted to record a reaction for a message that was deleted")
             return nil
@@ -281,8 +279,6 @@ public extension TSMessage {
     }
 
     func removeReaction(for reactor: Aci, tx: SDSAnyWriteTransaction) {
-        Logger.info("")
-
         guard let reaction = reaction(for: reactor, tx: tx) else { return }
 
         reaction.anyRemove(transaction: tx)

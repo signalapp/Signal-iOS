@@ -32,7 +32,7 @@ public class GroupV2UpdatesImpl: Dependencies {
     public required init() {
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             self.autoRefreshGroupOnLaunch()
         }
     }
@@ -41,10 +41,8 @@ public class GroupV2UpdatesImpl: Dependencies {
 
     // On launch, we refresh a few randomly-selected groups.
     private func autoRefreshGroupOnLaunch() {
-        guard CurrentAppContext().isMainApp,
-              DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
-              reachabilityManager.isReachable,
-              !CurrentAppContext().isRunningTests else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
 
@@ -58,8 +56,7 @@ public class GroupV2UpdatesImpl: Dependencies {
             let groupId = groupInfoToRefresh.groupId
             let groupSecretParamsData = groupInfoToRefresh.groupSecretParamsData
             if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
-                let duration = OWSFormat.formatDurationSeconds(Int(abs(lastRefreshDate.timeIntervalSinceNow)))
-                Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which hasn't been refreshed in \(duration).")
+                Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which hasn't been refreshed in \(-lastRefreshDate.timeIntervalSinceNow) seconds.")
             } else {
                 Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which has never been refreshed.")
             }
@@ -115,30 +112,36 @@ public class GroupV2UpdatesImpl: Dependencies {
                 ) else {
                     // If we find a group that we have no record of refreshing,
                     // pick that one immediately.
-                    groupInfoToRefresh = GroupInfo(groupId: groupThread.groupId,
-                                                   groupSecretParamsData: groupModel.secretParamsData,
-                                                   lastRefreshDate: nil)
+                    groupInfoToRefresh = GroupInfo(
+                        groupId: groupThread.groupId,
+                        groupSecretParamsData: groupModel.secretParamsData,
+                        lastRefreshDate: nil
+                    )
                     stop.pointee = true
                     return
                 }
 
                 // Don't auto-refresh groups more than once a week.
-                let maxRefreshFrequencyInternal: TimeInterval = kWeekInterval * 1
+                let maxRefreshFrequencyInternal: TimeInterval = kWeekInterval
                 guard abs(lastRefreshDate.timeIntervalSinceNow) > maxRefreshFrequencyInternal else {
                     return
                 }
 
-                if let otherGroupInfo = groupInfoToRefresh,
-                   let otherLastRefreshDate = otherGroupInfo.lastRefreshDate,
-                   otherLastRefreshDate < lastRefreshDate {
+                if
+                    let otherGroupInfo = groupInfoToRefresh,
+                    let otherLastRefreshDate = otherGroupInfo.lastRefreshDate,
+                    otherLastRefreshDate < lastRefreshDate
+                {
                     // We already found another group with an older refresh
                     // date, so prefer that one.
                     return
                 }
 
-                groupInfoToRefresh = GroupInfo(groupId: groupThread.groupId,
-                                               groupSecretParamsData: groupModel.secretParamsData,
-                                               lastRefreshDate: lastRefreshDate)
+                groupInfoToRefresh = GroupInfo(
+                    groupId: groupThread.groupId,
+                    groupSecretParamsData: groupModel.secretParamsData,
+                    lastRefreshDate: lastRefreshDate
+                )
             }
             return groupInfoToRefresh
         }
@@ -265,10 +268,12 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             }
             let groupId = groupModel.groupId
             let groupSecretParamsData = groupModel.secretParamsData
-            return self.tryToRefreshV2GroupThread(groupId: groupId,
-                                                  spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                                                  groupSecretParamsData: groupSecretParamsData,
-                                                  groupUpdateMode: groupUpdateMode).asVoid()
+            return self.tryToRefreshV2GroupThread(
+                groupId: groupId,
+                spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+                groupSecretParamsData: groupSecretParamsData,
+                groupUpdateMode: groupUpdateMode
+            ).asVoid()
         }.catch(on: DispatchQueue.global()) { error in
             Logger.warn("Group refresh failed: \(error).")
         }
@@ -282,7 +287,6 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         groupModelOptions: TSGroupModelOptions
     ) -> Promise<TSGroupThread> {
 
-        if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] tryToRefreshV2GroupThread") }
         let isThrottled = { () -> Bool in
             guard groupUpdateMode.shouldThrottle else {
                 return false

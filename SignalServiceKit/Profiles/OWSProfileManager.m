@@ -1153,16 +1153,11 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    if (userProfile.avatarFileName.length > 0) {
-        return [self loadProfileAvatarDataWithFilename:userProfile.avatarFileName];
-    } else {
-        OWSLogWarn(@"Failed to get user profile to generate avatar data for %@. Has profile? %i. Has filename? %i",
-            address,
-            userProfile != nil,
-            userProfile.avatarFileName != nil);
+    if (userProfile.avatarFileName.length == 0) {
+        return nil;
     }
 
-    return nil;
+    return [self loadProfileAvatarDataWithFilename:userProfile.avatarFileName];
 }
 
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address

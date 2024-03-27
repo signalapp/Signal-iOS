@@ -267,6 +267,9 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     }
 
     public func recordPendingUpdates(updatedAccountIds: [AccountId]) {
+        if updatedAccountIds.isEmpty {
+            return
+        }
         Logger.info("Recording pending update for account IDs: \(updatedAccountIds)")
 
         updatePendingMutations {
@@ -275,6 +278,9 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     }
 
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
+        if updatedAddresses.isEmpty {
+            return
+        }
         Logger.info("Recording pending update for addresses: \(updatedAddresses)")
 
         updatePendingMutations {

@@ -24,7 +24,6 @@ extension OWSOutgoingResendResponse {
             timestamp: failedTimestamp,
             tx: tx
         ) {
-            Logger.info("Found an MSL record for resend request: \(failedTimestamp)")
             let originalThread = TSThread.anyFetch(uniqueId: payloadRecord.uniqueThreadId, transaction: tx)
 
             // We should inherit the timestamp of the failed message. This allows the
@@ -58,7 +57,7 @@ extension OWSOutgoingResendResponse {
                 transaction: tx
             )
         } else {
-            Logger.info("Failed to find MSL record for resend request: \(failedTimestamp). Declining to respond.")
+            Logger.warn("Failed to find MSL record for resend request: \(failedTimestamp). Declining to respond.")
             return nil
         }
     }
