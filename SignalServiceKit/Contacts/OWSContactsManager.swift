@@ -180,8 +180,8 @@ extension OWSContactsManager: SystemContactsFetcherDelegate {
 public class OWSContactsManagerSwiftValues {
     fileprivate let avatarBlurringCache = LowTrustCache()
     fileprivate let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
-    fileprivate let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: AtomicLock())
-    fileprivate let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>([:], lock: AtomicLock())
+    fileprivate let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: .init())
+    fileprivate let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>([:], lock: .init())
     fileprivate var systemContactsCache: SystemContactsCache?
     fileprivate let unknownThreadWarningCache = LowTrustCache()
 

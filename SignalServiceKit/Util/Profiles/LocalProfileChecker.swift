@@ -41,7 +41,7 @@ final class LocalProfileChecker {
         var consecutiveMismatchCount = 0
     }
 
-    private let state = AtomicValue(State(), lock: AtomicLock())
+    private let state = AtomicValue(State(), lock: .init())
 
     func didFetchLocalProfile(_ remoteProfile: RemoteProfile) {
         state.update { $0.mostRecentRemoteProfile = remoteProfile }

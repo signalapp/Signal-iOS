@@ -185,7 +185,7 @@ public class JobQueueRunner<
 
     public init(canExecuteJobsConcurrently: Bool, db: DB, jobFinder: JobFinderType, jobRunnerFactory: JobRunnerFactoryType) {
         let mode: Mode = .loading(canExecuteJobsConcurrently: canExecuteJobsConcurrently, jobsToEnqueueAfterLoading: [])
-        self.state = AtomicValue<State>(State(mode: mode), lock: AtomicLock())
+        self.state = AtomicValue<State>(State(mode: mode), lock: .init())
         self.db = db
         self.jobFinder = jobFinder
         self.jobRunnerFactory = jobRunnerFactory

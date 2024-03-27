@@ -59,7 +59,7 @@ public class ReceiptSender: NSObject {
         self.readReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingReadReceiptManagerCollection")
         self.viewedReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingViewedReceiptManagerCollection")
 
-        self.sendingState = AtomicValue(SendingState(), lock: AtomicLock())
+        self.sendingState = AtomicValue(SendingState(), lock: .init())
 
         super.init()
         SwiftSingletons.register(self)

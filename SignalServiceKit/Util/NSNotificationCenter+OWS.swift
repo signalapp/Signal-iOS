@@ -33,7 +33,7 @@ extension NotificationCenter {
             //
             // Memory management in this method is also non-trivial. The observer
             // captured in the block must be set to nil to avoid leaking memory.
-            let observer = AtomicOptional<NSObjectProtocol>(nil, lock: AtomicLock())
+            let observer = AtomicOptional<NSObjectProtocol>(nil, lock: .init())
             _ = observer.map { _ in
                 return addObserver(forName: name, object: object, queue: nil, using: { [weak self] notification in
                     guard let observer = observer.swap(nil) else {

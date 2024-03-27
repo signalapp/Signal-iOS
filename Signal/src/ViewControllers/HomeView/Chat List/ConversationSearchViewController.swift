@@ -560,7 +560,7 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
-    private let currentSearchCounter = AtomicUInt(0, lock: AtomicLock())
+    private let currentSearchCounter = AtomicUInt(0, lock: .init())
 
     private func updateSearchResults(searchText: String) {
         let searchText = searchText.stripped

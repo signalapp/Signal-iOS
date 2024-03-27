@@ -72,7 +72,7 @@ final class WebSocketPromise: SSKWebSocketDelegate {
         var socketError: Error?
     }
 
-    private var state = AtomicValue(State(), lock: AtomicLock())
+    private var state = AtomicValue(State(), lock: .init())
 
     /// Read one message from the underlying web socket.
     ///

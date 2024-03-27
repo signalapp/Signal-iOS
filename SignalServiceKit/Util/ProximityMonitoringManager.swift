@@ -17,7 +17,7 @@ public class OWSProximityMonitoringManagerImpl: OWSProximityMonitoringManager {
         var didAddObserver = false
         var lifetimes = [Weak<AnyObject>]()
     }
-    private var state = AtomicValue(State(), lock: AtomicLock())
+    private var state = AtomicValue(State(), lock: .init())
 
     public func add(lifetime: AnyObject) {
         guard !CurrentAppContext().isNSE else {

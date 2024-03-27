@@ -661,7 +661,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     // MARK: -
 
-    private let _cachedConfig = AtomicValue<RemoteConfig?>(nil, lock: AtomicLock())
+    private let _cachedConfig = AtomicValue<RemoteConfig?>(nil, lock: .init())
     public var cachedConfig: RemoteConfig? {
         let result = _cachedConfig.get()
         owsAssertDebug(result != nil, "cachedConfig not yet set.")

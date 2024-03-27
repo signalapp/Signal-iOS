@@ -8,8 +8,8 @@ import LibSignalClient
 import SignalCoreKit
 
 public class OWSProfileManagerSwiftValues {
-    fileprivate let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: AtomicLock())
-    fileprivate let avatarDownloadRequests = AtomicValue<[OWSProfileManager.AvatarDownloadKey: Promise<Data>]>([:], lock: AtomicLock())
+    fileprivate let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: .init())
+    fileprivate let avatarDownloadRequests = AtomicValue<[OWSProfileManager.AvatarDownloadKey: Promise<Data>]>([:], lock: .init())
 
     public init() {
     }

@@ -601,7 +601,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     /// Used to avoid concurrent calls to ``loadCallRecordsAnew(animated:)``
     /// from clobbering each other.
-    private let loadCallRecordsAnewToken = AtomicUuid(lock: AtomicLock())
+    private let loadCallRecordsAnewToken = AtomicUuid(lock: .init())
 
     /// Asynchronously resets our current ``LoadedCalls`` for the current UI
     /// state, then kicks off an initial page load.

@@ -44,7 +44,7 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
     private let databaseStorage: DB
     private let keyValueStore: KeyValueStore
 
-    private var lastReceivedSyncMessageAt: AtomicOptional<Date> = .init(nil, lock: AtomicLock())
+    private var lastReceivedSyncMessageAt: AtomicOptional<Date> = .init(nil, lock: .init())
 
     init(
         databaseStorage: DB,

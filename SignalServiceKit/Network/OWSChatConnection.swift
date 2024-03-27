@@ -280,7 +280,7 @@ public class OWSChatConnection: NSObject {
     /// This lock is sometimes waited on within an async context; make sure *all* uses release the lock quickly.
     private let stateObservation = AtomicValue(
         StateObservation(currentState: .closed, onOpen: [:]),
-        lock: AtomicLock()
+        lock: .init()
     )
 
     private func notifyStatusChange() {

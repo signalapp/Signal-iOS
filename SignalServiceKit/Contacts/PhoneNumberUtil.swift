@@ -9,14 +9,14 @@ import SignalCoreKit
 
 public class PhoneNumberUtilSwiftValues {
     fileprivate let nbPhoneNumberUtil = NBPhoneNumberUtil()
-    fileprivate let countryCodesFromCallingCodeCache = AtomicDictionary<String, [String]>([:], lock: AtomicLock())
+    fileprivate let countryCodesFromCallingCodeCache = AtomicDictionary<String, [String]>([:], lock: .init())
     fileprivate let parsedPhoneNumberCache = LRUCache<String, NBPhoneNumber>(
         maxSize: 256,
         nseMaxSize: 0,
         shouldEvacuateInBackground: false
     )
-    fileprivate let nationalPrefixTransformRuleCache = AtomicDictionary<String, String?>([:], lock: AtomicLock())
-    fileprivate let phoneNumberCountryCodeCache = AtomicDictionary<String, String?>([:], lock: AtomicLock())
+    fileprivate let nationalPrefixTransformRuleCache = AtomicDictionary<String, String?>([:], lock: .init())
+    fileprivate let phoneNumberCountryCodeCache = AtomicDictionary<String, String?>([:], lock: .init())
 }
 
 // MARK: -

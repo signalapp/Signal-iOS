@@ -109,7 +109,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     private let checkpointQueue = DispatchQueue(label: "org.signal.checkpoint", qos: .utility)
-    private let checkpointState = AtomicValue<CheckpointState>(CheckpointState(), lock: AtomicLock())
+    private let checkpointState = AtomicValue<CheckpointState>(CheckpointState(), lock: .init())
 
     private struct CheckpointState {
         /// The number of writes we can perform until our next checkpoint attempt.

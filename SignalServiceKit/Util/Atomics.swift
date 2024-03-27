@@ -12,17 +12,9 @@ public enum AtomicError: Int, Error {
 
 // MARK: -
 
-public class AtomicLock {
+extension UnfairLock {
     // The default lock shared by _all_ atomics.
-    public static let sharedGlobal = AtomicLock()
-
-    public init() {}
-
-    private let unfairLock = UnfairLock()
-
-    fileprivate func perform<T>(_ block: () throws -> T) rethrows -> T {
-        try unfairLock.withLock(block)
-    }
+    public static let sharedGlobal = UnfairLock()
 }
 
 // MARK: -
@@ -30,7 +22,7 @@ public class AtomicLock {
 public class AtomicBool: NSObject {
     private let value: AtomicValue<Bool>
 
-    public init(_ value: Bool, lock: AtomicLock) {
+    public init(_ value: Bool, lock: UnfairLock) {
         self.value = AtomicValue(value, lock: lock)
     }
 
@@ -76,7 +68,7 @@ public class AtomicBool: NSObject {
 public class AtomicUInt {
     private let value: AtomicValue<UInt>
 
-    public init(_ value: UInt = 0, lock: AtomicLock) {
+    public init(_ value: UInt = 0, lock: UnfairLock) {
         self.value = AtomicValue(value, lock: lock)
     }
 
@@ -116,7 +108,7 @@ public extension AtomicUuid {
         return newValue
     }
 
-    convenience init(lock: AtomicLock) {
+    convenience init(lock: UnfairLock) {
         self.init(UUID(), lock: lock)
     }
 }
@@ -124,29 +116,29 @@ public extension AtomicUuid {
 // MARK: -
 
 public final class AtomicValue<T> {
-    private let lock: AtomicLock
+    private let lock: UnfairLock
     private var value: T
 
-    public init(_ value: T, lock: AtomicLock) {
+    public init(_ value: T, lock: UnfairLock) {
         self.value = value
         self.lock = lock
     }
 
     public func get() -> T {
-        lock.perform {
+        lock.withLock {
             self.value
         }
     }
 
     public func set(_ value: T) {
-        lock.perform {
+        lock.withLock {
             self.value = value
         }
     }
 
     // Returns the old value.
     public func swap(_ value: T) -> T {
-        lock.perform {
+        lock.withLock {
             let oldValue = self.value
             self.value = value
             return oldValue
@@ -156,7 +148,7 @@ public final class AtomicValue<T> {
     // Transform the current value using a block.
     @discardableResult
     public func map(_ block: (T) -> T) -> T {
-        lock.perform {
+        lock.withLock {
             let newValue = block(self.value)
             self.value = newValue
             return newValue
@@ -164,7 +156,7 @@ public final class AtomicValue<T> {
     }
 
     public func update<Result>(block: (inout T) throws -> Result) rethrows -> Result {
-        try lock.perform { try block(&self.value) }
+        try lock.withLock { try block(&self.value) }
     }
 }
 
@@ -174,7 +166,7 @@ extension AtomicValue where T: Equatable {
     // Sets value to "toValue" IFF it currently has "fromValue",
     // otherwise throws.
     public func transition(from fromValue: T, to toValue: T) throws {
-        try lock.perform {
+        try lock.withLock {
             guard self.value == fromValue else {
                 throw AtomicError.invalidTransition
             }
@@ -188,7 +180,7 @@ extension AtomicValue where T: Equatable {
 public final class AtomicOptional<T> {
     fileprivate let value: AtomicValue<T?>
 
-    public init(_ value: T?, lock: AtomicLock) {
+    public init(_ value: T?, lock: UnfairLock) {
         self.value = AtomicValue(value, lock: lock)
     }
 
@@ -248,46 +240,46 @@ extension AtomicOptional where T: Equatable {
 // MARK: -
 
 public class AtomicArray<T> {
-    private let lock: AtomicLock
+    private let lock: UnfairLock
     private var values: [T]
 
-    public init(_ values: [T] = [], lock: AtomicLock) {
+    public init(_ values: [T] = [], lock: UnfairLock) {
         self.values = values
         self.lock = lock
     }
 
     public func get() -> [T] {
-        lock.perform {
+        lock.withLock {
             values
         }
     }
 
     public func set(_ values: [T]) {
-        lock.perform {
+        lock.withLock {
             self.values = values
         }
     }
 
     public func append(_ value: T) {
-        lock.perform {
+        lock.withLock {
             values.append(value)
         }
     }
 
     public func append(contentsOf newElements: some Sequence<T>) {
-        lock.perform {
+        lock.withLock {
             values.append(contentsOf: newElements)
         }
     }
 
     public var first: T? {
-        lock.perform {
+        lock.withLock {
             values.first
         }
     }
 
     public func popHead() -> T? {
-        lock.perform {
+        lock.withLock {
             guard !values.isEmpty else {
                 return nil
             }
@@ -296,7 +288,7 @@ public class AtomicArray<T> {
     }
 
     public func popTail() -> T? {
-        lock.perform {
+        lock.withLock {
             guard !values.isEmpty else {
                 return nil
             }
@@ -309,18 +301,18 @@ public class AtomicArray<T> {
     }
 
     public func pushHead(_ value: T) {
-        lock.perform {
+        lock.withLock {
             self.values.insert(value, at: 0)
         }
     }
 
     public var count: Int {
-        lock.perform { values.count }
+        lock.withLock { values.count }
     }
 
     @discardableResult
     public func removeAll() -> [T] {
-        lock.perform {
+        lock.withLock {
             let oldValues = values
             values = []
             return oldValues
@@ -330,7 +322,7 @@ public class AtomicArray<T> {
 
 extension AtomicArray where T: Equatable {
     public func remove(_ valueToRemove: T) {
-        lock.perform {
+        lock.withLock {
             self.values = self.values.filter { (value: T) -> Bool in
                 valueToRemove != value
             }
@@ -341,21 +333,21 @@ extension AtomicArray where T: Equatable {
 // MARK: -
 
 public class AtomicDictionary<Key: Hashable, Value> {
-    private let lock: AtomicLock
+    private let lock: UnfairLock
     private var values: [Key: Value]
 
-    public init(_ values: [Key: Value] = [:], lock: AtomicLock) {
+    public init(_ values: [Key: Value] = [:], lock: UnfairLock) {
         self.values = values
         self.lock = lock
     }
 
     public subscript(_ key: Key) -> Value? {
-        get { lock.perform { self.values[key] } }
-        set { lock.perform { self.values[key] = newValue } }
+        get { lock.withLock { self.values[key] } }
+        set { lock.withLock { self.values[key] = newValue } }
     }
 
     public func pop(_ key: Key) -> Value? {
-        lock.perform {
+        lock.withLock {
             guard let value = self.values[key] else { return nil }
             self.values[key] = nil
             return value
@@ -363,27 +355,27 @@ public class AtomicDictionary<Key: Hashable, Value> {
     }
 
     public func get() -> [Key: Value] {
-        lock.perform { self.values }
+        lock.withLock { self.values }
     }
 
     public func set(_ values: [Key: Value]) {
-        lock.perform { self.values = values }
+        lock.withLock { self.values = values }
     }
 
     public var isEmpty: Bool {
-        lock.perform { values.isEmpty }
+        lock.withLock { values.isEmpty }
     }
 
     @discardableResult
     public func removeValue(forKey key: Key) -> Value? {
-        lock.perform {
+        lock.withLock {
             values.removeValue(forKey: key)
         }
     }
 
     @discardableResult
     public func removeAllValues() -> [Value] {
-        lock.perform {
+        lock.withLock {
             let result = Array(values.values)
             values.removeAll()
             return result
@@ -391,54 +383,54 @@ public class AtomicDictionary<Key: Hashable, Value> {
     }
 
     public var count: Int {
-        lock.perform { values.count }
+        lock.withLock { values.count }
     }
 
     public var allValues: [Value] {
-        lock.perform { Array(values.values) }
+        lock.withLock { Array(values.values) }
     }
 }
 
 // MARK: -
 
 public class AtomicSet<T: Hashable> {
-    private let lock: AtomicLock
+    private let lock: UnfairLock
     private var values = Set<T>()
 
-    public init(lock: AtomicLock) {
+    public init(lock: UnfairLock) {
         self.lock = lock
     }
 
     public func insert(_ value: T) {
-        lock.perform { _ = self.values.insert(value) }
+        lock.withLock { _ = self.values.insert(value) }
     }
 
     public func contains(_ value: T) -> Bool {
-        lock.perform { self.values.contains(value) }
+        lock.withLock { self.values.contains(value) }
     }
 
     @discardableResult
     public func remove(_ value: T) -> Bool {
-        lock.perform { () -> Bool in
+        lock.withLock { () -> Bool in
             self.values.remove(value) != nil
         }
     }
 
     public var isEmpty: Bool {
-        lock.perform { values.isEmpty }
+        lock.withLock { values.isEmpty }
     }
 
     public var count: Int {
-        lock.perform { values.count }
+        lock.withLock { values.count }
     }
 
     public var allValues: Set<T> {
-        lock.perform { values }
+        lock.withLock { values }
     }
 
     @discardableResult
     public func removeAllValues() -> Set<T> {
-        lock.perform {
+        lock.withLock {
             let result = values
             values.removeAll()
             return result
@@ -452,7 +444,7 @@ public struct Atomic<Value> {
     private let value: AtomicValue<Value>
 
     public init(wrappedValue value: Value) {
-        self.value = AtomicValue(value, lock: AtomicLock())
+        self.value = AtomicValue(value, lock: UnfairLock())
     }
 
     public var wrappedValue: Value {

@@ -506,12 +506,12 @@ private class CachedAddress {
 
     init(hashValue: Int, identifiers: Identifiers) {
         self.hashValue = hashValue
-        self.identifiers = AtomicValue(identifiers, lock: AtomicLock())
+        self.identifiers = AtomicValue(identifiers, lock: .init())
     }
 }
 
 public class SignalServiceAddressCache: NSObject {
-    private let state = AtomicValue(CacheState(), lock: AtomicLock())
+    private let state = AtomicValue(CacheState(), lock: .init())
 
     private let _phoneNumberVisibilityFetcher: PhoneNumberVisibilityFetcher?
     private var phoneNumberVisibilityFetcher: PhoneNumberVisibilityFetcher {

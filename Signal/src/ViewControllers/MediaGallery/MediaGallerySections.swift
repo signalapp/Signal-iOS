@@ -808,7 +808,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     class SnapshotManager: Dependencies {
         private var mutableState: State
         private var snapshot: State
-        private(set) var pendingUpdate = AtomicValue(Update.noop, lock: AtomicLock())
+        private(set) var pendingUpdate = AtomicValue(Update.noop, lock: .init())
         private var highPriorityStack: AtomicArray<() -> Void> = AtomicArray(lock: .sharedGlobal)
         private var lowPriorityStack: AtomicArray<() -> Void> = AtomicArray(lock: .sharedGlobal)
         // We tried to use an OperationQueue for this. It was a good fit because it can prioritize

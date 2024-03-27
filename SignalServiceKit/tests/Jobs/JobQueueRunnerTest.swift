@@ -109,7 +109,7 @@ final class JobQueueRunnerTest: XCTestCase {
 }
 
 private class MockJobFinder: JobRecordFinder {
-    let jobRecords = AtomicValue<[IncomingContactSyncJobRecord?]>([], lock: AtomicLock())
+    let jobRecords = AtomicValue<[IncomingContactSyncJobRecord?]>([], lock: .init())
 
     func addJob(_ jobRecord: IncomingContactSyncJobRecord) {
         jobRecords.update {
@@ -140,7 +140,7 @@ private class MockJobRunnerFactory: JobRunnerFactory {
     private let jobFinder: MockJobFinder
     private let mockDb: MockDB
 
-    let executedJobs = AtomicArray<String>(lock: AtomicLock())
+    let executedJobs = AtomicArray<String>(lock: .init())
 
     init(jobFinder: MockJobFinder, mockDb: MockDB) {
         self.jobFinder = jobFinder

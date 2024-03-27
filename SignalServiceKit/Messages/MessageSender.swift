@@ -299,7 +299,7 @@ public class MessageSender: Dependencies {
 
     // MARK: - Untrusted Identities
 
-    private let staleIdentityCache = AtomicDictionary<AccountId, Date>(lock: AtomicLock())
+    private let staleIdentityCache = AtomicDictionary<AccountId, Date>(lock: .init())
 
     private func handleUntrustedIdentityKeyError(
         serviceId: ServiceId,
@@ -361,7 +361,7 @@ public class MessageSender: Dependencies {
         let lastErrorDate: Date
         let errorCount: UInt32
     }
-    private let invalidKeySignatureCache = AtomicValue(InvalidSignatureCache(), lock: AtomicLock())
+    private let invalidKeySignatureCache = AtomicValue(InvalidSignatureCache(), lock: .init())
 
     private func hadInvalidKeySignatureError(for recipientId: AccountId) {
         invalidKeySignatureCache.update { cache in
@@ -536,7 +536,7 @@ public class MessageSender: Dependencies {
         owsAssertDebug(message.messageState == .sent)
     }
 
-    private let sendingQueueMap = AtomicValue<[String: OperationQueue]>([:], lock: AtomicLock())
+    private let sendingQueueMap = AtomicValue<[String: OperationQueue]>([:], lock: .init())
 
     private func sendingQueue(for message: TSOutgoingMessage) -> OperationQueue {
         let sendingQueueKey = message.uniqueThreadId
@@ -563,7 +563,7 @@ public class MessageSender: Dependencies {
         }
     }
 
-    private let pendingPreKeyRotation = AtomicValue<Task<Void, Error>?>(nil, lock: AtomicLock())
+    private let pendingPreKeyRotation = AtomicValue<Task<Void, Error>?>(nil, lock: .init())
 
     private func preKeyRotationTaskIfNeeded() -> Task<Void, Error>? {
         return pendingPreKeyRotation.map { existingTask in
@@ -891,7 +891,7 @@ public class MessageSender: Dependencies {
             try await lookUpPhoneNumbers(phoneNumbers)
             try await sendPreparedMessage(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
         case .sendPreparedMessage(let serializedMessage, let thread, let serviceIds, let udAccess, let localIdentifiers):
-            let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: AtomicLock())
+            let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: .init())
             do {
                 try await sendPreparedMessage(
                     message,

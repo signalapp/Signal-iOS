@@ -13,7 +13,7 @@ class MainAppContext: NSObject, AppContext {
     private(set) var appForegroundTime: Date
 
     override init() {
-        _reportedApplicationState = AtomicValue(.inactive, lock: AtomicLock())
+        _reportedApplicationState = AtomicValue(.inactive, lock: .init())
 
         let launchDate = Date()
         appLaunchTime = launchDate
