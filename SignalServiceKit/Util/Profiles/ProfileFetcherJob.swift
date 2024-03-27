@@ -499,12 +499,13 @@ public extension DecryptedProfile {
 
         do {
             guard let (dataLength, dataLengthCount) = UInt32.from(littleEndianData: paymentAddressData) else {
+                owsFailDebug("couldn't find paymentAddressData's length")
                 return nil
             }
             paymentAddressData = paymentAddressData.dropFirst(dataLengthCount)
             paymentAddressData = paymentAddressData.prefix(Int(dataLength))
             guard paymentAddressData.count == dataLength else {
-                owsFailDebug("Invalid paymentAddressData.")
+                owsFailDebug("paymentAddressData is too short")
                 return nil
             }
             let proto = try SSKProtoPaymentAddress(serializedData: paymentAddressData)
