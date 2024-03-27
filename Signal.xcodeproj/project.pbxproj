@@ -2718,7 +2718,6 @@
 		05E3A4DD8B4442530268AFC1 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Multiselect.swift"; sourceTree = "<group>"; };
-		1422CB3D27AD456900090BB6 /* Signalyzer.instrpkg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "com.apple.instruments.package-definition"; path = Signalyzer.instrpkg; sourceTree = "<group>"; };
 		1466AB272817F7E7003B3D9F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = translations/en.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		1466AB292817F7F2003B3D9F /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = de; path = translations/de.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		1466AB2B2817F811003B3D9F /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ca; path = translations/ca.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -5610,14 +5609,6 @@
 				94A685625E25E6F3EE3CC812 /* Pods-SignalUITests.testable release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		146FFAA127A7FE87004A2A64 /* Instruments */ = {
-			isa = PBXGroup;
-			children = (
-				1422CB3D27AD456900090BB6 /* Signalyzer.instrpkg */,
-			);
-			path = Instruments;
 			sourceTree = "<group>";
 		};
 		1704690725D4C2DA000793D8 /* attachments */ = {
@@ -8710,7 +8701,6 @@
 				453518691FC635DD00210559 /* SignalShareExtension */,
 				34A954A9271A471200B05242 /* SignalUI */,
 				34A954B7271A471300B05242 /* SignalUITests */,
-				146FFAA127A7FE87004A2A64 /* Instruments */,
 				F9C5C898289451B900548EEE /* SignalServiceKit */,
 				F9C5C8A4289451B900548EEE /* SignalServiceKitTests */,
 				D221A08C169C9E5E00537ABF /* Frameworks */,
