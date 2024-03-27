@@ -449,19 +449,18 @@ public class AtomicSet<T: Hashable> {
 @propertyWrapper
 public struct Atomic<Value> {
 
-    private var value: Value
-    private let lock = AtomicLock()
+    private let value: AtomicValue<Value>
 
     public init(wrappedValue value: Value) {
-        self.value = value
+        self.value = AtomicValue(value, lock: AtomicLock())
     }
 
     public var wrappedValue: Value {
       get {
-          lock.perform { value }
+          value.get()
       }
-      set {
-          lock.perform { value = newValue }
+      nonmutating set {
+          value.set(newValue)
       }
     }
 }
