@@ -9,6 +9,8 @@ import SignalCoreKit
 public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
     public private(set) var storyMessageId: String!
+    public private(set) var storyMessageRowId: Int64!
+
     @objc
     public private(set) var storyAllowsReplies: NSNumber!
     @objc
@@ -20,10 +22,12 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     public init(
         thread: TSThread,
         storyMessage: StoryMessage,
+        storyMessageRowId: Int64,
         skipSyncTranscript: Bool = false,
         transaction: SDSAnyReadTransaction
     ) {
         self.storyMessageId = storyMessage.uniqueId
+        self.storyMessageRowId = storyMessageRowId
         self.storyAllowsReplies = NSNumber(value: (thread as? TSPrivateStoryThread)?.allowsReplies ?? true)
         self.isPrivateStorySend = NSNumber(value: thread is TSPrivateStoryThread)
         self.skipSyncTranscript = NSNumber(value: skipSyncTranscript)
@@ -102,7 +106,12 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             groupThread.updateWithStorySendEnabled(true, transaction: transaction)
         }
 
-        let outgoingMessage = OutgoingStoryMessage(thread: thread, storyMessage: storyMessage, transaction: transaction)
+        let outgoingMessage = OutgoingStoryMessage(
+            thread: thread,
+            storyMessage: storyMessage,
+            storyMessageRowId: storyMessage.id!,
+            transaction: transaction
+        )
         return outgoingMessage
     }
 
@@ -147,6 +156,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         let outgoingMessage = OutgoingStoryMessage(
             thread: privateStoryThread,
             storyMessage: storyMessage,
+            storyMessageRowId: storyMessage.id!,
             skipSyncTranscript: true,
             transaction: transaction
         )

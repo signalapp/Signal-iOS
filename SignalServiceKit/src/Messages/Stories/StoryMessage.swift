@@ -879,6 +879,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             let message = OutgoingStoryMessage(
                 thread: thread,
                 storyMessage: self,
+                storyMessageRowId: self.id!,
                 // Only send one sync transcript, even if we're sending to multiple threads
                 skipSyncTranscript: idx > 0,
                 transaction: transaction
