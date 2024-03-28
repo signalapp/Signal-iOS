@@ -21,25 +21,6 @@ public final class ThreadUtil: Dependencies {
         }
     }
 
-    @discardableResult
-    class func enqueueMessage(
-        outgoingMessageBuilder builder: TSOutgoingMessageBuilder,
-        thread: TSThread
-    ) -> TSOutgoingMessage {
-        let message: TSOutgoingMessage = databaseStorage.read { tx in
-            applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
-            return builder.build(transaction: tx)
-        }
-
-        Self.enqueueSendAsyncWrite { transaction in
-            message.anyInsert(transaction: transaction)
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
-            if message.hasRenderableContent(tx: transaction) { thread.donateSendMessageIntent(for: message, transaction: transaction) }
-        }
-
-        return message
-    }
-
     private static func applyDisappearingMessagesConfiguration(to builder: TSOutgoingMessageBuilder, tx: DBReadTransaction) {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: builder.thread, tx: tx)
@@ -96,7 +77,29 @@ public extension ThreadUtil {
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.contactShare = contactShare
 
-        return enqueueMessage(outgoingMessageBuilder: builder, thread: thread)
+        let message: TSOutgoingMessage = databaseStorage.read { tx in
+            applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
+            return builder.build(transaction: tx)
+        }
+
+        // TODO: contact share should be passed as a "draft" to the unprepared message.
+        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(message)
+
+        Self.enqueueSendAsyncWrite { transaction in
+            guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {
+                owsFailDebug("Unable to build message for sending!")
+                return
+            }
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
+            if
+                let messageForIntent = preparedMessage.messageForIntentDonation(tx: transaction),
+                let thread = messageForIntent.thread(tx: transaction)
+            {
+                thread.donateSendMessageIntent(for: messageForIntent, transaction: transaction)
+            }
+        }
+
+        return message
     }
 }
 
