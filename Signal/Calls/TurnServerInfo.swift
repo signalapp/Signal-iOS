@@ -10,6 +10,8 @@ struct TurnServerInfo {
     let password: String
     let username: String
     let urls: [String]
+    let urlsWithIps: [String]
+    let hostname: String
 
     init?(attributes: [String: AnyObject]) {
         if let passwordAttribute = (attributes["password"] as? String) {
@@ -24,8 +26,26 @@ struct TurnServerInfo {
             return nil
         }
 
-        if let urlsAttribute = attributes["urls"] as? [String] {
+        switch attributes["urls"] {
+        case let urlsAttribute as [String]:
             urls = urlsAttribute
+        case is NSNull:
+            urls = []
+        default:
+            return nil
+        }
+
+        switch attributes["urlsWithIps"] {
+        case let urlsWithIpsAttribute as [String]:
+            urlsWithIps = urlsWithIpsAttribute
+        case is NSNull:
+            urlsWithIps = []
+        default:
+            return nil
+        }
+
+        if let hostnameAttribute = attributes["hostname"] as? String {
+            hostname = hostnameAttribute
         } else {
             return nil
         }

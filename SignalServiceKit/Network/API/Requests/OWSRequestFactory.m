@@ -95,7 +95,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)turnServerInfoRequest
 {
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/accounts/turn"] method:@"GET" parameters:@{}];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/calling/relays"] method:@"GET" parameters:@{}];
 }
 
 + (TSRequest *)allocAttachmentRequestV4

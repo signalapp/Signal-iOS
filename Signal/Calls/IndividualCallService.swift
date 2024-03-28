@@ -1207,17 +1207,15 @@ final class IndividualCallService {
      * connection to the other party. SignalService supplies a list of servers.
      */
     private func getIceServers() async throws -> [RTCIceServer] {
-        let turnServerInfo = try await self.getTurnServerInfo()
-        Logger.debug("got turn server urls: \(turnServerInfo.urls)")
+        let tsi = try await self.getTurnServerInfo()
+        Logger.debug("got turn server urls: \(tsi.urls) and \(tsi.urlsWithIps)")
 
-        return turnServerInfo.urls.map { url in
-            if url.hasPrefix("turn") {
-                // Only "turn:" servers require authentication. Don't include the credentials to other ICE servers
-                // as 1.) they aren't used, and 2.) the non-turn servers might not be under our control.
-                return RTCIceServer(urlStrings: [url], username: turnServerInfo.username, credential: turnServerInfo.password)
-            } else {
-                return RTCIceServer(urlStrings: [url])
-            }
+        // prioritize ip options by putting them first
+        // only provide hostname for ip based options
+        return tsi.urlsWithIps.map { url in
+            return RTCIceServer(urlStrings: [url], username: tsi.username, credential: tsi.password, tlsCertPolicy: RTCTlsCertPolicy.secure, hostname: tsi.hostname)
+        } + tsi.urls.map { url in
+            return RTCIceServer(urlStrings: [url], username: tsi.username, credential: tsi.password)
         }
     }
 
