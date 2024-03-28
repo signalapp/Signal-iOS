@@ -25,12 +25,12 @@ extension TSOutgoingMessage {
                 transaction: transaction.unwrapGrdbRead
             ).asMessageBodyForForwarding()
 
-            let message: TSOutgoingMessage
+            let preparedMessage: PreparedOutgoingMessage
             let attachmentUUIDs: [UUID]
             switch destination.content {
             case .media(let attachments):
                 attachmentUUIDs = attachments.map(\.id)
-                message = try ThreadUtil.createUnsentMessage(
+                preparedMessage = try Self.createUnsentMessage(
                     body: messageBodyForContext,
                     mediaAttachments: attachments.map(\.value),
                     thread: destination.thread,
@@ -42,17 +42,38 @@ extension TSOutgoingMessage {
                 continue
             }
 
-            state.messages.append(message)
+            state.messages.append(preparedMessage)
             state.threads.append(destination.thread)
 
-            for (idx, attachmentId) in message.bodyAttachmentIds(transaction: transaction).enumerated() {
+            for (idx, attachmentId) in preparedMessage.legacyAttachmentIdsForMultisend(tx: transaction).enumerated() {
                 let attachmentUUID = attachmentUUIDs[idx]
                 var correspondingIdsForAttachment = state.correspondingAttachmentIds[attachmentUUID] ?? []
                 correspondingIdsForAttachment += [attachmentId]
                 state.correspondingAttachmentIds[attachmentUUID] = correspondingIdsForAttachment
             }
 
-            destination.thread.donateSendMessageIntent(for: message, transaction: transaction)
+            if let message = preparedMessage.messageForIntentDonation(tx: transaction) {
+                destination.thread.donateSendMessageIntent(for: message, transaction: transaction)
+            }
         }
+    }
+
+    private class func createUnsentMessage(
+        body messageBody: MessageBody?,
+        mediaAttachments: [SignalAttachment],
+        thread: TSThread,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> PreparedOutgoingMessage {
+        let unpreparedMessage = UnpreparedOutgoingMessage.build(
+            thread: thread,
+            messageBody: messageBody,
+            mediaAttachments: mediaAttachments,
+            quotedReplyDraft: nil,
+            linkPreviewDraft: nil,
+            editTarget: nil,
+            transaction: transaction)
+        let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
+        _ = preparedMessage.dequeueForSending(tx: transaction)
+        return preparedMessage
     }
 }

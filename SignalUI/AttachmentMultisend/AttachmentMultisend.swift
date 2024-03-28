@@ -10,7 +10,7 @@ public class AttachmentMultisend: Dependencies {
 
     private struct PreparedMultisend {
         let attachmentIdMap: [String: [String]]
-        let messages: [TSOutgoingMessage]
+        let messages: [PreparedOutgoingMessage]
         let storyMessagesToSend: [OutgoingStoryMessage]
         let threads: [TSThread]
     }
@@ -36,7 +36,7 @@ public class AttachmentMultisend: Dependencies {
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment],
-        messagesReadyToSend: @escaping ([TSOutgoingMessage]) -> Void
+        messagesReadyToSend: @escaping ([PreparedOutgoingMessage]) -> Void
     ) -> Promise<[TSThread]> {
         return firstly(on: ThreadUtil.enqueueSendQueue) { () -> Promise<PreparedMultisend> in
             self.prepareForSendingWithSneakyTransaction(
@@ -229,7 +229,7 @@ public class AttachmentMultisend: Dependencies {
     public class func sendTextAttachmentFromShareExtension(
         _ textAttachment: UnsentTextAttachment,
         to conversations: [ConversationItem],
-        messagesReadyToSend: @escaping ([TSOutgoingMessage]) -> Void
+        messagesReadyToSend: @escaping ([PreparedOutgoingMessage]) -> Void
     ) -> Promise<[TSThread]> {
         return firstly(on: ThreadUtil.enqueueSendQueue) {
             try self.prepareForSending(conversations: conversations, textAttachment: textAttachment)
@@ -390,7 +390,7 @@ public class AttachmentMultisend: Dependencies {
 
     private class func sendAttachmentFromShareExtension(
         preparedSend: PreparedMultisend,
-        messagesReadyToSend: @escaping ([TSOutgoingMessage]) -> Void
+        messagesReadyToSend: @escaping ([PreparedOutgoingMessage]) -> Void
     ) throws -> Promise<[TSThread]> {
         messagesReadyToSend(preparedSend.messages)
 
@@ -398,7 +398,12 @@ public class AttachmentMultisend: Dependencies {
             let messageSendPromises = try await BroadcastMediaUploader.uploadAttachments(
                 attachmentIdMap: preparedSend.attachmentIdMap,
                 sendMessages: { uploadedMessages, tx in
-                    let outgoingMessages = uploadedMessages + preparedSend.storyMessagesToSend
+                    let preparedStoryMessages = preparedSend.storyMessagesToSend.map {
+                        PreparedOutgoingMessage.preprepared(
+                            outgoingStoryMessage: $0
+                        )
+                    }
+                    let outgoingMessages = uploadedMessages + preparedStoryMessages
                     return outgoingMessages.map { message in
                         ThreadUtil.enqueueMessagePromise(message: message, transaction: tx)
                     }
@@ -447,7 +452,7 @@ class MultisendDestination: NSObject {
 
 class MultisendState: NSObject {
     let approvalMessageBody: MessageBody?
-    var messages: [TSOutgoingMessage] = []
+    var messages: [PreparedOutgoingMessage] = []
     var storyMessagesToSend: [OutgoingStoryMessage] = []
     var threads: [TSThread] = []
     var correspondingAttachmentIds: [UUID: [String]] = [:]
