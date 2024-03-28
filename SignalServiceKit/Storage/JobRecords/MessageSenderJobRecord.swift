@@ -80,36 +80,6 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
     }
 
     convenience init(
-        message: TSOutgoingMessage,
-        isHighPriority: Bool,
-        transaction: SDSAnyReadTransaction
-    ) throws {
-        let messageType: MessageType
-        if message.shouldBeSaved {
-            let messageIdParam = message.uniqueId
-            owsAssertDebug(!messageIdParam.isEmpty)
-
-            guard TSInteraction.anyExists(uniqueId: messageIdParam, transaction: transaction) else {
-                throw JobRecordError.assertionError(message: "Message wasn't saved!")
-            }
-
-            messageType = .persisted(
-                messageId: messageIdParam,
-                useMediaQueue: message.hasMediaAttachments(transaction: transaction)
-            )
-        } else {
-            messageType = .transient(message)
-        }
-
-        self.init(
-            threadId: message.uniqueThreadId,
-            messageType: messageType,
-            removeMessageAfterSending: false,
-            isHighPriority: isHighPriority
-        )
-    }
-
-    convenience init(
         persistedMessage: PreparedOutgoingMessage.MessageType.Persisted,
         isHighPriority: Bool,
         transaction: SDSAnyReadTransaction

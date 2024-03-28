@@ -177,23 +177,6 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
     // MARK: -
 
-    private static func sendStressMessage(_ message: TSOutgoingMessage) {
-        if let dynamicMessage = message as? OWSDynamicOutgoingMessage {
-            Task {
-                do {
-                    try await self.messageSender.sendMessage(dynamicMessage.asPreparer)
-                    Logger.info("Success.")
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                }
-            }
-        } else {
-            databaseStorage.write { transaction in
-                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
-            }
-        }
-    }
-
     private static func sendStressMessage(
         toThread thread: TSThread,
         timestamp: UInt64 = Date.ows_millisecondTimestamp(),
@@ -207,7 +190,14 @@ class DebugUIStress: DebugUIPage, Dependencies {
                 plainTextDataBlock: block
             )
         }
-        sendStressMessage(message)
+        Task {
+            do {
+                try await self.messageSender.sendMessage(message.asPreparer)
+                Logger.info("Success.")
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
     }
 
     // MARK: Groups

@@ -17,7 +17,11 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let jobQueue = MessageSenderJobQueue()
         let (message, promise) = await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
-            let promise = jobQueue.add(.promise, message: message.asPreparer, transaction: tx)
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                insertedAndUploadedMessage: message,
+                messageRowId: message.sqliteRowId!
+            )
+            let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
             return (message, promise)
         }
         fakeMessageSender.stubbedFailingErrors = [nil]
@@ -31,7 +35,13 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let jobQueue = MessageSenderJobQueue()
         let (messages, promises) = await databaseStorage.awaitableWrite { tx in
             let messages = (1...messageCount).map { _ in OutgoingMessageFactory().create(transaction: tx) }
-            let promises = messages.map { jobQueue.add(.promise, message: $0.asPreparer, transaction: tx) }
+            let promises = messages.map {
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    insertedAndUploadedMessage: $0,
+                    messageRowId: $0.sqliteRowId!
+                )
+                return jobQueue.add(.promise, message: preparedMessage, transaction: tx)
+            }
             return (messages, promises)
         }
         fakeMessageSender.stubbedFailingErrors = Array(repeating: nil, count: messageCount)
@@ -48,7 +58,10 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         jobQueue.setup()
         let (message, promise) = await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().buildDeliveryReceipt(transaction: tx)
-            let promise = jobQueue.add(.promise, message: message.asPreparer, transaction: tx)
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: message
+            )
+            let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
             return (message, promise)
         }
         try await promise.awaitable()
@@ -60,7 +73,11 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let (message, promise) = await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
-            let promise = jobQueue.add(.promise, message: message.asPreparer, transaction: tx)
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                insertedAndUploadedMessage: message,
+                messageRowId: message.sqliteRowId!
+            )
+            let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
             return (message, promise)
         }
 
@@ -117,7 +134,11 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let (message, promise) = await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
-            let promise = jobQueue.add(.promise, message: message.asPreparer, transaction: tx)
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                insertedAndUploadedMessage: message,
+                messageRowId: message.sqliteRowId!
+            )
+            let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
             return (message, promise)
         }
 

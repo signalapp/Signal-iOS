@@ -13,7 +13,11 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
         let message = OutgoingMessageFactory().create()
         self.read { transaction in
             let jobRecord = try! MessageSenderJobRecord(
-                message: message,
+                persistedMessage: .init(
+                    rowId: 0,
+                    message: message,
+                    legacyAttachmentIdsForUpload: []
+                ),
                 isHighPriority: false,
                 transaction: transaction
             )
@@ -28,33 +32,12 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
         }
     }
 
-    func test_unsavedVisibleMessage() {
-        self.write { transaction in
-            let message = OutgoingMessageFactory().build(transaction: transaction)
-
-            do {
-                _ = try MessageSenderJobRecord(
-                    message: message,
-                    isHighPriority: false,
-                    transaction: transaction
-                )
-
-                XCTFail("Should error")
-            } catch JobRecordError.assertionError {
-                // expected
-            } catch {
-                XCTFail("unexpected error: \(error)")
-            }
-        }
-    }
-
     func test_invisibleMessage() {
         let message = OutgoingMessageFactory().buildDeliveryReceipt()
         self.read { transaction in
-            let jobRecord = try! MessageSenderJobRecord(
-                message: message,
-                isHighPriority: false,
-                transaction: transaction
+            let jobRecord = MessageSenderJobRecord(
+                transientMessage: message,
+                isHighPriority: false
             )
 
             switch jobRecord.messageType {

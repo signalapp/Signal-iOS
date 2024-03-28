@@ -36,39 +36,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // MARK: 
 
     public func add(
-        message: OutgoingMessagePreparer,
-        limitToCurrentProcessLifetime: Bool = false,
-        isHighPriority: Bool = false,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        self.add(
-            message: message,
-            exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
-            isHighPriority: isHighPriority,
-            future: nil,
-            transaction: transaction
-        )
-    }
-
-    public func add(
-        _ namespace: PromiseNamespace,
-        message: OutgoingMessagePreparer,
-        limitToCurrentProcessLifetime: Bool = false,
-        isHighPriority: Bool = false,
-        transaction: SDSAnyWriteTransaction
-    ) -> Promise<Void> {
-        return Promise { future in
-            self.add(
-                message: message,
-                exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
-                isHighPriority: isHighPriority,
-                future: future,
-                transaction: transaction
-            )
-        }
-    }
-
-    public func add(
         message: PreparedOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
@@ -102,33 +69,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     private var jobFutures = AtomicDictionary<String, Future<Void>>(lock: .sharedGlobal)
-    private func add(
-        message: OutgoingMessagePreparer,
-        exclusiveToCurrentProcessIdentifier: Bool,
-        isHighPriority: Bool,
-        future: Future<Void>?,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
-        do {
-            let messageRecord = try message.prepareMessage(transaction: transaction)
-            let jobRecord = try MessageSenderJobRecord(
-                message: messageRecord,
-                isHighPriority: isHighPriority,
-                transaction: transaction
-            )
-            if exclusiveToCurrentProcessIdentifier {
-                jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
-            }
-            self.add(jobRecord: jobRecord, transaction: transaction)
-            if let future = future {
-                jobFutures[jobRecord.uniqueId] = future
-            }
-        } catch {
-            message.unpreparedMessage.update(sendingError: error, transaction: transaction)
-        }
-    }
-
     private func add(
         message: PreparedOutgoingMessage,
         exclusiveToCurrentProcessIdentifier: Bool,
