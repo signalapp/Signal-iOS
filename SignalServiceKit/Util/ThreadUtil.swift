@@ -157,30 +157,22 @@ public extension ThreadUtil {
     ) {
         AssertNotOnMainThread()
 
-        let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>
+        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+            message,
+            messageStickerDraft: stickerDraft
+        )
+        let preparedMessage: PreparedOutgoingMessage
         do {
-            messageStickerBuilder = try MessageSticker.buildValidatedMessageSticker(fromDraft: stickerDraft, transaction: tx)
+            preparedMessage = try unpreparedMessage.prepare(tx: tx)
         } catch {
-            return owsFailDebug("Couldn't send sticker: \(error)")
+            return owsFailDebug("Couldn't prepare message: \(error)")
         }
 
-        message.anyInsert(transaction: tx)
-        message.update(with: messageStickerBuilder.info, transaction: tx)
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
 
-        do {
-            try messageStickerBuilder.finalize(
-                owner: .messageSticker(messageRowId: message.sqliteRowId!),
-                tx: tx.asV2Write
-            )
-        } catch {
-            message.anyRemove(transaction: tx)
-            return owsFailDebug("Couldn't finalize sticker!")
+        if let messageForIntent = preparedMessage.messageForIntentDonation(tx: tx) {
+            thread.donateSendMessageIntent(for: messageForIntent, transaction: tx)
         }
-
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
-        StickerManager.stickerWasSent(messageStickerBuilder.info.info, transaction: tx)
-
-        thread.donateSendMessageIntent(for: message, transaction: tx)
     }
 }
 
