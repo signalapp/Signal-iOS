@@ -72,8 +72,11 @@ public extension TSInteraction {
                         } else {
                             owsFailDebug("Local ACI missing during message deletion.")
                         }
+                        let preparedMessage = PreparedOutgoingMessage.preprepared(
+                            transientMessageWithoutAttachments: deleteMessage
+                        )
 
-                        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: deleteMessage.asPreparer, transaction: tx)
+                        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
                     }
                 }
             }

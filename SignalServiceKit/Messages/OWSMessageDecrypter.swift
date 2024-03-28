@@ -72,9 +72,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
                 let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread, transaction: transaction)
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: nullMessage
+                )
                 SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,
-                    message: nullMessage.asPreparer,
+                    message: preparedMessage,
                     transaction: transaction
                 ).done(on: DispatchQueue.global()) {
                     Logger.info("Successfully sent null message after session reset " +
@@ -113,9 +116,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
                 let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread, transaction: transaction)
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: profileKeyMessage
+                )
                 SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,
-                    message: profileKeyMessage.asPreparer,
+                    message: preparedMessage,
                     transaction: transaction
                 ).done(on: DispatchQueue.global()) {
                     Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAci)")
@@ -327,7 +333,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             failedEnvelopeGroupId: failedEnvelopeGroupId,
             transaction: transaction
         )
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: resendRequest.asPreparer, transaction: transaction)
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: resendRequest
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
     }
 
     private func resetSessionIfNecessary(

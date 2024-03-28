@@ -138,12 +138,18 @@ public class ViewOnceMessages: NSObject {
         }
         let readTimestamp: UInt64 = nowMs()
 
-        let syncMessage = OWSViewOnceMessageReadSyncMessage(thread: thread,
-                                                            senderAddress: senderAddress,
-                                                            message: message,
-                                                            readTimestamp: readTimestamp,
-                                                            transaction: transaction)
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: syncMessage.asPreparer, transaction: transaction)
+        let syncMessage = OWSViewOnceMessageReadSyncMessage(
+            thread: thread,
+            senderAddress: senderAddress,
+            message: message,
+            readTimestamp: readTimestamp,
+            transaction: transaction
+        )
+        // this is the sync that we viewed; it doesn't have the attachment on it.
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: syncMessage
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
 
         if let incomingMessage = message as? TSIncomingMessage {
             let circumstance: OWSReceiptCircumstance =

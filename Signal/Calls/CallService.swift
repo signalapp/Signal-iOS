@@ -1161,9 +1161,12 @@ extension CallService: CallManagerDelegate {
                     opaqueMessage: opaqueBuilder.buildInfallibly(),
                     transaction: transaction
                 )
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: callMessage
+                )
 
                 return ThreadUtil.enqueueMessagePromise(
-                    message: callMessage,
+                    message: preparedMessage,
                     limitToCurrentProcessLifetime: true,
                     isHighPriority: true,
                     transaction: transaction
@@ -1213,9 +1216,12 @@ extension CallService: CallManagerDelegate {
                     opaqueMessage: opaqueBuilder.buildInfallibly(),
                     transaction: transaction
                 )
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: callMessage
+                )
 
                 return ThreadUtil.enqueueMessagePromise(
-                    message: callMessage,
+                    message: preparedMessage,
                     limitToCurrentProcessLifetime: true,
                     isHighPriority: true,
                     transaction: transaction

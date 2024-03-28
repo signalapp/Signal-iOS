@@ -73,7 +73,10 @@ private class SessionResetJobRunner: JobRunner, Dependencies {
                 self.archiveAllSessions(for: contactThread, tx: tx)
             }
             let endSessionMessage = EndSessionMessage(thread: contactThread, transaction: tx)
-            return ThreadUtil.enqueueMessagePromise(message: endSessionMessage, isHighPriority: true, transaction: tx)
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: endSessionMessage
+            )
+            return ThreadUtil.enqueueMessagePromise(message: preparedMessage, isHighPriority: true, transaction: tx)
         }
         self.hasArchivedAllSessions = true
 

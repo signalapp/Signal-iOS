@@ -797,7 +797,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 skippedRecipients: nil,
                 transaction: transaction
             )
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: deleteMessage.asPreparer, transaction: transaction)
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: deleteMessage
+            )
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
             anyRemove(transaction: transaction)
         case thread as TSPrivateStoryThread:
             // Private story deletes are complicated. We may have sent the private
@@ -835,7 +838,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 skippedRecipients: skippedRecipients,
                 transaction: transaction
             )
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: deleteMessage.asPreparer, transaction: transaction)
+            let preparedDeleteMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: deleteMessage
+            )
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedDeleteMessage, transaction: transaction)
 
             if hasRemainingRecipients {
                 // Record the updated contexts, so we no longer render it for the one we deleted for.
@@ -852,7 +858,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 recipientStates: recipientStates,
                 transaction: transaction
             )
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: sentTranscriptUpdate.asPreparer, transaction: transaction)
+            let preparedTranscriptMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: sentTranscriptUpdate
+            )
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedTranscriptMessage, transaction: transaction)
         default:
             owsFailDebug("Cannot remotely delete unexpected thread type \(type(of: thread))")
         }
@@ -897,7 +906,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
 
         messages.forEach { message in
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                outgoingStoryMessage: message
+            )
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
         }
     }
 

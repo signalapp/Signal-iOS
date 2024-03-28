@@ -294,8 +294,11 @@ private extension RecipientHidingManagerImpl {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             Logger.info("[Recipient hiding][side effects] Share profile key.")
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: profileKeyMessage
+            )
             self.messageSenderJobQueue.add(
-                message: profileKeyMessage.asPreparer,
+                message: preparedMessage,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         }

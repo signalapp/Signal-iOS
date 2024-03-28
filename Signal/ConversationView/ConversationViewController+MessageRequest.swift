@@ -253,7 +253,10 @@ extension ConversationViewController: MessageRequestDelegate {
                     // If this is a contact thread, we should give the
                     // now-unblocked contact our profile key.
                     let profileKeyMessage = OWSProfileKeyMessage(thread: thread, transaction: transaction)
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: profileKeyMessage.asPreparer, transaction: transaction)
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: profileKeyMessage
+                    )
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
                 }
 
                 NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)

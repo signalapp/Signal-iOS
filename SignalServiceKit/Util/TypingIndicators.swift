@@ -302,10 +302,13 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 }
 
                 let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: message
+                )
 
                 return SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,
-                    message: message.asPreparer,
+                    message: preparedMessage,
                     limitToCurrentProcessLifetime: true,
                     transaction: transaction
                 )

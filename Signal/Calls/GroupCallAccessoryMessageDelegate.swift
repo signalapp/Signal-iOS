@@ -202,9 +202,12 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
             eraId: eraId,
             tx: tx
         )
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: updateMessage
+        )
 
         messageSenderJobQueue.add(
-            message: updateMessage.asPreparer, transaction: tx
+            message: preparedMessage, transaction: tx
         )
 
         return updateMessage

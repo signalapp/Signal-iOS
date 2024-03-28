@@ -1169,9 +1169,17 @@ public class StickerManager: NSObject {
             owsFailDebug("Missing thread.")
             return
         }
-
-        let message = OWSStickerPackSyncMessage(thread: thread, packs: packs, operationType: operationType, transaction: transaction)
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+        let message = OWSStickerPackSyncMessage(
+            thread: thread,
+            packs: packs,
+            operationType: operationType,
+            transaction: transaction
+        )
+        // The sync message doesn't include the actual stickers on it as attachments.
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: message
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
     }
 
     @objc

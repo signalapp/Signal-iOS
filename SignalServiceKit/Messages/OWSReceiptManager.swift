@@ -85,8 +85,15 @@ public extension OWSReceiptManager {
             if !readReceiptsForLinkedDevices.isEmpty {
                 let readReceiptsToSend = readReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceReadReceipt }
                 if !readReceiptsToSend.isEmpty {
-                    let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread, readReceipts: readReceiptsToSend, transaction: transaction)
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+                    let message = OWSReadReceiptsForLinkedDevicesMessage(
+                        thread: thread,
+                        readReceipts: readReceiptsToSend,
+                        transaction: transaction
+                    )
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: message
+                    )
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
                 }
                 self.toLinkedDevicesReadReceiptMapStore.removeAll(transaction: transaction)
             }
@@ -94,8 +101,15 @@ public extension OWSReceiptManager {
             if !viewedReceiptsForLinkedDevices.isEmpty {
                 let viewedReceiptsToSend = viewedReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceViewedReceipt }
                 if !viewedReceiptsToSend.isEmpty {
-                    let message = OWSViewedReceiptsForLinkedDevicesMessage(thread: thread, viewedReceipts: viewedReceiptsToSend, transaction: transaction)
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+                    let message = OWSViewedReceiptsForLinkedDevicesMessage(
+                        thread: thread,
+                        viewedReceipts: viewedReceiptsToSend,
+                        transaction: transaction
+                    )
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: message
+                    )
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
                 }
                 self.toLinkedDevicesViewedReceiptMapStore.removeAll(transaction: transaction)
             }
@@ -468,10 +482,15 @@ public extension OWSReceiptManager {
                     }
 
                     if !receiptsForMessage.isEmpty {
-                        let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread,
-                                                                             readReceipts: receiptsForMessage,
-                                                                             transaction: transaction)
-                        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+                        let message = OWSReadReceiptsForLinkedDevicesMessage(
+                            thread: thread,
+                            readReceipts: receiptsForMessage,
+                            transaction: transaction
+                        )
+                        let preparedMessage = PreparedOutgoingMessage.preprepared(
+                            transientMessageWithoutAttachments: message
+                        )
+                        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
                     }
                 }
                 // Continue until we process a batch and have some quota left.

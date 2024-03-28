@@ -287,9 +287,11 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
             thread: localThread,
             tx: tx
         )
-
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: outgoingCallLogEventSyncMessage
+        )
         messageSenderJobQueue.add(
-            message: outgoingCallLogEventSyncMessage.asPreparer,
+            message: preparedMessage,
             transaction: tx
         )
     }

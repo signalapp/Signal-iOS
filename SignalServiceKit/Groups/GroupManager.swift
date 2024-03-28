@@ -556,8 +556,15 @@ public class GroupManager: NSObject {
             return
         }
         let newConfiguration = updateResult.newConfiguration
-        let message = OWSDisappearingMessagesConfigurationMessage(configuration: newConfiguration, thread: thread, transaction: transaction)
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+        let message = OWSDisappearingMessagesConfigurationMessage(
+            configuration: newConfiguration,
+            thread: thread,
+            transaction: transaction
+        )
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: message
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
     }
 
     // MARK: - Accept Invites
@@ -901,8 +908,13 @@ public class GroupManager: NSObject {
                 additionalRecipients: Self.invitedMembers(in: thread),
                 transaction: transaction
             )
+            // "changeActionsProtoData" is _not_ an attachment, it is just put on
+            // the outgoing proto directly.
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: message
+            )
 
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
         }
     }
 
@@ -920,7 +932,12 @@ public class GroupManager: NSObject {
                 additionalRecipients: Self.invitedMembers(in: thread),
                 transaction: tx
             )
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
+            // "changeActionsProtoData" is _not_ an attachment, it is just put on
+            // the outgoing proto directly.
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: message
+            )
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
         }
     }
 

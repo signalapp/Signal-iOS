@@ -185,9 +185,11 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
             event: outgoingCallEvent,
             tx: tx
         )
-
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: outgoingCallEventMessage
+        )
         messageSenderJobQueue.add(
-            message: outgoingCallEventMessage.asPreparer, transaction: tx
+            message: preparedMessage, transaction: tx
         )
     }
 }

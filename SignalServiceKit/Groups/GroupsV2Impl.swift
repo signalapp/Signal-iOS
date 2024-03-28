@@ -475,7 +475,10 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 let address = SignalServiceAddress(serviceId)
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
                 let message = OWSStaticOutgoingMessage(thread: contactThread, plaintextData: plaintextData, transaction: tx)
-                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: message
+                )
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
             }
         }
     }

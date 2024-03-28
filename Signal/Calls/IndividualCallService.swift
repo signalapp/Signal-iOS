@@ -808,8 +808,11 @@ final class IndividualCallService {
                         destinationDeviceId: NSNumber(value: destinationDeviceId),
                         transaction: tx
                     )
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: callMessage
+                    )
                     return ThreadUtil.enqueueMessagePromise(
-                        message: callMessage,
+                        message: preparedMessage,
                         limitToCurrentProcessLifetime: true,
                         isHighPriority: true,
                         transaction: tx
@@ -841,8 +844,11 @@ final class IndividualCallService {
                         destinationDeviceId: NSNumber(value: destinationDeviceId),
                         transaction: tx
                     )
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: callMessage
+                    )
                     return ThreadUtil.enqueueMessagePromise(
-                        message: callMessage,
+                        message: preparedMessage,
                         limitToCurrentProcessLifetime: true,
                         isHighPriority: true,
                         transaction: tx
@@ -887,8 +893,11 @@ final class IndividualCallService {
                         destinationDeviceId: NSNumber(value: destinationDeviceId),
                         transaction: tx
                     )
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: callMessage
+                    )
                     return ThreadUtil.enqueueMessagePromise(
-                        message: callMessage,
+                        message: preparedMessage,
                         limitToCurrentProcessLifetime: true,
                         isHighPriority: true,
                         transaction: tx
@@ -934,8 +943,11 @@ final class IndividualCallService {
                         destinationDeviceId: NSNumber(value: destinationDeviceId),
                         transaction: tx
                     )
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: callMessage
+                    )
                     return ThreadUtil.enqueueMessagePromise(
-                        message: callMessage,
+                        message: preparedMessage,
                         limitToCurrentProcessLifetime: true,
                         isHighPriority: true,
                         transaction: tx
@@ -967,8 +979,11 @@ final class IndividualCallService {
                         destinationDeviceId: NSNumber(value: destinationDeviceId),
                         transaction: tx
                     )
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: callMessage
+                    )
                     return ThreadUtil.enqueueMessagePromise(
-                        message: callMessage,
+                        message: preparedMessage,
                         limitToCurrentProcessLifetime: true,
                         isHighPriority: true,
                         transaction: tx

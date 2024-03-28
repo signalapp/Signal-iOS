@@ -1497,7 +1497,10 @@ public final class MessageReceiver: Dependencies {
 
             let sendBlock = { (transaction: SDSAnyWriteTransaction) in
                 if let resendResponse = resendResponse {
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: resendResponse.asPreparer, transaction: transaction)
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        transientMessageWithoutAttachments: resendResponse
+                    )
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
                 }
             }
 

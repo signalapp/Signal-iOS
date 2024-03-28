@@ -305,8 +305,11 @@ class _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper: _CallRecordMis
             tx: sdsTx
         )
 
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: outgoingCallLogEventSyncMessage
+        )
         messageSenderJobQueue.add(
-            message: outgoingCallLogEventSyncMessage.asPreparer,
+            message: preparedMessage,
             transaction: sdsTx
         )
     }

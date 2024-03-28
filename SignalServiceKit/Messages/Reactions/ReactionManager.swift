@@ -43,10 +43,10 @@ public class ReactionManager: NSObject {
             return Promise(error: error)
         }
         NotificationCenter.default.post(name: ReactionManager.localUserReacted, object: nil)
-        let messagePreparer = outgoingMessage.asPreparer
+        let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: outgoingMessage)
         return SSKEnvironment.shared.messageSenderJobQueueRef.add(
             .promise,
-            message: messagePreparer,
+            message: preparedMessage,
             isHighPriority: isHighPriority,
             transaction: tx
         )

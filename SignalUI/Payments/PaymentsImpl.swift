@@ -1110,19 +1110,28 @@ public extension PaymentsImpl {
             owsFailDebug("Missing local thread.")
             return nil
         }
-        let mobileCoin = OutgoingPaymentMobileCoin(recipientAci: recipientAci.map { AciObjC($0) },
-                                                   recipientAddress: recipientAddress,
-                                                   amountPicoMob: paymentAmount.picoMob,
-                                                   feePicoMob: feeAmount.picoMob,
-                                                   blockIndex: mcLedgerBlockIndex ?? 0,
-                                                   blockTimestamp: mcLedgerBlockTimestamp ?? 0,
-                                                   memoMessage: memoMessage?.nilIfEmpty,
-                                                   spentKeyImages: mcSpentKeyImages,
-                                                   outputPublicKeys: mcOutputPublicKeys,
-                                                   receiptData: mcReceiptData,
-                                                   isDefragmentation: isDefragmentation)
-        let message = OutgoingPaymentSyncMessage(thread: thread, mobileCoin: mobileCoin, transaction: transaction)
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+        let mobileCoin = OutgoingPaymentMobileCoin(
+            recipientAci: recipientAci.map { AciObjC($0) },
+            recipientAddress: recipientAddress,
+            amountPicoMob: paymentAmount.picoMob,
+            feePicoMob: feeAmount.picoMob,
+            blockIndex: mcLedgerBlockIndex ?? 0,
+            blockTimestamp: mcLedgerBlockTimestamp ?? 0,
+            memoMessage: memoMessage?.nilIfEmpty,
+            spentKeyImages: mcSpentKeyImages,
+            outputPublicKeys: mcOutputPublicKeys,
+            receiptData: mcReceiptData,
+            isDefragmentation: isDefragmentation
+        )
+        let message = OutgoingPaymentSyncMessage(
+            thread: thread,
+            mobileCoin: mobileCoin,
+            transaction: transaction
+        )
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: message
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
         return message
     }
 }

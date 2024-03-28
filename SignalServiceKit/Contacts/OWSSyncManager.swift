@@ -203,7 +203,10 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             masterKey: masterKey,
             transaction: tx
         )
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: syncKeysMessage.asPreparer, transaction: tx)
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: syncKeysMessage
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
     }
 
     @objc
@@ -328,7 +331,10 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
 
         let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(thread: thread, responseType: responseType, transaction: transaction)
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: syncMessageRequestResponse
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
     }
 
     // MARK: - Configuration Sync
@@ -365,8 +371,11 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             sendLinkPreviews: linkPreviews,
             transaction: tx
         )
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: configurationSyncMessage
+        )
 
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: configurationSyncMessage.asPreparer, transaction: tx)
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
     }
 
     // MARK: - Contact Sync
@@ -588,7 +597,10 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
 
         let fetchLatestSyncMessage = OWSSyncFetchLatestMessage(thread: thread, fetchType: type, transaction: tx)
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: fetchLatestSyncMessage.asPreparer, transaction: tx)
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: fetchLatestSyncMessage
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
     }
 }
 
@@ -648,7 +660,10 @@ public extension OWSSyncManager {
         }
 
         let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType.rawValue, transaction: transaction)
-        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: syncRequestMessage.asPreparer, transaction: transaction)
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: syncRequestMessage
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
     }
 }
 

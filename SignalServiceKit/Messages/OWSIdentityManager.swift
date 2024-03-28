@@ -695,10 +695,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 verificationStateSyncMessage: message,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
-
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: nullMessage
+            )
             return messageSenderJobQueue.add(
                 .promise,
-                message: nullMessage.asPreparer,
+                message: preparedMessage,
                 limitToCurrentProcessLifetime: true,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
@@ -707,9 +709,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         nullMessagePromise.done(on: schedulers.global()) {
             Logger.info("Successfully sent verification state NullMessage")
             let syncMessagePromise = self.db.write { tx in
-                self.messageSenderJobQueue.add(
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: message
+                )
+                return self.messageSenderJobQueue.add(
                     .promise,
-                    message: message.asPreparer,
+                    message: preparedMessage,
                     limitToCurrentProcessLifetime: true,
                     transaction: SDSDB.shimOnlyBridge(tx)
                 )

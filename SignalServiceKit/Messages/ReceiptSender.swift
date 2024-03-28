@@ -283,9 +283,12 @@ public class ReceiptSender: NSObject {
             }
 
             let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: message
+            )
             return messageSenderJobQueue.add(
                 .promise,
-                message: message.asPreparer,
+                message: preparedMessage,
                 limitToCurrentProcessLifetime: true,
                 transaction: tx
             )

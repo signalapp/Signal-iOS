@@ -354,9 +354,13 @@ public class SendPaymentViewController: OWSViewController {
             ) else {
                 return
             }
-            let interaction = OWSPaymentActivationRequestMessage(thread: thread, transaction: transaction)
+            let message = OWSPaymentActivationRequestMessage(thread: thread, transaction: transaction)
+            // The request message isn't inserted or rendered in chat; thats done with an info message.
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: message
+            )
             SSKEnvironment.shared.messageSenderJobQueueRef.add(
-                message: interaction.asPreparer,
+                message: preparedMessage,
                 transaction: transaction
             )
             if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci {

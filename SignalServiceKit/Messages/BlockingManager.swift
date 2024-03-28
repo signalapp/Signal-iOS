@@ -381,10 +381,13 @@ extension BlockingManager {
                     // Tests can opt in to setting this token early. This won't be executed in production.
                     State.setLastSyncedChangeToken(outgoingChangeToken, transaction: transaction)
                 }
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: message
+                )
 
                 SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,
-                    message: message.asPreparer,
+                    message: preparedMessage,
                     transaction: transaction
                 ).done(on: DispatchQueue.global()) {
                     Logger.info("Successfully sent blocked phone numbers sync message")
