@@ -120,17 +120,20 @@ public class PreparedOutgoingMessage {
 
     public func dequeueForSending(tx: SDSAnyWriteTransaction) -> MessageType {
         // When we start a message send, all "failed" recipients should be marked as "sending".
-        switch messageType {
-        case .persisted(let message):
-            message.message.updateAllUnsentRecipientsAsSending(transaction: tx)
-        case .contactSync(let contactSync):
-            contactSync.message.updateAllUnsentRecipientsAsSending(transaction: tx)
-        case .story(let storyMessage):
-            storyMessage.message.updateAllUnsentRecipientsAsSending(transaction: tx)
-        case .transient(let message):
-            // Is this even necessary for transient messages?
-            message.updateAllUnsentRecipientsAsSending(transaction: tx)
-        }
+        let messageToUpdateRecipientsSending: TSOutgoingMessage? = {
+            switch messageType {
+            case .persisted(let message):
+                return message.message
+            case .contactSync(let contactSync):
+                return contactSync.message
+            case .story(let storyMessage):
+                return storyMessage.message
+            case .transient(let message):
+                // Is this even necessary for transient messages?
+                return message
+            }
+        }()
+        messageToUpdateRecipientsSending?.updateAllUnsentRecipientsAsSending(transaction: tx)
         return messageType
     }
 

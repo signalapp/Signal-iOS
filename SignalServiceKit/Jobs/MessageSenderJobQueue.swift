@@ -35,17 +35,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     // MARK: 
 
-    @available(swift, obsoleted: 1.0)
-    public func add(message: OutgoingMessagePreparer, transaction: SDSAnyWriteTransaction) {
-        self.add(
-            message: message,
-            exclusiveToCurrentProcessIdentifier: false,
-            isHighPriority: false,
-            future: nil,
-            transaction: transaction
-        )
-    }
-
     public func add(
         message: OutgoingMessagePreparer,
         limitToCurrentProcessLifetime: Bool = false,
@@ -61,25 +50,42 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         )
     }
 
-    @available(swift, obsoleted: 1.0)
-    public func addPromise(
+    public func add(
+        _ namespace: PromiseNamespace,
         message: OutgoingMessagePreparer,
-        limitToCurrentProcessLifetime: Bool,
-        isHighPriority: Bool,
+        limitToCurrentProcessLifetime: Bool = false,
+        isHighPriority: Bool = false,
         transaction: SDSAnyWriteTransaction
-    ) -> AnyPromise {
-        return AnyPromise(add(
-            .promise,
+    ) -> Promise<Void> {
+        return Promise { future in
+            self.add(
+                message: message,
+                exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
+                isHighPriority: isHighPriority,
+                future: future,
+                transaction: transaction
+            )
+        }
+    }
+
+    public func add(
+        message: PreparedOutgoingMessage,
+        limitToCurrentProcessLifetime: Bool = false,
+        isHighPriority: Bool = false,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        self.add(
             message: message,
-            limitToCurrentProcessLifetime: limitToCurrentProcessLifetime,
+            exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
             isHighPriority: isHighPriority,
+            future: nil,
             transaction: transaction
-        ))
+        )
     }
 
     public func add(
         _ namespace: PromiseNamespace,
-        message: OutgoingMessagePreparer,
+        message: PreparedOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
         transaction: SDSAnyWriteTransaction
@@ -120,6 +126,51 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             }
         } catch {
             message.unpreparedMessage.update(sendingError: error, transaction: transaction)
+        }
+    }
+
+    private func add(
+        message: PreparedOutgoingMessage,
+        exclusiveToCurrentProcessIdentifier: Bool,
+        isHighPriority: Bool,
+        future: Future<Void>?,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
+        let messageRecord = message.dequeueForSending(tx: transaction)
+        do {
+            let jobRecord: MessageSenderJobRecord
+            switch messageRecord {
+            case .persisted(let persisted):
+                jobRecord = try .init(persistedMessage: persisted, isHighPriority: isHighPriority, transaction: transaction)
+            case .contactSync:
+                throw OWSAssertionError("Cannot create a job record for contact syncs; their in-memory attachments can't be persisted!")
+            case .story(let story):
+                jobRecord = .init(storyMessage: story, isHighPriority: isHighPriority)
+            case .transient(let message):
+                jobRecord = .init(transientMessage: message, isHighPriority: isHighPriority)
+            }
+            if exclusiveToCurrentProcessIdentifier {
+                jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
+            }
+            self.add(jobRecord: jobRecord, transaction: transaction)
+            if let future = future {
+                jobFutures[jobRecord.uniqueId] = future
+            }
+        } catch {
+            let messageToUpdate: TSOutgoingMessage? = {
+                switch messageRecord {
+                case .persisted(let persisted):
+                    return persisted.message
+                case .contactSync(let contactSync):
+                    return contactSync.message
+                case .story(let story):
+                    return story.message
+                case .transient(let message):
+                    return message
+                }
+            }()
+            messageToUpdate?.update(sendingError: error, transaction: transaction)
         }
     }
 

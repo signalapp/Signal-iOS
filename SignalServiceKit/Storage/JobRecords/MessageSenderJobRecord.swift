@@ -109,6 +109,58 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         )
     }
 
+    convenience init(
+        persistedMessage: PreparedOutgoingMessage.MessageType.Persisted,
+        isHighPriority: Bool,
+        transaction: SDSAnyReadTransaction
+    ) throws {
+        let messageType = MessageType.persisted(
+            messageId: persistedMessage.message.uniqueId,
+            useMediaQueue: persistedMessage.message.hasMediaAttachments(transaction: transaction)
+        )
+
+        self.init(
+            threadId: persistedMessage.message.uniqueThreadId,
+            messageType: messageType,
+            removeMessageAfterSending: false,
+            isHighPriority: isHighPriority
+        )
+    }
+
+    convenience init(
+        storyMessage: PreparedOutgoingMessage.MessageType.Story,
+        isHighPriority: Bool
+    ) {
+        let messageType = MessageType.transient(storyMessage.message)
+
+        self.init(
+            threadId: storyMessage.message.uniqueThreadId,
+            messageType: messageType,
+            removeMessageAfterSending: false,
+            isHighPriority: isHighPriority
+        )
+    }
+
+    convenience init(
+        transientMessage: TSOutgoingMessage,
+        isHighPriority: Bool
+    ) {
+        owsAssert(
+            transientMessage.shouldBeSaved.negated
+            && !(transientMessage is OutgoingStoryMessage)
+            && !(transientMessage is OWSSyncContactsMessage),
+            "Invalid transient message type!"
+        )
+        let messageType = MessageType.transient(transientMessage)
+
+        self.init(
+            threadId: transientMessage.uniqueThreadId,
+            messageType: messageType,
+            removeMessageAfterSending: false,
+            isHighPriority: isHighPriority
+        )
+    }
+
     public enum CodingKeys: String, CodingKey {
         case threadId = "threadId"
         case isHighPriority = "isHighPriority"
