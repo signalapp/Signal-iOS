@@ -27,25 +27,6 @@ public final class ThreadUtil: Dependencies {
     }
 
     public class func enqueueMessagePromise(
-        message: TSOutgoingMessage,
-        limitToCurrentProcessLifetime: Bool = false,
-        isHighPriority: Bool = false,
-        transaction: SDSAnyWriteTransaction
-    ) -> Promise<Void> {
-        let promise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
-            .promise,
-            message: message.asPreparer,
-            limitToCurrentProcessLifetime: limitToCurrentProcessLifetime,
-            isHighPriority: isHighPriority,
-            transaction: transaction
-        )
-        if message.hasRenderableContent(tx: transaction) {
-            message.thread(tx: transaction)?.donateSendMessageIntent(for: message, transaction: transaction)
-        }
-        return promise
-    }
-
-    public class func enqueueMessagePromise(
         message: PreparedOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,

@@ -68,11 +68,16 @@ extension StoryReplySheet {
                 builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
             }
 
-            let message = builder.build(transaction: transaction)
-            message.anyInsert(transaction: transaction)
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+            let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(builder.build(transaction: transaction))
+            guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {
+                owsFailDebug("Failed to prepare message")
+                return
+            }
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
 
-            if message.hasRenderableContent(tx: transaction) { thread.donateSendMessageIntent(for: message, transaction: transaction) }
+            if let message = preparedMessage.messageForIntentDonation(tx: transaction) {
+                thread.donateSendMessageIntent(for: message, transaction: transaction)
+            }
 
             transaction.addAsyncCompletionOnMain { self?.didSendMessage() }
         }

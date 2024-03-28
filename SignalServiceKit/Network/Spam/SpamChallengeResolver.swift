@@ -116,7 +116,13 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
             pendingInteractionIds
                 .compactMap { TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: $0, transaction: writeTx) }
-                .forEach { SSKEnvironment.shared.messageSenderJobQueueRef.add(message: $0.asPreparer, transaction: writeTx) }
+                .forEach { message in
+                    let preparedMessage = PreparedOutgoingMessage.preprepared(
+                        forResending: message,
+                        messageRowId: message.sqliteRowId!
+                    )
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: writeTx)
+                }
         }
     }
 }

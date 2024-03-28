@@ -163,10 +163,16 @@ public class NotificationActionHandler: Dependencies {
                         builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
                     }
 
-                    let message = TSOutgoingMessage(outgoingMessageWithBuilder: builder, transaction: transaction)
-                    message.anyInsert(transaction: transaction)
-
-                    return ThreadUtil.enqueueMessagePromise(message: message, transaction: transaction)
+                    let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(TSOutgoingMessage(
+                        outgoingMessageWithBuilder: builder,
+                        transaction: transaction
+                    ))
+                    do {
+                        let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
+                        return ThreadUtil.enqueueMessagePromise(message: preparedMessage, transaction: transaction)
+                    } catch {
+                        return Promise(error: error)
+                    }
                 }
             }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
