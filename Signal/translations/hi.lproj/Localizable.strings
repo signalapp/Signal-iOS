@@ -2657,7 +2657,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "ग्रुप बनाना पूरा करें";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "फ्लिप कैमरे को यहां लाया गया है, इसे आज़माने के लिए अपने वीडियो पर टैप करें";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "संपर्क आगे भेजें";
@@ -4455,6 +4455,24 @@
 
 /* Title for the new story sheet */
 "NEW_STORY_SHEET_TITLE" = "स्टोरी का प्रकार चुनें";
+
+/* Title for the table cell in conversation settings for presenting the profile nickname editor. */
+"NICKNAME_BUTTON_TITLE" = "Nickname";
+
+/* The description below the title on the profile nickname editor view. */
+"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames and notes are stored using Signal’s end-to-end encrypted storage service. They are only visible to you.";
+
+/* Placeholder text it the text field for the family name in the profile nickname editor. */
+"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Last name";
+
+/* Placeholder text it the text field for the given name in the profile nickname editor. */
+"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "First name";
+
+/* Placeholder text it the text box for the note in the profile nickname editor. */
+"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Note";
+
+/* The title for the profile nickname editor view. */
+"NICKNAME_EDITOR_TITLE" = "Nickname";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "संपर्क को फोन नंबर से खोजें";
