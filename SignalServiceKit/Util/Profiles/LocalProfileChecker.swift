@@ -101,7 +101,7 @@ final class LocalProfileChecker {
                 return false
             }
             guard let decryptedProfile = mostRecentRemoteProfile.decryptedProfile else {
-                Logger.warn("Will reupload; couldn't decrypt our own profile")
+                Logger.warn("Will reupload; we don't appear to have a profile")
                 return true
             }
             // We check these because they are considered "Storage Service properties"
@@ -111,14 +111,14 @@ final class LocalProfileChecker {
             if localProfile.avatarUrlPath != mostRecentRemoteProfile.avatarUrlPath {
                 mismatchedProperties.append("avatarUrlPath")
             }
-            if localProfile.givenName != decryptedProfile.givenName {
+            if localProfile.givenName != (try? decryptedProfile.nameComponents.get()?.givenName) {
                 mismatchedProperties.append("givenName")
             }
-            if localProfile.familyName != decryptedProfile.familyName {
+            if localProfile.familyName != (try? decryptedProfile.nameComponents.get()?.familyName) {
                 mismatchedProperties.append("familyName")
             }
             let localPhoneNumberSharing = udManager.phoneNumberSharingMode(tx: tx).orDefault == .everybody
-            if localPhoneNumberSharing != decryptedProfile.phoneNumberSharing {
+            if localPhoneNumberSharing != (try? decryptedProfile.phoneNumberSharing.get()) {
                 mismatchedProperties.append("phoneNumberSharing")
             }
 

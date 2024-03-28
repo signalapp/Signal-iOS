@@ -639,54 +639,55 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return try Aes256GcmEncryptedData.encrypt(profileData, key: profileKey.keyData).concatenate()
     }
 
-    public class func decrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
-        return try? Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.keyData)
+    public class func decrypt(profileData: Data, profileKey: OWSAES256Key) throws -> Data {
+        return try Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.keyData)
     }
 
-    class func decrypt(profileNameData: Data, profileKey: OWSAES256Key) -> (givenName: String, familyName: String?)? {
-        guard let decryptedData = decrypt(profileData: profileNameData, profileKey: profileKey) else {
-            return nil
-        }
+    enum DecryptionError: Error {
+        case missingName
+        case malformedValue
+    }
 
-        func parseNameSegment(_ nameSegment: Data?) -> String? {
-            return nameSegment.flatMap({ String(data: $0, encoding: .utf8) })?.strippedOrNil
+    class func decrypt(profileNameData: Data, profileKey: OWSAES256Key) throws -> (givenName: String, familyName: String?) {
+        let decryptedData = try decrypt(profileData: profileNameData, profileKey: profileKey)
+
+        func parseNameSegment(_ nameSegment: Data) throws -> String? {
+            guard let nameValue = String(data: nameSegment, encoding: .utf8) else {
+                throw DecryptionError.malformedValue
+            }
+            return nameValue.strippedOrNil
         }
 
         // Unpad profile name. The given and family name are stored in the string
         // like "<given name><null><family name><null padding>"
-        let nameSegments: [Data] = decryptedData.split(separator: 0x00, maxSplits: 2)
+        let nameSegments: [Data] = decryptedData.split(separator: 0x00, maxSplits: 2, omittingEmptySubsequences: false)
 
-        guard let givenName = parseNameSegment(nameSegments.first) else {
-            return nil
+        guard let givenName = try parseNameSegment(nameSegments.first!) else {
+            throw DecryptionError.missingName
         }
-
-        return (givenName, parseNameSegment(nameSegments.dropFirst().first))
+        let familyName = nameSegments.dropFirst().first
+        return (givenName, try familyName.flatMap(parseNameSegment(_:)))
     }
 
-    class func decrypt(profileStringData: Data, profileKey: OWSAES256Key) -> String? {
-        guard let decryptedData = decrypt(profileData: profileStringData, profileKey: profileKey) else {
-            return nil
-        }
+    class func decrypt(profileStringData: Data, profileKey: OWSAES256Key) throws -> String? {
+        let decryptedData = try decrypt(profileData: profileStringData, profileKey: profileKey)
 
         // Remove padding.
-        let segments: [Data] = decryptedData.split(separator: 0x00, maxSplits: 1)
-        guard let firstSegment = segments.first else {
-            return nil
+        let segments: [Data] = decryptedData.split(separator: 0x00, maxSplits: 1, omittingEmptySubsequences: false)
+        guard let value = String(data: segments.first!, encoding: .utf8) else {
+            throw DecryptionError.malformedValue
         }
-        guard let string = String(data: firstSegment, encoding: .utf8), !string.isEmpty else {
-            return nil
-        }
-        return string
+        return value.nilIfEmpty
     }
 
-    class func decrypt(profileBooleanData: Data, profileKey: OWSAES256Key) -> Bool? {
-        switch decrypt(profileData: profileBooleanData, profileKey: profileKey) {
+    class func decrypt(profileBooleanData: Data, profileKey: OWSAES256Key) throws -> Bool {
+        switch try decrypt(profileData: profileBooleanData, profileKey: profileKey) {
         case Data([1]):
             return true
         case Data([0]):
             return false
         default:
-            return nil
+            throw DecryptionError.malformedValue
         }
     }
 

@@ -433,12 +433,11 @@ public class ProfileFetcherJob: NSObject {
 // MARK: -
 
 public struct DecryptedProfile {
-    public let givenName: String
-    public let familyName: String?
-    public let bio: String?
-    public let bioEmoji: String?
-    public let paymentAddressData: Data?
-    public let phoneNumberSharing: Bool?
+    public let nameComponents: Result<(givenName: String, familyName: String?)?, Error>
+    public let bio: Result<String?, Error>
+    public let bioEmoji: Result<String?, Error>
+    public let paymentAddressData: Result<Data?, Error>
+    public let phoneNumberSharing: Result<Bool?, Error>
 }
 
 // MARK: -
@@ -460,27 +459,33 @@ public struct FetchedProfile {
         guard let profileKey else {
             return nil
         }
-        let nameComponents = profile.profileNameEncrypted.flatMap {
-            OWSUserProfile.decrypt(profileNameData: $0, profileKey: profileKey)
-        }
-        guard let nameComponents else {
+        let hasAnyField: Bool = (
+            profile.profileNameEncrypted != nil
+            || profile.bioEncrypted != nil
+            || profile.bioEmojiEncrypted != nil
+            || profile.paymentAddressEncrypted != nil
+            || profile.phoneNumberSharingEncrypted != nil
+        )
+        guard hasAnyField else {
             return nil
         }
-        let bio = profile.bioEncrypted.flatMap {
-            OWSUserProfile.decrypt(profileStringData: $0, profileKey: profileKey)
-        }
-        let bioEmoji = profile.bioEmojiEncrypted.flatMap {
-            OWSUserProfile.decrypt(profileStringData: $0, profileKey: profileKey)
-        }
-        let paymentAddressData = profile.paymentAddressEncrypted.flatMap {
-            OWSUserProfile.decrypt(profileData: $0, profileKey: profileKey)
-        }
-        let phoneNumberSharing = profile.phoneNumberSharingEncrypted.flatMap {
-            OWSUserProfile.decrypt(profileBooleanData: $0, profileKey: profileKey)
-        }
+        let nameComponents = Result { try profile.profileNameEncrypted.map {
+            try OWSUserProfile.decrypt(profileNameData: $0, profileKey: profileKey)
+        }}
+        let bio = Result { try profile.bioEncrypted.flatMap {
+            try OWSUserProfile.decrypt(profileStringData: $0, profileKey: profileKey)
+        }}
+        let bioEmoji = Result { try profile.bioEmojiEncrypted.flatMap {
+            try OWSUserProfile.decrypt(profileStringData: $0, profileKey: profileKey)
+        }}
+        let paymentAddressData = Result { try profile.paymentAddressEncrypted.map {
+            try OWSUserProfile.decrypt(profileData: $0, profileKey: profileKey)
+        }}
+        let phoneNumberSharing = Result { try profile.phoneNumberSharingEncrypted.map {
+            try OWSUserProfile.decrypt(profileBooleanData: $0, profileKey: profileKey)
+        }}
         return DecryptedProfile(
-            givenName: nameComponents.givenName,
-            familyName: nameComponents.familyName,
+            nameComponents: nameComponents,
             bio: bio,
             bioEmoji: bioEmoji,
             paymentAddressData: paymentAddressData,
@@ -493,11 +498,10 @@ public struct FetchedProfile {
 
 public extension DecryptedProfile {
     func paymentAddress(identityKey: IdentityKey) -> TSPaymentAddress? {
-        guard var paymentAddressData = paymentAddressData else {
-            return nil
-        }
-
         do {
+            guard var paymentAddressData = try paymentAddressData.get() else {
+                return nil
+            }
             guard let (dataLength, dataLengthCount) = UInt32.from(littleEndianData: paymentAddressData) else {
                 owsFailDebug("couldn't find paymentAddressData's length")
                 return nil

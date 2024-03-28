@@ -53,16 +53,53 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             transaction: tx
         )
 
+        var givenNameChange: OptionalChange<String> = .noChange
+        var familyNameChange: OptionalChange<String?> = .noChange
+        var bioChange: OptionalChange<String?> = .noChange
+        var bioEmojiChange: OptionalChange<String?> = .noChange
+        var isPhoneNumberSharedChange: OptionalChange<Bool?> = .noChange
+        if let decryptedProfile {
+            do {
+                if let nameComponents = try decryptedProfile.nameComponents.get() {
+                    givenNameChange = .setTo(nameComponents.givenName)
+                    familyNameChange = .setTo(nameComponents.familyName)
+                }
+            } catch {
+                Logger.warn("Couldn't decrypt profile name: \(error)")
+            }
+            do {
+                if let bio = try decryptedProfile.bio.get() {
+                    bioChange = .setTo(bio)
+                }
+            } catch {
+                Logger.warn("Couldn't decrypt profile bio: \(error)")
+            }
+            do {
+                if let bioEmoji = try decryptedProfile.bioEmoji.get() {
+                    bioEmojiChange = .setTo(bioEmoji)
+                }
+            } catch {
+                Logger.warn("Couldn't decrypt profile bio emoji: \(error)")
+            }
+            do {
+                if let phoneNumberSharing = try decryptedProfile.phoneNumberSharing.get() {
+                    isPhoneNumberSharedChange = .setTo(phoneNumberSharing)
+                }
+            } catch {
+                Logger.warn("Couldn't decrypt phone number sharing: \(error)")
+            }
+        }
+
         userProfile.update(
-            givenName: decryptedProfile.map { .setTo($0.givenName) } ?? .noChange,
-            familyName: decryptedProfile.map { .setTo($0.familyName) } ?? .noChange,
-            bio: decryptedProfile.map { .setTo($0.bio) } ?? .noChange,
-            bioEmoji: decryptedProfile.map { .setTo($0.bioEmoji) } ?? .noChange,
+            givenName: givenNameChange.map({ $0 as String? }),
+            familyName: familyNameChange,
+            bio: bioChange,
+            bioEmoji: bioEmojiChange,
             avatarUrlPath: avatarUrlPath,
             avatarFileName: avatarFileName,
             lastFetchDate: .setTo(lastFetchDate),
             badges: .setTo(profileBadges),
-            isPhoneNumberShared: decryptedProfile.map { .setTo($0.phoneNumberSharing) } ?? .noChange,
+            isPhoneNumberShared: isPhoneNumberSharedChange,
             userProfileWriter: userProfileWriter,
             authedAccount: authedAccount,
             transaction: tx,
@@ -1418,11 +1455,7 @@ extension OWSProfileManager {
                 throw SSKUnretryableError.couldNotLoadFileData
             }
 
-            guard let decryptedData = OWSUserProfile.decrypt(profileData: encryptedData, profileKey: profileKey) else {
-                throw OWSGenericError("Could not decrypt profile avatar.")
-            }
-
-            return decryptedData
+            return try OWSUserProfile.decrypt(profileData: encryptedData, profileKey: profileKey)
         } catch where error.isNetworkFailureOrTimeout && remainingRetries > 0 {
             return try await _downloadAndDecryptAvatar(
                 avatarUrlPath: avatarUrlPath,
