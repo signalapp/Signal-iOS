@@ -7,7 +7,7 @@ import XCTest
 import UIKit
 import SignalUI
 
-final class UIStackViewExtensionsTest: XCTestCase {
+final class UIStackViewSignalUITest: XCTestCase {
     func testRemoveArrangedSubviewsAfter() {
         let a = UIView()
         let b = UIView()

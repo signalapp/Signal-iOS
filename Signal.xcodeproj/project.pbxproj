@@ -381,7 +381,6 @@
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
 		34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
 		34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */; };
-		34BB78B9272C51E800DA0D04 /* MobileCoinHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B8272C51E800DA0D04 /* MobileCoinHelperTests.swift */; };
 		34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85F220E883200857249 /* ImageEditorModelTest.swift */; };
 		34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC860220E883200857249 /* ImageEditorTest.swift */; };
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
@@ -566,7 +565,6 @@
 		4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */; };
 		5000CA312B1F97EE00BB8EFF /* JobQueueRunnerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5000CA302B1F97EE00BB8EFF /* JobQueueRunnerTest.swift */; };
 		5003BB3F299DA0F10037159B /* LinkPreviewFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */; };
-		5003BB41299E1FD10037159B /* LinkPreviewFetcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */; };
 		5003BB43299F034D0037159B /* E164.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB42299F034D0037159B /* E164.swift */; };
 		500824CE292737FC005A5DC0 /* WebSocketPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CD292737FC005A5DC0 /* WebSocketPromise.swift */; };
 		500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */; };
@@ -660,7 +658,6 @@
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
 		507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */; };
 		508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */; };
-		509913BE2913274100F34F8E /* PhoneNumberFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */; };
 		509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */; };
 		50A1CE3A2A00931900730C40 /* DebugLogger+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */; };
 		50A40ED32B88005A0060C5A5 /* DisplayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A40ED22B88005A0060C5A5 /* DisplayName.swift */; };
@@ -683,6 +680,11 @@
 		50BF51022BB1FACA00C2C309 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */; };
 		50BF51042BB1FE5D00C2C309 /* NameCollisionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955BC271B560000B05242 /* NameCollisionFinder.swift */; };
 		50BF51052BB1FE7E00C2C309 /* TSInteraction+DeleteActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C980D327F3AD2C009750C0 /* TSInteraction+DeleteActionSheet.swift */; };
+		50BF51082BB2030C00C2C309 /* FormattedNumberFieldTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */; };
+		50BF510A2BB2031600C2C309 /* LinkPreviewFetcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */; };
+		50BF510C2BB2032500C2C309 /* MobileCoinHelperSDKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B8272C51E800DA0D04 /* MobileCoinHelperSDKTest.swift */; };
+		50BF510E2BB2033800C2C309 /* RecipientPickerViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */; };
+		50BF51102BB2035400C2C309 /* UIStackView+SignalUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C45D9329CB93E200B2CD2D /* UIStackView+SignalUITest.swift */; };
 		50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */; };
 		50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */; };
 		50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */; };
@@ -1914,7 +1916,6 @@
 		F963164B291AE06C00218FB7 /* ScrubbingLogFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963164A291AE06C00218FB7 /* ScrubbingLogFormatterTest.swift */; };
 		F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */; };
 		F963F818292D7E53007DBBBD /* FormattedNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F817292D7E53007DBBBD /* FormattedNumberField.swift */; };
-		F963F81A292DA8E2007DBBBD /* FormattedNumberFieldTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */; };
 		F964D2A529770180003C39DA /* BadgeGiftingConfirmationViewController+Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F964D2A429770180003C39DA /* BadgeGiftingConfirmationViewController+Paypal.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
 		F96B66A92912B88B004FFFAA /* DonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A02912B88A004FFFAA /* DonateViewController.swift */; };
@@ -1977,7 +1978,6 @@
 		F9B93CDC28E1FE3500B3F8A0 /* SignalProxyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B93CDB28E1FE3500B3F8A0 /* SignalProxyTest.swift */; };
 		F9B93CE028E246D900B3F8A0 /* AppDelegateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B93CDF28E246D900B3F8A0 /* AppDelegateTest.swift */; };
 		F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */; };
-		F9C45D9429CB93E200B2CD2D /* UIStackViewExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C45D9329CB93E200B2CD2D /* UIStackViewExtensionsTest.swift */; };
 		F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */; };
 		F9C5C89F289451B900548EEE /* SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; };
 		F9C5C8A7289451B900548EEE /* SignalServiceKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C899289451B900548EEE /* SignalServiceKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3150,7 +3150,7 @@
 		34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Impl.swift; sourceTree = "<group>"; };
 		34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinHelperMinimal.swift; sourceTree = "<group>"; };
 		34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinHelperSDK.swift; sourceTree = "<group>"; };
-		34BB78B8272C51E800DA0D04 /* MobileCoinHelperTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinHelperTests.swift; sourceTree = "<group>"; };
+		34BB78B8272C51E800DA0D04 /* MobileCoinHelperSDKTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinHelperSDKTest.swift; sourceTree = "<group>"; };
 		34BBC85F220E883200857249 /* ImageEditorModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorModelTest.swift; sourceTree = "<group>"; };
 		34BBC860220E883200857249 /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
 		34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
@@ -3478,7 +3478,7 @@
 		508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellBackgroundColor.swift; sourceTree = "<group>"; };
 		5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSyncAttachmentBuilder.swift; sourceTree = "<group>"; };
 		5096BE682AF37A9900668F9F /* ContactOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactOutputStream.swift; sourceTree = "<group>"; };
-		509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberFinderTests.swift; sourceTree = "<group>"; };
+		509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewControllerTest.swift; sourceTree = "<group>"; };
 		509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SSKTest.swift"; sourceTree = "<group>"; };
 		50A1CE372A00894C00730C40 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugLogger+MainApp.swift"; sourceTree = "<group>"; };
@@ -4835,7 +4835,7 @@
 		F9B93CDF28E246D900B3F8A0 /* AppDelegateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateTest.swift; sourceTree = "<group>"; };
 		F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewsUtil.swift; sourceTree = "<group>"; };
 		F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessageTest.swift; sourceTree = "<group>"; };
-		F9C45D9329CB93E200B2CD2D /* UIStackViewExtensionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStackViewExtensionsTest.swift; sourceTree = "<group>"; };
+		F9C45D9329CB93E200B2CD2D /* UIStackView+SignalUITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+SignalUITest.swift"; sourceTree = "<group>"; };
 		F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSSKEnvironment.swift; sourceTree = "<group>"; };
 		F9C5C897289451B900548EEE /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9C5C899289451B900548EEE /* SignalServiceKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalServiceKit.h; sourceTree = "<group>"; };
@@ -6048,18 +6048,6 @@
 			path = SignalUI;
 			sourceTree = "<group>";
 		};
-		34A954B7271A471300B05242 /* SignalUITests */ = {
-			isa = PBXGroup;
-			children = (
-				F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */,
-				5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */,
-				34BB78B8272C51E800DA0D04 /* MobileCoinHelperTests.swift */,
-				509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */,
-				F9C45D9329CB93E200B2CD2D /* UIStackViewExtensionsTest.swift */,
-			);
-			path = SignalUITests;
-			sourceTree = "<group>";
-		};
 		34A954D2271B4F3E00B05242 /* Appearance */ = {
 			isa = PBXGroup;
 			children = (
@@ -6085,6 +6073,7 @@
 				762A416C2A383ABF00057955 /* UIKit+Image.swift */,
 				762A416A2A38397500057955 /* UIKit+Text.swift */,
 				766CE0D92A32E52300AD609D /* UIStackView+SignalUI.swift */,
+				F9C45D9329CB93E200B2CD2D /* UIStackView+SignalUITest.swift */,
 				500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */,
 				766CE0D72A32968600AD609D /* UIView+AutoLayout.swift */,
 				3402A9E5271D97090084CBAE /* UIView+SignalUI.swift */,
@@ -6098,6 +6087,7 @@
 			children = (
 				762EBBD12A2FE370002FD28F /* BlockListUIUtils.swift */,
 				F963F817292D7E53007DBBBD /* FormattedNumberField.swift */,
+				F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */,
 				34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */,
 				34A95507271B510400B05242 /* GroupViewUtils.swift */,
 				6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */,
@@ -6166,6 +6156,7 @@
 			children = (
 				34A95517271B510400B05242 /* GroupLinkPreview.swift */,
 				5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */,
+				5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */,
 				34A95516271B510400B05242 /* LinkPreviewState.swift */,
 				34A95515271B510400B05242 /* LinkPreviewView.swift */,
 			);
@@ -6336,6 +6327,7 @@
 				3465F4D227287675001663AF /* MobileCoinAPI+Configuration.swift */,
 				3465F4D427287675001663AF /* MobileCoinAPI.swift */,
 				34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */,
+				34BB78B8272C51E800DA0D04 /* MobileCoinHelperSDKTest.swift */,
 				3465F4DC2728812A001663AF /* Payments.swift */,
 				34A955B8271B553D00B05242 /* PaymentsFormat.swift */,
 				3465F4D327287675001663AF /* PaymentsImpl.swift */,
@@ -8322,6 +8314,7 @@
 				506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */,
 				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
 				F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */,
+				509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */,
 				34ACA7F42733183000E47AD4 /* RegistrationValues.swift */,
 				34A955A7271B510500B05242 /* ThreadViewModel.swift */,
 				50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */,
@@ -8700,7 +8693,6 @@
 				342FFE8927245850000AC89F /* SignalNSE */,
 				453518691FC635DD00210559 /* SignalShareExtension */,
 				34A954A9271A471200B05242 /* SignalUI */,
-				34A954B7271A471300B05242 /* SignalUITests */,
 				F9C5C898289451B900548EEE /* SignalServiceKit */,
 				D221A08C169C9E5E00537ABF /* Frameworks */,
 				D221A08A169C9E5E00537ABF /* Products */,
@@ -12219,11 +12211,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F963F81A292DA8E2007DBBBD /* FormattedNumberFieldTest.swift in Sources */,
-				5003BB41299E1FD10037159B /* LinkPreviewFetcherTest.swift in Sources */,
-				34BB78B9272C51E800DA0D04 /* MobileCoinHelperTests.swift in Sources */,
-				509913BE2913274100F34F8E /* PhoneNumberFinderTests.swift in Sources */,
-				F9C45D9429CB93E200B2CD2D /* UIStackViewExtensionsTest.swift in Sources */,
+				50BF51082BB2030C00C2C309 /* FormattedNumberFieldTest.swift in Sources */,
+				50BF510A2BB2031600C2C309 /* LinkPreviewFetcherTest.swift in Sources */,
+				50BF510C2BB2032500C2C309 /* MobileCoinHelperSDKTest.swift in Sources */,
+				50BF510E2BB2033800C2C309 /* RecipientPickerViewControllerTest.swift in Sources */,
+				50BF51102BB2035400C2C309 /* UIStackView+SignalUITest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

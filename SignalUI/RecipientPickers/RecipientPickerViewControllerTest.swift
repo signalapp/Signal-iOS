@@ -9,7 +9,7 @@ import XCTest
 @testable import SignalServiceKit
 @testable import SignalUI
 
-final class PhoneNumberFinderTests: XCTestCase {
+final class RecipientPickerViewControllerTests: XCTestCase {
     private struct MockContactDiscoveryManager: ContactDiscoveryManager {
         var lookUpBlock: ((Set<String>) -> Promise<Set<SignalRecipient>>)?
 
@@ -18,7 +18,7 @@ final class PhoneNumberFinderTests: XCTestCase {
         }
     }
 
-    func testParseResults() {
+    func testPhoneNumberFinderParseResults() {
         let finder = PhoneNumberFinder(
             localNumber: "+16505550100",
             contactDiscoveryManager: MockContactDiscoveryManager(),
@@ -54,7 +54,7 @@ final class PhoneNumberFinderTests: XCTestCase {
         }
     }
 
-    func testLookUp() throws {
+    func testPhoneNumberFinderLookUp() throws {
         struct TestCase {
             var searchResult: PhoneNumberFinder.SearchResult
             var isValid: Bool

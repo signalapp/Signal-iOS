@@ -7,7 +7,7 @@ import SignalServiceKit
 import XCTest
 @testable import SignalUI
 
-class MobileCoinHelperTests: XCTestCase {
+class MobileCoinHelperSDKTests: XCTestCase {
     func testInfoForReceiptData() {
         let receiptData = Data(base64Encoded: """
         CiIKIARfCkd3ZdIMRhXSGvi72N2cDjtc5A0LvdPCgTMBWX5JEiIKIFf4+WnFJ5XvgQ3Si6ewxByjiZKIhwJO4AfN1cP\
