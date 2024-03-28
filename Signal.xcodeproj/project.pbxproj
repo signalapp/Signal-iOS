@@ -820,6 +820,9 @@
 		664657412AC4FB720099DE1C /* NotificationsProtocolSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */; };
 		664657452ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657442ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift */; };
 		664657472ACB66630099DE1C /* TSAccountManagerObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */; };
+		664BA8422BB5CE04005638E0 /* OutgoingMessagePreparer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8412BB5CE04005638E0 /* OutgoingMessagePreparer.swift */; };
+		664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */; };
+		664BA8472BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */; };
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
 		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
 		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
@@ -2062,7 +2065,6 @@
 		F9C5CC05289453B300548EEE /* OWSOutgoingPaymentMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C912289453B100548EEE /* OWSOutgoingPaymentMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC06289453B300548EEE /* OWSOutgoingPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C913289453B100548EEE /* OWSOutgoingPaymentMessage+SDS.swift */; };
 		F9C5CC07289453B300548EEE /* OWSOutgoingPaymentMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C914289453B100548EEE /* OWSOutgoingPaymentMessage.m */; };
-		F9C5CC08289453B300548EEE /* OutgoingMessagePreparer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C915289453B100548EEE /* OutgoingMessagePreparer.swift */; };
 		F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C918289453B100548EEE /* InstalledSticker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC0B289453B300548EEE /* StickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C919289453B100548EEE /* StickerManager.swift */; };
 		F9C5CC0C289453B300548EEE /* CDNDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C91A289453B100548EEE /* CDNDownloadOperation.swift */; };
@@ -3642,6 +3644,9 @@
 		664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsProtocolSwift.swift; sourceTree = "<group>"; };
 		664657442ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAccountManagerImpl+Shims.swift"; sourceTree = "<group>"; };
 		664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerObjcBridge.swift; sourceTree = "<group>"; };
+		664BA8412BB5CE04005638E0 /* OutgoingMessagePreparer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingMessagePreparer.swift; sourceTree = "<group>"; };
+		664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedOutgoingMessage.swift; sourceTree = "<group>"; };
+		664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnpreparedOutgoingMessage.swift; sourceTree = "<group>"; };
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
 		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
 		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
@@ -4919,7 +4924,6 @@
 		F9C5C912289453B100548EEE /* OWSOutgoingPaymentMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingPaymentMessage.h; sourceTree = "<group>"; };
 		F9C5C913289453B100548EEE /* OWSOutgoingPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSOutgoingPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C914289453B100548EEE /* OWSOutgoingPaymentMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingPaymentMessage.m; sourceTree = "<group>"; };
-		F9C5C915289453B100548EEE /* OutgoingMessagePreparer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingMessagePreparer.swift; sourceTree = "<group>"; };
 		F9C5C918289453B100548EEE /* InstalledSticker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstalledSticker.h; sourceTree = "<group>"; };
 		F9C5C919289453B100548EEE /* StickerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerManager.swift; sourceTree = "<group>"; };
 		F9C5C91A289453B100548EEE /* CDNDownloadOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CDNDownloadOperation.swift; sourceTree = "<group>"; };
@@ -7193,6 +7197,16 @@
 				6640DD5D2ACCCDC000CE9A8C /* RegistrationStateChangeManagerObjcTestUtil.swift */,
 			);
 			path = RegistrationStateChangeManager;
+			sourceTree = "<group>";
+		};
+		664BA8402BB5CDF6005638E0 /* OutgoingMessagePreparer */ = {
+			isa = PBXGroup;
+			children = (
+				664BA8412BB5CE04005638E0 /* OutgoingMessagePreparer.swift */,
+				664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */,
+				664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */,
+			);
+			path = OutgoingMessagePreparer;
 			sourceTree = "<group>";
 		};
 		66533E3529B7B53500E8D928 /* WhoAmI */ = {
@@ -9775,6 +9789,7 @@
 				C1DB22C129C9F93600757380 /* Edit */,
 				F9C5C8D8289453B100548EEE /* Interactions */,
 				F9C5C930289453B100548EEE /* InvalidKeyMessages */,
+				664BA8402BB5CDF6005638E0 /* OutgoingMessagePreparer */,
 				F9C5C911289453B100548EEE /* Payments */,
 				F9C5C948289453B100548EEE /* Reactions */,
 				F9C5C917289453B100548EEE /* Stickers */,
@@ -9801,7 +9816,6 @@
 				50F9460F2AD768AF002EF293 /* MockIdentityManager.swift */,
 				502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */,
 				F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */,
-				F9C5C915289453B100548EEE /* OutgoingMessagePreparer.swift */,
 				F9C5C959289453B100548EEE /* OWSAddToContactsOfferMessage+SDS.swift */,
 				F9C5C92C289453B100548EEE /* OWSAddToContactsOfferMessage.h */,
 				F9C5C979289453B100548EEE /* OWSAddToContactsOfferMessage.m */,
@@ -13436,7 +13450,7 @@
 				C1EAECDF2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift in Sources */,
 				D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */,
 				F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */,
-				F9C5CC08289453B300548EEE /* OutgoingMessagePreparer.swift in Sources */,
+				664BA8422BB5CE04005638E0 /* OutgoingMessagePreparer.swift in Sources */,
 				F9C5CBB9289453B300548EEE /* OutgoingPaymentSyncMessage.m in Sources */,
 				F9C5CBB4289453B300548EEE /* OutgoingPaymentSyncMessage.swift in Sources */,
 				50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */,
@@ -13618,6 +13632,7 @@
 				6659A0312A7C5B9700066AB7 /* PreKeyUploadBundle.swift in Sources */,
 				6681AB652B7AE53B0099D187 /* PreloadedTextAttachment.swift in Sources */,
 				7254653B2BA01FCC00EABFD2 /* PreparedGiftPayment.swift in Sources */,
+				664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */,
 				725465452BA01FCC00EABFD2 /* ProfileBadgesSnapshot+Constructors.swift in Sources */,
 				D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */,
 				F9C5CE38289453B400548EEE /* ProfileFetcherJob.swift in Sources */,
@@ -13978,6 +13993,7 @@
 				7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */,
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,
 				6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */,
+				664BA8472BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift in Sources */,
 				C1DF3F462B0283C5004B6986 /* Upload.swift in Sources */,
 				C1DF3F432B0283C5004B6986 /* UploadEndpoint.swift in Sources */,
 				C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */,
