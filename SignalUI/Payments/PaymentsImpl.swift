@@ -1081,14 +1081,12 @@ public extension PaymentsImpl {
         )
 
         paymentModel.update(withInteractionUniqueId: message.uniqueId, transaction: transaction)
+        // No attachments to add.
+        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(message)
 
         ThreadUtil.enqueueMessage(
-            message,
+            unpreparedMessage,
             thread: thread,
-            insertMessage: { innerTx in
-                message.anyInsert(transaction: innerTx)
-                return message.asPreparer
-            },
             transaction: transaction
         )
 
