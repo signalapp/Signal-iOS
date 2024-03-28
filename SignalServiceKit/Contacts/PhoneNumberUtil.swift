@@ -233,19 +233,7 @@ extension PhoneNumberUtil {
             return unknownValue
         }
 
-        let identifier = NSLocale.localeIdentifier(fromComponents: [
-            NSLocale.Key.countryCode.rawValue: countryCode
-        ])
-
-        let localesToTry = [Locale.current, NSLocale.system]
-        for locale in localesToTry {
-            let nsLocale = locale as NSLocale
-            if let result = nsLocale.displayName(forKey: .identifier, value: identifier)?.nilIfEmpty {
-                return result
-            }
-        }
-
-        return unknownValue
+        return Locale.current.localizedString(forRegionCode: countryCode)?.nilIfEmpty ?? unknownValue
     }
 
     private func parsePhoneNumber(_ numberToParse: String, regionCode: String) -> PhoneNumber? {
