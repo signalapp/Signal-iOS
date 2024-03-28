@@ -321,61 +321,53 @@ private class SendGiftBadgeJobRunner: JobRunner, Dependencies {
         receiptCredentialPresentation: ReceiptCredentialPresentation,
         tx: SDSAnyWriteTransaction
     ) throws {
-        func send(_ preparer: OutgoingMessagePreparer) {
-            preparer.insertMessage(transaction: tx)
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparer, transaction: tx)
+        func send(_ unpreparedMessage: UnpreparedOutgoingMessage) throws {
+            let preparedMessage = try unpreparedMessage.prepare(tx: tx)
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
         }
 
         let thread = try getValidatedThread(threadUniqueId: threadUniqueId, tx: tx)
 
-        send(OutgoingMessagePreparer(
+        try send(UnpreparedOutgoingMessage.build(
             giftBadgeReceiptCredentialPresentation: receiptCredentialPresentation,
             thread: thread,
-            transaction: tx
+            tx: tx
         ))
 
         if !messageText.isEmpty {
-            send(OutgoingMessagePreparer(messageBody: messageText, thread: thread, transaction: tx))
+            try send(UnpreparedOutgoingMessage.build(messageBody: messageText, thread: thread, tx: tx))
         }
     }
 }
 
 // MARK: - Outgoing message preparer
 
-extension OutgoingMessagePreparer {
-    fileprivate convenience init(
+extension UnpreparedOutgoingMessage {
+    fileprivate static func build(
         giftBadgeReceiptCredentialPresentation: ReceiptCredentialPresentation,
         thread: TSThread,
-        transaction tx: SDSAnyReadTransaction
-    ) {
+        tx: SDSAnyReadTransaction
+    ) -> UnpreparedOutgoingMessage {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        self.init(
-            builder: TSOutgoingMessageBuilder(
-                thread: thread,
-                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read),
-                giftBadge: OWSGiftBadge(redemptionCredential: Data(giftBadgeReceiptCredentialPresentation.serialize()))
-            ),
-            transaction: tx
+        let builder = TSOutgoingMessageBuilder(
+            thread: thread,
+            expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read),
+            giftBadge: OWSGiftBadge(redemptionCredential: Data(giftBadgeReceiptCredentialPresentation.serialize()))
         )
+        return .forMessage(builder.build(transaction: tx))
     }
 
-    fileprivate convenience init(
+    fileprivate static func build(
         messageBody: String,
         thread: TSThread,
-        transaction tx: SDSAnyReadTransaction
-    ) {
+        tx: SDSAnyReadTransaction
+    ) -> UnpreparedOutgoingMessage {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        self.init(
-            builder: TSOutgoingMessageBuilder(
-                thread: thread,
-                messageBody: messageBody,
-                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read)
-            ),
-            transaction: tx
+        let builder = TSOutgoingMessageBuilder(
+            thread: thread,
+            messageBody: messageBody,
+            expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read)
         )
-    }
-
-    private convenience init(builder: TSOutgoingMessageBuilder, transaction: SDSAnyReadTransaction) {
-        self.init(builder.build(transaction: transaction))
+        return .forMessage(builder.build(transaction: tx))
     }
 }
