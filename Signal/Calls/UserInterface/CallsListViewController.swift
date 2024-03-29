@@ -458,6 +458,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             owsFail("Unexpectedly failed to instantiate group call interaction updated notification!")
         }
 
+        if DebugFlags.internalLogging {
+            logger.info("Group call interaction was updated, reloading.")
+        }
+
         let callRecordIdForGroupCall = CallRecord.ID(
             callId: notification.callId,
             threadRowId: notification.groupThreadRowId
@@ -1144,6 +1148,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             return viewModelLoader.refreshViewModels(
                 callRecordIds: callRecordIdsToReload, tx: tx.asV2Read
             )
+        }
+
+        if DebugFlags.internalLogging {
+            logger.info("Reloading \(referencesToReload.count) rows.")
         }
 
         var snapshot = getSnapshot()
