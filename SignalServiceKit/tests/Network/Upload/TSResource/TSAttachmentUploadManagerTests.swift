@@ -6,13 +6,13 @@
 import XCTest
 @testable import SignalServiceKit
 
-class UploadManagerTests: XCTestCase {
-    var uploadManager: UploadManager!
-    var helper: UploadManagerMockHelper!
+class TSAttachmentUploadManagerTests: XCTestCase {
+    var uploadManager: TSAttachmentUploadManager!
+    var helper: TSAttachmentUploadManagerMockHelper!
 
     override func setUp() {
-        helper = UploadManagerMockHelper()
-        uploadManager = UploadManagerImpl(
+        helper = TSAttachmentUploadManagerMockHelper()
+        uploadManager = TSAttachmentUploadManagerImpl(
             db: helper.mockDB,
             interactionStore: helper.mockInteractionStore,
             networkManager: helper.mockNetworkManager,

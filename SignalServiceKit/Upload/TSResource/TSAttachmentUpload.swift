@@ -10,14 +10,14 @@ extension Upload.Constants {
     fileprivate static let maxUploadProgressRetries = 2
 }
 
-public struct AttachmentUpload {
+public struct TSAttachmentUpload {
 
     private let db: DB
     private let signalService: OWSSignalServiceProtocol
     private let networkManager: NetworkManager
     private let chatConnectionManager: ChatConnectionManager
 
-    private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
+    private let attachmentEncrypter: TSAttachmentUpload.Shims.AttachmentEncrypter
     private let fileSystem: Upload.Shims.FileSystem
 
     private let sourceURL: URL
@@ -29,7 +29,7 @@ public struct AttachmentUpload {
         signalService: OWSSignalServiceProtocol,
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,
-        attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
+        attachmentEncrypter: TSAttachmentUpload.Shims.AttachmentEncrypter,
         fileSystem: Upload.Shims.FileSystem,
         sourceURL: URL,
         logger: PrefixedLogger

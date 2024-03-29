@@ -6,19 +6,19 @@
 import Foundation
 @testable import SignalServiceKit
 
-extension Upload {
+extension TSAttachmentUpload {
     enum Mocks {
-        typealias NetworkManager = _UploadManager_NetworkManagerMock
-        typealias URLSession = _UploadManager_OWSURLSessionMock
-        typealias ChatConnectionManager = _UploadManager_ChatConnectionManagerMock
+        typealias NetworkManager = _TSAttachmentUploadManager_NetworkManagerMock
+        typealias URLSession = _TSAttachmentUploadManager_OWSURLSessionMock
+        typealias ChatConnectionManager = _TSAttachmentUploadManager_ChatConnectionManagerMock
 
-        typealias AttachmentEncrypter = _UploadManager_AttachmentEncrypterMock
-        typealias BlurHash = _Upload_BlurHashMock
+        typealias AttachmentEncrypter = _TSAttachmentUploadManager_AttachmentEncrypterMock
+        typealias BlurHash = _TSAttachmentUpload_BlurHashMock
         typealias FileSystem = _Upload_FileSystemMock
     }
 }
 
-class _Upload_BlurHashMock: Upload.Shims.BlurHash {
+class _TSAttachmentUpload_BlurHashMock: TSAttachmentUpload.Shims.BlurHash {
     func ensureBlurHash(attachmentStream: TSAttachmentStream) async throws {
         return
     }
@@ -36,7 +36,7 @@ class _Upload_FileSystemMock: Upload.Shims.FileSystem {
     }
 }
 
-class _UploadManager_NetworkManagerMock: NetworkManager {
+class _TSAttachmentUploadManager_NetworkManagerMock: NetworkManager {
 
     var performRequestBlock: ((TSRequest, Bool) -> Promise<HTTPResponse>)?
 
@@ -45,7 +45,7 @@ class _UploadManager_NetworkManagerMock: NetworkManager {
     }
 }
 
-class _UploadManager_AttachmentEncrypterMock: Upload.Shims.AttachmentEncrypter {
+class _TSAttachmentUploadManager_AttachmentEncrypterMock: TSAttachmentUpload.Shims.AttachmentEncrypter {
 
     var encryptAttachmentBlock: ((URL, URL) -> EncryptionMetadata)?
     func encryptAttachment(at unencryptedUrl: URL, output encryptedUrl: URL) throws -> EncryptionMetadata {
@@ -53,7 +53,7 @@ class _UploadManager_AttachmentEncrypterMock: Upload.Shims.AttachmentEncrypter {
     }
 }
 
-public class _UploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
+public class _TSAttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
 
     public var promiseForUploadDataTaskBlock: ((URLRequest, Data, ProgressBlock?) -> Promise<HTTPResponse>)?
     public override func uploadTaskPromise(request: URLRequest, data requestData: Data, progress progressBlock: ProgressBlock?) -> Promise<HTTPResponse> {
@@ -76,7 +76,7 @@ public class _UploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
     }
 }
 
-class _UploadManager_ChatConnectionManagerMock: ChatConnectionManager {
+class _TSAttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager {
     var hasEmptiedInitialQueue: Bool { true }
     var identifiedConnectionState: OWSChatConnectionState { .open }
     func waitForIdentifiedConnectionToOpen() async throws { }

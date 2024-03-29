@@ -663,14 +663,14 @@ public class AppSetup {
             udManager: udManager
         )
 
-        let uploadManager = UploadManagerImpl(
+        let tsAttachmentUploadManager = TSAttachmentUploadManagerImpl(
             db: db,
             interactionStore: InteractionStoreImpl(),
             networkManager: networkManager,
             chatConnectionManager: chatConnectionManager,
             signalService: signalService,
-            attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
-            blurHash: Upload.Wrappers.BlurHash(),
+            attachmentEncrypter: TSAttachmentUpload.Wrappers.AttachmentEncrypter(),
+            blurHash: TSAttachmentUpload.Wrappers.BlurHash(),
             fileSystem: Upload.Wrappers.FileSystem(),
             tsResourceStore: tsResourceStore
         )
@@ -743,10 +743,10 @@ public class AppSetup {
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
+            tsAttachmentUploadManager: tsAttachmentUploadManager,
             tsResourceDownloadManager: tsResourceDownloadManager,
             tsResourceManager: tsResourceManager,
             tsResourceStore: tsResourceStore,
-            uploadManager: uploadManager,
             usernameApiClient: usernameApiClient,
             usernameEducationManager: usernameEducationManager,
             usernameLinkManager: usernameLinkManager,

@@ -934,6 +934,7 @@
 		66C102F62B61E3D700B47EC2 /* TSResourcePointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C102F52B61E3D700B47EC2 /* TSResourcePointer.swift */; };
 		66C102F82B6306B900B47EC2 /* TSResourceThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C102F72B6306B900B47EC2 /* TSResourceThumbnail.swift */; };
 		66C102FA2B630F9600B47EC2 /* TSAttachment+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */; };
+		66C1A8742BB759820076C65A /* TSAttachmentUploadShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */; };
 		66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1302A05D28A008DDE72 /* TSRequest.swift */; };
 		66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */; };
 		66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */; };
@@ -1506,7 +1507,7 @@
 		C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyTarget.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
-		C18B56B92B07BC12000A441F /* AttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18B56B82B07BC12000A441F /* AttachmentUpload.swift */; };
+		C18B56B92B07BC12000A441F /* TSAttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18B56B82B07BC12000A441F /* TSAttachmentUpload.swift */; };
 		C18CA8342B6D6F8400D411B0 /* UploadManagerTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */; };
 		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
 		C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */; };
@@ -1531,13 +1532,13 @@
 		C1DD78AB2BB1CEF80020F064 /* InputStreamable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DD78AA2BB1CEF80020F064 /* InputStreamable.swift */; };
 		C1DD78AD2BB1CF110020F064 /* Streamable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DD78AC2BB1CF110020F064 /* Streamable.swift */; };
 		C1DF3F432B0283C5004B6986 /* UploadEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */; };
-		C1DF3F442B0283C5004B6986 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3D2B0283C5004B6986 /* UploadManager.swift */; };
+		C1DF3F442B0283C5004B6986 /* TSAttachmentUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3D2B0283C5004B6986 /* TSAttachmentUploadManager.swift */; };
 		C1DF3F452B0283C5004B6986 /* UploadV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3E2B0283C5004B6986 /* UploadV2.swift */; };
 		C1DF3F462B0283C5004B6986 /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3F2B0283C5004B6986 /* Upload.swift */; };
 		C1DF3F472B0283C5004B6986 /* UploadShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F402B0283C5004B6986 /* UploadShims.swift */; };
 		C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */; };
 		C1DF3F4D2B028409004B6986 /* UploadManagerTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */; };
-		C1DF3F4E2B028409004B6986 /* UploadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F4C2B028409004B6986 /* UploadManagerTests.swift */; };
+		C1DF3F4E2B028409004B6986 /* TSAttachmentUploadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F4C2B028409004B6986 /* TSAttachmentUploadManagerTests.swift */; };
 		C1DF3F5B2B0287C7004B6986 /* UploadEndpointCDN3.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */; };
 		C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */; };
 		C1E307402BA3B342009F015B /* OutputStreamable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E3073F2BA3B342009F015B /* OutputStreamable.swift */; };
@@ -3765,6 +3766,7 @@
 		66C102F52B61E3D700B47EC2 /* TSResourcePointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourcePointer.swift; sourceTree = "<group>"; };
 		66C102F72B6306B900B47EC2 /* TSResourceThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceThumbnail.swift; sourceTree = "<group>"; };
 		66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachment+TSResource.swift"; sourceTree = "<group>"; };
+		66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadShims.swift; sourceTree = "<group>"; };
 		66C2B1302A05D28A008DDE72 /* TSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequest.swift; sourceTree = "<group>"; };
 		66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRUtil.swift; sourceTree = "<group>"; };
 		66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredential.swift; sourceTree = "<group>"; };
@@ -4331,7 +4333,7 @@
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
-		C18B56B82B07BC12000A441F /* AttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUpload.swift; sourceTree = "<group>"; };
+		C18B56B82B07BC12000A441F /* TSAttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentUpload.swift; sourceTree = "<group>"; };
 		C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManagerTestHelper.swift; sourceTree = "<group>"; };
 		C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+IDEAL.swift"; sourceTree = "<group>"; };
 		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
@@ -4357,13 +4359,13 @@
 		C1DD78AA2BB1CEF80020F064 /* InputStreamable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputStreamable.swift; sourceTree = "<group>"; };
 		C1DD78AC2BB1CF110020F064 /* Streamable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Streamable.swift; sourceTree = "<group>"; };
 		C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpoint.swift; sourceTree = "<group>"; };
-		C1DF3F3D2B0283C5004B6986 /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
+		C1DF3F3D2B0283C5004B6986 /* TSAttachmentUploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadManager.swift; sourceTree = "<group>"; };
 		C1DF3F3E2B0283C5004B6986 /* UploadV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadV2.swift; sourceTree = "<group>"; };
 		C1DF3F3F2B0283C5004B6986 /* Upload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		C1DF3F402B0283C5004B6986 /* UploadShims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadShims.swift; sourceTree = "<group>"; };
 		C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpointCDN2.swift; sourceTree = "<group>"; };
 		C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManagerTestMocks.swift; sourceTree = "<group>"; };
-		C1DF3F4C2B028409004B6986 /* UploadManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManagerTests.swift; sourceTree = "<group>"; };
+		C1DF3F4C2B028409004B6986 /* TSAttachmentUploadManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadManagerTests.swift; sourceTree = "<group>"; };
 		C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpointCDN3.swift; sourceTree = "<group>"; };
 		C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationViewController.swift; sourceTree = "<group>"; };
 		C1E3073F2BA3B342009F015B /* OutputStreamable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputStreamable.swift; sourceTree = "<group>"; };
@@ -7524,6 +7526,26 @@
 			path = V2;
 			sourceTree = "<group>";
 		};
+		66C1A8722BB759350076C65A /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				C18B56B82B07BC12000A441F /* TSAttachmentUpload.swift */,
+				C1DF3F3D2B0283C5004B6986 /* TSAttachmentUploadManager.swift */,
+				66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */,
+			);
+			path = TSResource;
+			sourceTree = "<group>";
+		};
+		66C1A8752BB75A7D0076C65A /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				C1DF3F4C2B028409004B6986 /* TSAttachmentUploadManagerTests.swift */,
+				C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */,
+				C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */,
+			);
+			path = TSResource;
+			sourceTree = "<group>";
+		};
 		66C2B13B2A0E9108008DDE72 /* SVR2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -8703,12 +8725,11 @@
 		C1DF3F3B2B0283C5004B6986 /* Upload */ = {
 			isa = PBXGroup;
 			children = (
-				C18B56B82B07BC12000A441F /* AttachmentUpload.swift */,
+				66C1A8722BB759350076C65A /* TSResource */,
 				C1DF3F3F2B0283C5004B6986 /* Upload.swift */,
 				C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */,
 				C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */,
 				C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */,
-				C1DF3F3D2B0283C5004B6986 /* UploadManager.swift */,
 				C1DF3F402B0283C5004B6986 /* UploadShims.swift */,
 				C1DF3F3E2B0283C5004B6986 /* UploadV2.swift */,
 			);
@@ -8718,9 +8739,7 @@
 		C1DF3F4A2B028409004B6986 /* Upload */ = {
 			isa = PBXGroup;
 			children = (
-				C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */,
-				C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */,
-				C1DF3F4C2B028409004B6986 /* UploadManagerTests.swift */,
+				66C1A8752BB75A7D0076C65A /* TSResource */,
 			);
 			path = Upload;
 			sourceTree = "<group>";
@@ -13078,7 +13097,6 @@
 				66D7B9072B928BD50005C98B /* AttachmentStream.swift in Sources */,
 				66CA4CE42B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift in Sources */,
 				66D7B92B2B97E5990005C98B /* AttachmentTransitPointer.swift in Sources */,
-				C18B56B92B07BC12000A441F /* AttachmentUpload.swift in Sources */,
 				66D7B9092B9291BD0005C98B /* AttachmentUploadStore.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
 				50552C2A2BAB8E7D00815474 /* AuthCredentialManager.swift in Sources */,
@@ -13923,6 +13941,9 @@
 				6619A1C32B2B7199004B38FE /* TSAttachmentStore.swift in Sources */,
 				F9C5CC7B289453B300548EEE /* TSAttachmentStream+SDS.swift in Sources */,
 				F9C5CC76289453B300548EEE /* TSAttachmentStream.m in Sources */,
+				C18B56B92B07BC12000A441F /* TSAttachmentUpload.swift in Sources */,
+				C1DF3F442B0283C5004B6986 /* TSAttachmentUploadManager.swift in Sources */,
+				66C1A8742BB759820076C65A /* TSAttachmentUploadShims.swift in Sources */,
 				F9C5CC5C289453B300548EEE /* TSCall+SDS.swift in Sources */,
 				F9C5CC5D289453B300548EEE /* TSCall.m in Sources */,
 				D91AC93E2B6337B200814975 /* TSCall.swift in Sources */,
@@ -14026,7 +14047,6 @@
 				C1DF3F432B0283C5004B6986 /* UploadEndpoint.swift in Sources */,
 				C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */,
 				C1DF3F5B2B0287C7004B6986 /* UploadEndpointCDN3.swift in Sources */,
-				C1DF3F442B0283C5004B6986 /* UploadManager.swift in Sources */,
 				C1DF3F472B0283C5004B6986 /* UploadShims.swift in Sources */,
 				C1DF3F452B0283C5004B6986 /* UploadV2.swift in Sources */,
 				F9D5BFCF2979AFF4001737E5 /* URLPathComponents.swift in Sources */,
@@ -14240,6 +14260,7 @@
 				66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */,
 				C1F09B9F2BB307E100F9E7F5 /* TransformingInputStreamTests.swift in Sources */,
 				C1E307422BA4D388009F015B /* TransformingOutputStreamTests.swift in Sources */,
+				C1DF3F4E2B028409004B6986 /* TSAttachmentUploadManagerTests.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,
 				F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */,
 				D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */,
@@ -14255,7 +14276,6 @@
 				6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */,
 				C18CA8342B6D6F8400D411B0 /* UploadManagerTestHelper.swift in Sources */,
 				C1DF3F4D2B028409004B6986 /* UploadManagerTestMocks.swift in Sources */,
-				C1DF3F4E2B028409004B6986 /* UploadManagerTests.swift in Sources */,
 				F9D5BFD12979B027001737E5 /* URLPathComponentsTest.swift in Sources */,
 				F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */,
 				D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */,

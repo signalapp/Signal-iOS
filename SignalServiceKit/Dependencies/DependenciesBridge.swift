@@ -106,10 +106,10 @@ public class DependenciesBridge {
     public let threadReplyInfoStore: ThreadReplyInfoStore
     public let threadStore: ThreadStore
     public let tsAccountManager: TSAccountManager
+    public let tsAttachmentUploadManager: TSAttachmentUploadManager
     public let tsResourceDownloadManager: TSResourceDownloadManager
     public let tsResourceManager: TSResourceManager
     public let tsResourceStore: TSResourceStore
-    public let uploadManager: UploadManager
     public let usernameApiClient: UsernameApiClient
     public let usernameEducationManager: UsernameEducationManager
     public let usernameLinkManager: UsernameLinkManager
@@ -185,10 +185,10 @@ public class DependenciesBridge {
         threadReplyInfoStore: ThreadReplyInfoStore,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
+        tsAttachmentUploadManager: TSAttachmentUploadManager,
         tsResourceDownloadManager: TSResourceDownloadManager,
         tsResourceManager: TSResourceManager,
         tsResourceStore: TSResourceStore,
-        uploadManager: UploadManager,
         usernameApiClient: UsernameApiClient,
         usernameEducationManager: UsernameEducationManager,
         usernameLinkManager: UsernameLinkManager,
@@ -263,10 +263,10 @@ public class DependenciesBridge {
         self.threadReplyInfoStore = threadReplyInfoStore
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
+        self.tsAttachmentUploadManager = tsAttachmentUploadManager
         self.tsResourceDownloadManager = tsResourceDownloadManager
         self.tsResourceManager = tsResourceManager
         self.tsResourceStore = tsResourceStore
-        self.uploadManager = uploadManager
         self.usernameApiClient = usernameApiClient
         self.usernameEducationManager = usernameEducationManager
         self.usernameLinkManager = usernameLinkManager

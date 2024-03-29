@@ -5,7 +5,7 @@
 
 import Foundation
 
-public protocol UploadManager {
+public protocol TSAttachmentUploadManager {
 
     /// Upload a TSAttachment to the given endpoint.
     /// - Parameters:
@@ -15,15 +15,15 @@ public protocol UploadManager {
     func uploadAttachment(attachmentId: String, messageIds: [String]) async throws
 }
 
-public actor UploadManagerImpl: UploadManager {
+public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
 
     private let db: DB
     private let interactionStore: InteractionStore
     private let networkManager: NetworkManager
     private let chatConnectionManager: ChatConnectionManager
     private let signalService: OWSSignalServiceProtocol
-    private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
-    private let blurHash: Upload.Shims.BlurHash
+    private let attachmentEncrypter: TSAttachmentUpload.Shims.AttachmentEncrypter
+    private let blurHash: TSAttachmentUpload.Shims.BlurHash
     private let fileSystem: Upload.Shims.FileSystem
     private let tsResourceStore: TSResourceUploadStore
 
@@ -33,8 +33,8 @@ public actor UploadManagerImpl: UploadManager {
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,
         signalService: OWSSignalServiceProtocol,
-        attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
-        blurHash: Upload.Shims.BlurHash,
+        attachmentEncrypter: TSAttachmentUpload.Shims.AttachmentEncrypter,
+        blurHash: TSAttachmentUpload.Shims.BlurHash,
         fileSystem: Upload.Shims.FileSystem,
         tsResourceStore: TSResourceUploadStore
     ) {
@@ -50,7 +50,7 @@ public actor UploadManagerImpl: UploadManager {
     }
 
     /// Entry point for uploading a `TSAttachmentStream`
-    /// Fetches the `TSAttachmentStream`, builds the AttachmentUpload, begins the
+    /// Fetches the `TSAttachmentStream`, builds the TSAttachmentUpload, begins the
     /// upload, and updates the `TSAttachmentStream` upon success.
     ///
     /// It is assumed any errors that could be retried or otherwise handled will have happend at a lower level,
@@ -78,7 +78,7 @@ public actor UploadManagerImpl: UploadManager {
         }
 
         do {
-            let upload = AttachmentUpload(
+            let upload = TSAttachmentUpload(
                 db: db,
                 signalService: signalService,
                 networkManager: networkManager,

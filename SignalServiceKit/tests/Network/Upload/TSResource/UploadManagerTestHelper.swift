@@ -24,15 +24,15 @@ enum MockResultType {
     case uploadTask(URLRequest)
 }
 
-class UploadManagerMockHelper {
+class TSAttachmentUploadManagerMockHelper {
     var mockDB = MockDB()
-    var mockURLSession = Upload.Mocks.URLSession()
-    var mockNetworkManager = Upload.Mocks.NetworkManager()
+    var mockURLSession = TSAttachmentUpload.Mocks.URLSession()
+    var mockNetworkManager = TSAttachmentUpload.Mocks.NetworkManager()
     var mockServiceManager = OWSSignalServiceMock()
-    var mockChatConnectionManager = Upload.Mocks.ChatConnectionManager()
-    var mockAttachmentEncrypter = Upload.Mocks.AttachmentEncrypter()
-    var mockBlurHash = Upload.Mocks.BlurHash()
-    var mockFileSystem = Upload.Mocks.FileSystem()
+    var mockChatConnectionManager = TSAttachmentUpload.Mocks.ChatConnectionManager()
+    var mockAttachmentEncrypter = TSAttachmentUpload.Mocks.AttachmentEncrypter()
+    var mockBlurHash = TSAttachmentUpload.Mocks.BlurHash()
+    var mockFileSystem = TSAttachmentUpload.Mocks.FileSystem()
     var mockInteractionStore = MockInteractionStore()
     var mockResourceStore = TSResourceUploadStoreMock()
 

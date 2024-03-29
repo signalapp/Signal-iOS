@@ -520,7 +520,7 @@ public class MessageSender: Dependencies {
 
             for attachmentId in (outgoingMessagePreparer.savedAttachmentIds ?? []) {
                 let uploadOperation = AsyncBlockOperation {
-                    try await DependenciesBridge.shared.uploadManager.uploadAttachment(
+                    try await DependenciesBridge.shared.tsAttachmentUploadManager.uploadAttachment(
                         attachmentId: attachmentId,
                         messageIds: [ message.uniqueId ]
                     )
