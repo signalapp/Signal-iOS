@@ -22,7 +22,7 @@ public extension ThreadUtil {
     ) -> TSOutgoingMessage {
         AssertIsOnMainThread()
 
-        let unpreparedMessage = UnpreparedOutgoingMessage.build(
+        let (message, unpreparedMessage) = UnpreparedOutgoingMessage.build(
             thread: thread,
             messageBody: messageBody,
             mediaAttachments: mediaAttachments,
@@ -32,27 +32,27 @@ public extension ThreadUtil {
             transaction: readTransaction
         )
 
-        return enqueueMessage(
+        enqueueMessage(
             unpreparedMessage,
             thread: thread,
             persistenceCompletionHandler: persistenceCompletion,
             transaction: readTransaction
         )
+        return message
     }
 
     // MARK: - Durable Message Enqueue
 
-    @discardableResult
     class func enqueueMessage(
         _ unpreparedMessage: UnpreparedOutgoingMessage,
         thread: TSThread,
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
         transaction readTransaction: SDSAnyReadTransaction
-    ) -> TSOutgoingMessage {
-        let message = unpreparedMessage.message
-        let eventId = "sendMessageMarkedAsSent-\(message.timestamp)"
+    ) {
+        let messageTimestampForLogging = unpreparedMessage.messageTimestampForLogging
+        let eventId = "sendMessageMarkedAsSent-\(messageTimestampForLogging)"
         BenchEventStart(
-            title: "Send Message Milestone: Marked as Sent (\(message.timestamp))",
+            title: "Send Message Milestone: Marked as Sent (\(messageTimestampForLogging))",
             eventId: eventId,
             logInProduction: true
         )
@@ -82,7 +82,6 @@ public extension ThreadUtil {
                 thread.donateSendMessageIntent(for: messageForIntent, transaction: writeTransaction)
             }
         }
-        return message
     }
 }
 
@@ -98,7 +97,7 @@ extension UnpreparedOutgoingMessage {
         linkPreviewDraft: OWSLinkPreviewDraft?,
         editTarget: TSOutgoingMessage?,
         transaction: SDSAnyReadTransaction
-    ) -> UnpreparedOutgoingMessage {
+    ) -> (TSOutgoingMessage, UnpreparedOutgoingMessage) {
 
         var attachments = mediaAttachments
         let truncatedText: String?
@@ -171,11 +170,12 @@ extension UnpreparedOutgoingMessage {
 
         let attachmentInfos = attachments.map { $0.buildAttachmentDataSource(message: message) }
 
-        return UnpreparedOutgoingMessage.forMessage(
+        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
             message,
             unsavedBodyAttachments: attachmentInfos,
             linkPreviewDraft: linkPreviewDraft,
             quotedReplyDraft: quotedReplyDraft
         )
+        return (message, unpreparedMessage)
     }
 }

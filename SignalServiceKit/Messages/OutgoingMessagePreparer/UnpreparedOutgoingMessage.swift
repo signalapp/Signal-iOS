@@ -83,18 +83,18 @@ public class UnpreparedOutgoingMessage {
         return try self._prepare(tx: tx)
     }
 
-    public var message: TSOutgoingMessage {
+    public var messageTimestampForLogging: UInt64 {
         switch messageType {
         case .persistable(let message):
-            return message.message
+            return message.message.timestamp
         case .editMessage(let message):
-            return message.messageForSending
+            return message.messageForSending.timestamp
         case .contactSync(let contactSync):
-            return contactSync.message
+            return contactSync.message.timestamp
         case .story(let story):
-            return story.message
+            return story.message.timestamp
         case .transient(let message):
-            return message
+            return message.timestamp
         }
     }
 

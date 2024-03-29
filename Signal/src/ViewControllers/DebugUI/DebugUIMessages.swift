@@ -2923,13 +2923,12 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         }
 
         databaseStorage.read { transaction in
-            let message = ThreadUtil.enqueueMessage(
+            ThreadUtil.enqueueMessage(
                 body: messageBody,
                 mediaAttachments: attachments,
                 thread: thread,
                 transaction: transaction
             )
-            Logger.debug("timestamp: \(message.timestamp)")
         }
     }
 
@@ -2972,14 +2971,13 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         Logger.flush()
 
         let text = "\(counter) " + randomText()
-        let message = databaseStorage.write { transaction in
-            return ThreadUtil.enqueueMessage(
+        databaseStorage.write { transaction in
+            ThreadUtil.enqueueMessage(
                 body: MessageBody(text: text, ranges: .empty),
                 thread: thread,
                 transaction: transaction
             )
         }
-        Logger.info("sendTextMessageInThread timestamp: \(message.timestamp).")
     }
 
     private static func sendOversizeTextMessageInThread(_ thread: TSThread) {

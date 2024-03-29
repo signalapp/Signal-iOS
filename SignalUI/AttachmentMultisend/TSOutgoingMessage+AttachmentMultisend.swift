@@ -64,7 +64,7 @@ extension TSOutgoingMessage {
         thread: TSThread,
         transaction: SDSAnyWriteTransaction
     ) throws -> PreparedOutgoingMessage {
-        let unpreparedMessage = UnpreparedOutgoingMessage.build(
+        let (_, unpreparedMessage) = UnpreparedOutgoingMessage.build(
             thread: thread,
             messageBody: messageBody,
             mediaAttachments: mediaAttachments,
