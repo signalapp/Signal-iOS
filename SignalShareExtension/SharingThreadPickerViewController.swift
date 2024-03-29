@@ -58,7 +58,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     var approvalMessageBody: MessageBody?
     var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
 
-    var outgoingMessages = AtomicArray<PreparedOutgoingMessage>(lock: .init())
+    var outgoingMessages = AtomicArray<TSOutgoingMessage>(lock: .init())
 
     var mentionCandidates: [SignalServiceAddress] = []
 
@@ -219,24 +219,18 @@ extension SharingThreadPickerViewController {
             let nonStorySendPromise = sendToOutgoingMessageThreads { thread in
                 return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                     return self.databaseStorage.write { transaction in
-                        let unpreparedMessage = UnpreparedOutgoingMessage.build(
-                            thread: thread,
+                        let preparer = OutgoingMessagePreparer(
                             messageBody: body,
-                            quotedReplyDraft: nil,
-                            linkPreviewDraft: linkPreviewDraft,
+                            thread: thread,
                             editTarget: nil,
                             transaction: transaction
                         )
-                        do {
-                            let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
-                            self.outgoingMessages.append(preparedMessage)
-                            return ThreadUtil.enqueueMessagePromise(
-                                message: preparedMessage,
-                                transaction: transaction
-                            )
-                        } catch {
-                            return Promise(error: error)
-                        }
+                        preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
+                        self.outgoingMessages.append(preparer.unpreparedMessage)
+                        return ThreadUtil.enqueueMessagePromise(
+                            message: preparer.unpreparedMessage,
+                            transaction: transaction
+                        )
                     }
                 }
             }
@@ -263,22 +257,16 @@ extension SharingThreadPickerViewController {
                 return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                     return self.databaseStorage.write { transaction in
                         let builder = TSOutgoingMessageBuilder(thread: thread)
-                        // TODO: this should be a "draft contact share" sent to the unprepared message
                         builder.contactShare = contactShare.dbRecord
                         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
                         builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
                         let message = builder.build(transaction: transaction)
-                        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(message)
-                        do {
-                            let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
-                            self.outgoingMessages.append(preparedMessage)
-                            return ThreadUtil.enqueueMessagePromise(
-                                message: preparedMessage,
-                                transaction: transaction
-                            )
-                        } catch {
-                            return Promise(error: error)
-                        }
+                        message.anyInsert(transaction: transaction)
+                        self.outgoingMessages.append(message)
+                        return ThreadUtil.enqueueMessagePromise(
+                            message: message,
+                            transaction: transaction
+                        )
                     }
                 }
             }
@@ -340,8 +328,7 @@ extension SharingThreadPickerViewController {
                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
 
         let attachmentIds: [String]? = databaseStorage.read { tx in
-            return self.outgoingMessages.first?.mediaAttachments(tx: tx)
-                .map { $0.resourceId.bridgeUniqueId }
+            return self.outgoingMessages.first?.bodyAttachmentIds(transaction: tx)
         }
 
         var progressPerAttachment = [String: Float]()
@@ -458,7 +445,7 @@ extension SharingThreadPickerViewController {
             self.databaseStorage.write { transaction in
                 for message in self.outgoingMessages.get() {
                     // If we sent the message to anyone, mark it as failed
-                    message.updateWithAllSendingRecipientsMarkedAsFailed(tx: transaction)
+                    message.updateWithAllSendingRecipientsMarkedAsFailed(with: transaction)
                 }
             }
             self.shareViewDelegate?.shareViewWasCancelled()
@@ -546,7 +533,7 @@ extension SharingThreadPickerViewController {
             for message in outgoingMessages.get() {
                 promises.append(SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,
-                    message: message,
+                    message: message.asPreparer,
                     transaction: transaction
                 ))
             }

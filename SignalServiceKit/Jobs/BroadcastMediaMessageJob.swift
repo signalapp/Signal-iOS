@@ -58,13 +58,8 @@ private class BroadcastMediaMessageJobRunner: JobRunner, Dependencies {
         try await BroadcastMediaUploader.uploadAttachments(
             attachmentIdMap: jobRecord.attachmentIdMap,
             sendMessages: { uploadedMessages, tx in
-                let preparedStoryMessages: [PreparedOutgoingMessage] = jobRecord.storyMessagesToSend?.map {
-                    return PreparedOutgoingMessage.preprepared(
-                        outgoingStoryMessage: $0
-                    )
-                } ?? []
-                for preparedMessage in uploadedMessages + preparedStoryMessages {
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
+                for message in uploadedMessages + (jobRecord.storyMessagesToSend ?? []) {
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
                 }
                 jobRecord.anyRemove(transaction: tx)
             }
@@ -77,7 +72,7 @@ private class BroadcastMediaMessageJobRunner: JobRunner, Dependencies {
 public enum BroadcastMediaUploader: Dependencies {
     public static func uploadAttachments<T>(
         attachmentIdMap: [String: [String]],
-        sendMessages: @escaping (_ messages: [PreparedOutgoingMessage], _ tx: SDSAnyWriteTransaction) -> T
+        sendMessages: @escaping (_ messages: [TSOutgoingMessage], _ tx: SDSAnyWriteTransaction) -> T
     ) async throws -> T {
         let observer = NotificationCenter.default.addObserver(
             forName: Upload.Constants.uploadProgressNotification,
@@ -210,7 +205,7 @@ public enum BroadcastMediaUploader: Dependencies {
                 }
             }
 
-            let messagesToSend: [PreparedOutgoingMessage] = messageIdsToSend.compactMap { messageId in
+            let messagesToSend: [TSOutgoingMessage] = messageIdsToSend.compactMap { messageId in
                 guard let message = TSOutgoingMessage.anyFetchOutgoingMessage(
                         uniqueId: messageId,
                         transaction: transaction
@@ -218,10 +213,7 @@ public enum BroadcastMediaUploader: Dependencies {
                     owsFailDebug("outgoingMessage was unexpectedly nil")
                     return nil
                 }
-                return PreparedOutgoingMessage.preprepared(
-                    insertedAndUploadedMessage: message,
-                    messageRowId: message.sqliteRowId!
-                )
+                return message
             }
 
             // The attachment we uploaded should not be associated with any actual

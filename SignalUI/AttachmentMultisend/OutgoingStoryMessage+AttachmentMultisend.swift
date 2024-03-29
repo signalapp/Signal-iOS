@@ -56,9 +56,7 @@ extension OutgoingStoryMessage {
                         }
                     }
 
-                    state.messages.append(PreparedOutgoingMessage.preprepared(
-                        outgoingStoryMessage: message
-                    ))
+                    state.messages.append(message)
                     state.storyMessagesToSend.append(message)
                 }
 
@@ -92,13 +90,11 @@ extension OutgoingStoryMessage {
                     }
                 }
 
-                state.messages.append(PreparedOutgoingMessage.preprepared(
-                    outgoingStoryMessage: message
-                ))
+                state.messages.append(message)
                 state.storyMessagesToSend.append(message)
             }
         }
 
-        OutgoingStoryMessage.dedupePrivateStoryRecipients(for: state.messages.lazy.compactMap(\.storyMessage), transaction: transaction)
+        OutgoingStoryMessage.dedupePrivateStoryRecipients(for: state.messages.lazy.compactMap { $0 as? OutgoingStoryMessage }, transaction: transaction)
     }
 }

@@ -26,7 +26,7 @@ public enum StorySharing: Dependencies {
         with messageBody: MessageBody,
         linkPreviewDraft: OWSLinkPreviewDraft?,
         to conversations: [ConversationItem],
-        messagesReadyToSend: @escaping ([PreparedOutgoingMessage]) -> Void
+        messagesReadyToSend: @escaping ([TSOutgoingMessage]) -> Void
     ) -> Promise<Void> {
         let storyConversations = conversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
         owsAssertDebug(conversations.count == storyConversations.count)

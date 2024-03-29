@@ -187,23 +187,6 @@ public class PreparedOutgoingMessage {
         }
     }
 
-    public func updateWithAllSendingRecipientsMarkedAsFailed(tx: SDSAnyWriteTransaction) {
-        let messageToUpdateFailedRecipients: TSOutgoingMessage? = {
-            switch messageType {
-            case .persisted(let message):
-                return message.message
-            case .contactSync(let contactSync):
-                return contactSync.message
-            case .story(let storyMessage):
-                return storyMessage.message
-            case .transient(let message):
-                // Is this even necessary for transient messages?
-                return message
-            }
-        }()
-        messageToUpdateFailedRecipients?.updateWithAllSendingRecipientsMarkedAsFailed(with: tx)
-    }
-
     // MARK: - Private
 
     private let messageType: MessageType
