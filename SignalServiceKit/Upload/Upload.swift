@@ -16,7 +16,7 @@ public enum Upload {
     }()
 
     public enum Constants {
-        public static let uploadProgressNotification = NSNotification.Name("UploadProgressNotification")
+        public static let attachmentUploadProgressNotification = NSNotification.Name("AttachmentUploadProgressNotification")
         public static let uploadProgressKey = "UploadProgressKey"
         public static let uploadAttachmentIDKey = "UploadAttachmentIDKey"
     }

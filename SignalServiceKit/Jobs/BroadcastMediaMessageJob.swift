@@ -80,12 +80,16 @@ public enum BroadcastMediaUploader: Dependencies {
         sendMessages: @escaping (_ messages: [PreparedOutgoingMessage], _ tx: SDSAnyWriteTransaction) -> T
     ) async throws -> T {
         let observer = NotificationCenter.default.addObserver(
-            forName: Upload.Constants.uploadProgressNotification,
+            forName: Upload.Constants.resourceUploadProgressNotification,
             object: nil,
             queue: nil
         ) { notification in
-            guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadAttachmentIDKey] as? String else {
+            guard let notificationResourceId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? TSResourceId else {
                 owsFailDebug("Missing notificationAttachmentId.")
+                return
+            }
+            guard case let .legacy(notificationAttachmentId) = notificationResourceId else {
+                // Ignore v2 attachments in a multisend context.
                 return
             }
             guard let progress = notification.userInfo?[Upload.Constants.uploadProgressKey] as? NSNumber else {
@@ -102,10 +106,10 @@ public enum BroadcastMediaUploader: Dependencies {
                     continue
                 }
                 NotificationCenter.default.post(
-                    name: Upload.Constants.uploadProgressNotification,
+                    name: Upload.Constants.resourceUploadProgressNotification,
                     object: nil,
                     userInfo: [
-                        Upload.Constants.uploadAttachmentIDKey: correspondingId,
+                        Upload.Constants.uploadResourceIDKey: TSResourceId.legacy(uniqueId: correspondingId),
                         Upload.Constants.uploadProgressKey: progress
                     ]
                 )

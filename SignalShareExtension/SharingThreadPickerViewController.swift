@@ -343,14 +343,13 @@ extension SharingThreadPickerViewController {
         let progressFormat = OWSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT",
                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
 
-        let attachmentIds: [String]? = databaseStorage.read { tx in
-            return self.outgoingMessages.first?.mediaAttachments(tx: tx)
-                .map { $0.resourceId.bridgeUniqueId }
+        let attachmentIds: [TSResourceId]? = databaseStorage.read { tx in
+            return self.outgoingMessages.first?.mediaAttachments(tx: tx).map(\.resourceId)
         }
 
-        var progressPerAttachment = [String: Float]()
+        var progressPerAttachment = [TSResourceId: Float]()
         let observer = NotificationCenter.default.addObserver(
-            forName: Upload.Constants.uploadProgressNotification,
+            forName: Upload.Constants.resourceUploadProgressNotification,
             object: nil,
             queue: nil
         ) { notification in
@@ -363,7 +362,7 @@ extension SharingThreadPickerViewController {
                 progressPerAttachment = Dictionary(uniqueKeysWithValues: attachmentIds.map { ($0, 0) })
             }
 
-            guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadAttachmentIDKey] as? String else {
+            guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? TSResourceId else {
                 owsFailDebug("Missing notificationAttachmentId.")
                 return
             }

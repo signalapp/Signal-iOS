@@ -175,11 +175,11 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
 
     private func updateProgress(id: String, progress: Double) {
         NotificationCenter.default.postNotificationNameAsync(
-            Upload.Constants.uploadProgressNotification,
+            Upload.Constants.resourceUploadProgressNotification,
             object: nil,
             userInfo: [
                 Upload.Constants.uploadProgressKey: progress,
-                Upload.Constants.uploadAttachmentIDKey: id
+                Upload.Constants.uploadResourceIDKey: TSResourceId.legacy(uniqueId: id)
             ]
         )
     }

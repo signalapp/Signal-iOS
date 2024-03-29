@@ -274,7 +274,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(processUploadNotification(notification:)),
-                name: Upload.Constants.uploadProgressNotification,
+                name: Upload.Constants.resourceUploadProgressNotification,
                 object: nil
             )
 
@@ -341,11 +341,11 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     @objc
     private func processUploadNotification(notification: Notification) {
-        guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadAttachmentIDKey] as? String else {
+        guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? TSResourceId else {
             owsFailDebug("Missing notificationAttachmentId.")
             return
         }
-        guard .legacy(uniqueId: notificationAttachmentId) == attachmentId else {
+        guard notificationAttachmentId == attachmentId else {
             return
         }
         guard let progress = notification.userInfo?[Upload.Constants.uploadProgressKey] as? NSNumber else {

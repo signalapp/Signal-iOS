@@ -935,6 +935,7 @@
 		66C102F82B6306B900B47EC2 /* TSResourceThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C102F72B6306B900B47EC2 /* TSResourceThumbnail.swift */; };
 		66C102FA2B630F9600B47EC2 /* TSAttachment+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */; };
 		66C1A8742BB759820076C65A /* TSAttachmentUploadShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */; };
+		66C1A87B2BB7675B0076C65A /* UploadProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A87A2BB7675B0076C65A /* UploadProgress.swift */; };
 		66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1302A05D28A008DDE72 /* TSRequest.swift */; };
 		66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */; };
 		66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */; };
@@ -3767,6 +3768,7 @@
 		66C102F72B6306B900B47EC2 /* TSResourceThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceThumbnail.swift; sourceTree = "<group>"; };
 		66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachment+TSResource.swift"; sourceTree = "<group>"; };
 		66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadShims.swift; sourceTree = "<group>"; };
+		66C1A87A2BB7675B0076C65A /* UploadProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgress.swift; sourceTree = "<group>"; };
 		66C2B1302A05D28A008DDE72 /* TSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequest.swift; sourceTree = "<group>"; };
 		66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRUtil.swift; sourceTree = "<group>"; };
 		66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredential.swift; sourceTree = "<group>"; };
@@ -7532,6 +7534,7 @@
 				C18B56B82B07BC12000A441F /* TSAttachmentUpload.swift */,
 				C1DF3F3D2B0283C5004B6986 /* TSAttachmentUploadManager.swift */,
 				66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */,
+				66C1A87A2BB7675B0076C65A /* UploadProgress.swift */,
 			);
 			path = TSResource;
 			sourceTree = "<group>";
@@ -14047,6 +14050,7 @@
 				C1DF3F432B0283C5004B6986 /* UploadEndpoint.swift in Sources */,
 				C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */,
 				C1DF3F5B2B0287C7004B6986 /* UploadEndpointCDN3.swift in Sources */,
+				66C1A87B2BB7675B0076C65A /* UploadProgress.swift in Sources */,
 				C1DF3F472B0283C5004B6986 /* UploadShims.swift in Sources */,
 				C1DF3F452B0283C5004B6986 /* UploadV2.swift in Sources */,
 				F9D5BFCF2979AFF4001737E5 /* URLPathComponents.swift in Sources */,
