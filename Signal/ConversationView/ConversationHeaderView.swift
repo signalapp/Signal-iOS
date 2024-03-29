@@ -29,7 +29,6 @@ public class ConversationHeaderView: UIView {
         }
         set {
             self.titleIconView.image = newValue
-            self.titleIconView.tintColor = Theme.secondaryTextAndIconColor
             self.titleIconView.isHidden = newValue == nil
         }
     }

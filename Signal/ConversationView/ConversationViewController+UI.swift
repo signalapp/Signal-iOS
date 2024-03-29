@@ -13,22 +13,29 @@ extension ConversationViewController {
 
         self.title = nil
 
-        if conversationViewModel.isSystemContact {
-            headerView.titleIcon = UIImage(imageLiteralResourceName: "person-circle-compact")
-            headerView.titleIconSize = 20
-        } else if thread.isNoteToSelf {
+        if thread.isNoteToSelf {
             headerView.titleIcon = Theme.iconImage(.official)
             headerView.titleIconSize = 16
         } else {
             headerView.titleIcon = nil
         }
 
-        let attributedName = NSAttributedString(
+        let attributedName = NSMutableAttributedString(
             string: threadViewModel.name,
             attributes: [
                 .foregroundColor: Theme.primaryTextColor
             ]
         )
+
+        if conversationViewModel.isSystemContact {
+            let contactIcon = SignalSymbol.personCircle.attributedString(
+                dynamicTypeBaseSize: 14,
+                weight: .bold,
+                withLeadingSpace: true
+            )
+            attributedName.append(contactIcon)
+        }
+
         if headerView.attributedTitle != attributedName {
             headerView.attributedTitle = attributedName
         }

@@ -519,7 +519,7 @@ extension ConversationHeaderDelegate {
 
     func threadAttributedString(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> NSAttributedString {
         let threadName = threadName(renderLocalUserAsNoteToSelf: renderLocalUserAsNoteToSelf, transaction: transaction)
-        let font = UIFont.semiboldFont(ofSize: UIFont.dynamicTypeTitle1Clamped.pointSize * (13/14))
+        let font = UIFont.dynamicTypeFont(ofStandardSize: 26, weight: .semibold)
 
         let attributedString = NSMutableAttributedString(string: threadName, attributes: [
             .foregroundColor: Theme.primaryTextColor,
@@ -539,19 +539,28 @@ extension ConversationHeaderDelegate {
         }
 
         if
-            self.canTapThreadName,
-            let chevron = UIImage(named: "chevron-right-20")
+            let contactThread = self.thread as? TSContactThread,
+            contactsManager.fetchSignalAccount(
+                for: contactThread.contactAddress,
+                transaction: transaction
+            ) != nil
         {
-            // Add disclosure chevron
-            attributedString.append(.with(
-                image: chevron,
-                font: .systemFont(ofSize: 24),
-                attributes: [
-                    .foregroundColor: Theme.primaryIconColor
-                ],
-                centerVerticallyRelativeTo: font,
-                heightReference: .pointSize
-            ))
+            let contactIcon = SignalSymbol.personCircle.attributedString(
+                dynamicTypeBaseSize: 20,
+                weight: .bold,
+                withLeadingSpace: true
+            )
+            attributedString.append(contactIcon)
+        }
+
+        if self.canTapThreadName {
+            let chevron = SignalSymbol.chevronTrailing.attributedString(
+                dynamicTypeBaseSize: 24,
+                weight: .bold,
+                withLeadingSpace: true,
+                attributes: [.foregroundColor: Theme.snippetColor]
+            )
+            attributedString.append(chevron)
         }
 
         return attributedString

@@ -75,6 +75,7 @@ public class ContactSearchResult: Comparable, Dependencies {
 
     public let recipientAddress: SignalServiceAddress
     private let comparableName: ComparableDisplayName
+    private let lastInteractionRowID: UInt64?
 
     init(recipientAddress: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
         self.recipientAddress = recipientAddress
@@ -83,12 +84,24 @@ public class ContactSearchResult: Comparable, Dependencies {
             displayName: Self.contactsManager.displayName(for: recipientAddress, tx: transaction),
             config: .current()
         )
+        let thread = ContactThreadFinder().contactThread(for: recipientAddress, tx: transaction)
+        lastInteractionRowID = thread?.lastInteractionRowId
     }
 
     // MARK: Comparable
 
     public static func < (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.comparableName < rhs.comparableName
+        // Sort contacts by most recent chat, falling back to alphabetical
+        switch (lhs.lastInteractionRowID, rhs.lastInteractionRowID) {
+        case (.some, .none):
+            return true
+        case (.none, .some):
+            return false
+        case let (.some(lhsRowID), .some(rhsRowID)):
+            return lhsRowID > rhsRowID
+        case (.none, .none):
+            return lhs.comparableName < rhs.comparableName
+        }
     }
 
     // MARK: Equatable

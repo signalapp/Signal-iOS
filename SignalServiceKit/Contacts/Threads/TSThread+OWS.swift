@@ -106,10 +106,7 @@ public extension TSThread {
     @nonobjc
     func isSystemContact(contactsManager: ContactManager, tx: SDSAnyReadTransaction) -> Bool {
         guard let contactThread = self as? TSContactThread else { return false }
-        return contactsManager.fetchSignalAccount(
-            for: contactThread.contactAddress,
-            transaction: tx
-        ) != nil
+        return contactsManager.fetchSignalAccount(for: contactThread.contactAddress, transaction: tx) != nil
     }
 
     // MARK: - Database Hooks

@@ -1103,6 +1103,9 @@ extension RecipientPickerViewController {
                 }
 
                 configuration.allowUserInteraction = delegate.recipientPicker(self, shouldAllowUserInteractionForRecipient: recipient, transaction: transaction)
+
+                let isSystemContact = contactsManager.fetchSignalAccount(for: address, transaction: transaction) != nil
+                configuration.shouldShowContactIcon = isSystemContact
             }
             cell.configure(configuration: configuration, transaction: transaction)
         }

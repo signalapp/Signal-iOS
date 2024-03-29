@@ -20,6 +20,21 @@ public extension UIFont {
         return .systemFont(ofSize: size, weight: .regular)
     }
 
+    /// Returns an instance of the system font with scaling for the user's
+    /// selected content size category with the specified size being used for
+    /// the standard Dynamic Type size.
+    ///
+    /// - Parameters:
+    ///   - standardSize: The size the font should be for the standard Dynamic Type size.
+    ///   - weight: The weight of the font.
+    /// - Returns: The system font scaled to the current Dynamic Type setting.
+    class func dynamicTypeFont(
+        ofStandardSize standardSize: CGFloat,
+        weight: UIFont.Weight = .regular
+    ) -> UIFont {
+        return UIFontMetrics.default.scaledFont(for: .systemFont(ofSize: standardSize, weight: weight))
+    }
+
     class func semiboldFont(ofSize size: CGFloat) -> UIFont {
         return .systemFont(ofSize: size, weight: .semibold)
     }

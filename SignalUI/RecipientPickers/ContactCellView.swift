@@ -39,6 +39,8 @@ public class ContactCellConfiguration: NSObject {
 
     public var attributedSubtitle: NSAttributedString?
 
+    public var shouldShowContactIcon = false
+
     public var allowUserInteraction = false
 
     public var badged = true // TODO: Badges — Default false? Configure each use-case?
@@ -139,12 +141,16 @@ public class ContactCellView: ManualStackView {
     private var nameLabelFont: UIFont { OWSTableItem.primaryLabelFont }
     fileprivate static var subtitleFont: UIFont { .dynamicTypeCaption1Clamped }
 
+    private func nameLabelColor(forceDarkAppearance: Bool) -> UIColor {
+        forceDarkAppearance ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
+    }
+
     private func configureFontsAndColors(forceDarkAppearance: Bool) {
         nameLabel.font = nameLabelFont
         subtitleLabel.font = Self.subtitleFont
         accessoryLabel.font = .dynamicTypeSubheadlineClamped
 
-        nameLabel.textColor = forceDarkAppearance ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
+        nameLabel.textColor = nameLabelColor(forceDarkAppearance: forceDarkAppearance)
         subtitleLabel.textColor = (forceDarkAppearance ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor)
         accessoryLabel.textColor = Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray45
 
@@ -282,7 +288,9 @@ public class ContactCellView: ManualStackView {
                                   transaction: SDSAnyReadTransaction) {
         AssertIsOnMainThread()
 
-        nameLabel.attributedText = { () -> NSAttributedString in
+        let textColor = self.nameLabelColor(forceDarkAppearance: configuration.forceDarkAppearance)
+
+        let nameString = { () -> NSAttributedString in
             if let customName = configuration.customName?.nilIfEmpty {
                 return customName.asAttributedString
             }
@@ -294,20 +302,26 @@ public class ContactCellView: ManualStackView {
                                                       short: false,
                                                       transaction: transaction)
             case .groupThread(let thread):
-                // TODO: Ensure nameLabel.textColor.
                 let threadName = contactsManager.displayName(for: thread, transaction: transaction)
-                if let nameLabelColor = nameLabel.textColor {
-                    return threadName.asAttributedString(attributes: [
-                        .foregroundColor: nameLabelColor
-                    ])
-                } else {
-                    owsFailDebug("Missing nameLabelColor.")
-                    return TSGroupThread.defaultGroupName.asAttributedString
-                }
+                return threadName.asAttributedString(attributes: [
+                    .foregroundColor: textColor,
+                ])
             case .static(let name, _):
                 return name.asAttributedString
             }
         }()
+
+        if configuration.shouldShowContactIcon {
+            let contactIcon = SignalSymbol.personCircle.attributedString(
+                dynamicTypeBaseSize: 14,
+                weight: .bold,
+                withLeadingSpace: true,
+                attributes: [.foregroundColor: textColor]
+            )
+            nameLabel.attributedText = nameString.stringByAppendingString(contactIcon)
+        } else {
+            nameLabel.attributedText = nameString
+        }
     }
 
     public override func reset() {

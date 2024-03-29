@@ -713,6 +713,9 @@ extension ConversationSettingsViewController {
                         owsAssertDebug(configuration.attributedSubtitle == nil)
                     }
 
+                    let isSystemContact = self.contactsManager.fetchSignalAccount(for: memberAddress, transaction: transaction) != nil
+                    configuration.shouldShowContactIcon = isSystemContact
+
                     cell.configure(configuration: configuration, transaction: transaction)
                 }
 
