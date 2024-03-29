@@ -18,9 +18,10 @@ git_repo_path = os.path.abspath(
 
 
 def ows_getoutput(cmd):
-    proc = subprocess.Popen(cmd,
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE,
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     stdout, stderr = proc.communicate()
 
@@ -28,12 +29,12 @@ def ows_getoutput(cmd):
 
 
 def process_file(file_path):
-    print('Scanning:', file_path)
+    print("Scanning:", file_path)
 
-    with open(file_path, 'rt') as f:
+    with open(file_path, "rt") as f:
         src_text = f.read()
 
-    regex = re.compile(r'(@import (.+);)')
+    regex = re.compile(r"(@import (.+);)")
 
     text = src_text
     while True:
@@ -42,29 +43,36 @@ def process_file(file_path):
             break
 
         import_name = match.group(2)
-        if import_name == 'Compression':
+        if import_name == "Compression":
             # Ignore this framework.
             continue
 
-        print('\t', 'Fixing:', import_name)
-        new_import = '#import <%s/%s.h>' % ( import_name, import_name, )
-        text = text[:match.start(1)] + new_import + text[match.end(1):]
+        print("\t", "Fixing:", import_name)
+        new_import = "#import <%s/%s.h>" % (
+            import_name,
+            import_name,
+        )
+        text = text[: match.start(1)] + new_import + text[match.end(1) :]
 
     if text == src_text:
         return
 
-
-    with open(file_path, 'wt') as f:
+    with open(file_path, "wt") as f:
         f.write(text)
 
 
 # ---
 
+
 def search_path(module_name):
     dir_path = os.path.abspath(os.path.join(git_repo_path, module_name))
     for rootdir, dirnames, filenames in os.walk(dir_path):
         for filename in filenames:
-            if not (filename.endswith('.h') or filename.endswith('.m') or filename.endswith('.pch')):
+            if not (
+                filename.endswith(".h")
+                or filename.endswith(".m")
+                or filename.endswith(".pch")
+            ):
                 continue
             file_path = os.path.abspath(os.path.join(rootdir, filename))
             process_file(file_path)
@@ -74,8 +82,8 @@ def search_path(module_name):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='Parse Objective-C AST.')
+    parser = argparse.ArgumentParser(description="Parse Objective-C AST.")
     args = parser.parse_args()
 
-    search_path('Signal')
-    search_path('SignalServiceKit')
+    search_path("Signal")
+    search_path("SignalServiceKit")

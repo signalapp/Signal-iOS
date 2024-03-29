@@ -100,8 +100,7 @@ def get_unused_keys(
 def main() -> None:
     args = parse_args()
 
-    unused_keys = get_unused_keys(
-        args.strings, args.src_dirs, set(args.extensions))
+    unused_keys = get_unused_keys(args.strings, args.src_dirs, set(args.extensions))
     sorted_unused_keys = sorted(unused_keys)
 
     for key in sorted_unused_keys:
