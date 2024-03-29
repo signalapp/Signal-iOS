@@ -143,7 +143,7 @@ extension OWSOrphanDataCleaner {
             return nil
         case .transient(let message):
             return message
-        case .persisted(let messageId, _):
+        case .persisted(let messageId, _), .editMessage(let messageId, _, _):
             guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
                 // Interaction may have been deleted.
                 Logger.warn("Missing interaction")

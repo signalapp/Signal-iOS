@@ -21,7 +21,16 @@ public class UnpreparedOutgoingMessage {
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         messageStickerDraft: MessageStickerDraft? = nil
     ) -> UnpreparedOutgoingMessage {
-        if !message.shouldBeSaved {
+        if let editMessage = message as? OutgoingEditMessage {
+            owsAssertDebug(messageStickerDraft == nil, "Can't edit sticker messages")
+            return .init(messageType: .editMessage(.init(
+                editedMessage: editMessage.editedMessage,
+                messageForSending: editMessage,
+                unsavedBodyAttachments: unsavedBodyAttachments,
+                linkPreviewDraft: linkPreviewDraft,
+                quotedReplyDraft: quotedReplyDraft
+            )))
+        } else if !message.shouldBeSaved {
             owsAssertDebug(
                 unsavedBodyAttachments.isEmpty
                 || linkPreviewDraft != nil
@@ -76,6 +85,8 @@ public class UnpreparedOutgoingMessage {
         switch messageType {
         case .persistable(let message):
             return message.message
+        case .editMessage(let message):
+            return message.messageForSending
         case .contactSync(let contactSync):
             return contactSync.message
         case .story(let story):
@@ -91,6 +102,9 @@ public class UnpreparedOutgoingMessage {
 
         /// The message that will be inserted into the Interaction table before sending.
         case persistable(Persistable)
+
+        /// An edit for an existing message; persisted to the Interaction table, but as an edit.
+        case editMessage(EditMessage)
 
         /// A contact sync message that is not inserted into the Interactions table.
         /// It has an attachment, but that attachment is never persisted as an Attachment
@@ -111,6 +125,14 @@ public class UnpreparedOutgoingMessage {
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
             let messageStickerDraft: MessageStickerDraft?
+        }
+
+        struct EditMessage {
+            let editedMessage: TSOutgoingMessage
+            let messageForSending: OutgoingEditMessage
+            let unsavedBodyAttachments: [AttachmentDataSource]
+            let linkPreviewDraft: OWSLinkPreviewDraft?
+            let quotedReplyDraft: DraftQuotedReplyModel?
         }
 
         struct ContactSync {
@@ -144,6 +166,8 @@ public class UnpreparedOutgoingMessage {
                 // attachments, those are dropped if we don't know how to handle them.
                 preparedMessageType = prepareTransientMessage(message.message)
             }
+        case .editMessage(let message):
+            preparedMessageType = try prepareEditMessage(message, tx: tx)
         case .contactSync(let contactSync):
             preparedMessageType = prepareContactSyncMessage(contactSync)
         case .story(let story):
@@ -170,80 +194,127 @@ public class UnpreparedOutgoingMessage {
         _ message: MessageType.Persistable,
         tx: SDSAnyWriteTransaction
     ) throws -> PreparedOutgoingMessage.MessageType {
-        guard let thread = message.message.thread(tx: tx) else {
+        return try Self.prepareMessageAttachments(.persistable(message), tx: tx)
+    }
+
+    private func prepareEditMessage(
+        _ message: MessageType.EditMessage,
+        tx: SDSAnyWriteTransaction
+    ) throws -> PreparedOutgoingMessage.MessageType {
+        return try Self.prepareMessageAttachments(.editMessage(message), tx: tx)
+    }
+
+    private enum AttachmentPrepMessage {
+        case persistable(MessageType.Persistable)
+        case editMessage(MessageType.EditMessage)
+    }
+
+    private static func prepareMessageAttachments(
+        _ type: AttachmentPrepMessage,
+        tx: SDSAnyWriteTransaction
+    ) throws -> PreparedOutgoingMessage.MessageType {
+
+        let thread: TSThread?
+        let attachmentOwnerMessage: TSOutgoingMessage
+        let unsavedBodyAttachments: [AttachmentDataSource]
+        let linkPreviewDraft: OWSLinkPreviewDraft?
+        let quotedReplyDraft: DraftQuotedReplyModel?
+        let messageStickerDraft: MessageStickerDraft?
+
+        switch type {
+        case .persistable(let persistable):
+            thread = persistable.message.thread(tx: tx)
+            attachmentOwnerMessage = persistable.message
+            unsavedBodyAttachments = persistable.unsavedBodyAttachments
+            linkPreviewDraft = persistable.linkPreviewDraft
+            quotedReplyDraft = persistable.quotedReplyDraft
+            messageStickerDraft = persistable.messageStickerDraft
+        case .editMessage(let editMessage):
+            thread = editMessage.editedMessage.thread(tx: tx)
+            attachmentOwnerMessage = editMessage.editedMessage
+            unsavedBodyAttachments = editMessage.unsavedBodyAttachments
+            linkPreviewDraft = editMessage.linkPreviewDraft
+            quotedReplyDraft = editMessage.quotedReplyDraft
+            // Note: no sticker because you can't edit sticker messages
+            messageStickerDraft = nil
+        }
+
+        guard let thread else {
             throw OWSAssertionError("Outgoing message missing thread.")
         }
 
-        let linkPreviewBuilder = message.linkPreviewDraft.flatMap {
+        let linkPreviewBuilder = linkPreviewDraft.flatMap {
             try? DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
                 from: $0,
                 tx: tx.asV2Write
             )
         }.map {
-            message.message.update(with: $0.info, transaction: tx)
+            attachmentOwnerMessage.update(with: $0.info, transaction: tx)
             return $0
         }
 
-        let quotedReplyBuilder = message.quotedReplyDraft.flatMap {
+        let quotedReplyBuilder = quotedReplyDraft.flatMap {
             DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
                 draft: $0,
                 threadUniqueId: thread.uniqueId,
                 tx: tx.asV2Write
             )
         }.map {
-            message.message.update(with: $0.info, transaction: tx)
+            attachmentOwnerMessage.update(with: $0.info, transaction: tx)
             return $0
         }
 
-        let messageStickerBuilder = message.messageStickerDraft.flatMap {
+        let messageStickerBuilder = messageStickerDraft.flatMap {
             // TODO: message stickers, specifically and unlike the other ones, would fail
             // the message send if they failed to finalize (create the attachment).
             // should just unify all the error handling.
             let builder = try? MessageSticker.buildValidatedMessageSticker(fromDraft: $0, transaction: tx)
             if let builder {
-                message.message.update(with: builder.info, transaction: tx)
+                attachmentOwnerMessage.update(with: builder.info, transaction: tx)
             }
             return builder
         }
 
-        let messageRowId: Int64
-        if let message = message.message as? OutgoingEditMessage {
-            // Write changes and insert new edit revisions/records
-            DependenciesBridge.shared.editManager.insertOutgoingEditRevisions(
-                for: message,
-                thread: thread,
-                tx: tx.asV2Write
-            )
-            // All editable messages, by definition, should have been inserted.
-            // Fail if we have no row id.
-            guard let id = message.sqliteRowId else {
-                // We failed to insert!
-                throw OWSAssertionError("Failed to insert message!")
+        let attachmentOwnerMessageRowId = try {
+            switch type {
+            case .editMessage(let editMessage):
+                // Write changes and insert new edit revisions/records
+                DependenciesBridge.shared.editManager.insertOutgoingEditRevisions(
+                    for: editMessage.messageForSending,
+                    thread: thread,
+                    tx: tx.asV2Write
+                )
+                // All editable messages, by definition, should have been inserted.
+                // Fail if we have no row id.
+                guard let messageRowId = editMessage.editedMessage.sqliteRowId else {
+                    // We failed to insert!
+                    throw OWSAssertionError("Failed to insert message!")
+                }
+                return messageRowId
+            case .persistable(let persistable):
+                persistable.message.anyInsert(transaction: tx)
+                guard let messageRowId = persistable.message.sqliteRowId else {
+                    // We failed to insert!
+                    throw OWSAssertionError("Failed to insert message!")
+                }
+                return messageRowId
             }
-            messageRowId = id
-        } else {
-            message.message.anyInsert(transaction: tx)
-            guard let id = message.message.sqliteRowId else {
-                // We failed to insert!
-                throw OWSAssertionError("Failed to insert message!")
-            }
-            messageRowId = id
-        }
+        }()
 
-        if message.unsavedBodyAttachments.count > 0 {
+        if unsavedBodyAttachments.count > 0 {
             try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentStreams(
-                consuming: message.unsavedBodyAttachments,
-                message: message.message,
+                consuming: unsavedBodyAttachments,
+                message: attachmentOwnerMessage,
                 tx: tx.asV2Write
             )
         }
 
         try? linkPreviewBuilder?.finalize(
-            owner: .messageLinkPreview(messageRowId: messageRowId),
+            owner: .messageLinkPreview(messageRowId: attachmentOwnerMessageRowId),
             tx: tx.asV2Write
         )
         try? quotedReplyBuilder?.finalize(
-            owner: .quotedReplyAttachment(messageRowId: messageRowId),
+            owner: .quotedReplyAttachment(messageRowId: attachmentOwnerMessageRowId),
             tx: tx.asV2Write
         )
 
@@ -251,7 +322,7 @@ public class UnpreparedOutgoingMessage {
         // the message send if they failed to finalize (create the attachment).
         // should just unify all the error handling.
         try? messageStickerBuilder?.finalize(
-            owner: .messageSticker(messageRowId: messageRowId),
+            owner: .messageSticker(messageRowId: attachmentOwnerMessageRowId),
             tx: tx.asV2Write
         )
         if let stickerInfo = messageStickerBuilder?.info {
@@ -259,14 +330,24 @@ public class UnpreparedOutgoingMessage {
         }
 
         let legacyAttachmentIdsForUpload: [String] = Self.fetchLegacyAttachmentIdsForUpload(
-            persistedMessage: message.message
+            persistedMessage: attachmentOwnerMessage
         )
 
-        return .persisted(PreparedOutgoingMessage.MessageType.Persisted(
-            rowId: messageRowId,
-            message: message.message,
-            legacyAttachmentIdsForUpload: legacyAttachmentIdsForUpload
-        ))
+        switch type {
+        case .editMessage(let editMessage):
+            return .editMessage(PreparedOutgoingMessage.MessageType.EditMessage(
+                editedMessageRowId: attachmentOwnerMessageRowId,
+                editedMessage: editMessage.editedMessage,
+                messageForSending: editMessage.messageForSending,
+                legacyAttachmentIdsForUpload: legacyAttachmentIdsForUpload
+            ))
+        case .persistable(let persistable):
+            return .persisted(PreparedOutgoingMessage.MessageType.Persisted(
+                rowId: attachmentOwnerMessageRowId,
+                message: persistable.message,
+                legacyAttachmentIdsForUpload: legacyAttachmentIdsForUpload
+            ))
+        }
     }
 
     private func prepareContactSyncMessage(
@@ -318,7 +399,8 @@ public class UnpreparedOutgoingMessage {
         owsAssertDebug(
             message.shouldBeSaved.negated
             && !(message is OWSSyncContactsMessage)
-            && !(message is OutgoingStoryMessage),
+            && !(message is OutgoingStoryMessage)
+            && !(message is OutgoingEditMessage),
             "Disallowed transient message; use type-specific initializers instead"
         )
     }

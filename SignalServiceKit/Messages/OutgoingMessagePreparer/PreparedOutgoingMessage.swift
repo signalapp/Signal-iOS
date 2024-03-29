@@ -82,6 +82,9 @@ public class PreparedOutgoingMessage {
         /// The message is inserted into the Interactions table, ready for sending.
         case persisted(Persisted)
 
+        /// An edit for an existing message; the original is (already was) persisted to the Interaction table, but is now edited.
+        case editMessage(EditMessage)
+
         /// A contact sync message that is not inserted into the Interactions table.
         /// It has an attachment, but that attachment is never persisted as an Attachment
         /// in the database; it is simply in memory (or a temporary file location on disk).
@@ -98,6 +101,13 @@ public class PreparedOutgoingMessage {
         public struct Persisted {
             public let rowId: Int64
             public let message: TSOutgoingMessage
+            public let legacyAttachmentIdsForUpload: [String]
+        }
+
+        public struct EditMessage {
+            public let editedMessageRowId: Int64
+            public let editedMessage: TSOutgoingMessage
+            public let messageForSending: OutgoingEditMessage
             public let legacyAttachmentIdsForUpload: [String]
         }
 
@@ -124,6 +134,9 @@ public class PreparedOutgoingMessage {
             switch messageType {
             case .persisted(let message):
                 return message.message
+            case .editMessage(let message):
+                // We update the send state on the _original_ edited message.
+                return message.editedMessage
             case .contactSync(let contactSync):
                 return contactSync.message
             case .story(let storyMessage):
@@ -150,6 +163,9 @@ public class PreparedOutgoingMessage {
                 return nil
             }
             return persisted.message
+        case .editMessage(let editMessage):
+            // Edited messages were always renderable.
+            return editMessage.editedMessage
         case .contactSync:
             return nil
         case .story:
@@ -172,6 +188,11 @@ public class PreparedOutgoingMessage {
                 for: persisted.message,
                 tx: tx.asV2Read
             )
+        case .editMessage(let editMessage):
+            return DependenciesBridge.shared.tsResourceStore.bodyMediaAttachments(
+                for: editMessage.editedMessage,
+                tx: tx.asV2Read
+            )
         case .contactSync:
             return []
         case .story(let story):
@@ -192,6 +213,9 @@ public class PreparedOutgoingMessage {
             switch messageType {
             case .persisted(let message):
                 return message.message
+            case .editMessage(let message):
+                // We update the send state on the _original_ edited message.
+                return message.editedMessage
             case .contactSync(let contactSync):
                 return contactSync.message
             case .story(let storyMessage):
@@ -224,7 +248,7 @@ public class PreparedOutgoingMessage {
 extension PreparedOutgoingMessage {
     public var storyMessage: OutgoingStoryMessage? {
         switch messageType {
-        case .persisted, .contactSync, .transient:
+        case .persisted, .editMessage, .contactSync, .transient:
             return nil
         case .story(let storyMessage):
             return storyMessage.message
@@ -235,6 +259,9 @@ extension PreparedOutgoingMessage {
         switch messageType {
         case .persisted(let persisted):
             return persisted.message.bodyAttachmentIds(transaction: tx)
+        case .editMessage(let persisted):
+            owsFailDebug("We shouldn't be multisending an edit?")
+            return persisted.editedMessage.bodyAttachmentIds(transaction: tx)
         case .contactSync:
             return []
         case .story(let story):

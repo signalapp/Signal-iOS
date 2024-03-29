@@ -83,6 +83,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             switch messageRecord {
             case .persisted(let persisted):
                 jobRecord = try .init(persistedMessage: persisted, isHighPriority: isHighPriority, transaction: transaction)
+            case .editMessage(let edit):
+                jobRecord = try .init(editMessage: edit, isHighPriority: isHighPriority, transaction: transaction)
             case .contactSync:
                 throw OWSAssertionError("Cannot create a job record for contact syncs; their in-memory attachments can't be persisted!")
             case .story(let story):
@@ -102,6 +104,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                 switch messageRecord {
                 case .persisted(let persisted):
                     return persisted.message
+                case .editMessage(let edit):
+                    return edit.editedMessage
                 case .contactSync(let contactSync):
                     return contactSync.message
                 case .story(let story):
@@ -132,18 +136,23 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         oldJobRecord: MessageSenderJobRecord,
         transaction: SDSAnyWriteTransaction
     ) {
+        let uniqueId: String
         switch oldJobRecord.messageType {
         case .persisted(let messageId, _):
-            TSOutgoingMessage
-                .anyFetch(
-                    uniqueId: messageId,
-                    transaction: transaction
-                )
-                .flatMap { $0 as? TSOutgoingMessage }?
-                .updateAllUnsentRecipientsAsSending(transaction: transaction)
+            uniqueId = messageId
+        case .editMessage(let editedMessageId, _, _):
+            uniqueId = editedMessageId
         case .transient, .none:
-            break
+            return
         }
+
+        TSOutgoingMessage
+            .anyFetch(
+                uniqueId: uniqueId,
+                transaction: transaction
+            )
+            .flatMap { $0 as? TSOutgoingMessage }?
+            .updateAllUnsentRecipientsAsSending(transaction: transaction)
     }
 
     public func buildOperation(jobRecord: MessageSenderJobRecord,
@@ -152,6 +161,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         switch jobRecord.messageType {
         case .transient(let outgoingMessage):
             message = outgoingMessage
+        case .editMessage(_, let messageForSending, _):
+            message = messageForSending
         case .persisted(let messageId, _):
             if
                 let fetchedMessage = TSOutgoingMessage.anyFetch(
@@ -184,7 +195,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         // messages A, B, then media message C, followed by text message D, D cannot
         // send before A and B, but CAN send before C.
         switch jobRecord.messageType {
-        case .persisted(_, let useMediaQueue):
+        case .persisted(_, let useMediaQueue), .editMessage(_, _, let useMediaQueue):
             if useMediaQueue, let sendQueue = senderQueues[message.uniqueThreadId] {
                 let orderMaintainingOperation = Operation()
                 orderMaintainingOperation.queuePriority = operation.queuePriority
@@ -216,7 +227,9 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
 
         switch jobRecord.messageType {
-        case .persisted(_, let useMediaQueue) where useMediaQueue:
+        case
+                .persisted(_, let useMediaQueue) where useMediaQueue,
+                .editMessage(_, _, let useMediaQueue) where useMediaQueue:
             guard let existingQueue = mediaSenderQueues[threadId] else {
                 let operationQueue = OperationQueue()
                 operationQueue.name = "MessageSenderJobQueue-Media"
@@ -228,7 +241,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             }
 
             return existingQueue
-        case .persisted, .transient, .none:
+        case .persisted, .editMessage, .transient, .none:
             guard let existingQueue = senderQueues[threadId] else {
                 let operationQueue = OperationQueue()
                 operationQueue.name = "MessageSenderJobQueue-Text"

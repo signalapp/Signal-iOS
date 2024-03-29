@@ -28,13 +28,24 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
 
     public enum MessageType {
         case persisted(messageId: String, useMediaQueue: Bool)
+        case editMessage(
+            editedMessageId: String,
+            messageForSending: OutgoingEditMessage,
+            useMediaQueue: Bool
+        )
         case transient(TSOutgoingMessage)
         /// Generally considered invalid, but failed at processing time not deserialization time.
         case none
     }
 
     public var messageType: MessageType {
-        if let transientMessage {
+        if let editMessage = transientMessage as? OutgoingEditMessage {
+            return .editMessage(
+                editedMessageId: persistedMessageId ?? editMessage.editedMessage.uniqueId,
+                messageForSending: editMessage,
+                useMediaQueue: useMediaQueue
+            )
+        } else if let transientMessage {
             return .transient(transientMessage)
         } else if let persistedMessageId {
             return .persisted(messageId: persistedMessageId, useMediaQueue: useMediaQueue)
@@ -61,6 +72,10 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         case .persisted(let messageId, let useMediaQueue):
             self.persistedMessageId = messageId
             self.transientMessage = nil
+            self.useMediaQueue = useMediaQueue
+        case let .editMessage(editedMessageId, messageForSending, useMediaQueue):
+            self.persistedMessageId = editedMessageId
+            self.transientMessage = messageForSending
             self.useMediaQueue = useMediaQueue
         case .transient(let outgoingMessage):
             self.persistedMessageId = nil
@@ -91,6 +106,26 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
 
         self.init(
             threadId: persistedMessage.message.uniqueThreadId,
+            messageType: messageType,
+            removeMessageAfterSending: false,
+            isHighPriority: isHighPriority
+        )
+    }
+
+    convenience init(
+        editMessage: PreparedOutgoingMessage.MessageType.EditMessage,
+        isHighPriority: Bool,
+        transaction: SDSAnyReadTransaction
+    ) throws {
+        let messageType = MessageType.editMessage(
+            editedMessageId: editMessage.editedMessage.uniqueId,
+            messageForSending: editMessage.messageForSending,
+            // This would ideally only check for un-uploaded attachments.
+            useMediaQueue: editMessage.editedMessage.hasMediaAttachments(transaction: transaction)
+        )
+
+        self.init(
+            threadId: editMessage.editedMessage.uniqueThreadId,
             messageType: messageType,
             removeMessageAfterSending: false,
             isHighPriority: isHighPriority

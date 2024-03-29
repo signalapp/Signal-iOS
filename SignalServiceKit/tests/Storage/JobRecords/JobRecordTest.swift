@@ -325,6 +325,14 @@ extension MessageSenderJobRecord: ValidatableModel {
             else {
                 throw ValidatableModelError.failedToValidate
             }
+        case let (.editMessage(lhsId, lhsEditMessage, lhsUseMediaQueue), .editMessage(rhsId, rhsEditMessage, rhsUseMediaQueue)):
+            guard
+                lhsId == rhsId,
+                lhsUseMediaQueue == rhsUseMediaQueue,
+                lhsEditMessage == rhsEditMessage
+            else {
+                throw ValidatableModelError.failedToValidate
+            }
         case let (.transient(lhsMessage), .transient(rhsMessage)):
             guard
                 lhsMessage.uniqueId == rhsMessage.uniqueId
@@ -335,6 +343,7 @@ extension MessageSenderJobRecord: ValidatableModel {
             break
         case
             (.persisted, _),
+            (.editMessage, _),
             (.transient, _),
             (.none, _):
             throw ValidatableModelError.failedToValidate

@@ -25,7 +25,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
             switch jobRecord.messageType {
             case .persisted:
                 break
-            case .transient, .none:
+            case .transient, .editMessage, .none:
                 XCTFail("Incorrect message type")
             }
             XCTAssertNotNil(jobRecord.threadId)
@@ -43,7 +43,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
             switch jobRecord.messageType {
             case .transient:
                 break
-            case .persisted, .none:
+            case .persisted, .editMessage, .none:
                 XCTFail("Incorrect message type")
             }
             XCTAssertNotNil(jobRecord.threadId)
