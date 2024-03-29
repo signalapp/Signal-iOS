@@ -109,7 +109,7 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         // This is wasteful but this event is very rare.
-        reloadTableDataAndResetCellContentCache()
+        reloadTableDataAndResetThreadViewModelCache()
     }
 
     @objc

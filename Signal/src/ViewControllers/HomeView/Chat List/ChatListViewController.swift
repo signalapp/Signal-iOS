@@ -393,6 +393,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: Table View
 
+    func reloadTableDataAndResetThreadViewModelCache() {
+        threadViewModelCache.clear()
+        reloadTableDataAndResetCellContentCache()
+    }
+
     func reloadTableDataAndResetCellContentCache() {
         AssertIsOnMainThread()
 
