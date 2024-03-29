@@ -123,8 +123,8 @@ public class OWSChatConnection: NSObject {
     private let unsubmittedRequestTokens = AtomicSet<UnsubmittedRequestToken>(lock: .sharedGlobal)
     // This method is thread-safe.
     fileprivate func removeUnsubmittedRequestToken(_ token: UnsubmittedRequestToken) {
-        owsAssertDebug(unsubmittedRequestTokens.contains(token))
-        unsubmittedRequestTokens.remove(token)
+        let hadToken = unsubmittedRequestTokens.remove(token)
+        owsAssertDebug(hadToken)
         applyDesiredSocketState()
     }
 
