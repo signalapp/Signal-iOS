@@ -8,6 +8,12 @@ import LibSignalClient
 
 public protocol StoryStore {
 
+    /// Fetch the story message with the given SQLite row ID, if one exists.
+    func fetchStoryMessage(
+        rowId storyMessageRowId: Int64,
+        tx: DBReadTransaction
+    ) -> StoryMessage?
+
     /// Note: does not insert the created context; just populates it in memory with default values.
     /// (Note this method only takes a read transaction; it couldn't insert in the db if it wanted to.)
     func getOrCreateStoryContextAssociatedData(for aci: Aci, tx: DBReadTransaction) -> StoryContextAssociatedData
@@ -56,6 +62,13 @@ public class StoryStoreImpl: StoryStore {
 
     public init() {}
 
+    public func fetchStoryMessage(
+        rowId storyMessageRowId: Int64,
+        tx: DBReadTransaction
+    ) -> StoryMessage? {
+        return StoryMessage.anyFetch(rowId: storyMessageRowId, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
     public func getOrCreateStoryContextAssociatedData(for aci: Aci, tx: DBReadTransaction) -> StoryContextAssociatedData {
         return StoryContextAssociatedData.fetchOrDefault(
             sourceContext: .contact(contactAci: aci),
@@ -99,7 +112,15 @@ open class StoryStoreMock: StoryStore {
 
     public init() {}
 
+    public var storyMessages = [StoryMessage]()
     public var storyContexts = [StoryContextAssociatedData]()
+
+    public func fetchStoryMessage(
+        rowId storyMessageRowId: Int64,
+        tx: DBReadTransaction
+    ) -> StoryMessage? {
+        return storyMessages.first(where: { $0.id == storyMessageRowId })
+    }
 
     open func getOrCreateStoryContextAssociatedData(for aci: Aci, tx: DBReadTransaction) -> StoryContextAssociatedData {
         return storyContexts.first(where: {

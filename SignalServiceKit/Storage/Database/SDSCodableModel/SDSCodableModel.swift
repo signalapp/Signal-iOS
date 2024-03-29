@@ -147,6 +147,19 @@ public extension SDSCodableModel {
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
     static func anyFetch(
+        rowId: Int64,
+        transaction: SDSAnyReadTransaction
+    ) -> Self? {
+        SDSCodableModelDatabaseInterfaceImpl().fetchModel(
+            modelType: Self.self,
+            rowId: rowId,
+            tx: transaction.asV2Read
+        )
+    }
+
+    /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
+    /// See that class for details.
+    static func anyFetch(
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> Self? {
