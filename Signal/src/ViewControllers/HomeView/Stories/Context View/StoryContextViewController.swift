@@ -81,7 +81,7 @@ class StoryContextViewController: OWSViewController {
 
     private(set) lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self, delegate: self)
 
-    required init(
+    init(
         context: StoryContext,
         loadPositionIfRead: LoadPosition = .default,
         spoilerState: SpoilerRenderState,

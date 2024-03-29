@@ -17,7 +17,7 @@ class SyncPushTokensJob: NSObject {
 
     public let auth: ChatServiceAuth
 
-    required init(mode: Mode, auth: ChatServiceAuth = .implicit()) {
+    init(mode: Mode, auth: ChatServiceAuth = .implicit()) {
         self.mode = mode
         self.auth = auth
     }

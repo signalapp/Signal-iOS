@@ -15,7 +15,7 @@ public class TappableStackView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public required init(actionBlock: @escaping () -> Void) {
+    public init(actionBlock: @escaping () -> Void) {
         self.actionBlock = actionBlock
         super.init(frame: CGRect.zero)
 

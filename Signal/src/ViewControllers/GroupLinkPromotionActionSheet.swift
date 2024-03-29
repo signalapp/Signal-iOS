@@ -19,8 +19,8 @@ public class GroupLinkPromotionActionSheet: UIView {
 
     private let stackView = UIStackView()
 
-    required init(groupThread: TSGroupThread,
-                  conversationViewController: ConversationViewController) {
+    init(groupThread: TSGroupThread,
+         conversationViewController: ConversationViewController) {
         self.groupThread = groupThread
         self.conversationViewController = conversationViewController
 

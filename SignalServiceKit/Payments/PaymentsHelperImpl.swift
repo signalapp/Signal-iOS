@@ -8,7 +8,7 @@ import SignalCoreKit
 
 public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelper {
 
-    public required init() {
+    public init() {
         self.observeNotifications()
     }
 

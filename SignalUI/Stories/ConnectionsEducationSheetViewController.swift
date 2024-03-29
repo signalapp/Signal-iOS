@@ -10,7 +10,7 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
         .init(top: 24, left: 24, bottom: 32, right: 24)
     }
 
-    public required init() {
+    public init() {
         super.init()
 
         stackView.alignment = .fill

@@ -14,7 +14,7 @@ public class PendingTasks: NSObject {
     private let pendingTasks = AtomicDictionary<UInt, PendingTask>(lock: .sharedGlobal)
 
     @objc
-    public required init(label: String) {
+    public init(label: String) {
         self.label = label
     }
 

@@ -24,8 +24,8 @@ public class RefreshEvent: Dependencies {
     // if the app isn't the main app, if the app isn't active.
     //
     // It will also be performed immediately if any of the conditions change.
-    public required init(refreshInterval: TimeInterval,
-                         block: @escaping Block) {
+    public init(refreshInterval: TimeInterval,
+                block: @escaping Block) {
         self.refreshInterval = refreshInterval
         self.block = block
 

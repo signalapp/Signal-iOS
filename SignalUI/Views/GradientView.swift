@@ -25,7 +25,7 @@ public class GradientView: UIView {
         self.init(colors: [ fromColor, toColor ])
     }
 
-    public required init(colors: [UIColor], locations: [CGFloat]? = nil) {
+    public init(colors: [UIColor], locations: [CGFloat]? = nil) {
         self.colors = colors
         self.locations = locations
         super.init(frame: .zero)

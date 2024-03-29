@@ -272,7 +272,7 @@ fileprivate extension ConversationViewController {
 
 // A convenience view that allows block-based gesture handling.
 public class GestureView: UIView {
-    public required init() {
+    public init() {
         super.init(frame: .zero)
 
         self.layoutMargins = .zero

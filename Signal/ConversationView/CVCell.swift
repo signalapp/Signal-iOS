@@ -225,7 +225,7 @@ public class CVCellView: UIView, CVRootComponentHost {
     public var hostView: UIView { self }
     public var rootComponent: CVRootComponent? { renderItem?.rootComponent }
 
-    required init() {
+    init() {
         super.init(frame: .zero)
     }
 

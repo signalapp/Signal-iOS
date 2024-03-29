@@ -1074,7 +1074,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     private class PaymentsBannerView: UIView {
         let block: () -> Void
 
-        required init(block: @escaping () -> Void) {
+        init(block: @escaping () -> Void) {
             self.block = block
 
             super.init(frame: .zero)

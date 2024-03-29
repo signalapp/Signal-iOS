@@ -16,7 +16,7 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
 
     let completionBlock: () -> Void
 
-    public required init(thread: TSPrivateStoryThread, mode: TSThreadStoryViewMode, completionBlock: @escaping () -> Void) {
+    public init(thread: TSPrivateStoryThread, mode: TSThreadStoryViewMode, completionBlock: @escaping () -> Void) {
         self.thread = thread
         self.mode = mode
         if thread.storyViewMode == mode {

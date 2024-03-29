@@ -51,7 +51,7 @@ public extension TSErrorMessage {
 class TSErrorMessageSerializer: SDSSerializer {
 
     private let model: TSErrorMessage
-    public required init(model: TSErrorMessage) {
+    public init(model: TSErrorMessage) {
         self.model = model
     }
 

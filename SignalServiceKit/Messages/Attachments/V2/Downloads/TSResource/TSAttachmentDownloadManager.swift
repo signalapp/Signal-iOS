@@ -1061,7 +1061,7 @@ public extension TSAttachmentDownloadManager {
         let attachmentPointer: TSAttachmentPointer
         let startDate = Date()
 
-        required init(job: Job, attachmentPointer: TSAttachmentPointer) {
+        init(job: Job, attachmentPointer: TSAttachmentPointer) {
             self.job = job
             self.attachmentPointer = attachmentPointer
         }

@@ -125,7 +125,7 @@ public class StickerHorizontalListView: UICollectionView {
 
     private let cellReuseIdentifier = "cellReuseIdentifier"
 
-    public required init(cellSize: CGFloat, cellInset: CGFloat, spacing: CGFloat, forceDarkTheme: Bool = false) {
+    public init(cellSize: CGFloat, cellInset: CGFloat, spacing: CGFloat, forceDarkTheme: Bool = false) {
         self.cellSize = cellSize
         self.cellInset = cellInset
         let layout = LinearHorizontalLayout(itemSize: CGSize(square: cellSize), spacing: spacing)

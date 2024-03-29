@@ -284,10 +284,6 @@ class BadgeIssueSheet: OWSTableSheetViewController {
         updateTableContents()
     }
 
-    public required init() {
-        fatalError("init() has not been implemented")
-    }
-
     public override func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }

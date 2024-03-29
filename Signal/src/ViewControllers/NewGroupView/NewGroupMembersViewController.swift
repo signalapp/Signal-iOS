@@ -11,7 +11,7 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
 
     private var newGroupState = NewGroupState()
 
-    public required override init() {
+    public override init() {
         super.init()
 
         groupMemberViewDelegate = self

@@ -11,9 +11,9 @@ public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
     public let requestContext: ProfileKeyCredentialRequestContext?
     public let profileKey: OWSAES256Key?
 
-    public required init(request: TSRequest,
-                         requestContext: ProfileKeyCredentialRequestContext?,
-                         profileKey: OWSAES256Key?) {
+    public init(request: TSRequest,
+                requestContext: ProfileKeyCredentialRequestContext?,
+                profileKey: OWSAES256Key?) {
         self.request = request
         self.requestContext = requestContext
         self.profileKey = profileKey

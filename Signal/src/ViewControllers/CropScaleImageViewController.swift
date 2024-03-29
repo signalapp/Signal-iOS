@@ -75,7 +75,7 @@ class CropScaleImageViewController: OWSViewController {
 
     // MARK: Initializers
 
-    required init(srcImage: UIImage, successCompletion: @escaping (UIImage) -> Void) {
+    init(srcImage: UIImage, successCompletion: @escaping (UIImage) -> Void) {
         // normalized() can be slightly expensive but in practice this is fine.
         self.srcImage = srcImage.normalized()
         self.successCompletion = successCompletion

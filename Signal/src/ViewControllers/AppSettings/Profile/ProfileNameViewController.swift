@@ -45,7 +45,7 @@ class ProfileNameViewController: OWSTableViewController2 {
 
     private weak var profileDelegate: ProfileNameViewControllerDelegate?
 
-    required init(
+    init(
         givenName: String?,
         familyName: String?,
         profileDelegate: ProfileNameViewControllerDelegate

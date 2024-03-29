@@ -33,7 +33,7 @@ public class ConversationSearchController: NSObject {
 
     // MARK: Initializer
 
-    required public init(thread: TSThread) {
+    public init(thread: TSThread) {
         self.thread = thread
         super.init()
 

@@ -14,7 +14,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
     // Starting/Stopping incoming call ringing is our apps responsibility for the non CallKit interface.
     let hasManualRinger = true
 
-    required override init() {
+    override init() {
         AssertIsOnMainThread()
 
         super.init()

@@ -51,7 +51,7 @@ public extension TSUnreadIndicatorInteraction {
 class TSUnreadIndicatorInteractionSerializer: SDSSerializer {
 
     private let model: TSUnreadIndicatorInteraction
-    public required init(model: TSUnreadIndicatorInteraction) {
+    public init(model: TSUnreadIndicatorInteraction) {
         self.model = model
     }
 

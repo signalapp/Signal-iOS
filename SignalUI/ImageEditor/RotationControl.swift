@@ -64,7 +64,7 @@ class RotationControl: UIControl {
      */
     private var canvasRotation: CGFloat = 0
 
-    required init() {
+    init() {
         super.init(frame: .zero)
 
         layoutMargins = .zero

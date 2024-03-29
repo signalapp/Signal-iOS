@@ -544,7 +544,7 @@ class MessageSendEncryptionError: NSObject, CustomNSError, IsRetryableProvider {
     public let serviceId: ServiceId
     public let deviceId: UInt32
 
-    required init(serviceId: ServiceId, deviceId: UInt32) {
+    init(serviceId: ServiceId, deviceId: UInt32) {
         self.serviceId = serviceId
         self.deviceId = deviceId
     }

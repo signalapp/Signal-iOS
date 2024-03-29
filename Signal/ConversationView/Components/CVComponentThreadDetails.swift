@@ -31,7 +31,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         thread is TSContactThread && !thread.isNoteToSelf
     }
 
-    required init(itemModel: CVItemModel, threadDetails: CVComponentState.ThreadDetails) {
+    init(itemModel: CVItemModel, threadDetails: CVComponentState.ThreadDetails) {
         self.threadDetails = threadDetails
 
         super.init(itemModel: itemModel)

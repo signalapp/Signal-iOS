@@ -127,7 +127,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
         }
     }
 
-    public required init(stickerPackInfo: StickerPackInfo) {
+    public init(stickerPackInfo: StickerPackInfo) {
         self.stickerPackInfo = stickerPackInfo
 
         super.init()
@@ -320,8 +320,8 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     private var stickerMetadataMap = [String: StickerMetadata]()
     private var temporaryFileUrls = [URL]()
 
-    public required init(stickerPackInfo: StickerPackInfo,
-                         shouldDownloadAllStickers: Bool) {
+    public init(stickerPackInfo: StickerPackInfo,
+                shouldDownloadAllStickers: Bool) {
         self.stickerPackInfo = stickerPackInfo
         self.shouldDownloadAllStickers = shouldDownloadAllStickers
 
@@ -592,7 +592,7 @@ extension TransientStickerPackDataSource: StickerPackDataSourceDelegate {
 // Supplies sticker pack data for recently used stickers.
 public class RecentStickerPackDataSource: BaseStickerPackDataSource {
 
-    public required override init() {
+    public override init() {
         super.init()
 
         NotificationCenter.default.addObserver(self,

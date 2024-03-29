@@ -51,7 +51,7 @@ public extension OWSGroupCallMessage {
 class OWSGroupCallMessageSerializer: SDSSerializer {
 
     private let model: OWSGroupCallMessage
-    public required init(model: OWSGroupCallMessage) {
+    public init(model: OWSGroupCallMessage) {
         self.model = model
     }
 

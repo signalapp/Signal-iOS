@@ -36,7 +36,7 @@ public class NewMembersBar: UIView {
 
     private var heightConstraint: NSLayoutConstraint?
 
-    public required init() {
+    public init() {
         self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
 
         super.init(frame: .zero)

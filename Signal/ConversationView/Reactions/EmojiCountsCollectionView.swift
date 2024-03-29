@@ -27,7 +27,7 @@ public class EmojiCountsCollectionView: UICollectionView {
         }
     }
 
-    public required init() {
+    public init() {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0

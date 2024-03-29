@@ -30,7 +30,7 @@ class DownloadStickerOperation: CDNDownloadOperation {
     private let failure: (Error) -> Void
 
     @objc
-    public required init(
+    public init(
         stickerInfo: StickerInfo,
         success: @escaping (URL) -> Void,
         failure: @escaping (Error) -> Void

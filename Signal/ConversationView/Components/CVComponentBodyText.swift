@@ -681,7 +681,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             stackView
         }
 
-        required init(componentDelegate: CVComponentDelegate) {
+        init(componentDelegate: CVComponentDelegate) {
             self.componentDelegate = componentDelegate
 
             super.init()

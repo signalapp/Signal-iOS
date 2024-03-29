@@ -28,10 +28,6 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
         super.init()
     }
 
-    public required init() {
-        fatalError("init() has not been implemented")
-    }
-
     public override func viewDidLoad() {
         super.viewDidLoad()
 

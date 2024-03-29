@@ -588,7 +588,7 @@ public extension InstalledSticker {
 class InstalledStickerSerializer: SDSSerializer {
 
     private let model: InstalledSticker
-    public required init(model: InstalledSticker) {
+    public init(model: InstalledSticker) {
         self.model = model
     }
 

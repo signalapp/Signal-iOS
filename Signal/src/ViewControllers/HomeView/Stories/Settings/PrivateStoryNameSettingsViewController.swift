@@ -13,7 +13,7 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
 
     var hasPendingChanges: Bool { nameTextField.text?.filterForDisplay != thread.name }
 
-    required init(thread: TSPrivateStoryThread, completionHandler: @escaping () -> Void) {
+    init(thread: TSPrivateStoryThread, completionHandler: @escaping () -> Void) {
         self.thread = thread
         self.completionHandler = completionHandler
 

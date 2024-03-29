@@ -67,7 +67,7 @@ public class AudioSession: NSObject {
 
     private let device = UIDevice.current
 
-    public required override init() {
+    public override init() {
         super.init()
 
         if CurrentAppContext().isMainApp {

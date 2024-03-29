@@ -30,7 +30,7 @@ public class BlockingManager: NSObject {
     private let lock = UnfairLock()
     private var state = State()
 
-    public required override init() {
+    public override init() {
         super.init()
         SwiftSingletons.register(self)
         AppReadiness.runNowOrWhenAppWillBecomeReady {

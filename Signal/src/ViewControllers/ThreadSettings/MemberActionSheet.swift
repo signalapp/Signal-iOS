@@ -70,10 +70,6 @@ class MemberActionSheet: OWSTableSheetViewController {
             OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
     }
 
-    public required init() {
-        fatalError("init() has not been implemented")
-    }
-
     fileprivate static func fetchThreadViewModel(address: SignalServiceAddress) -> ThreadViewModel {
         // Avoid opening a write transaction if we can
         guard let threadViewModel: ThreadViewModel = Self.databaseStorage.read(block: { transaction in

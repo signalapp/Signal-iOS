@@ -440,7 +440,7 @@ public class CVPanHandler {
 
     public var percentDrivenTransition: UIPercentDrivenInteractiveTransition?
 
-    required init(delegate: CVComponentDelegate, panType: PanType, renderItem: CVRenderItem) {
+    init(delegate: CVComponentDelegate, panType: PanType, renderItem: CVRenderItem) {
         self.delegate = delegate
         self.panType = panType
         self.renderItem = renderItem

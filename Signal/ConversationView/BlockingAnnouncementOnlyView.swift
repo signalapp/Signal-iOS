@@ -141,10 +141,6 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
         updateViewState()
     }
 
-    public required init() {
-        fatalError("init() has not been implemented")
-    }
-
     // MARK: -
 
     public override func updateTableContents(shouldReload: Bool = true) {

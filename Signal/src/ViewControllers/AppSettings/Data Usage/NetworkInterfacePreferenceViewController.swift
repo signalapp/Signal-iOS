@@ -11,7 +11,7 @@ class NetworkInterfacePreferenceViewController: OWSTableViewController2 {
     private let availableOptions: [NetworkInterfaceSet]
     private let updateHandler: (NetworkInterfaceSet) -> Void
 
-    public required init(
+    public init(
         selectedOption: NetworkInterfaceSet?,
         availableOptions: [NetworkInterfaceSet],
         updateHandler: @escaping (NetworkInterfaceSet) -> Void) {

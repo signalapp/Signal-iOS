@@ -31,12 +31,8 @@ public class MyStorySettingsSheetViewController: OWSTableSheetViewController, My
 
     private var willDisappear: (() -> Void)?
 
-    public init(willDisappear: (() -> Void)?) {
+    public init(willDisappear: (() -> Void)? = nil) {
         self.willDisappear = willDisappear
-        super.init()
-    }
-
-    public required init() {
         super.init()
     }
 

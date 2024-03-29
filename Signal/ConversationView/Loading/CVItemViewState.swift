@@ -713,10 +713,10 @@ private class ItemBuilder {
     let componentState: CVComponentState
     var itemViewState = CVItemViewState.Builder()
 
-    required init(interaction: TSInteraction,
-                  thread: TSThread,
-                  threadAssociatedData: ThreadAssociatedData,
-                  componentState: CVComponentState) {
+    init(interaction: TSInteraction,
+         thread: TSThread,
+         threadAssociatedData: ThreadAssociatedData,
+         componentState: CVComponentState) {
         self.interaction = interaction
         self.thread = thread
         self.threadAssociatedData = threadAssociatedData

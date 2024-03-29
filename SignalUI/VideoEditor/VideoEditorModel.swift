@@ -309,7 +309,7 @@ extension VideoEditorModel {
             }
         }()
 
-        required init(model: VideoEditorModel) {
+        init(model: VideoEditorModel) {
             self.srcVideoPath = model.srcVideoPath
             self.untrimmedDuration = model.untrimmedDuration
             self.trimmedStartSeconds = model.trimmedStartSeconds

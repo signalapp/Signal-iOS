@@ -18,7 +18,7 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
 
     private let dataSource = PaymentsHistoryDataSource()
 
-    public override required init() {
+    public override init() {
         super.init()
 
         topHeader = OWSTableViewController2.buildTopHeader(forView: modeControl,

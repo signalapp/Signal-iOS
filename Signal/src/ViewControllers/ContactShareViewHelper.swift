@@ -18,7 +18,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     weak var delegate: ContactShareViewHelperDelegate?
 
-    required override init() {
+    override init() {
         AssertIsOnMainThread()
 
         super.init()

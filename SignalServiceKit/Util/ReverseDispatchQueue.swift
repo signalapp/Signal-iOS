@@ -18,7 +18,7 @@ public class ReverseDispatchQueue: NSObject {
         self.init(label: label, qos: .unspecified, autoreleaseFrequency: .inherit)
     }
 
-    public required init(label: String, qos: DispatchQoS, autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency) {
+    public init(label: String, qos: DispatchQoS, autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency) {
         self.label = label
         serialQueue = DispatchQueue(label: label, qos: qos, autoreleaseFrequency: autoreleaseFrequency)
 
@@ -31,7 +31,7 @@ public class ReverseDispatchQueue: NSObject {
         let workBlock: WorkBlock
         let index: UInt64
 
-        required init(workBlock: @escaping WorkBlock, index: UInt64) {
+        init(workBlock: @escaping WorkBlock, index: UInt64) {
             self.workBlock = workBlock
             self.index = index
         }

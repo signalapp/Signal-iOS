@@ -38,7 +38,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         )
     }
 
-    required init(
+    init(
         helper: GroupAttributesEditorHelper,
         groupDescriptionCurrent: String? = nil,
         options: Options = []

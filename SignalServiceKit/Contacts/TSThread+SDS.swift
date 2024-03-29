@@ -1057,7 +1057,7 @@ public extension TSThread {
 class TSThreadSerializer: SDSSerializer {
 
     private let model: TSThread
-    public required init(model: TSThread) {
+    public init(model: TSThread) {
         self.model = model
     }
 

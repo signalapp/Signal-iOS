@@ -103,10 +103,10 @@ public class StickerMetadata: NSObject {
     public let emojiString: String?
 
     @objc
-    public required init(stickerInfo: StickerInfo,
-                         stickerType: StickerType,
-                         stickerDataUrl: URL,
-                         emojiString: String?) {
+    public init(stickerInfo: StickerInfo,
+                stickerType: StickerType,
+                stickerDataUrl: URL,
+                emojiString: String?) {
         self.stickerInfo = stickerInfo
         self.stickerType = stickerType
         self.stickerDataUrl = stickerDataUrl

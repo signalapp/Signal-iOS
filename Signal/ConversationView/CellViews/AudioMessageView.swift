@@ -71,11 +71,6 @@ class AudioMessageView: ManualStackView {
         super.init(name: presentation.name)
     }
 
-    @available(swift, obsoleted: 1.0)
-    required init(name: String, arrangedSubviews: [UIView] = []) {
-        owsFail("Do not use this initializer.")
-    }
-
     // MARK: - Rendering
 
     public func configureForRendering(cellMeasurement: CVCellMeasurement, conversationStyle: ConversationStyle) {

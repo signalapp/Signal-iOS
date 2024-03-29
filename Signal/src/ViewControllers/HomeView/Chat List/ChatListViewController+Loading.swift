@@ -246,7 +246,7 @@ public class CLVLoadCoordinator: Dependencies {
     }
     private var loadInfoBuilder = CLVLoadInfoBuilder()
 
-    public required init() {
+    public init() {
         loadInfoBuilder.shouldResetAll = true
     }
 

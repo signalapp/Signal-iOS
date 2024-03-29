@@ -22,10 +22,10 @@ public class LinkPreviewGroupLink: LinkPreviewState {
         _conversationStyle
     }
 
-    public required init(linkType: LinkPreviewLinkType,
-                         linkPreview: OWSLinkPreview,
-                         groupInviteLinkViewModel: GroupInviteLinkViewModel,
-                         conversationStyle: ConversationStyle) {
+    public init(linkType: LinkPreviewLinkType,
+                linkPreview: OWSLinkPreview,
+                groupInviteLinkViewModel: GroupInviteLinkViewModel,
+                conversationStyle: ConversationStyle) {
         self.linkPreview = linkPreview
         self.linkType = linkType
         self.groupInviteLinkViewModel = groupInviteLinkViewModel

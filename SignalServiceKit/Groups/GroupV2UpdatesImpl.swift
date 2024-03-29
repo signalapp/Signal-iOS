@@ -29,7 +29,7 @@ public class GroupV2UpdatesImpl: Dependencies {
         return operationQueue
     }()
 
-    public required init() {
+    public init() {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
@@ -363,11 +363,11 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         let promise: Promise<TSGroupThread>
         let future: Future<TSGroupThread>
 
-        required init(groupId: Data,
-                      spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-                      groupSecretParamsData: Data,
-                      groupUpdateMode: GroupUpdateMode,
-                      groupModelOptions: TSGroupModelOptions) {
+        init(groupId: Data,
+             spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+             groupSecretParamsData: Data,
+             groupUpdateMode: GroupUpdateMode,
+             groupModelOptions: TSGroupModelOptions) {
             self.groupId = groupId
             self.spamReportingMetadata = spamReportingMetadata
             self.groupSecretParamsData = groupSecretParamsData

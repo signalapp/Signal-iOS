@@ -205,7 +205,7 @@ class ImageEditorCanvasView: UIView {
     /// We leave space for 10k items/layers of each type.
     private static let zPositionSpacing: CGFloat = 0.0001
 
-    required init(model: ImageEditorModel, hiddenItemId: String? = nil) {
+    init(model: ImageEditorModel, hiddenItemId: String? = nil) {
         self.model = model
         self.hiddenItemId = hiddenItemId
 

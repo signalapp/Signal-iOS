@@ -424,7 +424,7 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         private lazy var _imageView = UIImageView()
         private lazy var _label = UILabel()
 
-        required init() {
+        init() {
             super.init(frame: .zero)
 
             addSubview(_imageView)

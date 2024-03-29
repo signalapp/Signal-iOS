@@ -30,7 +30,7 @@ public class LongTextViewController: OWSViewController {
 
     // MARK: Initializers
 
-    public required init(
+    public init(
         itemViewModel: CVItemViewModelImpl,
         threadViewModel: ThreadViewModel,
         spoilerState: SpoilerRenderState

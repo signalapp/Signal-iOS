@@ -613,7 +613,7 @@ public extension StickerPack {
 class StickerPackSerializer: SDSSerializer {
 
     private let model: StickerPack
-    public required init(model: StickerPack) {
+    public init(model: StickerPack) {
         self.model = model
     }
 

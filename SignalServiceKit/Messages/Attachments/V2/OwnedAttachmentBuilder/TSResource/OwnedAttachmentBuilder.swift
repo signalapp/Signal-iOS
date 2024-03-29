@@ -19,7 +19,7 @@ import Foundation
 /// this abstraction, though we don't strictly need to do so immediately. In a v2-only
 /// world, callsites just invoke directly the things that would have been handled
 /// by "finalize".
-public class OwnedAttachmentBuilder<InfoType> {
+public final class OwnedAttachmentBuilder<InfoType> {
 
     // MARK: - API
 
@@ -43,7 +43,7 @@ public class OwnedAttachmentBuilder<InfoType> {
 
     // MARK: - Init
 
-    public required init(
+    public init(
         info: InfoType,
         finalize: @escaping FinalizeFn
     ) {

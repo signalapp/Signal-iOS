@@ -35,7 +35,7 @@ open class ManualLayoutView: UIView, CVView {
         CATransformLayer.self
     }
 
-    public required init(name: String) {
+    public init(name: String) {
         self.name = name
 
         super.init(frame: .zero)

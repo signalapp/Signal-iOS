@@ -13,7 +13,7 @@ public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewCont
 
     public override var hasUnsavedChanges: Bool { !recipientSet.orderedMembers.isEmpty }
 
-    public required init(thread: TSPrivateStoryThread) {
+    public init(thread: TSPrivateStoryThread) {
         self.thread = thread
         super.init()
 

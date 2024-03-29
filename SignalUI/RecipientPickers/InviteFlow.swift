@@ -39,7 +39,7 @@ public class InviteFlow: NSObject {
 
     private var channel: Channel?
 
-    public required init(presentingViewController: UIViewController) {
+    public init(presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
 
         super.init()

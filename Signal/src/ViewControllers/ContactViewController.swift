@@ -38,7 +38,7 @@ class ContactViewController: OWSTableViewController2 {
 
     // MARK: View Controller
 
-    required init(contactShare: ContactShareViewModel) {
+    init(contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
         let phoneNumberPartition = Self.phoneNumberPartition(for: contactShare)
         self.viewMode = Self.viewMode(for: phoneNumberPartition)

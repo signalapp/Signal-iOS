@@ -51,7 +51,7 @@ public extension OWSUnknownProtocolVersionMessage {
 class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
 
     private let model: OWSUnknownProtocolVersionMessage
-    public required init(model: OWSUnknownProtocolVersionMessage) {
+    public init(model: OWSUnknownProtocolVersionMessage) {
         self.model = model
     }
 

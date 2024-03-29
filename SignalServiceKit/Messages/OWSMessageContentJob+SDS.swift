@@ -586,7 +586,7 @@ public extension OWSMessageContentJob {
 class OWSMessageContentJobSerializer: SDSSerializer {
 
     private let model: OWSMessageContentJob
-    public required init(model: OWSMessageContentJob) {
+    public init(model: OWSMessageContentJob) {
         self.model = model
     }
 

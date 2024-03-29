@@ -1458,7 +1458,7 @@ public class ConversationPickerSelection: Dependencies {
 
     public private(set) var conversations: [ConversationItem] = []
 
-    public required init() {}
+    public init() {}
 
     public func add(_ conversation: ConversationItem) {
         conversations.append(conversation)

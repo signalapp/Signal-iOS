@@ -455,7 +455,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
     private var downloadFolderPath: String?
 
     // Force usage as a singleton
-    public required init(downloadFolderName: String) {
+    public init(downloadFolderName: String) {
         AssertIsOnMainThread()
 
         self.downloadFolderName = downloadFolderName

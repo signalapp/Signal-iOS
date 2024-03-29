@@ -5865,7 +5865,7 @@ public extension TSInteraction {
 class TSInteractionSerializer: SDSSerializer {
 
     private let model: TSInteraction
-    public required init(model: TSInteraction) {
+    public init(model: TSInteraction) {
         self.model = model
     }
 

@@ -10,7 +10,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
     private var groupModelV2: TSGroupModelV2
 
-    required init(groupModelV2: TSGroupModelV2) {
+    init(groupModelV2: TSGroupModelV2) {
         self.groupModelV2 = groupModelV2
 
         super.init()

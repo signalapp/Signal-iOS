@@ -103,7 +103,7 @@ public class ConversationStyle: NSObject {
     // ColorOrGradientValue is used for rendering.
     public let chatColorValue: ColorOrGradientValue
 
-    public required init(
+    public init(
         type: `Type`,
         thread: TSThread,
         viewWidth: CGFloat,

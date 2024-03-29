@@ -65,7 +65,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     private var currentCurrencyConversion: CurrencyConversionInfo? { helper?.currentCurrencyConversion }
 
-    public required init(mode: Mode, delegate: SendPaymentCompletionDelegate) {
+    public init(mode: Mode, delegate: SendPaymentCompletionDelegate) {
         self.mode = mode
         self.delegate = delegate
 

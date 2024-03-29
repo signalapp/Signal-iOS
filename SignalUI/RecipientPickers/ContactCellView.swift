@@ -124,18 +124,13 @@ public class ContactCellView: ManualStackView {
 
     private let textStack = ManualStackView(name: "textStack")
 
-    public required init() {
+    public init() {
         super.init(name: "ContactCellView")
 
         nameLabel.lineBreakMode = .byTruncatingTail
         accessoryLabel.textAlignment = .right
 
         self.shouldDeactivateConstraints = false
-    }
-
-    @available(swift, obsoleted: 1.0)
-    required init(name: String, arrangedSubviews: [UIView] = []) {
-        owsFail("Do not use this initializer.")
     }
 
     private var nameLabelFont: UIFont { OWSTableItem.primaryLabelFont }

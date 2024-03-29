@@ -32,7 +32,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     // MARK: Initializers
 
-    public required init(canCancel: Bool, presentationDelay: TimeInterval, isInvisible: Bool = false) {
+    public init(canCancel: Bool, presentationDelay: TimeInterval, isInvisible: Bool = false) {
         self.canCancel = canCancel
         self.presentationDelay = presentationDelay
         self.isInvisible = isInvisible

@@ -34,7 +34,7 @@ class ConversationInputTextView: BodyRangesTextView {
     var untrimmedText: String { textStorage.string }
     private var textIsChanging = false
 
-    required init() {
+    override init() {
         super.init()
 
         backgroundColor = nil

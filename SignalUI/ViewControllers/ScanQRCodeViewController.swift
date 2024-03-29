@@ -185,7 +185,7 @@ public class QRCodeScanViewController: OWSViewController {
         }
     }
 
-    public required init(appearance: Appearance) {
+    public init(appearance: Appearance) {
         self.appearance = appearance
         super.init()
     }
@@ -549,7 +549,7 @@ public class QRCodePayload {
 private class QRCodeBitStream {
     private var bits: [UInt8]
 
-    required init(codewords: Data) {
+    init(codewords: Data) {
         var bits = [UInt8]()
         for codeword in codewords {
             var codeword: UInt8 = codeword
@@ -664,7 +664,7 @@ private class QRCodeScanner {
 
     private var hasRequestedDeviceOrientationNotifications = false
 
-    required init(
+    init(
         prefersFrontFacingCamera: Bool,
         sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate
     ) {
@@ -929,7 +929,7 @@ private class QRCodeScanOutput {
 
     // MARK: - Init
 
-    required init(sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate) {
+    init(sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate) {
         videoDataOutput.videoSettings =
             [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
         videoDataOutput.setSampleBufferDelegate(

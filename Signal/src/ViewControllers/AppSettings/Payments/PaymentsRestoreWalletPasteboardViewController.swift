@@ -16,7 +16,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         textField.text?.strippedOrNil?.lowercased()
     }
 
-    public required init(restoreWalletDelegate: PaymentsRestoreWalletDelegate) {
+    public init(restoreWalletDelegate: PaymentsRestoreWalletDelegate) {
         self.restoreWalletDelegate = restoreWalletDelegate
 
         super.init()

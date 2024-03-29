@@ -53,7 +53,7 @@ class SendPaymentHelper: Dependencies {
 
     private var maximumPaymentAmount: TSPaymentAmount?
 
-    required init(delegate: SendPaymentHelperDelegate) {
+    init(delegate: SendPaymentHelperDelegate) {
         self.delegate = delegate
 
         addObservers()

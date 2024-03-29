@@ -128,7 +128,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         }
     }
 
-    public required override init() {
+    public override init() {
         AssertIsOnMainThread()
 
         super.init()

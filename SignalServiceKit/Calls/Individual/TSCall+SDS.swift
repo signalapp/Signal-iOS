@@ -51,7 +51,7 @@ public extension TSCall {
 class TSCallSerializer: SDSSerializer {
 
     private let model: TSCall
-    public required init(model: TSCall) {
+    public init(model: TSCall) {
         self.model = model
     }
 

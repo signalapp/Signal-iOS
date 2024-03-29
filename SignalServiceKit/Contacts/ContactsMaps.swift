@@ -16,7 +16,7 @@ public class ContactsMaps: NSObject {
     @objc
     public var allContacts: [Contact] { Array(uniqueIdToContactMap.values) }
 
-    required init(
+    init(
         uniqueIdToContactMap: [String: Contact],
         phoneNumberToContactMap: [String: Contact]
     ) {

@@ -48,22 +48,22 @@ public class TSGroupModelV2: TSGroupModel {
     public var descriptionText: String?
 
     @objc
-    public required init(groupId: Data,
-                         name: String?,
-                         descriptionText: String?,
-                         avatarData: Data?,
-                         groupMembership: GroupMembership,
-                         groupAccess: GroupAccess,
-                         revision: UInt32,
-                         secretParamsData: Data,
-                         avatarUrlPath: String?,
-                         inviteLinkPassword: Data?,
-                         isAnnouncementsOnly: Bool,
-                         isJoinRequestPlaceholder: Bool,
-                         wasJustMigrated: Bool,
-                         didJustAddSelfViaGroupLink: Bool,
-                         addedByAddress: SignalServiceAddress?,
-                         droppedMembers: [SignalServiceAddress]) {
+    public init(groupId: Data,
+                name: String?,
+                descriptionText: String?,
+                avatarData: Data?,
+                groupMembership: GroupMembership,
+                groupAccess: GroupAccess,
+                revision: UInt32,
+                secretParamsData: Data,
+                avatarUrlPath: String?,
+                inviteLinkPassword: Data?,
+                isAnnouncementsOnly: Bool,
+                isJoinRequestPlaceholder: Bool,
+                wasJustMigrated: Bool,
+                didJustAddSelfViaGroupLink: Bool,
+                addedByAddress: SignalServiceAddress?,
+                droppedMembers: [SignalServiceAddress]) {
         self.descriptionText = descriptionText
         self.membership = groupMembership
         self.secretParamsData = secretParamsData

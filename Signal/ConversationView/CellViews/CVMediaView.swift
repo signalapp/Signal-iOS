@@ -28,15 +28,15 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
     // MARK: - Initializers
 
-    public required init(mediaCache: CVMediaCache,
-                         attachment: TSAttachment,
-                         interaction: TSInteraction,
-                         maxMessageWidth: CGFloat,
-                         isBorderless: Bool,
-                         isLoopingVideo: Bool,
-                         isBroken: Bool,
-                         thumbnailQuality: TSAttachmentThumbnailQuality,
-                         conversationStyle: ConversationStyle) {
+    public init(mediaCache: CVMediaCache,
+                attachment: TSAttachment,
+                interaction: TSInteraction,
+                maxMessageWidth: CGFloat,
+                isBorderless: Bool,
+                isLoopingVideo: Bool,
+                isBroken: Bool,
+                thumbnailQuality: TSAttachmentThumbnailQuality,
+                conversationStyle: ConversationStyle) {
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.interaction = interaction
@@ -53,11 +53,6 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         clipsToBounds = true
 
         createContents()
-    }
-
-    @available(*, unavailable, message: "use other constructor instead.")
-    public required init(name: String) {
-        fatalError("init(name:) has not been implemented")
     }
 
     // MARK: -

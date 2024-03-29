@@ -97,11 +97,6 @@ extension UsernameSelectionViewController {
                 configureForCurrentMode()
             }
 
-            @available(*, unavailable, message: "Use other constructor")
-            required init(name: String, arrangedSubviews: [UIView]) {
-                fatalError("Use other constructor")
-            }
-
             // MARK: Views
 
             private lazy var spinnerView: UIActivityIndicatorView = {

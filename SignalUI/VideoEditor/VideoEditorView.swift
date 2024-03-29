@@ -45,10 +45,10 @@ class VideoEditorView: UIView {
         return playButton
     }()
 
-    required init(model: VideoEditorModel,
-                  delegate: VideoEditorViewDelegate,
-                  dataSource: VideoEditorDataSource,
-                  viewControllerProvider: VideoEditorViewControllerProviding) {
+    init(model: VideoEditorModel,
+         delegate: VideoEditorViewDelegate,
+         dataSource: VideoEditorDataSource,
+         viewControllerProvider: VideoEditorViewControllerProviding) {
 
         self.model = model
         self.delegate = delegate

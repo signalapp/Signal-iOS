@@ -558,7 +558,7 @@ public extension OWSDisappearingMessagesConfiguration {
 class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
 
     private let model: OWSDisappearingMessagesConfiguration
-    public required init(model: OWSDisappearingMessagesConfiguration) {
+    public init(model: OWSDisappearingMessagesConfiguration) {
         self.model = model
     }
 

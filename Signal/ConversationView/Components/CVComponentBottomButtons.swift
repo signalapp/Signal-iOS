@@ -15,7 +15,7 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
     typealias Action = CVMessageAction
     fileprivate var actions: [Action] { bottomButtonsState.actions }
 
-    required init(itemModel: CVItemModel, bottomButtonsState: CVComponentState.BottomButtons) {
+    init(itemModel: CVItemModel, bottomButtonsState: CVComponentState.BottomButtons) {
         self.bottomButtonsState = bottomButtonsState
 
         super.init(itemModel: itemModel)
@@ -116,7 +116,7 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
 
         let action: CVMessageAction
 
-        required init(action: CVMessageAction) {
+        init(action: CVMessageAction) {
             self.action = action
 
             super.init(frame: .zero)

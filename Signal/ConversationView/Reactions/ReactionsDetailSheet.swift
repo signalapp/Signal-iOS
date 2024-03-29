@@ -32,10 +32,6 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         super.init()
     }
 
-    public required init() {
-        fatalError("init() has not been implemented")
-    }
-
     // MARK: -
 
     override public func viewDidLoad() {

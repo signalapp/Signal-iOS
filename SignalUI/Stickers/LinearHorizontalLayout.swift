@@ -23,7 +23,7 @@ class LinearHorizontalLayout: UICollectionViewLayout {
         fatalError("init(coder:) has not been implemented")
     }
 
-    required init(itemSize: CGSize, spacing: CGFloat = 0) {
+    init(itemSize: CGSize, spacing: CGFloat = 0) {
         self.itemSize = itemSize
         self.spacing = spacing
 

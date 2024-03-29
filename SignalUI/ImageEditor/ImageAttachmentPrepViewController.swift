@@ -12,7 +12,7 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController {
 
     private lazy var editorView = ImageEditorView(model: model, delegate: self)
 
-    required init?(attachmentApprovalItem: AttachmentApprovalItem) {
+    override init?(attachmentApprovalItem: AttachmentApprovalItem) {
         guard let imageEditorModel = attachmentApprovalItem.imageEditorModel else {
             owsFailDebug("imageEditorModel is empty.")
             return nil

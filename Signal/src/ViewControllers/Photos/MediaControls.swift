@@ -69,7 +69,7 @@ class CameraCaptureControl: UIView {
 
     weak var delegate: CameraCaptureControlDelegate?
 
-    required init(axis: NSLayoutConstraint.Axis) {
+    init(axis: NSLayoutConstraint.Axis) {
         innerCircleSizeConstraint = shutterButtonInnerCircle.autoSetDimension(.width, toSize: CameraCaptureControl.shutterButtonDefaultSize)
         outerCircleSizeConstraint = shutterButtonOuterCircle.autoSetDimension(.width, toSize: CameraCaptureControl.shutterButtonDefaultSize)
 
@@ -607,7 +607,7 @@ class CameraZoomSelectionControl: UIView {
         }
     }
 
-    required init(availableCameras: [(cameraType: CameraCaptureSession.CameraType, defaultZoomFactor: CGFloat)]) {
+    init(availableCameras: [(cameraType: CameraCaptureSession.CameraType, defaultZoomFactor: CGFloat)]) {
         owsAssertDebug(!availableCameras.isEmpty, "availableCameras must not be empty.")
 
         self.availableCameras = availableCameras.map { $0.cameraType }
@@ -700,7 +700,7 @@ class CameraZoomSelectionControl: UIView {
             return label
         }()
 
-        required init(camera: CameraCaptureSession.CameraType, defaultZoomFactor: CGFloat) {
+        init(camera: CameraCaptureSession.CameraType, defaultZoomFactor: CGFloat) {
             self.camera = camera
             self.defaultZoomFactor = defaultZoomFactor
             self.currentZoomFactor = defaultZoomFactor
@@ -1121,7 +1121,7 @@ class FlashModeButton: RoundMediaButton {
 
     private var flashMode: AVCaptureDevice.FlashMode = .auto
 
-    required init() {
+    init() {
         super.init(image: FlashModeButton.flashAuto, backgroundStyle: .blur, customView: nil)
     }
 
@@ -1191,7 +1191,7 @@ class CaptureModeButton: RoundMediaButton {
 
 class MediaPickerThumbnailButton: UIButton {
 
-    required init() {
+    init() {
         let buttonSize = MediaPickerThumbnailButton.visibleSize + 2*MediaPickerThumbnailButton.contentMargin
         super.init(frame: CGRect(origin: .zero, size: .square(buttonSize)))
     }

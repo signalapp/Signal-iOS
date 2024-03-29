@@ -50,10 +50,6 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         minimizedHeight = CurrentAppContext().frame.height * 0.6
     }
 
-    public required init() {
-        fatalError("init() has not been implemented")
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 

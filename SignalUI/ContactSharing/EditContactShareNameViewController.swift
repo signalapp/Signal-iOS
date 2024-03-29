@@ -29,7 +29,7 @@ private class ContactNameFieldView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    required init(name: String, value: String?, delegate: ContactNameFieldViewDelegate) {
+    init(name: String, value: String?, delegate: ContactNameFieldViewDelegate) {
         self.name = name
         self.delegate = delegate
 
@@ -110,7 +110,7 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
 
     // MARK: Initializers
 
-    required public init(contactShareDraft: ContactShareDraft, delegate: EditContactShareNameViewControllerDelegate) {
+    public init(contactShareDraft: ContactShareDraft, delegate: EditContactShareNameViewControllerDelegate) {
         self.contactShareDraft = contactShareDraft
         self.editingDelegate = delegate
 

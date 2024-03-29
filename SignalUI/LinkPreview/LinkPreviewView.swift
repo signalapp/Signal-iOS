@@ -27,11 +27,6 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @available(*, unavailable, message: "use other constructor instead.")
-    required init(name: String, arrangedSubviews: [UIView] = []) {
-        fatalError("init(name:arrangedSubviews:) has not been implemented")
-    }
-
     private var state: LinkPreviewState?
     private var configurationSize: CGSize?
     private var shouldReconfigureForBounds = false

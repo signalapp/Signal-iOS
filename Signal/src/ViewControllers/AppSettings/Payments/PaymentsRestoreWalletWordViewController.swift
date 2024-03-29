@@ -32,9 +32,9 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
 
     private let warningLabel = UILabel()
 
-    public required init(restoreWalletDelegate: PaymentsRestoreWalletDelegate,
-                         partialPassphrase: PartialPaymentsPassphrase,
-                         wordIndex: Int) {
+    public init(restoreWalletDelegate: PaymentsRestoreWalletDelegate,
+                partialPassphrase: PartialPaymentsPassphrase,
+                wordIndex: Int) {
         self.restoreWalletDelegate = restoreWalletDelegate
         self.partialPassphrase = partialPassphrase
         self.wordIndex = wordIndex

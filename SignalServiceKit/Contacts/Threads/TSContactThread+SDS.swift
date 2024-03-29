@@ -51,7 +51,7 @@ public extension TSContactThread {
 class TSContactThreadSerializer: SDSSerializer {
 
     private let model: TSContactThread
-    public required init(model: TSContactThread) {
+    public init(model: TSContactThread) {
         self.model = model
     }
 

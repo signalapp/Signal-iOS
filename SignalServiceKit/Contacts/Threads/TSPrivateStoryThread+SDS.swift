@@ -51,7 +51,7 @@ public extension TSPrivateStoryThread {
 class TSPrivateStoryThreadSerializer: SDSSerializer {
 
     private let model: TSPrivateStoryThread
-    public required init(model: TSPrivateStoryThread) {
+    public init(model: TSPrivateStoryThread) {
         self.model = model
     }
 

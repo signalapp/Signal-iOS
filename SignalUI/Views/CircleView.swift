@@ -12,11 +12,11 @@ public class CircleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public required init() {
+    public init() {
         super.init(frame: .zero)
     }
 
-    public required init(diameter: CGFloat) {
+    public init(diameter: CGFloat) {
         super.init(frame: .zero)
 
         autoSetDimensions(to: CGSize(square: diameter))
@@ -51,7 +51,7 @@ public class CircleBlurView: UIVisualEffectView {
         frame = .zero
     }
 
-    public required init(effect: UIVisualEffect, diameter: CGFloat) {
+    public init(effect: UIVisualEffect, diameter: CGFloat) {
         super.init(effect: effect)
         frame = .zero
 

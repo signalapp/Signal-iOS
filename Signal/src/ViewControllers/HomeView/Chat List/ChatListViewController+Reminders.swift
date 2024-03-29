@@ -25,7 +25,7 @@ public class CLVReminderViews: Dependencies {
 
     public weak var chatListViewController: ChatListViewController?
 
-    required init() {
+    init() {
         AssertIsOnMainThread()
 
         reminderStackView.axis = .vertical

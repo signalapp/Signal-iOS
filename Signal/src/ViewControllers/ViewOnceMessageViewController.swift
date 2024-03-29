@@ -39,7 +39,7 @@ class ViewOnceMessageViewController: OWSViewController {
 
     // MARK: - Initializers
 
-    required init(content: Content) {
+    init(content: Content) {
         self.content = content
 
         super.init()

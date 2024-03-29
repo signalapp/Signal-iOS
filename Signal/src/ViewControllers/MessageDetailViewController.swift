@@ -114,7 +114,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     // MARK: Initializers
 
-    required init(
+    init(
         message: TSMessage,
         spoilerState: SpoilerRenderState,
         editManager: EditManager,
@@ -1278,7 +1278,7 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
     weak var percentDrivenTransition: UIPercentDrivenInteractiveTransition?
 
     let operation: UINavigationController.Operation
-    required init(operation: UINavigationController.Operation) {
+    init(operation: UINavigationController.Operation) {
         self.operation = operation
         super.init()
     }

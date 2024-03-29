@@ -19,7 +19,7 @@ class GifPickerNavigationViewController: OWSNavigationController {
         return gifPickerViewController
     }()
 
-    required init(initialMessageBody: MessageBody?) {
+    init(initialMessageBody: MessageBody?) {
         self.initialMessageBody = initialMessageBody
         super.init()
         pushViewController(gifPickerViewController, animated: false)
@@ -134,7 +134,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: Initializers
 
-    required override init() {
+    override init() {
         self.searchBar = OWSSearchBar()
         self.layout = GifPickerLayout()
         self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.layout)

@@ -268,7 +268,7 @@ public extension GroupsV2Impl {
 
         private let account: AuthedAccount
 
-        required init(account: AuthedAccount) {
+        init(account: AuthedAccount) {
             self.account = account
             super.init()
         }

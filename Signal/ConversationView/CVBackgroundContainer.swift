@@ -33,11 +33,6 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
         self.layer.zPosition = -1
     }
 
-    @available(*, unavailable, message: "use other constructor instead.")
-    public required init(name: String) {
-        fatalError("init(name:) has not been implemented")
-    }
-
     public func set(wallpaperView: WallpaperView?) {
         self.wallpaperView?.contentView?.removeFromSuperview()
         self.wallpaperView?.dimmingView?.removeFromSuperview()

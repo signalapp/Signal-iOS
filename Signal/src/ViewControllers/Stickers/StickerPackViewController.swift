@@ -18,7 +18,7 @@ public class StickerPackViewController: OWSViewController {
 
     // MARK: Initializers
 
-    public required init(stickerPackInfo: StickerPackInfo) {
+    public init(stickerPackInfo: StickerPackInfo) {
         self.stickerPackInfo = stickerPackInfo
         self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo,
                                                          shouldDownloadAllStickers: true)

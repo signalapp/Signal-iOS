@@ -36,9 +36,9 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
     private let rootView = UIStackView()
 
-    public required init(passphrase: PaymentsPassphrase,
-                         style: Style,
-                         viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {
+    public init(passphrase: PaymentsPassphrase,
+                style: Style,
+                viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {
         self.passphrase = passphrase
         self.style = style
         self.viewPassphraseDelegate = viewPassphraseDelegate

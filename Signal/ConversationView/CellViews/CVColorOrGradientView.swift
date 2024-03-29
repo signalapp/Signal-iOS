@@ -50,10 +50,6 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         maskLayer.disableAnimationsWithDelegate()
     }
 
-    required init(name: String) {
-        fatalError("init(name:) has not been implemented")
-    }
-
     private func addDefaultLayoutBlock() {
         addLayoutBlock { view in
             guard let view = view as? CVColorOrGradientView else { return }

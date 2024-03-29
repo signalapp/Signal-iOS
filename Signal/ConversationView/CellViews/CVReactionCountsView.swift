@@ -38,13 +38,8 @@ class CVReactionCountsView: ManualStackView {
     private let pill2 = PillView(pillKey: CVReactionCountsView.pillKey2)
     private let pill3 = PillView(pillKey: CVReactionCountsView.pillKey3)
 
-    required init() {
+    init() {
         super.init(name: "reaction counts")
-    }
-
-    @available(swift, obsoleted: 1.0)
-    required init(name: String, arrangedSubviews: [UIView] = []) {
-        super.init(name: name, arrangedSubviews: arrangedSubviews)
     }
 
     static var stackConfig: CVStackViewConfig {
@@ -174,21 +169,13 @@ class CVReactionCountsView: ManualStackView {
 
         private static let pillBorderWidth: CGFloat = 1
 
-        required init(pillKey: String) {
+        init(pillKey: String) {
             self.pillKey = pillKey
 
             super.init(name: pillKey)
 
             emojiLabel.clipsToBounds = true
             clipsToBounds = true
-        }
-
-        required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-
-        required init(name: String, arrangedSubviews: [UIView] = []) {
-            fatalError("init(name:arrangedSubviews:) has not been implemented")
         }
 
         static var stackConfig: CVStackViewConfig {

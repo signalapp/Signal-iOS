@@ -13,7 +13,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
     let selectItemsInParent: (([StoryConversationItem]) -> Void)?
     var allowsReplies = true
 
-    required init(recipientSet: OrderedSet<PickedRecipient>, selectItemsInParent: (([StoryConversationItem]) -> Void)? = nil) {
+    init(recipientSet: OrderedSet<PickedRecipient>, selectItemsInParent: (([StoryConversationItem]) -> Void)? = nil) {
         self.recipientSet = recipientSet
         self.selectItemsInParent = selectItemsInParent
 

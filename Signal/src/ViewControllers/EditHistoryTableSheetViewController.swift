@@ -41,10 +41,6 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         database.appendDatabaseChangeDelegate(self)
     }
 
-    required init() {
-        fatalError("init() has not been implemented")
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         do {

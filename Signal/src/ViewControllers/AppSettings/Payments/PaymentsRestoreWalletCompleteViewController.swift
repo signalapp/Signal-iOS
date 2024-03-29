@@ -19,8 +19,8 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         set {}
     }
 
-    public required init(restoreWalletDelegate: PaymentsRestoreWalletDelegate,
-                         passphrase: PaymentsPassphrase) {
+    public init(restoreWalletDelegate: PaymentsRestoreWalletDelegate,
+                passphrase: PaymentsPassphrase) {
         self.passphrase = passphrase
         self.restoreWalletDelegate = restoreWalletDelegate
 

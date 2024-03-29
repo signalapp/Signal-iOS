@@ -26,7 +26,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         return !addressValue.isEmpty
     }
 
-    public required init(transferAmount: TSPaymentAmount?) {
+    public init(transferAmount: TSPaymentAmount?) {
         self.transferAmount = transferAmount
     }
 

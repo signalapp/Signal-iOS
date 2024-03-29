@@ -586,7 +586,7 @@ public extension OWSRecipientIdentity {
 class OWSRecipientIdentitySerializer: SDSSerializer {
 
     private let model: OWSRecipientIdentity
-    public required init(model: OWSRecipientIdentity) {
+    public init(model: OWSRecipientIdentity) {
         self.model = model
     }
 

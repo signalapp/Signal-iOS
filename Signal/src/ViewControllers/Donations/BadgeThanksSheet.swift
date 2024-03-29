@@ -146,7 +146,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     /// - Parameter oldBadgesSnapshot: A snapshot of the user's badges before
     /// `newBadge` was redeemed. You can capture this value by calling
     /// ``ProfileBadgesSnapshot/current()``.
-    required init(
+    init(
         newBadge badge: ProfileBadge,
         thanksType: ThanksType,
         oldBadgesSnapshot: ProfileBadgesSnapshot
@@ -166,10 +166,6 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         super.init()
 
         updateTableContents()
-    }
-
-    public required init() {
-        fatalError("init() has not been implemented")
     }
 
     override func willDismissInteractively() {

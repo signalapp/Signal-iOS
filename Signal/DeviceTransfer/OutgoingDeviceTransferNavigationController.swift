@@ -8,7 +8,7 @@ import SignalUI
 
 class OutgoingDeviceTransferNavigationController: UINavigationController {
 
-    required init() {
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
 

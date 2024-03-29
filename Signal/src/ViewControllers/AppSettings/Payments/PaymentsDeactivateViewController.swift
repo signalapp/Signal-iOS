@@ -10,7 +10,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
 
     var paymentBalance: PaymentBalance
 
-    public required init(paymentBalance: PaymentBalance) {
+    public init(paymentBalance: PaymentBalance) {
         owsAssertDebug(paymentBalance.amount.isValidAmount(canBeEmpty: false))
 
         self.paymentBalance = paymentBalance

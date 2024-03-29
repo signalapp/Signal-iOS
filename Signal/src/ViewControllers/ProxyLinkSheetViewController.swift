@@ -15,10 +15,6 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
         super.init()
     }
 
-    required init() {
-        fatalError("init() has not been implemented")
-    }
-
     override func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }

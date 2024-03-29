@@ -61,11 +61,6 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         self.imageView.image = Constants.image?.asTintedImage(color: textColor)
     }
 
-    @available(swift, obsoleted: 1.0)
-    required init(name: String) {
-        owsFail("Do not use this initializer.")
-    }
-
     // MARK: - Animating Changes
 
     private var isVisible: Bool = false {

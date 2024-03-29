@@ -599,7 +599,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             outerStack
         }
 
-        override required init() {
+        override init() {
             timestampLabel.textAlignment = .trailing
         }
 

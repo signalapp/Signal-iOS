@@ -558,11 +558,6 @@ private class SpectrumSlider: ManualLayoutView {
         createSubviews()
     }
 
-    @available(swift, obsoleted: 1.0)
-    required init(name: String) {
-        owsFail("Do not use this initializer.")
-    }
-
     private static let knobDiameter: CGFloat = 28
     private static let knobShadowRadius: CGFloat = 4
     private static let spectrumImageDiameter: CGFloat = 24

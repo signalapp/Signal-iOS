@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 import SignalCoreKit
 
-public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertible {
+public final class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertible {
     public enum DatabaseCorruptionStatus: Int, Codable, CustomStringConvertible {
         // We used to store these as booleans, so the value is important.
         case notCorrupted = 0
@@ -39,7 +39,7 @@ public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertibl
     public let status: DatabaseCorruptionStatus
     public let count: UInt
 
-    required init(status: DatabaseCorruptionStatus, count: UInt) {
+    init(status: DatabaseCorruptionStatus, count: UInt) {
         self.status = status
         self.count = count
     }

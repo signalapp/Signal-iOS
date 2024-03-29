@@ -25,7 +25,7 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
         searchBar.text?.ows_stripped()
     }
 
-    public required init(dataSource: DataSourceType, completion: @escaping (Currency.Code) -> Void) {
+    public init(dataSource: DataSourceType, completion: @escaping (Currency.Code) -> Void) {
         self.dataSource = dataSource
         self.completion = completion
         super.init()

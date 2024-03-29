@@ -616,7 +616,7 @@ private class RegistrationVerificationHelpSheetViewController: InteractiveSheetV
 
     private var intrinsicSizeObservation: NSKeyValueObservation?
 
-    public required init() {
+    public init() {
         super.init()
 
         scrollView.bounces = false

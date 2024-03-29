@@ -15,7 +15,7 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: ContactShareFiel
 
     let value: ContactFieldType
 
-    required init(_ value: ContactFieldType) {
+    init(_ value: ContactFieldType) {
         self.value = value
     }
 
@@ -78,11 +78,7 @@ class OWSContactAvatar: NSObject, OWSContactField {
     let avatarData: Data
     let existingAttachment: ReferencedTSResource?
 
-    required init(
-        avatarImage: UIImage,
-        avatarData: Data,
-        existingAttachment: ReferencedTSResource?
-    ) {
+    init(avatarImage: UIImage, avatarData: Data, existingAttachment: ReferencedTSResource?) {
         self.avatarImage = avatarImage
         self.avatarData = avatarData
         self.existingAttachment = existingAttachment

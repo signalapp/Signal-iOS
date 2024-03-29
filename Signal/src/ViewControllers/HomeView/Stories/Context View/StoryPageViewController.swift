@@ -61,7 +61,7 @@ class StoryPageViewController: UIPageViewController {
 
     // MARK: - Init
 
-    required init(
+    init(
         context: StoryContext,
         spoilerState: SpoilerRenderState,
         viewableContexts: [StoryContext]? = nil,

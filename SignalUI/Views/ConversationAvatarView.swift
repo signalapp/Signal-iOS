@@ -42,7 +42,7 @@ public extension ConversationAvatarViewDelegate {
 
 public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
-    public required init(
+    public init(
         sizeClass: Configuration.SizeClass = .customDiameter(0),
         localUserDisplayMode: LocalUserDisplayMode,
         badged: Bool = true,

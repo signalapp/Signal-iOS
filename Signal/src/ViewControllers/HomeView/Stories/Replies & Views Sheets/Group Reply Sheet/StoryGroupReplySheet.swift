@@ -25,10 +25,6 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
         self.allowsExpansion = true
     }
 
-    public required init() {
-        fatalError("init() has not been implemented")
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 

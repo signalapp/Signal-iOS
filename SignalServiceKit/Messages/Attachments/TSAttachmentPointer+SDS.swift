@@ -51,7 +51,7 @@ public extension TSAttachmentPointer {
 class TSAttachmentPointerSerializer: SDSSerializer {
 
     private let model: TSAttachmentPointer
-    public required init(model: TSAttachmentPointer) {
+    public init(model: TSAttachmentPointer) {
         self.model = model
     }
 

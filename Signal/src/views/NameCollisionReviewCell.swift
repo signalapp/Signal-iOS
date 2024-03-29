@@ -57,7 +57,7 @@ extension NameCollision {
     }
 }
 
-class NameCollisionCell: UITableViewCell {
+final class NameCollisionCell: UITableViewCell {
     let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser)
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -87,7 +87,7 @@ class NameCollisionCell: UITableViewCell {
         return stackView
     }()
 
-    required override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         let horizontalStack = UIStackView(arrangedSubviews: [

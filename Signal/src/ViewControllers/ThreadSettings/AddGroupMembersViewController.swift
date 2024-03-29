@@ -22,7 +22,7 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
 
     private var newRecipientSet = OrderedSet<PickedRecipient>()
 
-    public required init(groupThread: TSGroupThread) {
+    public init(groupThread: TSGroupThread) {
         owsAssertDebug(groupThread.isGroupV2Thread, "Can't add members to v1 threads.")
 
         self.groupThread = groupThread

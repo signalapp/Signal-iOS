@@ -25,7 +25,7 @@ public class CVAvatarBuilder: Dependencies {
     // TODO: Badges — Key off of avatar size? Badge size? Clear on badge update
     private var cache = [String: ConversationAvatarDataSource]()
 
-    required init(transaction: SDSAnyReadTransaction) {
+    init(transaction: SDSAnyReadTransaction) {
         self.transaction = transaction
     }
 

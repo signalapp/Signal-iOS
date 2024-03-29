@@ -55,10 +55,6 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         super.allowsExpansion = true
     }
 
-    public required init() {
-        fatalError("init() has not been implemented")
-    }
-
     override func willDismissInteractively() {
         super.willDismissInteractively()
         completionHandler(nil)

@@ -31,7 +31,7 @@ class MentionPicker: UIView {
     let style: Style
     let selectedAddressCallback: (SignalServiceAddress) -> Void
 
-    required init(
+    init(
         mentionableAddresses: [SignalServiceAddress],
         style: Style,
         selectedAddressCallback: @escaping (SignalServiceAddress) -> Void

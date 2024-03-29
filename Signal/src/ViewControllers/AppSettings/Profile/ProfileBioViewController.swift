@@ -40,9 +40,9 @@ class ProfileBioViewController: OWSTableViewController2 {
     private let originalBio: String?
     private let originalBioEmoji: String?
 
-    required init(bio: String?,
-                  bioEmoji: String?,
-                  profileDelegate: ProfileBioViewControllerDelegate) {
+    init(bio: String?,
+         bioEmoji: String?,
+         profileDelegate: ProfileBioViewControllerDelegate) {
 
         self.originalBio = bio
         self.originalBioEmoji = bioEmoji

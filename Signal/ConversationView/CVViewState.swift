@@ -153,7 +153,7 @@ public class CVViewState: NSObject {
 
     // MARK: - 
 
-    public required init(
+    public init(
         threadUniqueId: String,
         conversationStyle: ConversationStyle,
         didAlreadyShowGroupCallTooltipEnoughTimes: Bool,
@@ -389,7 +389,7 @@ struct CVCoreState {
 public class CVTextExpansion {
     private var expandedTextInteractionsIds = Set<String>()
 
-    required init(expandedTextInteractionsIds: Set<String>? = nil) {
+    init(expandedTextInteractionsIds: Set<String>? = nil) {
         if let expandedTextInteractionsIds = expandedTextInteractionsIds {
             self.expandedTextInteractionsIds = expandedTextInteractionsIds
         }
@@ -421,7 +421,7 @@ public class CVMessageSwipeActionState {
     public typealias ProgressMap = [String: Progress]
     private var progressMap = ProgressMap()
 
-    required init(progressMap: ProgressMap? = nil) {
+    init(progressMap: ProgressMap? = nil) {
         if let progressMap = progressMap {
             self.progressMap = progressMap
         }

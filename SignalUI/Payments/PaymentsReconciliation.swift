@@ -11,7 +11,7 @@ public class PaymentsReconciliation: Dependencies {
 
     private var refreshEvent: RefreshEvent?
 
-    public required init() {
+    public init() {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             // Note: this isn't how often we perform reconciliation, it's how often we
             // check whether we should perform reconciliation.

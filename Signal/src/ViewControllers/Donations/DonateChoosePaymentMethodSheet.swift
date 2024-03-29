@@ -91,10 +91,6 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         super.init()
     }
 
-    required init() {
-        owsFail("init() has not been implemented")
-    }
-
     // MARK: - Updating table contents
 
     public override func updateTableContents(shouldReload: Bool = true) {

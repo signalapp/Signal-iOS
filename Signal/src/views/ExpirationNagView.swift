@@ -15,7 +15,7 @@ public class ExpirationNagView: ReminderView {
     // This default value may be quickly overwritten.
     var urlToOpen: URL = .appStoreUrl
 
-    required init(
+    init(
         dateProvider: @escaping DateProvider,
         appExpiry: AppExpiry,
         osExpiry: OsExpiry,

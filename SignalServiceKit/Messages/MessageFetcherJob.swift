@@ -479,7 +479,7 @@ private class MessageFetchOperation: OWSOperation {
     let promise: Promise<Void>
     let future: Future<Void>
 
-    override required init() {
+    override init() {
         let (promise, future) = Promise<Void>.pending()
         self.promise = promise
         self.future = future
@@ -547,7 +547,7 @@ private class MessageAckOperation: OWSOperation {
         }
     }
 
-    fileprivate required init?(envelopeInfo: EnvelopeInfo, pendingAcks: PendingTasks) {
+    fileprivate init?(envelopeInfo: EnvelopeInfo, pendingAcks: PendingTasks) {
 
         let inFlightAckId = Self.inFlightAckId(forEnvelopeInfo: envelopeInfo)
         self.inFlightAckId = inFlightAckId

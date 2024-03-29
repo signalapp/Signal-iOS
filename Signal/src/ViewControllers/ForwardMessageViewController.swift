@@ -56,10 +56,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         minimizedHeight = 576
     }
 
-    required init() {
-        fatalError("init() has not been implemented")
-    }
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

@@ -63,7 +63,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
     private var isConfigured = false
 
-    public required init(mode: Mode) {
+    public init(mode: Mode) {
         self.mode = mode
 
         super.init(frame: .zero)

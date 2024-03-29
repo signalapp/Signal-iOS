@@ -11,7 +11,7 @@ import SignalCoreKit
 public class ViewOnceMessages: NSObject {
 
     @objc
-    public required override init() {
+    public override init() {
         super.init()
 
         if CurrentAppContext().isMainApp {

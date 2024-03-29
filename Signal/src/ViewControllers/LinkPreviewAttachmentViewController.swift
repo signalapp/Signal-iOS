@@ -17,7 +17,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     private let linkPreviewFetcher: LinkPreviewFetcher
 
-    init(_ linkPreview: OWSLinkPreviewDraft?) {
+    init(_ linkPreview: OWSLinkPreviewDraft? = nil) {
         self.linkPreviewFetcher = LinkPreviewFetcher(
             db: DependenciesBridge.shared.db,
             linkPreviewManager: DependenciesBridge.shared.linkPreviewManager,
@@ -27,10 +27,6 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         )
         super.init()
         self.linkPreviewFetcher.onStateChange = { [weak self] in self?.updateLinkPreview(animated: true) }
-    }
-
-    convenience required init() {
-        self.init(nil)
     }
 
     private let linkPreviewPanel = LinkPreviewPanel()

@@ -14,10 +14,10 @@ public class OWSError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDe
     private let customIsRetryable: Bool
     private var customUserInfo: [String: Any]?
 
-    public required init(errorCode: Int,
-                         description customLocalizedDescription: String,
-                         isRetryable customIsRetryable: Bool,
-                         userInfo customUserInfo: [String: Any]? = nil) {
+    public init(errorCode: Int,
+                description customLocalizedDescription: String,
+                isRetryable customIsRetryable: Bool,
+                userInfo customUserInfo: [String: Any]? = nil) {
         self.errorCode = errorCode
         self.customLocalizedDescription = customLocalizedDescription
         self.customIsRetryable = customIsRetryable
@@ -35,10 +35,10 @@ public class OWSError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDe
                  isRetryable: customIsRetryable) as Error as NSError
     }
 
-    public required init(error: OWSErrorCode,
-                         description customLocalizedDescription: String,
-                         isRetryable customIsRetryable: Bool,
-                         userInfo customUserInfo: [String: Any]? = nil) {
+    public init(error: OWSErrorCode,
+                description customLocalizedDescription: String,
+                isRetryable customIsRetryable: Bool,
+                userInfo customUserInfo: [String: Any]? = nil) {
         self.errorCode = error.rawValue
         self.customLocalizedDescription = customLocalizedDescription
         self.customIsRetryable = customIsRetryable

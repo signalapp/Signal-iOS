@@ -51,7 +51,7 @@ public extension OWSAddToProfileWhitelistOfferMessage {
 class OWSAddToProfileWhitelistOfferMessageSerializer: SDSSerializer {
 
     private let model: OWSAddToProfileWhitelistOfferMessage
-    public required init(model: OWSAddToProfileWhitelistOfferMessage) {
+    public init(model: OWSAddToProfileWhitelistOfferMessage) {
         self.model = model
     }
 

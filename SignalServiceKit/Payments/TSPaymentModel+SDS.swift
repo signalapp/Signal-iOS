@@ -692,7 +692,7 @@ public extension TSPaymentModel {
 class TSPaymentModelSerializer: SDSSerializer {
 
     private let model: TSPaymentModel
-    public required init(model: TSPaymentModel) {
+    public init(model: TSPaymentModel) {
         self.model = model
     }
 

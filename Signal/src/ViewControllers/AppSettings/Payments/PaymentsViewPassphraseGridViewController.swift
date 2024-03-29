@@ -19,8 +19,8 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         set {}
     }
 
-    public required init(passphrase: PaymentsPassphrase,
-                         viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {
+    public init(passphrase: PaymentsPassphrase,
+                viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {
         self.passphrase = passphrase
         self.viewPassphraseDelegate = viewPassphraseDelegate
 

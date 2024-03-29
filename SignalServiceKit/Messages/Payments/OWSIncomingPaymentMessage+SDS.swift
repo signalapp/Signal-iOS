@@ -51,7 +51,7 @@ public extension OWSIncomingPaymentMessage {
 class OWSIncomingPaymentMessageSerializer: SDSSerializer {
 
     private let model: OWSIncomingPaymentMessage
-    public required init(model: OWSIncomingPaymentMessage) {
+    public init(model: OWSIncomingPaymentMessage) {
         self.model = model
     }
 

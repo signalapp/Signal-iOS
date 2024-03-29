@@ -29,10 +29,6 @@ class StoryInfoSheet: OWSTableSheetViewController {
         tableViewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
     }
 
-    required init() {
-        fatalError("init() has not been implemented")
-    }
-
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag) { [dismissHandler] in
             completion?()

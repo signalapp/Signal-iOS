@@ -69,7 +69,7 @@ public class ReadyFlag: NSObject {
     private var didBecomeReadyAsyncTasks = [ReadyTask]()
 
     @objc
-    public required init(name: String) {
+    public init(name: String) {
         self.name = name
     }
 

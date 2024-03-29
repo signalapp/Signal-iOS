@@ -68,7 +68,7 @@ public class ConversationHeaderView: UIView {
         sizeClass: avatarSizeClass,
         localUserDisplayMode: .noteToSelf)
 
-    public required init() {
+    public init() {
         titleLabel = UILabel()
         titleLabel.textColor = Theme.navbarTitleColor
         titleLabel.lineBreakMode = .byTruncatingTail
@@ -131,10 +131,6 @@ public class ConversationHeaderView: UIView {
 
     required public init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    required public override init(frame: CGRect) {
-        fatalError("init(frame:) has not been implemented")
     }
 
     public func configure(threadViewModel: ThreadViewModel) {

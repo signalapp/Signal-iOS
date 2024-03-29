@@ -79,7 +79,7 @@ public class StickerPackCollectionView: UICollectionView {
     private let headerReuseIdentifier = StickerPickerHeaderView.reuseIdentifier
     private let placeholderColor: UIColor
 
-    public required init(placeholderColor: UIColor = .ows_gray45) {
+    public init(placeholderColor: UIColor = .ows_gray45) {
         self.placeholderColor = placeholderColor
 
         super.init(frame: .zero, collectionViewLayout: StickerPackCollectionView.buildLayout())

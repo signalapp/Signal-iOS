@@ -21,7 +21,7 @@ class AnimatedProgressView: UIView {
     private let errorAnimation = AnimationView(name: "pinCreationFail")
     private let successAnimation = AnimationView(name: "pinCreationSuccess")
 
-    required init(loadingText: String? = nil) {
+    init(loadingText: String? = nil) {
         super.init(frame: .zero)
 
         let animationContainer = UIView()

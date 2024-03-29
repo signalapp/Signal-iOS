@@ -34,14 +34,10 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
     private let focusedBadge: ProfileBadge
 
     // TODO: support initializing with a list of available badges and paging between them
-    required init(focusedBadge: ProfileBadge, owner: Owner) {
+    init(focusedBadge: ProfileBadge, owner: Owner) {
         self.focusedBadge = focusedBadge
         self.owner = owner
         super.init()
-    }
-
-    public required init() {
-        fatalError("init() has not been implemented")
     }
 
     // MARK: -

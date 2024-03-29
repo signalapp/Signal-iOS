@@ -126,7 +126,7 @@ public class DatabaseChangeObserver: NSObject {
         }
     }
 
-    required override init() {
+    override init() {
         super.init()
 
         NotificationCenter.default.addObserver(self,

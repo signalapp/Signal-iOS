@@ -228,7 +228,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     fileprivate let promise: Promise<Void>
     private let future: Future<Void>
 
-    internal required init(groupId: Data) {
+    internal init(groupId: Data) {
         self.groupId = groupId
 
         let (promise, future) = Promise<Void>.pending()

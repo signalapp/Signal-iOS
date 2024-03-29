@@ -18,9 +18,9 @@ class PhotoAlbumPickerViewController: OWSTableViewController, OWSNavigationChild
     private let library: PhotoLibrary
     private let folder: PhotoCollectionFolder?
 
-    required init(library: PhotoLibrary,
-                  collectionDelegate: PhotoAlbumPickerDelegate,
-                  folder: PhotoCollectionFolder? = nil) {
+    init(library: PhotoLibrary,
+         collectionDelegate: PhotoAlbumPickerDelegate,
+         folder: PhotoCollectionFolder? = nil) {
         self.library = library
         self.collectionDelegate = collectionDelegate
         self.folder = folder

@@ -16,7 +16,7 @@ public protocol MobileCoinHelper: AnyObject {
 public class MobileCoinReceiptInfo: NSObject {
     public let txOutPublicKey: Data
 
-    public required init(txOutPublicKey: Data) {
+    public init(txOutPublicKey: Data) {
         self.txOutPublicKey = txOutPublicKey
     }
 }

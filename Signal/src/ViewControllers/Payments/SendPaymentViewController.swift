@@ -112,7 +112,7 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
-    public required init(
+    public init(
         recipient: SendPaymentRecipient,
         initialPaymentAmount: TSPaymentAmount?,
         isOutgoingTransfer: Bool,

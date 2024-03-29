@@ -51,7 +51,7 @@ public extension TSAttachmentStream {
 class TSAttachmentStreamSerializer: SDSSerializer {
 
     private let model: TSAttachmentStream
-    public required init(model: TSAttachmentStream) {
+    public init(model: TSAttachmentStream) {
         self.model = model
     }
 

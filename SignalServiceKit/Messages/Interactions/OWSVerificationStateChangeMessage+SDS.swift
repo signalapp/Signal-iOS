@@ -51,7 +51,7 @@ public extension OWSVerificationStateChangeMessage {
 class OWSVerificationStateChangeMessageSerializer: SDSSerializer {
 
     private let model: OWSVerificationStateChangeMessage
-    public required init(model: OWSVerificationStateChangeMessage) {
+    public init(model: OWSVerificationStateChangeMessage) {
         self.model = model
     }
 

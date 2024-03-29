@@ -373,7 +373,7 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
         delegate?.audioPlaybackDidFinish(self)
     }
 
-    public required init?(attachment: AudioAttachment) {
+    public init?(attachment: AudioAttachment) {
         AssertIsOnMainThread()
 
         guard let attachmentStream = attachment.attachmentStream else {

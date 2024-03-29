@@ -90,8 +90,8 @@ public class ReusableMediaView: NSObject {
 
     // MARK: - Initializers
 
-    public required init(mediaViewAdapter: MediaViewAdapter,
-                         mediaCache: CVMediaCache) {
+    public init(mediaViewAdapter: MediaViewAdapter,
+                mediaCache: CVMediaCache) {
         self.mediaViewAdapter = mediaViewAdapter as! MediaViewAdapterSwift
         self.mediaCache = mediaCache
     }

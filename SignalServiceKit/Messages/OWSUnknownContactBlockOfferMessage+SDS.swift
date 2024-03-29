@@ -51,7 +51,7 @@ public extension OWSUnknownContactBlockOfferMessage {
 class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
 
     private let model: OWSUnknownContactBlockOfferMessage
-    public required init(model: OWSUnknownContactBlockOfferMessage) {
+    public init(model: OWSUnknownContactBlockOfferMessage) {
         self.model = model
     }
 

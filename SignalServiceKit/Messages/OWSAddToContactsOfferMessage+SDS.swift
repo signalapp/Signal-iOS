@@ -51,7 +51,7 @@ public extension OWSAddToContactsOfferMessage {
 class OWSAddToContactsOfferMessageSerializer: SDSSerializer {
 
     private let model: OWSAddToContactsOfferMessage
-    public required init(model: OWSAddToContactsOfferMessage) {
+    public init(model: OWSAddToContactsOfferMessage) {
         self.model = model
     }
 

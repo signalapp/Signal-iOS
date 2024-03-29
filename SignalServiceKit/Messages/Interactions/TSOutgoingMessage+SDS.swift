@@ -51,7 +51,7 @@ public extension TSOutgoingMessage {
 class TSOutgoingMessageSerializer: SDSSerializer {
 
     private let model: TSOutgoingMessage
-    public required init(model: TSOutgoingMessage) {
+    public init(model: TSOutgoingMessage) {
         self.model = model
     }
 

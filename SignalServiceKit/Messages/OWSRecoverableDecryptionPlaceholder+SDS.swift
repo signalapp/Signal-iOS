@@ -51,7 +51,7 @@ public extension OWSRecoverableDecryptionPlaceholder {
 class OWSRecoverableDecryptionPlaceholderSerializer: SDSSerializer {
 
     private let model: OWSRecoverableDecryptionPlaceholder
-    public required init(model: OWSRecoverableDecryptionPlaceholder) {
+    public init(model: OWSRecoverableDecryptionPlaceholder) {
         self.model = model
     }
 

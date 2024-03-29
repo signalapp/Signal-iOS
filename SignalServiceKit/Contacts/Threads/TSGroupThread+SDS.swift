@@ -51,7 +51,7 @@ public extension TSGroupThread {
 class TSGroupThreadSerializer: SDSSerializer {
 
     private let model: TSGroupThread
-    public required init(model: TSGroupThread) {
+    public init(model: TSGroupThread) {
         self.model = model
     }
 

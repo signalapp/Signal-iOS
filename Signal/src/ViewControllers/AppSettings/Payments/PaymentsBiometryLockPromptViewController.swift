@@ -23,7 +23,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
 
     private let rootView = UIStackView()
 
-    public required init(biometryType: ValidBiometryType, delegate: PaymentsBiometryLockPromptDelegate?) {
+    public init(biometryType: ValidBiometryType, delegate: PaymentsBiometryLockPromptDelegate?) {
         self.validBiometryType = biometryType
         self.delegate = delegate
 

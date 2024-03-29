@@ -622,7 +622,7 @@ public extension TestModel {
 class TestModelSerializer: SDSSerializer {
 
     private let model: TestModel
-    public required init(model: TestModel) {
+    public init(model: TestModel) {
         self.model = model
     }
 

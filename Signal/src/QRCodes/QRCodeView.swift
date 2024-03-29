@@ -12,7 +12,7 @@ class QRCodeView: UIView {
 
     private let useCircularWrapper: Bool
 
-    public required init(useCircularWrapper: Bool = true) {
+    public init(useCircularWrapper: Bool = true) {
         self.useCircularWrapper = useCircularWrapper
 
         super.init(frame: .zero)

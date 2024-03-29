@@ -130,7 +130,7 @@ private class CropBackgroundView: UIView {
         return view
     }()
 
-    required init(style: Style) {
+    init(style: Style) {
         self.style = style
         super.init(frame: .zero)
         isUserInteractionEnabled = false

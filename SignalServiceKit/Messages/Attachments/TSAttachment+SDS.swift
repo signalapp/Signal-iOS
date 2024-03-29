@@ -968,7 +968,7 @@ public extension TSAttachment {
 class TSAttachmentSerializer: SDSSerializer {
 
     private let model: TSAttachment
-    public required init(model: TSAttachment) {
+    public init(model: TSAttachment) {
         self.model = model
     }
 

@@ -595,7 +595,7 @@ public extension IncomingGroupsV2MessageJob {
 class IncomingGroupsV2MessageJobSerializer: SDSSerializer {
 
     private let model: IncomingGroupsV2MessageJob
-    public required init(model: IncomingGroupsV2MessageJob) {
+    public init(model: IncomingGroupsV2MessageJob) {
         self.model = model
     }
 

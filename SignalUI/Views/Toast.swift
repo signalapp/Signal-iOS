@@ -16,7 +16,7 @@ public class ToastController: NSObject, ToastViewDelegate {
 
     // MARK: Initializers
 
-    required public init(text: String) {
+    public init(text: String) {
         self.toastText = text
         isDismissing = false
 

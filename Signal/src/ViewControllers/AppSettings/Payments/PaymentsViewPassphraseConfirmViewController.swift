@@ -64,8 +64,8 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         correctness.filter { $0 }.count
     }
 
-    public required init(passphrase: PaymentsPassphrase,
-                         viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {
+    public init(passphrase: PaymentsPassphrase,
+                viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {
         self.passphrase = passphrase
         self.viewPassphraseDelegate = viewPassphraseDelegate
         self.wordIndices = Self.buildWordIndices(forPassphrase: passphrase)

@@ -66,7 +66,7 @@ public class CVComponentStateWrapper: NSObject, CVItemViewModel {
 public class CVItemViewModelImpl: CVComponentStateWrapper {
     public let renderItem: CVRenderItem
 
-    public required init(renderItem: CVRenderItem) {
+    public init(renderItem: CVRenderItem) {
         AssertIsOnMainThread()
 
         self.renderItem = renderItem

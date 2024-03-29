@@ -158,7 +158,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     // MARK: - Initializers
 
-    required init(call: SignalCall) {
+    init(call: SignalCall) {
         // TODO: Eventually unify UI for group and individual calls
         owsAssertDebug(call.isIndividualCall)
         self.call = call

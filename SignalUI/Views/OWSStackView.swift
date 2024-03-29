@@ -47,7 +47,7 @@ open class OWSStackView: UIStackView {
 
     public var layoutBlock: LayoutBlock?
 
-    public required init(name: String, arrangedSubviews: [UIView] = []) {
+    public init(name: String, arrangedSubviews: [UIView] = []) {
         super.init(frame: .zero)
 
         for subview in arrangedSubviews {

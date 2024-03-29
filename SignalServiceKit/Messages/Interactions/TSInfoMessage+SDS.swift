@@ -51,7 +51,7 @@ public extension TSInfoMessage {
 class TSInfoMessageSerializer: SDSSerializer {
 
     private let model: TSInfoMessage
-    public required init(model: TSInfoMessage) {
+    public init(model: TSInfoMessage) {
         self.model = model
     }
 

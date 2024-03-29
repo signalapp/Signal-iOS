@@ -17,15 +17,10 @@ final class MessageTimerView: ManualLayoutView {
     private let imageView = CVImageView()
     private var animationTimer: Timer?
 
-    required init() {
+    init() {
         super.init(name: "OWSMessageTimerView")
 
         addSubviewToFillSuperviewEdges(imageView)
-    }
-
-    @available(*, unavailable, message: "use other constructor instead.")
-    required init(name: String) {
-        fatalError("init(name:) has not been implemented")
     }
 
     deinit {

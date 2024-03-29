@@ -29,11 +29,6 @@ class TypingIndicatorView: ManualStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @available(*, unavailable, message: "use other constructor instead.")
-    required init(name: String, arrangedSubviews: [UIView] = []) {
-        fatalError("init(name:arrangedSubviews:) has not been implemented")
-    }
-
     // MARK: - Notifications
 
     @objc

@@ -921,7 +921,7 @@ public class CLVTableView: UITableView {
         (dataSource as? CLVTableDataSource)?.calcRefreshTimer()
     }
 
-    public required init() {
+    public init() {
         super.init(frame: .zero, style: .grouped)
     }
 

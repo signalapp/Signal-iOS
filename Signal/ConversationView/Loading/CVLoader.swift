@@ -16,7 +16,7 @@ public class CVLoader: NSObject {
     private let prevRenderState: CVRenderState
     private let messageLoader: MessageLoader
 
-    required init(
+    init(
         threadUniqueId: String,
         loadRequest: CVLoadRequest,
         viewStateSnapshot: CVViewStateSnapshot,

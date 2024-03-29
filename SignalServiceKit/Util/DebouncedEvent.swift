@@ -133,9 +133,9 @@ private class DebouncedEventFirstOnly: NSObject, DebouncedEvent {
     private let queueBehavior: DebouncedEventQueueBehavior
     private let unfairLock = UnfairLock()
 
-    public required init(maxFrequencySeconds: TimeInterval,
-                         onQueue queueBehavior: DebouncedEventQueueBehavior,
-                         notifyBlock: @escaping () -> Void) {
+    public init(maxFrequencySeconds: TimeInterval,
+                onQueue queueBehavior: DebouncedEventQueueBehavior,
+                notifyBlock: @escaping () -> Void) {
         self.maxFrequencySeconds = maxFrequencySeconds
         self.queueBehavior = queueBehavior
         self.notifyBlock = notifyBlock
@@ -174,9 +174,9 @@ private class DebouncedEventLastOnly: NSObject, DebouncedEvent {
     private let queueBehavior: DebouncedEventQueueBehavior
     private let unfairLock = UnfairLock()
 
-    public required init(maxFrequencySeconds: TimeInterval,
-                         onQueue queueBehavior: DebouncedEventQueueBehavior,
-                         notifyBlock: @escaping () -> Void) {
+    public init(maxFrequencySeconds: TimeInterval,
+                onQueue queueBehavior: DebouncedEventQueueBehavior,
+                notifyBlock: @escaping () -> Void) {
         self.maxFrequencySeconds = maxFrequencySeconds
         self.queueBehavior = queueBehavior
         self.notifyBlock = notifyBlock
@@ -226,9 +226,9 @@ private class DebouncedEventFirstLast: NSObject, DebouncedEvent {
     private let queueBehavior: DebouncedEventQueueBehavior
     private let unfairLock = UnfairLock()
 
-    public required init(maxFrequencySeconds: TimeInterval,
-                         onQueue queueBehavior: DebouncedEventQueueBehavior,
-                         notifyBlock: @escaping () -> Void) {
+    public init(maxFrequencySeconds: TimeInterval,
+                onQueue queueBehavior: DebouncedEventQueueBehavior,
+                notifyBlock: @escaping () -> Void) {
         self.maxFrequencySeconds = maxFrequencySeconds
         self.queueBehavior = queueBehavior
         self.notifyBlock = notifyBlock

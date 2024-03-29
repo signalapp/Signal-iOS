@@ -19,7 +19,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     public static let maxPaymentMemoMessageLength: Int = 32
 
-    public required override init() {
+    public override init() {
         super.init()
 
         // Note: this isn't how often we refresh the balance, it's how often we

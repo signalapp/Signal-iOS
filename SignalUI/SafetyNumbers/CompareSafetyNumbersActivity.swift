@@ -18,7 +18,7 @@ public class CompareSafetyNumbersActivity: UIActivity {
     var mySafetyNumbers: String?
     weak var delegate: CompareSafetyNumbersActivityDelegate?
 
-    required init(delegate: CompareSafetyNumbersActivityDelegate) {
+    init(delegate: CompareSafetyNumbersActivityDelegate) {
         self.delegate = delegate
         super.init()
     }

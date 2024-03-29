@@ -26,7 +26,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
 
     private let subtitleCellType: SubtitleCellValue
 
-    required public init(allowsMultipleSelection: Bool, subtitleCellType: SubtitleCellValue) {
+    public init(allowsMultipleSelection: Bool, subtitleCellType: SubtitleCellValue) {
         self.allowsMultipleSelection = allowsMultipleSelection
         self.subtitleCellType = subtitleCellType
 

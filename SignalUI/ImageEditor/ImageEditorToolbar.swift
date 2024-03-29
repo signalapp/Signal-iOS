@@ -83,7 +83,7 @@ class ImageEditorBottomBar: UIView {
     private var areControlsHidden = false
     private var stackViewPositionConstraint: NSLayoutConstraint?
 
-    required init(buttonProvider: ImageEditorBottomBarButtonProvider?) {
+    init(buttonProvider: ImageEditorBottomBarButtonProvider?) {
         let middleButtons = buttonProvider?.middleButtons ?? []
         self.buttons = [ cancelButton ] + middleButtons + [ doneButton ]
 

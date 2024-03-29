@@ -47,7 +47,7 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     @objc
-    public required init(databaseFileUrl: URL, delegate: SDSDatabaseStorageDelegate) {
+    public init(databaseFileUrl: URL, delegate: SDSDatabaseStorageDelegate) {
         self.databaseFileUrl = databaseFileUrl
         self.delegate = delegate
 

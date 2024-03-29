@@ -600,7 +600,7 @@ public class SendMessageController: SendMessageDelegate {
 
     let sendMessageFlow = AtomicOptional<SendMessageFlow>(nil, lock: .sharedGlobal)
 
-    public required init(fromViewController: UIViewController) {
+    public init(fromViewController: UIViewController) {
         self.fromViewController = fromViewController
     }
 

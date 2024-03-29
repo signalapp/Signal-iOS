@@ -72,7 +72,7 @@ public class ContactShareViewController: OWSTableViewController2 {
 
     // MARK: UIViewController
 
-    required public init(contactShareDraft: ContactShareDraft) {
+    public init(contactShareDraft: ContactShareDraft) {
         self.contactShareDraft = contactShareDraft
 
         super.init()

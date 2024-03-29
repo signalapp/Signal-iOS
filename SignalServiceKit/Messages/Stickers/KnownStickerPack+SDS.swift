@@ -571,7 +571,7 @@ public extension KnownStickerPack {
 class KnownStickerPackSerializer: SDSSerializer {
 
     private let model: KnownStickerPack
-    public required init(model: KnownStickerPack) {
+    public init(model: KnownStickerPack) {
         self.model = model
     }
 

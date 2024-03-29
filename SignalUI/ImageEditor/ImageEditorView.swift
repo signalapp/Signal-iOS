@@ -64,7 +64,7 @@ class ImageEditorView: UIView {
         }
     }
 
-    required init(model: ImageEditorModel, delegate: ImageEditorViewDelegate?) {
+    init(model: ImageEditorModel, delegate: ImageEditorViewDelegate?) {
         self.model = model
         self.delegate = delegate
         self.canvasView = ImageEditorCanvasView(model: model)

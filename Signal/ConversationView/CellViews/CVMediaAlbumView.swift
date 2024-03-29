@@ -21,17 +21,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
     private let subStack1 = ManualStackView(name: "CVMediaAlbumView.subStack1")
     private let subStack2 = ManualStackView(name: "CVMediaAlbumView.subStack2")
 
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    @available(*, unavailable, message: "use other init() instead.")
-    public required init(name: String, arrangedSubviews: [UIView] = []) {
-        fatalError("init(name:arrangedSubviews:) has not been implemented")
-    }
-
-    public required init() {
+    public init() {
         super.init(name: "media album view")
     }
 
@@ -380,7 +370,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
     fileprivate class CVMeasurementImageArrangement: CVMeasurementObject {
         fileprivate let imageArrangement: ImageArrangement
 
-        fileprivate required init(imageArrangement: ImageArrangement) {
+        fileprivate init(imageArrangement: ImageArrangement) {
             self.imageArrangement = imageArrangement
 
             super.init()

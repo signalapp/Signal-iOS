@@ -13,7 +13,7 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
 
     let selectItemsInParent: (([StoryConversationItem]) -> Void)?
 
-    public required init(selectItemsInParent: (([StoryConversationItem]) -> Void)? = nil) {
+    public init(selectItemsInParent: (([StoryConversationItem]) -> Void)? = nil) {
         self.selectItemsInParent = selectItemsInParent
         super.init()
 

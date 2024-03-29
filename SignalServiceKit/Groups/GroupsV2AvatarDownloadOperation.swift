@@ -12,8 +12,8 @@ public class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
     public let promise: Promise<Data>
     private let future: Future<Data>
 
-    public required init(urlPath: String,
-                         maxDownloadSize: UInt? = nil) {
+    public init(urlPath: String,
+                maxDownloadSize: UInt? = nil) {
         self.urlPath = urlPath
         self.maxDownloadSize = maxDownloadSize
 

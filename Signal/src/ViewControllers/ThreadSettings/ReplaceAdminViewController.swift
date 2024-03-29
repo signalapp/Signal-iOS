@@ -19,8 +19,8 @@ class ReplaceAdminViewController: OWSTableViewController2 {
 
     private let candidates: Set<SignalServiceAddress>
 
-    required init(candidates: Set<SignalServiceAddress>,
-                  replaceAdminViewControllerDelegate: ReplaceAdminViewControllerDelegate) {
+    init(candidates: Set<SignalServiceAddress>,
+         replaceAdminViewControllerDelegate: ReplaceAdminViewControllerDelegate) {
         assert(!candidates.isEmpty)
 
         self.candidates = candidates

@@ -10,7 +10,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
 
     private let mediaDownloadType: MediaBandwidthPreferences.MediaType
 
-    public required init(mediaDownloadType: MediaBandwidthPreferences.MediaType) {
+    public init(mediaDownloadType: MediaBandwidthPreferences.MediaType) {
         self.mediaDownloadType = mediaDownloadType
 
         super.init()

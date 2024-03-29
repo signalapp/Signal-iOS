@@ -42,7 +42,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private var outdatedClientReminderView: ReminderView?
 
-    public required init(mode: PaymentsSettingsMode) {
+    public init(mode: PaymentsSettingsMode) {
         self.mode = mode
 
         super.init()

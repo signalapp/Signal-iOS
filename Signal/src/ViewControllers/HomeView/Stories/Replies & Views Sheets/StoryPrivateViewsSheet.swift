@@ -19,10 +19,6 @@ class StoryPrivateViewsSheet: InteractiveSheetViewController {
         super.init()
     }
 
-    required init() {
-        fatalError("init() has not been implemented")
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 

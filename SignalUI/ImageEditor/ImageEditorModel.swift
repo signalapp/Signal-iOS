@@ -17,7 +17,7 @@ private class ImageEditorOperation: NSObject {
 
     let contents: ImageEditorContents
 
-    required init(contents: ImageEditorContents) {
+    init(contents: ImageEditorContents) {
         self.operationId = UUID().uuidString
         self.contents = contents
     }
@@ -62,7 +62,7 @@ class ImageEditorModel: NSObject {
     //
     // * They are invalid.
     // * We can't determine their size / aspect-ratio.
-    required init(srcImagePath: String) throws {
+    init(srcImagePath: String) throws {
         self.srcImagePath = srcImagePath
 
         let srcFileName = (srcImagePath as NSString).lastPathComponent

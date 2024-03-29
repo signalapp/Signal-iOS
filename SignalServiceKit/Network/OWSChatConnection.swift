@@ -1283,7 +1283,7 @@ private class WebSocketConnection {
         "[\(connectionType): \(id)]"
     }
 
-    required init(connectionType: OWSChatConnectionType, webSocket: SSKWebSocket) {
+    init(connectionType: OWSChatConnectionType, webSocket: SSKWebSocket) {
         owsAssertDebug(!CurrentAppContext().isRunningTests)
 
         self.connectionType = connectionType

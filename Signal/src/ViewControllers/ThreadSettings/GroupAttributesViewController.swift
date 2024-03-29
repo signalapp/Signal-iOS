@@ -31,9 +31,9 @@ class GroupAttributesViewController: OWSTableViewController2 {
         return helper.hasUnsavedChanges
     }
 
-    public required init(groupThread: TSGroupThread,
-                         editAction: EditAction,
-                         delegate: GroupAttributesViewControllerDelegate) {
+    public init(groupThread: TSGroupThread,
+                editAction: EditAction,
+                delegate: GroupAttributesViewControllerDelegate) {
         self.groupThread = groupThread
         self.editAction = editAction
         self.attributesDelegate = delegate

@@ -16,7 +16,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
     private weak var restoreWalletDelegate: PaymentsRestoreWalletDelegate?
 
-    public required init(restoreWalletDelegate: PaymentsRestoreWalletDelegate) {
+    public init(restoreWalletDelegate: PaymentsRestoreWalletDelegate) {
         self.restoreWalletDelegate = restoreWalletDelegate
 
         super.init()

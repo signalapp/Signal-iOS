@@ -51,7 +51,7 @@ public extension OWSDisappearingConfigurationUpdateInfoMessage {
 class OWSDisappearingConfigurationUpdateInfoMessageSerializer: SDSSerializer {
 
     private let model: OWSDisappearingConfigurationUpdateInfoMessage
-    public required init(model: OWSDisappearingConfigurationUpdateInfoMessage) {
+    public init(model: OWSDisappearingConfigurationUpdateInfoMessage) {
         self.model = model
     }
 

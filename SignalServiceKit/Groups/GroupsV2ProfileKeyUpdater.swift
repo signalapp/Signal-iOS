@@ -16,7 +16,7 @@ import Foundation
 // need to be updated and for updating them.
 class GroupsV2ProfileKeyUpdater: Dependencies {
 
-    public required init() {
+    public init() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
                                                name: SSKReachability.owsReachabilityDidChange,

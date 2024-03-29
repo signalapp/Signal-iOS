@@ -49,7 +49,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
     // MARK: - Initializers
 
-    required public init(messageBody: MessageBody) {
+    public init(messageBody: MessageBody) {
         self.initialMessageBody = messageBody
         self.linkPreviewFetcher = LinkPreviewFetcher(
             db: DependenciesBridge.shared.db,

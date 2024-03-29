@@ -21,7 +21,7 @@ public class CVMediaCache: NSObject {
                                                                           shouldEvacuateInBackground: true)
     private let lottieImageProvider = BundleImageProvider(bundle: .main, searchPath: nil)
 
-    public required override init() {
+    public override init() {
         AssertIsOnMainThread()
 
         super.init()

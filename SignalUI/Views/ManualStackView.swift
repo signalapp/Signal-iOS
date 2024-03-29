@@ -29,15 +29,10 @@ open class ManualStackView: ManualLayoutView {
 
     public var measurement: Measurement?
 
-    public required init(name: String, arrangedSubviews: [UIView] = []) {
+    public init(name: String, arrangedSubviews: [UIView] = []) {
         super.init(name: name)
 
         addArrangedSubviews(arrangedSubviews)
-    }
-
-    @available(*, unavailable, message: "use other constructor instead.")
-    public required init(name: String) {
-        fatalError("init(name:) has not been implemented")
     }
 
     // MARK: - Config

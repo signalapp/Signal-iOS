@@ -60,7 +60,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     var shouldRefreshAttachmentsOnReappear = false
 
-    public required init(
+    public init(
         threadViewModel: ThreadViewModel,
         isSystemContact: Bool,
         spoilerState: SpoilerRenderState,

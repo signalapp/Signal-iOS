@@ -30,7 +30,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         return dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read)
     }
 
-    required init(newGroupState: NewGroupState) {
+    init(newGroupState: NewGroupState) {
         self.newGroupState = newGroupState
 
         let groupId = newGroupState.groupSeed.possibleGroupId

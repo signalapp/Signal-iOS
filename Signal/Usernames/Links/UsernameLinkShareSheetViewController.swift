@@ -21,10 +21,6 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
         self.didCopyUsername = didCopyUsername
     }
 
-    required init() {
-        owsFail("Not implemented!")
-    }
-
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         dismissalDelegate?.didDismissPresentedSheet()

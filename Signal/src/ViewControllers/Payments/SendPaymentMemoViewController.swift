@@ -21,7 +21,7 @@ public class SendPaymentMemoViewController: OWSViewController {
     private let memoTextField = UITextField()
     private let memoCharacterCountLabel = UILabel()
 
-    public required init(memoMessage: String?) {
+    public init(memoMessage: String?) {
         super.init()
 
         memoTextField.text = memoMessage

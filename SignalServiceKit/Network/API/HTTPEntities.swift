@@ -297,11 +297,11 @@ public class HTTPResponseImpl: NSObject {
 
     private static let unfairLock = UnfairLock()
 
-    public required init(requestUrl: URL,
-                         status: Int,
-                         headers: OWSHttpHeaders,
-                         bodyData: Data?,
-                         stringEncoding: String.Encoding = .utf8) {
+    public init(requestUrl: URL,
+                status: Int,
+                headers: OWSHttpHeaders,
+                bodyData: Data?,
+                stringEncoding: String.Encoding = .utf8) {
         self.requestUrl = requestUrl
         self.status = status
         self.headers = headers

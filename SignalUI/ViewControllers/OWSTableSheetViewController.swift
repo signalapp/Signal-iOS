@@ -42,7 +42,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
 
     private var contentSizeObservation: NSKeyValueObservation?
 
-    public required init() {
+    public init() {
         super.init()
 
         tableViewController.shouldDeferInitialLoad = false

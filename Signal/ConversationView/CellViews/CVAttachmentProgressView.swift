@@ -32,10 +32,10 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     private var attachmentId: TSResourceId { direction.attachmentId }
 
-    public required init(direction: Direction,
-                         diameter: CGFloat = 44,
-                         isDarkThemeEnabled: Bool,
-                         mediaCache: CVMediaCache) {
+    public init(direction: Direction,
+                diameter: CGFloat = 44,
+                isDarkThemeEnabled: Bool,
+                mediaCache: CVMediaCache) {
         self.direction = direction
         self.diameter = diameter
         self.isDarkThemeEnabled = isDarkThemeEnabled
@@ -49,11 +49,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
         createViews()
 
         configureState()
-    }
-
-    @available(*, unavailable, message: "use other constructor instead.")
-    public required init(name: String) {
-        fatalError("init(name:) has not been implemented")
     }
 
     private enum State: Equatable {
@@ -111,10 +106,10 @@ public class CVAttachmentProgressView: ManualLayoutView {
             }
         }
 
-        required init(diameter: CGFloat,
-                      direction: Direction,
-                      isDarkThemeEnabled: Bool,
-                      mediaCache: CVMediaCache) {
+        init(diameter: CGFloat,
+             direction: Direction,
+             isDarkThemeEnabled: Bool,
+             mediaCache: CVMediaCache) {
             self.diameter = diameter
             self.direction = direction
             self.isDarkThemeEnabled = isDarkThemeEnabled
@@ -123,11 +118,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
             super.init(name: "CVAttachmentProgressView.StateView")
 
             applyState(oldState: .none, newState: .none)
-        }
-
-        @available(*, unavailable, message: "use other constructor instead.")
-            public required init(name: String) {
-                fatalError("init(name:) has not been implemented")
         }
 
         private func applyState(oldState: State, newState: State) {

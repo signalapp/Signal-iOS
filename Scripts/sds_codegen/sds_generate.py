@@ -2395,7 +2395,7 @@ public extension %s {
 class %sSerializer: SDSSerializer {
 
     private let model: %s
-    public required init(model: %s) {
+    public init(model: %s) {
         self.model = model
     }
 """ % (

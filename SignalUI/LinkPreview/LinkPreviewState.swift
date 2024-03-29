@@ -56,7 +56,7 @@ public class LinkPreviewLoading: LinkPreviewState {
 
     public let linkType: LinkPreviewLinkType
 
-    public required init(linkType: LinkPreviewLinkType) {
+    public init(linkType: LinkPreviewLinkType) {
         self.linkType = linkType
     }
 
@@ -116,7 +116,7 @@ public class LinkPreviewDraft: LinkPreviewState {
 
     let linkPreviewDraft: OWSLinkPreviewDraft
 
-    public required init(linkPreviewDraft: OWSLinkPreviewDraft) {
+    public init(linkPreviewDraft: OWSLinkPreviewDraft) {
         self.linkPreviewDraft = linkPreviewDraft
     }
 
@@ -209,7 +209,7 @@ public class LinkPreviewSent: LinkPreviewState {
 
     public let conversationStyle: ConversationStyle?
 
-    public required init(
+    public init(
         linkPreview: OWSLinkPreview,
         imageAttachment: TSAttachment?,
         conversationStyle: ConversationStyle?

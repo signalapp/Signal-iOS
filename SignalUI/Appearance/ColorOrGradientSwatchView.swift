@@ -79,11 +79,6 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
         }
     }
 
-    @available(swift, obsoleted: 1.0)
-    required init(name: String) {
-        owsFail("Do not use this initializer.")
-    }
-
     @objc
     private func themeDidChange() {
         configure()

@@ -9,17 +9,13 @@ import UIKit
 
 public class NewStorySheet: OWSTableSheetViewController {
     let selectItemsInParent: (([StoryConversationItem]) -> Void)?
-    public required init(selectItemsInParent: (([StoryConversationItem]) -> Void)?) {
+    public init(selectItemsInParent: (([StoryConversationItem]) -> Void)?) {
         self.selectItemsInParent = selectItemsInParent
 
         super.init()
 
         tableViewController.defaultSeparatorInsetLeading =
             OWSTableViewController2.cellHInnerMargin + 48 + OWSTableItem.iconSpacing
-    }
-
-    public required init() {
-        fatalError("init() has not been implemented")
     }
 
     public override func updateTableContents(shouldReload: Bool = true) {

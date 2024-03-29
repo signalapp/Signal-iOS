@@ -45,7 +45,7 @@ public class AttachmentPrepViewController: OWSViewController {
         }
     }
 
-    required init?(attachmentApprovalItem: AttachmentApprovalItem) {
+    init?(attachmentApprovalItem: AttachmentApprovalItem) {
         guard !attachmentApprovalItem.attachment.hasError else {
             return nil
         }

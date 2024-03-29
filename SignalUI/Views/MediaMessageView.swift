@@ -16,7 +16,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
 
     // MARK: Initializers
 
-    required init(attachment: SignalAttachment, contentMode: UIView.ContentMode = .scaleAspectFit) {
+    init(attachment: SignalAttachment, contentMode: UIView.ContentMode = .scaleAspectFit) {
         assert(!attachment.hasError)
         self.attachment = attachment
 

@@ -18,7 +18,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
     private var state: WallpaperBlurState?
     private var maskCornerRadius: CGFloat = 0
 
-    required init() {
+    init() {
         super.init(name: "CVWallpaperBlurView")
 
         self.clipsToBounds = true
@@ -44,11 +44,6 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
             let maskPath = UIBezierPath(roundedRect: maskFrame, cornerRadius: maskCornerRadius)
             maskLayer.path = maskPath.cgPath
         }
-    }
-
-    @available(swift, obsoleted: 1.0)
-    required init(name: String) {
-        owsFail("Do not use this initializer.")
     }
 
     public func configureForPreview(maskCornerRadius: CGFloat) {

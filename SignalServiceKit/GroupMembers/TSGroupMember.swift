@@ -48,7 +48,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public let groupThreadId: String
     public private(set) var lastInteractionTimestamp: UInt64
 
-    required public init(
+    public init(
         address: NormalizedDatabaseRecordAddress,
         groupThreadId: String,
         lastInteractionTimestamp: UInt64

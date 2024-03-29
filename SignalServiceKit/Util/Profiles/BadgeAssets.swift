@@ -49,7 +49,7 @@ public class BadgeAssets: NSObject {
         }
     }
 
-    required init(scale: Int, remoteSourceUrl: URL, localAssetDirectory: URL) {
+    init(scale: Int, remoteSourceUrl: URL, localAssetDirectory: URL) {
         self.scale = scale
         self.remoteSourceUrl = remoteSourceUrl
         self.localAssetDirectory = localAssetDirectory

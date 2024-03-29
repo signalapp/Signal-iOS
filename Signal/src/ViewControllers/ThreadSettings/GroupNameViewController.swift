@@ -15,7 +15,7 @@ class GroupNameViewController: OWSTableViewController2 {
 
     weak var nameDelegate: GroupNameViewControllerDelegate?
 
-    required init(groupModel: TSGroupModel, groupNameCurrent: String? = nil) {
+    init(groupModel: TSGroupModel, groupNameCurrent: String? = nil) {
         self.helper = GroupAttributesEditorHelper(groupModel: groupModel)
 
         if let groupNameCurrent = groupNameCurrent {

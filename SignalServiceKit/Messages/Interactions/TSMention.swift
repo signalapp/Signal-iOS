@@ -34,7 +34,7 @@ public final class TSMention: NSObject, SDSCodableModel, Decodable {
     public let creationDate: Date
     public var address: SignalServiceAddress { SignalServiceAddress(aciString: aciString) }
 
-    required public init(uniqueMessageId: String, uniqueThreadId: String, aci: Aci) {
+    public init(uniqueMessageId: String, uniqueThreadId: String, aci: Aci) {
         self.uniqueId = UUID().uuidString
         self.uniqueMessageId = uniqueMessageId
         self.uniqueThreadId = uniqueThreadId

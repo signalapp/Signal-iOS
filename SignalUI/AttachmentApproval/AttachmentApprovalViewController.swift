@@ -120,8 +120,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private var observingKeyboardNotifications = false
     private var keyboardHeight: CGFloat = 0
 
-    required public init(options: AttachmentApprovalViewControllerOptions,
-                         attachmentApprovalItems: [AttachmentApprovalItem]) {
+    public init(options: AttachmentApprovalViewControllerOptions,
+                attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
 
         self.receivedOptions = options

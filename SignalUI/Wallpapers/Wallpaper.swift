@@ -230,11 +230,6 @@ public class WallpaperView {
         configure(shouldDimInDarkTheme: shouldDimInDarkTheme)
     }
 
-    @available(swift, obsoleted: 1.0)
-    required init(name: String) {
-        owsFail("Do not use this initializer.")
-    }
-
     public func asPreviewView() -> UIView {
         let previewView = UIView.container()
         if let contentView = self.contentView {

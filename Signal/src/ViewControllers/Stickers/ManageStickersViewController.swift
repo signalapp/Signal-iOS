@@ -53,12 +53,6 @@ private class StickerPackActionButton: UIView {
 
 public class ManageStickersViewController: OWSTableViewController2 {
 
-    // MARK: Initializers
-
-    public required override init() {
-        super.init()
-    }
-
     // MARK: - View Lifecycle
 
     override public func loadView() {

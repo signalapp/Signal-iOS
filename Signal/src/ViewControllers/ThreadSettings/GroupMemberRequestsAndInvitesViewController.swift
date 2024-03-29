@@ -33,7 +33,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
     private let segmentedControl = UISegmentedControl()
 
-    required init(groupThread: TSGroupThread, groupViewHelper: GroupViewHelper, spoilerState: SpoilerRenderState) {
+    init(groupThread: TSGroupThread, groupViewHelper: GroupViewHelper, spoilerState: SpoilerRenderState) {
         self.oldGroupThread = groupThread
         self.groupModel = groupThread.groupModel
         self.groupViewHelper = groupViewHelper

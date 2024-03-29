@@ -214,7 +214,7 @@ public class ContextMenuTargetedPreview {
     ///   - alignment: If preview needs to be scaled, this property defines the edge alignment
     ///    in the source view to pin the preview to
     ///   - accessoryViews: accessory view
-    public required init(
+    public init(
         view: UIView,
         previewView: UIView,
         previewViewSourceFrame: CGRect? = nil,

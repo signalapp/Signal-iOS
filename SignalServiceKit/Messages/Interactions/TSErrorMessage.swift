@@ -21,21 +21,21 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
     @objc
     public var wasIdentityVerified: Bool
 
-    public required init(thread: TSThread,
-                         timestamp: UInt64? = nil,
-                         messageBody: String? = nil,
-                         bodyRanges: MessageBodyRanges? = nil,
-                         attachmentIds: [String]? = nil,
-                         expiresInSeconds: UInt32 = 0,
-                         quotedMessage: TSQuotedMessage? = nil,
-                         contactShare: OWSContact? = nil,
-                         linkPreview: OWSLinkPreview? = nil,
-                         messageSticker: MessageSticker? = nil,
-                         isViewOnceMessage: Bool = false,
-                         errorType: TSErrorMessageType,
-                         senderAddress: SignalServiceAddress? = nil,
-                         recipientAddress: SignalServiceAddress? = nil,
-                         wasIdentityVerified: Bool = false) {
+    public init(thread: TSThread,
+                timestamp: UInt64? = nil,
+                messageBody: String? = nil,
+                bodyRanges: MessageBodyRanges? = nil,
+                attachmentIds: [String]? = nil,
+                expiresInSeconds: UInt32 = 0,
+                quotedMessage: TSQuotedMessage? = nil,
+                contactShare: OWSContact? = nil,
+                linkPreview: OWSLinkPreview? = nil,
+                messageSticker: MessageSticker? = nil,
+                isViewOnceMessage: Bool = false,
+                errorType: TSErrorMessageType,
+                senderAddress: SignalServiceAddress? = nil,
+                recipientAddress: SignalServiceAddress? = nil,
+                wasIdentityVerified: Bool = false) {
 
         self.errorType = errorType
         self.senderAddress = senderAddress

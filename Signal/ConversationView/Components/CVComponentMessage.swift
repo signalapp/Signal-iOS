@@ -2010,7 +2010,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         // MARK: -
 
-        override required init() {
+        override init() {
             chatColorView.layoutMargins = .zero
             chatColorView.ensureSubviewsFillBounds = true
 
@@ -2706,9 +2706,9 @@ class SwipeToReplyWrapper: ManualLayoutView {
     let useSlowOffset: Bool
     let shouldReset: Bool
 
-    public required init(name: String,
-                         useSlowOffset: Bool,
-                         shouldReset: Bool) {
+    public init(name: String,
+                useSlowOffset: Bool,
+                shouldReset: Bool) {
         self.useSlowOffset = useSlowOffset
         self.shouldReset = shouldReset
 
@@ -2730,11 +2730,6 @@ class SwipeToReplyWrapper: ManualLayoutView {
             subviewFrame.origin += view.offset
             ManualLayoutView.setSubviewFrame(subview: subview, frame: subviewFrame)
         }
-    }
-
-    @available(*, unavailable, message: "use other constructor instead.")
-    public required init(name: String) {
-        fatalError("init(name:) has not been implemented")
     }
 
     override func reset() {

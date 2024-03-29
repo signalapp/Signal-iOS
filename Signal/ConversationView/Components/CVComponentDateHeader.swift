@@ -21,7 +21,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     }
     private let dateHeaderState: State
 
-    required init(itemModel: CVItemModel, dateHeaderState: State) {
+    init(itemModel: CVItemModel, dateHeaderState: State) {
         self.dateHeaderState = dateHeaderState
 
         super.init(itemModel: itemModel)
@@ -271,9 +271,6 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         }
 
         // MARK: -
-
-        override required init() {
-        }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 

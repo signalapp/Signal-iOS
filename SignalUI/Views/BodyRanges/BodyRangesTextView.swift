@@ -37,7 +37,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
     private let customLayoutManager: NSLayoutManager
 
-    public required init() {
+    public init() {
         let editableBody = EditableMessageBodyTextStorage(db: DependenciesBridge.shared.db)
         self.editableBody = editableBody
         let container = NSTextContainer()

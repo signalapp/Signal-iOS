@@ -63,10 +63,6 @@ class GroupDescriptionPreviewView: ManualLayoutView {
         textView.autoPinEdgesToSuperviewEdges()
     }
 
-    required init(name: String) {
-        fatalError("init(name:) has not been implemented")
-    }
-
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         textView.sizeThatFits(size)
     }

@@ -78,7 +78,7 @@ class AppUpdateNag: NSObject {
 
     let versionService: AppStoreVersionService
 
-    required init(versionService: AppStoreVersionService) {
+    init(versionService: AppStoreVersionService) {
         self.versionService = versionService
         super.init()
 

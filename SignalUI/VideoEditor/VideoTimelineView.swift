@@ -88,7 +88,7 @@ class VideoTimelineView: UIView {
     }()
     private var timeBubbleViewPositionConstraint: NSLayoutConstraint?
 
-    required init() {
+    init() {
         super.init(frame: .zero)
 
         createContents()
@@ -619,7 +619,7 @@ private class TrimHandleView: UIImageView {
         }
     }
 
-    required init(position: Position) {
+    init(position: Position) {
         self.position = position
         super.init(image: TrimHandleView.handleImage(forPosition: position, isHighlighted: false))
     }

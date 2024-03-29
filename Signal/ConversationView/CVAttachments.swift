@@ -19,7 +19,7 @@ public class AudioAttachment {
     // to ensure that conversation view diffing catches the need to redraw the cell
     public let isDownloading: Bool
 
-    public required init?(
+    public init?(
         attachment: TSAttachment,
         owningMessage: TSMessage?,
         metadata: MediaMetadata?,

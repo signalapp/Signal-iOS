@@ -22,7 +22,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     typealias Action = CVMessageAction
     fileprivate var action: Action? { systemMessage.action }
 
-    required init(itemModel: CVItemModel, systemMessage: CVComponentState.SystemMessage) {
+    init(itemModel: CVItemModel, systemMessage: CVComponentState.SystemMessage) {
         self.systemMessage = systemMessage
 
         super.init(itemModel: itemModel)
@@ -537,10 +537,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         }
 
         // MARK: -
-
-        override required init() {
-            super.init()
-        }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 

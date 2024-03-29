@@ -35,7 +35,7 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController {
         return timelineView
     }()
 
-    required init?(attachmentApprovalItem: AttachmentApprovalItem) {
+    override init?(attachmentApprovalItem: AttachmentApprovalItem) {
         guard let videoEditorModel = attachmentApprovalItem.videoEditorModel else {
             owsFailDebug("videoEditorModel is empty.")
             return nil

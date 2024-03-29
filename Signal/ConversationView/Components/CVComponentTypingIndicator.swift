@@ -18,8 +18,8 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
     private let typingIndicator: CVComponentState.TypingIndicator
 
-    required init(itemModel: CVItemModel,
-                  typingIndicator: CVComponentState.TypingIndicator) {
+    init(itemModel: CVItemModel,
+         typingIndicator: CVComponentState.TypingIndicator) {
         self.typingIndicator = typingIndicator
 
         super.init(itemModel: itemModel)

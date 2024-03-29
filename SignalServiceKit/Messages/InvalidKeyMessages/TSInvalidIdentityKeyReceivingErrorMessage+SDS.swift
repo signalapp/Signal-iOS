@@ -51,7 +51,7 @@ public extension TSInvalidIdentityKeyReceivingErrorMessage {
 class TSInvalidIdentityKeyReceivingErrorMessageSerializer: SDSSerializer {
 
     private let model: TSInvalidIdentityKeyReceivingErrorMessage
-    public required init(model: TSInvalidIdentityKeyReceivingErrorMessage) {
+    public init(model: TSInvalidIdentityKeyReceivingErrorMessage) {
         self.model = model
     }
 

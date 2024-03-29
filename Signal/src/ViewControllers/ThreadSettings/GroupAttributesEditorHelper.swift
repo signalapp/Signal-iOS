@@ -92,7 +92,7 @@ class GroupAttributesEditorHelper: NSObject {
         )
     }
 
-    public required init(
+    public init(
         groupModelOriginal: TSGroupModel? = nil,
         groupId: Data,
         groupNameOriginal: String?,

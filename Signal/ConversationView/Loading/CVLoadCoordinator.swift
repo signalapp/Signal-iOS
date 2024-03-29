@@ -78,7 +78,7 @@ public class CVLoadCoordinator: NSObject {
     // TODO: Remove. This model will get stale.
     private let thread: TSThread
 
-    required init(
+    init(
         viewState: CVViewState,
         threadViewModel: ThreadViewModel,
         conversationViewModel: ConversationViewModel,

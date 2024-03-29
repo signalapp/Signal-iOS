@@ -25,11 +25,6 @@ public class MessageSelectionView: ManualLayoutView {
         selectedView.isHidden = true
     }
 
-    @available(*, unavailable, message: "use other constructor instead.")
-    public required init(name: String) {
-        fatalError("init(name:) has not been implemented")
-    }
-
     public static var totalSize: CGSize {
         CGSize(square: ConversationStyle.selectionViewWidth)
     }

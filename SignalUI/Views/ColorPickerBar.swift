@@ -25,7 +25,7 @@ public class ColorPickerBarColor {
         return color.cgColor
     }
 
-    required init(color: UIColor, palettePhase: CGFloat) {
+    init(color: UIColor, palettePhase: CGFloat) {
         self.color = color
         self.palettePhase = palettePhase
     }
@@ -184,7 +184,7 @@ public class ColorPickerBarView: UIView {
         }
     }
 
-    required init(currentColor: ColorPickerBarColor? = nil) {
+    init(currentColor: ColorPickerBarColor? = nil) {
         selectedValue = currentColor ?? ColorPickerBarColor.defaultColor()
         super.init(frame: .zero)
         createContents()

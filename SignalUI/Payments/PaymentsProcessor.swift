@@ -8,7 +8,7 @@ import SignalServiceKit
 
 public class PaymentsProcessor: NSObject {
 
-    public required override init() {
+    public override init() {
         super.init()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {

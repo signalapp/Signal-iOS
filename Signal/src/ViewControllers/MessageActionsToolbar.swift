@@ -105,7 +105,7 @@ public class MessageActionsToolbar: UIToolbar {
     }
     private let mode: Mode
 
-    required init(mode: Mode) {
+    init(mode: Mode) {
         self.mode = mode
 
         super.init(frame: .zero)
@@ -226,11 +226,7 @@ class MessageActionsToolbarButton: UIBarButtonItem {
     private weak var actionsToolbar: MessageActionsToolbar?
     fileprivate var messageAction: MessageAction?
 
-    required override init() {
-        super.init()
-    }
-
-    required init(actionsToolbar: MessageActionsToolbar, messageAction: MessageAction) {
+    init(actionsToolbar: MessageActionsToolbar, messageAction: MessageAction) {
         self.actionsToolbar = actionsToolbar
         self.messageAction = messageAction
 

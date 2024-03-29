@@ -73,9 +73,9 @@ public class OWSUDAccess: NSObject {
 
     public let isRandomKey: Bool
 
-    public required init(udAccessKey: SMKUDAccessKey,
-                         udAccessMode: UnidentifiedAccessMode,
-                         isRandomKey: Bool) {
+    public init(udAccessKey: SMKUDAccessKey,
+                udAccessMode: UnidentifiedAccessMode,
+                isRandomKey: Bool) {
         self.udAccessKey = udAccessKey
         self.udAccessMode = udAccessMode
         self.isRandomKey = isRandomKey
@@ -170,7 +170,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Exposed for testing
     public internal(set) var trustRoot: PublicKey
 
-    public required override init() {
+    public override init() {
         self.trustRoot = OWSUDManagerImpl.trustRoot()
 
         super.init()

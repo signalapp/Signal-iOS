@@ -32,10 +32,6 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
         call.addObserverAndSyncState(observer: self)
     }
 
-    public required init() {
-        fatalError("init() has not been implemented")
-    }
-
     deinit { call.removeObserver(self) }
 
     // MARK: -

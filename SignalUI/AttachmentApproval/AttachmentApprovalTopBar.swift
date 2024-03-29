@@ -38,7 +38,7 @@ class AttachmentApprovalTopBar: MediaTopBar {
 
     // MARK: - UIView
 
-    required init(options: AttachmentApprovalViewControllerOptions) {
+    init(options: AttachmentApprovalViewControllerOptions) {
         super.init(frame: .zero)
 
         tintColor = .ows_white

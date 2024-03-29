@@ -38,7 +38,7 @@ final class CallKitCallManager: NSObject {
         }
     }
 
-    required init(showNamesOnCallScreen: Bool) {
+    init(showNamesOnCallScreen: Bool) {
         AssertIsOnMainThread()
 
         self.showNamesOnCallScreen = showNamesOnCallScreen

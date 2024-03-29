@@ -10,7 +10,7 @@ class LegacyGroupView: UIView {
 
     private weak var viewController: UIViewController?
 
-    required init(viewController: UIViewController) {
+    init(viewController: UIViewController) {
         self.viewController = viewController
 
         super.init(frame: .zero)
