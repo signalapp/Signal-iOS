@@ -93,11 +93,18 @@ extension ConversationViewController: ContactPickerDelegate {
             return
         }
 
-        let contactShare = databaseStorage.read { tx in
-            return ContactShareViewModel.load(cnContact: cnContact, signalContact: contact, tx: tx)
+        let contactShareDraft = databaseStorage.read { tx in
+            return ContactShareDraft.load(
+                cnContact: cnContact,
+                signalContact: contact,
+                contactsManager: Self.contactsManager,
+                profileManager: Self.profileManager,
+                recipientManager: DependenciesBridge.shared.recipientManager,
+                tx: tx
+            )
         }
 
-        let approveContactShare = ContactShareViewController(contactShare: contactShare)
+        let approveContactShare = ContactShareViewController(contactShareDraft: contactShareDraft)
         approveContactShare.shareDelegate = self
         guard let navigationController = contactPicker.navigationController else {
             owsFailDebug("Missing contactsPicker.navigationController.")
@@ -122,9 +129,9 @@ extension ConversationViewController: ContactPickerDelegate {
 extension ConversationViewController: ContactShareViewControllerDelegate {
 
     public func contactShareViewController(_ viewController: ContactShareViewController, didApproveContactShare contactShare:
-        ContactShareViewModel) {
+        ContactShareDraft) {
         dismiss(animated: true) {
-            self.send(contactShare: contactShare)
+            self.send(contactShareDraft: contactShare)
         }
     }
 
@@ -146,7 +153,7 @@ extension ConversationViewController: ContactShareViewControllerDelegate {
         return .send
     }
 
-    private func send(contactShare: ContactShareViewModel) {
+    private func send(contactShareDraft: ContactShareDraft) {
         let thread = self.thread
         Self.databaseStorage.asyncWrite { transaction in
             let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
@@ -154,15 +161,8 @@ extension ConversationViewController: ContactShareViewControllerDelegate {
                 setDefaultTimerIfNecessary: true,
                 tx: transaction
             )
-
-            // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
-            // preparation rather than duplicated here and in the SAE
-            if let avatarImage = contactShare.avatarImage {
-                contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
-            }
-
             transaction.addAsyncCompletionOnMain {
-                let message = ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, thread: thread)
+                let message = ThreadUtil.enqueueMessage(withContactShare: contactShareDraft, thread: thread)
                 self.messageWasSent(message)
 
                 if didAddToProfileWhitelist {

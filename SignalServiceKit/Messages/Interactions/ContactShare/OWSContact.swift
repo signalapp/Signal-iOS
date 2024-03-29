@@ -333,6 +333,19 @@ public class OWSContactName: MTLModel {
         super.init()
     }
 
+    public convenience init(cnContact: CNContact) {
+        // Name
+        self.init(
+            givenName: cnContact.givenName.stripped,
+            familyName: cnContact.familyName.stripped,
+            namePrefix: cnContact.namePrefix.stripped,
+            nameSuffix: cnContact.nameSuffix.stripped,
+            middleName: cnContact.middleName.stripped,
+            nickname: cnContact.nickname.stripped,
+            organizationName: cnContact.organizationName.stripped
+        )
+    }
+
     required init!(coder: NSCoder!) {
         super.init(coder: coder)
     }
@@ -441,6 +454,20 @@ public class OWSContact: MTLModel {
     public var legacyAvatarAttachmentId: String? { avatarAttachmentId }
 
     public var isValid: Bool {
+        return Self.isValid(
+            name: name,
+            phoneNumbers: phoneNumbers,
+            emails: emails,
+            addresses: addresses
+        )
+    }
+
+    public static func isValid(
+        name: OWSContactName,
+        phoneNumbers: [OWSContactPhoneNumber],
+        emails: [OWSContactEmail],
+        addresses: [OWSContactAddress]
+    ) -> Bool {
         guard !name.displayName.stripped.isEmpty else {
             Logger.warn("invalid contact; no display name.")
             return false
@@ -514,30 +541,6 @@ public class OWSContact: MTLModel {
 
     public func setLegacyAvatarAttachmentId(_ attachmentId: String) {
         self.avatarAttachmentId = attachmentId
-    }
-
-    public func saveAvatarImage(_ image: UIImage, transaction tx: SDSAnyWriteTransaction) {
-        guard let imageData = image.jpegData(compressionQuality: 0.9) else {
-            owsFailBeta("Failed to get JPEG")
-            return
-        }
-
-        let attachmentStream = TSAttachmentStream(
-            contentType: OWSMimeTypeImageJpeg,
-            byteCount: UInt32(imageData.count),
-            sourceFilename: nil,
-            caption: nil,
-            attachmentType: .default,
-            albumMessageId: nil
-        )
-        do {
-            try attachmentStream.write(imageData)
-        } catch {
-            owsAssertDebug(false)
-        }
-
-        attachmentStream.anyInsert(transaction: tx)
-        avatarAttachmentId = attachmentStream.uniqueId
     }
 
     // MARK: Phone Numbers and Recipient IDs
@@ -624,7 +627,7 @@ public class OWSContact: MTLModel {
 
 extension OWSContactPhoneNumber {
 
-    fileprivate convenience init(cnLabeledValue: CNLabeledValue<CNPhoneNumber>) {
+    public convenience init(cnLabeledValue: CNLabeledValue<CNPhoneNumber>) {
         // Make a best effort to parse the phone number to e164.
         let unparsedPhoneNumber = cnLabeledValue.value.stringValue
         let parsedPhoneNumber: String = {
@@ -680,7 +683,7 @@ extension OWSContactPhoneNumber {
 
 extension OWSContactEmail {
 
-    fileprivate convenience init(cnLabeledValue: CNLabeledValue<NSString>) {
+    public convenience init(cnLabeledValue: CNLabeledValue<NSString>) {
         let email = cnLabeledValue.value as String
 
         let customLabel: String?
@@ -721,7 +724,7 @@ extension OWSContactEmail {
 
 extension OWSContactAddress {
 
-    fileprivate convenience init(cnLabeledValue: CNLabeledValue<CNPostalAddress>) {
+    public convenience init(cnLabeledValue: CNLabeledValue<CNPostalAddress>) {
         let customLabel: String?
         let type: `Type`
         switch cnLabeledValue.label {
@@ -787,15 +790,7 @@ extension OWSContact {
 
     public convenience init(cnContact: CNContact) {
         // Name
-        let contactName = OWSContactName(
-            givenName: cnContact.givenName.stripped,
-            familyName: cnContact.familyName.stripped,
-            namePrefix: cnContact.namePrefix.stripped,
-            nameSuffix: cnContact.nameSuffix.stripped,
-            middleName: cnContact.middleName.stripped,
-            nickname: cnContact.nickname.stripped,
-            organizationName: cnContact.organizationName.stripped
-        )
+        let contactName = OWSContactName(cnContact: cnContact)
         self.init(
             name: contactName,
             phoneNumbers: cnContact.phoneNumbers.map { OWSContactPhoneNumber(cnLabeledValue: $0) },

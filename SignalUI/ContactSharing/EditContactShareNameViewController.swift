@@ -64,36 +64,36 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
 
     private weak var editingDelegate: EditContactShareNameViewControllerDelegate?
 
-    private let contactShare: ContactShareViewModel
+    private let contactShareDraft: ContactShareDraft
 
     private lazy var namePrefixView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_NAME_PREFIX", comment: "Label for the 'name prefix' field of a contact."),
-        value: contactShare.name.namePrefix,
+        value: contactShareDraft.name.namePrefix,
         delegate: self
     )
     private lazy var givenNameView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_GIVEN_NAME", comment: "Label for the 'given name' field of a contact."),
-        value: contactShare.name.givenName,
+        value: contactShareDraft.name.givenName,
         delegate: self
     )
     private lazy var middleNameView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_MIDDLE_NAME", comment: "Label for the 'middle name' field of a contact."),
-        value: contactShare.name.middleName,
+        value: contactShareDraft.name.middleName,
         delegate: self
     )
     private lazy var familyNameView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_FAMILY_NAME", comment: "Label for the 'family name' field of a contact."),
-        value: contactShare.name.familyName,
+        value: contactShareDraft.name.familyName,
         delegate: self
     )
     private lazy var nameSuffixView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_NAME_SUFFIX", comment: "Label for the 'name suffix' field of a contact."),
-        value: contactShare.name.nameSuffix,
+        value: contactShareDraft.name.nameSuffix,
         delegate: self
     )
     private lazy var organizationNameView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_ORGANIZATION", comment: "Label for the 'organization' field of a contact."),
-        value: contactShare.name.organizationName,
+        value: contactShareDraft.name.organizationName,
         delegate: self
     )
 
@@ -110,8 +110,8 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
 
     // MARK: Initializers
 
-    required public init(contactShare: ContactShareViewModel, delegate: EditContactShareNameViewControllerDelegate) {
-        self.contactShare = contactShare
+    required public init(contactShareDraft: ContactShareDraft, delegate: EditContactShareNameViewControllerDelegate) {
+        self.contactShareDraft = contactShareDraft
         self.editingDelegate = delegate
 
         super.init()

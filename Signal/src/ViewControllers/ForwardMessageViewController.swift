@@ -391,12 +391,7 @@ extension ForwardMessageViewController {
             }
         } else if let contactShare = item.contactShare {
             return send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
-                if let avatarImage = contactShare.avatarImage {
-                    self.databaseStorage.write { transaction in
-                        contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
-                    }
-                }
-                return self.send(contactShare: contactShare, thread: recipientThread)
+                return self.send(contactShare: contactShare.copyForResending(), thread: recipientThread)
             }
         } else if let attachments = item.attachments,
                   !attachments.isEmpty {
@@ -442,8 +437,8 @@ extension ForwardMessageViewController {
         return Promise.value(())
     }
 
-    fileprivate func send(contactShare: ContactShareViewModel, thread: TSThread) -> Promise<Void> {
-        ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, thread: thread)
+    fileprivate func send(contactShare: ContactShareDraft, thread: TSThread) -> Promise<Void> {
+        ThreadUtil.enqueueMessage(withContactShare: contactShare, thread: thread)
         return Promise.value(())
     }
 
@@ -797,7 +792,7 @@ public struct ForwardMessageItem {
 
         if shouldHaveAttachments {
             if let oldContactShare = componentState.contactShareModel {
-                builder.contactShare = oldContactShare.copyForResending()
+                builder.contactShare = oldContactShare.copyForRendering()
             }
 
             var attachmentStreams = [TSAttachmentStream]()

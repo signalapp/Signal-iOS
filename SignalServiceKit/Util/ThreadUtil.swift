@@ -51,20 +51,24 @@ public final class ThreadUtil: Dependencies {
 public extension ThreadUtil {
 
     @discardableResult
-    class func enqueueMessage(withContactShare contactShare: OWSContact, thread: TSThread) -> TSOutgoingMessage {
+    class func enqueueMessage(
+        withContactShare contactShareDraft: ContactShareDraft,
+        thread: TSThread
+    ) -> TSOutgoingMessage {
         AssertIsOnMainThread()
-        assert(contactShare.isValid)
+        assert(contactShareDraft.ows_isValid)
 
         let builder = TSOutgoingMessageBuilder(thread: thread)
-        builder.contactShare = contactShare
 
         let message: TSOutgoingMessage = databaseStorage.read { tx in
             applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
             return builder.build(transaction: tx)
         }
 
-        // TODO: contact share should be passed as a "draft" to the unprepared message.
-        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(message)
+        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+            message,
+            contactShareDraft: contactShareDraft
+        )
 
         Self.enqueueSendAsyncWrite { transaction in
             guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {

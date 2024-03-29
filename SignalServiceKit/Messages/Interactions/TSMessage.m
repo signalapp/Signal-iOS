@@ -538,6 +538,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) { message.messageSticker = messageSticker; }];
 }
 
+- (void)updateWithContactShare:(OWSContact *)contactShare transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(contactShare);
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) { message.contactShare = contactShare; }];
+}
+
 #ifdef TESTABLE_BUILD
 
 // This method is for testing purposes only.

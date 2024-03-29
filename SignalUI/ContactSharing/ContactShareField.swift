@@ -8,7 +8,7 @@ import SignalServiceKit
 protocol ContactShareField: AnyObject {
     var isIncluded: Bool { get set }
     var localizedLabel: String { get }
-    func applyToContact(contact: ContactShareViewModel)
+    func applyToContact(contact: ContactShareDraft)
 }
 
 class ContactShareFieldBase<ContactFieldType: OWSContactField>: ContactShareField {
@@ -30,14 +30,14 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: ContactShareFiel
         return value.localizedLabel
     }
 
-    func applyToContact(contact: ContactShareViewModel) {
+    func applyToContact(contact: ContactShareDraft) {
         fatalError("applyToContact(contact:) has not been implemented")
     }
 }
 
 class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 
-    override func applyToContact(contact: ContactShareViewModel) {
+    override func applyToContact(contact: ContactShareDraft) {
         owsAssert(isIncluded)
 
         var values = [OWSContactPhoneNumber]()
@@ -49,7 +49,7 @@ class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 
 class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 
-    override func applyToContact(contact: ContactShareViewModel) {
+    override func applyToContact(contact: ContactShareDraft) {
         owsAssert(isIncluded)
 
         var values = [OWSContactEmail]()
@@ -61,7 +61,7 @@ class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 
 class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 
-    override func applyToContact(contact: ContactShareViewModel) {
+    override func applyToContact(contact: ContactShareDraft) {
         owsAssert(isIncluded)
 
         var values = [OWSContactAddress]()
@@ -91,7 +91,7 @@ class OWSContactAvatar: NSObject, OWSContactField {
 
 class ContactShareAvatarField: ContactShareFieldBase<OWSContactAvatar> {
 
-    override func applyToContact(contact: ContactShareViewModel) {
+    override func applyToContact(contact: ContactShareDraft) {
         owsAssert(isIncluded)
 
         contact.avatarImageData = value.avatarData

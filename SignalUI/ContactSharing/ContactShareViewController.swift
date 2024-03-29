@@ -8,7 +8,7 @@ import SignalServiceKit
 public protocol ContactShareViewControllerDelegate: AnyObject {
 
     func contactShareViewController(_ viewController: ContactShareViewController,
-                                    didApproveContactShare contactShare: ContactShareViewModel)
+                                    didApproveContactShare contactShare: ContactShareDraft)
 
     func contactShareViewControllerDidCancel(_ viewController: ContactShareViewController)
 
@@ -29,11 +29,11 @@ public class ContactShareViewController: OWSTableViewController2 {
 
     // MARK: Contact data
 
-    private var contactShare: ContactShareViewModel
+    private var contactShareDraft: ContactShareDraft
 
     private lazy var avatarField: ContactShareField? = {
-        guard let avatarData = contactShare.avatarImageData else { return nil }
-        guard let avatarImage = contactShare.avatarImage else {
+        guard let avatarData = contactShareDraft.avatarImageData else { return nil }
+        guard let avatarImage = contactShareDraft.avatarImage else {
             owsFailDebug("could not load avatar image.")
             return nil
         }
@@ -43,15 +43,15 @@ public class ContactShareViewController: OWSTableViewController2 {
     private lazy var contactShareFields: [ContactShareField] = {
         var fields = [ContactShareField]()
 
-        fields += contactShare.phoneNumbers.map { ContactSharePhoneNumber($0) }
-        fields += contactShare.emails.map { ContactShareEmail($0) }
-        fields += contactShare.addresses.map { ContactShareAddress($0) }
+        fields += contactShareDraft.phoneNumbers.map { ContactSharePhoneNumber($0) }
+        fields += contactShareDraft.emails.map { ContactShareEmail($0) }
+        fields += contactShareDraft.addresses.map { ContactShareAddress($0) }
 
         return fields
     }()
 
-    private func filteredContactShare() -> ContactShareViewModel {
-        let result = contactShare.newContact(withName: contactShare.name)
+    private func filteredContactShare() -> ContactShareDraft {
+        let result = contactShareDraft.newContact(withName: contactShareDraft.name)
 
         if let avatarField, avatarField.isIncluded {
             avatarField.applyToContact(contact: result)
@@ -68,8 +68,8 @@ public class ContactShareViewController: OWSTableViewController2 {
 
     // MARK: UIViewController
 
-    required public init(contactShare: ContactShareViewModel) {
-        self.contactShare = contactShare
+    required public init(contactShareDraft: ContactShareDraft) {
+        self.contactShareDraft = contactShareDraft
 
         super.init()
     }
@@ -125,7 +125,7 @@ public class ContactShareViewController: OWSTableViewController2 {
         // Name
         tableItems.append(OWSTableItem(
             customCellBlock: { [weak self] in
-                guard let contactName = self?.contactShare.displayName else {
+                guard let contactName = self?.contactShareDraft.displayName else {
                     return OWSTableItem.newCell()
                 }
                 return ContactShareFieldCell.contactNameCell(for: contactName)
@@ -185,7 +185,7 @@ public class ContactShareViewController: OWSTableViewController2 {
 
         guard isAtLeastOneFieldSelected() else { return }
 
-        guard contactShare.ows_isValid else {
+        guard contactShareDraft.ows_isValid else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("CONTACT_SHARE_INVALID_CONTACT",
                                                                        comment: "Error indicating that an invalid contact cannot be shared."))
             return
@@ -211,7 +211,7 @@ public class ContactShareViewController: OWSTableViewController2 {
     }
 
     private func openContactNameEditingView() {
-        let view = EditContactShareNameViewController(contactShare: contactShare, delegate: self)
+        let view = EditContactShareNameViewController(contactShareDraft: contactShareDraft, delegate: self)
         navigationController?.pushViewController(view, animated: true)
     }
 
@@ -301,7 +301,7 @@ extension ContactShareViewController: EditContactShareNameViewControllerDelegate
 
     public func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController,
                                          didFinishWith contactName: OWSContactName) {
-        contactShare = contactShare.copy(withName: contactName)
+        contactShareDraft.name = contactName
         tableView.reloadData()
     }
 }

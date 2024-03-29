@@ -54,7 +54,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     }()
 
     var approvedAttachments: [SignalAttachment]?
-    var approvedContactShare: ContactShareViewModel?
+    var approvedContactShare: ContactShareDraft?
     var approvalMessageBody: MessageBody?
     var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
 
@@ -162,15 +162,18 @@ extension SharingThreadPickerViewController {
                 throw OWSAssertionError("Missing or invalid contact data for contact share attachment")
             }
 
-            let contactShare = databaseStorage.read { tx in
-                return ContactShareViewModel.load(
+            let contactShareDraft = databaseStorage.read { tx in
+                return ContactShareDraft.load(
                     cnContact: cnContact,
                     signalContact: Contact(systemContact: cnContact),
+                    contactsManager: Self.contactsManager,
+                    profileManager: Self.profileManager,
+                    recipientManager: DependenciesBridge.shared.recipientManager,
                     tx: tx
                 )
             }
 
-            let approvalView = ContactShareViewController(contactShare: contactShare)
+            let approvalView = ContactShareViewController(contactShareDraft: contactShareDraft)
             approvalVC = approvalView
             approvalView.shareDelegate = self
 
@@ -263,12 +266,13 @@ extension SharingThreadPickerViewController {
                 return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                     return self.databaseStorage.write { transaction in
                         let builder = TSOutgoingMessageBuilder(thread: thread)
-                        // TODO: this should be a "draft contact share" sent to the unprepared message
-                        builder.contactShare = contactShare.dbRecord
                         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
                         builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
                         let message = builder.build(transaction: transaction)
-                        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(message)
+                        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+                            message,
+                            contactShareDraft: contactShare
+                        )
                         do {
                             let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
                             self.outgoingMessages.append(preparedMessage)
@@ -657,7 +661,7 @@ extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate 
 
 extension SharingThreadPickerViewController: ContactShareViewControllerDelegate {
 
-    func contactShareViewController(_ viewController: ContactShareViewController, didApproveContactShare contactShare: ContactShareViewModel) {
+    func contactShareViewController(_ viewController: ContactShareViewController, didApproveContactShare contactShare: ContactShareDraft) {
         approvedContactShare = contactShare
         send()
     }

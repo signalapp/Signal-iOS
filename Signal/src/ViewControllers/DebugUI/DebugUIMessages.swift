@@ -2554,8 +2554,21 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     )
                     contact.addresses = [ address1, address2 ]
 
-                    let avatarImage = AvatarBuilder.buildRandomAvatar(diameterPoints: 200)!
-                    contact.saveAvatarImage(avatarImage, transaction: transaction)
+                    let avatarData = AvatarBuilder
+                        .buildRandomAvatar(diameterPoints: 200)!
+                        .jpegData(compressionQuality: 0.9)!
+
+                    let attachmentStream = TSAttachmentStream(
+                        contentType: OWSMimeTypeImageJpeg,
+                        byteCount: UInt32(avatarData.count),
+                        sourceFilename: nil,
+                        caption: nil,
+                        attachmentType: .default,
+                        albumMessageId: nil
+                    )
+                    try! attachmentStream.write(avatarData)
+                    attachmentStream.anyInsert(transaction: transaction)
+                    contact.setLegacyAvatarAttachmentId(attachmentStream.uniqueId)
 
                     return contact
                 }

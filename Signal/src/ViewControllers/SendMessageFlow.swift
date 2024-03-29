@@ -112,7 +112,7 @@ enum SendMessageUnapprovedContent {
 
 enum SendMessageApprovedContent {
     case text(messageBody: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?)
-    case contactShare(contactShare: ContactShareViewModel)
+    case contactShare(contactShare: ContactShareDraft)
     case installedSticker(stickerMetadata: StickerMetadata)
     case uninstalledSticker(stickerMetadata: StickerMetadata, stickerData: Data)
     case genericAttachment(signalAttachmentProvider: SignalAttachmentProvider)
@@ -266,7 +266,7 @@ extension SendMessageFlow {
             pushViewController(approvalView, animated: true)
         case .contactShare(let oldContactShare):
             let newContactShare = oldContactShare.copyForResending()
-            let approvalView = ContactShareViewController(contactShare: newContactShare)
+            let approvalView = ContactShareViewController(contactShareDraft: newContactShare)
             approvalView.shareDelegate = self
             pushViewController(approvalView, animated: true)
         case .media(let signalAttachmentProviders, let messageBody):
@@ -334,14 +334,7 @@ extension SendMessageFlow {
             }
         case .contactShare(let contactShare):
             return sendInEachThread { thread in
-                let contactShareCopy = contactShare.copyForResending()
-                if let avatarImage = contactShareCopy.avatarImage {
-                    self.databaseStorage.write { transaction in
-                        contactShareCopy.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
-                    }
-                }
-
-                self.send(contactShare: contactShareCopy, thread: thread)
+                self.send(contactShare: contactShare, thread: thread)
             }
         case .installedSticker(let stickerMetadata):
             let stickerInfo = stickerMetadata.stickerInfo
@@ -379,8 +372,8 @@ extension SendMessageFlow {
         }
     }
 
-    func send(contactShare: ContactShareViewModel, thread: TSThread) {
-        ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, thread: thread)
+    func send(contactShare: ContactShareDraft, thread: TSThread) {
+        ThreadUtil.enqueueMessage(withContactShare: contactShare, thread: thread)
     }
 
     func send(messageBody: MessageBody?, attachment: SignalAttachment, thread: TSThread) {
@@ -506,7 +499,7 @@ extension SendMessageFlow: TextApprovalViewControllerDelegate {
 
 extension SendMessageFlow: ContactShareViewControllerDelegate {
 
-    func contactShareViewController(_ viewController: ContactShareViewController, didApproveContactShare contactShare: ContactShareViewModel) {
+    func contactShareViewController(_ viewController: ContactShareViewController, didApproveContactShare contactShare: ContactShareDraft) {
         send(approvedContent: .contactShare(contactShare: contactShare))
     }
 

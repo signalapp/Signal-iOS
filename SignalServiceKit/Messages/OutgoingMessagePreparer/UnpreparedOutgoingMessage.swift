@@ -19,7 +19,8 @@ public class UnpreparedOutgoingMessage {
         unsavedBodyAttachments: [AttachmentDataSource] = [],
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
-        messageStickerDraft: MessageStickerDraft? = nil
+        messageStickerDraft: MessageStickerDraft? = nil,
+        contactShareDraft: ContactShareDraft? = nil
     ) -> UnpreparedOutgoingMessage {
         if let editMessage = message as? OutgoingEditMessage {
             owsAssertDebug(messageStickerDraft == nil, "Can't edit sticker messages")
@@ -46,7 +47,8 @@ public class UnpreparedOutgoingMessage {
                 unsavedBodyAttachments: unsavedBodyAttachments,
                 linkPreviewDraft: linkPreviewDraft,
                 quotedReplyDraft: quotedReplyDraft,
-                messageStickerDraft: messageStickerDraft
+                messageStickerDraft: messageStickerDraft,
+                contactShareDraft: contactShareDraft
             )))
         }
     }
@@ -125,6 +127,7 @@ public class UnpreparedOutgoingMessage {
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
             let messageStickerDraft: MessageStickerDraft?
+            let contactShareDraft: ContactShareDraft?
         }
 
         struct EditMessage {
@@ -220,6 +223,7 @@ public class UnpreparedOutgoingMessage {
         let linkPreviewDraft: OWSLinkPreviewDraft?
         let quotedReplyDraft: DraftQuotedReplyModel?
         let messageStickerDraft: MessageStickerDraft?
+        let contactShareDraft: ContactShareDraft?
 
         switch type {
         case .persistable(let persistable):
@@ -229,6 +233,7 @@ public class UnpreparedOutgoingMessage {
             linkPreviewDraft = persistable.linkPreviewDraft
             quotedReplyDraft = persistable.quotedReplyDraft
             messageStickerDraft = persistable.messageStickerDraft
+            contactShareDraft = persistable.contactShareDraft
         case .editMessage(let editMessage):
             thread = editMessage.editedMessage.thread(tx: tx)
             attachmentOwnerMessage = editMessage.editedMessage
@@ -237,6 +242,8 @@ public class UnpreparedOutgoingMessage {
             quotedReplyDraft = editMessage.quotedReplyDraft
             // Note: no sticker because you can't edit sticker messages
             messageStickerDraft = nil
+            // Note: no contact share because you can't edit contact share messages
+            contactShareDraft = nil
         }
 
         guard let thread else {
@@ -273,6 +280,13 @@ public class UnpreparedOutgoingMessage {
                 attachmentOwnerMessage.update(with: builder.info, transaction: tx)
             }
             return builder
+        }
+
+        let contactShareBuilder = contactShareDraft.flatMap {
+            return try? $0.builderForSending(tx: tx)
+        }.map {
+            attachmentOwnerMessage.update(withContactShare: $0.info, transaction: tx)
+            return $0
         }
 
         let attachmentOwnerMessageRowId = try {
@@ -328,6 +342,11 @@ public class UnpreparedOutgoingMessage {
         if let stickerInfo = messageStickerBuilder?.info {
             StickerManager.stickerWasSent(stickerInfo.info, transaction: tx)
         }
+
+        try? contactShareBuilder?.finalize(
+            owner: .messageContactAvatar(messageRowId: attachmentOwnerMessageRowId),
+            tx: tx.asV2Write
+        )
 
         let legacyAttachmentIdsForUpload: [String] = Self.fetchLegacyAttachmentIdsForUpload(
             persistedMessage: attachmentOwnerMessage

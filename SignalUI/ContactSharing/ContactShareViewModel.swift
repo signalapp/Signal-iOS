@@ -31,43 +31,6 @@ public class ContactShareViewModel: NSObject {
         return cachedAvatarImage
     }
 
-    public static func load(
-        cnContact: CNContact,
-        signalContact: @autoclosure () -> Contact,
-        tx: SDSAnyReadTransaction
-    ) -> ContactShareViewModel {
-        let contactShareRecord = OWSContact(cnContact: cnContact)
-        let avatarData = loadAvatarData(cnContact: cnContact, signalContact: signalContact(), tx: tx)
-        return ContactShareViewModel(
-            contactShareRecord: contactShareRecord,
-            avatarImageData: avatarData
-        )
-    }
-
-    private static func loadAvatarData(
-        cnContact: CNContact,
-        signalContact: @autoclosure () -> Contact,
-        tx: SDSAnyReadTransaction
-    ) -> Data? {
-        if let systemAvatarImageData = contactsManager.avatarData(for: cnContact.identifier) {
-            return systemAvatarImageData
-        }
-
-        let recipientManager = DependenciesBridge.shared.recipientManager
-        let profileAvatarData: Data? = signalContact().e164sForIntersection.lazy.compactMap { phoneNumber in
-            let recipient = recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber, tx: tx.asV2Read)
-            guard let recipient else {
-                return nil
-            }
-            return profileManager.profileAvatarData(for: recipient.address, transaction: tx)
-        }.first
-        if let profileAvatarData {
-            return profileAvatarData
-        }
-
-        return nil
-    }
-
     public required init(contactShareRecord: OWSContact, avatarImageData: Data?) {
         self.dbRecord = contactShareRecord
         self.avatarImageData = avatarImageData
@@ -166,24 +129,19 @@ public class ContactShareViewModel: NSObject {
         return dbRecord.name.displayName
     }
 
-    public var ows_isValid: Bool {
-        return dbRecord.isValid
+    public func copyForResending() -> ContactShareDraft {
+        return ContactShareDraft(
+            name: name,
+            addresses: addresses,
+            emails: emails,
+            phoneNumbers: phoneNumbers,
+            // TODO: should use the existing attachment so that we
+            // create a new reference to it rather than recreating.
+            avatarImageData: avatarImageData
+        )
     }
 
-    public func copy(withName name: OWSContactName) -> ContactShareViewModel {
-
-        // TODO move the `copy` logic into the view model?
-        let newDbRecord = dbRecord.copy(with: name)
-
-        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: self.avatarImageData)
-    }
-
-    public func newContact(withName name: OWSContactName) -> ContactShareViewModel {
-        // If we want to keep the avatar image, the caller will need to re-apply it.
-        return ContactShareViewModel(contactShareRecord: OWSContact(name: name), avatarImageData: nil)
-    }
-
-    public func copyForResending() -> ContactShareViewModel {
+    public func copyForRendering() -> ContactShareViewModel {
         let newDbRecord = dbRecord.copy() as! OWSContact
         return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: avatarImageData)
     }

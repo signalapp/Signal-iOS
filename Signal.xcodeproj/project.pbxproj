@@ -823,6 +823,7 @@
 		664BA8422BB5CE04005638E0 /* OutgoingMessagePreparer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8412BB5CE04005638E0 /* OutgoingMessagePreparer.swift */; };
 		664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */; };
 		664BA8472BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */; };
+		664BA84A2BB5DFE1005638E0 /* ContactShareDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */; };
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
 		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
 		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
@@ -3647,6 +3648,7 @@
 		664BA8412BB5CE04005638E0 /* OutgoingMessagePreparer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingMessagePreparer.swift; sourceTree = "<group>"; };
 		664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedOutgoingMessage.swift; sourceTree = "<group>"; };
 		664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnpreparedOutgoingMessage.swift; sourceTree = "<group>"; };
+		664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareDraft.swift; sourceTree = "<group>"; };
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
 		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
 		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
@@ -7209,6 +7211,15 @@
 			path = OutgoingMessagePreparer;
 			sourceTree = "<group>";
 		};
+		664BA8482BB5DF44005638E0 /* ContactShare */ = {
+			isa = PBXGroup;
+			children = (
+				664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */,
+				763A15FF2AEC3A490081D7E5 /* OWSContact.swift */,
+			);
+			path = ContactShare;
+			sourceTree = "<group>";
+		};
 		66533E3529B7B53500E8D928 /* WhoAmI */ = {
 			isa = PBXGroup;
 			children = (
@@ -9904,12 +9915,12 @@
 		F9C5C8D8289453B100548EEE /* Interactions */ = {
 			isa = PBXGroup;
 			children = (
+				664BA8482BB5DF44005638E0 /* ContactShare */,
 				669FAE162B7A8DA4009EE2FE /* LinkPreview */,
 				669FAE0C2B744BA4009EE2FE /* Quotes */,
 				667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */,
 				50468F2829EE130A00948E02 /* InteractionStore.swift */,
 				F9C5C8EB289453B100548EEE /* MentionFinder.swift */,
-				763A15FF2AEC3A490081D7E5 /* OWSContact.swift */,
 				F9C5C908289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift */,
 				F9C5C8F1289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h */,
 				F9C5C90E289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.m */,
@@ -13134,6 +13145,7 @@
 				66C2B1542A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift in Sources */,
 				506A99D42B86B39F00E3C753 /* ContactManager.swift in Sources */,
 				7254655D2BA0294100EABFD2 /* ContactOutputStream.swift in Sources */,
+				664BA84A2BB5DFE1005638E0 /* ContactShareDraft.swift in Sources */,
 				F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */,
 				7254651B2BA00F8D00EABFD2 /* ContactsMaps.swift in Sources */,
 				7254655C2BA0293900EABFD2 /* ContactSyncAttachmentBuilder.swift in Sources */,
