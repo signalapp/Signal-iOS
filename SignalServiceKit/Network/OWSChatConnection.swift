@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public enum OWSChatConnectionType: Int, CaseIterable, CustomDebugStringConvertible {
@@ -43,7 +44,7 @@ public enum OWSChatConnectionState: Int, CustomDebugStringConvertible {
 
 public class OWSChatConnection: NSObject {
     // Track where Dependencies are used throughout this class.
-    private struct GlobalDependencies: Dependencies {}
+    fileprivate struct GlobalDependencies: Dependencies {}
 
     public static let chatConnectionStateDidChange = Notification.Name("chatConnectionStateDidChange")
 
@@ -54,14 +55,14 @@ public class OWSChatConnection: NSObject {
 
     // MARK: -
 
-    private let type: OWSChatConnectionType
-    private let appExpiry: AppExpiry
-    private let db: DB
+    fileprivate let type: OWSChatConnectionType
+    fileprivate let appExpiry: AppExpiry
+    fileprivate let db: DB
 
     private static let socketReconnectDelaySeconds: TimeInterval = 5
 
     private var _currentWebSocket = AtomicOptional<WebSocketConnection>(nil, lock: .sharedGlobal)
-    private var currentWebSocket: WebSocketConnection? {
+    fileprivate var currentWebSocket: WebSocketConnection? {
         get {
             _currentWebSocket.get()
         }
@@ -203,7 +204,7 @@ public class OWSChatConnection: NSObject {
         }
     }
 
-    private var logPrefix: String {
+    fileprivate var logPrefix: String {
         if let currentWebSocket = currentWebSocket {
             return currentWebSocket.logPrefix
         } else {
@@ -798,7 +799,7 @@ public class OWSChatConnection: NSObject {
     // keep the app alive in the background.
     private var backgroundKeepAliveBackgroundTask: OWSBackgroundTask?
 
-    private func ensureWebsocketExists() {
+    fileprivate func ensureWebsocketExists() {
         assertOnQueue(serialQueue)
 
         // Try to reuse the existing socket (if any) if it is in a valid state.
@@ -1364,5 +1365,209 @@ private class WebSocketConnection {
                                   status: UInt32,
                                   message: String) throws {
         try webSocket.sendResponse(for: request, status: status, message: message)
+    }
+}
+
+internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnection {
+    private var chatService: ChatService
+
+    private var _shadowingFrequency: Double
+    private var shadowingFrequency: Double {
+        get {
+            assertOnQueue(serialQueue)
+            return _shadowingFrequency
+        }
+        set {
+            assertOnQueue(serialQueue)
+            _shadowingFrequency = newValue
+        }
+    }
+
+    private var previousUnexpectedReconnectsForThisInstance = AtomicUInt(lock: .init())
+
+    private let statsStore: SDSKeyValueStore = SDSKeyValueStore(collection: "OWSChatConnectionWithLibSignalShadowing")
+
+    private struct Stats: Codable {
+        var requestsCompared: UInt64 = 0
+        var healthcheckBadStatusCount: UInt64 = 0
+        var unexpectedReconnects: UInt64 = 0
+        var healthcheckFailures: UInt64 = 0
+        var requestsDuringInactive: UInt64 = 0
+        var lastNotifyTimestamp: Date = Date(timeIntervalSince1970: 0)
+
+        mutating func notifyAndResetIfNeeded() {
+            if shouldNotify() {
+                GlobalDependencies.notificationPresenter.notifyTestPopulation(ofErrorMessage: "Experimental WebSocket Transport is seeing too many errors")
+                self = Stats()
+                self.lastNotifyTimestamp = Date()
+            }
+        }
+
+        func shouldNotify() -> Bool {
+            if requestsCompared < 1000 {
+                return false
+            }
+            if abs(self.lastNotifyTimestamp.timeIntervalSinceNow) < 24 * 60 * 60 {
+                return false
+            }
+            return healthcheckBadStatusCount + healthcheckFailures > 20 || requestsDuringInactive > 50 || unexpectedReconnects > 50
+        }
+    }
+
+    internal init(chatService: ChatService, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB, shadowingFrequency: Double) {
+        owsAssert((0.0...1.0).contains(shadowingFrequency))
+        self.chatService = chatService
+        self._shadowingFrequency = shadowingFrequency
+        super.init(type: type, appExpiry: appExpiry, db: db)
+    }
+
+    private func shouldSendShadowRequest() -> Bool {
+        assertOnQueue(serialQueue)
+        if CurrentAppContext().isRunningTests {
+            return false
+        }
+        if GlobalDependencies.signalService.isCensorshipCircumventionManuallyDisabled {
+            // libsignal-net currently always tries censorship circumvention mode as a fallback,
+            // so it should work in scenarios where CC is *on*.
+            return false
+        }
+        if SignalProxy.isEnabled {
+            // libsignal-net does not yet support proxies.
+            return false
+        }
+        return shadowingFrequency == 1.0 || Double.random(in: 0.0..<1.0) < shadowingFrequency
+    }
+
+    internal func updateShadowingFrequency(_ newFrequency: Double) {
+        owsAssert((0.0...1.0).contains(newFrequency))
+        serialQueue.async {
+            self.shadowingFrequency = newFrequency
+        }
+    }
+
+    fileprivate override func ensureWebsocketExists() {
+        super.ensureWebsocketExists()
+        // We do this asynchronously, the same way ensureWebsocketExists() is itself invoked asynchronously.
+        // There is *technically* a chance of spuriously failing a future request,
+        // since we never check for success:
+        // 1. The SSKWebSocket-based chat socket opens.
+        // 2. This Task starts, but gets suspended at connectUnauthenticated().
+        // 3. An entire request succeeds on the SSKWebSocket-based socket.
+        // 4. A shadowing request Task is kicked off.
+        // 5. The shadowing request fails because (2) never got through to the underlying socket.
+        // This is *extremely* unlikely, though. These get tracked like premature disconnects (discussed below).
+        Task {
+            do {
+                owsAssertDebug(type == .unidentified)
+                try await chatService.connectUnauthenticated()
+            } catch {
+                Logger.error("\(logPrefix): failed to connect libsignal ")
+            }
+        }
+    }
+
+    fileprivate override var currentWebSocket: WebSocketConnection? {
+        get { super.currentWebSocket }
+        set {
+            super.currentWebSocket = newValue
+            if newValue == nil {
+                // This is a disconnect.
+                // Doing this asynchronously means there is a chance of spuriously failing a future shadow request:
+                // 1. An entire request succeeds on the SSKWebSocket-based socket.
+                // 2. The libsignal web socket is disconnected.
+                // 3. The shadow request on the libsignal is thus cancelled.
+                // We track these errors separately just in case.
+                Task {
+                    do {
+                        try await chatService.disconnect()
+                    } catch {
+                        Logger.error("\(logPrefix): failed to disconnect libsignal: \(error)")
+                    }
+                }
+            }
+        }
+    }
+
+    fileprivate override func makeRequestInternal(_ request: TSRequest,
+                                                  unsubmittedRequestToken: UnsubmittedRequestToken,
+                                                  success: @escaping RequestSuccessInternal,
+                                                  failure: @escaping RequestFailure) {
+        super.makeRequestInternal(request, unsubmittedRequestToken: unsubmittedRequestToken, success: { [weak self] response, requestInfo in
+            success(response, requestInfo)
+            if let self, self.shouldSendShadowRequest() {
+                let shouldNotify = self.shadowingFrequency == 1.0
+                Task {
+                    await self.sendShadowRequest(notifyOnFailure: shouldNotify)
+                }
+            }
+        }, failure: failure)
+    }
+
+    private func sendShadowRequest(notifyOnFailure: Bool) async {
+        let updateStatsAsync = { (modify: @escaping (inout Stats) -> Void) in
+            // We care that stats are updated atomically, but not urgently.
+            self.db.asyncWrite { [weak self] transaction in
+                guard let self else {
+                    return
+                }
+                let key = "Stats-\(self.type)"
+
+                var stats: Stats
+                do {
+                    stats = try self.statsStore.getCodableValue(forKey: key, transaction: transaction) ?? Stats()
+                } catch {
+                    owsFailDebug("Failed to load stats (resetting): \(error)")
+                    stats = Stats()
+                }
+
+                modify(&stats)
+                if notifyOnFailure {
+                    stats.notifyAndResetIfNeeded()
+                }
+
+                do {
+                    try self.statsStore.setCodable(stats, key: key, transaction: transaction)
+                } catch {
+                    owsFailDebug("Failed to update stats: \(error)")
+                }
+            }
+        }
+
+        do {
+            let (healthCheckResult, debugInfo) = try await chatService.unauthenticatedSendAndDebug(.init(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 2))
+            let succeeded = (200...299).contains(healthCheckResult.status)
+            if !succeeded {
+                Logger.warn("\(logPrefix): keepalive via libsignal responded with status [\(healthCheckResult.status)]")
+            }
+
+            updateStatsAsync { [previousUnexpectedReconnectsForThisInstance] stats in
+                stats.requestsCompared += 1
+
+                if !succeeded {
+                    stats.healthcheckBadStatusCount += 1
+                }
+
+                if debugInfo.reconnectCount > 0 {
+                    let previousUnexpectedReconnects = previousUnexpectedReconnectsForThisInstance.swap(UInt(debugInfo.reconnectCount))
+                    if debugInfo.reconnectCount > previousUnexpectedReconnects {
+                        stats.unexpectedReconnects += UInt64(debugInfo.reconnectCount) - UInt64(previousUnexpectedReconnects)
+                    } else {
+                        // Maybe we're processing results out of order. Just put the previous number back.
+                        // This isn't atomic, but we're in a DB write transaction anyway, so we effectively have a lock.
+                        previousUnexpectedReconnectsForThisInstance.set(previousUnexpectedReconnects)
+                    }
+                }
+            }
+        } catch {
+            Logger.warn("\(logPrefix): failed to send keepalive via libsignal: \(error)")
+            updateStatsAsync {
+                switch error {
+                case SignalError.chatServiceInactive(_):
+                    $0.requestsDuringInactive += 1
+                default:
+                    $0.healthcheckFailures += 1
+                }
+            }
+        }
     }
 }

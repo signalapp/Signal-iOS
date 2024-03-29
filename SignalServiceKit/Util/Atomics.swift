@@ -80,6 +80,10 @@ public class AtomicUInt {
         self.value.set(value)
     }
 
+    public func swap(_ value: UInt) -> UInt {
+        self.value.swap(value)
+    }
+
     @discardableResult
     public func increment() -> UInt {
         value.map { $0 + 1 }

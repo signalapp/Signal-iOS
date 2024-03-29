@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public protocol ChatConnectionManager {
@@ -22,7 +23,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     private let connectionUnidentified: OWSChatConnection
     private var connections: [OWSChatConnection] { [ connectionIdentified, connectionUnidentified ]}
 
-    public required init(appExpiry: AppExpiry, db: DB) {
+    public init(appExpiry: AppExpiry, db: DB, libsignalNet: Net) {
         AssertIsOnMainThread()
 
         connectionIdentified = OWSChatConnection(
@@ -30,11 +31,24 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             appExpiry: appExpiry,
             db: db
         )
-        connectionUnidentified = OWSChatConnection(
+
+        let chatService = libsignalNet.createChatService(username: "", password: "")
+        let shadowingConnection = OWSChatConnectionWithLibSignalShadowing(
+            chatService: chatService,
             type: .unidentified,
             appExpiry: appExpiry,
-            db: db
+            db: db,
+            shadowingFrequency: 0.0
         )
+        // RemoteConfig isn't available while we're still setting up singletons,
+        // so we might not shadow the first few requests.
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            let frequency = RemoteConfig.experimentalTransportShadowingHigh ? 1.0 : 0.1
+            Logger.info("Using unauth OWSChatConnectionWithLibSignalShadowing, shadowing frequency \(frequency)")
+            shadowingConnection.updateShadowingFrequency(frequency)
+        }
+
+        connectionUnidentified = shadowingConnection
 
         SwiftSingletons.register(self)
     }

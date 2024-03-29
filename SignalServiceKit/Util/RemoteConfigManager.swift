@@ -259,6 +259,10 @@ public class RemoteConfig: NSObject {
         ))
     }
 
+    public static var experimentalTransportShadowingHigh: Bool {
+        return isEnabled(.experimentalTransportShadowingHigh, defaultValue: DebugFlags.internalLogging)
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -471,6 +475,7 @@ private enum IsEnabledFlag: String, FlagType {
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case enableGifSearch = "global.gifSearch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
+    case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
 
     var isSticky: Bool {
         switch self {
@@ -489,7 +494,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
         case .enableGifSearch: fallthrough
-        case .serviceExtensionFailureKillSwitch:
+        case .serviceExtensionFailureKillSwitch: fallthrough
+        case .experimentalTransportShadowingHigh:
             return false
         }
     }
@@ -511,7 +517,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalMonthlyDonationKillSwitch: fallthrough
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
-        case .enableGifSearch:
+        case .enableGifSearch: fallthrough
+        case .experimentalTransportShadowingHigh:
             return false
         }
     }

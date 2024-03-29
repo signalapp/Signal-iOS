@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public class AppSetup {
@@ -510,7 +511,8 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let chatConnectionManager = ChatConnectionManagerImpl(appExpiry: appExpiry, db: db)
+        let libsignalNet = Net(env: TSConstants.isUsingProductionService ? .production : .staging)
+        let chatConnectionManager = ChatConnectionManagerImpl(appExpiry: appExpiry, db: db, libsignalNet: libsignalNet)
         let preKeyManager = PreKeyManagerImpl(
             dateProvider: dateProvider,
             db: db,
