@@ -18,6 +18,17 @@ extension AttachmentReference {
         case storyMessageMedia = 6
         case storyMessageLinkPreview = 7
         case threadWallpaperImage = 8
+
+        static var allMessageCases: [OwnerTypeRaw] {
+            [
+                .messageBodyAttachment,
+                .messageOversizeText,
+                .messageLinkPreview,
+                .quotedReplyAttachment,
+                .messageSticker,
+                .messageContactAvatar,
+            ]
+        }
     }
 
     /// What "owns" this attachment, as stored in the sql table column.

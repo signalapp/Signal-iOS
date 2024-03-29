@@ -121,6 +121,40 @@ public class TSAttachmentStore {
         return exists
     }
 
+    public func allAttachments(for message: TSMessage, tx: SDSAnyReadTransaction) -> [TSAttachmentReference] {
+        var uniqueIds = Set<String>()
+
+        uniqueIds.formUnion(message.attachmentIds)
+
+        if let attachmentId = message.linkPreview?.legacyImageAttachmentId?.nilIfEmpty {
+            uniqueIds.insert(attachmentId)
+        }
+
+        if let attachmentId = message.messageSticker?.legacyAttachmentId {
+            uniqueIds.insert(attachmentId)
+        }
+
+        if let attachmentId = message.quotedMessage?.attachmentInfo()?.attachmentId {
+            uniqueIds.insert(attachmentId)
+        }
+
+        if let attachmentId = message.contactShare?.legacyAvatarAttachmentId {
+            uniqueIds.insert(attachmentId)
+        }
+
+        if uniqueIds.isEmpty { return [] }
+
+        let idArray = Array(uniqueIds)
+
+        let attachments = Dictionary(
+            grouping: self.attachments(withAttachmentIds: idArray, tx: tx),
+            by: \.uniqueId
+        )
+        return idArray.map {
+            TSAttachmentReference(uniqueId: $0, attachment: attachments[$0]?.first)
+        }
+    }
+
     public func attachmentToUseInQuote(
         originalMessage: TSMessage,
         tx: SDSAnyReadTransaction

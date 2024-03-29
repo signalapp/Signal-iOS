@@ -39,26 +39,35 @@ public class TSResourceStoreImpl: TSResourceStore {
     // MARK: - Message Attachment fetching
 
     public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
-        // TODO: we can make this method more efficient if its more knowledgeable
-        // For v1, just grab all the fields one by one.
-        // For v2, do a single fetch with all message owner types.
-        var ids = Set<TSResourceId>()
+        let v2References: [TSResourceReference]
 
-        return (self.bodyAttachments(for: message, tx: tx) + [
-            self.quotedThumbnailAttachment(for: message, tx: tx),
-            self.contactShareAvatarAttachment(for: message, tx: tx),
-            self.linkPreviewAttachment(for: message, tx: tx),
-            self.stickerAttachment(for: message, tx: tx)
-        ]).compactMap { reference in
-            guard
-                let reference,
-                !ids.contains(reference.resourceId)
-            else {
-                return nil
+        if FeatureFlags.readV2Attachments {
+            guard let messageRowId = message.sqliteRowId else {
+                owsFailDebug("Fetching attachments for an un-inserted message!")
+                return []
             }
-            ids.insert(reference.resourceId)
-            return reference
+            v2References = attachmentStore
+                .fetchReferences(
+                    owners: AttachmentReference.OwnerTypeRaw.allMessageCases.map {
+                        $0.with(ownerId: messageRowId)
+                    },
+                    tx: tx
+                )
+        } else {
+            v2References = []
         }
+
+        let legacyReferences: [TSResourceReference] = tsAttachmentStore.allAttachments(
+            for: message,
+            tx: SDSDB.shimOnlyBridge(tx)
+        )
+
+        if !v2References.isEmpty && !legacyReferences.isEmpty {
+            // This isn't broken per se, things _should_ work, but it is unexpected.
+            owsFailDebug("Have both legacy and v2 references on the same attachment!")
+        }
+
+        return v2References + legacyReferences
     }
 
     public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
