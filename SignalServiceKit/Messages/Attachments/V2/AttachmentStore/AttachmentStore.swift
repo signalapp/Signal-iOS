@@ -19,6 +19,14 @@ public protocol AttachmentStore {
         ids: [Attachment.IDType],
         tx: DBReadTransaction
     ) -> [Attachment]
+
+    /// Enumerate all references to a given attachment id, calling the block for each one.
+    /// Blocks until all references have been enumerated.
+    func enumerateAllReferences(
+        toAttachmentId: Attachment.IDType,
+        tx: DBReadTransaction,
+        block: (AttachmentReference) -> Void
+    )
 }
 
 // MARK: - Convenience

@@ -23,6 +23,17 @@ open class AttachmentStoreMock: AttachmentStore {
             return ids.contains(attachment.id)
         }
     }
+
+    open func enumerateAllReferences(
+        toAttachmentId: Attachment.IDType,
+        tx: DBReadTransaction,
+        block: (AttachmentReference) -> Void
+    ) {
+        attachmentReferences
+            .lazy
+            .filter { $0.attachmentRowId == toAttachmentId }
+            .forEach(block)
+    }
 }
 
 #endif

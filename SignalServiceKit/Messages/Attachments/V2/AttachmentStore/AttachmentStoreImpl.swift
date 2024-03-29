@@ -19,6 +19,14 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func fetch(ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
         fatalError("Unimplemented")
     }
+
+    public func enumerateAllReferences(
+        toAttachmentId: Attachment.IDType,
+        tx: DBReadTransaction,
+        block: (AttachmentReference) -> Void
+    ) {
+        fatalError("Unimplemented")
+    }
 }
 
 extension AttachmentStoreImpl: AttachmentUploadStore {
