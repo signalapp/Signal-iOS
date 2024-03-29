@@ -5,6 +5,7 @@
 
 import Foundation
 import LibSignalClient
+import SignalCoreKit
 
 @objc
 public protocol TSPaymentBaseModel: AnyObject {
@@ -535,40 +536,14 @@ extension TSPaymentModel: TSPaymentBaseModel {
         return nil
     }
 
-    public var descriptionForLogs: String {
-        DebugFlags.internalLogging ? descriptionInternal : descriptionProduction
-    }
+    public var descriptionForLogs: String { buildDescription() }
 
-    public var descriptionInternal: String {
-        buildDescription(isForProduction: false)
-    }
-
-    public var descriptionProduction: String {
-        buildDescription(isForProduction: true)
-    }
-
-    private func buildDescription(isForProduction: Bool) -> String {
+    private func buildDescription() -> String {
         var components = [String]()
         components.append("paymentType: \(paymentType.formatted)")
         components.append("paymentState: \(paymentState.formatted)")
         if isFailed {
             components.append("paymentFailure: \(paymentFailure.formatted)")
-        }
-        if !isForProduction {
-            if let paymentAmount = paymentAmount {
-                components.append("paymentAmount: \(paymentAmount.formatted)")
-            }
-            if let feeAmount = mobileCoin?.feeAmount {
-                components.append("feeAmount: \(feeAmount.formatted)")
-            }
-
-            if let senderOrRecipientAci = senderOrRecipientAci {
-                components.append("senderOrRecipient: \(senderOrRecipientAci)")
-            }
-            if let memoMessage = memoMessage {
-                components.append("memoMessage: '\(memoMessage)'")
-            }
-            components.append("uniqueId: '\(uniqueId)'")
         }
         return "[" + components.joined(separator: ", ") + "]"
     }
