@@ -15,9 +15,12 @@ public class ContactShareDraft {
 
     public var phoneNumbers: [OWSContactPhoneNumber]
 
+    public var existingAvatarAttachment: ReferencedTSResource?
+
     public var avatarImageData: Data? {
         didSet {
             self.cachedAvatarImage = nil
+            existingAvatarAttachment = nil
         }
     }
 
@@ -57,6 +60,7 @@ public class ContactShareDraft {
             addresses: cnContact.postalAddresses.map(OWSContactAddress.init(cnLabeledValue:)),
             emails: cnContact.emailAddresses.map(OWSContactEmail.init(cnLabeledValue:)),
             phoneNumbers: cnContact.phoneNumbers.map(OWSContactPhoneNumber.init(cnLabeledValue:)),
+            existingAvatarAttachment: nil,
             avatarImageData: avatarData
         )
     }
@@ -93,12 +97,14 @@ public class ContactShareDraft {
         addresses: [OWSContactAddress],
         emails: [OWSContactEmail],
         phoneNumbers: [OWSContactPhoneNumber],
+        existingAvatarAttachment: ReferencedTSResource?,
         avatarImageData: Data?
     ) {
         self.name = name
         self.addresses = addresses
         self.emails = emails
         self.phoneNumbers = phoneNumbers
+        self.existingAvatarAttachment = existingAvatarAttachment
         self.avatarImageData = avatarImageData
     }
 
@@ -109,6 +115,7 @@ public class ContactShareDraft {
             addresses: [],
             emails: [],
             phoneNumbers: [],
+            existingAvatarAttachment: nil,
             avatarImageData: nil
         )
     }
@@ -124,24 +131,30 @@ public class ContactShareDraft {
             )
         }
 
-        guard let avatarImage else {
+        let avatarDataSource: TSResourceDataSource
+        if let existingAvatarAttachment, let stream = existingAvatarAttachment.attachment.asResourceStream() {
+            avatarDataSource = .forwarding(
+                existingAttachment: stream,
+                with: existingAvatarAttachment.reference
+            )
+        } else if let avatarImage {
+            guard let imageData = avatarImage.jpegData(compressionQuality: 0.9) else {
+                throw OWSAssertionError("Failed to get JPEG")
+            }
+            let mimeType = OWSMimeTypeImageJpeg
+            avatarDataSource = .from(
+                data: imageData,
+                mimeType: mimeType,
+                caption: nil,
+                renderingFlag: .default,
+                sourceFilename: nil
+            )
+        } else {
             return .withoutFinalizer(buildContact())
         }
-        guard let imageData = avatarImage.jpegData(compressionQuality: 0.9) else {
-            throw OWSAssertionError("Failed to get JPEG")
-        }
-        let mimeType = OWSMimeTypeImageJpeg
-        guard let dataSource = DataSourceValue.dataSource(with: imageData, mimeType: mimeType) else {
-            throw OWSAssertionError("Failed to create data source")
-        }
-        let attachmentDataSource = AttachmentDataSource(
-            mimeType: mimeType,
-            caption: nil,
-            renderingFlag: .default,
-            dataSource: dataSource
-        )
+
         return try DependenciesBridge.shared.tsResourceManager.createAttachmentStreamBuilder(
-            from: attachmentDataSource,
+            from: avatarDataSource,
             tx: tx.asV2Write
         ).wrap { attachmentInfo in
             switch attachmentInfo {
@@ -151,6 +164,7 @@ public class ContactShareDraft {
                 return buildContact()
             }
         }
+
     }
 
     // MARK: Convenience getters

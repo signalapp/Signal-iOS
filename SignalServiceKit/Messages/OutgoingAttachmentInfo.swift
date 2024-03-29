@@ -41,12 +41,22 @@ public final class OutgoingAttachmentInfo {
         }()
     }
 
-    public func asAttachmentDataSource() -> AttachmentDataSource {
-        return AttachmentDataSource(
+    public func asAttachmentDataSource() -> TSResourceDataSource {
+        return .from(
+            dataSource: dataSource,
             mimeType: contentType,
-            caption: caption,
+            caption: caption.map { MessageBody(text: $0, ranges: .empty) },
+            renderingFlag: renderingFlag
+        )
+    }
+
+    public func asLegacyAttachmentDataSource() -> TSAttachmentDataSource {
+        return .init(
+            mimeType: contentType,
+            caption: caption.map { MessageBody(text: $0, ranges: .empty) },
             renderingFlag: renderingFlag,
-            dataSource: dataSource
+            sourceFilename: dataSource.sourceFilename,
+            dataSource: .dataSource(dataSource, shouldCopy: false)
         )
     }
 }

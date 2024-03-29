@@ -27,7 +27,7 @@ public class TSAttachmentManager {
     }
 
     public func createBodyAttachmentStreams(
-        consuming dataSources: [AttachmentDataSource],
+        consuming dataSources: [TSAttachmentDataSource],
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction
     ) throws {
@@ -40,7 +40,7 @@ public class TSAttachmentManager {
     }
 
     public func createContactSyncAttachmentStreams(
-        consuming dataSources: [AttachmentDataSource],
+        consuming dataSources: [TSAttachmentDataSource],
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction
     ) throws {
@@ -56,29 +56,16 @@ public class TSAttachmentManager {
     }
 
     private func _createBodyAttachmentStreams(
-        consuming dataSources: [AttachmentDataSource],
+        consuming dataSources: [TSAttachmentDataSource],
         message: TSOutgoingMessage,
         albumMessageId: String?,
         tx: SDSAnyWriteTransaction
     ) throws {
         let attachmentStreams = try dataSources.map { dataSource in
-            let attachmentStream = TSAttachmentStream(
-                contentType: dataSource.mimeType,
-                byteCount: UInt32(dataSource.dataSource.dataLength),
-                sourceFilename: dataSource.sourceFilename,
-                caption: dataSource.caption,
-                attachmentType: dataSource.renderingFlag.tsAttachmentType,
-                albumMessageId: albumMessageId
-            )
-
-            try attachmentStream.writeConsumingDataSource(dataSource.dataSource)
-
-            return attachmentStream
+            return try self._createAttachmentStream(from: dataSource, tx: tx)
         }
 
         self.addBodyAttachments(attachmentStreams, to: message, tx: tx)
-
-        attachmentStreams.forEach { $0.anyInsert(transaction: tx) }
     }
 
     public func removeBodyAttachment(
@@ -373,32 +360,74 @@ public class TSAttachmentManager {
     // MARK: - Creating from local data
 
     public func createAttachmentStream(
-        from dataSource: AttachmentDataSource,
+        from dataSource: TSAttachmentDataSource,
         tx: SDSAnyWriteTransaction
     ) throws -> String {
-        guard dataSource.dataLength > 0 else {
-            throw OWSAssertionError("Invalid file size for image data.")
-        }
+        return try _createAttachmentStream(from: dataSource, tx: tx).uniqueId
+    }
+
+    private func _createAttachmentStream(
+        from dataSource: TSAttachmentDataSource,
+        tx: SDSAnyWriteTransaction
+    ) throws -> TSAttachmentStream {
         guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: dataSource.mimeType) else {
             throw OWSAssertionError("Invalid mime type!")
         }
 
-        let attachment = TSAttachmentStream(
-            contentType: dataSource.mimeType,
-            byteCount: UInt32(dataSource.dataSource.dataLength),
-            sourceFilename: dataSource.sourceFilename,
-            caption: dataSource.caption,
-            attachmentType: dataSource.renderingFlag.tsAttachmentType,
-            albumMessageId: nil
-        )
-        if dataSource.shouldCopyDataSource {
-            try attachment.writeCopyingDataSource(dataSource.dataSource)
-        } else {
-            try attachment.writeConsumingDataSource(dataSource.dataSource)
-        }
-        attachment.anyInsert(transaction: tx)
+        let attachment: TSAttachmentStream
+        switch dataSource.dataSource {
+        case .dataSource(let fileDataSource, let shouldCopy):
+            guard fileDataSource.dataLength > 0 else {
+                throw OWSAssertionError("Invalid file size for image data.")
+            }
 
-        return attachment.uniqueId
+            attachment = TSAttachmentStream(
+                contentType: dataSource.mimeType,
+                byteCount: UInt32(fileDataSource.dataLength),
+                sourceFilename: dataSource.sourceFilename,
+                caption: dataSource.caption?.text,
+                attachmentType: dataSource.renderingFlag.tsAttachmentType,
+                albumMessageId: nil
+            )
+            if shouldCopy {
+                try attachment.writeCopyingDataSource(fileDataSource)
+            } else {
+                try attachment.writeConsumingDataSource(fileDataSource)
+            }
+        case .data(let data):
+            guard data.count > 0 else {
+                throw OWSAssertionError("Invalid file size for image data.")
+            }
+            attachment = TSAttachmentStream(
+                contentType: dataSource.mimeType,
+                byteCount: UInt32(data.count),
+                sourceFilename: dataSource.sourceFilename,
+                caption: dataSource.caption?.text,
+                attachmentType: dataSource.renderingFlag.tsAttachmentType,
+                albumMessageId: nil
+            )
+            try attachment.write(data)
+        case .existingAttachment(let uniqueId):
+            guard let existingAttachment = TSAttachmentStream.anyFetchAttachmentStream(
+                uniqueId: uniqueId,
+                transaction: tx
+            ) else {
+                throw OWSAssertionError("Missing source attachment!")
+            }
+            let data = try existingAttachment.readDataFromFile()
+            attachment = TSAttachmentStream(
+                contentType: dataSource.mimeType,
+                byteCount: existingAttachment.byteCount,
+                sourceFilename: dataSource.sourceFilename,
+                caption: dataSource.caption?.text,
+                attachmentType: dataSource.renderingFlag.tsAttachmentType,
+                albumMessageId: nil
+            )
+            try attachment.write(data)
+        }
+
+        attachment.anyInsert(transaction: tx)
+        return attachment
     }
 }
 

@@ -192,7 +192,7 @@ public class AttachmentMultisend: Dependencies {
 
             for attachmentInfo in attachmentsToUpload {
                 do {
-                    let dataSource = attachmentInfo.value.asAttachmentDataSource()
+                    let dataSource = attachmentInfo.value.asLegacyAttachmentDataSource()
                     let attachmentIdToUpload = try TSAttachmentManager().createAttachmentStream(
                         from: dataSource,
                         tx: transaction
@@ -341,14 +341,14 @@ public class AttachmentMultisend: Dependencies {
         do {
             if
                 let imageData = info.imageData,
-                let imageMimeType = info.imageMimeType,
-                let dataSource = DataSourceValue.dataSource(with: imageData, mimeType: imageMimeType)
+                let imageMimeType = info.imageMimeType
             {
-                let attachmentDataSource = AttachmentDataSource(
+                let attachmentDataSource = TSAttachmentDataSource(
                     mimeType: imageMimeType,
                     caption: nil,
                     renderingFlag: .default,
-                    dataSource: dataSource
+                    sourceFilename: nil,
+                    dataSource: .data(imageData)
                 )
                 attachmentUniqueId = try TSAttachmentManager().createAttachmentStream(
                     from: attachmentDataSource,

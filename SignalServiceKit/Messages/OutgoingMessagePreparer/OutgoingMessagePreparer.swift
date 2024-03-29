@@ -104,10 +104,17 @@ public class OutgoingMessagePreparer: NSObject {
             owsAssertDebug(unpreparedMessage.messageSticker == nil)
 
             let dataSources = unsavedAttachmentInfos.map { $0.asAttachmentDataSource() }
-            if message is OWSSyncContactsMessage {
+            if message is OWSSyncContactsMessage, let firstDataSource = unsavedAttachmentInfos.first {
                 owsAssertDebug(dataSources.count == 1, "Contact syncs should have just one attachment!")
+                let tsDataSource = TSAttachmentDataSource(
+                    mimeType: firstDataSource.contentType,
+                    caption: nil,
+                    renderingFlag: .default,
+                    sourceFilename: nil,
+                    dataSource: .dataSource(firstDataSource.dataSource, shouldCopy: false)
+                )
                 try TSAttachmentManager().createContactSyncAttachmentStreams(
-                    consuming: dataSources,
+                    consuming: [tsDataSource],
                     message: message,
                     tx: transaction
                 )

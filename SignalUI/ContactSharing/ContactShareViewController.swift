@@ -37,7 +37,11 @@ public class ContactShareViewController: OWSTableViewController2 {
             owsFailDebug("could not load avatar image.")
             return nil
         }
-        return ContactShareAvatarField(OWSContactAvatar(avatarImage: avatarImage, avatarData: avatarData))
+        return ContactShareAvatarField(OWSContactAvatar(
+            avatarImage: avatarImage,
+            avatarData: avatarData,
+            existingAttachment: contactShareDraft.existingAvatarAttachment
+        ))
     }()
 
     private lazy var contactShareFields: [ContactShareField] = {

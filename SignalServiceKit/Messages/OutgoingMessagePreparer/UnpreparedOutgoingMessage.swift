@@ -16,7 +16,7 @@ public class UnpreparedOutgoingMessage {
 
     public static func forMessage(
         _ message: TSOutgoingMessage,
-        unsavedBodyAttachments: [AttachmentDataSource] = [],
+        unsavedBodyAttachments: [TSResourceDataSource] = [],
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         messageStickerDraft: MessageStickerDraft? = nil,
@@ -123,7 +123,7 @@ public class UnpreparedOutgoingMessage {
 
         struct Persistable {
             let message: TSOutgoingMessage
-            let unsavedBodyAttachments: [AttachmentDataSource]
+            let unsavedBodyAttachments: [TSResourceDataSource]
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
             let messageStickerDraft: MessageStickerDraft?
@@ -133,7 +133,7 @@ public class UnpreparedOutgoingMessage {
         struct EditMessage {
             let editedMessage: TSOutgoingMessage
             let messageForSending: OutgoingEditMessage
-            let unsavedBodyAttachments: [AttachmentDataSource]
+            let unsavedBodyAttachments: [TSResourceDataSource]
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
         }
@@ -219,7 +219,7 @@ public class UnpreparedOutgoingMessage {
 
         let thread: TSThread?
         let attachmentOwnerMessage: TSOutgoingMessage
-        let unsavedBodyAttachments: [AttachmentDataSource]
+        let unsavedBodyAttachments: [TSResourceDataSource]
         let linkPreviewDraft: OWSLinkPreviewDraft?
         let quotedReplyDraft: DraftQuotedReplyModel?
         let messageStickerDraft: MessageStickerDraft?

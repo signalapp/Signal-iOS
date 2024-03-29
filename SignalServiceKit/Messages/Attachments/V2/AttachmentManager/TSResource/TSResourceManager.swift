@@ -42,7 +42,7 @@ public protocol TSResourceManager {
     ) throws
 
     func createBodyAttachmentStreams(
-        consuming dataSources: [AttachmentDataSource],
+        consuming dataSources: [TSResourceDataSource],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) throws
@@ -81,7 +81,7 @@ public protocol TSResourceManager {
     ///
     /// Throws an error if the provided data/mimeType is invalid.
     func createAttachmentStreamBuilder(
-        from dataSource: AttachmentDataSource,
+        from dataSource: TSResourceDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo>
 

@@ -225,11 +225,11 @@ public class MessageSticker: MTLModel {
                 mimeType = OWSMimeTypeImageWebp
             }
 
-            let attachmentDataSource = AttachmentDataSource(
+            let attachmentDataSource = TSResourceDataSource.from(
+                dataSource: dataSource,
                 mimeType: mimeType,
                 caption: nil,
                 renderingFlag: .default,
-                dataSource: dataSource,
                 shouldCopyDataSource: true
             )
 
@@ -289,11 +289,11 @@ public class MessageSticker: MTLModel {
 
         let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
 
-        let attachmentDataSource = AttachmentDataSource(
+        let attachmentDataSource = TSResourceDataSource.from(
+            dataSource: dataSource,
             mimeType: mimeType,
             caption: nil,
             renderingFlag: .default,
-            dataSource: dataSource,
             // this data source should be consumed.
             shouldCopyDataSource: false
         )

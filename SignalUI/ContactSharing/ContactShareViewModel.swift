@@ -10,6 +10,8 @@ public class ContactShareViewModel: NSObject {
 
     public let dbRecord: OWSContact
 
+    private let existingAvatarAttachment: ReferencedTSResource?
+
     public var avatarImageData: Data? {
         didSet {
             self.cachedAvatarImage = nil
@@ -31,8 +33,13 @@ public class ContactShareViewModel: NSObject {
         return cachedAvatarImage
     }
 
-    public required init(contactShareRecord: OWSContact, avatarImageData: Data?) {
+    private init(
+        contactShareRecord: OWSContact,
+        existingAvatarAttachment: ReferencedTSResource?,
+        avatarImageData: Data?
+    ) {
         self.dbRecord = contactShareRecord
+        self.existingAvatarAttachment = existingAvatarAttachment
         self.avatarImageData = avatarImageData
     }
 
@@ -57,10 +64,15 @@ public class ContactShareViewModel: NSObject {
             }
             self.init(
                 contactShareRecord: contactShareRecord,
+                existingAvatarAttachment: .init(reference: avatarAttachmentRef, attachment: avatarAttachment),
                 avatarImageData: avatarImageData
             )
         } else {
-            self.init(contactShareRecord: contactShareRecord, avatarImageData: nil)
+            self.init(
+                contactShareRecord: contactShareRecord,
+                existingAvatarAttachment: nil,
+                avatarImageData: nil
+            )
         }
     }
 
@@ -135,14 +147,17 @@ public class ContactShareViewModel: NSObject {
             addresses: addresses,
             emails: emails,
             phoneNumbers: phoneNumbers,
-            // TODO: should use the existing attachment so that we
-            // create a new reference to it rather than recreating.
+            existingAvatarAttachment: existingAvatarAttachment,
             avatarImageData: avatarImageData
         )
     }
 
     public func copyForRendering() -> ContactShareViewModel {
         let newDbRecord = dbRecord.copy() as! OWSContact
-        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: avatarImageData)
+        return ContactShareViewModel(
+            contactShareRecord: newDbRecord,
+            existingAvatarAttachment: existingAvatarAttachment,
+            avatarImageData: avatarImageData
+        )
     }
 }

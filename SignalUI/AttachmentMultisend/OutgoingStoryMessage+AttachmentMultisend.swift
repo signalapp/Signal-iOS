@@ -30,7 +30,7 @@ extension OutgoingStoryMessage {
                             .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
                             .asStyleOnlyBody()
                         attachment.captionText = captionBody?.text
-                        let dataSource = attachment.buildAttachmentDataSource()
+                        let dataSource = attachment.buildLegacyAttachmentDataSource()
                         let attachmentStreamId = try TSAttachmentManager().createAttachmentStream(
                             from: dataSource,
                             tx: transaction

@@ -76,10 +76,16 @@ class OWSContactAvatar: NSObject, OWSContactField {
 
     let avatarImage: UIImage
     let avatarData: Data
+    let existingAttachment: ReferencedTSResource?
 
-    required init(avatarImage: UIImage, avatarData: Data) {
+    required init(
+        avatarImage: UIImage,
+        avatarData: Data,
+        existingAttachment: ReferencedTSResource?
+    ) {
         self.avatarImage = avatarImage
         self.avatarData = avatarData
+        self.existingAttachment = existingAttachment
 
         super.init()
     }
@@ -95,5 +101,6 @@ class ContactShareAvatarField: ContactShareFieldBase<OWSContactAvatar> {
         owsAssert(isIncluded)
 
         contact.avatarImageData = value.avatarData
+        contact.existingAvatarAttachment = value.existingAttachment
     }
 }

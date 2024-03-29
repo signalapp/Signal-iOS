@@ -53,23 +53,34 @@ public class TSResourceManagerImpl: TSResourceManager {
     }
 
     public func createBodyAttachmentStreams(
-        consuming dataSources: [AttachmentDataSource],
+        consuming dataSources: [TSResourceDataSource],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) throws {
-        if FeatureFlags.newAttachmentsUseV2 {
+        var legacyDataSources = [TSAttachmentDataSource]()
+        var v2DataSources = [AttachmentDataSource]()
+        for dataSource in dataSources {
+            switch dataSource.concreteType {
+            case .legacy(let tsAttachmentDataSource):
+                legacyDataSources.append(tsAttachmentDataSource)
+            case .v2(let attachmentDataSource):
+                v2DataSources.append(attachmentDataSource)
+            }
+        }
+        if !v2DataSources.isEmpty {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
             }
             try attachmentManager.createAttachmentStreams(
-                consuming: dataSources,
+                consuming: v2DataSources,
                 owner: .messageBodyAttachment(messageRowId: messageRowId),
                 tx: tx
             )
-        } else {
+        }
+        if !legacyDataSources.isEmpty {
             try tsAttachmentManager.createBodyAttachmentStreams(
-                consuming: dataSources,
+                consuming: legacyDataSources,
                 message: message,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
@@ -103,23 +114,24 @@ public class TSResourceManagerImpl: TSResourceManager {
     }
 
     public func createAttachmentStreamBuilder(
-        from dataSource: AttachmentDataSource,
+        from dataSource: TSResourceDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
-        if FeatureFlags.newAttachmentsUseV2 {
+        switch dataSource.concreteType {
+        case .v2(let attachmentDataSource):
             return OwnedAttachmentBuilder<TSResourceRetrievalInfo>(
                 info: .v2,
                 finalize: { [attachmentManager] owner, innerTx in
                     return try attachmentManager.createAttachmentStream(
-                        consuming: dataSource,
+                        consuming: attachmentDataSource,
                         owner: owner,
                         tx: innerTx
                     )
                 }
             )
-        } else {
+        case .legacy(let tsAttachmentDataSource):
             let attachmentId = try tsAttachmentManager.createAttachmentStream(
-                from: dataSource,
+                from: tsAttachmentDataSource,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
             return .withoutFinalizer(.legacy(uniqueId: attachmentId))

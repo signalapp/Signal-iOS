@@ -20,7 +20,7 @@ public class TSResourceManagerMock: TSResourceManager {
     }
 
     public func createBodyAttachmentStreams(
-        consuming dataSources: [AttachmentDataSource],
+        consuming dataSources: [TSResourceDataSource],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) throws {
@@ -35,7 +35,7 @@ public class TSResourceManagerMock: TSResourceManager {
     }
 
     public func createAttachmentStreamBuilder(
-        from dataSource: AttachmentDataSource,
+        from dataSource: TSResourceDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         return .withoutFinalizer(.legacy(uniqueId: ""))

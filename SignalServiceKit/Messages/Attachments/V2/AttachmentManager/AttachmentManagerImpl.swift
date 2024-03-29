@@ -180,11 +180,23 @@ public class AttachmentManagerImpl: AttachmentManager {
         sourceOrder: Int?,
         tx: DBWriteTransaction
     ) throws {
-        guard dataSource.dataLength > 0 else {
-            throw OWSAssertionError("Invalid file size for image data.")
-        }
         guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: dataSource.mimeType) else {
             throw OWSAssertionError("Invalid mime type!")
+        }
+
+        switch dataSource.dataSource {
+        case .dataSource(let fileDataSource, _):
+            guard fileDataSource.dataLength > 0 else {
+                throw OWSAssertionError("Invalid file size for data.")
+            }
+        case .data(let data):
+            guard data.count > 0 else {
+                throw OWSAssertionError("Invalid size for data.")
+            }
+        case .existingAttachment(let id):
+            guard let existingAttachment = attachmentStore.fetch(id: id, tx: tx) else {
+                throw OWSAssertionError("Missing existing attachment!")
+            }
         }
 
         let attachment: Attachment = {

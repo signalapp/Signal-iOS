@@ -116,17 +116,14 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
 
         if
             let imageData = draft.imageData,
-            let imageMimeType = draft.imageMimeType,
-            let dataSource = DataSourceValue.dataSource(
-                with: imageData,
-                mimeType: imageMimeType
-            )
+            let imageMimeType = draft.imageMimeType
         {
-            let dataSource = AttachmentDataSource(
+            let dataSource = TSResourceDataSource.from(
+                data: imageData,
                 mimeType: imageMimeType,
                 caption: nil,
                 renderingFlag: .default,
-                dataSource: dataSource
+                sourceFilename: nil
             )
             return try attachmentManager.createAttachmentStreamBuilder(
                 from: dataSource,
