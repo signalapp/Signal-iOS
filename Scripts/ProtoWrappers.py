@@ -772,7 +772,7 @@ public func serializedData() throws -> Data {
                 if proto_syntax == 'proto2':
                     writer.add('guard proto.%s else {' % field.has_accessor_name() )
                     writer.push_indent()
-                    writer.add('throw %s.invalidProtobuf(description: "\(Self.logTag()) missing required field: %s")' % ( writer.invalid_protobuf_error_name, field.name_swift, ) )
+                    writer.add('throw %s.invalidProtobuf(description: "\\(Self.logTag()) missing required field: %s")' % ( writer.invalid_protobuf_error_name, field.name_swift, ) )
                     writer.pop_indent()
                     writer.add('}')
 
@@ -902,7 +902,7 @@ public func serializedData() throws -> Data {
         else:
             writer.add('public var debugDescription: String {')
         writer.push_indent()
-        writer.add('return "\(proto)"')
+        writer.add('return "\\(proto)"')
         writer.pop_indent()
         writer.add('}')
         writer.newline()
