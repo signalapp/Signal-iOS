@@ -142,9 +142,15 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         let profilePaymentAddressData: Data? = await {
             guard
                 paymentsHelper.arePaymentsEnabled,
-                !paymentsHelper.isKillSwitchActive,
-                let addressProtoData = await fetchLocalPaymentAddressProtoData()
+                !paymentsHelper.isKillSwitchActive
             else {
+                return nil
+            }
+            guard
+                let addressProtoData = await fetchLocalPaymentAddressProtoData(),
+                addressProtoData.count > 0
+            else {
+                owsFailDebug("Payments enabled, but paymentAddress is missing or empty.")
                 return nil
             }
             var result = Data()
