@@ -605,7 +605,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Grupo bloqueado";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "No te puedes bloquearte a ti mismx.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "No te puedes bloquearte a ti mismo.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Fallo";
@@ -1085,13 +1085,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "Esta acción reinicia la aplicación y elimina todos tus mensajes. Signal se cerrará después de completarse el proceso.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "¿Estás segurx de querer eliminar todos los datos?";
+"CONFIRM_DELETE_DATA_TITLE" = "¿Estás seguro de querer eliminar todos los datos?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Esta acción reinicia la aplicación y elimina todos los mensajes en este dispositivo. Siempre puedes volver a enlazar tu iPhone/iPad pero no recuperarás los mensajes eliminados. Signal se cerrará después de completar el proceso.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "¿Estás segurx de querer eliminar todos los datos?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "¿Estás seguro de querer eliminar todos los datos?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "No podrás enviar o recibir más mensajes en este grupo.";
@@ -1103,7 +1103,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Enlazar nuevo dispositivo";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ está bloqueadx";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ está bloqueado";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ está entre tus contactos del sistema";
@@ -1748,7 +1748,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Esta acción elimina tu cuenta de Signal y reinicia la aplicación. Signal se cerrará después de completarse el proceso.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "¿Estás segurx de querer eliminar tu cuenta?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "¿Estás seguro de querer eliminar tu cuenta?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Código de país";
@@ -2273,7 +2273,7 @@
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donar";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Si continúas, se cancelará tu reciente donación. No se te cobrará, pero es posible que veas la solicitud de pago en tu app bancaria hasta que tomes alguna medida. ¿Segurx que quieres hacer una nueva donación?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Si continúas, se cancelará tu reciente donación. No se te cobrará, pero es posible que veas la solicitud de pago en tu app bancaria hasta que tomes alguna medida. ¿Seguro que quieres hacer una nueva donación?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Renovar suscripción";
@@ -2777,7 +2777,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "No recibirás su audio ni vídeo y ni ell@s el tuyo.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ está bloqueadx";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ está bloqueado";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Solo admins del grupo pueden iniciar una llamada.";
@@ -2786,7 +2786,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Imposible iniciar llamada en grupo";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ está bloqueadx";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ está bloqueado";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Continuar llamada";
@@ -3914,7 +3914,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar para todos";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Este mensaje se eliminará para todxs en el chat si usan una versión reciente de Signal. En el chat se mostrará que lo has eliminado.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Este mensaje se eliminará para todos en el chat si usan una versión reciente de Signal. En el chat se mostrará que lo has eliminado.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "¿Para quién deseas eliminar este mensaje?";
@@ -4304,7 +4304,7 @@
 "MY_STORIES_NO_STORIES" = "Actualizaciones de tu historia se mostrarán aquí.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Todxs excepto…";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Todos excepto…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Todas las conexiones de Signal";
@@ -5111,7 +5111,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nadie";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nadie podrá ver que estás en Signal a menos que les envíes un mensaje o tengas un chat abierto con ellxs.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nadie podrá ver que estás en Signal a menos que les envíes un mensaje o tengas un chat abierto con ellos.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Ejemplo: %1$@";
@@ -5120,7 +5120,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Cualquiera";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Tu número de teléfono será visible para la gente a quien envíes mensajes y para lxs participantes de tus grupos.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Tu número de teléfono será visible para la gente a quien envíes mensajes y para los participantes de tus grupos.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Nadie";
@@ -7439,7 +7439,7 @@
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Solo compartir con…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Todxs excepto…";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Todos excepto…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Fallo al enviar";
@@ -7862,13 +7862,13 @@
 "USE_PROXY_EXPLANATION" = "Usa un servidor proxy solamente cuando Signal no se pueda conectar por Wi-Fi o red móvil.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Los alias tienen un código QR único que puedes compartir con tus amigxs para que inicien un chat contigo.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Los alias tienen un código QR único que puedes compartir con tus amigos para que inicien un chat contigo.";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "Códigos QR y enlaces";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Tu número de teléfono ya no es visible en los chats. Incluso aunque tu amigx tenga tu número guardado en sus contactos, no le aparecerá.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Tu número de teléfono ya no es visible en los chats. Incluso aunque tu amigo tenga tu número guardado en sus contactos, no le aparecerá.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Privacidad del número de teléfono";
