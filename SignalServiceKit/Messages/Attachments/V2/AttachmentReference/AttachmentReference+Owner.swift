@@ -99,6 +99,23 @@ extension AttachmentReference {
 
                 override class var requiredFields: [AnyKeyPath] { [\Self._stickerPackId, \Self._stickerId] }
             }
+
+            public var messageRowId: Int64 {
+                switch self {
+                case .bodyAttachment(let metadata):
+                    return metadata.messageRowId
+                case .oversizeText(let metadata):
+                    return metadata.messageRowId
+                case .linkPreview(let metadata):
+                    return metadata.messageRowId
+                case .quotedReply(let metadata):
+                    return metadata.messageRowId
+                case .sticker(let metadata):
+                    return metadata.messageRowId
+                case .contactAvatar(let metadata):
+                    return metadata.messageRowId
+                }
+            }
         }
 
         // MARK: - Story Message
@@ -117,6 +134,15 @@ extension AttachmentReference {
                 public var contentType: ContentType? { _contentType }
                 public var caption: StyleOnlyMessageBody? { _caption.map(StyleOnlyMessageBody.init(messageBody:)) }
                 public var shouldLoop: Bool { _renderingFlag == .shouldLoop }
+            }
+
+            public var storyMsessageRowId: Int64 {
+                switch self {
+                case .media(let metadata):
+                    return metadata.storyMessageRowId
+                case .textStoryLinkPreview(let metadata):
+                    return metadata.storyMessageRowId
+                }
             }
         }
 

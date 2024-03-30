@@ -103,7 +103,7 @@ public class Attachment {
     /// should be ignored.
     public let encryptedFileSha256Digest: Data?
 
-    private init(
+    fileprivate init(
         id: Int64!,
         blurHash: String,
         contentHash: String?,
@@ -127,10 +127,79 @@ public class Attachment {
         localRelativeFilePathThumbnail: String?,
         protoDigest: Data?
     ) {
-        fatalError("No instances should exist yet!")
+        if !CurrentAppContext().isRunningTests {
+            fatalError("No instances should exist yet!")
+        }
+        self.id = id
+        self.blurHash = blurHash
+        self.contentHash = contentHash
+        self.encryptedByteCount = encryptedByteCount
+        self.unenecryptedByteCount = unenecryptedByteCount
+        self.mimeType = mimeType
+        self.contentType = contentType
+        self.encryptionKey = encryptionKey
+        self.transitCdnNumber = transitCdnNumber
+        self.transitCdnKey = transitCdnKey
+        self.transitUploadTimestamp = transitUploadTimestamp
+        self.lastTransitDownloadAttemptTimestamp = lastTransitDownloadAttemptTimestamp
+        self.mediaName = mediaName
+        self.mediaCdnNumber = mediaCdnNumber
+        self.mediaTierUploadEra = mediaTierUploadEra
+        self.lastMediaDownloadAttemptTimestamp = lastMediaDownloadAttemptTimestamp
+        self.thumbnailCdnNumber = thumbnailCdnNumber
+        self.thumbnailUploadEra = thumbnailUploadEra
+        self.lastThumbnailDownloadAttemptTimestamp = lastThumbnailDownloadAttemptTimestamp
+        self.localRelativeFilePath = localRelativeFilePath
+        self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
+        self.encryptedFileSha256Digest = protoDigest
     }
 
     func asStream() -> AttachmentStream? {
         return AttachmentStream(attachment: self)
     }
 }
+
+#if TESTABLE_BUILD
+
+public class MockAttachment: Attachment {
+
+    public static func mock(
+        contentHash: String? = nil,
+        encryptedFileSha256Digest: Data? = nil,
+        encryptedByteCount: UInt32? = nil,
+        unenecryptedByteCount: UInt32? = nil,
+        contentType: Attachment.ContentType? = nil,
+        localRelativeFilePath: String? = nil
+    ) -> MockAttachment {
+        return MockAttachment(
+            id: .random(in: 0..<(.max)),
+            blurHash: "",
+            contentHash: contentHash,
+            encryptedByteCount: encryptedByteCount,
+            unenecryptedByteCount: unenecryptedByteCount,
+            mimeType: "jpg",
+            contentType: contentType,
+            encryptionKey: UInt8.random(in: 0..<(.max)).bigEndianData,
+            transitCdnNumber: nil,
+            transitCdnKey: nil,
+            transitUploadTimestamp: nil,
+            lastTransitDownloadAttemptTimestamp: nil,
+            mediaName: "",
+            mediaCdnNumber: nil,
+            mediaTierUploadEra: nil,
+            lastMediaDownloadAttemptTimestamp: nil,
+            thumbnailCdnNumber: nil,
+            thumbnailUploadEra: nil,
+            lastThumbnailDownloadAttemptTimestamp: nil,
+            localRelativeFilePath: localRelativeFilePath,
+            localRelativeFilePathThumbnail: nil,
+            protoDigest: encryptedFileSha256Digest
+        )
+    }
+
+    public override func asStream() -> AttachmentStream? {
+        return MockAttachmentStream(attachment: self)
+    }
+}
+
+#endif

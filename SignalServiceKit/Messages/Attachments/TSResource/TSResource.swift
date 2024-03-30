@@ -28,7 +28,7 @@ public protocol TSResource {
     ///
     /// May be null if restored from a backup, or for legacy attachments. In this case, validation
     /// should be ignored.
-    var encryptedFileSha256Digest: Data? { get }
+    var encryptedResourceSha256Digest: Data? { get }
 
     // f.k.a. contentType
     var mimeType: String { get }

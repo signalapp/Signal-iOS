@@ -604,13 +604,15 @@ public class AppSetup {
             disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
             earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
             groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
-            interactionStore: InteractionStoreImpl(),
+            interactionStore: interactionStore,
             paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
             signalProtocolStoreManager: signalProtocolStoreManager,
             tsAccountManager: tsAccountManager,
             tsResourceManager: tsResourceManager,
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
         )
+
+        let storyStore = StoryStoreImpl()
 
         let messageBackupManager = MessageBackupManagerImpl(
             chatArchiver: MessageBackupChatArchiverImpl(
@@ -622,7 +624,7 @@ public class AppSetup {
                 dateProvider: dateProvider,
                 groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelperImpl(),
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
-                interactionStore: InteractionStoreImpl(),
+                interactionStore: interactionStore,
                 reactionStore: ReactionStoreImpl(),
                 sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
                 threadStore: threadStore
@@ -637,7 +639,7 @@ public class AppSetup {
                 recipientDatabaseTable: recipientDatabaseTable,
                 recipientHidingManager: recipientHidingManager,
                 recipientManager: recipientManager,
-                storyStore: StoryStoreImpl(),
+                storyStore: storyStore,
                 threadStore: threadStore,
                 tsAccountManager: tsAccountManager
             ),
@@ -665,7 +667,7 @@ public class AppSetup {
 
         let tsAttachmentUploadManager = TSAttachmentUploadManagerImpl(
             db: db,
-            interactionStore: InteractionStoreImpl(),
+            interactionStore: interactionStore,
             networkManager: networkManager,
             chatConnectionManager: chatConnectionManager,
             signalService: signalService,
@@ -673,6 +675,20 @@ public class AppSetup {
             blurHash: TSAttachmentUpload.Wrappers.BlurHash(),
             fileSystem: Upload.Wrappers.FileSystem(),
             tsResourceStore: tsResourceStore
+        )
+        let attachmentUploadManager = AttachmentUploadManagerImpl(
+            attachmentStore: attachmentStore,
+            chatConnectionManager: chatConnectionManager,
+            db: db,
+            fileSystem: Upload.Wrappers.FileSystem(),
+            interactionStore: interactionStore,
+            networkManager: networkManager,
+            signalService: signalService,
+            storyStore: storyStore
+        )
+        let tsResourceUploadManager = TSResourceUploadManagerImpl(
+            attachmentUploadManager: attachmentUploadManager,
+            tsAttachmentUploadManager: tsAttachmentUploadManager
         )
 
         let dependenciesBridge = DependenciesBridge(
@@ -743,10 +759,10 @@ public class AppSetup {
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
-            tsAttachmentUploadManager: tsAttachmentUploadManager,
             tsResourceDownloadManager: tsResourceDownloadManager,
             tsResourceManager: tsResourceManager,
             tsResourceStore: tsResourceStore,
+            tsResourceUploadManager: tsResourceUploadManager,
             usernameApiClient: usernameApiClient,
             usernameEducationManager: usernameEducationManager,
             usernameLinkManager: usernameLinkManager,

@@ -25,6 +25,10 @@ extension Attachment: TSResource {
         encryptedByteCount
     }
 
+    public var encryptedResourceSha256Digest: Data? {
+        encryptedFileSha256Digest
+    }
+
     public var resourceId: TSResourceId {
         .v2(rowId: id)
     }
@@ -103,7 +107,7 @@ extension AttachmentStream: TSResource {
 
     public var encryptedResourceByteCount: UInt32? { attachment.encryptedByteCount }
 
-    public var encryptedFileSha256Digest: Data? { attachment.encryptedFileSha256Digest }
+    public var encryptedResourceSha256Digest: Data? { encryptedFileSha256Digest }
 
     public var mimeType: String { attachment.mimeType }
 

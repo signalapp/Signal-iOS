@@ -24,17 +24,16 @@ enum MockResultType {
     case uploadTask(URLRequest)
 }
 
-class TSAttachmentUploadManagerMockHelper {
+class AttachmentUploadManagerMockHelper {
     var mockDB = MockDB()
-    var mockURLSession = TSAttachmentUpload.Mocks.URLSession()
-    var mockNetworkManager = TSAttachmentUpload.Mocks.NetworkManager()
+    var mockURLSession = AttachmentUpload.Mocks.URLSession()
+    var mockNetworkManager = AttachmentUpload.Mocks.NetworkManager()
     var mockServiceManager = OWSSignalServiceMock()
-    var mockChatConnectionManager = TSAttachmentUpload.Mocks.ChatConnectionManager()
-    var mockAttachmentEncrypter = TSAttachmentUpload.Mocks.AttachmentEncrypter()
-    var mockBlurHash = TSAttachmentUpload.Mocks.BlurHash()
-    var mockFileSystem = TSAttachmentUpload.Mocks.FileSystem()
+    var mockChatConnectionManager = AttachmentUpload.Mocks.ChatConnectionManager()
+    var mockFileSystem = AttachmentUpload.Mocks.FileSystem()
     var mockInteractionStore = MockInteractionStore()
-    var mockResourceStore = TSResourceUploadStoreMock()
+    var mockStoryStore = StoryStoreMock()
+    var mockAttachmentStore = AttachmentUploadStoreMock()
 
     var capturedRequests = [MockResultType]()
 
@@ -47,18 +46,14 @@ class TSAttachmentUploadManagerMockHelper {
     // auth set the active location Requests (and the active URL)
     var activeUploadRequestMocks = [MockRequestType]()
 
-    func setup(filename: String, size: Int) {
+    func setup(encryptedSize: UInt32, unencryptedSize: UInt32) {
 
-        self.mockResourceStore.filename = filename
-        self.mockResourceStore.size = size
-        self.mockFileSystem.size = size
+        self.mockAttachmentStore.encryptedSize = encryptedSize
+        self.mockAttachmentStore.unencryptedSize = unencryptedSize
+        self.mockFileSystem.size = Int(clamping: encryptedSize)
 
         mockServiceManager.mockUrlSessionBuilder = { (info: SignalServiceInfo, endpoint: OWSURLSessionEndpoint, config: URLSessionConfiguration? ) in
             return self.mockURLSession
-        }
-
-        mockAttachmentEncrypter.encryptAttachmentBlock = { _, _ in
-            EncryptionMetadata(key: Data(), digest: Data(), length: size, plaintextLength: size)
         }
 
         mockNetworkManager.performRequestBlock = { request, canUseWebSocket in

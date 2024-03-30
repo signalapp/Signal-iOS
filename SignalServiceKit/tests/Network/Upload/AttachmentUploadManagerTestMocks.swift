@@ -6,21 +6,13 @@
 import Foundation
 @testable import SignalServiceKit
 
-extension TSAttachmentUpload {
+extension AttachmentUpload {
     enum Mocks {
-        typealias NetworkManager = _TSAttachmentUploadManager_NetworkManagerMock
-        typealias URLSession = _TSAttachmentUploadManager_OWSURLSessionMock
-        typealias ChatConnectionManager = _TSAttachmentUploadManager_ChatConnectionManagerMock
+        typealias NetworkManager = _AttachmentUploadManager_NetworkManagerMock
+        typealias URLSession = _AttachmentUploadManager_OWSURLSessionMock
+        typealias ChatConnectionManager = _AttachmentUploadManager_ChatConnectionManagerMock
 
-        typealias AttachmentEncrypter = _TSAttachmentUploadManager_AttachmentEncrypterMock
-        typealias BlurHash = _TSAttachmentUpload_BlurHashMock
         typealias FileSystem = _Upload_FileSystemMock
-    }
-}
-
-class _TSAttachmentUpload_BlurHashMock: TSAttachmentUpload.Shims.BlurHash {
-    func ensureBlurHash(attachmentStream: TSAttachmentStream) async throws {
-        return
     }
 }
 
@@ -36,7 +28,7 @@ class _Upload_FileSystemMock: Upload.Shims.FileSystem {
     }
 }
 
-class _TSAttachmentUploadManager_NetworkManagerMock: NetworkManager {
+class _AttachmentUploadManager_NetworkManagerMock: NetworkManager {
 
     var performRequestBlock: ((TSRequest, Bool) -> Promise<HTTPResponse>)?
 
@@ -45,15 +37,7 @@ class _TSAttachmentUploadManager_NetworkManagerMock: NetworkManager {
     }
 }
 
-class _TSAttachmentUploadManager_AttachmentEncrypterMock: TSAttachmentUpload.Shims.AttachmentEncrypter {
-
-    var encryptAttachmentBlock: ((URL, URL) -> EncryptionMetadata)?
-    func encryptAttachment(at unencryptedUrl: URL, output encryptedUrl: URL) throws -> EncryptionMetadata {
-        return encryptAttachmentBlock!(unencryptedUrl, encryptedUrl)
-    }
-}
-
-public class _TSAttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
+public class _AttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
 
     public var promiseForUploadDataTaskBlock: ((URLRequest, Data, ProgressBlock?) -> Promise<HTTPResponse>)?
     public override func uploadTaskPromise(request: URLRequest, data requestData: Data, progress progressBlock: ProgressBlock?) -> Promise<HTTPResponse> {
@@ -76,7 +60,7 @@ public class _TSAttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock
     }
 }
 
-class _TSAttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager {
+class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager {
     var hasEmptiedInitialQueue: Bool { true }
     var identifiedConnectionState: OWSChatConnectionState { .open }
     func waitForIdentifiedConnectionToOpen() async throws { }
@@ -86,34 +70,28 @@ class _TSAttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManage
     func didReceivePush() { }
 }
 
-// MARK: - TSResourceStore
+// MARK: - AttachmentStore
 
-class TSResourceUploadStoreMock: TSResourceStoreMock, TSResourceUploadStore {
-    var filename: String!
-    var size: Int!
-    var uploadedAttachments = [TSResourceStream]()
+class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
+    var encryptedSize: UInt32!
+    var unencryptedSize: UInt32!
+    var uploadedAttachments = [AttachmentStream]()
 
-    override func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
+    override func fetch(ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
         return ids.map { _ in
-            return TSAttachmentStream(
-                contentType: "image/jpeg",
-                byteCount: UInt32(size),
-                sourceFilename: filename,
-                caption: nil,
-                attachmentType: .default,
-                albumMessageId: nil
-            )
+            return MockAttachmentStream.mock(
+                encryptedByteCount: encryptedSize,
+                unenecryptedByteCount: unencryptedSize
+            ).attachment
         }
     }
 
-    func updateAsUploaded(
-        attachmentStream: TSResourceStream,
-        encryptionKey: Data,
-        digest: Data,
+    func markUploadedToTransitTier(
+        attachmentStream: AttachmentStream,
         cdnKey: String,
         cdnNumber: UInt32,
         uploadTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: SignalServiceKit.DBWriteTransaction
     ) {
         uploadedAttachments.append(attachmentStream)
     }

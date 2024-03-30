@@ -131,9 +131,9 @@ public enum BroadcastMediaUploader: Dependencies {
                     return messageId
                 }
                 return AsyncBlockOperation {
-                    try await DependenciesBridge.shared.tsAttachmentUploadManager.uploadAttachment(
-                        attachmentId: attachmentId,
-                        messageIds: messageIds
+                    try await DependenciesBridge.shared.tsResourceUploadManager.uploadAttachment(
+                        attachmentId: .legacy(uniqueId: attachmentId),
+                        legacyMessageOwnerIds: messageIds
                     )
                 }
             }

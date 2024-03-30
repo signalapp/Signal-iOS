@@ -935,7 +935,13 @@
 		66C102F82B6306B900B47EC2 /* TSResourceThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C102F72B6306B900B47EC2 /* TSResourceThumbnail.swift */; };
 		66C102FA2B630F9600B47EC2 /* TSAttachment+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */; };
 		66C1A8742BB759820076C65A /* TSAttachmentUploadShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */; };
+		66C1A8772BB75E560076C65A /* AttachmentUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8762BB75E560076C65A /* AttachmentUploadManager.swift */; };
+		66C1A8792BB761D10076C65A /* AttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8782BB761D10076C65A /* AttachmentUpload.swift */; };
 		66C1A87B2BB7675B0076C65A /* UploadProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A87A2BB7675B0076C65A /* UploadProgress.swift */; };
+		66C1A87D2BB77AB70076C65A /* TSResourceUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A87C2BB77AB70076C65A /* TSResourceUploadManager.swift */; };
+		66C1A8802BB77EA50076C65A /* AttachmentUploadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A87E2BB77E950076C65A /* AttachmentUploadManagerTests.swift */; };
+		66C1A8852BB77EE00076C65A /* AttachmentUploadManagerTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8812BB77EBB0076C65A /* AttachmentUploadManagerTestHelper.swift */; };
+		66C1A8862BB77EE30076C65A /* AttachmentUploadManagerTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8832BB77EC60076C65A /* AttachmentUploadManagerTestMocks.swift */; };
 		66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1302A05D28A008DDE72 /* TSRequest.swift */; };
 		66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */; };
 		66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */; };
@@ -1477,10 +1483,10 @@
 		B93955E32B06D47000F35940 /* CallsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93955E22B06D47000F35940 /* CallsListViewController.swift */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
+		B95BBAC22BB36025009EFB4A /* ProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95BBAC12BB36025009EFB4A /* ProfileName.swift */; };
 		B96D6D792B9F83270039EB99 /* SignalSymbols-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */; };
 		B982ACFF2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */; };
 		B982AD012BA8FD3200AD7E81 /* SignalSymbols-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */; };
-		B95BBAC22BB36025009EFB4A /* ProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95BBAC12BB36025009EFB4A /* ProfileName.swift */; };
 		B98D246A2B8D2A2A00B1A8CC /* CallStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */; };
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
@@ -1514,7 +1520,7 @@
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
 		C18B56B92B07BC12000A441F /* TSAttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18B56B82B07BC12000A441F /* TSAttachmentUpload.swift */; };
-		C18CA8342B6D6F8400D411B0 /* UploadManagerTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */; };
+		C18CA8342B6D6F8400D411B0 /* TSAttachmentUploadManagerTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18CA8332B6D6F8400D411B0 /* TSAttachmentUploadManagerTestHelper.swift */; };
 		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
 		C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */; };
 		C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */; };
@@ -1543,7 +1549,7 @@
 		C1DF3F462B0283C5004B6986 /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3F2B0283C5004B6986 /* Upload.swift */; };
 		C1DF3F472B0283C5004B6986 /* UploadShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F402B0283C5004B6986 /* UploadShims.swift */; };
 		C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */; };
-		C1DF3F4D2B028409004B6986 /* UploadManagerTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */; };
+		C1DF3F4D2B028409004B6986 /* TSAttachmentUploadManagerTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F4B2B028409004B6986 /* TSAttachmentUploadManagerTestMocks.swift */; };
 		C1DF3F4E2B028409004B6986 /* TSAttachmentUploadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F4C2B028409004B6986 /* TSAttachmentUploadManagerTests.swift */; };
 		C1DF3F5B2B0287C7004B6986 /* UploadEndpointCDN3.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */; };
 		C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */; };
@@ -3774,7 +3780,13 @@
 		66C102F72B6306B900B47EC2 /* TSResourceThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceThumbnail.swift; sourceTree = "<group>"; };
 		66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachment+TSResource.swift"; sourceTree = "<group>"; };
 		66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadShims.swift; sourceTree = "<group>"; };
+		66C1A8762BB75E560076C65A /* AttachmentUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManager.swift; sourceTree = "<group>"; };
+		66C1A8782BB761D10076C65A /* AttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUpload.swift; sourceTree = "<group>"; };
 		66C1A87A2BB7675B0076C65A /* UploadProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgress.swift; sourceTree = "<group>"; };
+		66C1A87C2BB77AB70076C65A /* TSResourceUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceUploadManager.swift; sourceTree = "<group>"; };
+		66C1A87E2BB77E950076C65A /* AttachmentUploadManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManagerTests.swift; sourceTree = "<group>"; };
+		66C1A8812BB77EBB0076C65A /* AttachmentUploadManagerTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManagerTestHelper.swift; sourceTree = "<group>"; };
+		66C1A8832BB77EC60076C65A /* AttachmentUploadManagerTestMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManagerTestMocks.swift; sourceTree = "<group>"; };
 		66C2B1302A05D28A008DDE72 /* TSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequest.swift; sourceTree = "<group>"; };
 		66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRUtil.swift; sourceTree = "<group>"; };
 		66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredential.swift; sourceTree = "<group>"; };
@@ -4307,10 +4319,10 @@
 		B93955E22B06D47000F35940 /* CallsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListViewController.swift; sourceTree = "<group>"; };
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
+		B95BBAC12BB36025009EFB4A /* ProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileName.swift; sourceTree = "<group>"; };
 		B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Regular.otf"; sourceTree = "<group>"; };
 		B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Bold.otf"; sourceTree = "<group>"; };
 		B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Light.otf"; sourceTree = "<group>"; };
-		B95BBAC12BB36025009EFB4A /* ProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileName.swift; sourceTree = "<group>"; };
 		B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStarter.swift; sourceTree = "<group>"; };
 		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
 		B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewController.swift; sourceTree = "<group>"; };
@@ -4347,7 +4359,7 @@
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
 		C18B56B82B07BC12000A441F /* TSAttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentUpload.swift; sourceTree = "<group>"; };
-		C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManagerTestHelper.swift; sourceTree = "<group>"; };
+		C18CA8332B6D6F8400D411B0 /* TSAttachmentUploadManagerTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadManagerTestHelper.swift; sourceTree = "<group>"; };
 		C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+IDEAL.swift"; sourceTree = "<group>"; };
 		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
 		C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
@@ -4377,7 +4389,7 @@
 		C1DF3F3F2B0283C5004B6986 /* Upload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		C1DF3F402B0283C5004B6986 /* UploadShims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadShims.swift; sourceTree = "<group>"; };
 		C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpointCDN2.swift; sourceTree = "<group>"; };
-		C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManagerTestMocks.swift; sourceTree = "<group>"; };
+		C1DF3F4B2B028409004B6986 /* TSAttachmentUploadManagerTestMocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadManagerTestMocks.swift; sourceTree = "<group>"; };
 		C1DF3F4C2B028409004B6986 /* TSAttachmentUploadManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadManagerTests.swift; sourceTree = "<group>"; };
 		C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpointCDN3.swift; sourceTree = "<group>"; };
 		C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationViewController.swift; sourceTree = "<group>"; };
@@ -7552,6 +7564,7 @@
 				C18B56B82B07BC12000A441F /* TSAttachmentUpload.swift */,
 				C1DF3F3D2B0283C5004B6986 /* TSAttachmentUploadManager.swift */,
 				66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */,
+				66C1A87C2BB77AB70076C65A /* TSResourceUploadManager.swift */,
 				66C1A87A2BB7675B0076C65A /* UploadProgress.swift */,
 			);
 			path = TSResource;
@@ -7560,9 +7573,9 @@
 		66C1A8752BB75A7D0076C65A /* TSResource */ = {
 			isa = PBXGroup;
 			children = (
+				C18CA8332B6D6F8400D411B0 /* TSAttachmentUploadManagerTestHelper.swift */,
+				C1DF3F4B2B028409004B6986 /* TSAttachmentUploadManagerTestMocks.swift */,
 				C1DF3F4C2B028409004B6986 /* TSAttachmentUploadManagerTests.swift */,
-				C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */,
-				C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */,
 			);
 			path = TSResource;
 			sourceTree = "<group>";
@@ -8747,6 +8760,8 @@
 			isa = PBXGroup;
 			children = (
 				66C1A8722BB759350076C65A /* TSResource */,
+				66C1A8782BB761D10076C65A /* AttachmentUpload.swift */,
+				66C1A8762BB75E560076C65A /* AttachmentUploadManager.swift */,
 				C1DF3F3F2B0283C5004B6986 /* Upload.swift */,
 				C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */,
 				C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */,
@@ -8761,6 +8776,9 @@
 			isa = PBXGroup;
 			children = (
 				66C1A8752BB75A7D0076C65A /* TSResource */,
+				66C1A8812BB77EBB0076C65A /* AttachmentUploadManagerTestHelper.swift */,
+				66C1A8832BB77EC60076C65A /* AttachmentUploadManagerTestMocks.swift */,
+				66C1A87E2BB77E950076C65A /* AttachmentUploadManagerTests.swift */,
 			);
 			path = Upload;
 			sourceTree = "<group>";
@@ -12227,7 +12245,6 @@
 				66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */,
 				3402AA3C271D9DCD0084CBAE /* SheetViewController.swift in Sources */,
 				B9F817642BA263A900EAEE23 /* SignalSymbols.swift in Sources */,
-				34A954AC271A471300B05242 /* SignalUI.docc in Sources */,
 				342FFE57271DA8C9000AC89F /* Sounds+SignalUI.swift in Sources */,
 				3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */,
 				C1D9B1532B7E949500D94595 /* SpamReportingUIUtils.swift in Sources */,
@@ -13124,6 +13141,8 @@
 				66D7B9072B928BD50005C98B /* AttachmentStream.swift in Sources */,
 				66CA4CE42B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift in Sources */,
 				66D7B92B2B97E5990005C98B /* AttachmentTransitPointer.swift in Sources */,
+				66C1A8792BB761D10076C65A /* AttachmentUpload.swift in Sources */,
+				66C1A8772BB75E560076C65A /* AttachmentUploadManager.swift in Sources */,
 				66D7B9092B9291BD0005C98B /* AttachmentUploadStore.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
 				50552C2A2BAB8E7D00815474 /* AuthCredentialManager.swift in Sources */,
@@ -14052,6 +14071,7 @@
 				66E1AD5B2B8D5A1900C56B7B /* TSResourceStoreMock.swift in Sources */,
 				66C102F42B61E3CD00B47EC2 /* TSResourceStream.swift in Sources */,
 				66C102F82B6306B900B47EC2 /* TSResourceThumbnail.swift in Sources */,
+				66C1A87D2BB77AB70076C65A /* TSResourceUploadManager.swift in Sources */,
 				66E1AD9A2B91499700C56B7B /* TSResourceUploadStore.swift in Sources */,
 				F9C5CCCF289453B300548EEE /* TSThread+OWS.swift in Sources */,
 				F9C5CCDF289453B300548EEE /* TSThread+SDS.swift in Sources */,
@@ -14125,6 +14145,9 @@
 				50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */,
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
 				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
+				66C1A8852BB77EE00076C65A /* AttachmentUploadManagerTestHelper.swift in Sources */,
+				66C1A8862BB77EE30076C65A /* AttachmentUploadManagerTestMocks.swift in Sources */,
+				66C1A8802BB77EA50076C65A /* AttachmentUploadManagerTests.swift in Sources */,
 				50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */,
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
@@ -14289,6 +14312,8 @@
 				66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */,
 				C1F09B9F2BB307E100F9E7F5 /* TransformingInputStreamTests.swift in Sources */,
 				C1E307422BA4D388009F015B /* TransformingOutputStreamTests.swift in Sources */,
+				C18CA8342B6D6F8400D411B0 /* TSAttachmentUploadManagerTestHelper.swift in Sources */,
+				C1DF3F4D2B028409004B6986 /* TSAttachmentUploadManagerTestMocks.swift in Sources */,
 				C1DF3F4E2B028409004B6986 /* TSAttachmentUploadManagerTests.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,
 				F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */,
@@ -14303,8 +14328,6 @@
 				F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */,
 				F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */,
 				6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */,
-				C18CA8342B6D6F8400D411B0 /* UploadManagerTestHelper.swift in Sources */,
-				C1DF3F4D2B028409004B6986 /* UploadManagerTestMocks.swift in Sources */,
 				F9D5BFD12979B027001737E5 /* URLPathComponentsTest.swift in Sources */,
 				F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */,
 				D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */,

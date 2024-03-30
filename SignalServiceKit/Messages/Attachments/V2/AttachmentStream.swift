@@ -13,6 +13,20 @@ public class AttachmentStream {
     /// Sha256 hash of the plaintext of the media content. Used to deduplicate incoming media.
     public let contentHash: String
 
+    /// File digest info.
+    ///
+    /// SHA256Hash(iv + cyphertext + hmac),
+    /// (iv + cyphertext + hmac) is the thing we actually upload to the CDN server, which uses
+    /// the ``encryptionKey`` field.
+    ///
+    /// Generated locally/validated for downloaded attachments.
+    /// For undownloaded attachments, taken off the service proto. If validation fails when
+    /// downloading, the download is rejected.
+    ///
+    /// May be null if restored from a backup, or for legacy attachments. In this case, validation
+    /// should be ignored.
+    public let encryptedFileSha256Digest: Data
+
     /// Byte count of the encrypted fullsize resource
     public let encryptedByteCount: UInt32
     ///  Byte count of the decrypted fullsize resource
@@ -28,6 +42,7 @@ public class AttachmentStream {
     private init(
         attachment: Attachment,
         contentHash: String,
+        encryptedFileSha256Digest: Data,
         encryptedByteCount: UInt32,
         unenecryptedByteCount: UInt32,
         contentType: Attachment.ContentType,
@@ -35,6 +50,7 @@ public class AttachmentStream {
     ) {
         self.attachment = attachment
         self.contentHash = contentHash
+        self.encryptedFileSha256Digest = encryptedFileSha256Digest
         self.encryptedByteCount = encryptedByteCount
         self.unenecryptedByteCount = unenecryptedByteCount
         self.contentType = contentType
@@ -44,6 +60,7 @@ public class AttachmentStream {
     public convenience init?(attachment: Attachment) {
         guard
             let contentHash = attachment.contentHash,
+            let encryptedFileSha256Digest = attachment.encryptedFileSha256Digest,
             let encryptedByteCount = attachment.encryptedByteCount,
             let unenecryptedByteCount = attachment.unenecryptedByteCount,
             let contentType = attachment.contentType,
@@ -54,11 +71,18 @@ public class AttachmentStream {
         self.init(
             attachment: attachment,
             contentHash: contentHash,
+            encryptedFileSha256Digest: encryptedFileSha256Digest,
             encryptedByteCount: encryptedByteCount,
             unenecryptedByteCount: unenecryptedByteCount,
             contentType: contentType,
             localRelativeFilePath: localRelativeFilePath
         )
+    }
+
+    public var fileURL: URL {
+        // Need to solidify the directory scheme in order to
+        // properly use `localRelativeFilePath`
+        fatalError("Unimplemented!")
     }
 
     public func thumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage? {
@@ -101,5 +125,34 @@ public class AttachmentStream {
         case .large:
             return thumbnailDimensionPointsLarge()
         }
+    }
+}
+
+public class MockAttachmentStream: AttachmentStream {
+
+    public static func mock(
+        encryptedByteCount: UInt32? = nil,
+        unenecryptedByteCount: UInt32? = nil
+    ) -> MockAttachmentStream {
+        let contentHash: String = ""
+        let encryptedFileSha256Digest: Data = UInt8.random(in: 0..<(.max)).bigEndianData
+        let encryptedByteCount: UInt32 = encryptedByteCount ?? UInt32.random(in: 0..<(.max))
+        let unenecryptedByteCount: UInt32 = unenecryptedByteCount ?? UInt32.random(in: 0..<(.max))
+        let contentType: Attachment.ContentType = .file
+        let localRelativeFilePath: String = "/some/file/path"
+
+        let attachment = MockAttachment.mock(
+            contentHash: contentHash,
+            encryptedFileSha256Digest: encryptedFileSha256Digest,
+            encryptedByteCount: encryptedByteCount,
+            unenecryptedByteCount: unenecryptedByteCount,
+            contentType: contentType,
+            localRelativeFilePath: localRelativeFilePath
+        )
+        return MockAttachmentStream(attachment: attachment)!
+    }
+
+    public override var fileURL: URL {
+        return URL(string: localRelativeFilePath)!
     }
 }
