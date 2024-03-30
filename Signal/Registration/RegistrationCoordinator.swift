@@ -108,6 +108,12 @@ public protocol RegistrationCoordinator {
     /// decline transferring; this method informs the flow of the latter choice.
     func skipDeviceTransfer() -> Guarantee<RegistrationStep>
 
+    /// Set the target backup fileUrl to be used in the next step to restore the system.
+    func restoreFromMessageBackup(fileUrl: URL) -> Guarantee<RegistrationStep>
+
+    /// Mark the users choice to skip restoring from backup and continuing to the next step.
+    func skipRestoreFromBackup() -> Guarantee<RegistrationStep>
+
     /// Set whether the user's PNI should be discoverable by phone number.
     /// If the update is rejected for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the rejection.

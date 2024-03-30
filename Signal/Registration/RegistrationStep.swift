@@ -51,6 +51,10 @@ public enum RegistrationStep: Equatable {
 
     // MARK: - Post-Registration
 
+    /// If the user has successfully recovered their master key and can attempt to
+    /// restore from a local message backup.
+    case restoreFromLocalMessageBackup
+
     /// If the account has not set whether its phone number should be
     /// discoverable, this step happens after registration is complete.
     /// (Typically skipped during re-registration as a result.)
@@ -120,6 +124,7 @@ public enum RegistrationStep: Equatable {
         case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"
         case .captchaChallenge: return "captchaChallenge"
         case .reglockTimeout: return "reglockTimeout"
+        case .restoreFromLocalMessageBackup: return "restoreFromLocalMessageBackup"
         case .phoneNumberDiscoverability: return "phoneNumberDiscoverability"
         case .setupProfile: return "setupProfile"
         case .showErrorSheet: return "showErrorSheet"

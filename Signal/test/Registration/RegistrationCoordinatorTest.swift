@@ -111,6 +111,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             experienceManager: experienceManager,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
             localUsernameManager: localUsernameManagerMock,
+            messageBackupManager: MessageBackupManagerMock(),
             messagePipelineSupervisor: mockMessagePipelineSupervisor,
             messageProcessor: mockMessageProcessor,
             ows2FAManager: ows2FAManagerMock,

@@ -1494,6 +1494,7 @@
 		B9F215612A94071F002DCAE0 /* ImageEditorTransformable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F215602A94071F002DCAE0 /* ImageEditorTransformable.swift */; };
 		B9F817642BA263A900EAEE23 /* SignalSymbols.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F817632BA263A900EAEE23 /* SignalSymbols.swift */; };
 		B9FF37362B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */; };
+		C10E9FAF2BB778E100A609B9 /* MessageBackupManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
 		C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */; };
 		C13769422AFC20B900B4952D /* DonationPaymentDetailsSelectIdealBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13769412AFC20B900B4952D /* DonationPaymentDetailsSelectIdealBankViewController.swift */; };
@@ -1554,6 +1555,7 @@
 		C1EB623C2BADEE56006D99CB /* ChunkedInputStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB623B2BADEE56006D99CB /* ChunkedInputStreamTransform.swift */; };
 		C1ED5CA12A72E3D5009AD3FC /* PreKeyTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */; };
 		C1F09B9F2BB307E100F9E7F5 /* TransformingInputStreamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F09B9E2BB307E100F9E7F5 /* TransformingInputStreamTests.swift */; };
+		C1F09BA12BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F09BA02BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift */; };
 		C1FB9B732B16495D00D51A3B /* SubscriptionLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B722B16495D00D51A3B /* SubscriptionLevel.swift */; };
 		C1FB9B752B16498C00D51A3B /* ExternalPendingDonationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */; };
 		C26296B4BDCEDADBDA01DDD2 /* Pods_SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 948B2FC201146EF3BA459226 /* Pods_SignalServiceKit.framework */; };
@@ -4324,6 +4326,7 @@
 		B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkScanQRCodeSheet.swift; sourceTree = "<group>"; };
 		BA04179298647E71115FA4C1 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		BAD74FE6EBEB10FF3426D809 /* Pods-SignalTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.testable release.xcconfig"; sourceTree = "<group>"; };
+		C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupManagerMock.swift; sourceTree = "<group>"; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
 		C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsFindAccountInfoSheetViewController.swift; sourceTree = "<group>"; };
 		C13769412AFC20B900B4952D /* DonationPaymentDetailsSelectIdealBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsSelectIdealBankViewController.swift; sourceTree = "<group>"; };
@@ -4387,6 +4390,7 @@
 		C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalProtocolStoreMocks.swift; sourceTree = "<group>"; };
 		C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskManager.swift; sourceTree = "<group>"; };
 		C1F09B9E2BB307E100F9E7F5 /* TransformingInputStreamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingInputStreamTests.swift; sourceTree = "<group>"; };
+		C1F09BA02BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRestoreFromBackupViewController.swift; sourceTree = "<group>"; };
 		C1FB9B722B16495D00D51A3B /* SubscriptionLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionLevel.swift; sourceTree = "<group>"; };
 		C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPendingDonationStore.swift; sourceTree = "<group>"; };
 		C597942EF64D456BBE9782A2 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -7293,6 +7297,7 @@
 				665C0D5F2ADF57D000539A37 /* MessageBackupManager+Shims.swift */,
 				665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */,
 				665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */,
+				C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */,
 			);
 			path = MessageBackup;
 			sourceTree = "<group>";
@@ -7485,6 +7490,7 @@
 				F9E3006029A02D8800DCA219 /* RegistrationPinViewController.swift */,
 				F9EECB00299EC9D8005FDD52 /* RegistrationProfileViewController.swift */,
 				F9440E7129C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift */,
+				C1F09BA02BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift */,
 				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
 				F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */,
 				66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */,
@@ -12874,6 +12880,7 @@
 				F9E3006129A02D8800DCA219 /* RegistrationPinViewController.swift in Sources */,
 				F9EECB01299EC9D8005FDD52 /* RegistrationProfileViewController.swift in Sources */,
 				F9440E7229C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift in Sources */,
+				C1F09BA12BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift in Sources */,
 				F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */,
 				6600F39029918CBF00B1EDB7 /* RegistrationStep.swift in Sources */,
 				F9426D18299FEC8900357352 /* RegistrationTransferChoiceViewController.swift in Sources */,
@@ -13430,6 +13437,7 @@
 				665C0D602ADF57D000539A37 /* MessageBackupManager+Shims.swift in Sources */,
 				665C0D5C2ADF538100539A37 /* MessageBackupManager.swift in Sources */,
 				665C0D5E2ADF53E200539A37 /* MessageBackupManagerImpl.swift in Sources */,
+				C10E9FAF2BB778E100A609B9 /* MessageBackupManagerMock.swift in Sources */,
 				66CD25592B0685E000139E17 /* MessageBackupProtoArchiver.swift in Sources */,
 				66CD25752B0807BC00139E17 /* MessageBackupProtoInputStream.swift in Sources */,
 				66CD25772B0807C700139E17 /* MessageBackupProtoOutputStream.swift in Sources */,

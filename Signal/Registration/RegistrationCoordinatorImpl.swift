@@ -258,6 +258,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    public func restoreFromMessageBackup(fileUrl: URL) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+        switch getPathway() {
+        case
+                .opening,
+                .registrationRecoveryPassword,
+                .svrAuthCredential,
+                .svrAuthCredentialCandidates,
+                .session:
+            owsFailBeta("Shouldn't be restoring from non-profile paths.")
+            return nextStep()
+        case .profileSetup(let identity):
+            return restoreFromMessageBackup(fileUrl: fileUrl, identity: identity)
+        }
+    }
+
     public func submitCaptcha(_ token: String) -> Guarantee<RegistrationStep> {
         Logger.info("")
         switch getPathway() {
@@ -389,6 +405,28 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
         return self.nextStep()
+    }
+
+    public func skipRestoreFromBackup() -> Guarantee<RegistrationStep> {
+        Logger.info("")
+        inMemoryState.hasSkippedRestoreFromMessageBackup = true
+        return self.nextStep()
+    }
+
+    private func restoreFromMessageBackup(fileUrl: URL, identity: AccountIdentity) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+        return Promise.wrapAsync {
+            // TODO: Add BackupManager code in followup PR.
+            self.inMemoryState.hasRestoredFromLocalMessageBackup = true
+            Logger.info("Finished restore")
+        }.recover { error in
+            owsFailDebug("Failed restore")
+        }.then { [weak self] () -> Guarantee<RegistrationStep> in
+            guard let self else {
+                return unretainedSelfError()
+            }
+            return self.nextStep()
+        }
     }
 
     public func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) -> Guarantee<RegistrationStep> {
@@ -564,6 +602,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var udAccessKey: SMKUDAccessKey!
         var allowUnrestrictedUD = false
         var hasProfileName = false
+
+        // Message Backup state
+        var hasRestoredFromLocalMessageBackup = false
+        var hasSkippedRestoreFromMessageBackup = false
 
         // Once we have our SVR master key locally,
         // we can restore profile info from storage service.
@@ -893,7 +935,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         Logger.info("")
 
         func finalizeRegistration(_ tx: DBWriteTransaction) {
-            if inMemoryState.hasBackedUpToSVR || inMemoryState.didHaveSVRBackupsPriorToReg {
+            if
+                inMemoryState.hasBackedUpToSVR
+                || inMemoryState.didHaveSVRBackupsPriorToReg
+                || inMemoryState.hasRestoredFromLocalMessageBackup
+            {
                 // No need to show the experience if we made the pin
                 // and backed up.
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
@@ -2678,6 +2724,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return stepGuarantee
         }
 
+        if shouldRestoreFromMessageBackup() {
+            return chooseLocalMessageBackupToRestore()
+        }
+
         if shouldRestoreFromStorageService() {
             return restoreFromStorageService(accountIdentity: accountIdentity)
         }
@@ -2923,6 +2973,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 self.inMemoryState.didSkipSVRBackup = true
                 return .value(.showErrorSheet(.genericError))
             }
+    }
+
+    private func chooseLocalMessageBackupToRestore() -> Guarantee<RegistrationStep> {
+        return .value(.restoreFromLocalMessageBackup)
     }
 
     private func restoreFromStorageService(
@@ -3938,6 +3992,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         case .changingNumber:
             return nil
+        }
+    }
+
+    private func shouldRestoreFromMessageBackup() -> Bool {
+        switch mode {
+        case .registering:
+            return
+                FeatureFlags.messageBackupFileAlphaRegistrationFlow
+                && inMemoryState.hasBackedUpToSVR
+                && inMemoryState.didHaveSVRBackupsPriorToReg
+                && !inMemoryState.hasRestoredFromLocalMessageBackup
+                && !inMemoryState.hasSkippedRestoreFromMessageBackup
+        case .changingNumber, .reRegistering:
+            return false
         }
     }
 

@@ -11,6 +11,7 @@ class RegistrationLoadingViewController: OWSViewController {
         case generic
         case submittingPhoneNumber(e164: String)
         case submittingVerificationCode
+        case restoringBackup
     }
 
     public init(mode: RegistrationLoadingMode) {
@@ -29,6 +30,10 @@ class RegistrationLoadingViewController: OWSViewController {
                     "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL",
                     comment: "Label for a progress spinner currently validating code"
                 )
+            case .restoringBackup:
+                // TODO[Backups]: localize
+                return "Restoring from backup…"
+                // comment: "Label for a progress spinner when restoring from backup"
             }
         }())
 

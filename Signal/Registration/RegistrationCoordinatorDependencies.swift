@@ -16,6 +16,7 @@ public struct RegistrationCoordinatorDependencies {
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
     public let keyValueStoreFactory: KeyValueStoreFactory
     public let localUsernameManager: LocalUsernameManager
+    public let messageBackupManager: MessageBackupManager
     public let messagePipelineSupervisor: RegistrationCoordinatorImpl.Shims.MessagePipelineSupervisor
     public let messageProcessor: RegistrationCoordinatorImpl.Shims.MessageProcessor
     public let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
@@ -47,6 +48,7 @@ public struct RegistrationCoordinatorDependencies {
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
             keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
+            messageBackupManager: DependenciesBridge.shared.messageBackupManager,
             messagePipelineSupervisor: RegistrationCoordinatorImpl.Wrappers.MessagePipelineSupervisor(object.messagePipelineSupervisor),
             messageProcessor: RegistrationCoordinatorImpl.Wrappers.MessageProcessor(object.messageProcessor),
             ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(object.ows2FAManager),

@@ -277,6 +277,14 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
+        case .restoreFromLocalMessageBackup:
+            return Controller(
+                type: RegistrationRestoreFromBackupViewController.self,
+                make: { presenter in
+                    return RegistrationRestoreFromBackupViewController(presenter: presenter)
+                },
+                update: nil
+            )
         case .phoneNumberDiscoverability(let state):
             return Controller(
                 type: RegistrationPhoneNumberDiscoverabilityViewController.self,
@@ -556,6 +564,18 @@ extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter 
         case .restartRegistration(let nextStepGuarantee):
             pushNextController(nextStepGuarantee)
         }
+    }
+}
+
+extension RegistrationNavigationController: RegistrationRestoreFromBackupPresenter {
+
+    func skipRestoreFromBackup() {
+        pushNextController(coordinator.skipRestoreFromBackup())
+    }
+
+    func didSelectBackup(fileUrl: URL) {
+        let guarantee = coordinator.restoreFromMessageBackup(fileUrl: fileUrl)
+        pushNextController(guarantee, loadingMode: .restoringBackup)
     }
 }
 
