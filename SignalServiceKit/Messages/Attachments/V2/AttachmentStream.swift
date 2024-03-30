@@ -128,6 +128,8 @@ public class AttachmentStream {
     }
 }
 
+#if TESTABLE_BUILD
+
 public class MockAttachmentStream: AttachmentStream {
 
     public static func mock(
@@ -156,3 +158,5 @@ public class MockAttachmentStream: AttachmentStream {
         return URL(string: localRelativeFilePath)!
     }
 }
+
+#endif
