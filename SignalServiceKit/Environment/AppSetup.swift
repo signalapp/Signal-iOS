@@ -644,9 +644,8 @@ public class AppSetup {
                 tsAccountManager: tsAccountManager
             ),
             streamProvider: MessageBackupProtoStreamProviderImpl(
-                backupKeyMaterial: MessageBackupKeyMaterialImpl(svr: svr, tsAccountManager: tsAccountManager)
-            ),
-            tsAccountManager: tsAccountManager
+                backupKeyMaterial: MessageBackupKeyMaterialImpl(svr: svr)
+            )
         )
 
         let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)

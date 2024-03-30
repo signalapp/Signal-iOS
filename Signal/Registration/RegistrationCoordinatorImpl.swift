@@ -416,7 +416,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func restoreFromMessageBackup(fileUrl: URL, identity: AccountIdentity) -> Guarantee<RegistrationStep> {
         Logger.info("")
         return Promise.wrapAsync {
-            // TODO: Add BackupManager code in followup PR.
+            try await self.deps.messageBackupManager.importBackup(
+                localIdentifiers: identity.localIdentifiers,
+                fileUrl: fileUrl
+            )
             self.inMemoryState.hasRestoredFromLocalMessageBackup = true
             Logger.info("Finished restore")
         }.recover { error in
@@ -3810,6 +3813,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deviceId: .primary,
                 password: authPassword
             )
+        }
+
+        var localIdentifiers: LocalIdentifiers {
+            return AuthedDevice.Explicit(
+                aci: aci,
+                phoneNumber: e164,
+                pni: pni,
+                deviceId: .primary,
+                authPassword: authPassword
+            ).localIdentifiers
         }
     }
 

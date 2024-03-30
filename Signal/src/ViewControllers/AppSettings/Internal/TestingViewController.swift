@@ -89,11 +89,16 @@ class TestingViewController: OWSTableViewController2 {
 extension TestingViewController {
 
     private static func createMessageBackupProto() {
+        guard let localIdentifiers = NSObject.databaseStorage.read(block: {tx in
+            return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+        }) else {
+            return
+        }
         let vc = UIApplication.shared.frontmostViewController!
         ModalActivityIndicatorViewController.present(fromViewController: vc, canCancel: false, backgroundBlock: { modal in
             Task {
                 do {
-                    let fileUrl = try await DependenciesBridge.shared.messageBackupManager.createBackup()
+                    let fileUrl = try await DependenciesBridge.shared.messageBackupManager.createBackup(localIdentifiers: localIdentifiers)
                     await MainActor.run {
                         let activityVC = UIActivityViewController(
                             activityItems: [fileUrl],
@@ -132,11 +137,16 @@ extension TestingViewController: UIDocumentPickerDelegate {
         guard let fileUrl = urls.first else {
             return
         }
+        guard let localIdentifiers = NSObject.databaseStorage.read(block: {tx in
+            return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+        }) else {
+            return
+        }
         let vc = UIApplication.shared.frontmostViewController!
         ModalActivityIndicatorViewController.present(fromViewController: vc, canCancel: false, backgroundBlock: { modal in
             Task {
                 do {
-                    try await DependenciesBridge.shared.messageBackupManager.importBackup(fileUrl: fileUrl)
+                    try await DependenciesBridge.shared.messageBackupManager.importBackup(localIdentifiers: localIdentifiers, fileUrl: fileUrl)
                     await MainActor.run {
                         modal.dismiss {
                             let vc = UIApplication.shared.frontmostViewController!

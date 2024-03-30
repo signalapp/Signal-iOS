@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 extension MessageBackup {
     public enum OpenProtoOutputStreamResult {
@@ -33,11 +34,11 @@ public protocol MessageBackupProtoStreamProvider {
 
     /// Open an output stream to write a backup to a file on disk.
     /// The caller becomes the owner of the stream, and is responsible for closing it once finished.
-    func openOutputFileStream(tx: DBReadTransaction) -> MessageBackup.OpenProtoOutputStreamResult
+    func openOutputFileStream(localAci: Aci, tx: DBReadTransaction) -> MessageBackup.OpenProtoOutputStreamResult
 
     /// Open an input stream to read a backup from a file on disk.
     /// The caller becomes the owner of the stream, and is responsible for closing it once finished.
-    func openInputFileStream(fileURL: URL, tx: DBReadTransaction) -> MessageBackup.OpenProtoInputStreamResult
+    func openInputFileStream(localAci: Aci, fileURL: URL, tx: DBReadTransaction) -> MessageBackup.OpenProtoInputStreamResult
 }
 
 public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvider {
@@ -47,7 +48,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         self.backupKeyMaterial = backupKeyMaterial
     }
 
-    public func openOutputFileStream(tx: DBReadTransaction) -> MessageBackup.OpenProtoOutputStreamResult {
+    public func openOutputFileStream(localAci: Aci, tx: DBReadTransaction) -> MessageBackup.OpenProtoOutputStreamResult {
         let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
            return .unableToOpenFileStream
@@ -66,7 +67,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
                 transforms: [
                     ChunkedOutputStreamTransform(),
                     try GzipCompressingStreamTransform(),
-                    try backupKeyMaterial.createEncryptingStreamTransform(tx: tx)
+                    try backupKeyMaterial.createEncryptingStreamTransform(localAci: localAci, tx: tx)
                 ],
                 outputStream: outputStream,
                 runLoop: streamRunloop
@@ -83,7 +84,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         }
     }
 
-    public func openInputFileStream(fileURL: URL, tx: DBReadTransaction) -> MessageBackup.OpenProtoInputStreamResult {
+    public func openInputFileStream(localAci: Aci, fileURL: URL, tx: DBReadTransaction) -> MessageBackup.OpenProtoInputStreamResult {
         guard OWSFileSystem.fileOrFolderExists(url: fileURL) else {
             return .fileNotFound
         }
@@ -102,7 +103,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         do {
             let transformableInputStream = TransformingInputStream(
                 transforms: [
-                    try backupKeyMaterial.createDecryptingStreamTransform(tx: tx),
+                    try backupKeyMaterial.createDecryptingStreamTransform(localAci: localAci, tx: tx),
                     try GzipDecompressingStreamTransform(),
                     ChunkedInputStreamTransform(),
                 ],

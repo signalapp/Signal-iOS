@@ -17,19 +17,14 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
     }
 
     private let svr: SecureValueRecovery
-    private let tsAccountManager: TSAccountManager
 
-    public init(svr: SecureValueRecovery, tsAccountManager: TSAccountManager) {
+    public init(svr: SecureValueRecovery) {
         self.svr = svr
-        self.tsAccountManager = tsAccountManager
     }
 
-    public func backupID(tx: DBReadTransaction) throws -> Data {
+    public func backupID(localAci: Aci, tx: DBReadTransaction) throws -> Data {
         guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
             throw MessageBackupKeyMaterialError.missingMasterKey
-        }
-        guard let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci else {
-            throw MessageBackupKeyMaterialError.notRegistered
         }
         guard let infoData = Constants.MessageBackupIdInfoString.data(using: .utf8) else {
             owsFailDebug("Failed to encode data")
@@ -44,11 +39,11 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         return Data(keyBytes)
     }
 
-    public func createEncryptingStreamTransform(tx: DBReadTransaction) throws -> EncryptingStreamTransform {
+    public func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
         guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
             throw MessageBackupKeyMaterialError.missingMasterKey
         }
-        let backupId = try backupID(tx: tx)
+        let backupId = try backupID(localAci: localAci, tx: tx)
         guard let infoData = Constants.MessageBackupEncryptionInfoString.data(using: .utf8) else {
             owsFailDebug("Failed to encode data")
             throw MessageBackupKeyMaterialError.invalidKeyInfo
@@ -72,11 +67,11 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         )
     }
 
-    public func createDecryptingStreamTransform(tx: DBReadTransaction) throws -> DecryptingStreamTransform {
+    public func createDecryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> DecryptingStreamTransform {
         guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
             throw MessageBackupKeyMaterialError.missingMasterKey
         }
-        let backupId = try backupID(tx: tx)
+        let backupId = try backupID(localAci: localAci, tx: tx)
         guard let infoData = Constants.MessageBackupEncryptionInfoString.data(using: .utf8) else {
             owsFailDebug("Failed to encode data")
             throw MessageBackupKeyMaterialError.invalidKeyInfo

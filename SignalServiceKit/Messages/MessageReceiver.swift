@@ -1088,7 +1088,12 @@ public final class MessageReceiver: Dependencies {
 
         owsAssertDebug(message.hasRenderableContent(tx: tx))
 
-        earlyMessageManager.applyPendingMessages(for: message, transaction: tx)
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            owsFailDebug("Can't process messages when not registered.")
+            return nil
+        }
+
+        earlyMessageManager.applyPendingMessages(for: message, localIdentifiers: localIdentifiers, transaction: tx)
 
         // Any messages sent from the current user - from this device or another -
         // should be automatically marked as read.

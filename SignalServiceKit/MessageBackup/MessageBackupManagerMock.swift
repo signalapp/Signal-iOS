@@ -8,9 +8,9 @@ import Foundation
 #if TESTABLE_BUILD
 
 open class MessageBackupManagerMock: MessageBackupManager {
-    public func createBackup() async throws -> URL { return URL(string: "file://")! }
+    public func createBackup(localIdentifiers: LocalIdentifiers) async throws -> URL { return URL(string: "file://")! }
 
-    public func importBackup(fileUrl: URL) async throws { }
+    public func importBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws { }
 }
 
 #endif

@@ -339,12 +339,7 @@ public class EarlyMessageManager: NSObject {
         }
     }
 
-    @objc
-    public func applyPendingMessages(for message: TSMessage, transaction: SDSAnyWriteTransaction) {
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
-            owsFailDebug("Can't process messages when not registered.")
-            return
-        }
+    public func applyPendingMessages(for message: TSMessage, localIdentifiers: LocalIdentifiers, transaction: SDSAnyWriteTransaction) {
         let identifier: MessageIdentifier
         if let message = message as? TSOutgoingMessage {
             identifier = MessageIdentifier(timestamp: message.timestamp, author: localIdentifiers.aci)

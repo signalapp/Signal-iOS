@@ -53,6 +53,7 @@ public protocol _SentMessageTranscriptReceiver_EarlyMessageManagerShim {
 
     func applyPendingMessages(
         for message: TSMessage,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     )
 }
@@ -65,8 +66,8 @@ public class _SentMessageTranscriptReceiver_EarlyMessageManagerWrapper: _SentMes
         self.earlyMessageManager = earlyMessageManager
     }
 
-    public func applyPendingMessages(for message: TSMessage, tx: DBWriteTransaction) {
-        earlyMessageManager.applyPendingMessages(for: message, transaction: SDSDB.shimOnlyBridge(tx))
+    public func applyPendingMessages(for message: TSMessage, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
+        earlyMessageManager.applyPendingMessages(for: message, localIdentifiers: localIdentifiers, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

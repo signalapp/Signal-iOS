@@ -248,7 +248,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             tx: tx
         )
 
-        self.earlyMessageManager.applyPendingMessages(for: outgoingMessage, tx: tx)
+        self.earlyMessageManager.applyPendingMessages(for: outgoingMessage, localIdentifiers: localIdentifiers, tx: tx)
 
         if (outgoingMessage.isViewOnceMessage) {
             // Don't download attachments for "view-once" messages from linked devices.

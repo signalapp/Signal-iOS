@@ -8,7 +8,7 @@ import Foundation
 public protocol MessageBackupManager {
 
     /// Outputs file url the backup proto is located at.
-    func createBackup() async throws -> URL
+    func createBackup(localIdentifiers: LocalIdentifiers) async throws -> URL
 
-    func importBackup(fileUrl: URL) async throws
+    func importBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws
 }

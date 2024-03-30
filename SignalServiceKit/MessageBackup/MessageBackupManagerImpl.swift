@@ -18,7 +18,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let recipientArchiver: MessageBackupRecipientArchiver
     private let streamProvider: MessageBackupProtoStreamProvider
-    private let tsAccountManager: TSAccountManager
 
     public init(
         chatArchiver: MessageBackupChatArchiver,
@@ -27,8 +26,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         db: DB,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         recipientArchiver: MessageBackupRecipientArchiver,
-        streamProvider: MessageBackupProtoStreamProvider,
-        tsAccountManager: TSAccountManager
+        streamProvider: MessageBackupProtoStreamProvider
     ) {
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
@@ -37,10 +35,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.localRecipientArchiver = localRecipientArchiver
         self.recipientArchiver = recipientArchiver
         self.streamProvider = streamProvider
-        self.tsAccountManager = tsAccountManager
     }
 
-    public func createBackup() async throws -> URL {
+    public func createBackup(localIdentifiers: LocalIdentifiers) async throws -> URL {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
@@ -50,11 +47,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             // a read tx, and use explicit locking to prevent other things from
             // happening in the meantime (e.g. message processing) but for now
             // hold the single write lock and call it a day.
-            return try self._createBackup(tx: tx)
+            return try self._createBackup(localIdentifiers: localIdentifiers, tx: tx)
         }
     }
 
-    public func importBackup(fileUrl: URL) async throws {
+    public func importBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
@@ -64,7 +61,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             // to chunk them into separate writes. Nothing else should be happening
             // in the app anyway.
             do {
-                try self._importBackup(fileUrl, tx: tx)
+                try self._importBackup(localIdentifiers: localIdentifiers, fileUrl: fileUrl, tx: tx)
             } catch let error {
                 owsFailDebug("Failed! \(error)")
                 throw error
@@ -72,17 +69,16 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
     }
 
-    private func _createBackup(tx: DBWriteTransaction) throws -> URL {
+    private func _createBackup(
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    ) throws -> URL {
         let stream: MessageBackupProtoOutputStream
-        switch streamProvider.openOutputFileStream(tx: tx) {
+        switch streamProvider.openOutputFileStream(localAci: localIdentifiers.aci, tx: tx) {
         case .success(let streamResult):
             stream = streamResult
         case .unableToOpenFileStream:
             throw OWSAssertionError("Unable to open output stream")
-        }
-
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            throw OWSAssertionError("No local identifiers!")
         }
 
         try writeHeader(stream: stream, tx: tx)
@@ -181,13 +177,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         throw BackupError()
     }
 
-    private func _importBackup(_ fileUrl: URL, tx: DBWriteTransaction) throws {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            throw OWSAssertionError("No local identifiers!")
-        }
+    private func _importBackup(
+        localIdentifiers: LocalIdentifiers,
+        fileUrl: URL,
+        tx: DBWriteTransaction
+    ) throws {
 
         let stream: MessageBackupProtoInputStream
-        switch streamProvider.openInputFileStream(fileURL: fileUrl, tx: tx) {
+        switch streamProvider.openInputFileStream(localAci: localIdentifiers.aci, fileURL: fileUrl, tx: tx) {
         case .success(let streamResult):
             stream = streamResult
         case .fileNotFound:
