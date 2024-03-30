@@ -62,10 +62,15 @@ public class TSAttachmentManager {
         tx: SDSAnyWriteTransaction
     ) throws {
         let attachmentStreams = try dataSources.map { dataSource in
-            return try self._createAttachmentStream(from: dataSource, tx: tx)
+            return try self._createAttachmentStream(
+                from: dataSource,
+                albumMessageId: albumMessageId,
+                tx: tx
+            )
         }
 
         self.addBodyAttachments(attachmentStreams, to: message, tx: tx)
+        attachmentStreams.forEach { $0.anyInsert(transaction: tx) }
     }
 
     public func removeBodyAttachment(
@@ -363,11 +368,14 @@ public class TSAttachmentManager {
         from dataSource: TSAttachmentDataSource,
         tx: SDSAnyWriteTransaction
     ) throws -> String {
-        return try _createAttachmentStream(from: dataSource, tx: tx).uniqueId
+        let attachment = try _createAttachmentStream(from: dataSource, tx: tx)
+        attachment.anyInsert(transaction: tx)
+        return attachment.uniqueId
     }
 
     private func _createAttachmentStream(
         from dataSource: TSAttachmentDataSource,
+        albumMessageId: String? = nil,
         tx: SDSAnyWriteTransaction
     ) throws -> TSAttachmentStream {
         guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: dataSource.mimeType) else {
@@ -387,7 +395,7 @@ public class TSAttachmentManager {
                 sourceFilename: dataSource.sourceFilename,
                 caption: dataSource.caption?.text,
                 attachmentType: dataSource.renderingFlag.tsAttachmentType,
-                albumMessageId: nil
+                albumMessageId: albumMessageId
             )
             if shouldCopy {
                 try attachment.writeCopyingDataSource(fileDataSource)
@@ -404,7 +412,7 @@ public class TSAttachmentManager {
                 sourceFilename: dataSource.sourceFilename,
                 caption: dataSource.caption?.text,
                 attachmentType: dataSource.renderingFlag.tsAttachmentType,
-                albumMessageId: nil
+                albumMessageId: albumMessageId
             )
             try attachment.write(data)
         case .existingAttachment(let uniqueId):
@@ -421,12 +429,10 @@ public class TSAttachmentManager {
                 sourceFilename: dataSource.sourceFilename,
                 caption: dataSource.caption?.text,
                 attachmentType: dataSource.renderingFlag.tsAttachmentType,
-                albumMessageId: nil
+                albumMessageId: albumMessageId
             )
             try attachment.write(data)
         }
-
-        attachment.anyInsert(transaction: tx)
         return attachment
     }
 }
