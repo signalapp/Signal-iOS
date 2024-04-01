@@ -539,13 +539,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private static func itemMatchesSpecificUtiType(itemProvider: NSItemProvider, utiType: String) -> Bool {
         // URLs, contacts and other special items have to be detected separately.
         // Many shares (e.g. pdfs) will register many UTI types and/or conform to kUTTypeData.
-        guard itemProvider.registeredTypeIdentifiers.count == 1 else {
-            return false
-        }
-        guard let firstUtiType = itemProvider.registeredTypeIdentifiers.first else {
-            return false
-        }
-        return firstUtiType == utiType
+        return [utiType] == itemProvider.registeredTypeIdentifiers
     }
 
     private static func isVisualMediaItem(itemProvider: NSItemProvider) -> Bool {
