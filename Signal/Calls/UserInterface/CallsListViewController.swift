@@ -605,7 +605,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     /// Used to avoid concurrent calls to ``loadCallRecordsAnew(animated:)``
     /// from clobbering each other.
-    private let loadCallRecordsAnewToken = AtomicUuid(lock: .init())
+    private var loadCallRecordsAnewCounter = 0
 
     /// Asynchronously resets our current ``LoadedCalls`` for the current UI
     /// state, then kicks off an initial page load.
@@ -623,7 +623,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }
         }()
 
-        let loadIdentifier = loadCallRecordsAnewToken.rotate()
+        self.loadCallRecordsAnewCounter += 1
+        let loadCallRecordsAnewCounterSnapshot = self.loadCallRecordsAnewCounter
 
         deps.db.asyncRead(
             block: { tx -> CallRecordLoaderImpl.Configuration in
@@ -669,7 +670,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             },
             completionQueue: .main,
             completion: { configuration in
-                guard self.loadCallRecordsAnewToken.get() == loadIdentifier else {
+                guard self.loadCallRecordsAnewCounter == loadCallRecordsAnewCounterSnapshot else {
                     /// While we were building the configuration, another caller
                     /// entered this method. Bail out in preference of the later
                     /// caller!
@@ -929,15 +930,18 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     /// The user's current search term. Coalesces empty strings into `nil`.
     private var searchTerm: String? {
-        get { _searchTerm?.nilIfEmpty }
+        get { _searchTerm }
         set { _searchTerm = newValue?.nilIfEmpty }
     }
 
-    private func searchTermDidChange() {
-        let searchTermSnapshot = searchTerm
+    private var searchTermCounter = 0
 
-        DispatchQueue.global().asyncAfter(deadline: .now() + Constants.searchDebounceInterval) {
-            guard self.searchTerm == searchTermSnapshot else {
+    private func searchTermDidChange() {
+        self.searchTermCounter += 1
+        let searchTermCounterSnapshot = self.searchTermCounter
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.searchDebounceInterval) {
+            guard self.searchTermCounter == searchTermCounterSnapshot else {
                 /// The search term changed in the debounce period, so we'll
                 /// bail out here in preference for the later-changed search
                 /// term.
