@@ -199,3 +199,9 @@ extension BackupProtoQuote {
         return .init(authorID)
     }
 }
+
+extension BackupProtoSendStatus {
+    public var destinationRecipientId: MessageBackup.RecipientId {
+        return .init(recipientID)
+    }
+}

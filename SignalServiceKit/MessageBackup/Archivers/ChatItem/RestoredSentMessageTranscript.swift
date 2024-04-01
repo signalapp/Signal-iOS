@@ -78,14 +78,15 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         var recipientStates = [MessageBackup.InteropAddress: TSOutgoingMessageRecipientState]()
         for sendStatus in outgoingDetails.sendStatus {
             let recipientAddress: MessageBackup.InteropAddress
-            switch context.recipientContext[chatItem.authorRecipientId] {
+            let recipientID = sendStatus.destinationRecipientId
+            switch context.recipientContext[recipientID] {
             case .contact(let address):
                 recipientAddress = address.asInteropAddress()
             case .none:
                 // Missing recipient! Fail this one recipient but keep going.
                 partialErrors.append(.invalidProtoData(
                     chatItem.id,
-                    .recipientIdNotFound(chatItem.authorRecipientId)
+                    .recipientIdNotFound(recipientID)
                 ))
                 continue
             case .localAddress, .group:
