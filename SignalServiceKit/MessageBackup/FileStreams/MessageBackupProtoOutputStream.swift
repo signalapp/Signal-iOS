@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import Wire
 
 extension MessageBackup {
     public enum ProtoOutputStreamWriteResult {
@@ -58,7 +58,7 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
     internal func writeHeader(_ header: BackupProtoBackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {
         let bytes: Data
         do {
-            bytes = try header.serializedData()
+            bytes = try ProtoEncoder().encode(header)
         } catch {
             return .protoSerializationError(error)
         }
@@ -73,7 +73,7 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
     internal func writeFrame(_ frame: BackupProtoFrame) -> MessageBackup.ProtoOutputStreamWriteResult {
         let bytes: Data
         do {
-            bytes = try frame.serializedData()
+            bytes = try ProtoEncoder().encode(frame)
         } catch {
             return .protoSerializationError(error)
         }

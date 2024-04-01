@@ -67,10 +67,10 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             context: context.recipientContext,
             tx: tx
         )
-        let type: MessageBackup.ChatItemMessageType
+        let chatItemType: MessageBackupTSMessageContentsArchiver.ChatItemType
         switch contentsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let t):
-            type = t
+            chatItemType = t
         case .bubbleUpError(let errorResult):
             return errorResult
         }
@@ -81,7 +81,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             expireStartDate: message.expireStartedAt,
             expiresInMs: UInt64(message.expiresInSeconds) * 1000,
             isSealedSender: message.wasReceivedByUD.negated,
-            type: type
+            chatItemType: chatItemType
         )
         if partialErrors.isEmpty {
             return .success(details)
@@ -93,17 +93,13 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
     private func buildIncomingMessageDetails(
         _ message: TSIncomingMessage
     ) -> MessageBackup.ArchiveInteractionResult<Details.DirectionalDetails> {
-        let incomingMessageProtoBuilder = BackupProtoChatItemIncomingMessageDetails.builder(
+        let incomingMessage = BackupProtoChatItem.BackupProtoIncomingMessageDetails(
             dateReceived: message.receivedAtTimestamp,
             dateServerSent: message.serverDeliveryTimestamp,
             read: message.wasRead
         )
-        do {
-            let incomingMessageProto = try incomingMessageProtoBuilder.build()
-            return .success(.incoming(incomingMessageProto))
-        } catch let error {
-            return .messageFailure([.protoSerializationError(message.uniqueInteractionId, error)])
-        }
+
+        return .success(.incoming(incomingMessage))
     }
 
     // MARK: - Restoring
@@ -114,7 +110,11 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
-        guard let incomingDetails = chatItem.incoming else {
+        let incomingDetails: BackupProtoChatItem.BackupProtoIncomingMessageDetails
+        switch chatItem.directionalDetails {
+        case .incoming(let incomingMessageDetails):
+            incomingDetails = incomingMessageDetails
+        case nil, .outgoing, .directionless:
             // Should be impossible.
             return .messageFailure([.developerError(
                 chatItem.id,
@@ -140,7 +140,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             ])
         }
 
-        guard let messageType = chatItem.messageType else {
+        guard let messageType = chatItem.item else {
             // Unrecognized item type!
             return .messageFailure([.invalidProtoData(chatItem.id, .unrecognizedChatItemType)])
         }
@@ -172,7 +172,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             // TODO: handle edit states
             editState: .none,
             // TODO: expose + set expire start time
-            expiresInSeconds: UInt32(chatItem.expiresInMs),
+            expiresInSeconds: chatItem.expiresInMs.map { UInt32($0) } ?? 0,
             quotedMessage: contents.quotedMessage,
             contactShare: nil,
             linkPreview: nil,

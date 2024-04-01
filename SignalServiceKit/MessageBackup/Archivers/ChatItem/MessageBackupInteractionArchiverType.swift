@@ -47,18 +47,27 @@ extension TSInteraction {
 extension BackupProtoChatItem {
 
     internal var archiverType: MessageBackup.InteractionArchiverType {
-        if self.incoming != nil {
+        switch directionalDetails {
+        case .incoming:
             return .incomingMessage
-        }
-        if self.outgoing != nil {
+        case .outgoing:
             return .outgoingMessage
+        case nil, .directionless:
+            break
         }
-        if
-            case let .chatUpdate(chatUpdate) = self.messageType,
-            chatUpdate.groupChange != nil
-        {
-            return .groupUpdateInfoMessage
+
+        switch item {
+        case .updateMessage(let chatUpdateMessage):
+            switch chatUpdateMessage.update {
+            case .groupChange:
+                return .groupUpdateInfoMessage
+            default:
+                break
+            }
+        default:
+            break
         }
+
         return .unimplemented
     }
 }

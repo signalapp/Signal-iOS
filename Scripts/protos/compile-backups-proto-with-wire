@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+WIRE_COMPILER_VERSION="4.9.4"
+WIRE_COMPILER_CHECKSUM="4134b15e77fa0725ac499d8aded607a1c5b34e7cd9581b18385d868ffb0bfcdd"
+
+WIRE_COMPILER_JAR="$REPO_ROOT/Scripts/protos/WireCompiler-$WIRE_COMPILER_VERSION.jar"
+
+# ------ #
+
+if ! command -v sha256sum > /dev/null; then
+    echo "Error: missing sha256sum!"
+    exit 1
+fi
+
+if ! command -v java > /dev/null; then
+    echo "Error: Java must be installed!"
+    exit 1
+fi
+
+# ------ #
+
+if ! [[ -f "$WIRE_COMPILER_JAR" ]]; then
+    echo "Downloading Wire compiler..."
+
+    REMOTE_JAR_URL="https://repo.maven.apache.org/maven2/com/squareup/wire/wire-compiler/$WIRE_COMPILER_VERSION/wire-compiler-$WIRE_COMPILER_VERSION-jar-with-dependencies.jar"
+    curl "$REMOTE_JAR_URL" --output "$WIRE_COMPILER_JAR"
+fi
+
+# ------ #
+
+echo "Checking Wire compiler checksum..."
+
+echo "$WIRE_COMPILER_CHECKSUM" "$WIRE_COMPILER_JAR" | sha256sum --check > /dev/null
+
+if [ "$?" -ne 0 ]; then
+    echo "Error: JAR file checksum failed to validate!"
+    exit 1
+fi
+
+# ------ #
+
+echo "Running Wire compiler..."
+
+BACKUP_PROTOS_DIR="$REPO_ROOT/SignalServiceKit/protobuf/Backups"
+
+java \
+    -jar "$WIRE_COMPILER_JAR" \
+    --proto_path="$BACKUP_PROTOS_DIR" \
+    --swift_out="$BACKUP_PROTOS_DIR" \
+    > /dev/null
+
+# ------ #
+
+echo "Adding license header to generated files..."
+
+"$REPO_ROOT"/Scripts/lint/lint-license-headers --fix

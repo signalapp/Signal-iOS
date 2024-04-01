@@ -57,7 +57,7 @@ extension MessageBackup.RestoredMessageContents {
 
 internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
-    typealias ChatItemMessageType = MessageBackup.ChatItemMessageType
+    typealias ChatItemType = MessageBackup.InteractionArchiveDetails.ChatItemType
 
     private let interactionStore: InteractionStore
     private let reactionArchiver: MessageBackupReactionArchiver
@@ -76,28 +76,27 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         _ message: TSMessage,
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
-    ) -> MessageBackup.ArchiveInteractionResult<ChatItemMessageType> {
+    ) -> MessageBackup.ArchiveInteractionResult<ChatItemType> {
         guard let body = message.body else {
             // TODO: handle non simple text messages.
             return .notYetImplemented
         }
 
-        var partialErrors = [MessageBackup.ArchiveInteractionResult<ChatItemMessageType>.ArchiveFrameError]()
+        var standardMessage = BackupProtoStandardMessage()
+        var partialErrors = [MessageBackup.ArchiveInteractionResult<ChatItemType>.ArchiveFrameError]()
 
-        let standardMessageBuilder = BackupProtoStandardMessage.builder()
-
+        let text: BackupProtoText
         let textResult = archiveText(
             .init(text: body, ranges: message.bodyRanges ?? .empty),
             interactionUniqueId: message.uniqueInteractionId
         )
-        let text: BackupProtoText
-        switch textResult.bubbleUp(ChatItemMessageType.self, partialErrors: &partialErrors) {
+        switch textResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
         case .continue(let value):
             text = value
         case .bubbleUpError(let errorResult):
             return errorResult
         }
-        standardMessageBuilder.setText(text)
+        standardMessage.text = text
 
         let quote: BackupProtoQuote?
         if let quotedMessage = message.quotedMessage {
@@ -106,7 +105,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 interactionUniqueId: message.uniqueInteractionId,
                 context: context
             )
-            switch quoteResult.bubbleUp(ChatItemMessageType.self, partialErrors: &partialErrors) {
+            switch quoteResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
             case .continue(let value):
                 quote = value
             case .bubbleUpError(let errorResult):
@@ -115,36 +114,26 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         } else {
             quote = nil
         }
-        if let quote {
-            standardMessageBuilder.setQuote(quote)
-        }
+        standardMessage.quote = quote
 
+        let reactions: [BackupProtoReaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
             context: context,
             tx: tx
         )
-
-        let reactions: [BackupProtoReaction]
-        switch reactionsResult.bubbleUp(ChatItemMessageType.self, partialErrors: &partialErrors) {
+        switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
         case .continue(let values):
             reactions = values
         case .bubbleUpError(let errorResult):
             return errorResult
         }
-        standardMessageBuilder.setReactions(reactions)
-
-        let standardMessageProto: BackupProtoStandardMessage
-        do {
-            standardMessageProto = try standardMessageBuilder.build()
-        } catch let error {
-            return .messageFailure([.protoSerializationError(message.uniqueInteractionId, error)])
-        }
+        standardMessage.reactions = reactions
 
         if partialErrors.isEmpty {
-            return .success(.standard(standardMessageProto))
+            return .success(.standardMessage(standardMessage))
         } else {
-            return .partialFailure(.standard(standardMessageProto), partialErrors)
+            return .partialFailure(.standardMessage(standardMessage), partialErrors)
         }
     }
 
@@ -152,45 +141,36 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         _ messageBody: MessageBody,
         interactionUniqueId: MessageBackup.InteractionUniqueId
     ) -> MessageBackup.ArchiveInteractionResult<BackupProtoText> {
-        let textBuilder = BackupProtoText.builder(body: messageBody.text)
+        var text = BackupProtoText(body: messageBody.text)
 
-        var partialErrors = [MessageBackup.ArchiveInteractionResult<ChatItemMessageType>.ArchiveFrameError]()
+        for bodyRangeParam in messageBody.ranges.toProtoBodyRanges() {
+            var bodyRange = BackupProtoBodyRange()
+            bodyRange.start = bodyRangeParam.start
+            bodyRange.length = bodyRangeParam.length
 
-        for bodyRange in messageBody.ranges.toProtoBodyRanges() {
-            let bodyRangeProtoBuilder = BackupProtoBodyRange.builder()
-            bodyRangeProtoBuilder.setStart(bodyRange.start)
-            bodyRangeProtoBuilder.setLength(bodyRange.length)
-            if let mentionAci = Aci.parseFrom(aciString: bodyRange.mentionAci) {
-                bodyRangeProtoBuilder.setMentionAci(mentionAci.serviceIdBinary.asData)
-            } else if let style = bodyRange.style {
-                switch style {
-                case .none:
-                    bodyRangeProtoBuilder.setStyle(.none)
-                case .bold:
-                    bodyRangeProtoBuilder.setStyle(.bold)
-                case .italic:
-                    bodyRangeProtoBuilder.setStyle(.italic)
-                case .spoiler:
-                    bodyRangeProtoBuilder.setStyle(.spoiler)
-                case .strikethrough:
-                    bodyRangeProtoBuilder.setStyle(.strikethrough)
-                case .monospace:
-                    bodyRangeProtoBuilder.setStyle(.monospace)
-                }
+            if let mentionAci = Aci.parseFrom(aciString: bodyRangeParam.mentionAci) {
+                bodyRange.associatedValue = .mentionAci(
+                    mentionAci.serviceIdBinary.asData
+                )
+            } else if let style = bodyRangeParam.style {
+                let backupProtoStyle: BackupProtoBodyRange.BackupProtoStyle = {
+                    switch style {
+                    case .none: return .NONE
+                    case .bold: return .BOLD
+                    case .italic: return .ITALIC
+                    case .spoiler: return .SPOILER
+                    case .strikethrough: return .STRIKETHROUGH
+                    case .monospace: return .MONOSPACE
+                    }
+                }()
+
+                bodyRange.associatedValue = .style(backupProtoStyle)
             }
-            textBuilder.addBodyRanges(bodyRangeProtoBuilder.buildInfallibly())
+
+            text.bodyRanges.append(bodyRange)
         }
-        do {
-            let textProto = try textBuilder.build()
-            if partialErrors.isEmpty {
-                return .success(textProto)
-            } else {
-                return .partialFailure(textProto, partialErrors)
-            }
-        } catch let error {
-            // Count this as a complete and total failure of the message.
-            return .messageFailure([.protoSerializationError(interactionUniqueId, error)])
-        }
+
+        return .success(text)
     }
 
     private func archiveQuote(
@@ -198,7 +178,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         interactionUniqueId: MessageBackup.InteractionUniqueId,
         context: MessageBackup.RecipientArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<BackupProtoQuote> {
-        var partialErrors = [MessageBackup.ArchiveInteractionResult<ChatItemMessageType>.ArchiveFrameError]()
+        var partialErrors = [MessageBackup.ArchiveInteractionResult<ChatItemType>.ArchiveFrameError]()
 
         guard let authorAddress = quotedMessage.authorAddress.asSingleServiceIdBackupAddress() else {
             // Fail the whole message if we fail archiving a quote.
@@ -212,10 +192,10 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             )])
         }
 
-        let quoteBuilder = BackupProtoQuote.builder(authorID: authorId.value)
-        if let targetSentTimestamp = quotedMessage.timestampValue?.uint64Value {
-            quoteBuilder.setTargetSentTimestamp(targetSentTimestamp)
-        }
+        var quote = BackupProtoQuote(authorId: authorId.value)
+        quote.targetSentTimestamp = quotedMessage.timestampValue?.uint64Value
+        quote.type = quotedMessage.isGiftBadge ? .GIFTBADGE : .NORMAL
+
         if let body = quotedMessage.body {
             let textResult = archiveText(
                 .init(text: body, ranges: quotedMessage.bodyRanges ?? .empty),
@@ -228,45 +208,37 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             case .bubbleUpError(let errorResult):
                 return errorResult
             }
-            quoteBuilder.setText(text.body)
-            quoteBuilder.setBodyRanges(text.bodyRanges)
+            quote.text = text.body
+            quote.bodyRanges = text.bodyRanges
         }
 
         // TODO: set attachments on the quote
 
-        if quotedMessage.isGiftBadge {
-            quoteBuilder.setType(.giftbadge)
-        } else {
-            quoteBuilder.setType(.normal)
-        }
-
-        do {
-            let quote = try quoteBuilder.build()
-            return .success(quote)
-        } catch {
-            return .messageFailure([.protoSerializationError(interactionUniqueId, error)])
-        }
+        return .success(quote)
     }
 
     // MARK: - Restoring
 
     typealias RestoreResult = MessageBackup.RestoreInteractionResult<MessageBackup.RestoredMessageContents>
 
-    /// Parses the contents of ``MessageBackup.ChatItemMessageType`` (which represents the proto structure of message contents)
-    /// into ``MessageBackup.RestoredMessageContents``, which maps more directly to the ``TSMessage`` values in our database.
+    /// Parses the proto structure of message contents into
+    /// into ``MessageBackup.RestoredMessageContents``, which map more directly
+    /// to the ``TSMessage`` values in our database.
     ///
-    /// Does NOT create the ``TSMessage``; callers are expected to utilize the restored contents to construct and insert the message.
+    /// Does NOT create the ``TSMessage``; callers are expected to utilize the
+    /// restored contents to construct and insert the message.
     ///
-    /// Callers MUST call ``restoreDownstreamObjects`` after creating and inserting the ``TSMessage``.
+    /// Callers MUST call ``restoreDownstreamObjects`` after creating and
+    /// inserting the ``TSMessage``.
     func restoreContents(
-        _ chatItemType: ChatItemMessageType,
+        _ chatItemType: ChatItemType,
         chatItemId: MessageBackup.ChatItemId,
         thread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreResult {
         switch chatItemType {
-        case .standard(let standardMessage):
+        case .standardMessage(let standardMessage):
             return restoreStandardMessage(
                 standardMessage,
                 chatItemId: chatItemId,
@@ -274,12 +246,12 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 context: context,
                 tx: tx
             )
-        case .chatUpdate:
+        case .updateMessage:
             return .messageFailure([.developerError(
                 chatItemId,
                 OWSAssertionError("Chat update has no contents to restore!")
             )])
-        case .contact, .voice, .sticker, .remotelyDeleted:
+        case .contactMessage, .voiceMessage, .stickerMessage, .remoteDeletedMessage:
             // Other types not supported yet.
             return .messageFailure([.unimplemented(chatItemId)])
         }
@@ -387,9 +359,14 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         var bodyMentions = [NSRange: Aci]()
         var bodyStyles = [NSRangedValue<MessageBodyRanges.SingleStyle>]()
         for bodyRange in bodyRangeProtos {
-            let range = NSRange(location: Int(bodyRange.start), length: Int(bodyRange.length))
-            if let rawMentionAci = bodyRange.mentionAci {
-                guard let mentionAci = try? Aci.parseFrom(serviceIdBinary: rawMentionAci) else {
+            guard let bodyRangeStart = bodyRange.start, let bodyRangeLength = bodyRange.length else {
+                continue
+            }
+
+            let range = NSRange(location: Int(bodyRangeStart), length: Int(bodyRangeLength))
+            switch bodyRange.associatedValue {
+            case .mentionAci(let aciData):
+                guard let mentionAci = try? Aci.parseFrom(serviceIdBinary: aciData) else {
                     partialErrors.append(.invalidProtoData(
                         chatItemId,
                         .invalidAci(protoClass: BackupProtoBodyRange.self)
@@ -397,29 +374,30 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                     continue
                 }
                 bodyMentions[range] = mentionAci
-            } else if bodyRange.hasStyle {
+            case .style(let protoBodyRangeStyle):
                 let swiftStyle: MessageBodyRanges.SingleStyle
-                switch bodyRange.style {
-                case .some(.none):
-                    // Unrecognized enum value
+                switch protoBodyRangeStyle {
+                case .NONE:
                     partialErrors.append(.invalidProtoData(chatItemId, .unrecognizedBodyRangeStyle))
                     continue
-                case nil:
-                    // Missing enum value
-                    partialErrors.append(.invalidProtoData(chatItemId, .unrecognizedBodyRangeStyle))
-                    continue
-                case .bold:
+                case .BOLD:
                     swiftStyle = .bold
-                case .italic:
+                case .ITALIC:
                     swiftStyle = .italic
-                case .monospace:
+                case .MONOSPACE:
                     swiftStyle = .monospace
-                case .spoiler:
+                case .SPOILER:
                     swiftStyle = .spoiler
-                case .strikethrough:
+                case .STRIKETHROUGH:
                     swiftStyle = .strikethrough
                 }
                 bodyStyles.append(.init(swiftStyle, range: range))
+            case nil:
+                partialErrors.append(.invalidProtoData(
+                    chatItemId,
+                    .invalidAci(protoClass: BackupProtoBodyRange.self)
+                ))
+                continue
             }
         }
         let bodyRanges = MessageBodyRanges(mentions: bodyMentions, styles: bodyStyles)
@@ -465,10 +443,12 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
         var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
 
-        // 0 is treated as a null value.
         let targetMessageTimestamp: NSNumber?
-        if quote.targetSentTimestamp != 0, SDS.fitsInInt64(quote.targetSentTimestamp) {
-            targetMessageTimestamp = NSNumber(value: quote.targetSentTimestamp)
+        if
+            let targetSentTimestamp = quote.targetSentTimestamp,
+            SDS.fitsInInt64(targetSentTimestamp)
+        {
+            targetMessageTimestamp = NSNumber(value: targetSentTimestamp)
         } else {
             targetMessageTimestamp = nil
         }
@@ -509,9 +489,9 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
         let isGiftBadge: Bool
         switch quote.type {
-        case .unknown, .none, .normal:
+        case nil, .UNKNOWN, .NORMAL:
             isGiftBadge = false
-        case .giftbadge:
+        case .GIFTBADGE:
             isGiftBadge = true
         }
 
@@ -543,12 +523,12 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         thread: MessageBackup.ChatThread,
         tx: DBReadTransaction
     ) -> TSMessage? {
-        guard quote.targetSentTimestamp > 0 else {
+        guard let targetSentTimestamp = quote.targetSentTimestamp else {
             return nil
         }
         let messageCandidates: [TSInteraction] = (try? interactionStore
             .interactions(
-                withTimestamp: quote.targetSentTimestamp,
+                withTimestamp: targetSentTimestamp,
                 tx: tx
             )
         ) ?? []

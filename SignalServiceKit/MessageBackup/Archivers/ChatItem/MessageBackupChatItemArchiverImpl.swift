@@ -195,55 +195,27 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             return .success
         }
 
-        let chatItemBuilder = BackupProtoChatItem.builder(
-            chatID: chatId.value,
-            authorID: details.author.value,
+        var chatItem = BackupProtoChatItem(
+            chatId: chatId.value,
+            authorId: details.author.value,
             dateSent: interaction.timestamp,
             sealedSender: details.isSealedSender,
             sms: details.isSms
         )
 
-        switch details.type {
-        case .standard(let msg):
-            chatItemBuilder.setStandardMessage(msg)
-        case .contact(let msg):
-            chatItemBuilder.setContactMessage(msg)
-        case .voice(let msg):
-            chatItemBuilder.setVoiceMessage(msg)
-        case .sticker(let msg):
-            chatItemBuilder.setStickerMessage(msg)
-        case .remotelyDeleted(let msg):
-            chatItemBuilder.setRemoteDeletedMessage(msg)
-        case .chatUpdate(let msg):
-            chatItemBuilder.setUpdateMessage(msg)
-        }
-
-        switch details.directionalDetails {
-        case .incoming(let backupProtoChatItemIncomingMessageDetails):
-            chatItemBuilder.setIncoming(backupProtoChatItemIncomingMessageDetails)
-        case .outgoing(let backupProtoChatItemOutgoingMessageDetails):
-            chatItemBuilder.setOutgoing(backupProtoChatItemOutgoingMessageDetails)
-        case .directionless(let backupProtoChatItemDirectionlessMessageDetails):
-            chatItemBuilder.setDirectionless(backupProtoChatItemDirectionlessMessageDetails)
-        }
-
-        if let expireStartDate = details.expireStartDate {
-            chatItemBuilder.setExpireStartDate(expireStartDate)
-        }
-        if let expiresInMs = details.expiresInMs {
-            chatItemBuilder.setExpiresInMs(expiresInMs)
-        }
-
-        chatItemBuilder.setRevisions(details.revisions)
+        chatItem.item = details.chatItemType
+        chatItem.directionalDetails = details.directionalDetails
+        chatItem.expireStartDate = details.expireStartDate
+        chatItem.expiresInMs = details.expiresInMs
+        chatItem.revisions = details.revisions
 
         let error = Self.writeFrameToStream(
             stream,
             objectId: interaction.uniqueInteractionId
-        ) { frameBuilder in
-            let chatItemProto = try chatItemBuilder.build()
-            let frameBuilder = BackupProtoFrame.builder()
-            frameBuilder.setChatItem(chatItemProto)
-            return try frameBuilder.build()
+        ) {
+            var frame = BackupProtoFrame()
+            frame.item = .chatItem(chatItem)
+            return frame
         }
 
         if let error {
@@ -268,8 +240,8 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             return .success
         }
 
-        guard let threadUniqueId = context[chatItem.chatId] else {
-            return .failure([.invalidProtoData(chatItem.id, .chatIdNotFound(chatItem.chatId))])
+        guard let threadUniqueId = context[chatItem.typedChatId] else {
+            return .failure([.invalidProtoData(chatItem.id, .chatIdNotFound(chatItem.typedChatId))])
         }
 
         guard

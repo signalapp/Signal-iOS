@@ -13,7 +13,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
     typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
     internal static func restoreGroupUpdates(
-        groupUpdates: [BackupProtoGroupChangeChatUpdateUpdate],
+        groupUpdates: [BackupProtoGroupChangeChatUpdate.BackupProtoUpdate],
         // We should never be comparing our pni as it can change,
         // we only ever want to compare our unchanging aci.
         localUserAci: Aci,
@@ -37,7 +37,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
     }
 
     private static func restoreGroupUpdate(
-        groupUpdate: BackupProtoGroupChangeChatUpdateUpdate,
+        groupUpdate: BackupProtoGroupChangeChatUpdate.BackupProtoUpdate,
         localUserAci: Aci,
         chatItemId: MessageBackup.ChatItemId
     ) -> MessageBackup.RestoreInteractionResult<[PersistableGroupUpdateItem]> {
@@ -96,7 +96,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
             }
         }
 
-        switch groupUpdate.updateType {
+        switch groupUpdate.update {
         case .none:
             return .messageFailure([.invalidProtoData(chatItemId, .unrecognizedGroupUpdate)])
         case .genericGroupUpdate(let proto):
@@ -319,7 +319,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .selfInvitedOtherUserToGroupUpdate(let proto):
-            switch (try? ServiceId.parseFrom(serviceIdBinary: proto.inviteeServiceID)) {
+            switch (try? ServiceId.parseFrom(serviceIdBinary: proto.inviteeServiceId)) {
             case .some(let serviceId):
                 return .success([.otherUserWasInvitedByLocalUser(inviteeServiceId: serviceId.codableUppercaseString)])
             case .none:
@@ -641,133 +641,19 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
     }
 }
 
-extension BackupProtoGroupChangeChatUpdateUpdate {
-
-    fileprivate enum UpdateType {
-        case genericGroupUpdate(BackupProtoGenericGroupUpdate)
-        case groupCreationUpdate(BackupProtoGroupCreationUpdate)
-        case groupNameUpdate(BackupProtoGroupNameUpdate)
-        case groupAvatarUpdate(BackupProtoGroupAvatarUpdate)
-        case groupDescriptionUpdate(BackupProtoGroupDescriptionUpdate)
-        case groupMembershipAccessLevelChangeUpdate(BackupProtoGroupMembershipAccessLevelChangeUpdate)
-        case groupAttributesAccessLevelChangeUpdate(BackupProtoGroupAttributesAccessLevelChangeUpdate)
-        case groupAnnouncementOnlyChangeUpdate(BackupProtoGroupAnnouncementOnlyChangeUpdate)
-        case groupAdminStatusUpdate(BackupProtoGroupAdminStatusUpdate)
-        case groupMemberLeftUpdate(BackupProtoGroupMemberLeftUpdate)
-        case groupMemberRemovedUpdate(BackupProtoGroupMemberRemovedUpdate)
-        case selfInvitedToGroupUpdate(BackupProtoSelfInvitedToGroupUpdate)
-        case selfInvitedOtherUserToGroupUpdate(BackupProtoSelfInvitedOtherUserToGroupUpdate)
-        case groupUnknownInviteeUpdate(BackupProtoGroupUnknownInviteeUpdate)
-        case groupInvitationAcceptedUpdate(BackupProtoGroupInvitationAcceptedUpdate)
-        case groupInvitationDeclinedUpdate(BackupProtoGroupInvitationDeclinedUpdate)
-        case groupMemberJoinedUpdate(BackupProtoGroupMemberJoinedUpdate)
-        case groupMemberAddedUpdate(BackupProtoGroupMemberAddedUpdate)
-        case groupSelfInvitationRevokedUpdate(BackupProtoGroupSelfInvitationRevokedUpdate)
-        case groupInvitationRevokedUpdate(BackupProtoGroupInvitationRevokedUpdate)
-        case groupJoinRequestUpdate(BackupProtoGroupJoinRequestUpdate)
-        case groupJoinRequestApprovalUpdate(BackupProtoGroupJoinRequestApprovalUpdate)
-        case groupJoinRequestCanceledUpdate(BackupProtoGroupJoinRequestCanceledUpdate)
-        case groupInviteLinkResetUpdate(BackupProtoGroupInviteLinkResetUpdate)
-        case groupInviteLinkEnabledUpdate(BackupProtoGroupInviteLinkEnabledUpdate)
-        case groupInviteLinkAdminApprovalUpdate(BackupProtoGroupInviteLinkAdminApprovalUpdate)
-        case groupInviteLinkDisabledUpdate(BackupProtoGroupInviteLinkDisabledUpdate)
-        case groupMemberJoinedByLinkUpdate(BackupProtoGroupMemberJoinedByLinkUpdate)
-        case groupV2MigrationUpdate(BackupProtoGroupV2MigrationUpdate)
-        case groupV2MigrationSelfInvitedUpdate(BackupProtoGroupV2MigrationSelfInvitedUpdate)
-        case groupV2MigrationInvitedMembersUpdate(BackupProtoGroupV2MigrationInvitedMembersUpdate)
-        case groupV2MigrationDroppedMembersUpdate(BackupProtoGroupV2MigrationDroppedMembersUpdate)
-        case groupSequenceOfRequestsAndCancelsUpdate(BackupProtoGroupSequenceOfRequestsAndCancelsUpdate)
-        case groupExpirationTimerUpdate(BackupProtoGroupExpirationTimerUpdate)
-    }
-
-    fileprivate var updateType: UpdateType? {
-        if let genericGroupUpdate {
-            return .genericGroupUpdate(genericGroupUpdate)
-        } else if let groupCreationUpdate {
-            return .groupCreationUpdate(groupCreationUpdate)
-        } else if let groupNameUpdate {
-            return .groupNameUpdate(groupNameUpdate)
-        } else if let groupAvatarUpdate {
-            return .groupAvatarUpdate(groupAvatarUpdate)
-        } else if let groupDescriptionUpdate {
-            return .groupDescriptionUpdate(groupDescriptionUpdate)
-        } else if let groupMembershipAccessLevelChangeUpdate {
-            return .groupMembershipAccessLevelChangeUpdate(groupMembershipAccessLevelChangeUpdate)
-        } else if let groupAttributesAccessLevelChangeUpdate {
-            return .groupAttributesAccessLevelChangeUpdate(groupAttributesAccessLevelChangeUpdate)
-        } else if let groupAnnouncementOnlyChangeUpdate {
-            return .groupAnnouncementOnlyChangeUpdate(groupAnnouncementOnlyChangeUpdate)
-        } else if let groupAdminStatusUpdate {
-            return .groupAdminStatusUpdate(groupAdminStatusUpdate)
-        } else if let groupMemberLeftUpdate {
-            return .groupMemberLeftUpdate(groupMemberLeftUpdate)
-        } else if let groupMemberRemovedUpdate {
-            return .groupMemberRemovedUpdate(groupMemberRemovedUpdate)
-        } else if let selfInvitedToGroupUpdate {
-            return .selfInvitedToGroupUpdate(selfInvitedToGroupUpdate)
-        } else if let selfInvitedOtherUserToGroupUpdate {
-            return .selfInvitedOtherUserToGroupUpdate(selfInvitedOtherUserToGroupUpdate)
-        } else if let groupUnknownInviteeUpdate {
-            return .groupUnknownInviteeUpdate(groupUnknownInviteeUpdate)
-        } else if let groupInvitationAcceptedUpdate {
-            return .groupInvitationAcceptedUpdate(groupInvitationAcceptedUpdate)
-        } else if let groupInvitationDeclinedUpdate {
-            return .groupInvitationDeclinedUpdate(groupInvitationDeclinedUpdate)
-        } else if let groupMemberJoinedUpdate {
-            return .groupMemberJoinedUpdate(groupMemberJoinedUpdate)
-        } else if let groupMemberAddedUpdate {
-            return .groupMemberAddedUpdate(groupMemberAddedUpdate)
-        } else if let groupSelfInvitationRevokedUpdate {
-            return .groupSelfInvitationRevokedUpdate(groupSelfInvitationRevokedUpdate)
-        } else if let groupInvitationRevokedUpdate {
-            return .groupInvitationRevokedUpdate(groupInvitationRevokedUpdate)
-        } else if let groupJoinRequestUpdate {
-            return .groupJoinRequestUpdate(groupJoinRequestUpdate)
-        } else if let groupJoinRequestApprovalUpdate {
-            return .groupJoinRequestApprovalUpdate(groupJoinRequestApprovalUpdate)
-        } else if let groupJoinRequestCanceledUpdate {
-            return .groupJoinRequestCanceledUpdate(groupJoinRequestCanceledUpdate)
-        } else if let groupInviteLinkResetUpdate {
-            return .groupInviteLinkResetUpdate(groupInviteLinkResetUpdate)
-        } else if let groupInviteLinkEnabledUpdate {
-            return .groupInviteLinkEnabledUpdate(groupInviteLinkEnabledUpdate)
-        } else if let groupInviteLinkAdminApprovalUpdate {
-            return .groupInviteLinkAdminApprovalUpdate(groupInviteLinkAdminApprovalUpdate)
-        } else if let groupInviteLinkDisabledUpdate {
-            return .groupInviteLinkDisabledUpdate(groupInviteLinkDisabledUpdate)
-        } else if let groupMemberJoinedByLinkUpdate {
-            return .groupMemberJoinedByLinkUpdate(groupMemberJoinedByLinkUpdate)
-        } else if let groupV2MigrationUpdate {
-            return .groupV2MigrationUpdate(groupV2MigrationUpdate)
-        } else if let groupV2MigrationSelfInvitedUpdate {
-            return .groupV2MigrationSelfInvitedUpdate(groupV2MigrationSelfInvitedUpdate)
-        } else if let groupV2MigrationInvitedMembersUpdate {
-            return .groupV2MigrationInvitedMembersUpdate(groupV2MigrationInvitedMembersUpdate)
-        } else if let groupV2MigrationDroppedMembersUpdate {
-            return .groupV2MigrationDroppedMembersUpdate(groupV2MigrationDroppedMembersUpdate)
-        } else if let groupSequenceOfRequestsAndCancelsUpdate {
-            return .groupSequenceOfRequestsAndCancelsUpdate(groupSequenceOfRequestsAndCancelsUpdate)
-        } else if let groupExpirationTimerUpdate {
-            return .groupExpirationTimerUpdate(groupExpirationTimerUpdate)
-        } else {
-            return nil
-        }
-    }
-}
-
 extension Optional where Wrapped == BackupProtoGroupV2AccessLevel {
 
     fileprivate var swiftAccessLevel: GroupV2Access {
         switch self {
-        case .none, .unknown:
+        case nil, .UNKNOWN:
             return .unknown
-        case .any:
+        case .ANY:
             return .any
-        case .member:
+        case .MEMBER:
             return .member
-        case .administrator:
+        case .ADMINISTRATOR:
             return .administrator
-        case .unsatisfiable:
+        case .UNSATISFIABLE:
             return .unsatisfiable
         }
     }

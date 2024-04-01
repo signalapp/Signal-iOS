@@ -51,21 +51,20 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
     private static let localRecipientId = RecipientId(integerLiteral: 1)
 
     public func archiveLocalRecipient(stream: MessageBackupProtoOutputStream) -> MessageBackup.ArchiveLocalRecipientResult {
-        let selfRecipientBuilder = BackupProtoSelfRecipient.builder()
-        let recipientBuilder = BackupProtoRecipient.builder(
-            id: Self.localRecipientId.value
-        )
-
         let error = Self.writeFrameToStream(
             stream,
             objectId: MessageBackup.LocalRecipientId()
-        ) { frameBuilder in
-            let selfRecipientProto = selfRecipientBuilder.buildInfallibly()
-            recipientBuilder.setSelfRecipient(selfRecipientProto)
-            let recipientProto = try recipientBuilder.build()
-            frameBuilder.setRecipient(recipientProto)
-            return try frameBuilder.build()
+        ) {
+            let selfRecipient = BackupProtoSelfRecipient()
+
+            var recipient = BackupProtoRecipient(id: Self.localRecipientId.value)
+            recipient.destination = .selfRecipient(selfRecipient)
+
+            var frame = BackupProtoFrame()
+            frame.item = .recipient(recipient)
+            return frame
         }
+
         if let error {
             return .failure(error)
         } else {
@@ -74,7 +73,12 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
     }
 
     public static func canRestore(_ recipient: BackupProtoRecipient) -> Bool {
-        return recipient.selfRecipient != nil
+        switch recipient.destination {
+        case .selfRecipient:
+            return true
+        case nil, .contact, .group, .distributionList, .releaseNotes:
+            return false
+        }
     }
 
     public func restore(
@@ -82,7 +86,10 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        guard recipient.selfRecipient != nil else {
+        switch recipient.destination {
+        case .selfRecipient:
+            break
+        case nil, .contact, .group, .distributionList, .releaseNotes:
             return .failure([.developerError(
                 recipient.recipientId,
                 OWSAssertionError("Non self recipient sent to local recipient archiver")
@@ -90,7 +97,6 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
         }
 
         context[recipient.recipientId] = .localAddress
-
         return .success
     }
 }

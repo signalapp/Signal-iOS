@@ -58,10 +58,10 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             context: context.recipientContext,
             tx: tx
         )
-        let type: MessageBackup.ChatItemMessageType
+        let chatItemType: MessageBackup.InteractionArchiveDetails.ChatItemType
         switch contentsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let t):
-            type = t
+            chatItemType = t
         case .bubbleUpError(let errorResult):
             return errorResult
         }
@@ -72,7 +72,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             expireStartDate: message.expireStartedAt,
             expiresInMs: UInt64(message.expiresInSeconds) * 1000,
             isSealedSender: wasAnySendSealedSender,
-            type: type
+            chatItemType: chatItemType
         )
         if partialErrors.isEmpty {
             return .success(details)
@@ -93,7 +93,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
         var perRecipientErrors = [MessageBackup.ArchiveInteractionResult<Details.DirectionalDetails>.ArchiveFrameError]()
 
         var wasAnySendSealedSender = false
-        let outgoingMessageProtoBuilder = BackupProtoChatItemOutgoingMessageDetails.builder()
+        var outgoingMessage = BackupProtoChatItem.BackupProtoOutgoingMessageDetails()
 
         for (address, sendState) in message.recipientAddressStates ?? [:] {
             guard let recipientAddress = address.asSingleServiceIdBackupAddress()?.asArchivingAddress() else {
@@ -111,79 +111,62 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             }
             var isNetworkFailure = false
             var isIdentityKeyMismatchFailure = false
-            let protoDeliveryStatus: BackupProtoSendStatusStatus
+            let protoDeliveryStatus: BackupProtoSendStatus.BackupProtoStatus
             let statusTimestamp: UInt64
             switch sendState.state {
             case OWSOutgoingMessageRecipientState.sent:
                 if let readTimestamp = sendState.readTimestamp {
-                    protoDeliveryStatus = .read
+                    protoDeliveryStatus = .READ
                     statusTimestamp = readTimestamp.uint64Value
                 } else if let viewedTimestamp = sendState.viewedTimestamp {
-                    protoDeliveryStatus = .viewed
+                    protoDeliveryStatus = .VIEWED
                     statusTimestamp = viewedTimestamp.uint64Value
                 } else if let deliveryTimestamp = sendState.deliveryTimestamp {
-                    protoDeliveryStatus = .delivered
+                    protoDeliveryStatus = .DELIVERED
                     statusTimestamp = deliveryTimestamp.uint64Value
                 } else {
-                    protoDeliveryStatus = .sent
+                    protoDeliveryStatus = .SENT
                     statusTimestamp = message.timestamp
                 }
             case OWSOutgoingMessageRecipientState.failed:
                 // TODO: identify specific errors. for now call everything network.
                 isNetworkFailure = true
                 isIdentityKeyMismatchFailure = false
-                protoDeliveryStatus = .failed
+                protoDeliveryStatus = .FAILED
                 statusTimestamp = message.timestamp
             case OWSOutgoingMessageRecipientState.sending, OWSOutgoingMessageRecipientState.pending:
-                protoDeliveryStatus = .pending
+                protoDeliveryStatus = .PENDING
                 statusTimestamp = message.timestamp
             case OWSOutgoingMessageRecipientState.skipped:
-                protoDeliveryStatus = .skipped
+                protoDeliveryStatus = .SKIPPED
                 statusTimestamp = message.timestamp
             }
 
-            let sendStatusBuilder: BackupProtoSendStatusBuilder = BackupProtoSendStatus.builder(
-                recipientID: recipientId.value,
+            var sendStatus = BackupProtoSendStatus(
+                recipientId: recipientId.value,
                 networkFailure: isNetworkFailure,
                 identityKeyMismatch: isIdentityKeyMismatchFailure,
                 sealedSender: sendState.wasSentByUD.negated,
                 lastStatusUpdateTimestamp: statusTimestamp
             )
-            sendStatusBuilder.setDeliveryStatus(protoDeliveryStatus)
-            do {
-                let sendStatus = try sendStatusBuilder.build()
-                outgoingMessageProtoBuilder.addSendStatus(sendStatus)
-            } catch let error {
-                perRecipientErrors.append(.protoSerializationError(
-                    message.uniqueInteractionId,
-                    error
-                ))
-            }
+            sendStatus.deliveryStatus = protoDeliveryStatus
+
+            outgoingMessage.sendStatus.append(sendStatus)
 
             if sendState.wasSentByUD.negated {
                 wasAnySendSealedSender = true
             }
         }
 
-        let outgoingMessageProto: BackupProtoChatItemOutgoingMessageDetails
-        do {
-            outgoingMessageProto = try outgoingMessageProtoBuilder.build()
-        } catch let error {
-            return .messageFailure(
-                [.protoSerializationError(message.uniqueInteractionId, error)]
-                + perRecipientErrors
-            )
-        }
-
         if perRecipientErrors.isEmpty {
             return .success(.init(
-                details: .outgoing(outgoingMessageProto),
+                details: .outgoing(outgoingMessage),
                 wasAnySendSealedSender: wasAnySendSealedSender
             ))
         } else {
             return .partialFailure(
                 .init(
-                    details: .outgoing(outgoingMessageProto),
+                    details: .outgoing(outgoingMessage),
                     wasAnySendSealedSender: wasAnySendSealedSender
                 ),
                 perRecipientErrors
@@ -199,7 +182,11 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
-        guard let outgoingDetails = chatItem.outgoing else {
+        let outgoingDetails: BackupProtoChatItem.BackupProtoOutgoingMessageDetails
+        switch chatItem.directionalDetails {
+        case .outgoing(let backupProtoChatItemOutgoingMessageDetails):
+            outgoingDetails = backupProtoChatItemOutgoingMessageDetails
+        case nil, .incoming, .directionless:
             // Should be impossible.
             return .messageFailure([.developerError(
                 chatItem.id,
@@ -207,7 +194,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             )])
         }
 
-        guard let messageType = chatItem.messageType else {
+        guard let chatItemType = chatItem.item else {
             // Unrecognized item type!
             return .messageFailure([.invalidProtoData(chatItem.id, .unrecognizedChatItemType)])
         }
@@ -215,7 +202,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
         var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
 
         let contentsResult = contentsArchiver.restoreContents(
-            messageType,
+            chatItemType,
             chatItemId: chatItem.id,
             thread: thread,
             context: context,

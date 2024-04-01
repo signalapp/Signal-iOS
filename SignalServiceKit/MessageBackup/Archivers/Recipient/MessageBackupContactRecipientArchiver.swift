@@ -66,10 +66,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
 
             let recipientId = context.assignRecipientId(to: recipientAddress)
 
-            let recipientBuilder = BackupProtoRecipient.builder(
-                id: recipientId.value
-            )
-
             var unregisteredAtTimestamp: UInt64 = 0
             if !recipient.isRegistered {
                 unregisteredAtTimestamp = (
@@ -79,7 +75,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
 
             let storyContext = recipient.aci.map { self.storyStore.getOrCreateStoryContextAssociatedData(for: $0, tx: tx) }
 
-            let contactBuilder = BackupProtoContact.builder(
+            var contact = BackupProtoContact(
                 blocked: blockedAddresses.contains(recipient.address),
                 hidden: self.recipientHidingManager.isHiddenRecipient(recipient, tx: tx),
                 unregisteredTimestamp: unregisteredAtTimestamp,
@@ -87,28 +83,28 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
                 hideStory: storyContext?.isHidden ?? false
             )
 
-            contactBuilder.setRegistered(recipient.isRegistered ? .registered : .notRegistered)
-
-            recipient.aci.map(\.rawUUID.data).map(contactBuilder.setAci)
-            recipient.pni.map(\.rawUUID.data).map(contactBuilder.setPni)
-            recipient.address.e164.map(\.uint64Value).map(contactBuilder.setE164)
+            contact.registered = recipient.isRegistered ? .REGISTERED : .NOT_REGISTERED
+            contact.aci = recipient.aci.map(\.rawUUID.data)
+            contact.pni = recipient.pni.map(\.rawUUID.data)
+            contact.e164 = recipient.address.e164.map(\.uint64Value)
             // TODO: username?
 
             let userProfile = self.profileManager.getUserProfile(for: recipient.address, tx: tx)
-            userProfile?.profileKey.map(\.keyData).map(contactBuilder.setProfileKey(_:))
-            userProfile?.givenName.map(contactBuilder.setProfileGivenName(_:))
-            userProfile?.familyName.map(contactBuilder.setProfileFamilyName(_:))
+            contact.profileKey = userProfile?.profileKey.map(\.keyData)
+            contact.profileGivenName = userProfile?.givenName
+            contact.profileFamilyName = userProfile?.familyName
             // TODO: joined name?
 
             Self.writeFrameToStream(
                 stream,
                 objectId: .contact(contactAddress),
-                frameBuilder: { frameBuilder in
-                    let contact = try contactBuilder.build()
-                    recipientBuilder.setContact(contact)
-                    let protoRecipient = try recipientBuilder.build()
-                    frameBuilder.setRecipient(protoRecipient)
-                    return try frameBuilder.build()
+                frameBuilder: {
+                    var recipient = BackupProtoRecipient(id: recipientId.value)
+                    recipient.destination = .contact(contact)
+
+                    var frame = BackupProtoFrame()
+                    frame.item = .recipient(recipient)
+                    return frame
                 }
             ).map { errors.append($0) }
         }
@@ -121,7 +117,12 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
     }
 
     static func canRestore(_ recipient: BackupProtoRecipient) -> Bool {
-        return recipient.contact != nil
+        switch recipient.destination {
+        case .contact:
+            return true
+        case nil, .group, .distributionList, .selfRecipient, .releaseNotes:
+            return false
+        }
     }
 
     public func restore(
@@ -129,7 +130,11 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        guard let contactProto = recipientProto.contact else {
+        let contactProto: BackupProtoContact
+        switch recipientProto.destination {
+        case .contact(let backupProtoContact):
+            contactProto = backupProtoContact
+        case nil, .group, .distributionList, .selfRecipient, .releaseNotes:
             return .failure(
                 [.developerError(
                     recipientProto.recipientId,
@@ -141,13 +146,13 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         let isRegistered: Bool?
         let unregisteredTimestamp: UInt64?
         switch contactProto.registered {
-        case .none, .unknown:
+        case nil, .UNKNOWN:
             isRegistered = nil
             unregisteredTimestamp = nil
-        case .registered:
+        case .REGISTERED:
             isRegistered = true
             unregisteredTimestamp = nil
-        case .notRegistered:
+        case .NOT_REGISTERED:
             isRegistered = false
             unregisteredTimestamp = contactProto.unregisteredTimestamp
         }
@@ -181,8 +186,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         } else {
             pni = nil
         }
-        if contactProto.hasE164, contactProto.e164 != 0 {
-            guard let protoE164 = E164(contactProto.e164) else {
+        if let contactProtoE164 = contactProto.e164 {
+            guard let protoE164 = E164(contactProtoE164) else {
                 return .failure(
                     [.invalidProtoData(
                         recipientProto.recipientId,

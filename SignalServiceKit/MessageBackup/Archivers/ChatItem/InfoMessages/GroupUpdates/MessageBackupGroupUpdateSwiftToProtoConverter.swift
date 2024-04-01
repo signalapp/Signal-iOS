@@ -14,16 +14,11 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
 
     private static func buildEmptyRevokedInvitees(
         count: UInt
-    ) -> [BackupProtoGroupInvitationRevokedUpdateInvitee] {
+    ) -> [BackupProtoGroupInvitationRevokedUpdate.BackupProtoInvitee] {
         // All the invitees are empty; only their count matters.
-        var invitees = [BackupProtoGroupInvitationRevokedUpdateInvitee]()
-        for _ in 0..<count {
-            let invitee = BackupProtoGroupInvitationRevokedUpdateInvitee
-                .builder()
-                .buildInfallibly()
-            invitees.append(invitee)
+        return (0..<count).map { _ in
+            return BackupProtoGroupInvitationRevokedUpdate.BackupProtoInvitee()
         }
-        return invitees
     }
 
     // MARK: - Enum cases
@@ -34,7 +29,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
         // we only ever insert our aci and use special cases for our pni.
         localUserAci: Aci,
         interactionId: MessageBackup.InteractionUniqueId
-    ) -> MessageBackup.ArchiveInteractionResult<BackupProtoGroupChangeChatUpdateUpdate> {
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProtoGroupChangeChatUpdate.BackupProtoUpdate> {
         let localAciData = localUserAci.rawUUID.data
         func aciData(_ aci: AciUuid) -> Data {
             return aci.wrappedValue.rawUUID.data
@@ -46,24 +41,18 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             return serviceId.wrappedValue.serviceIdBinary.asData
         }
 
-        let updateBuilder = BackupProtoGroupChangeChatUpdateUpdate.builder()
+        var update = BackupProtoGroupChangeChatUpdate.BackupProtoUpdate()
 
-        var protoBuildError: MessageBackup.RawError?
-
-        func setUpdate<Proto, Builder>(
-            _ builder: Builder,
-            setOptionalFields: ((Builder) -> Void)? = nil,
-            build: (Builder) -> () throws -> Proto,
-            set: (BackupProtoGroupChangeChatUpdateUpdateBuilder) -> (Proto) -> Void
+        func setUpdate<Proto>(
+            _ proto: Proto,
+            setOptionalFields: ((inout Proto) -> Void)? = nil,
+            asUpdate: (Proto) -> BackupProtoGroupChangeChatUpdate.BackupProtoUpdate.Update
         ) {
-            do {
-                setOptionalFields?(builder)
-                let proto = try build(builder)()
-                set(updateBuilder)(proto)
-            } catch let error {
-                protoBuildError = error
-            }
+            var proto = proto
+            setOptionalFields?(&proto)
+            update.update = asUpdate(proto)
         }
+
         switch groupUpdate {
         case .sequenceOfInviteLinkRequestAndCancels(let requester, let count, _):
             // Note: isTail is dropped from the backup.
@@ -72,82 +61,73 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             if count == 0 {
                 // If the count is 0, its actually just a request to join.
                 setUpdate(
-                    BackupProtoGroupJoinRequestUpdate.builder(
+                    BackupProtoGroupJoinRequestUpdate(
                         requestorAci: aciData(requester)
                     ),
-                    build: { $0.build },
-                    set: { $0.setGroupJoinRequestUpdate(_:) }
+                    asUpdate: { .groupJoinRequestUpdate($0) }
                 )
             } else {
                 setUpdate(
-                    BackupProtoGroupSequenceOfRequestsAndCancelsUpdate.builder(
+                    BackupProtoGroupSequenceOfRequestsAndCancelsUpdate(
                         requestorAci: aciData(requester),
                         count: .init(clamping: count)
                     ),
-                    build: { $0.build },
-                    set: { $0.setGroupSequenceOfRequestsAndCancelsUpdate }
+                    asUpdate: { .groupSequenceOfRequestsAndCancelsUpdate($0) }
                 )
             }
         case .invitedPniPromotedToFullMemberAci(let newMember, let inviter):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate.builder(
+                BackupProtoGroupInvitationAcceptedUpdate(
                     newMemberAci: aciData(newMember)
                 ),
                 setOptionalFields: {
                     if let inviter {
-                        $0.setInviterAci(aciData(inviter))
+                        $0.inviterAci = aciData(inviter)
                     }
                 },
-                build: { $0.build },
-                set: { $0.setGroupInvitationAcceptedUpdate }
+                asUpdate: { .groupInvitationAcceptedUpdate($0) }
             )
         case .genericUpdateByLocalUser:
             setUpdate(
-                BackupProtoGenericGroupUpdate.builder(),
+                BackupProtoGenericGroupUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGenericGroupUpdate(_:) }
+                asUpdate: { .genericGroupUpdate($0) }
             )
         case .genericUpdateByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGenericGroupUpdate.builder(),
+                BackupProtoGenericGroupUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGenericGroupUpdate(_:) }
+                asUpdate: { .genericGroupUpdate($0) }
             )
         case .genericUpdateByUnknownUser:
             setUpdate(
-                BackupProtoGenericGroupUpdate.builder(),
-                build: { $0.buildInfallibly },
-                set: { $0.setGenericGroupUpdate(_:) }
+                BackupProtoGenericGroupUpdate(),
+                asUpdate: { .genericGroupUpdate($0) }
             )
         case .createdByLocalUser:
             setUpdate(
-                BackupProtoGroupCreationUpdate.builder(),
+                BackupProtoGroupCreationUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupCreationUpdate(_:) }
+                asUpdate: { .groupCreationUpdate($0) }
             )
         case .createdByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupCreationUpdate.builder(),
+                BackupProtoGroupCreationUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupCreationUpdate(_:) }
+                asUpdate: { .groupCreationUpdate($0) }
             )
         case .createdByUnknownUser:
             setUpdate(
-                BackupProtoGroupCreationUpdate.builder(),
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupCreationUpdate(_:) }
+                BackupProtoGroupCreationUpdate(),
+                asUpdate: { .groupCreationUpdate($0) }
             )
         case .inviteFriendsToNewlyCreatedGroup:
             // This specific one is ignored for purposes of backups.
@@ -156,724 +136,649 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             return .skippableGroupUpdate(.inviteFriendsToNewlyCreatedGroup)
         case .wasMigrated:
             setUpdate(
-                BackupProtoGroupV2MigrationUpdate.builder(),
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupV2MigrationUpdate(_:) }
+                BackupProtoGroupV2MigrationUpdate(),
+                asUpdate: { .groupV2MigrationUpdate($0) }
             )
         case .localUserInvitedAfterMigration:
             setUpdate(
-                BackupProtoGroupV2MigrationSelfInvitedUpdate.builder(),
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupV2MigrationSelfInvitedUpdate(_:) }
+                BackupProtoGroupV2MigrationSelfInvitedUpdate(),
+                asUpdate: { .groupV2MigrationSelfInvitedUpdate($0) }
             )
         case .otherUsersInvitedAfterMigration(let count):
             setUpdate(
-                BackupProtoGroupV2MigrationInvitedMembersUpdate.builder(
+                BackupProtoGroupV2MigrationInvitedMembersUpdate(
                     invitedMembersCount: .init(clamping: count)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupV2MigrationInvitedMembersUpdate(_:) }
+                asUpdate: { .groupV2MigrationInvitedMembersUpdate($0) }
             )
         case .otherUsersDroppedAfterMigration(let count):
             setUpdate(
-                BackupProtoGroupV2MigrationDroppedMembersUpdate.builder(
+                BackupProtoGroupV2MigrationDroppedMembersUpdate(
                     droppedMembersCount: .init(clamping: count)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupV2MigrationDroppedMembersUpdate(_:) }
+                asUpdate: { .groupV2MigrationDroppedMembersUpdate($0) }
             )
         case .nameChangedByLocalUser(let newGroupName):
             setUpdate(
-                BackupProtoGroupNameUpdate.builder(),
+                BackupProtoGroupNameUpdate(),
                 setOptionalFields: {
-                    $0.setNewGroupName(newGroupName)
-                    $0.setUpdaterAci(localAciData)
+                    $0.newGroupName = newGroupName
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupNameUpdate(_:) }
+                asUpdate: { .groupNameUpdate($0) }
             )
         case .nameChangedByOtherUser(let updaterAci, let newGroupName):
             setUpdate(
-                BackupProtoGroupNameUpdate.builder(),
+                BackupProtoGroupNameUpdate(),
                 setOptionalFields: {
-                    $0.setNewGroupName(newGroupName)
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.newGroupName = newGroupName
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupNameUpdate(_:) }
+                asUpdate: { .groupNameUpdate($0) }
             )
         case .nameChangedByUnknownUser(let newGroupName):
             setUpdate(
-                BackupProtoGroupNameUpdate.builder(),
+                BackupProtoGroupNameUpdate(),
                 setOptionalFields: {
-                    $0.setNewGroupName(newGroupName)
+                    $0.newGroupName = newGroupName
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupNameUpdate(_:) }
+                asUpdate: { .groupNameUpdate($0) }
             )
         case .nameRemovedByLocalUser:
             setUpdate(
-                BackupProtoGroupNameUpdate.builder(),
+                BackupProtoGroupNameUpdate(),
                 setOptionalFields: {
                     // nil group name means removed.
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupNameUpdate(_:) }
+                asUpdate: { .groupNameUpdate($0) }
             )
         case .nameRemovedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupNameUpdate.builder(),
+                BackupProtoGroupNameUpdate(),
                 setOptionalFields: {
                     // nil group name means removed.
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupNameUpdate(_:) }
+                asUpdate: { .groupNameUpdate($0) }
             )
         case .nameRemovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupNameUpdate.builder(),
+                BackupProtoGroupNameUpdate(),
                 // nil group name means removed, updater unknown.
                 // nothing to set.
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupNameUpdate(_:) }
+                asUpdate: { .groupNameUpdate($0) }
             )
         case .avatarChangedByLocalUser:
             setUpdate(
-                BackupProtoGroupAvatarUpdate.builder(wasRemoved: false),
+                BackupProtoGroupAvatarUpdate(wasRemoved: false),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupAvatarUpdate(_:) }
+                asUpdate: { .groupAvatarUpdate($0) }
             )
         case .avatarChangedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAvatarUpdate.builder(wasRemoved: false),
+                BackupProtoGroupAvatarUpdate(wasRemoved: false),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupAvatarUpdate(_:) }
+                asUpdate: { .groupAvatarUpdate($0) }
             )
         case .avatarChangedByUnknownUser:
             setUpdate(
-                BackupProtoGroupAvatarUpdate.builder(wasRemoved: false),
-                build: { $0.build },
-                set: { $0.setGroupAvatarUpdate(_:) }
+                BackupProtoGroupAvatarUpdate(wasRemoved: false),
+                asUpdate: { .groupAvatarUpdate($0) }
             )
         case .avatarRemovedByLocalUser:
             setUpdate(
-                BackupProtoGroupAvatarUpdate.builder(wasRemoved: true),
+                BackupProtoGroupAvatarUpdate(wasRemoved: true),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupAvatarUpdate(_:) }
+                asUpdate: { .groupAvatarUpdate($0) }
             )
         case .avatarRemovedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAvatarUpdate.builder(wasRemoved: true),
+                BackupProtoGroupAvatarUpdate(wasRemoved: true),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupAvatarUpdate(_:) }
+                asUpdate: { .groupAvatarUpdate($0) }
             )
         case .avatarRemovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupAvatarUpdate.builder(wasRemoved: true),
-                build: { $0.build },
-                set: { $0.setGroupAvatarUpdate(_:) }
+                BackupProtoGroupAvatarUpdate(wasRemoved: true),
+                asUpdate: { .groupAvatarUpdate($0) }
             )
         case .descriptionChangedByLocalUser(let newDescription):
             setUpdate(
-                BackupProtoGroupDescriptionUpdate.builder(),
+                BackupProtoGroupDescriptionUpdate(),
                 setOptionalFields: {
-                    $0.setNewDescription(newDescription)
-                    $0.setUpdaterAci(localAciData)
+                    $0.newDescription = newDescription
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupDescriptionUpdate(_:) }
+                asUpdate: { .groupDescriptionUpdate($0) }
             )
         case .descriptionChangedByOtherUser(let updaterAci, let newDescription):
             setUpdate(
-                BackupProtoGroupDescriptionUpdate.builder(),
+                BackupProtoGroupDescriptionUpdate(),
                 setOptionalFields: {
-                    $0.setNewDescription(newDescription)
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.newDescription = newDescription
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupDescriptionUpdate(_:) }
+                asUpdate: { .groupDescriptionUpdate($0) }
             )
         case .descriptionChangedByUnknownUser(let newDescription):
             setUpdate(
-                BackupProtoGroupDescriptionUpdate.builder(),
+                BackupProtoGroupDescriptionUpdate(),
                 setOptionalFields: {
-                    $0.setNewDescription(newDescription)
+                    $0.newDescription = newDescription
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupDescriptionUpdate(_:) }
+                asUpdate: { .groupDescriptionUpdate($0) }
             )
         case .descriptionRemovedByLocalUser:
             setUpdate(
-                BackupProtoGroupDescriptionUpdate.builder(),
+                BackupProtoGroupDescriptionUpdate(),
                 setOptionalFields: {
                     // nil group description means removed.
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupDescriptionUpdate(_:) }
+                asUpdate: { .groupDescriptionUpdate($0) }
             )
         case .descriptionRemovedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupDescriptionUpdate.builder(),
+                BackupProtoGroupDescriptionUpdate(),
                 setOptionalFields: {
                     // nil group name means removed.
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupDescriptionUpdate(_:) }
+                asUpdate: { .groupDescriptionUpdate($0) }
             )
         case .descriptionRemovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupDescriptionUpdate.builder(),
+                BackupProtoGroupDescriptionUpdate(),
                 // nil group description means removed, updater unknown.
                 // nothing to set.
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupDescriptionUpdate(_:) }
+                asUpdate: { .groupDescriptionUpdate($0) }
             )
         case .membersAccessChangedByLocalUser(let newAccess):
             setUpdate(
-                BackupProtoGroupMembershipAccessLevelChangeUpdate.builder(),
+                BackupProtoGroupMembershipAccessLevelChangeUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
-                    $0.setAccessLevel(newAccess.backupAccessLevel)
+                    $0.updaterAci = localAciData
+                    $0.accessLevel = newAccess.backupAccessLevel
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupMembershipAccessLevelChangeUpdate(_:) }
+                asUpdate: { .groupMembershipAccessLevelChangeUpdate($0) }
             )
         case .membersAccessChangedByOtherUser(let updaterAci, let newAccess):
             setUpdate(
-                BackupProtoGroupMembershipAccessLevelChangeUpdate.builder(),
+                BackupProtoGroupMembershipAccessLevelChangeUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
-                    $0.setAccessLevel(newAccess.backupAccessLevel)
+                    $0.updaterAci = aciData(updaterAci)
+                    $0.accessLevel = newAccess.backupAccessLevel
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupMembershipAccessLevelChangeUpdate(_:) }
+                asUpdate: { .groupMembershipAccessLevelChangeUpdate($0) }
             )
         case .membersAccessChangedByUnknownUser(let newAccess):
             setUpdate(
-                BackupProtoGroupMembershipAccessLevelChangeUpdate.builder(),
+                BackupProtoGroupMembershipAccessLevelChangeUpdate(),
                 setOptionalFields: {
-                    $0.setAccessLevel(newAccess.backupAccessLevel)
+                    $0.accessLevel = newAccess.backupAccessLevel
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupMembershipAccessLevelChangeUpdate(_:) }
+                asUpdate: { .groupMembershipAccessLevelChangeUpdate($0) }
             )
         case .attributesAccessChangedByLocalUser(let newAccess):
             setUpdate(
-                BackupProtoGroupAttributesAccessLevelChangeUpdate.builder(),
+                BackupProtoGroupAttributesAccessLevelChangeUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
-                    $0.setAccessLevel(newAccess.backupAccessLevel)
+                    $0.updaterAci = localAciData
+                    $0.accessLevel = newAccess.backupAccessLevel
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupAttributesAccessLevelChangeUpdate(_:) }
+                asUpdate: { .groupAttributesAccessLevelChangeUpdate($0) }
             )
         case .attributesAccessChangedByOtherUser(let updaterAci, let newAccess):
             setUpdate(
-                BackupProtoGroupAttributesAccessLevelChangeUpdate.builder(),
+                BackupProtoGroupAttributesAccessLevelChangeUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
-                    $0.setAccessLevel(newAccess.backupAccessLevel)
+                    $0.updaterAci = aciData(updaterAci)
+                    $0.accessLevel = newAccess.backupAccessLevel
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupAttributesAccessLevelChangeUpdate }
+                asUpdate: { .groupAttributesAccessLevelChangeUpdate($0) }
             )
         case .attributesAccessChangedByUnknownUser(let newAccess):
             setUpdate(
-                BackupProtoGroupAttributesAccessLevelChangeUpdate.builder(),
+                BackupProtoGroupAttributesAccessLevelChangeUpdate(),
                 setOptionalFields: {
-                    $0.setAccessLevel(newAccess.backupAccessLevel)
+                    $0.accessLevel = newAccess.backupAccessLevel
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupAttributesAccessLevelChangeUpdate }
+                asUpdate: { .groupAttributesAccessLevelChangeUpdate($0) }
             )
         case .announcementOnlyEnabledByLocalUser:
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate.builder(isAnnouncementOnly: true),
+                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: true),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupAnnouncementOnlyChangeUpdate(_:) }
+                asUpdate: { .groupAnnouncementOnlyChangeUpdate($0) }
             )
         case .announcementOnlyEnabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate.builder(isAnnouncementOnly: true),
+                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: true),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupAnnouncementOnlyChangeUpdate(_:) }
+                asUpdate: { .groupAnnouncementOnlyChangeUpdate($0) }
             )
         case .announcementOnlyEnabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate.builder(isAnnouncementOnly: true),
-                build: { $0.build },
-                set: { $0.setGroupAnnouncementOnlyChangeUpdate(_:) }
+                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: true),
+                asUpdate: { .groupAnnouncementOnlyChangeUpdate($0) }
             )
         case .announcementOnlyDisabledByLocalUser:
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate.builder(isAnnouncementOnly: false),
+                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: false),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupAnnouncementOnlyChangeUpdate(_:) }
+                asUpdate: { .groupAnnouncementOnlyChangeUpdate($0) }
             )
         case .announcementOnlyDisabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate.builder(isAnnouncementOnly: false),
+                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: false),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupAnnouncementOnlyChangeUpdate(_:) }
+                asUpdate: { .groupAnnouncementOnlyChangeUpdate($0) }
             )
         case .announcementOnlyDisabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate.builder(isAnnouncementOnly: false),
-                build: { $0.build },
-                set: { $0.setGroupAnnouncementOnlyChangeUpdate(_:) }
+                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: false),
+                asUpdate: { .groupAnnouncementOnlyChangeUpdate($0) }
             )
         case .localUserWasGrantedAdministratorByLocalUser:
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .localUserWasGrantedAdministratorByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .localUserWasGrantedAdministratorByUnknownUser:
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: true
                 ),
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .otherUserWasGrantedAdministratorByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .otherUserWasGrantedAdministratorByOtherUser(let updaterAci, let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .otherUserWasGrantedAdministratorByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: true
                 ),
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .localUserWasRevokedAdministratorByLocalUser:
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .localUserWasRevokedAdministratorByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .localUserWasRevokedAdministratorByUnknownUser:
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: false
                 ),
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .otherUserWasRevokedAdministratorByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .otherUserWasRevokedAdministratorByOtherUser(let updaterAci, let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .otherUserWasRevokedAdministratorByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate.builder(
+                BackupProtoGroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: false
                 ),
-                build: { $0.build },
-                set: { $0.setGroupAdminStatusUpdate(_:) }
+                asUpdate: { .groupAdminStatusUpdate($0) }
             )
         case .localUserLeft:
             setUpdate(
-                BackupProtoGroupMemberLeftUpdate.builder(
+                BackupProtoGroupMemberLeftUpdate(
                     aci: localAciData
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberLeftUpdate(_:) }
+                asUpdate: { .groupMemberLeftUpdate($0) }
             )
         case .localUserRemoved(let removerAci):
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate.builder(
+                BackupProtoGroupMemberRemovedUpdate(
                     removedAci: localAciData
                 ),
                 setOptionalFields: {
-                    $0.setRemoverAci(aciData(removerAci))
+                    $0.removerAci = aciData(removerAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupMemberRemovedUpdate(_:) }
+                asUpdate: { .groupMemberRemovedUpdate($0) }
             )
         case .localUserRemovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate.builder(
+                BackupProtoGroupMemberRemovedUpdate(
                     removedAci: localAciData
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberRemovedUpdate(_:) }
+                asUpdate: { .groupMemberRemovedUpdate($0) }
             )
         case .otherUserLeft(let userAci):
             setUpdate(
-                BackupProtoGroupMemberLeftUpdate.builder(
+                BackupProtoGroupMemberLeftUpdate(
                     aci: aciData(userAci)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberLeftUpdate(_:) }
+                asUpdate: { .groupMemberLeftUpdate($0) }
             )
         case .otherUserRemovedByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate.builder(
+                BackupProtoGroupMemberRemovedUpdate(
                     removedAci: aciData(userAci)
                 ),
                 setOptionalFields: {
-                    $0.setRemoverAci(localAciData)
+                    $0.removerAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupMemberRemovedUpdate(_:) }
+                asUpdate: { .groupMemberRemovedUpdate($0) }
             )
         case .otherUserRemoved(let removerAci, let userAci):
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate.builder(
+                BackupProtoGroupMemberRemovedUpdate(
                     removedAci: aciData(userAci)
                 ),
                 setOptionalFields: {
-                    $0.setRemoverAci(aciData(removerAci))
+                    $0.removerAci = aciData(removerAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupMemberRemovedUpdate(_:) }
+                asUpdate: { .groupMemberRemovedUpdate($0) }
             )
         case .otherUserRemovedByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate.builder(
+                BackupProtoGroupMemberRemovedUpdate(
                     removedAci: aciData(userAci)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberRemovedUpdate(_:) }
+                asUpdate: { .groupMemberRemovedUpdate($0) }
             )
         case .localUserWasInvitedByLocalUser:
             setUpdate(
-                BackupProtoSelfInvitedToGroupUpdate.builder(),
+                BackupProtoSelfInvitedToGroupUpdate(),
                 setOptionalFields: {
-                    $0.setInviterAci(localAciData)
+                    $0.inviterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setSelfInvitedToGroupUpdate(_:) }
+                asUpdate: { .selfInvitedToGroupUpdate($0) }
             )
         case .localUserWasInvitedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoSelfInvitedToGroupUpdate.builder(),
+                BackupProtoSelfInvitedToGroupUpdate(),
                 setOptionalFields: {
-                    $0.setInviterAci(aciData(updaterAci))
+                    $0.inviterAci = aciData(updaterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setSelfInvitedToGroupUpdate(_:) }
+                asUpdate: { .selfInvitedToGroupUpdate($0) }
             )
         case .localUserWasInvitedByUnknownUser:
             setUpdate(
-                BackupProtoSelfInvitedToGroupUpdate.builder(),
-                build: { $0.buildInfallibly },
-                set: { $0.setSelfInvitedToGroupUpdate(_:) }
+                BackupProtoSelfInvitedToGroupUpdate(),
+                asUpdate: { .selfInvitedToGroupUpdate($0) }
             )
         case .otherUserWasInvitedByLocalUser(let inviteeServiceId):
             setUpdate(
-                BackupProtoSelfInvitedOtherUserToGroupUpdate.builder(
-                    inviteeServiceID: serviceIdData(inviteeServiceId)
+                BackupProtoSelfInvitedOtherUserToGroupUpdate(
+                    inviteeServiceId: serviceIdData(inviteeServiceId)
                 ),
-                build: { $0.build },
-                set: { $0.setSelfInvitedOtherUserToGroupUpdate(_:) }
+                asUpdate: { .selfInvitedOtherUserToGroupUpdate($0) }
             )
         case .unnamedUsersWereInvitedByLocalUser(let count):
             setUpdate(
-                BackupProtoGroupUnknownInviteeUpdate.builder(
+                BackupProtoGroupUnknownInviteeUpdate(
                     inviteeCount: UInt32(clamping: count)
                 ),
                 setOptionalFields: {
-                    $0.setInviterAci(localAciData)
+                    $0.inviterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupUnknownInviteeUpdate(_:) }
+                asUpdate: { .groupUnknownInviteeUpdate($0) }
             )
         case .unnamedUsersWereInvitedByOtherUser(let updaterAci, let count):
             setUpdate(
-                BackupProtoGroupUnknownInviteeUpdate.builder(
+                BackupProtoGroupUnknownInviteeUpdate(
                     inviteeCount: UInt32(clamping: count)
                 ),
                 setOptionalFields: {
-                    $0.setInviterAci(aciData(updaterAci))
+                    $0.inviterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupUnknownInviteeUpdate(_:) }
+                asUpdate: { .groupUnknownInviteeUpdate($0) }
             )
         case .unnamedUsersWereInvitedByUnknownUser(let count):
             setUpdate(
-                BackupProtoGroupUnknownInviteeUpdate.builder(
+                BackupProtoGroupUnknownInviteeUpdate(
                     inviteeCount: UInt32(clamping: count)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupUnknownInviteeUpdate(_:) }
+                asUpdate: { .groupUnknownInviteeUpdate($0) }
             )
         case .localUserAcceptedInviteFromInviter(let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate.builder(
+                BackupProtoGroupInvitationAcceptedUpdate(
                     newMemberAci: localAciData
                 ),
                 setOptionalFields: {
-                    $0.setInviterAci(aciData(inviterAci))
+                    $0.inviterAci = aciData(inviterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupInvitationAcceptedUpdate(_:) }
+                asUpdate: { .groupInvitationAcceptedUpdate($0) }
             )
         case .localUserAcceptedInviteFromUnknownUser:
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate.builder(
+                BackupProtoGroupInvitationAcceptedUpdate(
                     newMemberAci: localAciData
                 ),
-                build: { $0.build },
-                set: { $0.setGroupInvitationAcceptedUpdate(_:) }
+                asUpdate: { .groupInvitationAcceptedUpdate($0) }
             )
         case .otherUserAcceptedInviteFromLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate.builder(
+                BackupProtoGroupInvitationAcceptedUpdate(
                     newMemberAci: aciData(userAci)
                 ),
                 setOptionalFields: {
-                    $0.setInviterAci(localAciData)
+                    $0.inviterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupInvitationAcceptedUpdate(_:) }
+                asUpdate: { .groupInvitationAcceptedUpdate($0) }
             )
         case .otherUserAcceptedInviteFromInviter(let userAci, let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate.builder(
+                BackupProtoGroupInvitationAcceptedUpdate(
                     newMemberAci: aciData(userAci)
                 ),
                 setOptionalFields: {
-                    $0.setInviterAci(aciData(inviterAci))
+                    $0.inviterAci = aciData(inviterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupInvitationAcceptedUpdate(_:) }
+                asUpdate: { .groupInvitationAcceptedUpdate($0) }
             )
         case .otherUserAcceptedInviteFromUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate.builder(
+                BackupProtoGroupInvitationAcceptedUpdate(
                     newMemberAci: aciData(userAci)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupInvitationAcceptedUpdate(_:) }
+                asUpdate: { .groupInvitationAcceptedUpdate($0) }
             )
         case .localUserJoined:
             setUpdate(
-                BackupProtoGroupMemberJoinedUpdate.builder(
+                BackupProtoGroupMemberJoinedUpdate(
                     newMemberAci: localAciData
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberJoinedUpdate(_:) }
+                asUpdate: { .groupMemberJoinedUpdate($0) }
             )
         case .otherUserJoined(let userAci):
             setUpdate(
-                BackupProtoGroupMemberJoinedUpdate.builder(
+                BackupProtoGroupMemberJoinedUpdate(
                     newMemberAci: aciData(userAci)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberJoinedUpdate(_:) }
+                asUpdate: { .groupMemberJoinedUpdate($0) }
             )
         case .localUserAddedByLocalUser:
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate.builder(
+                BackupProtoGroupMemberAddedUpdate(
                     newMemberAci: localAciData,
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
                     hadOpenInvitation: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupMemberAddedUpdate(_:) }
+                asUpdate: { .groupMemberAddedUpdate($0) }
             )
         case .localUserAddedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate.builder(
+                BackupProtoGroupMemberAddedUpdate(
                     newMemberAci: localAciData,
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
                     hadOpenInvitation: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupMemberAddedUpdate(_:) }
+                asUpdate: { .groupMemberAddedUpdate($0) }
             )
         case .localUserAddedByUnknownUser:
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate.builder(
+                BackupProtoGroupMemberAddedUpdate(
                     newMemberAci: localAciData,
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
                     hadOpenInvitation: false
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberAddedUpdate(_:) }
+                asUpdate: { .groupMemberAddedUpdate($0) }
             )
         case .otherUserAddedByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate.builder(
+                BackupProtoGroupMemberAddedUpdate(
                     newMemberAci: aciData(userAci),
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
                     hadOpenInvitation: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupMemberAddedUpdate(_:) }
+                asUpdate: { .groupMemberAddedUpdate($0) }
             )
         case .otherUserAddedByOtherUser(let updaterAci, let userAci):
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate.builder(
+                BackupProtoGroupMemberAddedUpdate(
                     newMemberAci: aciData(userAci),
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
                     hadOpenInvitation: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupMemberAddedUpdate(_:) }
+                asUpdate: { .groupMemberAddedUpdate($0) }
             )
         case .otherUserAddedByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate.builder(
+                BackupProtoGroupMemberAddedUpdate(
                     newMemberAci: aciData(userAci),
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
                     hadOpenInvitation: false
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberAddedUpdate(_:) }
+                asUpdate: { .groupMemberAddedUpdate($0) }
             )
         case .localUserDeclinedInviteFromInviter(let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate.builder(),
+                BackupProtoGroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
-                    $0.setInviteeAci(localAciData)
-                    $0.setInviterAci(aciData(inviterAci))
+                    $0.inviteeAci = localAciData
+                    $0.inviterAci = aciData(inviterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationDeclinedUpdate(_:) }
+                asUpdate: { .groupInvitationDeclinedUpdate($0) }
             )
         case .localUserDeclinedInviteFromUnknownUser:
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate.builder(),
+                BackupProtoGroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
-                    $0.setInviteeAci(localAciData)
+                    $0.inviteeAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationDeclinedUpdate(_:) }
+                asUpdate: { .groupInvitationDeclinedUpdate($0) }
             )
         case .otherUserDeclinedInviteFromLocalUser(let invitee):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate.builder(),
+                BackupProtoGroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
                     switch invitee.wrappedValue.concreteType {
                     case .pni:
@@ -881,16 +786,15 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                         // They become unknown invitees.
                         break
                     case .aci(let aci):
-                        $0.setInviteeAci(aciData(aci.codableUuid))
+                        $0.inviteeAci = aciData(aci.codableUuid)
                     }
-                    $0.setInviterAci(localAciData)
+                    $0.inviterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationDeclinedUpdate(_:) }
+                asUpdate: { .groupInvitationDeclinedUpdate($0) }
             )
         case .otherUserDeclinedInviteFromInviter(let invitee, let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate.builder(),
+                BackupProtoGroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
                     switch invitee.wrappedValue.concreteType {
                     case .pni:
@@ -898,16 +802,15 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                         // They become unknown invitees.
                         break
                     case .aci(let aci):
-                        $0.setInviteeAci(aciData(aci.codableUuid))
+                        $0.inviteeAci = aciData(aci.codableUuid)
                     }
-                    $0.setInviterAci(aciData(inviterAci))
+                    $0.inviterAci = aciData(inviterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationDeclinedUpdate(_:) }
+                asUpdate: { .groupInvitationDeclinedUpdate($0) }
             )
         case .otherUserDeclinedInviteFromUnknownUser(let invitee):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate.builder(),
+                BackupProtoGroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
                     switch invitee.wrappedValue.concreteType {
                     case .pni:
@@ -915,489 +818,425 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                         // They become unknown invitees.
                         break
                     case .aci(let aci):
-                        $0.setInviteeAci(aciData(aci.codableUuid))
+                        $0.inviteeAci = aciData(aci.codableUuid)
                     }
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationDeclinedUpdate(_:) }
+                asUpdate: { .groupInvitationDeclinedUpdate($0) }
             )
         case .unnamedUserDeclinedInviteFromInviter(let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate.builder(),
+                BackupProtoGroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
-                    $0.setInviterAci(aciData(inviterAci))
+                    $0.inviterAci = aciData(inviterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationDeclinedUpdate(_:) }
+                asUpdate: { .groupInvitationDeclinedUpdate($0) }
             )
         case .unnamedUserDeclinedInviteFromUnknownUser:
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate.builder(),
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationDeclinedUpdate(_:) }
+                BackupProtoGroupInvitationDeclinedUpdate(),
+                asUpdate: { .groupInvitationDeclinedUpdate($0) }
             )
         case .localUserInviteRevoked(let revokerAci):
             setUpdate(
-                BackupProtoGroupSelfInvitationRevokedUpdate.builder(),
+                BackupProtoGroupSelfInvitationRevokedUpdate(),
                 setOptionalFields: {
-                    $0.setRevokerAci(aciData(revokerAci))
+                    $0.revokerAci = aciData(revokerAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupSelfInvitationRevokedUpdate(_:) }
+                asUpdate: { .groupSelfInvitationRevokedUpdate($0) }
             )
         case .localUserInviteRevokedByUnknownUser:
             setUpdate(
-                BackupProtoGroupSelfInvitationRevokedUpdate.builder(),
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupSelfInvitationRevokedUpdate(_:) }
+                BackupProtoGroupSelfInvitationRevokedUpdate(),
+                asUpdate: { .groupSelfInvitationRevokedUpdate($0) }
             )
         case .otherUserInviteRevokedByLocalUser(let invitee):
-            let inviteeBuilder = BackupProtoGroupInvitationRevokedUpdateInvitee.builder()
+            var inviteeProto = BackupProtoGroupInvitationRevokedUpdate.BackupProtoInvitee()
             switch invitee.wrappedValue.concreteType {
             case .aci(let aci):
-                inviteeBuilder.setInviteeAci(aciData(aci.codableUuid))
+                inviteeProto.inviteeAci = aciData(aci.codableUuid)
             case .pni(let pni):
-                inviteeBuilder.setInviteePni(pniData(pni))
+                inviteeProto.inviteePni = pniData(pni)
             }
             // Note: on iOS we don't keep who the inviter was.
-            let invitee = inviteeBuilder.buildInfallibly()
             setUpdate(
-                BackupProtoGroupInvitationRevokedUpdate.builder(),
+                BackupProtoGroupInvitationRevokedUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
-                    $0.setInvitees([invitee])
+                    $0.updaterAci = localAciData
+                    $0.invitees = [inviteeProto]
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationRevokedUpdate(_:) }
+                asUpdate: { .groupInvitationRevokedUpdate($0) }
             )
         case .unnamedUserInvitesWereRevokedByLocalUser(let count):
             // All the invitees are empty; only their count matters.
             let invitees = buildEmptyRevokedInvitees(count: count)
             setUpdate(
-                BackupProtoGroupInvitationRevokedUpdate.builder(),
+                BackupProtoGroupInvitationRevokedUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
-                    $0.setInvitees(invitees)
+                    $0.updaterAci = localAciData
+                    $0.invitees = invitees
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationRevokedUpdate(_:) }
+                asUpdate: { .groupInvitationRevokedUpdate($0) }
             )
         case .unnamedUserInvitesWereRevokedByOtherUser(let updaterAci, let count):
             // All the invitees are empty; only their count matters.
             let invitees = buildEmptyRevokedInvitees(count: count)
             setUpdate(
-                BackupProtoGroupInvitationRevokedUpdate.builder(),
+                BackupProtoGroupInvitationRevokedUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
-                    $0.setInvitees(invitees)
+                    $0.updaterAci = aciData(updaterAci)
+                    $0.invitees = invitees
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationRevokedUpdate(_:) }
+                asUpdate: { .groupInvitationRevokedUpdate($0) }
             )
         case .unnamedUserInvitesWereRevokedByUnknownUser(let count):
             // All the invitees are empty; only their count matters.
             let invitees = buildEmptyRevokedInvitees(count: count)
             setUpdate(
-                BackupProtoGroupInvitationRevokedUpdate.builder(),
+                BackupProtoGroupInvitationRevokedUpdate(),
                 setOptionalFields: {
-                    $0.setInvitees(invitees)
+                    $0.invitees = invitees
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInvitationRevokedUpdate(_:) }
+                asUpdate: { .groupInvitationRevokedUpdate($0) }
             )
         case .localUserRequestedToJoin:
             setUpdate(
-                BackupProtoGroupJoinRequestUpdate.builder(
+                BackupProtoGroupJoinRequestUpdate(
                     requestorAci: localAciData
                 ),
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestUpdate(_:) }
+                asUpdate: { .groupJoinRequestUpdate($0) }
             )
         case .otherUserRequestedToJoin(let userAci):
             setUpdate(
-                BackupProtoGroupJoinRequestUpdate.builder(
+                BackupProtoGroupJoinRequestUpdate(
                     requestorAci: aciData(userAci)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestUpdate(_:) }
+                asUpdate: { .groupJoinRequestUpdate($0) }
             )
         case .localUserRequestApproved(let approverAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate.builder(
+                BackupProtoGroupJoinRequestApprovalUpdate(
                     requestorAci: localAciData,
                     wasApproved: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(approverAci))
+                    $0.updaterAci = aciData(approverAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestApprovalUpdate(_:) }
+                asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .localUserRequestApprovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate.builder(
+                BackupProtoGroupJoinRequestApprovalUpdate(
                     requestorAci: localAciData,
                     wasApproved: true
                 ),
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestApprovalUpdate(_:) }
+                asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .otherUserRequestApprovedByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate.builder(
+                BackupProtoGroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(userAci),
                     wasApproved: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestApprovalUpdate(_:) }
+                asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .otherUserRequestApproved(let userAci, let approverAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate.builder(
+                BackupProtoGroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(userAci),
                     wasApproved: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(approverAci))
+                    $0.updaterAci = aciData(approverAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestApprovalUpdate(_:) }
+                asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .otherUserRequestApprovedByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate.builder(
+                BackupProtoGroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(userAci),
                     wasApproved: true
                 ),
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestApprovalUpdate(_:) }
+                asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .localUserRequestCanceledByLocalUser:
             setUpdate(
-                BackupProtoGroupJoinRequestCanceledUpdate.builder(
+                BackupProtoGroupJoinRequestCanceledUpdate(
                     requestorAci: localAciData
                 ),
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestCanceledUpdate(_:) }
+                asUpdate: { .groupJoinRequestCanceledUpdate($0) }
             )
         case .localUserRequestRejectedByUnknownUser:
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate.builder(
+                BackupProtoGroupJoinRequestApprovalUpdate(
                     requestorAci: localAciData,
                     wasApproved: false
                 ),
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestApprovalUpdate(_:) }
+                asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .otherUserRequestRejectedByLocalUser(let requesterAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate.builder(
+                BackupProtoGroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(requesterAci),
                     wasApproved: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestApprovalUpdate(_:) }
+                asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .otherUserRequestRejectedByOtherUser(let updaterAci, let requesterAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate.builder(
+                BackupProtoGroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(requesterAci),
                     wasApproved: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestApprovalUpdate(_:) }
+                asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .otherUserRequestCanceledByOtherUser(let requesterAci):
             setUpdate(
-                BackupProtoGroupJoinRequestCanceledUpdate.builder(
+                BackupProtoGroupJoinRequestCanceledUpdate(
                     requestorAci: aciData(requesterAci)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestCanceledUpdate(_:) }
+                asUpdate: { .groupJoinRequestCanceledUpdate($0) }
             )
         case .otherUserRequestRejectedByUnknownUser(let requesterAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate.builder(
+                BackupProtoGroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(requesterAci),
                     wasApproved: false
                 ),
-                build: { $0.build },
-                set: { $0.setGroupJoinRequestApprovalUpdate(_:) }
+                asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .disappearingMessagesEnabledByLocalUser(let durationMs):
             let expiresInMs = UInt32(clamping: durationMs)
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate.builder(
+                BackupProtoGroupExpirationTimerUpdate(
                     expiresInMs: expiresInMs
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupExpirationTimerUpdate(_:) }
+                asUpdate: { .groupExpirationTimerUpdate($0) }
             )
         case .disappearingMessagesEnabledByOtherUser(let updaterAci, let durationMs):
             let expiresInMs = UInt32(clamping: durationMs)
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate.builder(
+                BackupProtoGroupExpirationTimerUpdate(
                     expiresInMs: expiresInMs
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupExpirationTimerUpdate(_:) }
+                asUpdate: { .groupExpirationTimerUpdate($0) }
             )
         case .disappearingMessagesEnabledByUnknownUser(let durationMs):
             let expiresInMs = UInt32(clamping: durationMs)
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate.builder(
+                BackupProtoGroupExpirationTimerUpdate(
                     expiresInMs: expiresInMs
                 ),
-                build: { $0.build },
-                set: { $0.setGroupExpirationTimerUpdate(_:) }
+                asUpdate: { .groupExpirationTimerUpdate($0) }
             )
         case .disappearingMessagesDisabledByLocalUser:
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate.builder(
+                BackupProtoGroupExpirationTimerUpdate(
                     // 0 means disabled.
                     expiresInMs: 0
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupExpirationTimerUpdate(_:) }
+                asUpdate: { .groupExpirationTimerUpdate($0) }
             )
         case .disappearingMessagesDisabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate.builder(
+                BackupProtoGroupExpirationTimerUpdate(
                     // 0 means disabled.
                     expiresInMs: 0
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupExpirationTimerUpdate(_:) }
+                asUpdate: { .groupExpirationTimerUpdate($0) }
             )
         case .disappearingMessagesDisabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate.builder(
+                BackupProtoGroupExpirationTimerUpdate(
                     // 0 means disabled.
                     expiresInMs: 0
                 ),
-                build: { $0.build },
-                set: { $0.setGroupExpirationTimerUpdate(_:) }
+                asUpdate: { .groupExpirationTimerUpdate($0) }
             )
         case .inviteLinkResetByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkResetUpdate.builder(),
+                BackupProtoGroupInviteLinkResetUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInviteLinkResetUpdate(_:) }
+                asUpdate: { .groupInviteLinkResetUpdate($0) }
             )
         case .inviteLinkResetByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkResetUpdate.builder(),
+                BackupProtoGroupInviteLinkResetUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInviteLinkResetUpdate(_:) }
+                asUpdate: { .groupInviteLinkResetUpdate($0) }
             )
         case .inviteLinkResetByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkResetUpdate.builder(),
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInviteLinkResetUpdate(_:) }
+                BackupProtoGroupInviteLinkResetUpdate(),
+                asUpdate: { .groupInviteLinkResetUpdate($0) }
             )
         case .inviteLinkEnabledWithoutApprovalByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate.builder(
+                BackupProtoGroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkEnabledUpdate(_:) }
+                asUpdate: { .groupInviteLinkEnabledUpdate($0) }
             )
         case .inviteLinkEnabledWithoutApprovalByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate.builder(
+                BackupProtoGroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkEnabledUpdate(_:) }
+                asUpdate: { .groupInviteLinkEnabledUpdate($0) }
             )
         case .inviteLinkEnabledWithoutApprovalByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate.builder(
+                BackupProtoGroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: false
                 ),
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkEnabledUpdate(_:) }
+                asUpdate: { .groupInviteLinkEnabledUpdate($0) }
             )
         case .inviteLinkEnabledWithApprovalByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate.builder(
+                BackupProtoGroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkEnabledUpdate(_:) }
+                asUpdate: { .groupInviteLinkEnabledUpdate($0) }
             )
         case .inviteLinkEnabledWithApprovalByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate.builder(
+                BackupProtoGroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkEnabledUpdate(_:) }
+                asUpdate: { .groupInviteLinkEnabledUpdate($0) }
             )
         case .inviteLinkEnabledWithApprovalByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate.builder(
+                BackupProtoGroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: true
                 ),
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkEnabledUpdate(_:) }
+                asUpdate: { .groupInviteLinkEnabledUpdate($0) }
             )
         case .inviteLinkDisabledByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkDisabledUpdate.builder(),
+                BackupProtoGroupInviteLinkDisabledUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInviteLinkDisabledUpdate(_:) }
+                asUpdate: { .groupInviteLinkDisabledUpdate($0) }
             )
         case .inviteLinkDisabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkDisabledUpdate.builder(),
+                BackupProtoGroupInviteLinkDisabledUpdate(),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInviteLinkDisabledUpdate(_:) }
+                asUpdate: { .groupInviteLinkDisabledUpdate($0) }
             )
         case .inviteLinkDisabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkDisabledUpdate.builder(),
-                build: { $0.buildInfallibly },
-                set: { $0.setGroupInviteLinkDisabledUpdate(_:) }
+                BackupProtoGroupInviteLinkDisabledUpdate(),
+                asUpdate: { .groupInviteLinkDisabledUpdate($0) }
             )
         case .inviteLinkApprovalDisabledByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate.builder(
+                BackupProtoGroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkAdminApprovalUpdate(_:) }
+                asUpdate: { .groupInviteLinkAdminApprovalUpdate($0) }
             )
         case .inviteLinkApprovalDisabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate.builder(
+                BackupProtoGroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkAdminApprovalUpdate(_:) }
+                asUpdate: { .groupInviteLinkAdminApprovalUpdate($0) }
             )
         case .inviteLinkApprovalDisabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate.builder(
+                BackupProtoGroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: false
                 ),
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkAdminApprovalUpdate(_:) }
+                asUpdate: { .groupInviteLinkAdminApprovalUpdate($0) }
             )
         case .inviteLinkApprovalEnabledByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate.builder(
+                BackupProtoGroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(localAciData)
+                    $0.updaterAci = localAciData
                 },
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkAdminApprovalUpdate(_:) }
+                asUpdate: { .groupInviteLinkAdminApprovalUpdate($0) }
             )
         case .inviteLinkApprovalEnabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate.builder(
+                BackupProtoGroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 setOptionalFields: {
-                    $0.setUpdaterAci(aciData(updaterAci))
+                    $0.updaterAci = aciData(updaterAci)
                 },
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkAdminApprovalUpdate(_:) }
+                asUpdate: { .groupInviteLinkAdminApprovalUpdate($0) }
             )
         case .inviteLinkApprovalEnabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate.builder(
+                BackupProtoGroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: true
                 ),
-                build: { $0.build },
-                set: { $0.setGroupInviteLinkAdminApprovalUpdate(_:) }
+                asUpdate: { .groupInviteLinkAdminApprovalUpdate($0) }
             )
         case .localUserJoinedViaInviteLink:
             setUpdate(
-                BackupProtoGroupMemberJoinedByLinkUpdate.builder(
+                BackupProtoGroupMemberJoinedByLinkUpdate(
                     newMemberAci: localAciData
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberJoinedByLinkUpdate(_:) }
+                asUpdate: { .groupMemberJoinedByLinkUpdate($0) }
             )
         case .otherUserJoinedViaInviteLink(let userAci):
             setUpdate(
-                BackupProtoGroupMemberJoinedByLinkUpdate.builder(
+                BackupProtoGroupMemberJoinedByLinkUpdate(
                     newMemberAci: aciData(userAci)
                 ),
-                build: { $0.build },
-                set: { $0.setGroupMemberJoinedByLinkUpdate(_:) }
+                asUpdate: { .groupMemberJoinedByLinkUpdate($0) }
             )
-        }
-
-        if let protoBuildError {
-            return .messageFailure([
-                .protoSerializationError(interactionId, protoBuildError)
-            ])
-        }
-
-        let update: BackupProtoGroupChangeChatUpdateUpdate
-        do {
-            update = try updateBuilder.build()
-        } catch let error {
-            return .messageFailure([
-                .protoSerializationError(interactionId, error)
-            ])
         }
 
         return .success(update)
@@ -1409,15 +1248,15 @@ extension GroupV2Access {
     fileprivate var backupAccessLevel: BackupProtoGroupV2AccessLevel {
         switch self {
         case .unknown:
-            return .unknown
+            return .UNKNOWN
         case .any:
-            return .any
+            return .ANY
         case .member:
-            return .member
+            return .MEMBER
         case .administrator:
-            return .administrator
+            return .ADMINISTRATOR
         case .unsatisfiable:
-            return .unsatisfiable
+            return .UNSATISFIABLE
         }
     }
 }

@@ -235,9 +235,9 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             dontNotifyForMentionsIfMuted = true
         }
 
-        let chatBuilder = BackupProtoChat.builder(
+        let chat = BackupProtoChat(
             id: chatId.value,
-            recipientID: recipientId.value,
+            recipientId: recipientId.value,
             archived: threadAssociatedData.isArchived,
             pinnedOrder: thisThreadPinnedOrder,
             expirationTimerMs: UInt64(expirationTimerSeconds * 1000),
@@ -249,10 +249,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         let error = Self.writeFrameToStream(
             stream,
             objectId: thread.uniqueThreadIdentifier
-        ) { frameBuilder in
-            let chatProto = try chatBuilder.build()
-            frameBuilder.setChat(chatProto)
-            return try frameBuilder.build()
+        ) {
+            var frame = BackupProtoFrame()
+            frame.item = .chat(chat)
+            return frame
         }
         if let error {
             return .partialSuccess([error])
@@ -269,10 +269,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
         let thread: MessageBackup.ChatThread
-        switch context.recipientContext[chat.recipientId] {
+        switch context.recipientContext[chat.typedRecipientId] {
         case .none:
             return .failure(
-                [.invalidProtoData(chat.chatId, .recipientIdNotFound(chat.recipientId))]
+                [.invalidProtoData(chat.chatId, .recipientIdNotFound(chat.typedRecipientId))]
             )
         case .localAddress:
             let noteToSelfThread = threadStore.getOrCreateContactThread(

@@ -153,8 +153,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             messageBody: messageParams.body,
             bodyRanges: messageParams.bodyRanges,
             attachmentIds: [],
-            expiresInSeconds: messageParams.expirationDuration,
-            expireStartedAt: messageParams.expirationStartedAt,
+            expiresInSeconds: messageParams.expirationDuration ?? 0,
+            expireStartedAt: messageParams.expirationStartedAt ?? 0,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
             quotedMessage: messageParams.quotedMessageBuilder?.info,
@@ -239,14 +239,17 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             tx: tx
         )
 
-        // The insert and update methods above may start expiration for this message, but
-        // transcript.expirationStartedAt may be earlier, so we need to pass that to
-        // the OWSDisappearingMessagesJob in case it needs to back-date the expiration.
-        disappearingMessagesJob.startExpiration(
-            for: outgoingMessage,
-            expirationStartedAt: messageParams.expirationStartedAt,
-            tx: tx
-        )
+        if let expirationStartedAt = messageParams.expirationStartedAt {
+            /// The insert and update methods above may start expiration for
+            /// this message, but transcript.expirationStartedAt may be earlier,
+            /// so we need to pass that to the OWSDisappearingMessagesJob in
+            /// case it needs to back-date the expiration.
+            disappearingMessagesJob.startExpiration(
+                for: outgoingMessage,
+                expirationStartedAt: expirationStartedAt,
+                tx: tx
+            )
+        }
 
         self.earlyMessageManager.applyPendingMessages(for: outgoingMessage, localIdentifiers: localIdentifiers, tx: tx)
 

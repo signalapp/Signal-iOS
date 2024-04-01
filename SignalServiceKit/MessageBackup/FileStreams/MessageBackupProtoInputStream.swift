@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import Wire
 
 extension MessageBackup {
     public enum ProtoInputStreamReadResult<T> {
@@ -48,11 +48,17 @@ internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream 
     }
 
     internal func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProtoBackupInfo> {
-        return readProto(BackupProtoBackupInfo.init(serializedData:))
+        return readProto { protoData in
+            return try ProtoDecoder(enumDecodingStrategy: .returnNil)
+                .decode(BackupProtoBackupInfo.self, from: protoData)
+        }
     }
 
     internal func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProtoFrame> {
-        return readProto(BackupProtoFrame.init(serializedData:))
+        return readProto { protoData in
+            return try ProtoDecoder(enumDecodingStrategy: .returnNil)
+                .decode(BackupProtoFrame.self, from: protoData)
+        }
     }
 
     public func closeFileStream() {

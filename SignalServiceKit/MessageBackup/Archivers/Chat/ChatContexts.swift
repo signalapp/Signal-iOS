@@ -62,9 +62,9 @@ extension MessageBackup {
      * As we go archiving chats, we use this object to track mappings from the addressing we use in the app
      * to the ID addressing system of the backup protos.
      *
-     * For example, we will assign a ``BackupChatId`` to each ``TSThread`` as we
+     * For example, we will assign a ``MessageBackup/ChatId`` to each ``TSThread`` as we
      * insert them. Later, when we create the ``BackupProtoChatItem`` corresponding to the ``TSThread``,
-     * we will need to add the corresponding ``BackupChatId``, which we look up using the thread id
+     * we will need to add the corresponding ``MessageBackup/ChatId``, which we look up using the thread id
      * this context keeps.
      */
     public class ChatArchivingContext {
@@ -148,8 +148,8 @@ extension BackupProtoChat {
 
 extension BackupProtoChatItem {
 
-    public var chatId: MessageBackup.ChatId {
-        return .init(chatID)
+    public var typedChatId: MessageBackup.ChatId {
+        return .init(chatId)
     }
 }
 

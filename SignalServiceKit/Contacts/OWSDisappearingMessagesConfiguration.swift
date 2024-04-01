@@ -44,14 +44,12 @@ public class DisappearingMessageToken: MTLModel {
 
     // MARK: -
 
-    @objc
     public static var disabledToken: DisappearingMessageToken {
         return DisappearingMessageToken(isEnabled: false, durationSeconds: 0)
     }
 
-    @objc
-    public class func token(forProtoExpireTimer expireTimer: UInt32) -> DisappearingMessageToken {
-        if expireTimer > 0 {
+    public class func token(forProtoExpireTimer expireTimer: UInt32?) -> DisappearingMessageToken {
+        if let expireTimer, expireTimer > 0 {
             return DisappearingMessageToken(isEnabled: true, durationSeconds: expireTimer)
         } else {
             return .disabledToken

@@ -57,6 +57,7 @@ PODS:
     - SQLCipher/common
   - SSZipArchive (2.5.2)
   - SwiftProtobuf (1.25.2)
+  - Wire (4.9.4)
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
@@ -88,6 +89,7 @@ DEPENDENCIES:
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.5.6-f_barrierfsync`)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - SwiftProtobuf (>= 1.14.0)
+  - Wire
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - YYImage/libwebp (from `https://github.com/signalapp/YYImage`)
 
@@ -102,6 +104,7 @@ SPEC REPOS:
     - Reachability
     - SAMKeychain
     - SwiftProtobuf
+    - Wire
 
 EXTERNAL SOURCES:
   blurhash:
@@ -199,8 +202,9 @@ SPEC CHECKSUMS:
   SQLCipher: 838309284f29953a28ad2e81d87d55ea6b7c74fd
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   SwiftProtobuf: 407a385e97fd206c4fbe880cc84123989167e0d1
+  Wire: f5fe13fcad476bfd248f23a45a2004167c0ebae2
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 90a026315646249d8bb16f5164459729db2c0afe
+PODFILE CHECKSUM: e33a1f1be9bb3a18fda306b0efe0f8b19a302acf
 
 COCOAPODS: 1.15.2

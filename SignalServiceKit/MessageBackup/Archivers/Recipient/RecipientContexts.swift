@@ -174,34 +174,34 @@ extension BackupProtoRecipient {
 
 extension BackupProtoChat {
 
-    public var recipientId: MessageBackup.RecipientId {
-        return .init(self.recipientID)
+    public var typedRecipientId: MessageBackup.RecipientId {
+        return .init(recipientId)
     }
 }
 
 extension BackupProtoChatItem {
 
     public var authorRecipientId: MessageBackup.RecipientId {
-        return .init(authorID)
+        return .init(authorId)
     }
 }
 
 extension BackupProtoReaction {
 
     public var authorRecipientId: MessageBackup.RecipientId {
-        return .init(authorID)
+        return .init(authorId)
     }
 }
 
 extension BackupProtoQuote {
 
     public var authorRecipientId: MessageBackup.RecipientId {
-        return .init(authorID)
+        return .init(authorId)
     }
 }
 
 extension BackupProtoSendStatus {
     public var destinationRecipientId: MessageBackup.RecipientId {
-        return .init(recipientID)
+        return .init(recipientId)
     }
 }

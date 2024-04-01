@@ -52,23 +52,13 @@ extension MessageBackupProtoArchiver {
     /**
      * Helper function to build a frame and write the proto to the backup file in one action
      * with standard error handling.
-     *
-     * WARNING: any errors thrown in the ``frameBuilder`` function will become
-     * ``MessageBackup.ArchiveFrameError.protoSerializationError``s. The closure
-     * should only be used to build the frame proto and any sub protos, and not to capture errors encountered
-     * reading the information required to build the proto.
      */
     internal static func writeFrameToStream<AppIdType>(
         _ stream: MessageBackupProtoOutputStream,
         objectId: AppIdType,
-        frameBuilder: (BackupProtoFrameBuilder) throws -> BackupProtoFrame
+        frameBuilder: () -> BackupProtoFrame
     ) -> MessageBackup.ArchiveFrameError<AppIdType>? {
-        let frame: BackupProtoFrame
-        do {
-            frame = try frameBuilder(BackupProtoFrame.builder())
-        } catch {
-            return .protoSerializationError(objectId, error)
-        }
+        let frame = frameBuilder()
         switch stream.writeFrame(frame) {
         case .success:
             return nil

@@ -148,10 +148,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {
-        let backupInfo = try BackupProtoBackupInfo.builder(
+        let backupInfo = BackupProtoBackupInfo(
             version: 1,
             backupTimeMs: dateProvider().ows_millisecondsSince1970
-        ).build()
+        )
         switch stream.writeHeader(backupInfo) {
         case .success:
             break
@@ -230,7 +230,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 owsFailDebug("Failed to deserialize proto frame!")
                 throw error
             }
-            if let recipient = frame.recipient {
+
+            switch frame.item {
+            case .recipient(let recipient):
                 let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
                 if type(of: localRecipientArchiver).canRestore(recipient) {
                     recipientResult = localRecipientArchiver.restore(
@@ -253,7 +255,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .failure(let errors):
                     try processRestoreFrameErrors(errors: errors)
                 }
-            } else if let chat = frame.chat {
+            case .chat(let chat):
                 let chatResult = chatArchiver.restore(
                     chat,
                     context: chatContext,
@@ -267,7 +269,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .failure(let errors):
                     try processRestoreFrameErrors(errors: errors)
                 }
-            } else if let chatItem = frame.chatItem {
+            case .chatItem(let chatItem):
                 let chatItemResult = chatItemArchiver.restore(
                     chatItem,
                     context: chatContext,
@@ -281,6 +283,17 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .failure(let errors):
                     try processRestoreFrameErrors(errors: errors)
                 }
+            case .account(let backupProtoAccountData):
+                // TODO: Not yet implemented.
+                break
+            case .call(let backupProtoCall):
+                // TODO: Not yet implemented.
+                break
+            case .stickerPack(let backupProtoStickerPack):
+                // TODO: Not yet implemented.
+                break
+            case nil:
+                throw OWSAssertionError("Frame missing item!")
             }
         }
 

@@ -29,12 +29,12 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
     internal static func from(
         chatItem: BackupProtoChatItem,
         contents: MessageBackup.RestoredMessageContents,
-        outgoingDetails: BackupProtoChatItemOutgoingMessageDetails,
+        outgoingDetails: BackupProtoChatItem.BackupProtoOutgoingMessageDetails,
         context: MessageBackup.ChatRestoringContext,
         thread: MessageBackup.ChatThread
     ) -> MessageBackup.RestoreInteractionResult<RestoredSentMessageTranscript> {
 
-        let expirationDuration = UInt32(chatItem.expiresInMs / 1000)
+        let expirationDuration: UInt32? = chatItem.expiresInMs.map { UInt32($0 / 1000) }
 
         let target: SentMessageTranscriptTarget
         switch thread {
@@ -145,37 +145,37 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         recipientState.wasSentByUD = sendStatus.sealedSender.negated
 
         switch sendStatus.deliveryStatus {
-        case .none, .unknown:
+        case nil, .UNKNOWN:
             partialErrors.append(.invalidProtoData(chatItemId, .unrecognizedMessageSendStatus))
             return nil
-        case .pending:
+        case .PENDING:
             recipientState.state = .pending
             recipientState.errorCode = nil
             return recipientState
-        case .sent:
+        case .SENT:
             recipientState.state = .sent
             recipientState.errorCode = nil
             return recipientState
-        case .delivered:
+        case .DELIVERED:
             recipientState.state = .sent
             recipientState.deliveryTimestamp = NSNumber(value: sendStatus.lastStatusUpdateTimestamp)
             recipientState.errorCode = nil
             return recipientState
-        case .read:
+        case .READ:
             recipientState.state = .sent
             recipientState.readTimestamp = NSNumber(value: sendStatus.lastStatusUpdateTimestamp)
             recipientState.errorCode = nil
             return recipientState
-        case .viewed:
+        case .VIEWED:
             recipientState.state = .sent
             recipientState.viewedTimestamp = NSNumber(value: sendStatus.lastStatusUpdateTimestamp)
             recipientState.errorCode = nil
             return recipientState
-        case .skipped:
+        case .SKIPPED:
             recipientState.state = .skipped
             recipientState.errorCode = nil
             return recipientState
-        case .failed:
+        case .FAILED:
             recipientState.state = .failed
             if sendStatus.identityKeyMismatch {
                 // We want to explicitly represent identity key errors.

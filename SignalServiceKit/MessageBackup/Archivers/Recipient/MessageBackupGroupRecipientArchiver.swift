@@ -93,37 +93,41 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
 
         let storyContext = storyStore.getOrCreateStoryContextAssociatedData(forGroupThread: groupThread, tx: tx)
 
-        let groupBuilder = BackupProtoGroup.builder(
+        var group = BackupProtoGroup(
             masterKey: groupMasterKey,
             whitelisted: self.profileManager.isThread(inProfileWhitelist: groupThread, tx: tx),
             hideStory: storyContext.isHidden
         )
         switch groupThread.storyViewMode {
         case .disabled:
-            groupBuilder.setStorySendMode(.disabled)
+            group.storySendMode = .DISABLED
         case .explicit:
-            groupBuilder.setStorySendMode(.enabled)
+            group.storySendMode = .ENABLED
         default:
-            groupBuilder.setStorySendMode(.default)
+            group.storySendMode = .DEFAULT
         }
-
-        let recipientBuilder = BackupProtoRecipient.builder(id: recipientId.value)
 
         Self.writeFrameToStream(
             stream,
             objectId: .group(groupId),
-            frameBuilder: { frameBuilder in
-                let groupProto = try groupBuilder.build()
-                recipientBuilder.setGroup(groupProto)
-                let recipientProto = try recipientBuilder.build()
-                frameBuilder.setRecipient(recipientProto)
-                return try frameBuilder.build()
+            frameBuilder: {
+                var recipient = BackupProtoRecipient(id: recipientId.value)
+                recipient.destination = .group(group)
+
+                var frame = BackupProtoFrame()
+                frame.item = .recipient(recipient)
+                return frame
             }
         ).map { errors.append($0) }
     }
 
     static func canRestore(_ recipient: BackupProtoRecipient) -> Bool {
-        return recipient.group != nil
+        switch recipient.destination {
+        case .group:
+            return true
+        case nil, .contact, .distributionList, .selfRecipient, .releaseNotes:
+            return false
+        }
     }
 
     public func restore(
@@ -131,7 +135,11 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        guard let groupProto = recipient.group else {
+        let groupProto: BackupProtoGroup
+        switch recipient.destination {
+        case .group(let backupProtoGroup):
+            groupProto = backupProtoGroup
+        case nil, .contact, .distributionList, .selfRecipient, .releaseNotes:
             return .failure(
                 [.developerError(
                     recipient.recipientId,
@@ -170,12 +178,12 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         }
         let localStorySendMode = localThread.storyViewMode.storageServiceMode
         switch (groupProto.storySendMode, localThread.storyViewMode) {
-        case (.disabled, .disabled), (.enabled, .explicit), (.default, _), (nil, _):
+        case (.DISABLED, .disabled), (.ENABLED, .explicit), (.DEFAULT, _), (nil, _):
             // Nothing to change.
             break
-        case (.disabled, _):
+        case (.DISABLED, _):
             threadStore.update(groupThread: localThread, withStorySendEnabled: false, updateStorageService: false, tx: tx)
-        case (.enabled, _):
+        case (.ENABLED, _):
             threadStore.update(groupThread: localThread, withStorySendEnabled: true, updateStorageService: false, tx: tx)
         }
         let groupThread = localThread

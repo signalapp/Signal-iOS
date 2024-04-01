@@ -48,23 +48,14 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                 continue
             }
 
-            let protoBuilder = BackupProtoReaction.builder(
+            let reaction = BackupProtoReaction(
                 emoji: reaction.emoji,
-                authorID: authorId.value,
+                authorId: authorId.value,
                 sentTimestamp: reaction.sentAtTimestamp,
                 sortOrder: reaction.sortOrder
             )
 
-            do {
-                let proto = try protoBuilder.build()
-                reactionProtos.append(proto)
-            } catch {
-                errors.append(.protoSerializationError(
-                    message.uniqueInteractionId,
-                    error
-                ))
-                continue
-            }
+            reactionProtos.append(reaction)
         }
 
         if errors.isEmpty {

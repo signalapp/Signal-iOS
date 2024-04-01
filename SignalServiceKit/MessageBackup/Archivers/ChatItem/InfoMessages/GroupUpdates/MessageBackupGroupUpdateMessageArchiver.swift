@@ -86,20 +86,10 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
             return errorResult
         }
 
-        let chatUpdateBuilder = BackupProtoChatUpdateMessage.builder()
-        chatUpdateBuilder.setGroupChange(groupChange)
-        let chatUpdate: BackupProtoChatUpdateMessage
-        do {
-            chatUpdate = try chatUpdateBuilder.build()
-        } catch let error {
-            return .messageFailure([.protoSerializationError(
-                infoMessage.uniqueInteractionId,
-                error
-            )])
-        }
+        var chatUpdate = BackupProtoChatUpdateMessage()
+        chatUpdate.update = .groupChange(groupChange)
 
-        let directionlessDetails: BackupProtoChatItemDirectionlessMessageDetails
-        directionlessDetails = .builder().buildInfallibly()
+        let directionlessDetails = BackupProtoChatItem.BackupProtoDirectionlessMessageDetails()
 
         let details = Details(
             author: context.recipientContext.localRecipientId,
@@ -107,7 +97,7 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
-            type: .chatUpdate(chatUpdate)
+            chatItemType: .updateMessage(chatUpdate)
         )
 
         if partialErrors.isEmpty {
@@ -123,7 +113,7 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         localIdentifiers: LocalIdentifiers,
         partialErrors: inout [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]
     ) -> MessageBackup.ArchiveInteractionResult<BackupProtoGroupChangeChatUpdate> {
-        var updates = [BackupProtoGroupChangeChatUpdateUpdate]()
+        var updates = [BackupProtoGroupChangeChatUpdate.BackupProtoUpdate]()
 
         var skipCount = 0
         var latestSkipError: MessageBackup.SkippableGroupUpdate?
@@ -160,19 +150,13 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
             return .messageFailure(partialErrors + [.emptyGroupUpdate(interactionId)])
         }
 
-        let builder = BackupProtoGroupChangeChatUpdate.builder()
-        builder.setUpdates(updates)
+        var groupChangeChatUpdate = BackupProtoGroupChangeChatUpdate()
+        groupChangeChatUpdate.updates = updates
 
-        let update: BackupProtoGroupChangeChatUpdate
-        do {
-            update = try builder.build()
-        } catch let error {
-            return .messageFailure([.protoSerializationError(interactionId, error)])
-        }
         if partialErrors.isEmpty {
-            return .success(update)
+            return .success(groupChangeChatUpdate)
         } else {
-            return .partialFailure(update, partialErrors)
+            return .partialFailure(groupChangeChatUpdate, partialErrors)
         }
     }
 
@@ -193,16 +177,21 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         }
 
         let groupUpdate: BackupProtoGroupChangeChatUpdate
-        switch chatItem.messageType {
-        case .chatUpdate(let chatUpdate):
-            guard let groupChange = chatUpdate.groupChange else {
-                fallthrough
+        switch chatItem.item {
+        case .updateMessage(let chatUpdateMessage):
+            switch chatUpdateMessage.update {
+            case .groupChange(let groupChangeChatUpdate):
+                groupUpdate = groupChangeChatUpdate
+            default:
+                return .messageFailure([.developerError(
+                    chatItem.id,
+                    OWSAssertionError("Got non group change update message in GroupUpdate archiver!")
+                )])
             }
-            groupUpdate = groupChange
         default:
             return .messageFailure([.developerError(
                 chatItem.id,
-                OWSAssertionError("Got non group update in GroupUpdate archiver!")
+                OWSAssertionError("Got non update message in GroupUpdate archiver!")
             )])
         }
 

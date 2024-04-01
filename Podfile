@@ -52,6 +52,7 @@ pod 'libwebp', podspec: './ThirdParty/libwebp.podspec.json'
 # third party pods
 ####
 
+pod 'Wire'
 pod 'Reachability', :inhibit_warnings => true
 
 def ui_pods

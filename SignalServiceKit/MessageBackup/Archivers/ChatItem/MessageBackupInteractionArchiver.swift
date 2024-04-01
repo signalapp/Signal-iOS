@@ -40,39 +40,9 @@ extension MessageBackup {
         }
     }
 
-    internal enum ChatItemMessageType {
-        case standard(BackupProtoStandardMessage)
-        case contact(BackupProtoContactMessage)
-        case voice(BackupProtoVoiceMessage)
-        case sticker(BackupProtoStickerMessage)
-        case remotelyDeleted(BackupProtoRemoteDeletedMessage)
-        case chatUpdate(BackupProtoChatUpdateMessage)
-
-        init?(_ chatItem: BackupProtoChatItem) {
-            if let standardMessage = chatItem.standardMessage {
-                self = .standard(standardMessage)
-            } else if let contactMessage = chatItem.contactMessage {
-                self = .contact(contactMessage)
-            } else if let voiceMessage = chatItem.voiceMessage {
-                self = .voice(voiceMessage)
-            } else if let stickerMessage = chatItem.stickerMessage {
-                self = .sticker(stickerMessage)
-            } else if let remoteDeletedMessage = chatItem.remoteDeletedMessage {
-                self = .remotelyDeleted(remoteDeletedMessage)
-            } else if let updateMessage = chatItem.updateMessage {
-                self = .chatUpdate(updateMessage)
-            } else {
-                return nil
-            }
-        }
-    }
-
     internal struct InteractionArchiveDetails {
-        enum DirectionalDetails {
-            case incoming(BackupProtoChatItemIncomingMessageDetails)
-            case outgoing(BackupProtoChatItemOutgoingMessageDetails)
-            case directionless(BackupProtoChatItemDirectionlessMessageDetails)
-        }
+        typealias DirectionalDetails = BackupProtoChatItem.DirectionalDetails
+        typealias ChatItemType = BackupProtoChatItem.Item
 
         let author: RecipientId
         let directionalDetails: DirectionalDetails
@@ -83,7 +53,7 @@ extension MessageBackup {
         // TODO: sms
         let isSms: Bool = false
         let isSealedSender: Bool
-        let type: ChatItemMessageType
+        let chatItemType: ChatItemType
     }
 
     enum SkippableGroupUpdate {
@@ -287,10 +257,6 @@ extension BackupProtoChatItem {
 
     var id: MessageBackup.ChatItemId {
         return .init(self.dateSent)
-    }
-
-    var messageType: MessageBackup.ChatItemMessageType? {
-        return .init(self)
     }
 }
 
