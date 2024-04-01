@@ -44,50 +44,65 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         super.init()
     }
 
-    public class func present(fromViewController: UIViewController,
-                              canCancel: Bool,
-                              backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
-        present(fromViewController: fromViewController,
-                canCancel: canCancel,
-                presentationDelay: kPresentationDelayDefault,
-                isInvisible: false,
-                backgroundBlock: backgroundBlock)
+    public class func present(
+        fromViewController: UIViewController,
+        canCancel: Bool,
+        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+    ) {
+        present(
+            fromViewController: fromViewController,
+            canCancel: canCancel,
+            presentationDelay: kPresentationDelayDefault,
+            isInvisible: false,
+            backgroundBlock: backgroundBlock
+        )
     }
 
-    public class func present(fromViewController: UIViewController,
-                              canCancel: Bool,
-                              presentationDelay: TimeInterval,
-                              backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
-        present(fromViewController: fromViewController,
-                canCancel: canCancel,
-                presentationDelay: presentationDelay,
-                isInvisible: false,
-                backgroundBlock: backgroundBlock)
+    public class func present(
+        fromViewController: UIViewController,
+        canCancel: Bool,
+        presentationDelay: TimeInterval,
+        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+    ) {
+        present(
+            fromViewController: fromViewController,
+            canCancel: canCancel,
+            presentationDelay: presentationDelay,
+            isInvisible: false,
+            backgroundBlock: backgroundBlock
+        )
     }
 
-    public class func presentAsInvisible(fromViewController: UIViewController,
-                                         backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
-        present(fromViewController: fromViewController,
-                canCancel: false,
-                presentationDelay: kPresentationDelayDefault,
-                isInvisible: true,
-                backgroundBlock: backgroundBlock)
+    public class func presentAsInvisible(
+        fromViewController: UIViewController,
+        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+    ) {
+        present(
+            fromViewController: fromViewController,
+            canCancel: false,
+            presentationDelay: kPresentationDelayDefault,
+            isInvisible: true,
+            backgroundBlock: backgroundBlock
+        )
     }
 
-    public class func present(fromViewController: UIViewController,
-                              canCancel: Bool,
-                              presentationDelay: TimeInterval,
-                              isInvisible: Bool,
-                              backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
+    public class func present(
+        fromViewController: UIViewController,
+        canCancel: Bool,
+        presentationDelay: TimeInterval,
+        isInvisible: Bool,
+        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+    ) {
         AssertIsOnMainThread()
 
-        let view = ModalActivityIndicatorViewController(canCancel: canCancel,
-                                                        presentationDelay: presentationDelay,
-                                                        isInvisible: isInvisible)
+        let view = ModalActivityIndicatorViewController(
+            canCancel: canCancel,
+            presentationDelay: presentationDelay,
+            isInvisible: isInvisible
+        )
         // Present this modal _over_ the current view contents.
         view.modalPresentationStyle = .overFullScreen
-        fromViewController.present(view,
-                                   animated: false) {
+        fromViewController.present(view, animated: false) {
             DispatchQueue.global().async {
                 backgroundBlock(view)
             }
