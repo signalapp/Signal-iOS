@@ -188,6 +188,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         if
             let expireStartDate = details.expireStartDate,
             let expiresInMs = details.expiresInMs,
+            expiresInMs > 0, // Only check expiration if `expiresInMs` is set to something interesting.
             expireStartDate + expiresInMs < minExpireTime
         {
             // Skip this message, but count it as a success.
