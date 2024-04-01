@@ -48,8 +48,12 @@ public extension Data {
 
     func base64EncodedStringWithoutPadding() -> String {
         let resultWithPadding = base64EncodedString()
-        let paddingCount = (3 - (self.count % 3)) % 3
+        let paddingCount = Self.base64PaddingCount(for: self.count)
         return String(resultWithPadding.dropLast(paddingCount))
+    }
+
+    static func base64PaddingCount(for count: Int) -> Int {
+        return (3 - (count % 3)) % 3
     }
 }
 

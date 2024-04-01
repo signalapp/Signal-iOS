@@ -12,32 +12,8 @@ import XCTest
 final class ScrubbingLogFormatterTest: XCTestCase {
     private let formatter = ScrubbingLogFormatter()
 
-    private func message(with string: String) -> DDLogMessage {
-        DDLogMessage(
-            message: string,
-            level: .info,
-            flag: [],
-            context: 0,
-            file: "mock file name",
-            function: "mock function name",
-            line: 0,
-            tag: nil,
-            options: [],
-            timestamp: Date.init(timeIntervalSinceNow: 0)
-        )
-    }
-
-    private lazy var datePrefixLength: Int = {
-        // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
-        formatter.format(message: message(with: ""))!.count
-    }()
-
     private func format(_ input: String) -> String {
-        formatter.format(message: message(with: input)) ?? ""
-    }
-
-    private func stripDate(fromRawMessage rawMessage: String) -> String {
-        rawMessage.substring(from: datePrefixLength)
+        return formatter.redactMessage(input)
     }
 
     func testAttachmentPathScrubbed() {
@@ -48,46 +24,46 @@ final class ScrubbingLogFormatterTest: XCTestCase {
         ]
 
         for testCase in testCases {
-            XCTAssertEqual(stripDate(fromRawMessage: format(testCase)), "[ REDACTED_CONTAINS_USER_PATH ]")
+            XCTAssertEqual(format(testCase), "[USER_PATH]")
         }
     }
 
     func testDataScrubbed_preformatted() {
         let testCases: [String: String] = [
-            "<01>": "[ REDACTED_DATA:01... ]",
-            "<0123>": "[ REDACTED_DATA:01... ]",
-            "<012345>": "[ REDACTED_DATA:01... ]",
-            "<01234567>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a2>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23d>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23def>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23def 23>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23def 2323>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23def 232345>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23def 23234567>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23def 23234567 89>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23def 23234567 89ab>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23def 23234567 89ab12>": "[ REDACTED_DATA:01... ]",
-            "<01234567 89a23def 23234567 89ab1234>": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0xaa}": "[ REDACTED_DATA:aa... ]",
-            "{length = 32, bytes = 0xaaaaaaaa}": "[ REDACTED_DATA:aa... ]",
-            "{length = 32, bytes = 0xff}": "[ REDACTED_DATA:ff... ]",
-            "{length = 32, bytes = 0xffff}": "[ REDACTED_DATA:ff... ]",
-            "{length = 32, bytes = 0x00}": "[ REDACTED_DATA:00... ]",
-            "{length = 32, bytes = 0x0000}": "[ REDACTED_DATA:00... ]",
-            "{length = 32, bytes = 0x99}": "[ REDACTED_DATA:99... ]",
-            "{length = 32, bytes = 0x999999}": "[ REDACTED_DATA:99... ]",
+            "<01>": "<01…>",
+            "<0123>": "<01…>",
+            "<012345>": "<01…>",
+            "<01234567>": "<01…>",
+            "<01234567 89>": "<01…>",
+            "<01234567 89a2>": "<01…>",
+            "<01234567 89a23d>": "<01…>",
+            "<01234567 89a23def>": "<01…>",
+            "<01234567 89a23def 23>": "<01…>",
+            "<01234567 89a23def 2323>": "<01…>",
+            "<01234567 89a23def 232345>": "<01…>",
+            "<01234567 89a23def 23234567>": "<01…>",
+            "<01234567 89a23def 23234567 89>": "<01…>",
+            "<01234567 89a23def 23234567 89ab>": "<01…>",
+            "<01234567 89a23def 23234567 89ab12>": "<01…>",
+            "<01234567 89a23def 23234567 89ab1234>": "<01…>",
+            "{length = 32, bytes = 0xaa}": "<aa…>",
+            "{length = 32, bytes = 0xaaaaaaaa}": "<aa…>",
+            "{length = 32, bytes = 0xff}": "<ff…>",
+            "{length = 32, bytes = 0xffff}": "<ff…>",
+            "{length = 32, bytes = 0x00}": "<00…>",
+            "{length = 32, bytes = 0x0000}": "<00…>",
+            "{length = 32, bytes = 0x99}": "<99…>",
+            "{length = 32, bytes = 0x999999}": "<99…>",
             "{length = 32, bytes = 0x00010203 44556677 89898989 abcdef01 ... aabbccdd eeff1234 }":
-                "[ REDACTED_DATA:00... ]",
-            "My data is: <01234567 89a23def 23234567 89ab1223>": "My data is: [ REDACTED_DATA:01... ]",
+                "<00…>",
+            "My data is: <01234567 89a23def 23234567 89ab1223>": "My data is: <01…>",
             "My data is <12345670 89a23def 23234567 89ab1223> their data is <87654321 89ab1234>":
-                "My data is [ REDACTED_DATA:12... ] their data is [ REDACTED_DATA:87... ]"
+                "My data is <12…> their data is <87…>"
         ]
 
         for (input, expectedOutput) in testCases {
             XCTAssertEqual(
-                stripDate(fromRawMessage: format(input)),
+                format(input),
                 expectedOutput,
                 "Failed redaction: \(input)"
             )
@@ -96,39 +72,39 @@ final class ScrubbingLogFormatterTest: XCTestCase {
 
     func testIOS13AndHigherDataScrubbed() {
         let testCases: [String: String] = [
-            "{length = 32, bytes = 0x01}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x012345}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x01234567}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a2}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23d}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23def}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23def23}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23def2323}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23def232345}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23def23234567}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23def2323456789}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23def2323456789ab}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23def2323456789ab12}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0x0123456789a23def2323456789ab1234}": "[ REDACTED_DATA:01... ]",
-            "{length = 32, bytes = 0xaa}": "[ REDACTED_DATA:aa... ]",
-            "{length = 32, bytes = 0xaaaaaaaa}": "[ REDACTED_DATA:aa... ]",
-            "{length = 32, bytes = 0xff}": "[ REDACTED_DATA:ff... ]",
-            "{length = 32, bytes = 0xffff}": "[ REDACTED_DATA:ff... ]",
-            "{length = 32, bytes = 0x00}": "[ REDACTED_DATA:00... ]",
-            "{length = 32, bytes = 0x0000}": "[ REDACTED_DATA:00... ]",
-            "{length = 32, bytes = 0x99}": "[ REDACTED_DATA:99... ]",
-            "{length = 32, bytes = 0x999999}": "[ REDACTED_DATA:99... ]",
+            "{length = 32, bytes = 0x01}": "<01…>",
+            "{length = 32, bytes = 0x0123}": "<01…>",
+            "{length = 32, bytes = 0x012345}": "<01…>",
+            "{length = 32, bytes = 0x01234567}": "<01…>",
+            "{length = 32, bytes = 0x0123456789}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a2}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23d}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23def}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23def23}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23def2323}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23def232345}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23def23234567}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23def2323456789}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23def2323456789ab}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23def2323456789ab12}": "<01…>",
+            "{length = 32, bytes = 0x0123456789a23def2323456789ab1234}": "<01…>",
+            "{length = 32, bytes = 0xaa}": "<aa…>",
+            "{length = 32, bytes = 0xaaaaaaaa}": "<aa…>",
+            "{length = 32, bytes = 0xff}": "<ff…>",
+            "{length = 32, bytes = 0xffff}": "<ff…>",
+            "{length = 32, bytes = 0x00}": "<00…>",
+            "{length = 32, bytes = 0x0000}": "<00…>",
+            "{length = 32, bytes = 0x99}": "<99…>",
+            "{length = 32, bytes = 0x999999}": "<99…>",
             "My data is: {length = 32, bytes = 0x0123456789a23def2323456789ab1223}":
-                "My data is: [ REDACTED_DATA:01... ]",
+                "My data is: <01…>",
             "My data is {length = 32, bytes = 0x1234567089a23def2323456789ab1223} their data is {length = 16, bytes = 0x8765432189ab1234}":
-                "My data is [ REDACTED_DATA:12... ] their data is [ REDACTED_DATA:87... ]"
+                "My data is <12…> their data is <87…>"
         ]
 
         for (input, expectedOutput) in testCases {
             XCTAssertEqual(
-                stripDate(fromRawMessage: format(input)),
+                format(input),
                 expectedOutput,
                 "Failed redaction: \(input)"
             )
@@ -137,18 +113,18 @@ final class ScrubbingLogFormatterTest: XCTestCase {
 
     func testDataScrubbed_lazyFormatted() {
         let testCases: [Data: String] = [
-            .init([0]): "[ REDACTED_DATA:00... ]",
-            .init([0, 0, 0]): "[ REDACTED_DATA:00... ]",
-            .init([1]): "[ REDACTED_DATA:01... ]",
-            .init([1, 2, 3, 0x10, 0x20]): "[ REDACTED_DATA:01... ]",
-            .init([0xff]): "[ REDACTED_DATA:ff... ]",
-            .init([0xff, 0xff, 0xff]): "[ REDACTED_DATA:ff... ]"
+            .init([0]): "<00…>",
+            .init([0, 0, 0]): "<00…>",
+            .init([1]): "<01…>",
+            .init([1, 2, 3, 0x10, 0x20]): "<01…>",
+            .init([0xff]): "<ff…>",
+            .init([0xff, 0xff, 0xff]): "<ff…>"
         ]
 
         for (inputData, expectedOutput) in testCases {
             let input = (inputData as NSData).description
             XCTAssertEqual(
-                stripDate(fromRawMessage: format(input)),
+                format(input),
                 expectedOutput,
                 "Failed redaction: \(input)"
             )
@@ -156,34 +132,30 @@ final class ScrubbingLogFormatterTest: XCTestCase {
     }
 
     func testPhoneNumbersScrubbed() {
-        let phoneStrings: [String] = [
-            "+15557340123",
-            "+447700900123",
-            "+15557340123 somethingsomething +15557340123"
+        let testCases: [(String, String)] = [
+            ("my phone is +15557340123", "my phone is +x…123"),
+            ("your phone is +447700900124", "your phone is +x…124"),
+            ("+15557340123 something +15557340123", "+x…123 something +x…123"),
         ]
-        let expectedOutput = "My phone number is [ REDACTED_PHONE_NUMBER:xxx123 ]"
 
-        for phoneString in phoneStrings {
-            let result = format("My phone number is \(phoneString)")
-            XCTAssertTrue(result.contains(expectedOutput), "Failed to redact phone string: \(phoneString)")
-            XCTAssertFalse(result.contains(phoneString), "Failed to redact phone string: \(phoneString)")
+        for (inputValue, expectedValue) in testCases {
+            let actualOutput = format(inputValue)
+            XCTAssertEqual(actualOutput, expectedValue)
         }
     }
 
     func testGroupIdScrubbed() {
         for _ in 1...100 {
-            let groupIdCount = Bool.random() ? kGroupIdLengthV1 : kGroupIdLengthV2
+            let isGV1 = Bool.random()
+            let groupIdCount = isGV1 ? kGroupIdLengthV1 : kGroupIdLengthV2
+            let paddingCount = isGV1 ? 2 : 1
             let groupId = Randomness.generateRandomBytes(groupIdCount)
             let groupIdString = TSGroupThread.defaultThreadId(forGroupId: groupId)
 
-            let expectedOutput = "Hello [ REDACTED_GROUP_ID:...\(groupIdString.suffix(2)) ]!"
+            let expectedOutput = "Hello g…\(groupIdString.suffix(3 + paddingCount))!"
+            let actualOutput = format("Hello \(groupIdString)!")
 
-            let result = format("Hello \(groupIdString)!")
-
-            XCTAssertTrue(
-                result.contains(expectedOutput),
-                "Failed to redact group ID: \(groupIdString). Result was \(result)"
-            )
+            XCTAssertEqual(actualOutput, expectedOutput, groupIdString)
         }
     }
 
@@ -217,26 +189,22 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             let input = "Hello \(fakeGroupIdString)!"
 
             let result = format(input)
-            XCTAssertEqual(
-                stripDate(fromRawMessage: result),
-                input,
-                "Should not be affected"
-            )
+            XCTAssertEqual(result, input)
         }
     }
 
     func testNotScrubbed() {
         let input = "Some unfiltered string"
         let result = format(input)
-        XCTAssertEqual(stripDate(fromRawMessage: result), input, "Shouldn't touch this string")
+        XCTAssertEqual(result, input)
     }
 
     func testIPv4AddressesScrubbed() {
         let valueMap: [String: String] = [
-            "0.0.0.0": "[ REDACTED_IPV4_ADDRESS:...0 ]",
-            "127.0.0.1": "[ REDACTED_IPV4_ADDRESS:...1 ]",
-            "255.255.255.255": "[ REDACTED_IPV4_ADDRESS:...255 ]",
-            "1.2.3.4": "[ REDACTED_IPV4_ADDRESS:...4 ]"
+            "0.0.0.0": "x.x.x.0",
+            "127.0.0.1": "x.x.x.1",
+            "255.255.255.255": "x.x.x.255",
+            "1.2.3.4": "x.x.x.4"
         ]
         let messageFormats: [String] = [
             "a%@b",
@@ -254,15 +222,7 @@ final class ScrubbingLogFormatterTest: XCTestCase {
                 let input = messageFormat.replacingOccurrences(of: "%@", with: ipAddress)
                 let result = format(input)
                 let expectedOutput = messageFormat.replacingOccurrences(of: "%@", with: redactedIpAddress)
-                XCTAssertEqual(
-                    stripDate(fromRawMessage: result),
-                    expectedOutput,
-                    "Failed to redact IP address input: \(input)"
-                )
-                XCTAssertFalse(
-                    result.contains(ipAddress),
-                    "Failed to redact IP address input: \(input)"
-                )
+                XCTAssertEqual(result, expectedOutput, input)
             }
         }
     }
@@ -275,19 +235,9 @@ final class ScrubbingLogFormatterTest: XCTestCase {
     func testIPv6AddressesScrubbed() {
         func runTest(messageFormat: String, ipAddress: String) {
             let input = messageFormat.replacingOccurrences(of: "%@", with: ipAddress)
-            let expectedOutput = messageFormat.replacingOccurrences(of: "%@", with: "[ REDACTED_IPV6_ADDRESS ]")
-
+            let expectedOutput = messageFormat.replacingOccurrences(of: "%@", with: "[IPV6]")
             let result = format(input)
-
-            XCTAssertEqual(
-                stripDate(fromRawMessage: result),
-                expectedOutput,
-                "Failed to redact IP address input: \(input)"
-            )
-            XCTAssertFalse(
-                result.contains(ipAddress),
-                "Failed to redact IP address input: \(input)"
-            )
+            XCTAssertEqual(result, expectedOutput, input)
         }
 
         let testAddresses: [String] = [
@@ -363,25 +313,17 @@ final class ScrubbingLogFormatterTest: XCTestCase {
     }
 
     func testUUIDsScrubbed_Random() {
-        let expectedOutput = "My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx"
-
         for _ in (1...10) {
-            let uuid = UUID().uuidString
-            let result = format("My UUID is \(uuid)")
-            XCTAssertTrue(result.contains(expectedOutput), "Failed to redact UUID string: \(uuid)")
-            XCTAssertFalse(result.contains(uuid), "Failed to redact UUID string: \(uuid)")
+            let uuidString = UUID().uuidString
+            let result = format("My UUID is \(uuidString)")
+            XCTAssertEqual(result, "My UUID is xxxx-xx-xx-xxx\(uuidString.suffix(3))")
         }
     }
 
     func testUUIDsScrubbed_Specific() {
-        let uuid = "BAF1768C-2A25-4D8F-83B7-A89C59C98748"
-        let result = format("My UUID is \(uuid)")
-        XCTAssertEqual(
-            stripDate(fromRawMessage: result),
-            "My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx748 ]",
-            "Failed to redact UUID string: \(uuid)"
-        )
-        XCTAssertFalse(result.contains(uuid), "Failed to redact UUID string: \(uuid)")
+        let uuidString = "BAF1768C-2A25-4D8F-83B7-A89C59C98748"
+        let result = format("My UUID is \(uuidString)")
+        XCTAssertEqual(result, "My UUID is xxxx-xx-xx-xxx748")
     }
 
     func testTimestampsNotScrubbed() {
@@ -392,12 +334,12 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             "Sending message: TSOutgoingMessage, timestamp: \(timestamp)": "Sending message: TSOutgoingMessage, timestamp: \(timestamp)",
             // Leave timestamp, but UUID and phone number should be redacted
             "attempting to send message: TSOutgoingMessage, timestamp: \(timestamp), recipient: <SignalServiceAddress phoneNumber: +12345550123, uuid: BAF1768C-2A25-4D8F-83B7-A89C59C98748>":
-                "attempting to send message: TSOutgoingMessage, timestamp: \(timestamp), recipient: <SignalServiceAddress phoneNumber: [ REDACTED_PHONE_NUMBER:xxx123 ], uuid: [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx748 ]>"
+                "attempting to send message: TSOutgoingMessage, timestamp: \(timestamp), recipient: <SignalServiceAddress phoneNumber: +x…123, uuid: xxxx-xx-xx-xxx748>"
         ]
 
         for (input, expectedOutput) in testCases {
             XCTAssertEqual(
-                stripDate(fromRawMessage: format(input)),
+                format(input),
                 expectedOutput,
                 "Failed redaction: \(input)"
             )
@@ -413,16 +355,16 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             "01020304": "01020304",
             "0102030405": "0102030405",
             "010203040506": "010203040506",
-            "01020304050607": "[ REDACTED_HEX:...607 ]",
-            "0102030405060708": "[ REDACTED_HEX:...708 ]",
-            "010203040506070809": "[ REDACTED_HEX:...809 ]",
-            "010203040506070809ab": "[ REDACTED_HEX:...9ab ]",
-            "010203040506070809abcd": "[ REDACTED_HEX:...bcd ]"
+            "01020304050607": "…607",
+            "0102030405060708": "…708",
+            "010203040506070809": "…809",
+            "010203040506070809ab": "…9ab",
+            "010203040506070809abcd": "…bcd"
         ]
 
         for (input, expectedOutput) in testCases {
             XCTAssertEqual(
-                stripDate(fromRawMessage: format(input)),
+                format(input),
                 expectedOutput,
                 "Failed redaction: \(input)"
             )
@@ -430,57 +372,35 @@ final class ScrubbingLogFormatterTest: XCTestCase {
     }
 
     func testBase64UUIDsScrubbed_Random() {
-        let expectedOutputPrefix = "My base64 UUID is [ REDACTED_BASE64_UUID:"
-        let expectedOutputSuffix = "... ]"
-        let expectedOutputLength = expectedOutputPrefix.count + 3 + expectedOutputSuffix.count
-
         for _ in (1...10) {
             let uuid = UUID().data.base64EncodedString()
-            let result = stripDate(fromRawMessage: format("My base64 UUID is \(uuid)"))
-            XCTAssertTrue(result.hasPrefix(expectedOutputPrefix), "Failed to redact base64 UUID string: \(result)")
-            XCTAssertTrue(result.hasSuffix(expectedOutputSuffix), "Failed to redact base64 UUID string: \(result)")
-            XCTAssertEqual(result.count, expectedOutputLength, "Failed to redact base64 UUID string: \(result)")
-            XCTAssertFalse(result.contains(uuid), "Failed to redact base64 UUID string: \(result)")
+            let result = format("My base64 UUID is \(uuid)")
+            XCTAssertEqual(result, "My base64 UUID is \(uuid.prefix(3))…")
         }
     }
 
     func testBase64UUIDsScrubbed_Specific() {
-        let uuid = "GW/VMbPjTiyr5cSoblKBmQ=="
-        let result = format("My base64 UUID is \(uuid)")
-        XCTAssertEqual(
-            stripDate(fromRawMessage: result),
-            "My base64 UUID is [ REDACTED_BASE64_UUID:GW/... ]",
-            "Failed to redact base64 UUID string: \(uuid)"
-        )
-        XCTAssertFalse(result.contains(uuid), "Failed to redact base64 UUID string: \(uuid)")
+        let uuidString = "GW/VMbPjTiyr5cSoblKBmQ=="
+        let result = format("My base64 UUID is \(uuidString)")
+        XCTAssertEqual(result, "My base64 UUID is GW/…")
     }
 
     func testBase64UUIDsScrubbed_SpecificInURL() {
-        var uuid = "sdfssAFFDSAFdsFFsdaFfg=="
-        var result = format("http://signal.org/\(uuid)")
-        XCTAssertEqual(
-            stripDate(fromRawMessage: result),
-            "http://signal.org/[ REDACTED_BASE64_UUID:sdf... ]",
-            "Failed to redact base64 UUID string: \(uuid)"
-        )
-        XCTAssertFalse(result.contains(uuid), "Failed to redact base64 UUID string: \(uuid)")
+        var uuidString = "sdfssAFFDSAFdsFFsdaFfg=="
+        var result = format("http://signal.org/\(uuidString)")
+        XCTAssertEqual(result, "http://signal.org/sdf…")
 
         // Do one with a leading / in itself.
-        uuid = "/dfssAFFDSAFdsFFsdaFfg=="
-        result = format("http://signal.org/\(uuid)")
-        XCTAssertEqual(
-            stripDate(fromRawMessage: result),
-            "http://signal.org/[ REDACTED_BASE64_UUID:/df... ]",
-            "Failed to redact base64 UUID string: \(uuid)"
-        )
-        XCTAssertFalse(result.contains(uuid), "Failed to redact base64 UUID string: \(uuid)")
+        uuidString = "/dfssAFFDSAFdsFFsdaFfg=="
+        result = format("http://signal.org/\(uuidString)")
+        XCTAssertEqual(result, "http://signal.org//df…")
     }
 
     func testBase64UUIDsScrubbed_dontScrubDifferentLengths() {
         for byteLength in [15, 17, 32, 1] {
             for _ in (1...10) {
                 let uuid = Data.secRngGenBytes(byteLength).base64EncodedString()
-                let result = stripDate(fromRawMessage: format("My not base64 UUID is \(uuid)"))
+                let result = format("My not base64 UUID is \(uuid)")
                 XCTAssert(result.contains(uuid), "Incorrectly redacted non base64 UUID string: \(result)")
             }
         }

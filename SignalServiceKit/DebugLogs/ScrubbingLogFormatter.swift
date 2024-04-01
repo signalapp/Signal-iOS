@@ -5,6 +5,7 @@
 
 import CocoaLumberjack
 import Foundation
+import SignalCoreKit
 
 class ScrubbingLogFormatter: NSObject, DDLogFormatter {
     private struct Replacement {
@@ -25,46 +26,47 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
             self.replacementTemplate = replacementTemplate
         }
 
-        static func groupId(length: Int32) -> Replacement {
+        static func groupId(length: Int) -> Replacement {
             let prefix = TSGroupThread.groupThreadUniqueIdPrefix
-            let groupIdBase64StringLength = length.base64Length
+            let base64Length = ((length + 2) / 3) * 4
+            let base64Padding = Data.base64PaddingCount(for: length)
 
-            let unredactedSize = 2
-            let redactedSize = groupIdBase64StringLength - unredactedSize
+            // It's important to have some padding because we use that to mark the end
+            // of the groupId. If we don't have padding, then we need to sort the
+            // groupId Replacements from longest to shortest.
+            owsAssert(base64Padding != 0)
+
+            let unredactedLength = 3
+            let redactedLength = base64Length - base64Padding - unredactedLength
 
             // This assertion exists to prevent someone from updating the values and forgetting to
             // update things here.
-            owsAssert(
-                prefix == "g" &&
-                groupIdBase64StringLength >= (unredactedSize + 1) &&
-                groupIdBase64StringLength <= 100
-            )
+            owsAssert(prefix == "g" && redactedLength >= 1)
 
-            let base64Pattern = "A-Za-z0-9+/="
-            let base64Char = "[\(base64Pattern)]"
-            let notBase64Char = "[^\(base64Pattern)]"
+            let base64Character = "A-Za-z0-9+/"
+            let paddingCharacter = "="
 
             return Replacement(
-                pattern: "(^|\(notBase64Char))\(prefix)\(base64Char){\(redactedSize)}(\(base64Char){\(unredactedSize)})($|\(notBase64Char))",
-                replacementTemplate: "$1[ REDACTED_GROUP_ID:...$2 ]$3"
+                pattern: "(^|[^\(base64Character)])\(prefix)[\(base64Character)]{\(redactedLength)}([\(base64Character)]{\(unredactedLength)}\(paddingCharacter){\(base64Padding)})",
+                replacementTemplate: "$1g…$2"
             )
         }
 
         static let phoneNumber: Replacement = Replacement(
-            pattern: "\\+\\d{7,12}(\\d{3})",
-            replacementTemplate: "[ REDACTED_PHONE_NUMBER:xxx$1 ]"
+            pattern: #"\+\d{7,12}(\d{3})"#,
+            replacementTemplate: "+x…$1"
         )
 
         static let uuid: Replacement = Replacement(
-            pattern: "[\\da-f]{8}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{9}([\\da-f]{3})",
+            pattern: #"[\da-f]{8}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{9}([\da-f]{3})"#,
             options: .caseInsensitive,
-            replacementTemplate: "[ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx$1 ]"
+            replacementTemplate: "xxxx-xx-xx-xxx$1"
         )
 
         static let data: Replacement = Replacement(
-            pattern: "<([\\da-f]{2})[\\da-f]{0,6}( [\\da-f]{2,8})*>",
+            pattern: #"<([\da-f]{2})[\da-f]{0,6}( [\da-f]{2,8})*>"#,
             options: .caseInsensitive,
-            replacementTemplate: "[ REDACTED_DATA:$1... ]"
+            replacementTemplate: "<$1…>"
         )
 
         /// On iOS 13, when built with the 13 SDK, NSData's description has changed and needs to be
@@ -72,9 +74,9 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         /// example log line: "Called someFunction with nsData: {length = 8, bytes = 0x0123456789abcdef}"
         ///  scrubbed output: "Called someFunction with nsData: [ REDACTED_DATA:96 ]"
         static let iOS13Data: Replacement = Replacement(
-            pattern: "\\{length = \\d+, bytes = 0x([\\da-f]{2})[\\.\\da-f ]*\\}",
+            pattern: #"\{length = \d+, bytes = 0x([\da-f]{2})[\.\da-f ]*\}"#,
             options: .caseInsensitive,
-            replacementTemplate: "[ REDACTED_DATA:$1... ]"
+            replacementTemplate: "<$1…>"
         )
 
         /// IPv6 addresses are _hard_.
@@ -96,52 +98,49 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
                + "::([fF]{4}(:0{1,4}){0,1}:){0,1}([0-9]{1,3}\\.){3,3}[0-9]{1,3}|"
                + ":((:[0-9a-fA-F]{1,4}){1,7}|:)"
             ),
-            replacementTemplate: "[ REDACTED_IPV6_ADDRESS ]"
+            replacementTemplate: "[IPV6]"
         )
 
         static let ipv4Address: Replacement = Replacement(
             pattern: "\\d+\\.\\d+\\.\\d+\\.(\\d+)",
-            replacementTemplate: "[ REDACTED_IPV4_ADDRESS:...$1 ]"
+            replacementTemplate: "x.x.x.$1"
         )
 
         static let hex: Replacement = Replacement(
             pattern: "[\\da-f]{11,}([\\da-f]{3})",
             options: .caseInsensitive,
-            replacementTemplate: "[ REDACTED_HEX:...$1 ]"
+            replacementTemplate: "…$1"
         )
 
         /// Redact base64 encoded UUIDs.
         ///
         /// We take advantage of the known length of UUIDs (16 bytes, 128 bits),
-        /// which when encoded to base64 means 22 chars (6 bits per char, so
-        /// 128/6 = 21.3) plus we add padding ("=" is the reserved padding
-        /// character) to make it 24. Otherwise we'd just be matching arbitrary
-        /// length text since all letters are covered.
+        /// which when encoded to base64 means 22 chars (6 bits per char, so 128/6 =
+        /// 21.3) plus we add padding ("=" is the reserved padding character) to
+        /// make it 24. Otherwise we'd just be matching arbitrary length text since
+        /// all letters are covered.
         static let base64Uuid: Replacement = Replacement(
             pattern: (
-                // Leading can be any non-matching character (so we
-                // want leading whitespace or something else)
-                // The exception is "/". The uuid might be in a url path,
-                // and we want to redact it, so we need to allow leading
-                // path delimiters.
-                "([^\\da-zA-Z+])"
+                // Leading can be any non-matching character (so we want leading whitespace
+                // or something else) The exception is "/". The uuid might be in a url
+                // path, and we want to redact it, so we need to allow leading path
+                // delimiters.
+                #"([^\da-zA-Z+])"#
                 // Capture the first 3 chars to retain after redaction
-                + "([\\da-zA-Z/+]{3})"
+                + #"([\da-zA-Z/+]{3})"#
                 // Match the rest but throw it away
-                + "[\\da-zA-Z/+]{19}"
+                + #"[\da-zA-Z/+]{19}"#
                 // Match the trailing padding
-                + "\\=\\="
+                + #"=="#
             ),
-            replacementTemplate: "$1[ REDACTED_BASE64_UUID:$2... ]"
+            replacementTemplate: "$1$2…"
         )
     }
 
     private let replacements: [Replacement] = [
         .phoneNumber,
-        // It's important to redact GV2 IDs first because they're longer. If the shorter IDs were
-        // first, we'd be left with a bunch of partially-redacted GV2 IDs.
-        .groupId(length: kGroupIdLengthV2),
-        .groupId(length: kGroupIdLengthV1),
+        .groupId(length: Int(kGroupIdLengthV2)),
+        .groupId(length: Int(kGroupIdLengthV1)),
         .uuid,
         .data,
         .iOS13Data,
@@ -157,11 +156,11 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         return LogFormatter.formatLogMessage(logMessage, modifiedMessage: redactMessage(logMessage.message))
     }
 
-    private func redactMessage(_ logString: String) -> String {
+    func redactMessage(_ logString: String) -> String {
         var logString = logString
 
         if logString.contains("/Attachments/") {
-            return "[ REDACTED_CONTAINS_USER_PATH ]"
+            return "[USER_PATH]"
         }
 
         for replacement in replacements {
@@ -174,8 +173,4 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
 
         return logString
     }
-}
-
-private extension Int32 {
-    var base64Length: Int { Int(4 * ceil(Double(self) / 3)) }
 }
