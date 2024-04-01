@@ -271,6 +271,7 @@ public extension DatabaseRecovery {
             // Okay to best-effort recover calls.
             CallRecord.databaseTableName,
             DeletedCallRecord.databaseTableName,
+            NicknameRecord.databaseTableName,
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

@@ -1479,6 +1479,8 @@
 		B9291BFC2B6058AE006BC25F /* ContactAboutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9291BFB2B6058AE006BC25F /* ContactAboutSheet.swift */; };
 		B92E76A92B647E780095C4DF /* StackSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92E76A82B647E780095C4DF /* StackSheetViewController.swift */; };
 		B92E76AB2B6871520095C4DF /* ProfileDetailLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92E76AA2B6871520095C4DF /* ProfileDetailLabel.swift */; };
+		B93296652BB5CF3200B8BD39 /* NicknameRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93296642BB5CF3200B8BD39 /* NicknameRecord.swift */; };
+		B93296672BB5CF7500B8BD39 /* NicknameRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */; };
 		B93526902B0E63C400421E6A /* NewCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B935268F2B0E63C300421E6A /* NewCallViewController.swift */; };
 		B93955E32B06D47000F35940 /* CallsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93955E22B06D47000F35940 /* CallsListViewController.swift */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
@@ -4315,6 +4317,8 @@
 		B9291BFB2B6058AE006BC25F /* ContactAboutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAboutSheet.swift; sourceTree = "<group>"; };
 		B92E76A82B647E780095C4DF /* StackSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackSheetViewController.swift; sourceTree = "<group>"; };
 		B92E76AA2B6871520095C4DF /* ProfileDetailLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailLabel.swift; sourceTree = "<group>"; };
+		B93296642BB5CF3200B8BD39 /* NicknameRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameRecord.swift; sourceTree = "<group>"; };
+		B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameRecordStore.swift; sourceTree = "<group>"; };
 		B935268F2B0E63C300421E6A /* NewCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCallViewController.swift; sourceTree = "<group>"; };
 		B93955E22B06D47000F35940 /* CallsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListViewController.swift; sourceTree = "<group>"; };
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
@@ -10271,6 +10275,8 @@
 				5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */,
 				50086B9B29DF5CB100F9C072 /* NameResolver.swift */,
 				4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */,
+				B93296642BB5CF3200B8BD39 /* NicknameRecord.swift */,
+				B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */,
 				3498A0A524DC81E100CA492C /* OWSContactsManager.swift */,
 				F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */,
 				F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */,
@@ -13515,6 +13521,8 @@
 				F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */,
 				725465172BA00CDB00EABFD2 /* NewAccountDiscovery.swift in Sources */,
 				F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */,
+				B93296652BB5CF3200B8BD39 /* NicknameRecord.swift in Sources */,
+				B93296672BB5CF7500B8BD39 /* NicknameRecordStore.swift in Sources */,
 				72C9058A2B9A293300E586B8 /* NoopCallMessageHandler.swift in Sources */,
 				F9C5CE62289453B400548EEE /* NoopNotificationsManager.swift in Sources */,
 				F9C5CE58289453B400548EEE /* NoopPendingReadReceiptRecorder.swift in Sources */,

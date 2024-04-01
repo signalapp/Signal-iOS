@@ -254,6 +254,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addCallRecordRowIdColumnToCallRecordDeleteAllJobRecord
         case markAllGroupCallMessagesAsRead
         case addIndexForUnreadByThreadRowIdToCallRecord
+        case addNicknamesTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2739,6 +2740,18 @@ public class GRDBSchemaMigrator: NSObject {
                     "timestamp",
                 ]
             )
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addNicknamesTable) { tx in
+            try tx.database.create(table: "NicknameRecord") { table in
+                table.column("recipientRowID", .integer).primaryKey().notNull()
+                    .references("model_SignalRecipient", column: "id", onDelete: .cascade)
+                table.column("givenName", .text)
+                table.column("familyName", .text)
+                table.column("note", .text)
+            }
 
             return .success(())
         }

@@ -648,6 +648,8 @@ public class AppSetup {
             )
         )
 
+        let nicknameRecordStore = NicknameRecordStoreImpl()
+
         let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
 
         // TODO: Move this into ProfileFetcherJob.
@@ -731,6 +733,7 @@ public class AppSetup {
             masterKeySyncManager: masterKeySyncManager,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             messageBackupManager: messageBackupManager,
+            nicknameRecordStore: nicknameRecordStore,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             pinnedThreadManager: pinnedThreadManager,

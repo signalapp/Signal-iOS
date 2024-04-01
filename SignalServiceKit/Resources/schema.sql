@@ -1654,3 +1654,16 @@ CREATE
     ,"timestamp"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "NicknameRecord" (
+            "recipientRowID" INTEGER PRIMARY KEY NOT NULL REFERENCES "model_SignalRecipient"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"givenName" TEXT
+                ,"familyName" TEXT
+                ,"note" TEXT
+)
+;
