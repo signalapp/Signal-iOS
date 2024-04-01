@@ -536,20 +536,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.info("showing screen lock")
     }
 
-    private static func itemMatchesSpecificUtiType(itemProvider: NSItemProvider, utiType: String) -> Bool {
-        // URLs, contacts and other special items have to be detected separately.
-        // Many shares (e.g. pdfs) will register many UTI types and/or conform to kUTTypeData.
-        return [utiType] == itemProvider.registeredTypeIdentifiers
-    }
-
     private static func isVisualMediaItem(itemProvider: NSItemProvider) -> Bool {
         return (itemProvider.hasItemConformingToTypeIdentifier(kUTTypeImage as String) ||
             itemProvider.hasItemConformingToTypeIdentifier(kUTTypeMovie as String))
     }
 
     private static func isUrlItem(itemProvider: NSItemProvider) -> Bool {
-        return itemMatchesSpecificUtiType(itemProvider: itemProvider,
-                                          utiType: kUTTypeURL as String)
+        // URLs, contacts and other special items have to be detected separately.
+        // Many shares (e.g. pdfs) will register many UTI types and/or conform to kUTTypeData.
+        return [kUTTypeURL as String] == itemProvider.registeredTypeIdentifiers
     }
 
     private static func itemsToLoad(inputItems: [NSExtensionItem]) throws -> [UnloadedItem] {
