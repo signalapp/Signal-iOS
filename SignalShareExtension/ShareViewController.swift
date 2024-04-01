@@ -562,13 +562,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     return UnloadedItem(itemProvider: itemProvider, itemType: .image)
                 }
 
-                // A single inputItem can have multiple attachments, e.g. sharing from Firefox gives
-                // one url attachment and another text attachment, where the url would be https://some-news.com/articles/123-cat-stuck-in-tree
-                // and the text attachment would be something like "Breaking news - cat stuck in tree"
-                //
-                // FIXME: For now, we prefer the URL provider and discard the text provider, since it's more useful to share the URL than the caption
-                // but we *should* include both. This will be a bigger change though since our share extension is currently heavily predicated
-                // on one itemProvider per share.
                 if Self.isUrlItem(itemProvider: itemProvider) {
                     return UnloadedItem(itemProvider: itemProvider, itemType: .webUrl)
                 }
@@ -601,6 +594,14 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 return UnloadedItem(itemProvider: itemProvider, itemType: .other)
             }
 
+            // A single inputItem can have multiple attachments, e.g. sharing from Firefox gives
+            // one url attachment and another text attachment, where the url would be https://some-news.com/articles/123-cat-stuck-in-tree
+            // and the text attachment would be something like "Breaking news - cat stuck in tree"
+            //
+            // FIXME: For now, we prefer the URL provider and discard the text provider, since it's more useful to share the URL than the caption
+            // but we *should* include both. This will be a bigger change though since our share extension is currently heavily predicated
+            // on one itemProvider per share.
+            //
             // Prefer a URL if available. If there's an image item and a URL item,
             // the URL is generally more useful. e.g. when sharing an app from the
             // App Store the image would be the app icon and the URL is the link
