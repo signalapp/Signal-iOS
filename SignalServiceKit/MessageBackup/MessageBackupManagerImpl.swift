@@ -285,15 +285,34 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 }
             case .account(let backupProtoAccountData):
                 // TODO: Not yet implemented.
-                break
+                try processRestoreFrameErrors(errors: [
+                    .unimplemented(MessageBackup.AccountDataId.localUser)
+                ])
             case .call(let backupProtoCall):
                 // TODO: Not yet implemented.
-                break
+                try processRestoreFrameErrors(errors: [
+                    .unimplemented(MessageBackup.CallId(
+                        callId: backupProtoCall.callId,
+                        conversationRecipientId: MessageBackup.RecipientId(
+                            integerLiteral: backupProtoCall.conversationRecipientId
+                        )
+                    ))
+                ])
             case .stickerPack(let backupProtoStickerPack):
                 // TODO: Not yet implemented.
-                break
+                try processRestoreFrameErrors(errors: [
+                    .unimplemented(MessageBackup.StickerPackId(
+                        backupProtoStickerPack.id
+                    ))
+                ])
             case nil:
-                throw OWSAssertionError("Frame missing item!")
+                owsFailDebug("Frame missing item!")
+                try processRestoreFrameErrors(errors: [
+                    .invalidProtoData(
+                        MessageBackup.EmptyFrameId.shared,
+                        .frameMissingItem
+                    )
+                ])
             }
         }
 

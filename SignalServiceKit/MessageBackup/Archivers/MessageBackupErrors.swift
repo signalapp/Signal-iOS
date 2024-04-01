@@ -163,6 +163,9 @@ extension MessageBackup {
         case sequenceOfRequestsAndCancelsWithLocalAci
         /// An unrecognized BackupProtoGroupChangeChatUpdate.
         case unrecognizedGroupUpdate
+
+        /// A frame was entirely missing its enclosed item.
+        case frameMissingItem
     }
 }
 
@@ -270,6 +273,8 @@ extension MessageBackup.RestoreFrameErrorType {
                 return "Collapsed sequence of requests and cancels with local user's aci"
             case .unrecognizedGroupUpdate:
                 return "Unrecognized group update type"
+            case .frameMissingItem:
+                return "Backup frame missing enclosed item"
             }
         case .referencedChatThreadNotFound(let threadUniqueId):
             return "Referenced thread with id not found: \(threadUniqueId.value)"
@@ -654,7 +659,8 @@ extension MessageBackup {
                         .groupUpdateMessageInNonGroupChat,
                         .emptyGroupUpdates,
                         .sequenceOfRequestsAndCancelsWithLocalAci,
-                        .unrecognizedGroupUpdate:
+                        .unrecognizedGroupUpdate,
+                        .frameMissingItem:
                     // Collapse these by the id of the containing frame.
                     return idLogString
                 }
