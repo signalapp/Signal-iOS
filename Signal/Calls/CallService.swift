@@ -39,7 +39,6 @@ public final class CallService: LightweightGroupCallManager {
     }
 
     private var audioSession: AudioSession { NSObject.audioSession }
-    private var callService: CallService { NSObject.callService }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var reachabilityManager: SSKReachabilityManager { NSObject.reachabilityManager }
 
@@ -245,9 +244,9 @@ public final class CallService: LightweightGroupCallManager {
     public func createCallUIAdapter() {
         AssertIsOnMainThread()
 
-        if let call = callService.currentCall {
+        if let call = currentCall {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
-            callService.terminate(call: call)
+            terminate(call: call)
         }
 
         self.callUIAdapter = CallUIAdapter()
@@ -1591,7 +1590,7 @@ extension CallService: CallManagerDelegate {
             // Mute video by default unless the user has already approved it.
             // This keeps us from popping the "give permission to use your camera" alert before the user answers.
             let videoMuted = AVCaptureDevice.authorizationStatus(for: .video) != .authorized
-            guard let groupCall = self.callService.buildAndConnectGroupCallIfPossible(
+            guard let groupCall = buildAndConnectGroupCallIfPossible(
                 thread: thread,
                 videoMuted: videoMuted
             ) else {
