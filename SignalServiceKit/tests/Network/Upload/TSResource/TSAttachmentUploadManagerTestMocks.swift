@@ -8,7 +8,6 @@ import Foundation
 
 extension TSAttachmentUpload {
     enum Mocks {
-        typealias AttachmentEncrypter = _TSAttachmentUploadManager_AttachmentEncrypterMock
         typealias BlurHash = _TSAttachmentUpload_BlurHashMock
     }
 }
@@ -16,14 +15,6 @@ extension TSAttachmentUpload {
 class _TSAttachmentUpload_BlurHashMock: TSAttachmentUpload.Shims.BlurHash {
     func ensureBlurHash(attachmentStream: TSAttachmentStream) async throws {
         return
-    }
-}
-
-class _TSAttachmentUploadManager_AttachmentEncrypterMock: TSAttachmentUpload.Shims.AttachmentEncrypter {
-
-    var encryptAttachmentBlock: ((URL, URL) -> EncryptionMetadata)?
-    func encryptAttachment(at unencryptedUrl: URL, output encryptedUrl: URL) throws -> EncryptionMetadata {
-        return encryptAttachmentBlock!(unencryptedUrl, encryptedUrl)
     }
 }
 

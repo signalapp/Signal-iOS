@@ -12,7 +12,7 @@ class TSAttachmentUploadManagerMockHelper {
     var mockNetworkManager = AttachmentUpload.Mocks.NetworkManager()
     var mockServiceManager = OWSSignalServiceMock()
     var mockChatConnectionManager = AttachmentUpload.Mocks.ChatConnectionManager()
-    var mockAttachmentEncrypter = TSAttachmentUpload.Mocks.AttachmentEncrypter()
+    var mockAttachmentEncrypter = AttachmentUpload.Mocks.AttachmentEncrypter()
     var mockBlurHash = TSAttachmentUpload.Mocks.BlurHash()
     var mockFileSystem = AttachmentUpload.Mocks.FileSystem()
     var mockInteractionStore = MockInteractionStore()

@@ -672,12 +672,13 @@ public class AppSetup {
             networkManager: networkManager,
             chatConnectionManager: chatConnectionManager,
             signalService: signalService,
-            attachmentEncrypter: TSAttachmentUpload.Wrappers.AttachmentEncrypter(),
+            attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
             blurHash: TSAttachmentUpload.Wrappers.BlurHash(),
             fileSystem: Upload.Wrappers.FileSystem(),
             tsResourceStore: tsResourceStore
         )
         let attachmentUploadManager = AttachmentUploadManagerImpl(
+            attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
             attachmentStore: attachmentStore,
             chatConnectionManager: chatConnectionManager,
             db: db,

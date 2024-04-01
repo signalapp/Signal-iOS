@@ -936,7 +936,7 @@
 		66C102FA2B630F9600B47EC2 /* TSAttachment+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */; };
 		66C1A8742BB759820076C65A /* TSAttachmentUploadShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */; };
 		66C1A8772BB75E560076C65A /* AttachmentUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8762BB75E560076C65A /* AttachmentUploadManager.swift */; };
-		66C1A8792BB761D10076C65A /* AttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8782BB761D10076C65A /* AttachmentUpload.swift */; };
+		66C1A8792BB761D10076C65A /* AttachmentUploadBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8782BB761D10076C65A /* AttachmentUploadBuilder.swift */; };
 		66C1A87B2BB7675B0076C65A /* UploadProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A87A2BB7675B0076C65A /* UploadProgress.swift */; };
 		66C1A87D2BB77AB70076C65A /* TSResourceUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A87C2BB77AB70076C65A /* TSResourceUploadManager.swift */; };
 		66C1A8802BB77EA50076C65A /* AttachmentUploadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A87E2BB77E950076C65A /* AttachmentUploadManagerTests.swift */; };
@@ -1014,6 +1014,8 @@
 		66D7B9392B99466F0005C98B /* TSResourceDownloadManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9382B99466F0005C98B /* TSResourceDownloadManagerImpl.swift */; };
 		66D7B9402B9A67B00005C98B /* AttachmentDownloadPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */; };
 		66D7B9432B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9422B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift */; };
+		66DA59C42BBB07F800D0EC58 /* TransientUploadBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA59C32BBB07F800D0EC58 /* TransientUploadBuilder.swift */; };
+		66DA59C62BBB090C00D0EC58 /* AttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA59C52BBB090C00D0EC58 /* AttachmentUpload.swift */; };
 		66E1AD502B80126200C56B7B /* TSResourceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD4F2B80126200C56B7B /* TSResourceId.swift */; };
 		66E1AD532B8D017400C56B7B /* TSResourceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD522B8D017400C56B7B /* TSResourceStore.swift */; };
 		66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */; };
@@ -3783,7 +3785,7 @@
 		66C102F92B630F9600B47EC2 /* TSAttachment+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachment+TSResource.swift"; sourceTree = "<group>"; };
 		66C1A8732BB759820076C65A /* TSAttachmentUploadShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadShims.swift; sourceTree = "<group>"; };
 		66C1A8762BB75E560076C65A /* AttachmentUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManager.swift; sourceTree = "<group>"; };
-		66C1A8782BB761D10076C65A /* AttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUpload.swift; sourceTree = "<group>"; };
+		66C1A8782BB761D10076C65A /* AttachmentUploadBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadBuilder.swift; sourceTree = "<group>"; };
 		66C1A87A2BB7675B0076C65A /* UploadProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgress.swift; sourceTree = "<group>"; };
 		66C1A87C2BB77AB70076C65A /* TSResourceUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceUploadManager.swift; sourceTree = "<group>"; };
 		66C1A87E2BB77E950076C65A /* AttachmentUploadManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManagerTests.swift; sourceTree = "<group>"; };
@@ -3862,6 +3864,8 @@
 		66D7B9382B99466F0005C98B /* TSResourceDownloadManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceDownloadManagerImpl.swift; sourceTree = "<group>"; };
 		66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadPriority.swift; sourceTree = "<group>"; };
 		66D7B9422B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentDownloadPriority+TSResource.swift"; sourceTree = "<group>"; };
+		66DA59C32BBB07F800D0EC58 /* TransientUploadBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransientUploadBuilder.swift; sourceTree = "<group>"; };
+		66DA59C52BBB090C00D0EC58 /* AttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUpload.swift; sourceTree = "<group>"; };
 		66E1AD4F2B80126200C56B7B /* TSResourceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceId.swift; sourceTree = "<group>"; };
 		66E1AD522B8D017400C56B7B /* TSResourceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStore.swift; sourceTree = "<group>"; };
 		66E1AD542B8D033E00C56B7B /* ConcreteTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteTSResource.swift; sourceTree = "<group>"; };
@@ -8764,8 +8768,10 @@
 			isa = PBXGroup;
 			children = (
 				66C1A8722BB759350076C65A /* TSResource */,
-				66C1A8782BB761D10076C65A /* AttachmentUpload.swift */,
+				66DA59C52BBB090C00D0EC58 /* AttachmentUpload.swift */,
+				66C1A8782BB761D10076C65A /* AttachmentUploadBuilder.swift */,
 				66C1A8762BB75E560076C65A /* AttachmentUploadManager.swift */,
+				66DA59C32BBB07F800D0EC58 /* TransientUploadBuilder.swift */,
 				C1DF3F3F2B0283C5004B6986 /* Upload.swift */,
 				C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */,
 				C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */,
@@ -13147,7 +13153,8 @@
 				66D7B9072B928BD50005C98B /* AttachmentStream.swift in Sources */,
 				66CA4CE42B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift in Sources */,
 				66D7B92B2B97E5990005C98B /* AttachmentTransitPointer.swift in Sources */,
-				66C1A8792BB761D10076C65A /* AttachmentUpload.swift in Sources */,
+				66DA59C62BBB090C00D0EC58 /* AttachmentUpload.swift in Sources */,
+				66C1A8792BB761D10076C65A /* AttachmentUploadBuilder.swift in Sources */,
 				66C1A8772BB75E560076C65A /* AttachmentUploadManager.swift in Sources */,
 				66D7B9092B9291BD0005C98B /* AttachmentUploadStore.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
@@ -13978,6 +13985,7 @@
 				50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */,
 				C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */,
 				C1CF83D42B9A207800CDC9C4 /* TransformingOutputStream.swift in Sources */,
+				66DA59C42BBB07F800D0EC58 /* TransientUploadBuilder.swift in Sources */,
 				661170C42ABA4D9900A1B16D /* TSAccountManager.swift in Sources */,
 				664657452ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift in Sources */,
 				661170C82ABA4F3A00A1B16D /* TSAccountManagerImpl.swift in Sources */,

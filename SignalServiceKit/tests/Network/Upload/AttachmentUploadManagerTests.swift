@@ -13,6 +13,7 @@ class AttachmentUploadManagerTests: XCTestCase {
     override func setUp() {
         helper = AttachmentUploadManagerMockHelper()
         uploadManager = AttachmentUploadManagerImpl(
+            attachmentEncrypter: helper.mockAttachmentEncrypter,
             attachmentStore: helper.mockAttachmentStore,
             chatConnectionManager: helper.mockChatConnectionManager,
             db: helper.mockDB,

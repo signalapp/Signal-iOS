@@ -17,7 +17,7 @@ public struct TSAttachmentUpload {
     private let networkManager: NetworkManager
     private let chatConnectionManager: ChatConnectionManager
 
-    private let attachmentEncrypter: TSAttachmentUpload.Shims.AttachmentEncrypter
+    private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let fileSystem: Upload.Shims.FileSystem
 
     private let sourceURL: URL
@@ -29,7 +29,7 @@ public struct TSAttachmentUpload {
         signalService: OWSSignalServiceProtocol,
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,
-        attachmentEncrypter: TSAttachmentUpload.Shims.AttachmentEncrypter,
+        attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         fileSystem: Upload.Shims.FileSystem,
         sourceURL: URL,
         logger: PrefixedLogger
@@ -293,7 +293,8 @@ public struct TSAttachmentUpload {
             fileUrl: temporaryFile,
             key: metadata.key,
             digest: digest,
-            encryptedDataLength: length
+            encryptedDataLength: length,
+            plaintextDataLength: plaintextLength
         )
     }
 

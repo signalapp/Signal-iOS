@@ -5,6 +5,11 @@
 
 import Foundation
 
+public protocol UploadBuilder {
+
+    func buildMetadata() throws -> Upload.LocalUploadMetadata
+}
+
 extension Upload.Constants {
     fileprivate static let uploadMaxRetries = 8
     fileprivate static let maxUploadProgressRetries = 2
@@ -12,38 +17,29 @@ extension Upload.Constants {
 
 public struct AttachmentUpload {
 
-    private let db: DB
     private let signalService: OWSSignalServiceProtocol
     private let networkManager: NetworkManager
     private let chatConnectionManager: ChatConnectionManager
 
     private let fileSystem: Upload.Shims.FileSystem
 
-    private let sourceURL: URL
-    private let encryptionMetadata: EncryptionMetadata
-
     private let logger: PrefixedLogger
 
+    private let builder: UploadBuilder
+
     public init(
-        db: DB,
+        builder: UploadBuilder,
         signalService: OWSSignalServiceProtocol,
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,
         fileSystem: Upload.Shims.FileSystem,
-        sourceURL: URL,
-        encryptionMetadata: EncryptionMetadata,
         logger: PrefixedLogger
     ) {
-        self.db = db
+        self.builder = builder
         self.signalService = signalService
         self.networkManager = networkManager
         self.chatConnectionManager = chatConnectionManager
-
         self.fileSystem = fileSystem
-
-        self.sourceURL = sourceURL
-        self.encryptionMetadata = encryptionMetadata
-
         self.logger = logger
     }
 
@@ -55,7 +51,14 @@ public struct AttachmentUpload {
     public func start(progress: Upload.ProgressBlock?) async throws -> Upload.Result {
         try Task.checkCancellation()
 
-        let localMetadata = try buildLocalAttachmentMetadata(for: sourceURL, encryptionMetadata: encryptionMetadata)
+        let localMetadata: Upload.LocalUploadMetadata = try builder.buildMetadata()
+
+        guard
+            localMetadata.plaintextDataLength <= OWSMediaUtils.kMaxFileSizeGeneric,
+            localMetadata.encryptedDataLength <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes
+        else {
+            throw OWSAssertionError("Data is too large: \(localMetadata.plaintextDataLength).")
+        }
 
         progress?(buildProgress(done: 0, total: localMetadata.encryptedDataLength))
 
@@ -265,33 +268,6 @@ public struct AttachmentUpload {
             endpoint: endpoint,
             uploadLocation: uploadLocation,
             logger: logger
-        )
-    }
-
-    private func buildLocalAttachmentMetadata(
-        for sourceURL: URL,
-        encryptionMetadata metadata: EncryptionMetadata
-    ) throws -> Upload.LocalUploadMetadata {
-        guard let length = metadata.length, let plaintextLength = metadata.plaintextLength else {
-            throw OWSAssertionError("Missing length.")
-        }
-
-        guard
-            plaintextLength <= OWSMediaUtils.kMaxFileSizeGeneric,
-            length <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes
-        else {
-            throw OWSAssertionError("Data is too large: \(length).")
-        }
-
-        guard let digest = metadata.digest else {
-            throw OWSAssertionError("Digest missing for attachment.")
-        }
-
-        return Upload.LocalUploadMetadata(
-            fileUrl: sourceURL,
-            key: metadata.key,
-            digest: digest,
-            encryptedDataLength: length
         )
     }
 

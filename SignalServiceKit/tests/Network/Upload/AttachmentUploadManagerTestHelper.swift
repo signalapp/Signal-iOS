@@ -34,6 +34,7 @@ class AttachmentUploadManagerMockHelper {
     var mockInteractionStore = MockInteractionStore()
     var mockStoryStore = StoryStoreMock()
     var mockAttachmentStore = AttachmentUploadStoreMock()
+    var mockAttachmentEncrypter = AttachmentUpload.Mocks.AttachmentEncrypter()
 
     var capturedRequests = [MockResultType]()
 

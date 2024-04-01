@@ -7,6 +7,9 @@ import Foundation
 
 public protocol AttachmentUploadManager {
 
+    /// Upload a transient attachment that isn't saved to the database for sending.
+    func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result
+
     /// Upload an Attachment to the given endpoint.
     /// Will fail if the attachment doesn't exist or isn't available locally.
     func uploadAttachment(attachmentId: Attachment.IDType) async throws
@@ -14,6 +17,7 @@ public protocol AttachmentUploadManager {
 
 public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
+    private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let attachmentStore: AttachmentUploadStore
     private let chatConnectionManager: ChatConnectionManager
     private let db: DB
@@ -24,6 +28,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let storyStore: StoryStore
 
     public init(
+        attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         attachmentStore: AttachmentUploadStore,
         chatConnectionManager: ChatConnectionManager,
         db: DB,
@@ -33,6 +38,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         signalService: OWSSignalServiceProtocol,
         storyStore: StoryStore
     ) {
+        self.attachmentEncrypter = attachmentEncrypter
         self.attachmentStore = attachmentStore
         self.chatConnectionManager = chatConnectionManager
         self.db = db
@@ -41,6 +47,46 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         self.networkManager = networkManager
         self.signalService = signalService
         self.storyStore = storyStore
+    }
+
+    public func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result {
+        let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[transient]")
+
+        let uploadBuilder = TransientUploadBuilder(
+            source: dataSource,
+            attachmentEncrypter: attachmentEncrypter,
+            fileSystem: fileSystem
+        )
+
+        do {
+            let upload = AttachmentUpload(
+                builder: uploadBuilder,
+                signalService: signalService,
+                networkManager: networkManager,
+                chatConnectionManager: chatConnectionManager,
+                fileSystem: fileSystem,
+                logger: logger
+            )
+
+            // We don't show progress for transient uploads
+            let result = try await upload.start(progress: nil)
+
+            return result
+
+        } catch {
+            if error.isNetworkFailureOrTimeout {
+                logger.warn("Upload failed due to network error")
+            } else if error is CancellationError {
+                logger.warn("Upload cancelled")
+            } else {
+                if let statusCode = error.httpStatusCode {
+                    logger.warn("Unexpected upload error [status: \(statusCode)]")
+                } else {
+                    logger.warn("Unexpected upload error")
+                }
+            }
+            throw error
+        }
     }
 
     /// Entry point for uploading an `AttachmentStream`
@@ -59,22 +105,15 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             logger.debug("Attachment previously uploaded.")
             return
         }
-        let encryptionMedatata = EncryptionMetadata(
-            key: attachmentStream.attachment.encryptionKey,
-            digest: attachmentStream.encryptedFileSha256Digest,
-            length: Int(clamping: attachmentStream.encryptedByteCount),
-            plaintextLength: Int(clamping: attachmentStream.unenecryptedByteCount)
-        )
+        let uploadBuilder = AttachmentUploadBuilder(attachmentStream: attachmentStream)
 
         do {
             let upload = AttachmentUpload(
-                db: db,
+                builder: uploadBuilder,
                 signalService: signalService,
                 networkManager: networkManager,
                 chatConnectionManager: chatConnectionManager,
                 fileSystem: fileSystem,
-                sourceURL: attachmentStream.fileURL,
-                encryptionMetadata: encryptionMedatata,
                 logger: logger
             )
 

@@ -7,15 +7,21 @@ import Foundation
 
 extension Upload {
     public enum Shims {
+        public typealias AttachmentEncrypter = _Upload_AttachmentEncrypterShim
         public typealias FileSystem = _Upload_FileSystemShim
     }
 
     public enum Wrappers {
+        public typealias AttachmentEncrypter = _Upload_AttachmentEncrypterWrapper
         public typealias FileSystem = _Upload_FileSystemWrapper
     }
 }
 
 // MARK: - Shims
+
+public protocol _Upload_AttachmentEncrypterShim {
+    func encryptAttachment(at unencryptedUrl: URL, output encryptedUrl: URL) throws -> EncryptionMetadata
+}
 
 public protocol _Upload_FileSystemShim {
     func temporaryFileUrl() -> URL
@@ -26,6 +32,12 @@ public protocol _Upload_FileSystemShim {
 }
 
 // MARK: - Wrappers
+
+public struct _Upload_AttachmentEncrypterWrapper: Upload.Shims.AttachmentEncrypter {
+    public func encryptAttachment(at unencryptedUrl: URL, output encryptedUrl: URL) throws -> EncryptionMetadata {
+        try Cryptography.encryptAttachment(at: unencryptedUrl, output: encryptedUrl)
+    }
+}
 
 public struct _Upload_FileSystemWrapper: Upload.Shims.FileSystem {
     public func temporaryFileUrl() -> URL {

@@ -105,6 +105,9 @@ public enum Upload {
 
         /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
         let encryptedDataLength: Int
+
+        /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
+        let plaintextDataLength: Int
     }
 
     public struct Result {

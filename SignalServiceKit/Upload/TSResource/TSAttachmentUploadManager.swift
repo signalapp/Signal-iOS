@@ -22,7 +22,7 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
     private let networkManager: NetworkManager
     private let chatConnectionManager: ChatConnectionManager
     private let signalService: OWSSignalServiceProtocol
-    private let attachmentEncrypter: TSAttachmentUpload.Shims.AttachmentEncrypter
+    private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let blurHash: TSAttachmentUpload.Shims.BlurHash
     private let fileSystem: Upload.Shims.FileSystem
     private let tsResourceStore: TSResourceUploadStore
@@ -33,7 +33,7 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,
         signalService: OWSSignalServiceProtocol,
-        attachmentEncrypter: TSAttachmentUpload.Shims.AttachmentEncrypter,
+        attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         blurHash: TSAttachmentUpload.Shims.BlurHash,
         fileSystem: Upload.Shims.FileSystem,
         tsResourceStore: TSResourceUploadStore

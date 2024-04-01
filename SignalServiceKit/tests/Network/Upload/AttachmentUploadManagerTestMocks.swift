@@ -12,7 +12,16 @@ extension AttachmentUpload {
         typealias URLSession = _AttachmentUploadManager_OWSURLSessionMock
         typealias ChatConnectionManager = _AttachmentUploadManager_ChatConnectionManagerMock
 
+        typealias AttachmentEncrypter = _Upload_AttachmentEncrypterMock
         typealias FileSystem = _Upload_FileSystemMock
+    }
+}
+
+class _Upload_AttachmentEncrypterMock: Upload.Shims.AttachmentEncrypter {
+
+    var encryptAttachmentBlock: ((URL, URL) -> EncryptionMetadata)?
+    func encryptAttachment(at unencryptedUrl: URL, output encryptedUrl: URL) throws -> EncryptionMetadata {
+        return encryptAttachmentBlock!(unencryptedUrl, encryptedUrl)
     }
 }
 
