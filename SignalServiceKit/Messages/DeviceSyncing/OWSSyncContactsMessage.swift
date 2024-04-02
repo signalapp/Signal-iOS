@@ -6,26 +6,19 @@
 import Foundation
 import SignalCoreKit
 
-@objc(OWSSyncContactsMessage)
 public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
 
-    /// Deprecated. It's always true for new instances, but it might be false
-    /// for jobs enqueued by prior versions of the application. (These would be
-    /// safe to drop, but they're also harmless to send.)
-    @objc // for Mantle
-    private(set) public var isFullSync = false
-
-    public init(thread: TSThread, isFullSync: Bool, tx: SDSAnyReadTransaction) {
-        self.isFullSync = isFullSync
+    public init(thread: TSThread, tx: SDSAnyReadTransaction) {
         super.init(thread: thread, transaction: tx)
     }
 
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        // Doesn't support serialization.
+        return nil
     }
 
     required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
+        throw OWSAssertionError("Doesn't support serialization.")
     }
 
     public override var isUrgent: Bool { false }
@@ -58,7 +51,7 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
         }
 
         let contactsBuilder = SSKProtoSyncMessageContacts.builder(blob: attachmentProto)
-        contactsBuilder.setIsComplete(isFullSync)
+        contactsBuilder.setIsComplete(true)
 
         let contactsProto: SSKProtoSyncMessageContacts
         do {

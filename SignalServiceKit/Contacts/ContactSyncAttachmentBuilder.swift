@@ -41,7 +41,6 @@ enum ContactSyncAttachmentBuilder {
             }
             try fetchAndWriteContacts(
                 to: ContactOutputStream(outputStream: outputStream),
-                isFullSync: contactSyncMessage.isFullSync,
                 localAddress: localAddress,
                 contactsManager: contactsManager,
                 tx: tx
@@ -61,7 +60,6 @@ enum ContactSyncAttachmentBuilder {
 
     private static func fetchAndWriteContacts(
         to contactOutputStream: ContactOutputStream,
-        isFullSync: Bool,
         localAddress: SignalServiceAddress,
         contactsManager: OWSContactsManager,
         tx: SDSAnyReadTransaction
@@ -73,7 +71,7 @@ enum ContactSyncAttachmentBuilder {
         }
 
         let localAccount = localAccountToSync(localAddress: localAddress)
-        let otherAccounts = isFullSync ? SignalAccount.anyFetchAll(transaction: tx) : []
+        let otherAccounts = SignalAccount.anyFetchAll(transaction: tx)
         let signalAccounts = [localAccount] + otherAccounts.sorted(
             by: { ($0.recipientPhoneNumber ?? "") < ($1.recipientPhoneNumber ?? "") }
         )
@@ -102,21 +100,19 @@ enum ContactSyncAttachmentBuilder {
             }
         }
 
-        if isFullSync {
-            for (rowId, inboxPosition) in threadPositions.sorted(by: { $0.key < $1.key }) {
-                try autoreleasepool {
-                    guard let contactThread = threadFinder.fetch(rowId: rowId, tx: tx) as? TSContactThread else {
-                        return
-                    }
-                    try writeContact(
-                        to: contactOutputStream,
-                        address: contactThread.contactAddress,
-                        contactThread: contactThread,
-                        signalAccount: nil,
-                        inboxPosition: inboxPosition,
-                        tx: tx
-                    )
+        for (rowId, inboxPosition) in threadPositions.sorted(by: { $0.key < $1.key }) {
+            try autoreleasepool {
+                guard let contactThread = threadFinder.fetch(rowId: rowId, tx: tx) as? TSContactThread else {
+                    return
                 }
+                try writeContact(
+                    to: contactOutputStream,
+                    address: contactThread.contactAddress,
+                    contactThread: contactThread,
+                    signalAccount: nil,
+                    inboxPosition: inboxPosition,
+                    tx: tx
+                )
             }
         }
     }
