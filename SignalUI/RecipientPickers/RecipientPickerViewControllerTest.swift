@@ -36,7 +36,7 @@ final class RecipientPickerViewControllerTests: XCTestCase {
             TestCase(searchText: "cat.123", searchResults: []),
 
             // test multiple search results
-            TestCase(searchText: "5215550100", searchResults: ["+15215550100", "+5215550100", "+525550100"]),
+            TestCase(searchText: "5215550100", searchResults: ["+15215550100", "+5215550100"]),
 
             // test punctuation and whitespace
             TestCase(searchText: "123", searchResults: ["+1123"]),

@@ -166,9 +166,11 @@ extension SharingThreadPickerViewController {
                 return ContactShareDraft.load(
                     cnContact: cnContact,
                     signalContact: Contact(systemContact: cnContact),
-                    contactsManager: Self.contactsManager,
+                    contactManager: Self.contactsManager,
+                    phoneNumberUtil: Self.phoneNumberUtil,
                     profileManager: Self.profileManager,
                     recipientManager: DependenciesBridge.shared.recipientManager,
+                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                     tx: tx
                 )
             }

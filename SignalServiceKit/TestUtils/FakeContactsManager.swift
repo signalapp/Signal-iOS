@@ -41,10 +41,8 @@ public class FakeContactsManager: NSObject, ContactManager {
         return displayNameString(for: address, transaction: transaction)
     }
 
-    public var systemContactPhoneNumbers: [String] = []
-
-    public func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
-        return systemContactPhoneNumbers.contains(phoneNumber)
+    public func cnContactId(for phoneNumber: String) -> String? {
+        return nil
     }
 
     public func sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {

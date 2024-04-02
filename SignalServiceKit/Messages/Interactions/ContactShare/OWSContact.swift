@@ -583,7 +583,7 @@ public class OWSContact: MTLModel {
             let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)
             return PhoneNumberStatus(
                 phoneNumber: phoneNumber,
-                isSystemContact: Self.contactsManager.isSystemContact(phoneNumber: phoneNumber, transaction: tx),
+                isSystemContact: Self.contactsManager.cnContactId(for: phoneNumber) != nil,
                 canLinkToSystemContact: recipient?.isRegistered == true
             )
         }

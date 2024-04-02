@@ -1206,12 +1206,12 @@ extension CVComponentSystemMessage {
             }
 
             // Only show the update contact action if this user was previously a contact.
-            guard let existingContact = contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld, transaction: transaction) else {
+            guard let existingCnContactId = contactsManager.cnContactId(for: phoneNumberOld) else {
                 return nil
             }
 
             // Make sure the contact hasn't already had the new number added.
-            guard contactsManagerImpl.contact(forPhoneNumber: phoneNumberNew, transaction: transaction) != existingContact else {
+            guard contactsManager.cnContactId(for: phoneNumberNew) != existingCnContactId else {
                 return nil
             }
 

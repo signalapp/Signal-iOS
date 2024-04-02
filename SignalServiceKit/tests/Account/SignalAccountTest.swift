@@ -278,13 +278,6 @@ extension SignalAccount: ValidatableModel {
         }
     }
 
-    private func contactsAreEqual(_ contactA: Contact?, _ contactB: Contact?) -> Bool {
-        guard let contactA = contactA, let contactB = contactB else {
-            return contactA == contactB
-        }
-        return contactA.hasSameContent(contactB)
-    }
-
     fileprivate static func buildMock(contact: Contact) -> SignalAccount {
         return SignalAccount(
             contact: contact,

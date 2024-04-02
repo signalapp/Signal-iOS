@@ -312,6 +312,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_reindexSignalAccounts
         case dataMigration_ensureLocalDeviceId
         case dataMigration_indexSearchableNames
+        case dataMigration_removeSystemContacts
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -3108,7 +3109,8 @@ public class GRDBSchemaMigrator: NSObject {
             // We only want to do this if we are the primary device, since only
             // the primary device's system contacts are synced.
 
-            guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asAnyRead.asV2Read).isPrimaryDevice ?? false else {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard tsAccountManager.registrationState(tx: transaction.asAnyRead.asV2Read).isPrimaryDevice ?? false else {
                 return .success(())
             }
 
@@ -3131,20 +3133,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_removeLinkedDeviceSystemContacts) { transaction in
-            guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asAnyRead.asV2Read).isPrimaryDevice != true else {
-                return .success(())
-            }
-
-            let keyValueCollections = [
-                "ContactsManagerCache.uniqueIdStore",
-                "ContactsManagerCache.phoneNumberStore",
-                "ContactsManagerCache.allContacts"
-            ]
-
-            for collection in keyValueCollections {
-                SDSKeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite)
-            }
-
+            // Obsoleted by .dataMigration_removeSystemContacts.
             return .success(())
         }
 
@@ -3199,6 +3188,20 @@ public class GRDBSchemaMigrator: NSObject {
             """)
             let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
             searchableNameIndexer.indexEverything(tx: tx.asAnyWrite.asV2Write)
+            return .success(())
+        }
+
+        migrator.registerMigration(.dataMigration_removeSystemContacts) { transaction in
+            let keyValueCollections = [
+                "ContactsManagerCache.uniqueIdStore",
+                "ContactsManagerCache.phoneNumberStore",
+                "ContactsManagerCache.allContacts"
+            ]
+
+            for collection in keyValueCollections {
+                SDSKeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite)
+            }
+
             return .success(())
         }
 

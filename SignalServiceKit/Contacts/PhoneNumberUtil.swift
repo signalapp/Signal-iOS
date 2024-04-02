@@ -403,10 +403,6 @@ extension PhoneNumberUtil {
             tryParsing(phoneNumberWithAreaCodeIfMissing, countryCode: localCountryCode)
         }
 
-        for phoneNumber in additionalMexicanPhoneNumbers(for: phoneNumbers) {
-            tryParsing(phoneNumber, countryCode: "MX")
-        }
-
         return results
     }
 
@@ -476,21 +472,6 @@ extension PhoneNumberUtil {
             return nil
         }
         return "+\(localCallingCode)\(localPhoneNumber[localAreaCodeRange])\(normalizedText)"
-    }
-
-    private func additionalMexicanPhoneNumbers(for phoneNumbers: some Sequence<String>) -> Set<String> {
-        var results = Set<String>()
-        for phoneNumber in phoneNumbers {
-            // Ordering is important because "+52" also matches "+521".
-            for (oldPrefix, newPrefix) in [("+521", "+52"), ("+52", "+521")] {
-                if phoneNumber.hasPrefix(oldPrefix) {
-                    results.insert(phoneNumber) // why?
-                    results.insert(newPrefix + phoneNumber.dropFirst(oldPrefix.count))
-                    break
-                }
-            }
-        }
-        return results
     }
 
     private func nationalPrefixTransformRule(countryCode: String) -> String? {

@@ -311,15 +311,8 @@ extension SignalAccount {
         && recipientServiceId == otherAccount.recipientServiceId
         && multipleAccountLabelText == otherAccount.multipleAccountLabelText
         && contactAvatarHash == otherAccount.contactAvatarHash
-        && contactHasSameContent(otherAccount.contact)
-    }
-
-    private func contactHasSameContent(_ otherContact: Contact?) -> Bool {
-        if let contact, let otherContact {
-            return contact.hasSameContent(otherContact)
-        } else {
-            return contact == nil && otherContact == nil
-        }
+        && contact?.cnContactId == otherAccount.contact?.cnContactId
+        && Contact.areNamesEqual(contact, otherAccount.contact)
     }
 
     public static func aciForPhoneNumberVisibilityUpdate(

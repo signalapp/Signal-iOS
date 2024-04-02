@@ -43,8 +43,6 @@ extension RegistrationCoordinatorImpl {
 public protocol _RegistrationCoordinator_ContactsManagerShim {
 
     func fetchSystemContactsOnceIfAlreadyAuthorized()
-
-    func setIsPrimaryDevice()
 }
 
 public class _RegistrationCoordinator_ContactsManagerWrapper: _RegistrationCoordinator_ContactsManagerShim {
@@ -54,10 +52,6 @@ public class _RegistrationCoordinator_ContactsManagerWrapper: _RegistrationCoord
 
     public func fetchSystemContactsOnceIfAlreadyAuthorized() {
         manager.fetchSystemContactsOnceIfAlreadyAuthorized()
-    }
-
-    public func setIsPrimaryDevice() {
-        manager.setIsPrimaryDevice()
     }
 }
 

@@ -572,11 +572,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // so that when we complete the challenge we send the code right away.
         var pendingCodeTransport: Registration.CodeTransport?
 
-        // Once we register with the server we have to set
-        // up contacts manager for syncs (letting it know this
-        // is the primary device). Do this again if we relaunch.
-        var hasSetUpContactsManager = false
-
         // Every time we go through registration, we should back up our SVR master
         // secret's random bytes to SVR. Its safer to do this more than it is to do
         // it less, so keeping this state in memory.
@@ -2679,14 +2674,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             return exportAndWipeState(accountIdentity: accountIdentity)
-        }
-
-        if !inMemoryState.hasSetUpContactsManager {
-            // This sets up the contact provider as the primary device one (system contacts).
-            // Without this, subsequent operations will fail as no contact provider is set
-            // and tsAccountManager isn't set up yet.
-            deps.contactsManager.setIsPrimaryDevice()
-            inMemoryState.hasSetUpContactsManager = true
         }
 
         // We _must_ do these steps first.

@@ -30,8 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                         nickname:(nullable NSString *)nickname
                         fullName:(NSString *)fullName
             userTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
-              phoneNumberNameMap:(NSDictionary<NSString *, NSString *> *)phoneNumberNameMap
-              parsedPhoneNumbers:(NSArray<PhoneNumber *> *)parsedPhoneNumbers
+       userTextPhoneNumberLabels:(NSDictionary<NSString *, NSString *> *)userTextPhoneNumberLabels
                           emails:(NSArray<NSString *> *)emails
 {
     self = [super init];
@@ -50,8 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     _fullName = [fullName copy];
     _nickname = [nickname copy];
     _userTextPhoneNumbers = [userTextPhoneNumbers copy];
-    _phoneNumberNameMap = [phoneNumberNameMap copy];
-    _parsedPhoneNumbers = [parsedPhoneNumbers copy];
+    _userTextPhoneNumberLabels = [userTextPhoneNumberLabels copy];
     _emails = [emails copy];
 
     return self;
@@ -117,15 +115,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    NSArray<PhoneNumber *> *parsedPhoneNumbers;
-    NSDictionary<NSString *, NSString *> *phoneNumberNameMap;
-    [self.class parseUserTextPhoneNumbers:userTextPhoneNumbers
-               userTextPhoneNumberNameMap:userTextPhoneNumberNameMap
-                    outParsedPhoneNumbers:&parsedPhoneNumbers
-              outParsedPhoneNumberNameMap:&phoneNumberNameMap];
-    OWSAssertDebug(parsedPhoneNumbers != nil);
-    OWSAssertDebug(phoneNumberNameMap != nil);
-
     NSMutableArray<NSString *> *emailAddresses = [NSMutableArray new];
     for (CNLabeledValue *emailField in cnContact.emailAddresses) {
         if ([emailField.value isKindOfClass:[NSString class]]) {
@@ -140,8 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
                          nickname:cnContact.nickname.ows_stripped
                          fullName:[Contact formattedFullNameWithCNContact:cnContact]
              userTextPhoneNumbers:userTextPhoneNumbers
-               phoneNumberNameMap:phoneNumberNameMap
-               parsedPhoneNumbers:parsedPhoneNumbers
+        userTextPhoneNumberLabels:userTextPhoneNumberNameMap
                            emails:emailAddresses];
 }
 
@@ -171,34 +159,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #endif // TARGET_OS_IOS
-
-+ (void)parseUserTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
-       userTextPhoneNumberNameMap:(NSDictionary<NSString *, NSString *> *)phoneNumberNameMap
-            outParsedPhoneNumbers:(NSArray<PhoneNumber *> **)outParsedPhoneNumbers
-      outParsedPhoneNumberNameMap:(NSDictionary<NSString *, NSString *> **)outParsedPhoneNumberNameMap
-{
-    NSMutableDictionary<NSString *, NSString *> *parsedPhoneNumberNameMap = [NSMutableDictionary new];
-    NSMutableArray<PhoneNumber *> *parsedPhoneNumbers = [NSMutableArray new];
-
-    LocalIdentifiersObjC *localIdentifiers = [TSAccountManagerObjcBridge localIdentifiersWithMaybeTransaction];
-    // Force unwrap.
-    NSString *localNumber = localIdentifiers.phoneNumber;
-    for (NSString *phoneNumberString in userTextPhoneNumbers) {
-        NSArray<PhoneNumber *> *phoneNumbers =
-            [self.phoneNumberUtil parsePhoneNumbersWithUserSpecifiedText:phoneNumberString
-                                                        localPhoneNumber:localNumber];
-        for (PhoneNumber *phoneNumber in phoneNumbers) {
-            [parsedPhoneNumbers addObject:phoneNumber];
-            NSString *phoneNumberName = phoneNumberNameMap[phoneNumberString];
-            if (phoneNumberName) {
-                parsedPhoneNumberNameMap[phoneNumber.toE164] = phoneNumberName;
-            }
-        }
-    }
-
-    *outParsedPhoneNumbers = [parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
-    *outParsedPhoneNumberNameMap = [parsedPhoneNumberNameMap copy];
-}
 
 - (NSString *)description
 {
@@ -240,82 +200,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"more than one contact in vcard: %@", error);
     }
     return contacts.firstObject;
-}
-
-+ (CNContact *)mergeCNContact:(CNContact *)oldCNContact newCNContact:(CNContact *)newCNContact
-{
-    OWSAssertDebug(oldCNContact);
-    OWSAssertDebug(newCNContact);
-
-    Contact *oldContact = [[Contact alloc] initWithSystemContact:oldCNContact];
-
-    CNMutableContact *_Nullable mergedCNContact = [oldCNContact mutableCopy];
-    if (!mergedCNContact) {
-        OWSFailDebug(@"mergedCNContact was unexpectedly nil");
-        return [CNContact new];
-    }
-
-    // Name
-    NSString *formattedFullName = [self.class formattedFullNameWithCNContact:mergedCNContact];
-
-    // merged all or nothing - do not try to piece-meal merge.
-    if (formattedFullName.length == 0) {
-        mergedCNContact.namePrefix = newCNContact.namePrefix.ows_stripped;
-        mergedCNContact.givenName = newCNContact.givenName.ows_stripped;
-        mergedCNContact.nickname = newCNContact.nickname.ows_stripped;
-        mergedCNContact.middleName = newCNContact.middleName.ows_stripped;
-        mergedCNContact.familyName = newCNContact.familyName.ows_stripped;
-        mergedCNContact.nameSuffix = newCNContact.nameSuffix.ows_stripped;
-    }
-
-    if (mergedCNContact.organizationName.ows_stripped.length < 1) {
-        mergedCNContact.organizationName = newCNContact.organizationName.ows_stripped;
-    }
-
-    // Phone Numbers
-    NSSet<PhoneNumber *> *existingParsedPhoneNumberSet = [NSSet setWithArray:oldContact.parsedPhoneNumbers];
-    NSSet<NSString *> *existingUnparsedPhoneNumberSet = [NSSet setWithArray:oldContact.userTextPhoneNumbers];
-
-    NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *mergedPhoneNumbers = [mergedCNContact.phoneNumbers mutableCopy];
-    for (CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber in newCNContact.phoneNumbers) {
-        NSString *_Nullable unparsedPhoneNumber = labeledPhoneNumber.value.stringValue;
-        if ([existingUnparsedPhoneNumberSet containsObject:unparsedPhoneNumber]) {
-            // Skip phone number if "unparsed" form is a duplicate.
-            continue;
-        }
-        PhoneNumber *_Nullable parsedPhoneNumber =
-            [self.phoneNumberUtil parsePhoneNumberWithUserSpecifiedText:labeledPhoneNumber.value.stringValue];
-        if (parsedPhoneNumber && [existingParsedPhoneNumberSet containsObject:parsedPhoneNumber]) {
-            // Skip phone number if "parsed" form is a duplicate.
-            continue;
-        }
-        [mergedPhoneNumbers addObject:labeledPhoneNumber];
-    }
-    mergedCNContact.phoneNumbers = mergedPhoneNumbers;
-
-    // Emails
-    NSSet<NSString *> *existingEmailSet = [NSSet setWithArray:oldContact.emails];
-    NSMutableArray<CNLabeledValue<NSString *> *> *mergedEmailAddresses = [mergedCNContact.emailAddresses mutableCopy];
-    for (CNLabeledValue<NSString *> *labeledEmail in newCNContact.emailAddresses) {
-        NSString *normalizedValue = labeledEmail.value.ows_stripped;
-        if (![existingEmailSet containsObject:normalizedValue]) {
-            [mergedEmailAddresses addObject:labeledEmail];
-        }
-    }
-    mergedCNContact.emailAddresses = mergedEmailAddresses;
-
-    // Address
-    // merged all or nothing - do not try to piece-meal merge.
-    if (mergedCNContact.postalAddresses.count == 0) {
-        mergedCNContact.postalAddresses = newCNContact.postalAddresses;
-    }
-
-    // Avatar
-    if (!mergedCNContact.imageData) {
-        mergedCNContact.imageData = newCNContact.imageData;
-    }
-
-    return [mergedCNContact copy];
 }
 
 + (nullable NSString *)localizedStringForCNLabel:(nullable NSString *)cnLabel

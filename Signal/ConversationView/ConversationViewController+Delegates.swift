@@ -97,9 +97,11 @@ extension ConversationViewController: ContactPickerDelegate {
             return ContactShareDraft.load(
                 cnContact: cnContact,
                 signalContact: contact,
-                contactsManager: Self.contactsManager,
+                contactManager: Self.contactsManager,
+                phoneNumberUtil: Self.phoneNumberUtil,
                 profileManager: Self.profileManager,
                 recipientManager: DependenciesBridge.shared.recipientManager,
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                 tx: tx
             )
         }

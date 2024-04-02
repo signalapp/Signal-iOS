@@ -12,11 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 @class CNContact;
-@class LabeledPhoneNumber;
-@class PhoneNumber;
-@class SDSAnyReadTransaction;
-@class SignalServiceAddress;
-@class UIImage;
 
 @interface Contact : MTLModel
 
@@ -24,16 +19,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, readonly, nonatomic) NSString *lastName;
 @property (nullable, readonly, nonatomic) NSString *nickname;
 @property (readonly, nonatomic) NSString *fullName;
-@property (readonly, nonatomic) NSArray<PhoneNumber *> *parsedPhoneNumbers;
 @property (readonly, nonatomic) NSArray<NSString *> *userTextPhoneNumbers;
+@property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *userTextPhoneNumberLabels;
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
 @property (readonly, nonatomic) NSString *uniqueId;
 @property (nonatomic, readonly, nullable) NSString *cnContactId;
 
 @property (nonatomic, readonly) BOOL isFromLocalAddressBook;
-
-// This property should only be accessed from Swift.
-@property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *phoneNumberNameMap;
 
 #if TARGET_OS_IOS
 
@@ -46,8 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                         nickname:(nullable NSString *)nickname
                         fullName:(NSString *)fullName
             userTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
-              phoneNumberNameMap:(NSDictionary<NSString *, NSString *> *)phoneNumberNameMap
-              parsedPhoneNumbers:(NSArray<PhoneNumber *> *)parsedPhoneNumbers
+       userTextPhoneNumberLabels:(NSDictionary<NSString *, NSString *> *)userTextPhoneNumberLabels
                           emails:(NSArray<NSString *> *)emails NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -60,9 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)formattedFullNameWithCNContact:(CNContact *)cnContact NS_SWIFT_NAME(formattedFullName(cnContact:));
 + (nullable NSString *)localizedStringForCNLabel:(nullable NSString *)cnLabel;
-
-+ (CNContact *)mergeCNContact:(CNContact *)oldCNContact
-                 newCNContact:(CNContact *)newCNContact NS_SWIFT_NAME(merge(cnContact:newCNContact:));
 
 + (nullable NSData *)avatarDataForCNContact:(nullable CNContact *)cnContact;
 

@@ -6,86 +6,53 @@
 import Foundation
 import SignalCoreKit
 
-// MARK: - Equality
+extension Contact {
 
-public extension Contact {
-    func isEqualForCache(_ otherContact: Contact) -> Bool {
-        uniqueId == otherContact.uniqueId
-        && hasSameContent(otherContact)
-    }
+    // MARK: - Equality
 
-    func hasSameContent(_ otherContact: Contact) -> Bool {
-        namesAreEqual(toOther: otherContact)
-        && cnContactId == otherContact.cnContactId
-        && phoneNumberNameMap == otherContact.phoneNumberNameMap
-        // Ignore ordering of these properties.
-        && Set(userTextPhoneNumbers) == Set(otherContact.userTextPhoneNumbers)
-        && Set(emails) == Set(otherContact.emails)
-        // Don't rely on equality of PhoneNumber.
-        && Set(parsedPhoneNumbers.map { $0.toE164() }) == Set(otherContact.parsedPhoneNumbers.map { $0.toE164() })
-    }
-
-    func namesAreEqual(toOther other: Contact) -> Bool {
-        guard
-            self.firstName == other.firstName,
-            self.lastName == other.lastName,
-            self.nickname == other.nickname,
-            self.fullName == other.fullName
-        else {
-            return false
-        }
-
-        return true
-    }
-}
-
-// MARK: - Phone Numbers
-
-public extension Contact {
-    func hasPhoneNumber(_ phoneNumber: String?) -> Bool {
-        for parsedPhoneNumber in parsedPhoneNumbers {
-            if parsedPhoneNumber.toE164() == phoneNumber {
-                return true
-            }
-        }
-        return false
-    }
-
-    private func phoneNumberLabel(for address: SignalServiceAddress) -> String {
-        if let phoneNumber = address.phoneNumber, let phoneNumberLabel = phoneNumberNameMap[phoneNumber] {
-            return phoneNumberLabel
-        }
-        return OWSLocalizedString(
-            "PHONE_NUMBER_TYPE_UNKNOWN",
-            comment: "Label used when we don't what kind of phone number it is (e.g. mobile/work/home)."
+    public static func areNamesEqual(_ lhs: Contact?, _ rhs: Contact?) -> Bool {
+        return lhs === rhs || (
+            lhs?.firstName == rhs?.firstName
+            && lhs?.lastName == rhs?.lastName
+            && lhs?.nickname == rhs?.nickname
+            && lhs?.fullName == rhs?.fullName
         )
     }
 
-    func uniquePhoneNumberLabel(for address: SignalServiceAddress, relatedAddresses: [SignalServiceAddress]) -> String? {
-        owsAssertDebug(address.isValid)
+    // MARK: - Phone Numbers
 
-        owsAssertDebug(relatedAddresses.contains(address))
-        guard relatedAddresses.count > 1 else {
+    public static func uniquePhoneNumberLabel(
+        for phoneNumber: CanonicalPhoneNumber,
+        relatedPhoneNumbers: [(phoneNumber: CanonicalPhoneNumber, userProvidedLabel: String)]
+    ) -> String? {
+        guard relatedPhoneNumbers.count > 1 else {
             return nil
         }
 
-        // 1. Find the address type of this account.
-        let addressLabel = phoneNumberLabel(for: address).filterForDisplay
+        // 1. Find this phone number's type.
+        let phoneNumberLabel = relatedPhoneNumbers
+            .first(where: { $0.phoneNumber == phoneNumber })?
+            .userProvidedLabel
+            .filterForDisplay
+        guard let phoneNumberLabel else {
+            owsFailDebug("Couldn't find phoneNumber in relatedPhoneNumbers")
+            return nil
+        }
 
-        // 2. Find all addresses for this contact of the same type.
-        let addressesWithTheSameLabel = relatedAddresses.filter {
-            addressLabel == phoneNumberLabel(for: $0).filterForDisplay
-        }.stableSort()
+        // 2. Find all phone numbers of this type.
+        let phoneNumbersWithTheSameLabel = relatedPhoneNumbers.lazy.filter {
+            return phoneNumberLabel == $0.userProvidedLabel.filterForDisplay
+        }.map { $0.phoneNumber }.sorted(by: { $0.rawValue.stringValue < $1.rawValue.stringValue })
 
         // 3. Figure out if this is "Mobile 0" or "Mobile 1".
-        guard let thisAddressIndex = addressesWithTheSameLabel.firstIndex(of: address) else {
+        guard let thisPhoneNumberIndex = phoneNumbersWithTheSameLabel.firstIndex(of: phoneNumber) else {
             owsFailDebug("Couldn't find the address we were trying to match.")
-            return addressLabel
+            return phoneNumberLabel
         }
 
         // 4. If there's only one "Mobile", don't add the " 0" or " 1" suffix.
-        guard addressesWithTheSameLabel.count > 1 else {
-            return addressLabel
+        guard phoneNumbersWithTheSameLabel.count > 1 else {
+            return phoneNumberLabel
         }
 
         // 5. If there's two or more "Mobile" numbers, specify which this is.
@@ -93,14 +60,10 @@ public extension Contact {
             "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
             comment: "Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}."
         )
-        return String(format: format, addressLabel, OWSFormat.formatInt(thisAddressIndex)).filterForDisplay
+        return String(format: format, phoneNumberLabel, OWSFormat.formatInt(thisPhoneNumberIndex))
     }
-}
 
-// MARK: - Convenience init
-
-public extension Contact {
-    convenience init(
+    public convenience init(
         phoneNumber: String,
         phoneNumberLabel: String,
         givenName: String?,
@@ -108,15 +71,6 @@ public extension Contact {
         nickname: String?,
         fullName: String
     ) {
-        var userTextPhoneNumbers: [String] = []
-        var phoneNumberNameMap: [String: String] = [:]
-        var parsedPhoneNumbers: [PhoneNumber] = []
-        if let parsedPhoneNumber = Self.phoneNumberUtil.parseE164(phoneNumber) {
-            userTextPhoneNumbers.append(phoneNumber)
-            parsedPhoneNumbers.append(parsedPhoneNumber)
-            phoneNumberNameMap[parsedPhoneNumber.toE164()] = phoneNumberLabel
-        }
-
         self.init(
             uniqueId: UUID().uuidString,
             cnContactId: nil,
@@ -124,18 +78,15 @@ public extension Contact {
             lastName: familyName,
             nickname: nickname,
             fullName: fullName,
-            userTextPhoneNumbers: userTextPhoneNumbers,
-            phoneNumberNameMap: phoneNumberNameMap,
-            parsedPhoneNumbers: parsedPhoneNumbers,
+            userTextPhoneNumbers: [phoneNumber],
+            userTextPhoneNumberLabels: [phoneNumber: phoneNumberLabel],
             emails: []
         )
     }
-}
 
-// MARK: - Names
+    // MARK: - Names
 
-public extension Contact {
-    static func fullName(
+    public static func fullName(
         fromGivenName givenName: String?,
         familyName: String?,
         nickname: String?

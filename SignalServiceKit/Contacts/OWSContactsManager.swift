@@ -28,7 +28,6 @@ public enum ContactAuthorizationForSharing {
 
 @objc
 public class OWSContactsManager: NSObject, ContactsManagerProtocol {
-    public let isSetup: AtomicBool = AtomicBool(false, lock: .init())
     let swiftValues: OWSContactsManagerSwiftValues
     let systemContactsFetcher: SystemContactsFetcher
     let keyValueStore: SDSKeyValueStore
@@ -79,15 +78,6 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
         systemContactsFetcher.delegate = self
 
         SwiftSingletons.register(self)
-
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.setup()
-        }
-    }
-
-    func setup() {
-        setUpSystemContacts()
-        isSetup.set(true)
     }
 
     // Request systems contacts and start syncing changes. The user will see an alert
@@ -182,30 +172,24 @@ public class OWSContactsManagerSwiftValues {
     fileprivate let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
     fileprivate let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: .init())
     fileprivate let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>([:], lock: .init())
-    fileprivate var systemContactsCache: SystemContactsCache?
+    fileprivate let systemContactsCache = SystemContactsCache()
     fileprivate let unknownThreadWarningCache = LowTrustCache()
 
     fileprivate let intersectionQueue = DispatchQueue(label: "org.signal.contacts.intersection")
     fileprivate let skipContactAvatarBlurByServiceIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
     fileprivate let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
-    fileprivate let systemContactsDataProvider = AtomicOptional<SystemContactsDataProvider>(nil, lock: .sharedGlobal)
 
     fileprivate let usernameLookupManager: UsernameLookupManager
 
     public init(usernameLookupManager: UsernameLookupManager) {
         self.usernameLookupManager = usernameLookupManager
     }
-
-    fileprivate var primaryDeviceSystemContactsDataProvider: PrimaryDeviceSystemContactsDataProvider? {
-        systemContactsDataProvider.get() as? PrimaryDeviceSystemContactsDataProvider
-    }
 }
 
 // MARK: -
 
 private class SystemContactsCache {
-    let unsortedSignalAccounts = AtomicOptional<[SignalAccount]>(nil, lock: .sharedGlobal)
-    let contactsMaps = AtomicOptional<ContactsMaps>(nil, lock: .sharedGlobal)
+    let fetchedSystemContacts = AtomicOptional<FetchedSystemContacts>(nil, lock: .init())
 }
 
 // MARK: -
@@ -248,7 +232,6 @@ private class LowTrustCache {
 // MARK: -
 
 extension OWSContactsManager: ContactManager {
-
     // MARK: Low Trust
 
     private func isLowTrustThread(_ thread: TSThread, lowTrustCache: LowTrustCache, tx: SDSAnyReadTransaction) -> Bool {
@@ -588,7 +571,7 @@ extension OWSContactsManager: ContactManager {
 
     // MARK: - Intersection
 
-    private func buildContactAvatarHash(contact: Contact) -> Data? {
+    private func buildContactAvatarHash(for contact: Contact) -> Data? {
         return autoreleasepool {
             guard let cnContactId: String = contact.cnContactId else {
                 owsFailDebug("Missing cnContactId.")
@@ -605,70 +588,95 @@ extension OWSContactsManager: ContactManager {
         }
     }
 
-    private func buildSignalAccounts(
-        for systemContacts: [Contact],
-        transaction: SDSAnyReadTransaction
-    ) -> [SignalAccount] {
-        var signalAccounts = [SignalAccount]()
-        var seenServiceIds = Set<ServiceId>()
-        for contact in systemContacts {
-            var signalRecipients = contact.discoverableRecipients(tx: transaction)
-            // TODO: Confirm ordering.
-            signalRecipients.sort { $0.address.compare($1.address) == .orderedAscending }
-            let relatedAddresses = signalRecipients.map { $0.address }
-            for signalRecipient in signalRecipients {
-                guard let recipientServiceId = signalRecipient.aci ?? signalRecipient.pni else {
-                    owsFailDebug("Can't be registered without a ServiceId.")
-                    continue
-                }
-                guard seenServiceIds.insert(recipientServiceId).inserted else {
-                    // We've already created a SignalAccount for this number.
-                    continue
-                }
-                let multipleAccountLabelText = contact.uniquePhoneNumberLabel(
-                    for: signalRecipient.address,
-                    relatedAddresses: relatedAddresses
-                )
-                let contactAvatarHash = buildContactAvatarHash(contact: contact)
-                let signalAccount = SignalAccount(
-                    contact: contact,
-                    contactAvatarHash: contactAvatarHash,
-                    multipleAccountLabelText: multipleAccountLabelText,
-                    recipientPhoneNumber: signalRecipient.phoneNumber?.stringValue,
-                    recipientServiceId: recipientServiceId
-                )
-                signalAccounts.append(signalAccount)
+    private func discoverableRecipient(for canonicalPhoneNumber: CanonicalPhoneNumber, tx: SDSAnyReadTransaction) -> SignalRecipient? {
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        for phoneNumber in [canonicalPhoneNumber.rawValue] + canonicalPhoneNumber.alternatePhoneNumbers() {
+            let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx.asV2Read)
+            guard let recipient, recipient.isPhoneNumberDiscoverable else {
+                continue
             }
+            return recipient
         }
-        return signalAccounts.stableSort()
+        return nil
     }
 
-    private func buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts localSystemContacts: [Contact]) {
+    private func buildSignalAccounts(
+        for fetchedSystemContacts: FetchedSystemContacts,
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalAccount] {
+        var discoverableRecipients = [CanonicalPhoneNumber: (SignalRecipient, ServiceId)]()
+        var groupedDiscoverablePhoneNumbers = [String: [(phoneNumber: CanonicalPhoneNumber, userProvidedLabel: String)]]()
+        for (phoneNumber, contactRef) in fetchedSystemContacts.phoneNumberToContactRef {
+            guard let signalRecipient = discoverableRecipient(for: phoneNumber, tx: transaction) else {
+                // Not discoverable.
+                continue
+            }
+            guard let serviceId = signalRecipient.aci ?? signalRecipient.pni else {
+                owsFailDebug("Can't be discoverable without an ACI or PNI.")
+                continue
+            }
+            discoverableRecipients[phoneNumber] = (signalRecipient, serviceId)
+            groupedDiscoverablePhoneNumbers[contactRef.uniqueId, default: []].append((phoneNumber, contactRef.userProvidedLabel))
+        }
+        var signalAccounts = [SignalAccount]()
+        for (phoneNumber, contactRef) in fetchedSystemContacts.phoneNumberToContactRef {
+            guard let (signalRecipient, serviceId) = discoverableRecipients[phoneNumber] else {
+                continue
+            }
+            guard let relatedPhoneNumbers = groupedDiscoverablePhoneNumbers[contactRef.uniqueId] else {
+                owsFailDebug("Couldn't find relatedPhoneNumbers")
+                continue
+            }
+            guard let systemContact = fetchedSystemContacts.uniqueIdToContact[contactRef.uniqueId] else {
+                owsFailDebug("Couldn't find systemContact")
+                continue
+            }
+            let multipleAccountLabelText = Contact.uniquePhoneNumberLabel(
+                for: phoneNumber,
+                relatedPhoneNumbers: relatedPhoneNumbers
+            )
+            let contactAvatarHash = buildContactAvatarHash(for: systemContact)
+            let signalAccount = SignalAccount(
+                contact: systemContact,
+                contactAvatarHash: contactAvatarHash,
+                multipleAccountLabelText: multipleAccountLabelText,
+                recipientPhoneNumber: signalRecipient.phoneNumber?.stringValue,
+                recipientServiceId: serviceId
+            )
+            signalAccounts.append(signalAccount)
+        }
+        return signalAccounts
+    }
+
+    private func buildSignalAccountsAndUpdatePersistedState(for fetchedSystemContacts: FetchedSystemContacts) {
         assertOnQueue(swiftValues.intersectionQueue)
 
         let (oldSignalAccounts, newSignalAccounts) = databaseStorage.read { transaction in
             let oldSignalAccounts = SignalAccount.anyFetchAll(transaction: transaction)
-            let newSignalAccounts = buildSignalAccounts(for: localSystemContacts, transaction: transaction)
+            let newSignalAccounts = buildSignalAccounts(for: fetchedSystemContacts, transaction: transaction)
             return (oldSignalAccounts, newSignalAccounts)
         }
-        let oldSignalAccountsMap: [SignalServiceAddress: SignalAccount] = Dictionary(
-            oldSignalAccounts.lazy.map { ($0.recipientAddress, $0) },
+        let oldSignalAccountsMap: [String?: SignalAccount] = Dictionary(
+            oldSignalAccounts.lazy.map { ($0.recipientPhoneNumber, $0) },
             uniquingKeysWith: { _, new in new }
         )
-        var newSignalAccountsMap = [SignalServiceAddress: SignalAccount]()
+        var newSignalAccountsMap = [String: SignalAccount]()
 
         var signalAccountChanges: [(remove: SignalAccount?, insert: SignalAccount?)] = []
         for newSignalAccount in newSignalAccounts {
-            let address = newSignalAccount.recipientAddress
+            guard let phoneNumber = newSignalAccount.recipientPhoneNumber else {
+                owsFailDebug("Can't have a system contact without a phone number.")
+                continue
+            }
 
             // The user might have multiple entries in their address book with the same phone number.
-            if newSignalAccountsMap[address] != nil {
-                Logger.warn("Ignoring redundant signal account: \(address)")
+            if newSignalAccountsMap[phoneNumber] != nil {
+                Logger.warn("Ignoring redundant signal account")
                 continue
             }
 
             let oldSignalAccountToKeep: SignalAccount?
-            let oldSignalAccount = oldSignalAccountsMap[address]
+            let oldSignalAccount = oldSignalAccountsMap[phoneNumber]
             switch oldSignalAccount {
             case .none:
                 oldSignalAccountToKeep = nil
@@ -682,18 +690,17 @@ extension OWSContactsManager: ContactManager {
             }
 
             if let oldSignalAccount = oldSignalAccountToKeep {
-                newSignalAccountsMap[address] = oldSignalAccount
+                newSignalAccountsMap[phoneNumber] = oldSignalAccount
             } else {
-                newSignalAccountsMap[address] = newSignalAccount
+                newSignalAccountsMap[phoneNumber] = newSignalAccount
                 signalAccountChanges.append((oldSignalAccount, newSignalAccount))
             }
         }
 
         // Clean up orphans.
         for signalAccount in oldSignalAccounts {
-            if newSignalAccountsMap[signalAccount.recipientAddress]?.uniqueId == signalAccount.uniqueId {
-                // If the SignalAccount is going to be inserted or updated, it doesn't need
-                // to be cleaned up.
+            if let phoneNumber = signalAccount.recipientPhoneNumber, newSignalAccountsMap[phoneNumber]?.uniqueId == signalAccount.uniqueId {
+                // Don't clean up SignalAccounts that aren't changing.
                 continue
             }
             // Clean up instances that have been replaced by another instance or are no
@@ -726,18 +733,10 @@ extension OWSContactsManager: ContactManager {
             // Add system contacts to the profile whitelist immediately so that they do
             // not see the "message request" UI.
             profileManager.addUsers(
-                toProfileWhitelist: Array(newSignalAccountsMap.keys),
+                toProfileWhitelist: newSignalAccountsMap.values.map { $0.recipientAddress },
                 userProfileWriter: .systemContactsFetch,
                 transaction: tx
             )
-
-#if DEBUG
-            let persistedAddresses = SignalAccount.anyFetchAll(transaction: tx).map {
-                $0.recipientAddress
-            }
-            let persistedAddressSet = Set(persistedAddresses)
-            owsAssertDebug(persistedAddresses.count == persistedAddressSet.count)
-#endif
         }
 
         // Once we've persisted new SignalAccount state, we should let
@@ -752,8 +751,7 @@ extension OWSContactsManager: ContactManager {
             // Post a notification if something changed or this is the first load since launch.
             let shouldNotify = didChangeAnySignalAccount || !self.hasLoadedSystemContacts
             self.hasLoadedSystemContacts = true
-            self.swiftValues.systemContactsCache?.unsortedSignalAccounts.set(Array(newSignalAccountsMap.values))
-            self.didUpdateSignalAccounts(shouldClearCache: false, shouldNotify: shouldNotify)
+            self.didUpdateSignalAccounts(shouldNotify: shouldNotify)
         }
     }
 
@@ -761,69 +759,40 @@ extension OWSContactsManager: ContactManager {
     /// a system contact that has been added, removed, or modified in a
     /// relevant way. Has no effect when we are a linked device.
     private func updateStorageServiceForSystemContactsFetch(
-        allSignalAccountsBeforeFetch: [SignalServiceAddress: SignalAccount],
-        allSignalAccountsAfterFetch: [SignalServiceAddress: SignalAccount]
+        allSignalAccountsBeforeFetch: [String?: SignalAccount],
+        allSignalAccountsAfterFetch: [String: SignalAccount]
     ) {
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false else {
-            Logger.info("Skipping updating StorageService on contact change, not primary device!")
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false else {
             return
         }
 
-        /// Creates a mapping of addresses to system contacts, given an existing
-        /// mapping of addresses to ``SignalAccount``s.
-        func extractSystemContacts(
-            accounts: [SignalServiceAddress: SignalAccount]
-        ) -> (
-            mapping: [SignalServiceAddress: Contact],
-            addresses: Set<SignalServiceAddress>
-        ) {
-            let mapping = accounts.reduce(into: [SignalServiceAddress: Contact]()) { partialResult, kv in
-                let (address, account) = kv
+        var systemContactsBeforeFetch = allSignalAccountsBeforeFetch.compactMapValues { $0.contact }
+        let systemContactsAfterFetch = allSignalAccountsAfterFetch.compactMapValues { $0.contact }
 
-                guard let contact = account.contact else {
-                    return
-                }
+        var phoneNumbersToUpdateInStorageService = [String]()
 
-                partialResult[address] = contact
+        for (phoneNumber, newSystemContact) in systemContactsAfterFetch {
+            let oldSystemContact = systemContactsBeforeFetch.removeValue(forKey: phoneNumber)
+            if Contact.areNamesEqual(oldSystemContact, newSystemContact) {
+                // No Storage Service-relevant changes were made.
+                continue
             }
-
-            return (mapping: mapping, addresses: Set(mapping.keys))
+            phoneNumbersToUpdateInStorageService.append(phoneNumber)
         }
+        // Anything left in ...BeforeFetch was removed.
+        phoneNumbersToUpdateInStorageService.append(
+            contentsOf: systemContactsBeforeFetch.keys.lazy.compactMap { $0 }
+        )
 
-        let systemContactsBeforeFetch = extractSystemContacts(accounts: allSignalAccountsBeforeFetch)
-        let systemContactsAfterFetch = extractSystemContacts(accounts: allSignalAccountsAfterFetch)
-
-        var addressesToUpdateInStorageService: Set<SignalServiceAddress> = []
-
-        // System contacts that are not present both before and after the fetch
-        // were either removed or added. In both cases, we should update their
-        // StorageService records.
-        //
-        // Note that just because a system contact was removed does *not* mean
-        // we should remove the ContactRecord from StorageService. Rather, we
-        // want to update the ContactRecord to reflect the removed system
-        // contact details.
-        let addedOrRemovedSystemContactAddresses = systemContactsAfterFetch.addresses
-            .symmetricDifference(systemContactsBeforeFetch.addresses)
-
-        addressesToUpdateInStorageService.formUnion(addedOrRemovedSystemContactAddresses)
-
-        // System contacts present both before and after may have been updated
-        // in a StorageService-relevant way. If so, we should let StorageService
-        // know.
-        let possiblyUpdatedSystemContactAddresses = systemContactsAfterFetch.addresses
-            .intersection(systemContactsBeforeFetch.addresses)
-
-        for address in possiblyUpdatedSystemContactAddresses {
-            let contactBefore = systemContactsBeforeFetch.mapping[address]!
-            let contactAfter = systemContactsAfterFetch.mapping[address]!
-
-            if !contactBefore.namesAreEqual(toOther: contactAfter) {
-                addressesToUpdateInStorageService.insert(address)
+        let updatedAccountIds = databaseStorage.read { tx in
+            return phoneNumbersToUpdateInStorageService.compactMap {
+                let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+                return recipientDatabaseTable.fetchRecipient(phoneNumber: $0, transaction: tx.asV2Read)?.uniqueId
             }
         }
 
-        storageServiceManager.recordPendingUpdates(updatedAddresses: Array(addressesToUpdateInStorageService))
+        storageServiceManager.recordPendingUpdates(updatedAccountIds: updatedAccountIds)
     }
 
     private func updatePhoneNumberVisibilityIfNeeded(
@@ -851,14 +820,11 @@ extension OWSContactsManager: ContactManager {
 
     public func didUpdateSignalAccounts(transaction: SDSAnyWriteTransaction) {
         transaction.addTransactionFinalizationBlock(forKey: "OWSContactsManager.didUpdateSignalAccounts") { _ in
-            self.didUpdateSignalAccounts(shouldClearCache: true, shouldNotify: true)
+            self.didUpdateSignalAccounts(shouldNotify: true)
         }
     }
 
-    private func didUpdateSignalAccounts(shouldClearCache: Bool, shouldNotify: Bool) {
-        if shouldClearCache {
-            swiftValues.systemContactsCache?.unsortedSignalAccounts.set(nil)
-        }
+    private func didUpdateSignalAccounts(shouldNotify: Bool) {
         if shouldNotify {
             NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerSignalAccountsDidChange, object: nil)
         }
@@ -876,20 +842,25 @@ extension OWSContactsManager: ContactManager {
     }
 
     private func _updateContacts(_ addressBookContacts: [Contact]?, isUserRequested: Bool) {
-        let (localNumber, contactsMaps) = databaseStorage.write { tx in
-            let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.phoneNumber
-            let contactsMaps = ContactsMaps.build(contacts: addressBookContacts ?? [], localNumber: localNumber)
-            setContactsMaps(contactsMaps, localNumber: localNumber, transaction: tx)
-            return (localNumber, contactsMaps)
-        }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+        let fetchedSystemContacts = FetchedSystemContacts.parseContacts(
+            addressBookContacts ?? [],
+            phoneNumberUtil: NSObject.phoneNumberUtil,
+            localPhoneNumber: localNumber
+        )
+        setFetchedSystemContacts(fetchedSystemContacts)
+
         swiftValues.cnContactCache.removeAllObjects()
 
         NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerContactsDidChange, object: nil)
 
         intersectContacts(
-            addressBookContacts, localNumber: localNumber, isUserRequested: isUserRequested
+            systemContactPhoneNumbers: fetchedSystemContacts.phoneNumberToContactRef.keys,
+            localNumber: localNumber,
+            isUserRequested: isUserRequested
         ).done(on: swiftValues.intersectionQueue) {
-            self.buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts: contactsMaps.allContacts)
+            self.buildSignalAccountsAndUpdatePersistedState(for: fetchedSystemContacts)
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Couldn't intersect contacts: \(error)")
         }
@@ -927,16 +898,8 @@ extension OWSContactsManager: ContactManager {
         return .deltaIntersection(priorPhoneNumbers: priorPhoneNumbers)
     }
 
-    private func intersectionPhoneNumbers(for contacts: [Contact]) -> Set<String> {
-        var result = Set<String>()
-        for contact in contacts {
-            result.formUnion(contact.e164sForIntersection)
-        }
-        return result
-    }
-
     private func intersectContacts(
-        _ addressBookContacts: [Contact]?,
+        systemContactPhoneNumbers: some Sequence<CanonicalPhoneNumber>,
         localNumber: String?,
         isUserRequested: Bool
     ) -> Promise<Void> {
@@ -945,12 +908,10 @@ extension OWSContactsManager: ContactManager {
             let signalRecipientPhoneNumbers = SignalRecipient.fetchAllPhoneNumbers(tx: tx)
             return (intersectionMode, signalRecipientPhoneNumbers)
         }
-        let addressBookPhoneNumbers = addressBookContacts.map { intersectionPhoneNumbers(for: $0) }
 
         var phoneNumbersToIntersect = Set(signalRecipientPhoneNumbers.keys)
-        if let addressBookPhoneNumbers {
-            phoneNumbersToIntersect.formUnion(addressBookPhoneNumbers)
-        }
+        phoneNumbersToIntersect.formUnion(systemContactPhoneNumbers.lazy.map { $0.rawValue.stringValue })
+        phoneNumbersToIntersect.formUnion(systemContactPhoneNumbers.lazy.flatMap { $0.alternatePhoneNumbers().map { $0.stringValue } })
         if case .deltaIntersection(let priorPhoneNumbers) = intersectionMode {
             phoneNumbersToIntersect.subtract(priorPhoneNumbers)
         }
@@ -970,13 +931,13 @@ extension OWSContactsManager: ContactManager {
             Self.databaseStorage.write { tx in
                 self.migrateDidIntersectAddressBookIfNeeded(tx: tx)
                 self.postJoinNotificationsIfNeeded(
-                    addressBookPhoneNumbers: addressBookPhoneNumbers,
+                    addressBookPhoneNumbers: systemContactPhoneNumbers,
                     phoneNumberRegistrationStatus: signalRecipientPhoneNumbers,
                     intersectedRecipients: intersectedRecipients,
                     tx: tx
                 )
                 self.unhideRecipientsIfNeeded(
-                    addressBookPhoneNumbers: addressBookPhoneNumbers,
+                    addressBookPhoneNumbers: systemContactPhoneNumbers,
                     tx: tx.asV2Write
                 )
                 self.didFinishIntersection(mode: intersectionMode, phoneNumbers: phoneNumbersToIntersect, tx: tx)
@@ -1007,14 +968,11 @@ extension OWSContactsManager: ContactManager {
     }
 
     private func postJoinNotificationsIfNeeded(
-        addressBookPhoneNumbers: Set<String>?,
+        addressBookPhoneNumbers: some Sequence<CanonicalPhoneNumber>,
         phoneNumberRegistrationStatus: [String: Bool],
         intersectedRecipients: some Sequence<SignalRecipient>,
         tx: SDSAnyWriteTransaction
     ) {
-        guard let addressBookPhoneNumbers else {
-            return
-        }
         let didIntersectAtLeastOnce = keyValueStore.getBool(Constants.didIntersectAddressBook, defaultValue: false, transaction: tx)
         guard didIntersectAtLeastOnce else {
             // This is the first address book intersection. Don't post notifications,
@@ -1025,11 +983,12 @@ extension OWSContactsManager: ContactManager {
         guard Self.preferences.shouldNotifyOfNewAccounts(transaction: tx) else {
             return
         }
+        let phoneNumbers = Set(addressBookPhoneNumbers.lazy.map { $0.rawValue.stringValue })
         for signalRecipient in intersectedRecipients {
             guard let phoneNumber = signalRecipient.phoneNumber, phoneNumber.isDiscoverable else {
                 continue  // Can't happen.
             }
-            guard addressBookPhoneNumbers.contains(phoneNumber.stringValue) else {
+            guard phoneNumbers.contains(phoneNumber.stringValue) else {
                 continue  // Not in the address book -- no notification.
             }
             guard phoneNumberRegistrationStatus[phoneNumber.stringValue] != true else {
@@ -1043,13 +1002,11 @@ extension OWSContactsManager: ContactManager {
     /// As a result, when a contact that was hidden is added to the address book,
     /// we must unhide them.
     private func unhideRecipientsIfNeeded(
-        addressBookPhoneNumbers: Set<String>?,
+        addressBookPhoneNumbers: some Sequence<CanonicalPhoneNumber>,
         tx: DBWriteTransaction
     ) {
-        guard let addressBookPhoneNumbers else {
-            return
-        }
         let recipientHidingManager = DependenciesBridge.shared.recipientHidingManager
+        let phoneNumbers = Set(addressBookPhoneNumbers.lazy.map { $0.rawValue.stringValue })
         for hiddenRecipient in recipientHidingManager.hiddenRecipients(tx: tx) {
             guard let phoneNumber = hiddenRecipient.phoneNumber else {
                 continue // We can't unhide because of the address book w/o a phone number.
@@ -1057,7 +1014,7 @@ extension OWSContactsManager: ContactManager {
             guard phoneNumber.isDiscoverable else {
                 continue // Not discoverable -- no unhiding.
             }
-            guard addressBookPhoneNumbers.contains(phoneNumber.stringValue) else {
+            guard phoneNumbers.contains(phoneNumber.stringValue) else {
                 continue  // Not in the address book -- no unhiding.
             }
             DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
@@ -1151,90 +1108,8 @@ extension OWSContactsManager: ContactManager {
 
     // MARK: - System Contacts
 
-    @objc
-    func setUpSystemContacts() {
-        updateSystemContactsDataProvider()
-        registerForRegistrationStateNotification()
-        if CurrentAppContext().isMainApp {
-            warmSystemContactsCache()
-        }
-    }
-
-    public func setIsPrimaryDevice() {
-        updateSystemContactsDataProvider(forcePrimary: true)
-    }
-
-    private func registerForRegistrationStateNotification() {
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(registrationStateDidChange),
-            name: .registrationStateDidChange,
-            object: nil
-        )
-    }
-
-    @objc
-    private func registrationStateDidChange() {
-        updateSystemContactsDataProvider()
-    }
-
-    private func updateSystemContactsDataProvider(forcePrimary: Bool = false) {
-        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
-        let dataProvider: SystemContactsDataProvider?
-        if forcePrimary {
-            dataProvider = PrimaryDeviceSystemContactsDataProvider()
-        } else if !tsRegistrationState.wasEverRegistered {
-            dataProvider = nil
-        } else if tsRegistrationState.isPrimaryDevice ?? true {
-            dataProvider = PrimaryDeviceSystemContactsDataProvider()
-        } else {
-            dataProvider = LinkedDeviceSystemContactsDataProvider()
-        }
-        swiftValues.systemContactsDataProvider.set(dataProvider)
-    }
-
-    private func warmSystemContactsCache() {
-        let systemContactsCache = SystemContactsCache()
-        swiftValues.systemContactsCache = systemContactsCache
-
-        databaseStorage.read {
-            var phoneNumberCount = 0
-            if let dataProvider = swiftValues.systemContactsDataProvider.get() {
-                let contactsMaps = buildContactsMaps(using: dataProvider, transaction: $0)
-                systemContactsCache.contactsMaps.set(contactsMaps)
-                phoneNumberCount = contactsMaps.phoneNumberToContactMap.count
-            }
-
-            let unsortedSignalAccounts = fetchUnsortedSignalAccounts(transaction: $0)
-            systemContactsCache.unsortedSignalAccounts.set(unsortedSignalAccounts)
-            let signalAccountCount = unsortedSignalAccounts.count
-
-            Logger.info("There are \(phoneNumberCount) phone numbers and \(signalAccountCount) SignalAccounts.")
-        }
-    }
-
-    private func buildContactsMaps(
-        using dataProvider: SystemContactsDataProvider,
-        transaction: SDSAnyReadTransaction
-    ) -> ContactsMaps {
-        let systemContacts = dataProvider.fetchAllSystemContacts(transaction: transaction)
-        let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.phoneNumber
-        return ContactsMaps.build(contacts: systemContacts, localNumber: localNumber)
-    }
-
-    @objc
-    func setContactsMaps(_ contactsMaps: ContactsMaps, localNumber: String?, transaction: SDSAnyWriteTransaction) {
-        guard let dataProvider = swiftValues.primaryDeviceSystemContactsDataProvider else {
-            return owsFailDebug("Can't modify contacts maps on linked devices.")
-        }
-        let oldContactsMaps = swiftValues.systemContactsCache?.contactsMaps.swap(contactsMaps)
-        dataProvider.setContactsMaps(
-            contactsMaps,
-            oldContactsMaps: { oldContactsMaps ?? buildContactsMaps(using: dataProvider, transaction: transaction) },
-            localNumber: localNumber,
-            transaction: transaction
-        )
+    func setFetchedSystemContacts(_ fetchedSystemContacts: FetchedSystemContacts) {
+        swiftValues.systemContactsCache.fetchedSystemContacts.set(fetchedSystemContacts)
     }
 
     public func cnContact(withId cnContactId: String?) -> CNContact? {
@@ -1251,34 +1126,13 @@ extension OWSContactsManager: ContactManager {
         return cnContact
     }
 
-    @objc
-    public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
-        if let cachedValue = swiftValues.systemContactsCache?.contactsMaps.get() {
-            return cachedValue.phoneNumberToContactMap[phoneNumber]
-        }
-        guard let dataProvider = swiftValues.systemContactsDataProvider.get() else {
-            owsFailDebug("Can't access contacts until registration is finished.")
+    public func cnContactId(for phoneNumber: String) -> String? {
+        guard let phoneNumber = E164(phoneNumber) else {
             return nil
         }
-        return dataProvider.fetchSystemContact(for: phoneNumber, transaction: transaction)
-    }
-
-    public func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
-        return contact(forPhoneNumber: phoneNumber, transaction: transaction) != nil
-    }
-
-    private func fetchUnsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        SignalAccount.anyFetchAll(transaction: transaction)
-    }
-
-    @objc
-    public func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        if let cachedValue = swiftValues.systemContactsCache?.unsortedSignalAccounts.get() {
-            return cachedValue
-        }
-        let uncachedValue = fetchUnsortedSignalAccounts(transaction: transaction)
-        swiftValues.systemContactsCache?.unsortedSignalAccounts.set(uncachedValue)
-        return uncachedValue
+        let fetchedSystemContacts = swiftValues.systemContactsCache.fetchedSystemContacts.get()
+        let canonicalPhoneNumber = CanonicalPhoneNumber(nonCanonicalPhoneNumber: phoneNumber)
+        return fetchedSystemContacts?.phoneNumberToContactRef[canonicalPhoneNumber]?.uniqueId
     }
 
     // MARK: - Display Names
@@ -1434,17 +1288,6 @@ extension ContactManager {
                 config: config
             )
         }.sorted(by: <)
-    }
-}
-
-// MARK: - SignalAccount
-
-public extension Array where Element == SignalAccount {
-    func stableSort() -> [SignalAccount] {
-        // Use an arbitrary sort but ensure the ordering is stable.
-        self.sorted { (left, right) in
-            left.recipientAddress.sortKey < right.recipientAddress.sortKey
-        }
     }
 }
 

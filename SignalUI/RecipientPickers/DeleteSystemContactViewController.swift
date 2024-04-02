@@ -323,10 +323,8 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                 }
 
                 // Check that the contact got deleted from our db.
-                let isStillSystemContact = self.dependencies.databaseStorage.read { tx in
-                    return self.contactsManager.isSystemContact(phoneNumber: self.e164.stringValue, transaction: tx)
-                }
-                guard !isStillSystemContact else {
+                let isStillSystemContact = self.contactsManager.cnContactId(for: self.e164.stringValue) != nil
+                if isStillSystemContact {
                     // Can't hide; likely there was another contact with the same number.
                     // Just exit.
                     Logger.warn("Address still a system contact after deletion; possibly duplicate system contact")

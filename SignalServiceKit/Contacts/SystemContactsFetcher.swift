@@ -381,43 +381,28 @@ public class SystemContactsFetcher: NSObject {
             DispatchQueue.main.async {
                 var shouldNotifyDelegate = false
 
+                // If nothing has changed, only notify delegate (to perform contact intersection) every N hours
+                let kDebounceInterval = 12 * kHourInterval
+
                 if self.lastContactUpdateHash != contactsHash {
-                    Logger.info("contact hash changed. new contactsHash: \(contactsHash)")
+                    Logger.info("Updating contacts because hash changed")
                     shouldNotifyDelegate = true
                 } else if isUserRequested {
-                    Logger.info("ignoring debounce due to user request")
+                    Logger.info("Updating contacts because of user request")
                     shouldNotifyDelegate = true
-                } else {
-
-                    // If nothing has changed, only notify delegate (to perform contact intersection) every N hours
-                    if let lastDelegateNotificationDate = self.lastDelegateNotificationDate {
-                        let kDebounceInterval = TimeInterval(12 * 60 * 60)
-
-                        let expiresAtDate = Date(timeInterval: kDebounceInterval, since: lastDelegateNotificationDate)
-                        if  Date() > expiresAtDate {
-                            Logger.info("debounce interval expired at: \(expiresAtDate)")
-                            shouldNotifyDelegate = true
-                        } else {
-                            Logger.info("ignoring since debounce interval hasn't expired")
-                        }
-                    } else {
-                        Logger.info("first contact fetch. contactsHash: \(contactsHash)")
-                        shouldNotifyDelegate = true
-                    }
+                } else if
+                    let lastDelegateNotificationDate = self.lastDelegateNotificationDate,
+                    -lastDelegateNotificationDate.timeIntervalSinceNow > kDebounceInterval
+                {
+                    Logger.info("Updating contacts because it's been more than \(kDebounceInterval) seconds")
+                    shouldNotifyDelegate = true
                 }
 
-                guard shouldNotifyDelegate else {
-                    Logger.info("no reason to notify delegate.")
-
-                    completion(nil)
-
-                    return
+                if shouldNotifyDelegate {
+                    self.lastContactUpdateHash = contactsHash
+                    self.lastDelegateNotificationDate = Date()
+                    self.delegate?.systemContactsFetcher(self, updatedContacts: contacts, isUserRequested: isUserRequested)
                 }
-
-                self.lastDelegateNotificationDate = Date()
-                self.lastContactUpdateHash = contactsHash
-
-                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts, isUserRequested: isUserRequested)
                 completion(nil)
             }
         }

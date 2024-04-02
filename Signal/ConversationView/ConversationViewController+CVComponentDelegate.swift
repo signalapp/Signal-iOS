@@ -886,10 +886,13 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {
         contactsViewHelper.checkEditAuthorization(
             performWhenAllowed: {
-                guard let existingContact: CNContact = self.databaseStorage.read(block: {
-                    guard let contact = self.contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld, transaction: $0) else { return nil }
-                    return self.contactsManager.cnContact(withId: contact.cnContactId)
-                }) else {
+                let existingContact: CNContact? = {
+                    guard let cnContactId = self.contactsManager.cnContactId(for: phoneNumberOld) else {
+                        return nil
+                    }
+                    return self.contactsManager.cnContact(withId: cnContactId)
+                }()
+                guard let existingContact else {
                     owsFailDebug("Missing existing contact for phone number change.")
                     return
                 }

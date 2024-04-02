@@ -34,13 +34,9 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     private func makeContactsManager() -> OWSContactsManager {
-        let contactsManager = OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
+        return OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
             usernameLookupManager: mockUsernameLookupMananger
         ))
-
-        contactsManager.setUpSystemContacts()
-
-        return contactsManager
     }
 
     private func createRecipients(_ serviceIds: [ServiceId]) {
@@ -67,10 +63,12 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     private func createContacts(_ contacts: [Contact]) {
         write { transaction in
-            (self.contactsManager as! OWSContactsManager).setContactsMaps(
-                .build(contacts: contacts, localNumber: LocalIdentifiers.forUnitTests.phoneNumber),
-                localNumber: LocalIdentifiers.forUnitTests.phoneNumber,
-                transaction: transaction
+            (self.contactsManager as! OWSContactsManager).setFetchedSystemContacts(
+                .parseContacts(
+                    contacts,
+                    phoneNumberUtil: phoneNumberUtil,
+                    localPhoneNumber: LocalIdentifiers.forUnitTests.phoneNumber
+                )
             )
         }
     }

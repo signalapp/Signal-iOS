@@ -609,32 +609,24 @@ public class ContactFactory {
     }
 
     public func build() throws -> Contact {
-
         var userTextPhoneNumbers: [String] = []
-        var phoneNumberNameMap: [String: String] = [:]
-        var parsedPhoneNumbers: [PhoneNumber] = []
+        var userTextPhoneNumberLabels: [String: String] = [:]
         for (userText, label) in userTextPhoneNumberAndLabelBuilder() {
-            let phoneNumbers = phoneNumberUtil.parsePhoneNumbers(
-                userSpecifiedText: userText,
-                localPhoneNumber: localClientPhoneNumber
-            )
-            for parsedPhoneNumber in phoneNumbers {
-                parsedPhoneNumbers.append(parsedPhoneNumber)
-                phoneNumberNameMap[parsedPhoneNumber.toE164()] = label
-                userTextPhoneNumbers.append(userText)
-            }
+            userTextPhoneNumbers.append(userText)
+            userTextPhoneNumberLabels[userText] = label
         }
 
-        return Contact(uniqueId: uniqueIdBuilder(),
-                       cnContactId: cnContactIdBuilder(),
-                       firstName: firstNameBuilder(),
-                       lastName: lastNameBuilder(),
-                       nickname: nicknameBuilder(),
-                       fullName: fullNameBuilder(),
-                       userTextPhoneNumbers: userTextPhoneNumbers,
-                       phoneNumberNameMap: phoneNumberNameMap,
-                       parsedPhoneNumbers: parsedPhoneNumbers,
-                       emails: emailsBuilder())
+        return Contact(
+            uniqueId: uniqueIdBuilder(),
+            cnContactId: cnContactIdBuilder(),
+            firstName: firstNameBuilder(),
+            lastName: lastNameBuilder(),
+            nickname: nicknameBuilder(),
+            fullName: fullNameBuilder(),
+            userTextPhoneNumbers: userTextPhoneNumbers,
+            userTextPhoneNumberLabels: userTextPhoneNumberLabels,
+            emails: emailsBuilder()
+        )
     }
 
     public var localClientPhoneNumber: String = "+13235551234"

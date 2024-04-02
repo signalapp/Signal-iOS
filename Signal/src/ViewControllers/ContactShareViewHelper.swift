@@ -189,9 +189,87 @@ private class AddContactShareToContactsFlow {
             return CNContact()
         }
         if let oldContact = existingContact {
-            return Contact.merge(cnContact: oldContact, newCNContact: newContact)
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let phoneNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+            let canonicalPhoneNumber = E164(phoneNumber).map(CanonicalPhoneNumber.init(nonCanonicalPhoneNumber:))
+            return mergeContact(newContact, into: oldContact, localPhoneNumber: canonicalPhoneNumber)
         }
         return newContact
+    }
+
+    private func mergeContact(
+        _ newCNContact: CNContact,
+        into oldCNContact: CNContact,
+        localPhoneNumber: CanonicalPhoneNumber?
+    ) -> CNContact {
+        let oldContact = Contact(systemContact: oldCNContact)
+        let mergedCNContact = oldCNContact.mutableCopy() as! CNMutableContact
+
+        // Name (all or nothing -- no piecemeal merges)
+        let formattedFullName = Contact.formattedFullName(cnContact: mergedCNContact)
+
+        if formattedFullName.isEmpty {
+            mergedCNContact.namePrefix = newCNContact.namePrefix.stripped
+            mergedCNContact.givenName = newCNContact.givenName.stripped
+            mergedCNContact.nickname = newCNContact.nickname.stripped
+            mergedCNContact.middleName = newCNContact.middleName.stripped
+            mergedCNContact.familyName = newCNContact.familyName.stripped
+            mergedCNContact.nameSuffix = newCNContact.nameSuffix.stripped
+        }
+
+        if mergedCNContact.organizationName.stripped.isEmpty {
+            mergedCNContact.organizationName = newCNContact.organizationName.stripped
+        }
+
+        // Phone Numbers
+        var existingUserTextPhoneNumbers = Set(oldContact.userTextPhoneNumbers)
+        var existingCanonicalPhoneNumbers = Set(FetchedSystemContacts.parsePhoneNumbers(
+            for: oldContact,
+            phoneNumberUtil: NSObject.phoneNumberUtil,
+            localPhoneNumber: localPhoneNumber
+        ))
+        var mergedPhoneNumbers = mergedCNContact.phoneNumbers
+        for labeledPhoneNumber in newCNContact.phoneNumbers {
+            let phoneNumber = labeledPhoneNumber.value.stringValue
+            guard existingUserTextPhoneNumbers.insert(phoneNumber).inserted else {
+                continue
+            }
+            let canonicalPhoneNumbers = FetchedSystemContacts.parsePhoneNumber(
+                phoneNumber,
+                phoneNumberUtil: NSObject.phoneNumberUtil,
+                localPhoneNumber: localPhoneNumber
+            )
+            guard existingCanonicalPhoneNumbers.isDisjoint(with: canonicalPhoneNumbers) else {
+                continue
+            }
+            existingCanonicalPhoneNumbers.formUnion(canonicalPhoneNumbers)
+            mergedPhoneNumbers.append(labeledPhoneNumber)
+        }
+        mergedCNContact.phoneNumbers = mergedPhoneNumbers
+
+        // Emails
+        var existingEmailAddresses = Set(oldContact.emails)
+        var mergedEmailAddresses = mergedCNContact.emailAddresses
+        for labeledEmailAddress in newCNContact.emailAddresses {
+            let emailAddress = labeledEmailAddress.value.ows_stripped()
+            guard existingEmailAddresses.insert(emailAddress).inserted else {
+                continue
+            }
+            mergedEmailAddresses.append(labeledEmailAddress)
+        }
+        mergedCNContact.emailAddresses = mergedEmailAddresses
+
+        // Address (all or nothing -- no piecemeal merges)
+        if mergedCNContact.postalAddresses.isEmpty {
+            mergedCNContact.postalAddresses = newCNContact.postalAddresses
+        }
+
+        // Avatar
+        if mergedCNContact.imageData == nil {
+            mergedCNContact.imageData = newCNContact.imageData
+        }
+
+        return mergedCNContact.copy() as! CNContact
     }
 }
 

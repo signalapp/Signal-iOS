@@ -42,17 +42,21 @@ public class ContactShareDraft {
     public static func load(
         cnContact: CNContact,
         signalContact: @autoclosure () -> Contact,
-        contactsManager: ContactManager,
-        profileManager: ProfileManager,
-        recipientManager: SignalRecipientManager,
+        contactManager: any ContactManager,
+        phoneNumberUtil: PhoneNumberUtil,
+        profileManager: any ProfileManager,
+        recipientManager: any SignalRecipientManager,
+        tsAccountManager: any TSAccountManager,
         tx: SDSAnyReadTransaction
     ) -> ContactShareDraft {
         let avatarData = loadAvatarData(
             cnContact: cnContact,
             signalContact: signalContact(),
-            contactsManager: contactsManager,
+            contactManager: contactManager,
+            phoneNumberUtil: phoneNumberUtil,
             profileManager: profileManager,
             recipientManager: recipientManager,
+            tsAccountManager: tsAccountManager,
             tx: tx
         )
         return ContactShareDraft(
@@ -68,25 +72,33 @@ public class ContactShareDraft {
     private static func loadAvatarData(
         cnContact: CNContact,
         signalContact: @autoclosure () -> Contact,
-        contactsManager: ContactManager,
-        profileManager: ProfileManager,
-        recipientManager: SignalRecipientManager,
+        contactManager: any ContactManager,
+        phoneNumberUtil: PhoneNumberUtil,
+        profileManager: any ProfileManager,
+        recipientManager: any SignalRecipientManager,
+        tsAccountManager: any TSAccountManager,
         tx: SDSAnyReadTransaction
     ) -> Data? {
-        if let systemAvatarImageData = contactsManager.avatarData(for: cnContact.identifier) {
+        if let systemAvatarImageData = contactManager.avatarData(for: cnContact.identifier) {
             return systemAvatarImageData
         }
 
-        let recipientManager = DependenciesBridge.shared.recipientManager
-        let profileAvatarData: Data? = signalContact().e164sForIntersection.lazy.compactMap { phoneNumber in
-            let recipient = recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber, tx: tx.asV2Read)
-            guard let recipient else {
-                return nil
+        let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.phoneNumber
+        let canonicalPhoneNumbers = FetchedSystemContacts.parsePhoneNumbers(
+            for: signalContact(),
+            phoneNumberUtil: phoneNumberUtil,
+            localPhoneNumber: E164(localPhoneNumber).map(CanonicalPhoneNumber.init(nonCanonicalPhoneNumber:))
+        )
+        for canonicalPhoneNumber in canonicalPhoneNumbers {
+            for phoneNumber in [canonicalPhoneNumber.rawValue] + canonicalPhoneNumber.alternatePhoneNumbers() {
+                let recipient = recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber.stringValue, tx: tx.asV2Read)
+                guard let recipient else {
+                    continue
+                }
+                if let avatarData = profileManager.profileAvatarData(for: recipient.address, transaction: tx) {
+                    return avatarData
+                }
             }
-            return profileManager.profileAvatarData(for: recipient.address, transaction: tx)
-        }.first
-        if let profileAvatarData {
-            return profileAvatarData
         }
 
         return nil
