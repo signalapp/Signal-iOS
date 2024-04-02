@@ -13,21 +13,13 @@ extension Attachment: TSResource {
         blurHash
     }
 
-    public var resourceEncryptionKey: Data? {
-        encryptionKey
-    }
-
-    public var unenecryptedResourceByteCount: UInt32? {
-        unenecryptedByteCount
-    }
-
-    public var encryptedResourceByteCount: UInt32? {
-        encryptedByteCount
-    }
-
-    public var encryptedResourceSha256Digest: Data? {
-        encryptedFileSha256Digest
-    }
+    public var resourceEncryptionKey: Data? { streamInfo?.encryptionKey }
+    public var unenecryptedResourceByteCount: UInt32? { streamInfo?.unenecryptedByteCount }
+    public var encryptedResourceByteCount: UInt32? { streamInfo?.encryptedByteCount }
+    public var encryptedResourceSha256Digest: Data? { streamInfo?.encryptedFileSha256Digest }
+    public var transitCdnKey: String? { transitTierInfo?.cdnKey }
+    public var transitCdnNumber: UInt32? { transitTierInfo?.cdnNumber }
+    public var transitUploadTimestamp: UInt64? { transitTierInfo?.uploadTimestamp }
 
     public var resourceId: TSResourceId {
         .v2(rowId: id)
@@ -103,9 +95,9 @@ extension AttachmentStream: TSResource {
 
     public var resourceEncryptionKey: Data? { attachment.resourceEncryptionKey }
 
-    public var unenecryptedResourceByteCount: UInt32? { attachment.unenecryptedByteCount }
+    public var unenecryptedResourceByteCount: UInt32? { unenecryptedByteCount }
 
-    public var encryptedResourceByteCount: UInt32? { attachment.encryptedByteCount }
+    public var encryptedResourceByteCount: UInt32? { encryptedByteCount }
 
     public var encryptedResourceSha256Digest: Data? { encryptedFileSha256Digest }
 

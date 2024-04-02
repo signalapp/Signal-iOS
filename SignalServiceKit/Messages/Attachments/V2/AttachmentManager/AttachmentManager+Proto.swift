@@ -63,8 +63,9 @@ extension AttachmentManager {
             reference.sourceUnencryptedByteCount.map(builder.setSize(_:))
             reference.sourceMediaSizePixels.map(setMediaSizePixels(_:))
         }
-        builder.setKey(pointer.attachment.encryptionKey)
-        pointer.attachment.encryptedFileSha256Digest.map(builder.setDigest(_:))
+        // TODO: this should use a pointer-specific encryption key
+        builder.setKey(pointer.attachment.streamInfo?.encryptionKey ?? Data())
+        (pointer.attachment.streamInfo?.encryptedFileSha256Digest).map(builder.setDigest(_:))
 
         pointer.attachment.blurHash.map(builder.setBlurHash(_:))
 

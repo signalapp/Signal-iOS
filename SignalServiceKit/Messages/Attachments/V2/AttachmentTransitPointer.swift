@@ -12,38 +12,30 @@ public class AttachmentTransitPointer {
 
     public let attachment: Attachment
 
-    public let cdnNumber: UInt32
-    public let cdnKey: String
+    public let info: Attachment.TransitTierInfo
 
-    public var uploadTimestamp: UInt64? {
-        attachment.transitUploadTimestamp
-    }
-
-    public var lastDownloadAttemptTimestamp: UInt64? {
-        attachment.lastTransitDownloadAttemptTimestamp
-    }
+    public var cdnNumber: UInt32 { info.cdnNumber }
+    public var cdnKey: String { info.cdnKey }
+    public var uploadTimestamp: UInt64 { info.uploadTimestamp }
+    public var lastDownloadAttemptTimestamp: UInt64? { info.lastDownloadAttemptTimestamp }
 
     private init(
         attachment: Attachment,
-        transitCdnNumber: UInt32,
-        transitCdnKey: String
+        info: Attachment.TransitTierInfo
     ) {
         self.attachment = attachment
-        self.cdnNumber = transitCdnNumber
-        self.cdnKey = transitCdnKey
+        self.info = info
     }
 
     public convenience init?(attachment: Attachment) {
         guard
-            let transitCdnNumber = attachment.transitCdnNumber,
-            let transitCdnKey = attachment.transitCdnKey
+            let info = attachment.transitTierInfo
         else {
             return nil
         }
         self.init(
             attachment: attachment,
-            transitCdnNumber: transitCdnNumber,
-            transitCdnKey: transitCdnKey
+            info: info
         )
     }
 }

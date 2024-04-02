@@ -18,7 +18,7 @@ internal struct AttachmentUploadBuilder: UploadBuilder {
     func buildMetadata() throws -> Upload.LocalUploadMetadata {
         return Upload.LocalUploadMetadata(
             fileUrl: attachmentStream.fileURL,
-            key: attachmentStream.attachment.encryptionKey,
+            key: attachmentStream.info.encryptionKey,
             digest: attachmentStream.encryptedFileSha256Digest,
             encryptedDataLength: Int(clamping: attachmentStream.encryptedByteCount),
             plaintextDataLength: Int(clamping: attachmentStream.unenecryptedByteCount)

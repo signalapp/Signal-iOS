@@ -284,7 +284,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         }
 
         self.cloneAsThumbnailAndCreateReference(
-            originalAttachment,
+            originalStream,
             newOwner: .quotedReplyAttachment(messageRowId: quotedReplyMessageId),
             sourceFilename: sourceFilename,
             renderingFlag: renderingFlag,
@@ -294,7 +294,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     }
 
     private func cloneAsThumbnailAndCreateReference(
-        _ originalAttachment: Attachment,
+        _ originalAttachment: AttachmentStream,
         newOwner: AttachmentReference.OwnerId,
         sourceFilename: String?,
         renderingFlag: AttachmentReference.RenderingFlag,
