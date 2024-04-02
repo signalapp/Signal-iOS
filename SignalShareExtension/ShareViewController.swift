@@ -536,11 +536,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.info("showing screen lock")
     }
 
-    private static func isVisualMediaItem(itemProvider: NSItemProvider) -> Bool {
-        return (itemProvider.hasItemConformingToTypeIdentifier(kUTTypeImage as String) ||
-            itemProvider.hasItemConformingToTypeIdentifier(kUTTypeMovie as String))
-    }
-
     private static func itemsToLoad(inputItems: [NSExtensionItem]) throws -> [UnloadedItem] {
         for inputItem in inputItems {
             guard let itemProviders = inputItem.attachments else {
@@ -604,7 +599,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 return [urlItem]
             }
 
-            let visualMediaItems = itemsToLoad.filter { Self.isVisualMediaItem(itemProvider: $0.itemProvider) }
+            let visualMediaItems = itemsToLoad.filter { $0.itemType == .image || $0.itemType == .movie }
 
             // We only allow sharing 1 item, unless they are visual media items. And if they are
             // visualMediaItems we share *only* the visual media items - a mix of visual and non
