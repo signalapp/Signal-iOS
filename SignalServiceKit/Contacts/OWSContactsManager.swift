@@ -605,7 +605,7 @@ extension OWSContactsManager: ContactManager {
         transaction: SDSAnyReadTransaction
     ) -> [SignalAccount] {
         var discoverableRecipients = [CanonicalPhoneNumber: (SignalRecipient, ServiceId)]()
-        var groupedDiscoverablePhoneNumbers = [String: [(phoneNumber: CanonicalPhoneNumber, userProvidedLabel: String)]]()
+        var discoverablePhoneNumberCounts = [String: Int]()
         for (phoneNumber, contactRef) in fetchedSystemContacts.phoneNumberToContactRef {
             guard let signalRecipient = discoverableRecipient(for: phoneNumber, tx: transaction) else {
                 // Not discoverable.
@@ -616,14 +616,14 @@ extension OWSContactsManager: ContactManager {
                 continue
             }
             discoverableRecipients[phoneNumber] = (signalRecipient, serviceId)
-            groupedDiscoverablePhoneNumbers[contactRef.uniqueId, default: []].append((phoneNumber, contactRef.userProvidedLabel))
+            discoverablePhoneNumberCounts[contactRef.uniqueId, default: 0] += 1
         }
         var signalAccounts = [SignalAccount]()
         for (phoneNumber, contactRef) in fetchedSystemContacts.phoneNumberToContactRef {
             guard let (signalRecipient, serviceId) = discoverableRecipients[phoneNumber] else {
                 continue
             }
-            guard let relatedPhoneNumbers = groupedDiscoverablePhoneNumbers[contactRef.uniqueId] else {
+            guard let discoverablePhoneNumberCount = discoverablePhoneNumberCounts[contactRef.uniqueId] else {
                 owsFailDebug("Couldn't find relatedPhoneNumbers")
                 continue
             }
@@ -632,8 +632,8 @@ extension OWSContactsManager: ContactManager {
                 continue
             }
             let multipleAccountLabelText = Contact.uniquePhoneNumberLabel(
-                for: phoneNumber,
-                relatedPhoneNumbers: relatedPhoneNumbers
+                userProvidedLabel: contactRef.userProvidedLabel,
+                discoverablePhoneNumberCount: discoverablePhoneNumberCount
             )
             let contactAvatarHash = buildContactAvatarHash(for: systemContact)
             let signalAccount = SignalAccount(

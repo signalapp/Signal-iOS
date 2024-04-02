@@ -22,45 +22,15 @@ extension Contact {
     // MARK: - Phone Numbers
 
     public static func uniquePhoneNumberLabel(
-        for phoneNumber: CanonicalPhoneNumber,
-        relatedPhoneNumbers: [(phoneNumber: CanonicalPhoneNumber, userProvidedLabel: String)]
+        userProvidedLabel: String,
+        discoverablePhoneNumberCount: Int
     ) -> String? {
-        guard relatedPhoneNumbers.count > 1 else {
+        // If there's only one phone number for this contact, don't show the label.
+        if discoverablePhoneNumberCount <= 1 {
             return nil
+        } else {
+            return userProvidedLabel.filterForDisplay
         }
-
-        // 1. Find this phone number's type.
-        let phoneNumberLabel = relatedPhoneNumbers
-            .first(where: { $0.phoneNumber == phoneNumber })?
-            .userProvidedLabel
-            .filterForDisplay
-        guard let phoneNumberLabel else {
-            owsFailDebug("Couldn't find phoneNumber in relatedPhoneNumbers")
-            return nil
-        }
-
-        // 2. Find all phone numbers of this type.
-        let phoneNumbersWithTheSameLabel = relatedPhoneNumbers.lazy.filter {
-            return phoneNumberLabel == $0.userProvidedLabel.filterForDisplay
-        }.map { $0.phoneNumber }.sorted(by: { $0.rawValue.stringValue < $1.rawValue.stringValue })
-
-        // 3. Figure out if this is "Mobile 0" or "Mobile 1".
-        guard let thisPhoneNumberIndex = phoneNumbersWithTheSameLabel.firstIndex(of: phoneNumber) else {
-            owsFailDebug("Couldn't find the address we were trying to match.")
-            return phoneNumberLabel
-        }
-
-        // 4. If there's only one "Mobile", don't add the " 0" or " 1" suffix.
-        guard phoneNumbersWithTheSameLabel.count > 1 else {
-            return phoneNumberLabel
-        }
-
-        // 5. If there's two or more "Mobile" numbers, specify which this is.
-        let format = OWSLocalizedString(
-            "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
-            comment: "Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}."
-        )
-        return String(format: format, phoneNumberLabel, OWSFormat.formatInt(thisPhoneNumberIndex))
     }
 
     public convenience init(
