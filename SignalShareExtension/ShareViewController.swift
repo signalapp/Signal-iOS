@@ -541,12 +541,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             itemProvider.hasItemConformingToTypeIdentifier(kUTTypeMovie as String))
     }
 
-    private static func isUrlItem(itemProvider: NSItemProvider) -> Bool {
-        // URLs, contacts and other special items have to be detected separately.
-        // Many shares (e.g. pdfs) will register many UTI types and/or conform to kUTTypeData.
-        return [kUTTypeURL as String] == itemProvider.registeredTypeIdentifiers
-    }
-
     private static func itemsToLoad(inputItems: [NSExtensionItem]) throws -> [UnloadedItem] {
         for inputItem in inputItems {
             guard let itemProviders = inputItem.attachments else {
@@ -562,12 +556,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     return UnloadedItem(itemProvider: itemProvider, itemType: .image)
                 }
 
-                if Self.isUrlItem(itemProvider: itemProvider) {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .webUrl)
-                }
-
                 if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeFileURL as String) {
                     return UnloadedItem(itemProvider: itemProvider, itemType: .fileUrl)
+                }
+
+                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
+                    return UnloadedItem(itemProvider: itemProvider, itemType: .webUrl)
                 }
 
                 if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeVCard as String) {
