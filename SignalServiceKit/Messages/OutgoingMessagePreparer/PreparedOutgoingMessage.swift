@@ -23,8 +23,7 @@ public class PreparedOutgoingMessage {
     ) -> PreparedOutgoingMessage {
         let messageType = MessageType.persisted(MessageType.Persisted(
             rowId: messageRowId,
-            message: message,
-            legacyAttachmentIdsForUpload: []
+            message: message
         ))
         return PreparedOutgoingMessage(messageType: messageType)
     }
@@ -36,13 +35,9 @@ public class PreparedOutgoingMessage {
         forResending message: TSOutgoingMessage,
         messageRowId: Int64
     ) -> PreparedOutgoingMessage {
-        let legacyAttachmentIdsForUpload = UnpreparedOutgoingMessage.fetchLegacyAttachmentIdsForUpload(
-            persistedMessage: message
-        )
         let messageType = MessageType.persisted(MessageType.Persisted(
             rowId: messageRowId,
-            message: message,
-            legacyAttachmentIdsForUpload: legacyAttachmentIdsForUpload
+            message: message
         ))
         return PreparedOutgoingMessage(messageType: messageType)
     }
@@ -52,12 +47,8 @@ public class PreparedOutgoingMessage {
     public static func preprepared(
         outgoingStoryMessage: OutgoingStoryMessage
     ) -> PreparedOutgoingMessage {
-        let legacyAttachmentIdsForUpload = UnpreparedOutgoingMessage.fetchLegacyAttachmentIdsForUpload(
-            storyMessage: outgoingStoryMessage
-        )
         let messageType = MessageType.story(MessageType.Story(
-            message: outgoingStoryMessage,
-            legacyAttachmentIdsForUpload: legacyAttachmentIdsForUpload
+            message: outgoingStoryMessage
         ))
         return PreparedOutgoingMessage(messageType: messageType)
     }
@@ -101,14 +92,12 @@ public class PreparedOutgoingMessage {
         public struct Persisted {
             public let rowId: Int64
             public let message: TSOutgoingMessage
-            public let legacyAttachmentIdsForUpload: [String]
         }
 
         public struct EditMessage {
             public let editedMessageRowId: Int64
             public let editedMessage: TSOutgoingMessage
             public let messageForSending: OutgoingEditMessage
-            public let legacyAttachmentIdsForUpload: [String]
         }
 
         public struct ContactSync {
@@ -118,7 +107,6 @@ public class PreparedOutgoingMessage {
 
         public struct Story {
             public let message: OutgoingStoryMessage
-            public let legacyAttachmentIdsForUpload: [String]
 
             public var storyMessageRowId: Int64 {
                 message.storyMessageRowId

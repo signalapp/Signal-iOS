@@ -15,8 +15,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
             let jobRecord = try! MessageSenderJobRecord(
                 persistedMessage: .init(
                     rowId: 0,
-                    message: message,
-                    legacyAttachmentIdsForUpload: []
+                    message: message
                 ),
                 isHighPriority: false,
                 transaction: transaction

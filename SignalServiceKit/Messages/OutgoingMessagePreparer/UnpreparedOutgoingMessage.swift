@@ -348,23 +348,17 @@ public class UnpreparedOutgoingMessage {
             tx: tx.asV2Write
         )
 
-        let legacyAttachmentIdsForUpload: [String] = Self.fetchLegacyAttachmentIdsForUpload(
-            persistedMessage: attachmentOwnerMessage
-        )
-
         switch type {
         case .editMessage(let editMessage):
             return .editMessage(PreparedOutgoingMessage.MessageType.EditMessage(
                 editedMessageRowId: attachmentOwnerMessageRowId,
                 editedMessage: editMessage.editedMessage,
-                messageForSending: editMessage.messageForSending,
-                legacyAttachmentIdsForUpload: legacyAttachmentIdsForUpload
+                messageForSending: editMessage.messageForSending
             ))
         case .persistable(let persistable):
             return .persisted(PreparedOutgoingMessage.MessageType.Persisted(
                 rowId: attachmentOwnerMessageRowId,
-                message: persistable.message,
-                legacyAttachmentIdsForUpload: legacyAttachmentIdsForUpload
+                message: persistable.message
             ))
         }
     }
@@ -381,13 +375,8 @@ public class UnpreparedOutgoingMessage {
     private func prepareStoryMessage(
         _ story: MessageType.Story
     ) -> PreparedOutgoingMessage.MessageType {
-        let legacyAttachmentIdsForUpload: [String] = Self.fetchLegacyAttachmentIdsForUpload(
-            storyMessage: story.message
-        )
-
         return .story(PreparedOutgoingMessage.MessageType.Story(
-            message: story.message,
-            legacyAttachmentIdsForUpload: legacyAttachmentIdsForUpload
+            message: story.message
         ))
     }
 
@@ -398,21 +387,6 @@ public class UnpreparedOutgoingMessage {
     }
 
     // MARK: - Helpers
-
-    internal static func fetchLegacyAttachmentIdsForUpload(
-        persistedMessage message: TSMessage
-    ) -> [String] {
-        return message.attachmentIds
-    }
-
-    internal static func fetchLegacyAttachmentIdsForUpload(
-        storyMessage: OutgoingStoryMessage
-    ) -> [String] {
-        // In the legacy world, we make _copies_ of the original attachments on
-        // the StoryMessage and use those for upload; the IDs for those copies
-        // are put into the OutgoingStoryMessage.
-        return storyMessage.attachmentIds
-    }
 
     internal static func assertIsAllowedTransientMessage(_ message: TSOutgoingMessage) {
         owsAssertDebug(
