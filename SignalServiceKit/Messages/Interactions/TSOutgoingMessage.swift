@@ -25,28 +25,29 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     @objc
     public var skippedRecipients: Set<SignalServiceAddress>?
 
-    public init(thread: TSThread,
-                timestamp: UInt64? = nil,
-                messageBody: String? = nil,
-                bodyRanges: MessageBodyRanges? = nil,
-                attachmentIds: [String]? = nil,
-                editState: TSEditState = .none,
-                expiresInSeconds: UInt32 = 0,
-                expireStartedAt: UInt64 = 0,
-                isVoiceMessage: Bool = false,
-                groupMetaMessage: TSGroupMetaMessage = .unspecified,
-                quotedMessage: TSQuotedMessage? = nil,
-                contactShare: OWSContact? = nil,
-                linkPreview: OWSLinkPreview? = nil,
-                messageSticker: MessageSticker? = nil,
-                isViewOnceMessage: Bool = false,
-                changeActionsProtoData: Data? = nil,
-                additionalRecipients: [SignalServiceAddress]? = nil,
-                skippedRecipients: Set<SignalServiceAddress>? = nil,
-                storyAuthorAci: Aci? = nil,
-                storyTimestamp: UInt64? = nil,
-                storyReactionEmoji: String? = nil,
-                giftBadge: OWSGiftBadge? = nil
+    public required init(
+        thread: TSThread,
+        timestamp: UInt64? = nil,
+        messageBody: String? = nil,
+        bodyRanges: MessageBodyRanges? = nil,
+        attachmentIds: [String]? = nil,
+        editState: TSEditState = .none,
+        expiresInSeconds: UInt32? = nil,
+        expireStartedAt: UInt64? = nil,
+        isVoiceMessage: Bool = false,
+        groupMetaMessage: TSGroupMetaMessage = .unspecified,
+        quotedMessage: TSQuotedMessage? = nil,
+        contactShare: OWSContact? = nil,
+        linkPreview: OWSLinkPreview? = nil,
+        messageSticker: MessageSticker? = nil,
+        isViewOnceMessage: Bool = false,
+        changeActionsProtoData: Data? = nil,
+        additionalRecipients: [SignalServiceAddress]? = nil,
+        skippedRecipients: Set<SignalServiceAddress>? = nil,
+        storyAuthorAci: Aci? = nil,
+        storyTimestamp: UInt64? = nil,
+        storyReactionEmoji: String? = nil,
+        giftBadge: OWSGiftBadge? = nil
     ) {
 
         super.init(thread: thread,
@@ -89,14 +90,13 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     // This factory method can be used at call sites that want
     // to specify every property; usage will fail to compile if
     // if any property is missing.
-    @objc
     public class func builder(thread: TSThread,
                               timestamp: UInt64,
                               messageBody: String?,
                               bodyRanges: MessageBodyRanges?,
                               attachmentIds: [String]?,
-                              expiresInSeconds: UInt32,
-                              expireStartedAt: UInt64,
+                              expiresInSeconds: UInt32?,
+                              expireStartedAt: UInt64?,
                               isVoiceMessage: Bool,
                               groupMetaMessage: TSGroupMetaMessage,
                               quotedMessage: TSQuotedMessage?,

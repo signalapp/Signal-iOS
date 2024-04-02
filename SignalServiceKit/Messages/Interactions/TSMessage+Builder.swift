@@ -59,8 +59,8 @@ public class TSMessageBuilder: NSObject {
          bodyRanges: MessageBodyRanges? = nil,
          attachmentIds: [String]? = nil,
          editState: TSEditState = .none,
-         expiresInSeconds: UInt32 = 0,
-         expireStartedAt: UInt64 = 0,
+         expiresInSeconds: UInt32? = nil,
+         expireStartedAt: UInt64? = nil,
          quotedMessage: TSQuotedMessage? = nil,
          contactShare: OWSContact? = nil,
          linkPreview: OWSLinkPreview? = nil,
@@ -82,8 +82,8 @@ public class TSMessageBuilder: NSObject {
             self.attachmentIds = attachmentIds
         }
         self.editState = editState
-        self.expiresInSeconds = expiresInSeconds
-        self.expireStartedAt = expireStartedAt
+        self.expiresInSeconds = expiresInSeconds ?? 0
+        self.expireStartedAt = expireStartedAt ?? 0
         self.quotedMessage = quotedMessage
         self.contactShare = contactShare
         self.linkPreview = linkPreview

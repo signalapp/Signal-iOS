@@ -176,12 +176,12 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return []
     }
 
-    public var expiresInSecondsBuilder: () -> UInt32 = {
-        return 0
+    public var expiresInSecondsBuilder: () -> UInt32? = {
+        return nil
     }
 
-    public var expireStartedAtBuilder: () -> UInt64 = {
-        return 0
+    public var expireStartedAtBuilder: () -> UInt64? = {
+        return nil
     }
 
     public var isVoiceMessageBuilder: () -> Bool = {
