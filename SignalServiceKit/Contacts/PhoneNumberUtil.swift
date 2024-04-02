@@ -478,9 +478,9 @@ extension PhoneNumberUtil {
         if let transformRule = swiftValues.nationalPrefixTransformRuleCache[countryCode] {
             return transformRule
         }
-        let transformRule = NBMetadataHelper().getMetadataForRegion(countryCode).nationalPrefixTransformRule
+        let transformRule: String? = NBMetadataHelper().getMetadataForRegion(countryCode)?.nationalPrefixTransformRule
         swiftValues.nationalPrefixTransformRuleCache[countryCode] = transformRule
-        return nil
+        return transformRule
     }
 
     private func countryCode(for phoneNumber: String) -> String? {
