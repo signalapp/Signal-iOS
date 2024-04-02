@@ -623,27 +623,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             case text(_ text: String)
             case pdf(_ data: Data)
             case pkPass(_ data: Data)
-
-            var debugDescription: String {
-                switch self {
-                case .fileUrl:
-                    return "fileUrl"
-                case .inMemoryImage:
-                    return "inMemoryImage"
-                case .webUrl:
-                    return "webUrl"
-                case .contact:
-                    return "contact"
-                case .richText:
-                    return "richText"
-                case .text:
-                    return "text"
-                case .pdf:
-                    return "pdf"
-                case .pkPass:
-                    return "pkPass"
-                }
-            }
         }
 
         let payload: LoadedItemPayload
@@ -658,10 +637,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             } else {
                 return false
             }
-        }
-
-        var debugDescription: String {
-            payload.debugDescription
         }
     }
 
