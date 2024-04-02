@@ -1005,8 +1005,7 @@ private struct NewGroupUpdateItemBuilder {
 
         let createItem: PersistableGroupUpdateItem? = groupCreationUpdateItems(
             groupUpdateSource: groupUpdateSource,
-            newGroupModel: newGroupModel,
-            wasInvited: inviteItem != nil
+            newGroupModel: newGroupModel
         )
 
         return [createItem, inviteItem].compacted()
@@ -1023,9 +1022,6 @@ private struct NewGroupUpdateItemBuilder {
             groupMembership: newGroupMembership
         ) {
         case .normalMember:
-            // We checked above if the group was just created, in which case
-            // it'd be implicit that we were added.
-
             switch groupUpdateSource {
             case let .aci(updaterAci):
                 return .localUserAddedByOtherUser(
@@ -1035,7 +1031,8 @@ private struct NewGroupUpdateItemBuilder {
                 if newGroupModel.didJustAddSelfViaGroupLink || newGroupMembership.didJoinFromInviteLink(forFullMember: localIdentifiers.aciAddress) {
                     return .localUserJoined
                 } else {
-                    return .localUserAddedByLocalUser
+                    // Displaying a message like "You added yourself to the group" isn't useful, so skip it.
+                    return nil
                 }
             default:
                 return .localUserAddedByUnknownUser
@@ -1058,8 +1055,7 @@ private struct NewGroupUpdateItemBuilder {
 
     private func groupCreationUpdateItems(
         groupUpdateSource: GroupUpdateSource,
-        newGroupModel: TSGroupModelV2,
-        wasInvited: Bool
+        newGroupModel: TSGroupModelV2
     ) -> PersistableGroupUpdateItem? {
         let wasGroupJustCreated = newGroupModel.revision == 0
         if wasGroupJustCreated {
@@ -1069,9 +1065,7 @@ private struct NewGroupUpdateItemBuilder {
             case let .aci(updaterAci):
                 return .createdByOtherUser(updaterAci: updaterAci.codableUuid)
             case .rejectedInviteToPni, .legacyE164, .unknown:
-                // If an invite item was created above, this item doesn't
-                // add much value to the messaging, so skip it.
-                return wasInvited ? nil : .createdByUnknownUser
+                return .createdByUnknownUser
             }
         }
         return nil
