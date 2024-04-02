@@ -657,7 +657,10 @@ extension OWSContactPhoneNumber {
 
         default:
             type = .custom
-            customLabel = Contact.localizedString(forCNLabel: cnLabeledValue.label)
+            customLabel = SystemContact.localizedString(
+                forCNLabel: cnLabeledValue.label,
+                labeledValueType: CNLabeledValue<CNPhoneNumber>.self
+            )
         }
 
         self.init(type: type, label: customLabel, phoneNumber: parsedPhoneNumber)
@@ -699,7 +702,10 @@ extension OWSContactEmail {
 
         default:
             type = .custom
-            customLabel = Contact.localizedString(forCNLabel: cnLabeledValue.label)
+            customLabel = SystemContact.localizedString(
+                forCNLabel: cnLabeledValue.label,
+                labeledValueType: CNLabeledValue<NSString>.self
+            )
         }
 
         self.init(type: type, label: customLabel, email: email)
@@ -738,7 +744,10 @@ extension OWSContactAddress {
 
         default:
             type = .custom
-            customLabel = Contact.localizedString(forCNLabel: cnLabeledValue.label)
+            customLabel = SystemContact.localizedString(
+                forCNLabel: cnLabeledValue.label,
+                labeledValueType: CNLabeledValue<CNPostalAddress>.self
+            )
         }
         let cnPostalAddress = cnLabeledValue.value
         self.init(

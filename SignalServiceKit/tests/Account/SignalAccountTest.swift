@@ -126,7 +126,7 @@ class SignalAccountTest: XCTestCase {
         XCTAssertEqual(signalAccount.recipientServiceId?.serviceIdUppercaseString, "00000000-0000-4000-8000-000000000AAA")
         XCTAssertEqual(signalAccount.recipientPhoneNumber, "+16505550100")
         XCTAssertEqual(signalAccount.multipleAccountLabelText, "Mobile")
-        XCTAssertNotNil(signalAccount.contact?.uniqueId, "00000000-0000-4000-8000-000000000BBB")
+        XCTAssertNil(signalAccount.contact?.cnContactId)
     }
 
     // MARK: - Display Name Tests
@@ -135,10 +135,9 @@ class SignalAccountTest: XCTestCase {
 
     func testContactNameComponents() {
         let contact = Contact(
-            phoneNumber: "+16505550100",
-            phoneNumberLabel: "Mobile",
-            givenName: "Shabby",
-            familyName: "Thesealion",
+            cnContactId: nil,
+            firstName: "Shabby",
+            lastName: "Thesealion",
             nickname: "Shabs ",
             fullName: "Shabby Thesealion"
         )
@@ -172,10 +171,9 @@ class SignalAccountTest: XCTestCase {
 
     func testFullNameOnly() {
         let contact = Contact(
-            phoneNumber: "+16505550100",
-            phoneNumberLabel: "",
-            givenName: nil,
-            familyName: nil,
+            cnContactId: nil,
+            firstName: nil,
+            lastName: nil,
             nickname: nil,
             fullName: "Company Name"
         )
@@ -255,18 +253,16 @@ extension SignalAccount: ValidatableModel {
 
     private enum ContactFixtures {
         static let contactA = Contact(
-            phoneNumber: "myPhoneNumber",
-            phoneNumberLabel: "hakuna",
-            givenName: "matata",
-            familyName: "what",
+            cnContactId: nil,
+            firstName: "matata",
+            lastName: "what",
             nickname: "a",
             fullName: "wonderful"
         )
         static let contactB = Contact(
-            phoneNumber: "myPhoneNumber",
-            phoneNumberLabel: "phrase",
-            givenName: "ain't",
-            familyName: "no",
+            cnContactId: nil,
+            firstName: "ain't",
+            lastName: "no",
             nickname: "passing",
             fullName: "phrase"
         )

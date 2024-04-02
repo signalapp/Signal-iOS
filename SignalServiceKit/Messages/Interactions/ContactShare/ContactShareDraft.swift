@@ -41,7 +41,7 @@ public class ContactShareDraft {
 
     public static func load(
         cnContact: CNContact,
-        signalContact: @autoclosure () -> Contact,
+        signalContact: @autoclosure () -> SystemContact,
         contactManager: any ContactManager,
         phoneNumberUtil: PhoneNumberUtil,
         profileManager: any ProfileManager,
@@ -71,7 +71,7 @@ public class ContactShareDraft {
 
     private static func loadAvatarData(
         cnContact: CNContact,
-        signalContact: @autoclosure () -> Contact,
+        signalContact: @autoclosure () -> SystemContact,
         contactManager: any ContactManager,
         phoneNumberUtil: PhoneNumberUtil,
         profileManager: any ProfileManager,

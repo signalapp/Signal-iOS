@@ -7,34 +7,34 @@ import Foundation
 import SignalCoreKit
 
 public struct FetchedSystemContacts {
-    struct ContactRef {
-        let uniqueId: String
+    struct SystemContactRef {
+        let cnContactId: String
         let userProvidedLabel: String
     }
 
-    let phoneNumberToContactRef: [CanonicalPhoneNumber: ContactRef]
-    let uniqueIdToContact: [String: Contact]
+    let phoneNumberToContactRef: [CanonicalPhoneNumber: SystemContactRef]
+    let cnContactIdToContact: [String: SystemContact]
 
     private init(
-        phoneNumberToContactRef: [CanonicalPhoneNumber: ContactRef],
-        uniqueIdToContact: [String: Contact]
+        phoneNumberToContactRef: [CanonicalPhoneNumber: SystemContactRef],
+        cnContactIdToContact: [String: SystemContact]
     ) {
         self.phoneNumberToContactRef = phoneNumberToContactRef
-        self.uniqueIdToContact = uniqueIdToContact
+        self.cnContactIdToContact = cnContactIdToContact
     }
 
-    public static func parseContacts(
-        _ orderedContacts: [Contact],
+    static func parseContacts(
+        _ orderedContacts: [SystemContact],
         phoneNumberUtil: PhoneNumberUtil,
         localPhoneNumber: String?
     ) -> FetchedSystemContacts {
         // A given Contact may have multiple phone numbers.
-        var phoneNumberToContactRef = [CanonicalPhoneNumber: ContactRef]()
-        var uniqueIdToContact = [String: Contact]()
+        var phoneNumberToContactRef = [CanonicalPhoneNumber: SystemContactRef]()
+        var cnContactIdToContact = [String: SystemContact]()
         let localPhoneNumber = E164(localPhoneNumber).map(CanonicalPhoneNumber.init(nonCanonicalPhoneNumber:))
-        for contact in orderedContacts {
+        for systemContact in orderedContacts {
             var parsedPhoneNumbers = Self._parsePhoneNumbers(
-                for: contact,
+                for: systemContact,
                 phoneNumberUtil: phoneNumberUtil,
                 localPhoneNumber: localPhoneNumber
             )
@@ -46,32 +46,32 @@ public struct FetchedSystemContacts {
             if parsedPhoneNumbers.isEmpty {
                 continue
             }
-            uniqueIdToContact[contact.uniqueId] = contact
+            cnContactIdToContact[systemContact.cnContactId] = systemContact
             for parsedPhoneNumber in parsedPhoneNumbers {
                 let phoneNumber = parsedPhoneNumber.canonicalValue
                 if phoneNumberToContactRef[phoneNumber] != nil {
                     // We've already picked a Contact for this number.
                     continue
                 }
-                phoneNumberToContactRef[phoneNumber] = ContactRef(
-                    uniqueId: contact.uniqueId,
+                phoneNumberToContactRef[phoneNumber] = SystemContactRef(
+                    cnContactId: systemContact.cnContactId,
                     userProvidedLabel: parsedPhoneNumber.userProvidedLabel
                 )
             }
         }
         return FetchedSystemContacts(
             phoneNumberToContactRef: phoneNumberToContactRef,
-            uniqueIdToContact: uniqueIdToContact
+            cnContactIdToContact: cnContactIdToContact
         )
     }
 
     public static func parsePhoneNumbers(
-        for contact: Contact,
+        for systemContact: SystemContact,
         phoneNumberUtil: PhoneNumberUtil,
         localPhoneNumber: CanonicalPhoneNumber?
     ) -> [CanonicalPhoneNumber] {
         return _parsePhoneNumbers(
-            for: contact,
+            for: systemContact,
             phoneNumberUtil: phoneNumberUtil,
             localPhoneNumber: localPhoneNumber
         ).map { $0.canonicalValue }
@@ -83,21 +83,21 @@ public struct FetchedSystemContacts {
     }
 
     private static func _parsePhoneNumbers(
-        for contact: Contact,
+        for systemContact: SystemContact,
         phoneNumberUtil: PhoneNumberUtil,
         localPhoneNumber: CanonicalPhoneNumber?
     ) -> [ParsedPhoneNumber] {
         var results = [ParsedPhoneNumber]()
-        for userTextPhoneNumber in contact.userTextPhoneNumbers {
-            let phoneNumbers = parsePhoneNumber(
-                userTextPhoneNumber,
+        for (phoneNumber, phoneNumberLabel) in systemContact.phoneNumbers {
+            let parsedPhoneNumbers = parsePhoneNumber(
+                phoneNumber,
                 phoneNumberUtil: phoneNumberUtil,
                 localPhoneNumber: localPhoneNumber
             )
-            for phoneNumber in phoneNumbers {
+            for parsedPhoneNumber in parsedPhoneNumbers {
                 results.append(ParsedPhoneNumber(
-                    canonicalValue: phoneNumber,
-                    userProvidedLabel: contact.userTextPhoneNumberLabels[userTextPhoneNumber] ?? ""
+                    canonicalValue: parsedPhoneNumber,
+                    userProvidedLabel: phoneNumberLabel ?? ""
                 ))
             }
         }

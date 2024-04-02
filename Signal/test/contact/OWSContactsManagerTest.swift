@@ -61,25 +61,13 @@ class OWSContactsManagerTest: SignalBaseTest {
         }
     }
 
-    private func createContacts(_ contacts: [Contact]) {
-        write { transaction in
-            (self.contactsManager as! OWSContactsManager).setFetchedSystemContacts(
-                .parseContacts(
-                    contacts,
-                    phoneNumberUtil: phoneNumberUtil,
-                    localPhoneNumber: LocalIdentifiers.forUnitTests.phoneNumber
-                )
-            )
-        }
-    }
-
     private func makeAccount(
         serviceId: ServiceId,
         phoneNumber: E164,
         name: String? = nil
     ) -> SignalAccount {
         let contact = name.map { name -> Contact in
-            makeContact(phoneNumber: phoneNumber, name: name)
+            makeContact(fullName: name)
         }
 
         return SignalAccount(
@@ -91,15 +79,14 @@ class OWSContactsManagerTest: SignalBaseTest {
         )
     }
 
-    private func makeContact(phoneNumber: E164, name: String) -> Contact {
-        let parts = name.components(separatedBy: " ")
+    private func makeContact(fullName: String) -> Contact {
+        let parts = fullName.components(separatedBy: " ")
         return Contact(
-            phoneNumber: phoneNumber.stringValue,
-            phoneNumberLabel: "home",
-            givenName: parts.first,
-            familyName: parts.dropFirst().first,
+            cnContactId: nil,
+            firstName: parts.first,
+            lastName: parts.dropFirst().first,
             nickname: nil,
-            fullName: name
+            fullName: fullName
         )
     }
 

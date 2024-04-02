@@ -202,11 +202,11 @@ private class AddContactShareToContactsFlow {
         into oldCNContact: CNContact,
         localPhoneNumber: CanonicalPhoneNumber?
     ) -> CNContact {
-        let oldContact = Contact(systemContact: oldCNContact)
+        let oldContact = SystemContact(cnContact: oldCNContact)
         let mergedCNContact = oldCNContact.mutableCopy() as! CNMutableContact
 
         // Name (all or nothing -- no piecemeal merges)
-        let formattedFullName = Contact.formattedFullName(cnContact: mergedCNContact)
+        let formattedFullName = SystemContact.formattedFullName(for: mergedCNContact)
 
         if formattedFullName.isEmpty {
             mergedCNContact.namePrefix = newCNContact.namePrefix.stripped
@@ -222,7 +222,7 @@ private class AddContactShareToContactsFlow {
         }
 
         // Phone Numbers
-        var existingUserTextPhoneNumbers = Set(oldContact.userTextPhoneNumbers)
+        var existingUserTextPhoneNumbers = Set(oldContact.phoneNumbers.map { $0.value })
         var existingCanonicalPhoneNumbers = Set(FetchedSystemContacts.parsePhoneNumbers(
             for: oldContact,
             phoneNumberUtil: NSObject.phoneNumberUtil,
@@ -248,7 +248,7 @@ private class AddContactShareToContactsFlow {
         mergedCNContact.phoneNumbers = mergedPhoneNumbers
 
         // Emails
-        var existingEmailAddresses = Set(oldContact.emails)
+        var existingEmailAddresses = Set(oldContact.emailAddresses)
         var mergedEmailAddresses = mergedCNContact.emailAddresses
         for labeledEmailAddress in newCNContact.emailAddresses {
             let emailAddress = labeledEmailAddress.value.ows_stripped()
@@ -326,8 +326,8 @@ private class AddContactShareToContactsFlowNavigationController: UINavigationCon
         dismiss(animated: true, completion: completion)
     }
 
-    func contactPicker(_ contactPicker: ContactPickerViewController, didSelect contact: Contact) {
-        flow.existingContact = contactsManager.cnContact(withId: contact.cnContactId)
+    func contactPicker(_ contactPicker: ContactPickerViewController, didSelect systemContact: SystemContact) {
+        flow.existingContact = contactsManager.cnContact(withId: systemContact.cnContactId)
         // Note that CNContactViewController uses Cancel as the left bar button item (not the < back button).
         // Therefore to go back to contact picker CNContactViewControllerDelegate method above
         // would need to be modified to handle contact editing cancellation.
@@ -336,11 +336,11 @@ private class AddContactShareToContactsFlowNavigationController: UINavigationCon
         pushViewController(contactViewController, animated: true)
     }
 
-    func contactPicker(_: ContactPickerViewController, didSelectMultiple contacts: [Contact]) {
+    func contactPicker(_: ContactPickerViewController, didSelectMultiple systemContacts: [SystemContact]) {
         owsFailBeta("Invalid configuration")
     }
 
-    func contactPicker(_: ContactPickerViewController, shouldSelect contact: Contact) -> Bool {
+    func contactPicker(_: ContactPickerViewController, shouldSelect systemContact: SystemContact) -> Bool {
         true
     }
 }

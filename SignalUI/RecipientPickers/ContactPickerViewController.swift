@@ -9,9 +9,9 @@ import UIKit
 
 public protocol ContactPickerDelegate: AnyObject {
     func contactPickerDidCancel(_: ContactPickerViewController)
-    func contactPicker(_: ContactPickerViewController, didSelect contact: Contact)
-    func contactPicker(_: ContactPickerViewController, didSelectMultiple contacts: [Contact])
-    func contactPicker(_: ContactPickerViewController, shouldSelect contact: Contact) -> Bool
+    func contactPicker(_: ContactPickerViewController, didSelect contact: SystemContact)
+    func contactPicker(_: ContactPickerViewController, didSelectMultiple contacts: [SystemContact])
+    func contactPicker(_: ContactPickerViewController, shouldSelect contact: SystemContact) -> Bool
 }
 
 public enum SubtitleCellValue {
@@ -118,7 +118,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
 
     private let contactStore = CNContactStore()
 
-    private var selectedContacts = [Contact]()
+    private var selectedContacts = [SystemContact]()
 
     private func updateTableContents() {
         guard contactsManagerImpl.sharingAuthorization == .authorized else {
@@ -178,53 +178,53 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
     }
 
     private func tableItem(for cnContact: CNContact) -> OWSTableItem {
-        let contact = Contact(systemContact: cnContact)
+        let systemContact = SystemContact(cnContact: cnContact)
         return OWSTableItem(
             dequeueCellBlock: { [weak self] tableView in
-                self?.cell(for: contact, tableView: tableView) ?? UITableViewCell()
+                self?.cell(for: systemContact, tableView: tableView) ?? UITableViewCell()
             },
             actionBlock: { [weak self] in
-                self?.tryToSelectContact(contact)
+                self?.tryToSelectContact(systemContact)
             }
         )
     }
 
-    private func cell(for contact: Contact, tableView: UITableView) -> UITableViewCell? {
+    private func cell(for systemContact: SystemContact, tableView: UITableView) -> UITableViewCell? {
         guard let cell = tableView.dequeueReusableCell(ContactCell.self) else { return nil }
 
         cell.configure(
-            contact: contact,
+            systemContact: systemContact,
             sortOrder: sortOrder,
             subtitleType: subtitleCellType,
             showsWhenSelected: allowsMultipleSelection
         )
 
-        if let delegate, !delegate.contactPicker(self, shouldSelect: contact) {
+        if let delegate, !delegate.contactPicker(self, shouldSelect: systemContact) {
             cell.selectionStyle = .none
             cell.isSelected = false
         } else {
             cell.selectionStyle = .default
-            cell.isSelected = selectedContacts.contains(where: { $0.uniqueId == contact.uniqueId })
+            cell.isSelected = selectedContacts.contains(where: { $0.cnContactId == systemContact.cnContactId })
         }
 
         return cell
     }
 
-    private func tryToSelectContact(_ contact: Contact) {
-        if let delegate, !delegate.contactPicker(self, shouldSelect: contact) {
+    private func tryToSelectContact(_ systemContact: SystemContact) {
+        if let delegate, !delegate.contactPicker(self, shouldSelect: systemContact) {
             return
         }
 
         guard allowsMultipleSelection else {
-            delegate?.contactPicker(self, didSelect: contact)
+            delegate?.contactPicker(self, didSelect: systemContact)
             return
         }
 
-        let isCellSelected = selectedContacts.contains(where: { $0.uniqueId == contact.uniqueId })
+        let isCellSelected = selectedContacts.contains(where: { $0.cnContactId == systemContact.cnContactId })
         if isCellSelected {
-            selectedContacts.removeAll(where: { $0.uniqueId == contact.uniqueId })
+            selectedContacts.removeAll(where: { $0.cnContactId == systemContact.cnContactId })
         } else {
-            selectedContacts.append(contact)
+            selectedContacts.append(systemContact)
         }
     }
 

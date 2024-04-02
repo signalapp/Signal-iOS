@@ -104,21 +104,21 @@ private class AddToContactsFlowNavigationController: UINavigationController, CNC
         dismiss(animated: true, completion: completion)
     }
 
-    func contactPicker(_ contactPicker: ContactPickerViewController, didSelect contact: Contact) {
+    func contactPicker(_ contactPicker: ContactPickerViewController, didSelect systemContact: SystemContact) {
         guard let addToContactFlow = flow as? AddToExistingContactFlow else {
             owsFailBeta("Invalid flow.")
             return
         }
-        addToContactFlow.contact = contactsManager.cnContact(withId: contact.cnContactId)
+        addToContactFlow.contact = contactsManager.cnContact(withId: systemContact.cnContactId)
         let contactViewController = contactsViewHelper.contactViewController(for: addToContactFlow)
         pushViewController(contactViewController, animated: true)
     }
 
-    func contactPicker(_: ContactPickerViewController, didSelectMultiple contacts: [Contact]) {
+    func contactPicker(_: ContactPickerViewController, didSelectMultiple systemContacts: [SystemContact]) {
         owsFailBeta("Invalid configuration")
     }
 
-    func contactPicker(_: ContactPickerViewController, shouldSelect contact: Contact) -> Bool {
+    func contactPicker(_: ContactPickerViewController, shouldSelect systemContact: SystemContact) -> Bool {
         true
     }
 }

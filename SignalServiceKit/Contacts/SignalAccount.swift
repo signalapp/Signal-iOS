@@ -385,21 +385,3 @@ extension SignalAccount: NSCopying {
         )
     }
 }
-
-// MARK: - Testing
-
-#if TESTABLE_BUILD
-
-public extension SignalAccount {
-    func replaceContactForTests(_ contact: Contact?) {
-        self.contact = contact
-    }
-}
-
-public extension UserDefaults {
-    func setNicknamePreferred(isPreferred: Bool) {
-        self.set(isPreferred, forKey: kSignalPreferNicknamesPreference)
-    }
-}
-
-#endif

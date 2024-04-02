@@ -178,9 +178,7 @@ public class InviteFlow: NSObject {
 
 extension InviteFlow: ContactPickerDelegate {
 
-    public func contactPicker(_: ContactPickerViewController, didSelectMultiple contacts: [Contact]) {
-        Logger.debug("didSelectContacts:\(contacts)")
-
+    public func contactPicker(_: ContactPickerViewController, didSelectMultiple systemContacts: [SystemContact]) {
         guard let inviteChannel = channel else {
             Logger.error("unexpected nil channel after returning from contact picker.")
             popToPresentingViewController(animated: true)
@@ -189,15 +187,15 @@ extension InviteFlow: ContactPickerDelegate {
 
         switch inviteChannel {
         case .message:
-            let phoneNumbers: [String] = contacts.map { $0.userTextPhoneNumbers.first }.filter { $0 != nil }.map { $0! }
+            let phoneNumbers: [String] = systemContacts.map { $0.phoneNumbers.first?.value }.compacted()
             dismissAndSendSMSTo(phoneNumbers: phoneNumbers)
         case .mail:
-            let recipients: [String] = contacts.map { $0.emails.first }.filter { $0 != nil }.map { $0! }
+            let recipients: [String] = systemContacts.map { $0.emailAddresses.first }.compacted()
             sendMailTo(emails: recipients)
         }
     }
 
-    public func contactPicker(_: ContactPickerViewController, shouldSelect contact: Contact) -> Bool {
+    public func contactPicker(_: ContactPickerViewController, shouldSelect systemContact: SystemContact) -> Bool {
         guard let inviteChannel = channel else {
             Logger.error("unexpected nil channel in contact picker.")
             return true
@@ -205,9 +203,9 @@ extension InviteFlow: ContactPickerDelegate {
 
         switch inviteChannel {
         case .message:
-            return contact.userTextPhoneNumbers.count > 0
+            return systemContact.phoneNumbers.count > 0
         case .mail:
-            return contact.emails.count > 0
+            return systemContact.emailAddresses.count > 0
         }
     }
 
@@ -216,7 +214,7 @@ extension InviteFlow: ContactPickerDelegate {
         popToPresentingViewController(animated: true)
     }
 
-    public func contactPicker(_: ContactPickerViewController, didSelect contact: Contact) {
+    public func contactPicker(_: ContactPickerViewController, didSelect systemContact: SystemContact) {
         owsFailDebug("InviteFlow only supports multi-select")
         popToPresentingViewController(animated: true)
     }

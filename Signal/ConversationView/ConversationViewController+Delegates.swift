@@ -84,11 +84,10 @@ extension ConversationViewController: ContactPickerDelegate {
         dismiss(animated: true, completion: nil)
     }
 
-    public func contactPicker(_ contactPicker: ContactPickerViewController, didSelect contact: Contact) {
+    public func contactPicker(_ contactPicker: ContactPickerViewController, didSelect systemContact: SystemContact) {
         AssertIsOnMainThread()
-        owsAssertDebug(contact.cnContactId != nil)
 
-        guard let cnContact = contactsManager.cnContact(withId: contact.cnContactId) else {
+        guard let cnContact = contactsManager.cnContact(withId: systemContact.cnContactId) else {
             owsFailDebug("Could not load system contact.")
             return
         }
@@ -96,7 +95,7 @@ extension ConversationViewController: ContactPickerDelegate {
         let contactShareDraft = databaseStorage.read { tx in
             return ContactShareDraft.load(
                 cnContact: cnContact,
-                signalContact: contact,
+                signalContact: systemContact,
                 contactManager: Self.contactsManager,
                 phoneNumberUtil: Self.phoneNumberUtil,
                 profileManager: Self.profileManager,
@@ -115,12 +114,12 @@ extension ConversationViewController: ContactPickerDelegate {
         navigationController.pushViewController(approveContactShare, animated: true)
     }
 
-    public func contactPicker(_: ContactPickerViewController, didSelectMultiple contacts: [Contact]) {
+    public func contactPicker(_: ContactPickerViewController, didSelectMultiple systemContacts: [SystemContact]) {
         owsFailDebug("Multiple selection not allowed.")
         dismiss(animated: true, completion: nil)
     }
 
-    public func contactPicker(_: ContactPickerViewController, shouldSelect contact: Contact) -> Bool {
+    public func contactPicker(_: ContactPickerViewController, shouldSelect systemContact: SystemContact) -> Bool {
         // Any reason to preclude contacts?
         return true
     }

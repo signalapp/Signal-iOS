@@ -66,23 +66,18 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
         }
     }
 
-    public func configure(contact: Contact, sortOrder: CNContactSortOrder, subtitleType: SubtitleCellValue, showsWhenSelected: Bool) {
+    public func configure(systemContact: SystemContact, sortOrder: CNContactSortOrder, subtitleType: SubtitleCellValue, showsWhenSelected: Bool) {
         self.showsWhenSelected = showsWhenSelected
 
-        let cnContact: CNContact?
-        if let cnContactId = contact.cnContactId {
-            cnContact = contactsManager.cnContact(withId: cnContactId)
-        } else {
-            cnContact = nil
-        }
+        let cnContact = contactsManager.cnContact(withId: systemContact.cnContactId)
 
         if let cnContact {
             titleLabel.attributedText = cnContact.formattedFullName(sortOrder: sortOrder, font: titleLabel.font)
         } else {
-            titleLabel.text = contact.fullName
+            titleLabel.text = systemContact.fullName
         }
 
-        updateSubtitle(subtitleType: subtitleType, contact: contact)
+        updateSubtitle(subtitleType: subtitleType, systemContact: systemContact)
 
         var contactImage: UIImage?
         if let cnContact {
@@ -94,8 +89,8 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
         }
         if contactImage == nil {
             var nameComponents = PersonNameComponents()
-            nameComponents.givenName = contact.firstName
-            nameComponents.familyName = contact.lastName
+            nameComponents.givenName = systemContact.firstName
+            nameComponents.familyName = systemContact.lastName
 
             let avatar = databaseStorage.read { transaction in
                 Self.avatarBuilder.avatarImage(
@@ -109,23 +104,23 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
         contactImageView.image = contactImage
     }
 
-    func updateSubtitle(subtitleType: SubtitleCellValue, contact: Contact) {
+    private func updateSubtitle(subtitleType: SubtitleCellValue, systemContact: SystemContact) {
         switch subtitleType {
         case .none:
             owsAssertBeta(subtitleLabel.superview == nil)
         case .phoneNumber:
             textStackView.addArrangedSubview(subtitleLabel)
 
-            if let firstPhoneNumber = contact.userTextPhoneNumbers.first {
-                subtitleLabel.text = firstPhoneNumber
+            if let firstPhoneNumber = systemContact.phoneNumbers.first {
+                subtitleLabel.text = firstPhoneNumber.value
             } else {
                 subtitleLabel.text = OWSLocalizedString("CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE", comment: "table cell subtitle when contact card has no known phone number")
             }
         case .email:
             textStackView.addArrangedSubview(subtitleLabel)
 
-            if let firstEmail = contact.emails.first {
-                subtitleLabel.text = firstEmail
+            if let firstEmailAddress = systemContact.emailAddresses.first {
+                subtitleLabel.text = firstEmailAddress
             } else {
                 subtitleLabel.text = OWSLocalizedString("CONTACT_PICKER_NO_EMAILS_AVAILABLE", comment: "table cell subtitle when contact card has no email")
             }

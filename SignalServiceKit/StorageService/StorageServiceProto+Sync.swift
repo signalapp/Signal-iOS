@@ -688,10 +688,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         )
         if let systemFullName {
             let newContact = Contact(
-                phoneNumber: phoneNumber,
-                phoneNumberLabel: CommonStrings.mainPhoneNumberLabel,
-                givenName: record.systemGivenName,
-                familyName: record.systemFamilyName,
+                cnContactId: nil,
+                firstName: record.systemGivenName,
+                lastName: record.systemFamilyName,
                 nickname: record.systemNickname,
                 fullName: systemFullName
             )

@@ -9,29 +9,25 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class ContactStreamTest: SignalBaseTest {
-
-    // MARK: - Test Life Cycle
-
-    override func setUp() {
-        super.setUp()
-        Self.databaseStorage.write { tx in
-            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
-            )
-        }
-    }
-
-    // MARK: -
+final class ContactStreamTest: XCTestCase {
 
     let outputContactSyncData = "GQoMKzEzMjMxMTExMTExEgdBbGljZS0xQAAxEgdBbGljZS0yQABKJDMxY2UxNDEyLTlhMjgtNGU2Zi1iNGVlLTIyMjIyMjIyMjIyMj8KDCsxMzIxMzMzMzMzMxIHQWxpY2UtM0AASiQxZDRhYjA0NS04OGZiLTRjNGUtOWY2YS0zMzMzMzMzMzMzMzM="
 
+    private func makeAccount(phoneNumber: String?, serviceId: String?, fullName: String) -> SignalAccount {
+        return SignalAccount(
+            contact: Contact(cnContactId: nil, firstName: nil, lastName: nil, nickname: nil, fullName: fullName),
+            contactAvatarHash: nil,
+            multipleAccountLabelText: nil,
+            recipientPhoneNumber: phoneNumber,
+            recipientServiceId: serviceId.map({ Aci.constantForTesting($0) })
+        )
+    }
+
     func test_writeContactSync() throws {
         let signalAccounts = [
-            SignalAccount(address: SignalServiceAddress(phoneNumber: "+13231111111")),
-            SignalAccount(address: SignalServiceAddress(aciString: "31ce1412-9a28-4e6f-b4ee-222222222222")),
-            SignalAccount(address: SignalServiceAddress(aciString: "1d4ab045-88fb-4c4e-9f6a-333333333333", phoneNumber: "+13213333333"))
+            makeAccount(phoneNumber: "+13231111111", serviceId: nil, fullName: "Alice-1"),
+            makeAccount(phoneNumber: nil, serviceId: "31ce1412-9a28-4e6f-b4ee-222222222222", fullName: "Alice-2"),
+            makeAccount(phoneNumber: "+13213333333", serviceId: "1d4ab045-88fb-4c4e-9f6a-333333333333", fullName: "Alice-3"),
         ]
 
         let streamData = try buildContactSyncData(signalAccounts: signalAccounts)
@@ -84,22 +80,13 @@ class ContactStreamTest: SignalBaseTest {
         }
     }
 
-    func buildContactSyncData(signalAccounts: [SignalAccount]) throws -> Data {
+    private func buildContactSyncData(signalAccounts: [SignalAccount]) throws -> Data {
         let dataOutputStream = OutputStream(toMemory: ())
         dataOutputStream.open()
         defer { dataOutputStream.close() }
         let contactOutputStream = ContactOutputStream(outputStream: dataOutputStream)
 
         for signalAccount in signalAccounts {
-            let contactFactory = ContactFactory()
-            contactFactory.fullNameBuilder = {
-                "Alice-\(signalAccount.recipientAddress.serviceIdentifier!.suffix(1))"
-            }
-            contactFactory.cnContactIdBuilder = { "123" }
-            contactFactory.uniqueIdBuilder = { "123" }
-
-            signalAccount.replaceContactForTests(try contactFactory.build())
-
             try contactOutputStream.writeContact(
                 aci: signalAccount.recipientServiceId as? Aci,
                 phoneNumber: E164(signalAccount.recipientPhoneNumber),

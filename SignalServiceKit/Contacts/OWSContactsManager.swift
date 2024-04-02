@@ -131,7 +131,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
 
 extension OWSContactsManager: SystemContactsFetcherDelegate {
 
-    public func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, hasAuthorizationStatus authorizationStatus: RawContactAuthorizationStatus) {
+    func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, hasAuthorizationStatus authorizationStatus: RawContactAuthorizationStatus) {
         guard isEditingAllowed else {
             owsFailDebug("Syncing contacts isn't available on linked devices.")
             return
@@ -144,7 +144,7 @@ extension OWSContactsManager: SystemContactsFetcherDelegate {
         }
     }
 
-    public func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact], isUserRequested: Bool) {
+    func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [SystemContact], isUserRequested: Bool) {
         guard isEditingAllowed else {
             owsFailDebug("Syncing contacts isn't available on linked devices.")
             return
@@ -571,12 +571,9 @@ extension OWSContactsManager: ContactManager {
 
     // MARK: - Intersection
 
-    private func buildContactAvatarHash(for contact: Contact) -> Data? {
+    private func buildContactAvatarHash(for systemContact: SystemContact) -> Data? {
         return autoreleasepool {
-            guard let cnContactId: String = contact.cnContactId else {
-                owsFailDebug("Missing cnContactId.")
-                return nil
-            }
+            let cnContactId = systemContact.cnContactId
             guard let contactAvatarData = avatarData(for: cnContactId) else {
                 return nil
             }
@@ -616,18 +613,18 @@ extension OWSContactsManager: ContactManager {
                 continue
             }
             discoverableRecipients[phoneNumber] = (signalRecipient, serviceId)
-            discoverablePhoneNumberCounts[contactRef.uniqueId, default: 0] += 1
+            discoverablePhoneNumberCounts[contactRef.cnContactId, default: 0] += 1
         }
         var signalAccounts = [SignalAccount]()
         for (phoneNumber, contactRef) in fetchedSystemContacts.phoneNumberToContactRef {
             guard let (signalRecipient, serviceId) = discoverableRecipients[phoneNumber] else {
                 continue
             }
-            guard let discoverablePhoneNumberCount = discoverablePhoneNumberCounts[contactRef.uniqueId] else {
+            guard let discoverablePhoneNumberCount = discoverablePhoneNumberCounts[contactRef.cnContactId] else {
                 owsFailDebug("Couldn't find relatedPhoneNumbers")
                 continue
             }
-            guard let systemContact = fetchedSystemContacts.uniqueIdToContact[contactRef.uniqueId] else {
+            guard let systemContact = fetchedSystemContacts.cnContactIdToContact[contactRef.cnContactId] else {
                 owsFailDebug("Couldn't find systemContact")
                 continue
             }
@@ -637,7 +634,13 @@ extension OWSContactsManager: ContactManager {
             )
             let contactAvatarHash = buildContactAvatarHash(for: systemContact)
             let signalAccount = SignalAccount(
-                contact: systemContact,
+                contact: Contact(
+                    cnContactId: systemContact.cnContactId,
+                    firstName: systemContact.firstName,
+                    lastName: systemContact.lastName,
+                    nickname: systemContact.nickname,
+                    fullName: systemContact.fullName
+                ),
                 contactAvatarHash: contactAvatarHash,
                 multipleAccountLabelText: multipleAccountLabelText,
                 recipientPhoneNumber: signalRecipient.phoneNumber?.stringValue,
@@ -836,12 +839,11 @@ extension OWSContactsManager: ContactManager {
         static let didIntersectAddressBook = "didIntersectAddressBook"
     }
 
-    @objc
-    func updateContacts(_ addressBookContacts: [Contact]?, isUserRequested: Bool) {
+    func updateContacts(_ addressBookContacts: [SystemContact]?, isUserRequested: Bool) {
         swiftValues.intersectionQueue.async { self._updateContacts(addressBookContacts, isUserRequested: isUserRequested) }
     }
 
-    private func _updateContacts(_ addressBookContacts: [Contact]?, isUserRequested: Bool) {
+    private func _updateContacts(_ addressBookContacts: [SystemContact]?, isUserRequested: Bool) {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
         let fetchedSystemContacts = FetchedSystemContacts.parseContacts(
@@ -1132,7 +1134,7 @@ extension OWSContactsManager: ContactManager {
         }
         let fetchedSystemContacts = swiftValues.systemContactsCache.fetchedSystemContacts.get()
         let canonicalPhoneNumber = CanonicalPhoneNumber(nonCanonicalPhoneNumber: phoneNumber)
-        return fetchedSystemContacts?.phoneNumberToContactRef[canonicalPhoneNumber]?.uniqueId
+        return fetchedSystemContacts?.phoneNumberToContactRef[canonicalPhoneNumber]?.cnContactId
     }
 
     // MARK: - Display Names

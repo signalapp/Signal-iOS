@@ -52,7 +52,10 @@ extension ContactManager {
 
     public func avatarData(for cnContactId: String?) -> Data? {
         // Don't bother to cache avatar data.
-        return Contact.avatarData(for: cnContact(withId: cnContactId))
+        guard let cnContact = self.cnContact(withId: cnContactId) else {
+            return nil
+        }
+        return SystemContact.avatarData(for: cnContact)
     }
 
     public func avatarImage(for cnContactId: String?) -> UIImage? {

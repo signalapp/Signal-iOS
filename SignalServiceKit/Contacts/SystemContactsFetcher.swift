@@ -10,13 +10,12 @@ import ContactsUI
 protocol ContactStoreAdaptee {
     var rawAuthorizationStatus: RawContactAuthorizationStatus { get }
     func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void)
-    func fetchContacts() -> Result<[Contact], Error>
+    func fetchContacts() -> Result<[SystemContact], Error>
     func fetchCNContact(contactId: String) -> CNContact?
     func startObservingChanges(changeHandler: @escaping () -> Void)
 }
 
-public
-class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
+public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
     private let contactStoreForLargeRequests = CNContactStore()
     private let contactStoreForSmallRequests = CNContactStore()
     private var changeHandler: (() -> Void)?
@@ -99,14 +98,14 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
         contactStoreForLargeRequests.requestAccess(for: .contacts, completionHandler: completionHandler)
     }
 
-    func fetchContacts() -> Result<[Contact], Error> {
+    func fetchContacts() -> Result<[SystemContact], Error> {
         do {
-            var contacts = [Contact]()
+            var contacts = [SystemContact]()
             let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
             contactFetchRequest.sortOrder = .userDefault
             try autoreleasepool {
                 try contactStoreForLargeRequests.enumerateContacts(with: contactFetchRequest) { (systemContact, _) -> Void in
-                    contacts.append(Contact(systemContact: systemContact))
+                    contacts.append(SystemContact(cnContact: systemContact))
                 }
             }
             return .success(contacts)
@@ -150,11 +149,10 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
     }
 }
 
-@objc
-public protocol SystemContactsFetcherDelegate: AnyObject {
+protocol SystemContactsFetcherDelegate: AnyObject {
     func systemContactsFetcher(
         _ systemContactsFetcher: SystemContactsFetcher,
-        updatedContacts contacts: [Contact],
+        updatedContacts contacts: [SystemContact],
         isUserRequested: Bool
     )
     func systemContactsFetcher(
@@ -172,8 +170,7 @@ public class SystemContactsFetcher: NSObject {
     var lastDelegateNotificationDate: Date?
     let contactStoreAdapter: ContactsFrameworkContactStoreAdaptee
 
-    @objc
-    public weak var delegate: SystemContactsFetcherDelegate?
+    weak var delegate: SystemContactsFetcherDelegate?
 
     @objc
     public var rawAuthorizationStatus: RawContactAuthorizationStatus {
@@ -363,7 +360,7 @@ public class SystemContactsFetcher: NSObject {
         serialQueue.async {
             Logger.info("Fetching contacts")
 
-            let contacts: [Contact]
+            let contacts: [SystemContact]
             switch self.contactStoreAdapter.fetchContacts() {
             case .success(let result):
                 contacts = result
