@@ -163,19 +163,24 @@ public class AppVersionImpl: AppVersion {
         userDefaults.set(currentAppVersion, forKey: lastVersionKey)
     }
 
+    private func formatForLogging(_ versionNumber: String?) -> String {
+        if let versionNumber {
+            // The long version string looks like an IPv4 address. To prevent the log
+            // scrubber from scrubbing it, we replace `.` with `_`.
+            return versionNumber.replacingOccurrences(of: ".", with: "_")
+        } else {
+            return "none"
+        }
+    }
+
     private func startupLogging() {
-        Logger.info("firstAppVersion: \(firstAppVersion)")
-        Logger.info("lastAppVersion: \(lastAppVersion ?? "none")")
-
-        // The long version string looks like an IPv4 address. To prevent the log scrubber from
-        // scrubbing it, we replace `.` with `_`.
-        let currentAppVersionFormatted = currentAppVersion.replacingOccurrences(of: ".", with: "_")
-        Logger.info("currentAppVersion: \(currentAppVersionFormatted)")
-
-        Logger.info("lastCompletedLaunchAppVersion: \(lastCompletedLaunchAppVersion ?? "none")")
-        Logger.info("lastCompletedLaunchMainAppVersion: \(lastCompletedLaunchMainAppVersion ?? "none")")
-        Logger.info("lastCompletedLaunchSAEAppVersion: \(lastCompletedLaunchSAEAppVersion ?? "none")")
-        Logger.info("lastCompletedLaunchNSEAppVersion: \(lastCompletedLaunchNSEAppVersion ?? "none")")
+        Logger.info("firstAppVersion: \(formatForLogging(firstAppVersion))")
+        Logger.info("lastAppVersion: \(formatForLogging(lastAppVersion))")
+        Logger.info("currentAppVersion: \(formatForLogging(currentAppVersion))")
+        Logger.info("lastCompletedLaunchAppVersion: \(formatForLogging(lastCompletedLaunchAppVersion))")
+        Logger.info("lastCompletedLaunchMainAppVersion: \(formatForLogging(lastCompletedLaunchMainAppVersion))")
+        Logger.info("lastCompletedLaunchSAEAppVersion: \(formatForLogging(lastCompletedLaunchSAEAppVersion))")
+        Logger.info("lastCompletedLaunchNSEAppVersion: \(formatForLogging(lastCompletedLaunchNSEAppVersion))")
 
         let databaseCorruptionState = DatabaseCorruptionState(userDefaults: userDefaults)
         Logger.info("Database corruption state: \(databaseCorruptionState)")
