@@ -19,7 +19,7 @@ import SignalCoreKit
 private let kSignalPreferNicknamesPreference = "NSPersonNameDefaultShouldPreferNicknamesPreference"
 
 @objc(SignalAccount)
-public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding {
+public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_SignalAccount"
     public static var recordType: UInt { SDSRecordType.signalAccount.rawValue }
 
@@ -169,84 +169,6 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         try container.encode(familyName, forKey: .familyName)
         try container.encode(nickname, forKey: .nickname)
         try container.encode(fullName, forKey: .fullName)
-    }
-
-    private enum NSCoderKeys: String {
-        case grdbId
-        case uniqueId
-        case accountSchemaVersion
-        case contact
-        case contactAvatarHash
-        case multipleAccountLabelText
-        case recipientId
-        case recipientPhoneNumber
-        case recipientServiceId = "recipientUUID"
-        case cnContactId
-        case givenName
-        case familyName
-        case nickname
-        case fullName
-    }
-
-    public init?(coder: NSCoder) {
-        func decodeObject<DecodedObjectType>(
-            of objectType: DecodedObjectType.Type,
-            forKey key: NSCoderKeys
-        ) -> DecodedObjectType? where DecodedObjectType: NSObject, DecodedObjectType: NSCoding {
-            return coder.decodeObject(of: objectType, forKey: key.rawValue)
-        }
-        let accountSchemaVersion = decodeObject(of: NSNumber.self, forKey: .accountSchemaVersion)?.intValue ?? 0
-        self.id = decodeObject(of: NSNumber.self, forKey: .grdbId)?.int64Value
-        guard let uniqueId = decodeObject(of: NSString.self, forKey: .uniqueId) else {
-            return nil
-        }
-        self.uniqueId = uniqueId as String
-        if let deprecatedContact = decodeObject(of: Contact.self, forKey: .contact) {
-            self.hasDeprecatedRepresentation = true
-            self.cnContactId = deprecatedContact.cnContactId
-            self.givenName = deprecatedContact.firstName
-            self.familyName = deprecatedContact.lastName
-            self.nickname = deprecatedContact.nickname
-            self.fullName = deprecatedContact.fullName
-        } else {
-            self.hasDeprecatedRepresentation = false
-            self.cnContactId = decodeObject(of: NSString.self, forKey: .cnContactId) as String?
-            self.givenName = (decodeObject(of: NSString.self, forKey: .givenName) ?? "") as String
-            self.familyName = (decodeObject(of: NSString.self, forKey: .familyName) ?? "") as String
-            self.nickname = (decodeObject(of: NSString.self, forKey: .nickname) ?? "") as String
-            self.fullName = (decodeObject(of: NSString.self, forKey: .fullName) ?? "") as String
-        }
-        self.contactAvatarHash = decodeObject(of: NSData.self, forKey: .contactAvatarHash) as Data?
-        guard let multipleAccountLabelText = decodeObject(of: NSString.self, forKey: .multipleAccountLabelText) else {
-            return nil
-        }
-        self.multipleAccountLabelText = multipleAccountLabelText as String
-        if accountSchemaVersion == 0 {
-            self.recipientPhoneNumber = decodeObject(of: NSString.self, forKey: .recipientId) as String?
-            owsAssert(self.recipientPhoneNumber != nil)
-        } else {
-            self.recipientPhoneNumber = decodeObject(of: NSString.self, forKey: .recipientPhoneNumber) as String?
-        }
-        self.recipientServiceId = (decodeObject(of: NSString.self, forKey: .recipientServiceId) as String?)
-            .flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
-    }
-
-    public func encode(with coder: NSCoder) {
-        func encodeObject(_ value: Any?, forKey key: NSCoderKeys) {
-            if let value { coder.encode(value, forKey: key.rawValue) }
-        }
-        encodeObject(NSNumber(value: 1), forKey: .accountSchemaVersion)
-        encodeObject(grdbId, forKey: .grdbId)
-        encodeObject(uniqueId, forKey: .uniqueId)
-        encodeObject(contactAvatarHash, forKey: .contactAvatarHash)
-        encodeObject(multipleAccountLabelText, forKey: .multipleAccountLabelText)
-        encodeObject(recipientPhoneNumber, forKey: .recipientPhoneNumber)
-        encodeObject(recipientServiceId?.serviceIdUppercaseString, forKey: .recipientServiceId)
-        encodeObject(cnContactId, forKey: .cnContactId)
-        encodeObject(givenName, forKey: .givenName)
-        encodeObject(familyName, forKey: .familyName)
-        encodeObject(nickname, forKey: .nickname)
-        encodeObject(fullName, forKey: .fullName)
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
