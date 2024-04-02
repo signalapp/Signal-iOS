@@ -25,6 +25,8 @@ enum MockResultType {
 }
 
 class AttachmentUploadManagerMockHelper {
+    var mockDate = Date()
+    lazy var mockDateProvider = { return self.mockDate }
     var mockDB = MockDB()
     var mockURLSession = AttachmentUpload.Mocks.URLSession()
     var mockNetworkManager = AttachmentUpload.Mocks.NetworkManager()
@@ -48,10 +50,26 @@ class AttachmentUploadManagerMockHelper {
     var activeUploadRequestMocks = [MockRequestType]()
 
     func setup(encryptedSize: UInt32, unencryptedSize: UInt32) {
+        setup(
+            encryptedUploadSize: encryptedSize,
+            mockAttachment: MockAttachmentStream.mock(
+                streamInfo: .mock(
+                    encryptedByteCount: encryptedSize,
+                    unenecryptedByteCount: unencryptedSize
+                )
+            ).attachment
+        )
+    }
 
-        self.mockAttachmentStore.encryptedSize = encryptedSize
-        self.mockAttachmentStore.unencryptedSize = unencryptedSize
-        self.mockFileSystem.size = Int(clamping: encryptedSize)
+    func setup(
+        encryptedUploadSize: UInt32,
+        mockAttachment: Attachment
+    ) {
+
+        self.mockAttachmentStore.mockFetcher = { _ in
+            return mockAttachment
+        }
+        self.mockFileSystem.size = Int(clamping: encryptedUploadSize)
 
         mockServiceManager.mockUrlSessionBuilder = { (info: SignalServiceInfo, endpoint: OWSURLSessionEndpoint, config: URLSessionConfiguration? ) in
             return self.mockURLSession

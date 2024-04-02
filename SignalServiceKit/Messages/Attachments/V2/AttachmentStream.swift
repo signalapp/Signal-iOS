@@ -97,36 +97,3 @@ public class AttachmentStream {
         }
     }
 }
-
-#if TESTABLE_BUILD
-
-public class MockAttachmentStream: AttachmentStream {
-
-    public static func mock(
-        encryptedByteCount: UInt32? = nil,
-        unenecryptedByteCount: UInt32? = nil
-    ) -> MockAttachmentStream {
-        let contentHash: String = ""
-        let encryptedFileSha256Digest: Data = UInt8.random(in: 0..<(.max)).bigEndianData
-        let encryptedByteCount: UInt32 = encryptedByteCount ?? UInt32.random(in: 0..<(.max))
-        let unenecryptedByteCount: UInt32 = unenecryptedByteCount ?? UInt32.random(in: 0..<(.max))
-        let contentType: Attachment.ContentType = .file
-        let localRelativeFilePath: String = "/some/file/path"
-
-        let attachment = MockAttachment.mock(
-            contentHash: contentHash,
-            encryptedFileSha256Digest: encryptedFileSha256Digest,
-            encryptedByteCount: encryptedByteCount,
-            unenecryptedByteCount: unenecryptedByteCount,
-            contentType: contentType,
-            localRelativeFilePath: localRelativeFilePath
-        )
-        return MockAttachmentStream(attachment: attachment)!
-    }
-
-    public override var fileURL: URL {
-        return URL(string: localRelativeFilePath)!
-    }
-}
-
-#endif

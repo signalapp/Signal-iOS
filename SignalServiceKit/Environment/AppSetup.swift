@@ -681,6 +681,7 @@ public class AppSetup {
             attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
             attachmentStore: attachmentStore,
             chatConnectionManager: chatConnectionManager,
+            dateProvider: dateProvider,
             db: db,
             fileSystem: Upload.Wrappers.FileSystem(),
             interactionStore: interactionStore,

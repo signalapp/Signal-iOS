@@ -19,6 +19,9 @@ public enum Upload {
         public static let attachmentUploadProgressNotification = NSNotification.Name("AttachmentUploadProgressNotification")
         public static let uploadProgressKey = "UploadProgressKey"
         public static let uploadAttachmentIDKey = "UploadAttachmentIDKey"
+
+        /// If within this window, we can reause existing attachment transit tier uploads for resending.
+        public static let uploadReuseWindow: TimeInterval = 60 * 60 * 24 * 3 // 3 days
     }
 
     internal struct Form: Codable {
@@ -104,10 +107,10 @@ public enum Upload {
         let digest: Data
 
         /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
-        let encryptedDataLength: Int
+        let encryptedDataLength: UInt32
 
         /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
-        let plaintextDataLength: Int
+        let plaintextDataLength: UInt32
     }
 
     public struct Result {
@@ -128,5 +131,48 @@ public enum Upload {
         let endpoint: UploadEndpoint
         let uploadLocation: URL
         let logger: PrefixedLogger
+    }
+}
+
+extension Upload.LocalUploadMetadata {
+
+    static func validateAndBuild(
+        fileUrl: URL,
+        metadata: EncryptionMetadata
+    ) throws -> Upload.LocalUploadMetadata {
+        guard let lengthRaw = metadata.length, let plaintextLengthRaw = metadata.plaintextLength else {
+            throw OWSAssertionError("Missing length.")
+        }
+
+        guard
+            lengthRaw > 0,
+            lengthRaw <= UInt32.max,
+            plaintextLengthRaw > 0,
+            plaintextLengthRaw <= UInt32.max
+        else {
+            throw OWSAssertionError("Invalid length.")
+        }
+
+        let length = UInt32(lengthRaw)
+        let plaintextLength = UInt32(plaintextLengthRaw)
+
+        guard
+            plaintextLength <= OWSMediaUtils.kMaxFileSizeGeneric,
+            length <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes
+        else {
+            throw OWSAssertionError("Data is too large: \(length).")
+        }
+
+        guard let digest = metadata.digest else {
+            throw OWSAssertionError("Digest missing for attachment.")
+        }
+
+        return Upload.LocalUploadMetadata(
+            fileUrl: fileUrl,
+            key: metadata.key,
+            digest: digest,
+            encryptedDataLength: length,
+            plaintextDataLength: plaintextLength
+        )
     }
 }

@@ -274,28 +274,7 @@ public struct TSAttachmentUpload {
         let temporaryFile = fileSystem.temporaryFileUrl()
         let metadata = try attachmentEncrypter.encryptAttachment(at: sourceURL, output: temporaryFile)
 
-        guard let length = metadata.length, let plaintextLength = metadata.plaintextLength else {
-            throw OWSAssertionError("Missing length.")
-        }
-
-        guard
-            plaintextLength <= OWSMediaUtils.kMaxFileSizeGeneric,
-            length <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes
-        else {
-            throw OWSAssertionError("Data is too large: \(length).")
-        }
-
-        guard let digest = metadata.digest else {
-            throw OWSAssertionError("Digest missing for attachment.")
-        }
-
-        return Upload.LocalUploadMetadata(
-            fileUrl: temporaryFile,
-            key: metadata.key,
-            digest: digest,
-            encryptedDataLength: length,
-            plaintextDataLength: plaintextLength
-        )
+        return try .validateAndBuild(fileUrl: temporaryFile, metadata: metadata)
     }
 
     private func fetchUploadForm<T: Decodable>(request: TSRequest ) async throws -> T {
@@ -317,7 +296,7 @@ public struct TSAttachmentUpload {
         try await Task.sleep(nanoseconds: delayInNs)
     }
 
-    private func buildProgress(done: Int, total: Int) -> Progress {
+    private func buildProgress(done: Int, total: UInt32) -> Progress {
         let progress = Progress(parent: nil, userInfo: nil)
         progress.totalUnitCount = Int64(total)
         progress.completedUnitCount = Int64(done)

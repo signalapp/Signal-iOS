@@ -33,11 +33,23 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
 
     public func markUploadedToTransitTier(
         attachmentStream: AttachmentStream,
+        encryptionKey: Data,
+        encryptedByteLength: UInt32,
+        digest: Data,
         cdnKey: String,
         cdnNumber: UInt32,
         uploadTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
+        let transitTierInfo = Attachment.TransitTierInfo(
+            cdnNumber: cdnNumber,
+            cdnKey: cdnKey,
+            uploadTimestamp: uploadTimestamp,
+            encryptionKey: encryptionKey,
+            encryptedByteCount: encryptedByteLength,
+            encryptedFileSha256Digest: digest,
+            lastDownloadAttemptTimestamp: nil
+        )
         fatalError("Unimplemented")
     }
 }

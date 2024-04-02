@@ -16,6 +16,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             attachmentEncrypter: helper.mockAttachmentEncrypter,
             attachmentStore: helper.mockAttachmentStore,
             chatConnectionManager: helper.mockChatConnectionManager,
+            dateProvider: helper.mockDateProvider,
             db: helper.mockDB,
             fileSystem: helper.mockFileSystem,
             interactionStore: helper.mockInteractionStore,
@@ -35,7 +36,7 @@ class AttachmentUploadManagerTests: XCTestCase {
         let (auth, uploadLocation) = helper.addFormRequestMock(version: 2)
         // 1. Mock UploadLocation request
         let location = helper.addResumeLocationMock(auth: auth)
-        // 2. Successful download
+        // 2. Successful upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
         _ = try await uploadManager.uploadAttachment(attachmentId: 1)
@@ -51,7 +52,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             XCTAssertEqual(request.url!.absoluteString, location)
             XCTAssertEqual(request.httpMethod, "PUT")
 
-            XCTAssertNotNil(request.allHTTPHeaderFields!["Content-Length"], "\(encryptedSize)")
+            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(encryptedSize)")
         } else { XCTFail("Unexpected request encountered.") }
     }
 
@@ -148,5 +149,210 @@ class AttachmentUploadManagerTests: XCTestCase {
             XCTAssertNil(request.allHTTPHeaderFields!["Content-Range"])
         } else { XCTFail("Unexpected request encountered.") }
         XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unenecryptedByteCount, unencryptedSize)
+    }
+
+    // MARK: Testing reupload strategies
+
+    func testCannotBeUploaded() async throws {
+        let uploadTimestamp = Date(timeIntervalSinceNow: -10000)
+        helper.mockDate = uploadTimestamp.addingTimeInterval(Upload.Constants.uploadReuseWindow / 2)
+
+        // Set up an attachment that isn't a stream.
+        helper.mockAttachmentStore.mockFetcher = { _ in
+            return MockAttachment.mock(
+                streamInfo: nil,
+                transitTierInfo: .mock(
+                    uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970
+                ),
+                localRelativeFilePath: nil
+            )
+        }
+
+        do {
+            try await uploadManager.uploadAttachment(attachmentId: 1)
+            XCTFail("Should fail to upload!")
+        } catch {
+            // Success
+        }
+    }
+
+    func testAlreadyUploaded() async throws {
+        // Set up an already uploaded attachment that is still in the time window.
+        let uploadTimestamp = Date(timeIntervalSinceNow: -10000)
+        helper.mockDate = uploadTimestamp.addingTimeInterval(Upload.Constants.uploadReuseWindow / 2)
+        helper.mockAttachmentStore.mockFetcher = { _ in
+            return MockAttachmentStream.mock(
+                transitTierInfo: .mock(
+                    uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970
+                )
+            ).attachment
+        }
+
+        try await uploadManager.uploadAttachment(attachmentId: 1)
+
+        XCTAssertTrue(helper.capturedRequests.isEmpty)
+    }
+
+    func testUseLocalEncryptionInfo() async throws {
+        // Set up an attachment we've never uploaded so we reuse the local stream info.
+        let encryptedSize: UInt32 = 27
+        helper.setup(
+            encryptedUploadSize: encryptedSize,
+            mockAttachment: MockAttachmentStream.mock(
+                streamInfo: .mock(encryptedByteCount: encryptedSize),
+                transitTierInfo: nil,
+                mediaTierInfo: nil
+            ).attachment
+        )
+
+        // Indexed to line up with helper.capturedRequests.
+        // 0. Mock the form request
+        let (auth, uploadLocation) = helper.addFormRequestMock(version: 2)
+        // 1. Mock UploadLocation request
+        let location = helper.addResumeLocationMock(auth: auth)
+        // 2. Successful upload
+        helper.addUploadRequestMock(auth: auth, location: location, type: .success)
+
+        _ = try await uploadManager.uploadAttachment(attachmentId: 1)
+
+        if case let .uploadLocation(request) = helper.capturedRequests[1] {
+            XCTAssertEqual(request.url!.absoluteString, uploadLocation)
+            XCTAssertEqual(request.httpMethod, "POST")
+
+            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "0")
+        } else { XCTFail("Unexpected request encountered.") }
+
+        if case let .uploadTask(request) = helper.capturedRequests[2] {
+            XCTAssertEqual(request.url!.absoluteString, location)
+            XCTAssertEqual(request.httpMethod, "PUT")
+
+            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(encryptedSize)")
+        } else { XCTFail("Unexpected request encountered.") }
+    }
+
+    func testUseRotatedEncryptionInfo() async throws {
+        // Set up an attachment with an expired window so we freshly upload.
+        let encryptedSize: UInt32 = 22
+        // We should use fresh encryption, so set these to intentionally
+        // non matching sizes.
+        let streamInfo = Attachment.StreamInfo.mock(encryptedByteCount: encryptedSize + 1)
+        let transitTierInfo = Attachment.TransitTierInfo.mock(
+            uploadTimestamp: helper.mockDate
+                .addingTimeInterval(Upload.Constants.uploadReuseWindow * -2)
+                .ows_millisecondsSince1970,
+            encryptedByteCount: encryptedSize + 2
+        )
+
+        helper.setup(
+            encryptedUploadSize: encryptedSize,
+            mockAttachment: MockAttachmentStream.mock(
+                streamInfo: streamInfo,
+                transitTierInfo: transitTierInfo,
+                mediaTierInfo: nil
+            ).attachment
+        )
+
+        var didDecrypt = false
+        helper.mockAttachmentEncrypter.decryptAttachmentBlock = { _, encryptionMetadata, _ in
+            didDecrypt = true
+            XCTAssertEqual(encryptionMetadata.key, streamInfo.encryptionKey)
+        }
+        var didEncrypt = false
+        helper.mockAttachmentEncrypter.encryptAttachmentBlock = { _, _ in
+            didEncrypt = true
+            return EncryptionMetadata(
+                key: Data(),
+                digest: Data(),
+                length: Int(encryptedSize),
+                plaintextLength: Int(streamInfo.unenecryptedByteCount)
+            )
+        }
+
+        // Indexed to line up with helper.capturedRequests.
+        // 0. Mock the form request
+        let (auth, uploadLocation) = helper.addFormRequestMock(version: 2)
+        // 1. Mock UploadLocation request
+        let location = helper.addResumeLocationMock(auth: auth)
+        // 2. Successful upload
+        helper.addUploadRequestMock(auth: auth, location: location, type: .success)
+
+        _ = try await uploadManager.uploadAttachment(attachmentId: 1)
+
+        if case let .uploadLocation(request) = helper.capturedRequests[1] {
+            XCTAssertEqual(request.url!.absoluteString, uploadLocation)
+            XCTAssertEqual(request.httpMethod, "POST")
+
+            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "0")
+        } else { XCTFail("Unexpected request encountered.") }
+
+        if case let .uploadTask(request) = helper.capturedRequests[2] {
+            XCTAssertEqual(request.url!.absoluteString, location)
+            XCTAssertEqual(request.httpMethod, "PUT")
+
+            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(encryptedSize)")
+        } else { XCTFail("Unexpected request encountered.") }
+
+        XCTAssertTrue(didDecrypt)
+        XCTAssertTrue(didEncrypt)
+    }
+
+    func testUseRotatedEncryptionInfo_MediaTierInfoExists() async throws {
+        // Set up an attachment with no transit tier upload, but media tier info so we reupload.
+        let encryptedSize: UInt32 = 22
+        // We should use fresh encryption, so set these to intentionally
+        // non matching sizes.
+        let streamInfo = Attachment.StreamInfo.mock(encryptedByteCount: encryptedSize + 1)
+
+        helper.setup(
+            encryptedUploadSize: encryptedSize,
+            mockAttachment: MockAttachmentStream.mock(
+                streamInfo: streamInfo,
+                transitTierInfo: nil,
+                mediaTierInfo: .mock()
+            ).attachment
+        )
+
+        var didDecrypt = false
+        helper.mockAttachmentEncrypter.decryptAttachmentBlock = { _, encryptionMetadata, _ in
+            didDecrypt = true
+            XCTAssertEqual(encryptionMetadata.key, streamInfo.encryptionKey)
+        }
+        var didEncrypt = false
+        helper.mockAttachmentEncrypter.encryptAttachmentBlock = { _, _ in
+            didEncrypt = true
+            return EncryptionMetadata(
+                key: Data(),
+                digest: Data(),
+                length: Int(encryptedSize),
+                plaintextLength: Int(streamInfo.unenecryptedByteCount)
+            )
+        }
+
+        // Indexed to line up with helper.capturedRequests.
+        // 0. Mock the form request
+        let (auth, uploadLocation) = helper.addFormRequestMock(version: 2)
+        // 1. Mock UploadLocation request
+        let location = helper.addResumeLocationMock(auth: auth)
+        // 2. Successful upload
+        helper.addUploadRequestMock(auth: auth, location: location, type: .success)
+
+        _ = try await uploadManager.uploadAttachment(attachmentId: 1)
+
+        if case let .uploadLocation(request) = helper.capturedRequests[1] {
+            XCTAssertEqual(request.url!.absoluteString, uploadLocation)
+            XCTAssertEqual(request.httpMethod, "POST")
+
+            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "0")
+        } else { XCTFail("Unexpected request encountered.") }
+
+        if case let .uploadTask(request) = helper.capturedRequests[2] {
+            XCTAssertEqual(request.url!.absoluteString, location)
+            XCTAssertEqual(request.httpMethod, "PUT")
+
+            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(encryptedSize)")
+        } else { XCTFail("Unexpected request encountered.") }
+
+        XCTAssertTrue(didDecrypt)
+        XCTAssertTrue(didEncrypt)
     }
 }

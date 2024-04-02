@@ -11,6 +11,9 @@ public protocol AttachmentUploadStore: AttachmentStore {
     /// Mark the attachment as having been uploaded to the transit tier.
     func markUploadedToTransitTier(
         attachmentStream: AttachmentStream,
+        encryptionKey: Data,
+        encryptedByteLength: UInt32,
+        digest: Data,
         cdnKey: String,
         cdnNumber: UInt32,
         uploadTimestamp: UInt64,

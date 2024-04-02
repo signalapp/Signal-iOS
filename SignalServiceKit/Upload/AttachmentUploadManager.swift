@@ -20,6 +20,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     private let attachmentEncrypter: Upload.Shims.AttachmentEncrypter
     private let attachmentStore: AttachmentUploadStore
     private let chatConnectionManager: ChatConnectionManager
+    private let dateProvider: DateProvider
     private let db: DB
     private let fileSystem: Upload.Shims.FileSystem
     private let interactionStore: InteractionStore
@@ -31,6 +32,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         attachmentStore: AttachmentUploadStore,
         chatConnectionManager: ChatConnectionManager,
+        dateProvider: @escaping DateProvider,
         db: DB,
         fileSystem: Upload.Shims.FileSystem,
         interactionStore: InteractionStore,
@@ -41,6 +43,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         self.attachmentEncrypter = attachmentEncrypter
         self.attachmentStore = attachmentStore
         self.chatConnectionManager = chatConnectionManager
+        self.dateProvider = dateProvider
         self.db = db
         self.fileSystem = fileSystem
         self.interactionStore = interactionStore
@@ -52,15 +55,16 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     public func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[transient]")
 
-        let uploadBuilder = TransientUploadBuilder(
-            source: dataSource,
-            attachmentEncrypter: attachmentEncrypter,
-            fileSystem: fileSystem
-        )
+        let temporaryFile = fileSystem.temporaryFileUrl()
+        guard let sourceURL = dataSource.dataUrl else {
+            throw OWSAssertionError("Failed to access data source file")
+        }
+        let metadata = try attachmentEncrypter.encryptAttachment(at: sourceURL, output: temporaryFile)
+        let localMetadata = try Upload.LocalUploadMetadata.validateAndBuild(fileUrl: temporaryFile, metadata: metadata)
 
         do {
             let upload = AttachmentUpload(
-                builder: uploadBuilder,
+                localMetadata: localMetadata,
                 signalService: signalService,
                 networkManager: networkManager,
                 chatConnectionManager: chatConnectionManager,
@@ -98,18 +102,27 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     public func uploadAttachment(attachmentId: Attachment.IDType) async throws {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[\(attachmentId)]")
 
-        let attachmentStream = try db.read(block: { tx in
-            try fetchAttachmentStream(attachmentId: attachmentId, logger: logger, tx: tx)
+        let attachment = try db.read(block: { tx in
+            try fetchAttachment(attachmentId: attachmentId, logger: logger, tx: tx)
         })
-        guard attachmentRequiresUpload(attachmentStream) else {
+        let localMetadata: Upload.LocalUploadMetadata
+        switch attachment.transitUploadStrategy(dateProvider: dateProvider) {
+        case .cannotUpload:
+            logger.warn("Attachment is not uploadable.")
+            // Can't upload non-stream attachments; terminal failure.
+            throw OWSUnretryableError()
+        case .reuseExistingUpload:
             logger.debug("Attachment previously uploaded.")
             return
+        case .reuseStreamEncryption(let metadata):
+            localMetadata = metadata
+        case .freshUpload(let stream):
+            localMetadata = try buildMetadata(forUploading: stream)
         }
-        let uploadBuilder = AttachmentUploadBuilder(attachmentStream: attachmentStream)
 
         do {
             let upload = AttachmentUpload(
-                builder: uploadBuilder,
+                localMetadata: localMetadata,
                 signalService: signalService,
                 networkManager: networkManager,
                 chatConnectionManager: chatConnectionManager,
@@ -122,7 +135,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             }
 
             // Update the attachment and associated messages with the success
-            try await update(
+            await update(
                 attachmentId: attachmentId,
                 with: result,
                 logger: logger
@@ -144,22 +157,17 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         }
     }
 
-    private func fetchAttachmentStream(
+    private func fetchAttachment(
         attachmentId: Attachment.IDType,
         logger: PrefixedLogger,
         tx: DBReadTransaction
-    ) throws -> AttachmentStream {
+    ) throws -> Attachment {
         guard let attachment = attachmentStore.fetch(id: attachmentId, tx: tx) else {
             logger.warn("Missing attachment.")
             // Not finding a local attachment is a terminal failure.
             throw OWSUnretryableError()
         }
-        guard let attachmentStream = attachment.asStream() else {
-            logger.warn("Attachment is not a stream.")
-            // Can't upload non-stream attachments; terminal failure.
-            throw OWSUnretryableError()
-        }
-        return attachmentStream
+        return attachment
     }
 
     // Update all the necessary places once the upload succeeds
@@ -167,18 +175,24 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         attachmentId: Attachment.IDType,
         with result: Upload.Result,
         logger: PrefixedLogger
-    ) async throws {
-        try await db.awaitableWrite { tx in
+    ) async {
+        await db.awaitableWrite { tx in
 
             // Read the attachment fresh from the DB
-            let attachmentStream = try self.fetchAttachmentStream(
+            guard let attachmentStream = try? self.fetchAttachment(
                 attachmentId: attachmentId,
                 logger: logger,
                 tx: tx
-            )
+            ).asStream() else {
+                logger.warn("Attachment deleted while uploading")
+                return
+            }
 
             self.attachmentStore.markUploadedToTransitTier(
                 attachmentStream: attachmentStream,
+                encryptionKey: result.localUploadMetadata.key,
+                encryptedByteLength: result.localUploadMetadata.encryptedDataLength,
+                digest: result.localUploadMetadata.digest,
                 cdnKey: result.cdnKey,
                 cdnNumber: result.cdnNumber,
                 uploadTimestamp: result.beginTimestamp,
@@ -219,8 +233,26 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         }
     }
 
-    private func attachmentRequiresUpload(_ attachmentStream: AttachmentStream) -> Bool {
-        return attachmentStream.transitUploadTimestamp == nil
+    func buildMetadata(forUploading attachmentStream: AttachmentStream) throws -> Upload.LocalUploadMetadata {
+        // First we need to decrypt, so we can re-encrypt for upload.
+        let tmpDecryptedFile = fileSystem.temporaryFileUrl()
+        let decryptionMedatata = EncryptionMetadata(
+            key: attachmentStream.info.encryptionKey,
+            digest: attachmentStream.info.encryptedFileSha256Digest,
+            length: Int(clamping: attachmentStream.info.encryptedByteCount),
+            plaintextLength: Int(clamping: attachmentStream.info.unenecryptedByteCount)
+        )
+        try attachmentEncrypter.decryptAttachment(at: attachmentStream.fileURL, metadata: decryptionMedatata, output: tmpDecryptedFile)
+
+        // Now re-encrypt with a fresh set of keys.
+        // We use a tmp file on purpose; we already have the source file for the attachment
+        // and don't need to keep around this copy encrypted with different keys; its useful
+        // for upload only and can cleaned up by the OS after.
+        let tmpReencryptedFile = fileSystem.temporaryFileUrl()
+        let reencryptedMetadata = try attachmentEncrypter.encryptAttachment(at: tmpDecryptedFile, output: tmpReencryptedFile)
+
+        // we upload the re-encrypted file.
+        return try .validateAndBuild(fileUrl: tmpReencryptedFile, metadata: reencryptedMetadata)
     }
 
     private func updateProgress(id: Attachment.IDType, progress: Double) {

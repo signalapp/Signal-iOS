@@ -5,11 +5,6 @@
 
 import Foundation
 
-public protocol UploadBuilder {
-
-    func buildMetadata() throws -> Upload.LocalUploadMetadata
-}
-
 extension Upload.Constants {
     fileprivate static let uploadMaxRetries = 8
     fileprivate static let maxUploadProgressRetries = 2
@@ -25,17 +20,17 @@ public struct AttachmentUpload {
 
     private let logger: PrefixedLogger
 
-    private let builder: UploadBuilder
+    private let localMetadata: Upload.LocalUploadMetadata
 
     public init(
-        builder: UploadBuilder,
+        localMetadata: Upload.LocalUploadMetadata,
         signalService: OWSSignalServiceProtocol,
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,
         fileSystem: Upload.Shims.FileSystem,
         logger: PrefixedLogger
     ) {
-        self.builder = builder
+        self.localMetadata = localMetadata
         self.signalService = signalService
         self.networkManager = networkManager
         self.chatConnectionManager = chatConnectionManager
@@ -50,15 +45,6 @@ public struct AttachmentUpload {
     /// From this point forward,  the upload doesn't have any knowledge of the source (attachment, backup, image, etc)
     public func start(progress: Upload.ProgressBlock?) async throws -> Upload.Result {
         try Task.checkCancellation()
-
-        let localMetadata: Upload.LocalUploadMetadata = try builder.buildMetadata()
-
-        guard
-            localMetadata.plaintextDataLength <= OWSMediaUtils.kMaxFileSizeGeneric,
-            localMetadata.encryptedDataLength <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes
-        else {
-            throw OWSAssertionError("Data is too large: \(localMetadata.plaintextDataLength).")
-        }
 
         progress?(buildProgress(done: 0, total: localMetadata.encryptedDataLength))
 
@@ -290,7 +276,7 @@ public struct AttachmentUpload {
         try await Task.sleep(nanoseconds: delayInNs)
     }
 
-    private func buildProgress(done: Int, total: Int) -> Progress {
+    private func buildProgress(done: Int, total: UInt32) -> Progress {
         let progress = Progress(parent: nil, userInfo: nil)
         progress.totalUnitCount = Int64(total)
         progress.completedUnitCount = Int64(done)

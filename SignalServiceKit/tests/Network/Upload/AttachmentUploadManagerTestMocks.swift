@@ -23,6 +23,11 @@ class _Upload_AttachmentEncrypterMock: Upload.Shims.AttachmentEncrypter {
     func encryptAttachment(at unencryptedUrl: URL, output encryptedUrl: URL) throws -> EncryptionMetadata {
         return encryptAttachmentBlock!(unencryptedUrl, encryptedUrl)
     }
+
+    var decryptAttachmentBlock: ((URL, EncryptionMetadata, URL) -> Void)?
+    func decryptAttachment(at encryptedUrl: URL, metadata: EncryptionMetadata, output: URL) throws {
+        return decryptAttachmentBlock!(encryptedUrl, metadata, output)
+    }
 }
 
 class _Upload_FileSystemMock: Upload.Shims.FileSystem {
@@ -82,21 +87,19 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
 // MARK: - AttachmentStore
 
 class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
-    var encryptedSize: UInt32!
-    var unencryptedSize: UInt32!
     var uploadedAttachments = [AttachmentStream]()
 
+    var mockFetcher: ((Attachment.IDType) -> Attachment)?
+
     override func fetch(ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
-        return ids.map { _ in
-            return MockAttachmentStream.mock(
-                encryptedByteCount: encryptedSize,
-                unenecryptedByteCount: unencryptedSize
-            ).attachment
-        }
+        return ids.map(mockFetcher!)
     }
 
     func markUploadedToTransitTier(
         attachmentStream: AttachmentStream,
+        encryptionKey: Data,
+        encryptedByteLength: UInt32,
+        digest: Data,
         cdnKey: String,
         cdnNumber: UInt32,
         uploadTimestamp: UInt64,

@@ -329,6 +329,7 @@ extension TSResourceStoreImpl: TSResourceUploadStore {
     public func updateAsUploaded(
         attachmentStream: TSResourceStream,
         encryptionKey: Data,
+        encryptedByteLength: UInt32,
         digest: Data,
         cdnKey: String,
         cdnNumber: UInt32,
@@ -349,6 +350,9 @@ extension TSResourceStoreImpl: TSResourceUploadStore {
         case .v2(let attachment):
             attachmentStore.markUploadedToTransitTier(
                 attachmentStream: attachment,
+                encryptionKey: encryptionKey,
+                encryptedByteLength: encryptedByteLength,
+                digest: digest,
                 cdnKey: cdnKey,
                 cdnNumber: cdnNumber,
                 uploadTimestamp: uploadTimestamp,

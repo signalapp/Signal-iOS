@@ -69,6 +69,21 @@ public class Attachment {
         /// Used to determine whether reuploading is necessary for e.g. forwarding.
         public let uploadTimestamp: UInt64
 
+        /// Encryption key used on this transit tier upload.
+        /// May be the same as the local stream encryption key, or may have been rotated for sending.
+        public let encryptionKey: Data
+
+        /// Byte count of the resource encrypted using the ``TransitTierInfo.encryptionKey``.
+        public let encryptedByteCount: UInt32
+
+        /// SHA256Hash(iv + cyphertext + hmac),
+        /// (iv + cyphertext + hmac) is the thing we actually upload to the CDN server, which uses
+        /// the ``TransitTierInfo.encryptionKey`` field.
+        ///
+        /// Generated locally for outgoing attachments.
+        /// For incoming attachments, taken off the service proto. If validation fails, the download is rejected.
+        public let encryptedFileSha256Digest: Data
+
         /// Timestamp we last tried (and failed) to download from the transit tier.
         /// Nil if we have not tried or have successfully downloaded.
         public let lastDownloadAttemptTimestamp: UInt64?
@@ -123,19 +138,22 @@ public class Attachment {
     /// This thumbnail is exclusively used for backup purposes.
     public let localRelativeFilePathThumbnail: String?
 
-    fileprivate init(
+    internal init(
         id: Int64!,
-        blurHash: String,
+        blurHash: String?,
         contentHash: String?,
         encryptedByteCount: UInt32?,
         unenecryptedByteCount: UInt32?,
         mimeType: String,
         contentType: ContentType?,
-        encryptionKey: Data,
+        encryptionKey: Data?,
         encryptedFileSha256Digest: Data?,
         transitCdnNumber: UInt32?,
         transitCdnKey: String?,
         transitUploadTimestamp: UInt64?,
+        transitEncryptionKey: Data?,
+        transitEncryptedByteCount: UInt32?,
+        transitEncryptedFileSha256Digest: Data?,
         lastTransitDownloadAttemptTimestamp: UInt64?,
         mediaName: String,
         mediaCdnNumber: UInt32?,
@@ -165,6 +183,9 @@ public class Attachment {
             cdnNumber: transitCdnNumber,
             cdnKey: transitCdnKey,
             uploadTimestamp: transitUploadTimestamp,
+            encryptionKey: transitEncryptionKey,
+            encryptedByteCount: transitEncryptedByteCount,
+            encryptedFileSha256Digest: transitEncryptedFileSha256Digest,
             lastDownloadAttemptTimestamp: lastTransitDownloadAttemptTimestamp
         )
         self.mediaName = mediaName
@@ -184,6 +205,50 @@ public class Attachment {
 
     func asStream() -> AttachmentStream? {
         return AttachmentStream(attachment: self)
+    }
+
+    public enum TransitUploadStrategy {
+        case reuseExistingUpload(TransitTierInfo)
+        case reuseStreamEncryption(Upload.LocalUploadMetadata)
+        case freshUpload(AttachmentStream)
+        case cannotUpload
+    }
+
+    public func transitUploadStrategy(dateProvider: DateProvider) -> TransitUploadStrategy {
+        // We never allow uploads of data we don't have locally.
+        guard let stream = self.asStream() else {
+            return .cannotUpload
+        }
+        if
+            // We have a prior upload
+            let transitTierInfo,
+            // And we are still in the window to reuse it
+            dateProvider().timeIntervalSince(
+                Date(millisecondsSince1970: transitTierInfo.uploadTimestamp)
+            ) <= Upload.Constants.uploadReuseWindow
+        {
+            // We have unexpired transit tier info. Reuse that upload.
+            return .reuseExistingUpload(transitTierInfo)
+        } else if
+            // This device has never uploaded
+            transitTierInfo == nil,
+            // No media tier info either
+            mediaTierInfo == nil
+        {
+            // Reuse our local encryption for sending.
+            // Without this, we'd have to reupload all our outgoing attacments
+            // in order to copy them to the media tier.
+            return .reuseStreamEncryption(.init(
+                fileUrl: stream.fileURL,
+                key: stream.info.encryptionKey,
+                digest: stream.info.encryptedFileSha256Digest,
+                encryptedDataLength: stream.info.encryptedByteCount,
+                plaintextDataLength: stream.info.unenecryptedByteCount
+            ))
+        } else {
+            // Upload from scratch
+            return .freshUpload(stream)
+        }
     }
 }
 
@@ -229,17 +294,26 @@ extension Attachment.TransitTierInfo {
         cdnNumber: UInt32?,
         cdnKey: String?,
         uploadTimestamp: UInt64?,
+        encryptionKey: Data?,
+        encryptedByteCount: UInt32?,
+        encryptedFileSha256Digest: Data?,
         lastDownloadAttemptTimestamp: UInt64?
     ) {
         guard
             let cdnNumber,
             let cdnKey,
-            let uploadTimestamp
+            let uploadTimestamp,
+            let encryptionKey,
+            let encryptedByteCount,
+            let encryptedFileSha256Digest
         else {
             owsAssertDebug(
                 cdnNumber == nil
                 && cdnKey == nil
-                && uploadTimestamp == nil,
+                && uploadTimestamp == nil
+                && encryptionKey == nil
+                && encryptedByteCount == nil
+                && encryptedFileSha256Digest == nil,
                 "Have partial transit cdn info!"
             )
             return nil
@@ -248,6 +322,9 @@ extension Attachment.TransitTierInfo {
         self.cdnKey = cdnKey
         self.uploadTimestamp = uploadTimestamp
         self.lastDownloadAttemptTimestamp = lastDownloadAttemptTimestamp
+        self.encryptionKey = encryptionKey
+        self.encryptedByteCount = encryptedByteCount
+        self.encryptedFileSha256Digest = encryptedFileSha256Digest
     }
 }
 
@@ -296,48 +373,3 @@ extension Attachment.ThumbnailMediaTierInfo {
         self.lastDownloadAttemptTimestamp = lastDownloadAttemptTimestamp
     }
 }
-
-#if TESTABLE_BUILD
-
-public class MockAttachment: Attachment {
-
-    public static func mock(
-        contentHash: String? = nil,
-        encryptedFileSha256Digest: Data? = nil,
-        encryptedByteCount: UInt32? = nil,
-        unenecryptedByteCount: UInt32? = nil,
-        contentType: Attachment.ContentType? = nil,
-        localRelativeFilePath: String? = nil
-    ) -> MockAttachment {
-        return MockAttachment(
-            id: .random(in: 0..<(.max)),
-            blurHash: "",
-            contentHash: contentHash,
-            encryptedByteCount: encryptedByteCount,
-            unenecryptedByteCount: unenecryptedByteCount,
-            mimeType: "jpg",
-            contentType: contentType,
-            encryptionKey: UInt8.random(in: 0..<(.max)).bigEndianData,
-            encryptedFileSha256Digest: encryptedFileSha256Digest,
-            transitCdnNumber: nil,
-            transitCdnKey: nil,
-            transitUploadTimestamp: nil,
-            lastTransitDownloadAttemptTimestamp: nil,
-            mediaName: "",
-            mediaCdnNumber: nil,
-            mediaTierUploadEra: nil,
-            lastMediaDownloadAttemptTimestamp: nil,
-            thumbnailCdnNumber: nil,
-            thumbnailUploadEra: nil,
-            lastThumbnailDownloadAttemptTimestamp: nil,
-            localRelativeFilePath: localRelativeFilePath,
-            localRelativeFilePathThumbnail: nil
-        )
-    }
-
-    public override func asStream() -> AttachmentStream? {
-        return MockAttachmentStream(attachment: self)
-    }
-}
-
-#endif

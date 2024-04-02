@@ -151,6 +151,7 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
             self.tsResourceStore.updateAsUploaded(
                 attachmentStream: attachmentStream,
                 encryptionKey: result.localUploadMetadata.key,
+                encryptedByteLength: result.localUploadMetadata.encryptedDataLength,
                 digest: result.localUploadMetadata.digest,
                 cdnKey: result.cdnKey,
                 cdnNumber: result.cdnNumber,
