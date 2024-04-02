@@ -15,7 +15,7 @@ final class ContactStreamTest: XCTestCase {
 
     private func makeAccount(phoneNumber: String?, serviceId: String?, fullName: String) -> SignalAccount {
         return SignalAccount(
-            contact: Contact(cnContactId: nil, firstName: nil, lastName: nil, nickname: nil, fullName: fullName),
+            contact: Contact(cnContactId: nil, firstName: "", lastName: "", nickname: "", fullName: fullName),
             contactAvatarHash: nil,
             multipleAccountLabelText: nil,
             recipientPhoneNumber: phoneNumber,

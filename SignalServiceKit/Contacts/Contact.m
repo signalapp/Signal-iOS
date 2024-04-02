@@ -15,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithCNContactId:(nullable NSString *)cnContactId
-                          firstName:(nullable NSString *)firstName
-                           lastName:(nullable NSString *)lastName
-                           nickname:(nullable NSString *)nickname
+                          firstName:(NSString *)firstName
+                           lastName:(NSString *)lastName
+                           nickname:(NSString *)nickname
                            fullName:(NSString *)fullName
 {
     self = [super init];
@@ -38,10 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self = [super init];
     _cnContactId = [[coder decodeObjectOfClass:NSString.class forKey:@"cnContactId"] copy];
-    _firstName = [[coder decodeObjectOfClass:NSString.class forKey:@"firstName"] copy];
-    _lastName = [[coder decodeObjectOfClass:NSString.class forKey:@"lastName"] copy];
-    _fullName = [[coder decodeObjectOfClass:NSString.class forKey:@"fullName"] copy];
-    _nickname = [[coder decodeObjectOfClass:NSString.class forKey:@"nickname"] copy];
+    _firstName = [[coder decodeObjectOfClass:NSString.class forKey:@"firstName"] copy] ?: @"";
+    _lastName = [[coder decodeObjectOfClass:NSString.class forKey:@"lastName"] copy] ?: @"";
+    _fullName = [[coder decodeObjectOfClass:NSString.class forKey:@"fullName"] copy] ?: @"";
+    _nickname = [[coder decodeObjectOfClass:NSString.class forKey:@"nickname"] copy] ?: @"";
     return self;
 }
 

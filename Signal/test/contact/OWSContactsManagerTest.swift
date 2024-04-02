@@ -83,9 +83,9 @@ class OWSContactsManagerTest: SignalBaseTest {
         let parts = fullName.components(separatedBy: " ")
         return Contact(
             cnContactId: nil,
-            firstName: parts.first,
-            lastName: parts.dropFirst().first,
-            nickname: nil,
+            firstName: parts.first!,
+            lastName: parts.dropFirst().first ?? "",
+            nickname: "",
             fullName: fullName
         )
     }

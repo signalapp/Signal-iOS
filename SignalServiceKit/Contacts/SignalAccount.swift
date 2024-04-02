@@ -254,10 +254,10 @@ extension SignalAccount {
     /// the components object is non-nil.
     public func contactNameComponents() -> PersonNameComponents? {
         var components = PersonNameComponents()
-        if let firstName = self.contact?.firstName?.strippedOrNil {
+        if let firstName = self.contact?.firstName.strippedOrNil {
             components.givenName = firstName
         }
-        if let lastName = self.contact?.lastName?.strippedOrNil {
+        if let lastName = self.contact?.lastName.strippedOrNil {
             components.familyName = lastName
         }
 
@@ -269,7 +269,7 @@ extension SignalAccount {
             components.givenName = fullName
         }
 
-        if let nickname = self.contact?.nickname?.strippedOrNil {
+        if let nickname = self.contact?.nickname.strippedOrNil {
             components.nickname = nickname
         }
 

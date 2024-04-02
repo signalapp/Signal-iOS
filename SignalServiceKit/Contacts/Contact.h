@@ -10,17 +10,17 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Contact : NSObject <NSSecureCoding>
 
 @property (nonatomic, readonly, nullable) NSString *cnContactId;
-@property (nullable, readonly, nonatomic) NSString *firstName;
-@property (nullable, readonly, nonatomic) NSString *lastName;
-@property (nullable, readonly, nonatomic) NSString *nickname;
-@property (readonly, nonatomic) NSString *fullName;
+@property (nonatomic, readonly) NSString *firstName;
+@property (nonatomic, readonly) NSString *lastName;
+@property (nonatomic, readonly) NSString *nickname;
+@property (nonatomic, readonly) NSString *fullName;
 
 @property (nonatomic, readonly) BOOL isFromLocalAddressBook;
 
 - (instancetype)initWithCNContactId:(nullable NSString *)cnContactId
-                          firstName:(nullable NSString *)firstName
-                           lastName:(nullable NSString *)lastName
-                           nickname:(nullable NSString *)nickname
+                          firstName:(NSString *)firstName
+                           lastName:(NSString *)lastName
+                           nickname:(NSString *)nickname
                            fullName:(NSString *)fullName NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

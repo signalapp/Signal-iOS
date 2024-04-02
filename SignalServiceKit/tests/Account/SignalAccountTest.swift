@@ -172,9 +172,9 @@ class SignalAccountTest: XCTestCase {
     func testFullNameOnly() {
         let contact = Contact(
             cnContactId: nil,
-            firstName: nil,
-            lastName: nil,
-            nickname: nil,
+            firstName: "",
+            lastName: "",
+            nickname: "",
             fullName: "Company Name"
         )
         let signalAccount = SignalAccount(

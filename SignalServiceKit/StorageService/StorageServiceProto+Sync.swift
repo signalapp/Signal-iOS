@@ -333,20 +333,17 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             let isLinkedAndHasSyncedContact = !isPrimary && !systemContact.isFromLocalAddressBook
 
             if isPrimaryAndHasLocalContact || isLinkedAndHasSyncedContact {
-                if let systemGivenName = systemContact.firstName {
-                    builder.setSystemGivenName(systemGivenName)
-                    usernameBetterIdentifierChecker.add(systemContactGivenName: systemGivenName)
-                }
+                let systemGivenName = systemContact.firstName
+                builder.setSystemGivenName(systemGivenName)
+                usernameBetterIdentifierChecker.add(systemContactGivenName: systemGivenName)
 
-                if let systemFamilyName = systemContact.lastName {
-                    builder.setSystemFamilyName(systemFamilyName)
-                    usernameBetterIdentifierChecker.add(systemContactFamilyName: systemFamilyName)
-                }
+                let systemFamilyName = systemContact.lastName
+                builder.setSystemFamilyName(systemFamilyName)
+                usernameBetterIdentifierChecker.add(systemContactFamilyName: systemFamilyName)
 
-                if let systemNickname = systemContact.nickname {
-                    builder.setSystemNickname(systemNickname)
-                    usernameBetterIdentifierChecker.add(systemContactNickname: systemNickname)
-                }
+                let systemNickname = systemContact.nickname
+                builder.setSystemNickname(systemNickname)
+                usernameBetterIdentifierChecker.add(systemContactNickname: systemNickname)
             }
         }
 
@@ -689,9 +686,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         if let systemFullName {
             let newContact = Contact(
                 cnContactId: nil,
-                firstName: record.systemGivenName,
-                lastName: record.systemFamilyName,
-                nickname: record.systemNickname,
+                firstName: record.systemGivenName ?? "",
+                lastName: record.systemFamilyName ?? "",
+                nickname: record.systemNickname ?? "",
                 fullName: systemFullName
             )
 
