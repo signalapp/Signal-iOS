@@ -255,6 +255,7 @@ public class GRDBSchemaMigrator: NSObject {
         case markAllGroupCallMessagesAsRead
         case addIndexForUnreadByThreadRowIdToCallRecord
         case addNicknamesTable
+        case expandSignalAccountContactFields
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2757,6 +2758,20 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.expandSignalAccountContactFields) { tx in
+            // To match iOS system behavior, these fields are NONNULL, so `contact !=
+            // NULL` should be used to differentiate modern/legacy encodings.
+            try tx.database.alter(table: "model_SignalAccount") { table in
+                table.add(column: "cnContactId", .text)
+                table.add(column: "givenName", .text).notNull().defaults(to: "")
+                table.add(column: "familyName", .text).notNull().defaults(to: "")
+                table.add(column: "nickname", .text).notNull().defaults(to: "")
+                table.add(column: "fullName", .text).notNull().defaults(to: "")
+            }
+
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -3117,10 +3132,7 @@ public class GRDBSchemaMigrator: NSObject {
             var accountsToRemove: Set<SignalAccount> = []
 
             SignalAccount.anyEnumerate(transaction: transaction.asAnyRead) { account, _ in
-                guard
-                    let contact = account.contact,
-                    contact.isFromLocalAddressBook
-                else {
+                guard account.isFromLocalAddressBook else {
                     // Skip any accounts that do not have a system contact
                     return
                 }

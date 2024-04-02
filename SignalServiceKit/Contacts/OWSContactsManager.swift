@@ -559,8 +559,7 @@ extension OWSContactsManager: ContactManager {
         if
             let phoneNumber = address.phoneNumber,
             let signalAccount = self.fetchSignalAccount(forPhoneNumber: phoneNumber, transaction: transaction),
-            let contact = signalAccount.contact,
-            let cnContactId = contact.cnContactId,
+            let cnContactId = signalAccount.cnContactId,
             let avatarData = self.avatarData(for: cnContactId),
             let validData = validateIfNecessary(avatarData)
         {
@@ -634,17 +633,15 @@ extension OWSContactsManager: ContactManager {
             )
             let contactAvatarHash = buildContactAvatarHash(for: systemContact)
             let signalAccount = SignalAccount(
-                contact: Contact(
-                    cnContactId: systemContact.cnContactId,
-                    firstName: systemContact.firstName,
-                    lastName: systemContact.lastName,
-                    nickname: systemContact.nickname,
-                    fullName: systemContact.fullName
-                ),
-                contactAvatarHash: contactAvatarHash,
-                multipleAccountLabelText: multipleAccountLabelText,
                 recipientPhoneNumber: signalRecipient.phoneNumber?.stringValue,
-                recipientServiceId: serviceId
+                recipientServiceId: serviceId,
+                multipleAccountLabelText: multipleAccountLabelText,
+                cnContactId: systemContact.cnContactId,
+                givenName: systemContact.firstName,
+                familyName: systemContact.lastName,
+                nickname: systemContact.nickname,
+                fullName: systemContact.fullName,
+                contactAvatarHash: contactAvatarHash
             )
             signalAccounts.append(signalAccount)
         }
@@ -684,7 +681,7 @@ extension OWSContactsManager: ContactManager {
             case .none:
                 oldSignalAccountToKeep = nil
 
-            case .some(let oldSignalAccount) where oldSignalAccount.hasSameContent(newSignalAccount):
+            case .some(let oldSignalAccount) where oldSignalAccount.hasSameContent(newSignalAccount) && !oldSignalAccount.hasDeprecatedRepresentation:
                 // Same content, no need to update.
                 oldSignalAccountToKeep = oldSignalAccount
 
@@ -770,14 +767,12 @@ extension OWSContactsManager: ContactManager {
             return
         }
 
-        var systemContactsBeforeFetch = allSignalAccountsBeforeFetch.compactMapValues { $0.contact }
-        let systemContactsAfterFetch = allSignalAccountsAfterFetch.compactMapValues { $0.contact }
-
         var phoneNumbersToUpdateInStorageService = [String]()
 
-        for (phoneNumber, newSystemContact) in systemContactsAfterFetch {
-            let oldSystemContact = systemContactsBeforeFetch.removeValue(forKey: phoneNumber)
-            if Contact.areNamesEqual(oldSystemContact, newSystemContact) {
+        var allSignalAccountsBeforeFetch = allSignalAccountsBeforeFetch
+        for (phoneNumber, newSignalAccount) in allSignalAccountsAfterFetch {
+            let oldSignalAccount = allSignalAccountsBeforeFetch.removeValue(forKey: phoneNumber)
+            if let oldSignalAccount, newSignalAccount.hasSameName(oldSignalAccount) {
                 // No Storage Service-relevant changes were made.
                 continue
             }
@@ -785,7 +780,7 @@ extension OWSContactsManager: ContactManager {
         }
         // Anything left in ...BeforeFetch was removed.
         phoneNumbersToUpdateInStorageService.append(
-            contentsOf: systemContactsBeforeFetch.keys.lazy.compactMap { $0 }
+            contentsOf: allSignalAccountsBeforeFetch.keys.lazy.compactMap { $0 }
         )
 
         let updatedAccountIds = databaseStorage.read { tx in

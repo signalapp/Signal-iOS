@@ -182,7 +182,7 @@ extension ContactsViewHelper {
             }
         }
 
-        if cnContact == nil, let cnContactId = signalAccount?.contact?.cnContactId {
+        if cnContact == nil, let cnContactId = signalAccount?.cnContactId {
             cnContact = contactsManager.cnContact(withId: cnContactId)
         }
 

@@ -18,10 +18,10 @@ public class FakeContactsManager: NSObject, ContactManager {
     public func displayNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [DisplayName] {
         return addresses.map { address in
             if let phoneNumber = address.e164 {
-                if let contact = mockSignalAccounts[phoneNumber.stringValue]?.contact {
+                if let signalAccount = mockSignalAccounts[phoneNumber.stringValue] {
                     var nameComponents = PersonNameComponents()
-                    nameComponents.givenName = contact.firstName
-                    nameComponents.familyName = contact.lastName
+                    nameComponents.givenName = signalAccount.givenName
+                    nameComponents.familyName = signalAccount.familyName
                     return .systemContactName(DisplayName.SystemContactName(
                         nameComponents: nameComponents,
                         multipleAccountLabel: nil

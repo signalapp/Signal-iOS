@@ -279,7 +279,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         }
         // In the case where we have more than one contact with the e164,
         // prefer the one with this id. Otherwise, choice is arbitrary.
-        let preferredContactIdForDeletion = signalAccount?.contact?.cnContactId
+        let preferredContactIdForDeletion = signalAccount?.cnContactId
 
         // Go to CNContacts as the source of truth for contacts.
         let contactStore = CNContactStore()

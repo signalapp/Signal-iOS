@@ -15,11 +15,15 @@ final class ContactStreamTest: XCTestCase {
 
     private func makeAccount(phoneNumber: String?, serviceId: String?, fullName: String) -> SignalAccount {
         return SignalAccount(
-            contact: Contact(cnContactId: nil, firstName: "", lastName: "", nickname: "", fullName: fullName),
-            contactAvatarHash: nil,
-            multipleAccountLabelText: nil,
             recipientPhoneNumber: phoneNumber,
-            recipientServiceId: serviceId.map({ Aci.constantForTesting($0) })
+            recipientServiceId: serviceId.map({ Aci.constantForTesting($0) }),
+            multipleAccountLabelText: nil,
+            cnContactId: nil,
+            givenName: "",
+            familyName: "",
+            nickname: "",
+            fullName: fullName,
+            contactAvatarHash: nil
         )
     }
 

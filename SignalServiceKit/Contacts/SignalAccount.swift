@@ -33,58 +33,84 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         case multipleAccountLabelText
         case recipientPhoneNumber
         case recipientServiceId = "recipientUUID"
+
+        case cnContactId
+        case givenName
+        case familyName
+        case nickname
+        case fullName
     }
 
     public var id: RowId?
     public let uniqueId: String
 
-    @objc
-    public private(set) var contact: Contact?
     public let contactAvatarHash: Data?
     public let multipleAccountLabelText: String
 
-    @objc
     public let recipientPhoneNumber: String?
     public private(set) var recipientServiceId: ServiceId?
-    @objc
-    public var recipientServiceIdObjc: ServiceIdObjC? {
-        recipientServiceId.map { .wrapValue($0) }
-    }
+
+    public let hasDeprecatedRepresentation: Bool
+    public let cnContactId: String?
+    public var isFromLocalAddressBook: Bool { cnContactId != nil }
+    public let givenName: String
+    public let familyName: String
+    public let nickname: String
+    public let fullName: String
 
     public convenience init(
-        contact: Contact?,
-        contactAvatarHash: Data?,
-        multipleAccountLabelText: String?,
         recipientPhoneNumber: String?,
-        recipientServiceId: ServiceId?
+        recipientServiceId: ServiceId?,
+        multipleAccountLabelText: String?,
+        cnContactId: String?,
+        givenName: String,
+        familyName: String,
+        nickname: String,
+        fullName: String,
+        contactAvatarHash: Data?
     ) {
         self.init(
             id: nil,
             uniqueId: UUID().uuidString,
-            contact: contact,
             contactAvatarHash: contactAvatarHash,
             multipleAccountLabelText: multipleAccountLabelText,
             recipientPhoneNumber: recipientPhoneNumber,
-            recipientServiceId: recipientServiceId
+            recipientServiceId: recipientServiceId,
+            hasDeprecatedRepresentation: false,
+            cnContactId: cnContactId,
+            givenName: givenName,
+            familyName: familyName,
+            nickname: nickname,
+            fullName: fullName
         )
     }
 
     private init(
         id: RowId?,
         uniqueId: String,
-        contact: Contact?,
         contactAvatarHash: Data?,
         multipleAccountLabelText: String?,
         recipientPhoneNumber: String?,
-        recipientServiceId: ServiceId?
+        recipientServiceId: ServiceId?,
+        hasDeprecatedRepresentation: Bool,
+        cnContactId: String?,
+        givenName: String,
+        familyName: String,
+        nickname: String,
+        fullName: String
     ) {
         self.id = id
         self.uniqueId = uniqueId
-        self.contact = contact
         self.contactAvatarHash = contactAvatarHash
         self.multipleAccountLabelText = multipleAccountLabelText ?? ""
         self.recipientPhoneNumber = recipientPhoneNumber
         self.recipientServiceId = recipientServiceId
+        self.hasDeprecatedRepresentation = hasDeprecatedRepresentation
+        self.cnContactId = cnContactId
+        self.givenName = givenName
+        self.familyName = familyName
+        self.nickname = nickname
+        self.fullName = fullName
     }
 
     public init(from decoder: Decoder) throws {
@@ -96,15 +122,29 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
 
-        contact = try container.decodeIfPresent(
-            Data.self,
-            forKey: .contact
-        ).map { contactData in
-            try LegacySDSSerializer().deserializeLegacySDSData(
-                contactData,
+        // To match iOS system behavior, the String name fields are NONNULL. As a
+        // result, we must test for whether or not `contact` exists to know if we
+        // have a deprecated or modern representation.
+        if let deprecatedContactData = try container.decodeIfPresent(Data.self, forKey: .contact) {
+            let deprecatedContact: Contact = try LegacySDSSerializer().deserializeLegacySDSData(
+                deprecatedContactData,
                 propertyName: "contact"
             )
+            self.hasDeprecatedRepresentation = true
+            self.cnContactId = deprecatedContact.cnContactId
+            self.givenName = deprecatedContact.firstName
+            self.familyName = deprecatedContact.lastName
+            self.nickname = deprecatedContact.nickname
+            self.fullName = deprecatedContact.fullName
+        } else {
+            self.hasDeprecatedRepresentation = false
+            self.cnContactId = try container.decodeIfPresent(String.self, forKey: .cnContactId)
+            self.givenName = try container.decode(String.self, forKey: .givenName)
+            self.familyName = try container.decode(String.self, forKey: .familyName)
+            self.nickname = try container.decode(String.self, forKey: .nickname)
+            self.fullName = try container.decode(String.self, forKey: .fullName)
         }
+
         contactAvatarHash = try container.decodeIfPresent(Data.self, forKey: .contactAvatarHash)
         multipleAccountLabelText = try container.decode(String.self, forKey: .multipleAccountLabelText)
         recipientPhoneNumber = try container.decodeIfPresent(String.self, forKey: .recipientPhoneNumber)
@@ -120,14 +160,15 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         try id.map { try container.encode($0, forKey: .id) }
         try container.encode(uniqueId, forKey: .uniqueId)
 
-        try container.encodeIfPresent(
-            LegacySDSSerializer().serializeAsLegacySDSData(property: contact),
-            forKey: .contact
-        )
         try container.encodeIfPresent(contactAvatarHash, forKey: .contactAvatarHash)
         try container.encode(multipleAccountLabelText, forKey: .multipleAccountLabelText)
         try container.encodeIfPresent(recipientPhoneNumber, forKey: .recipientPhoneNumber)
         try container.encodeIfPresent(recipientServiceId?.serviceIdUppercaseString, forKey: .recipientServiceId)
+        try container.encodeIfPresent(cnContactId, forKey: .cnContactId)
+        try container.encode(givenName, forKey: .givenName)
+        try container.encode(familyName, forKey: .familyName)
+        try container.encode(nickname, forKey: .nickname)
+        try container.encode(fullName, forKey: .fullName)
     }
 
     private enum NSCoderKeys: String {
@@ -140,6 +181,11 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         case recipientId
         case recipientPhoneNumber
         case recipientServiceId = "recipientUUID"
+        case cnContactId
+        case givenName
+        case familyName
+        case nickname
+        case fullName
     }
 
     public init?(coder: NSCoder) {
@@ -155,7 +201,21 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
             return nil
         }
         self.uniqueId = uniqueId as String
-        self.contact = decodeObject(of: Contact.self, forKey: .contact)
+        if let deprecatedContact = decodeObject(of: Contact.self, forKey: .contact) {
+            self.hasDeprecatedRepresentation = true
+            self.cnContactId = deprecatedContact.cnContactId
+            self.givenName = deprecatedContact.firstName
+            self.familyName = deprecatedContact.lastName
+            self.nickname = deprecatedContact.nickname
+            self.fullName = deprecatedContact.fullName
+        } else {
+            self.hasDeprecatedRepresentation = false
+            self.cnContactId = decodeObject(of: NSString.self, forKey: .cnContactId) as String?
+            self.givenName = (decodeObject(of: NSString.self, forKey: .givenName) ?? "") as String
+            self.familyName = (decodeObject(of: NSString.self, forKey: .familyName) ?? "") as String
+            self.nickname = (decodeObject(of: NSString.self, forKey: .nickname) ?? "") as String
+            self.fullName = (decodeObject(of: NSString.self, forKey: .fullName) ?? "") as String
+        }
         self.contactAvatarHash = decodeObject(of: NSData.self, forKey: .contactAvatarHash) as Data?
         guard let multipleAccountLabelText = decodeObject(of: NSString.self, forKey: .multipleAccountLabelText) else {
             return nil
@@ -178,11 +238,15 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         encodeObject(NSNumber(value: 1), forKey: .accountSchemaVersion)
         encodeObject(grdbId, forKey: .grdbId)
         encodeObject(uniqueId, forKey: .uniqueId)
-        encodeObject(contact, forKey: .contact)
         encodeObject(contactAvatarHash, forKey: .contactAvatarHash)
         encodeObject(multipleAccountLabelText, forKey: .multipleAccountLabelText)
         encodeObject(recipientPhoneNumber, forKey: .recipientPhoneNumber)
         encodeObject(recipientServiceId?.serviceIdUppercaseString, forKey: .recipientServiceId)
+        encodeObject(cnContactId, forKey: .cnContactId)
+        encodeObject(givenName, forKey: .givenName)
+        encodeObject(familyName, forKey: .familyName)
+        encodeObject(nickname, forKey: .nickname)
+        encodeObject(fullName, forKey: .fullName)
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -203,16 +267,17 @@ extension SignalAccount {
 
 extension SignalAccount {
     @objc
-    public convenience init(
-        contact: Contact? = nil,
-        address: SignalServiceAddress
-    ) {
+    public convenience init(address: SignalServiceAddress) {
         self.init(
-            contact: contact,
-            contactAvatarHash: nil,
-            multipleAccountLabelText: nil,
             recipientPhoneNumber: address.phoneNumber,
-            recipientServiceId: address.serviceId
+            recipientServiceId: address.serviceId,
+            multipleAccountLabelText: nil,
+            cnContactId: nil,
+            givenName: "",
+            familyName: "",
+            nickname: "",
+            fullName: "",
+            contactAvatarHash: nil
         )
     }
 }
@@ -254,22 +319,22 @@ extension SignalAccount {
     /// the components object is non-nil.
     public func contactNameComponents() -> PersonNameComponents? {
         var components = PersonNameComponents()
-        if let firstName = self.contact?.firstName.strippedOrNil {
+        if let firstName = self.givenName.strippedOrNil {
             components.givenName = firstName
         }
-        if let lastName = self.contact?.lastName.strippedOrNil {
+        if let lastName = self.familyName.strippedOrNil {
             components.familyName = lastName
         }
 
         if
             components.givenName == nil,
             components.familyName == nil,
-            let fullName = self.contact?.fullName.strippedOrNil
+            let fullName = self.fullName.strippedOrNil
         {
             components.givenName = fullName
         }
 
-        if let nickname = self.contact?.nickname.strippedOrNil {
+        if let nickname = self.nickname.strippedOrNil {
             components.nickname = nickname
         }
 
@@ -311,8 +376,17 @@ extension SignalAccount {
         && recipientServiceId == otherAccount.recipientServiceId
         && multipleAccountLabelText == otherAccount.multipleAccountLabelText
         && contactAvatarHash == otherAccount.contactAvatarHash
-        && contact?.cnContactId == otherAccount.contact?.cnContactId
-        && Contact.areNamesEqual(contact, otherAccount.contact)
+        && cnContactId == otherAccount.cnContactId
+        && hasSameName(otherAccount)
+    }
+
+    public func hasSameName(_ otherAccount: SignalAccount) -> Bool {
+        return (
+            self.givenName == otherAccount.givenName
+            && self.familyName == otherAccount.familyName
+            && self.nickname == otherAccount.nickname
+            && self.fullName == otherAccount.fullName
+        )
     }
 
     public static func aciForPhoneNumberVisibilityUpdate(
@@ -333,16 +407,11 @@ extension SignalAccount {
 // MARK: - Avatar
 
 extension SignalAccount {
-
-    @objc
     public func buildContactAvatarJpegData() -> Data? {
-        guard
-            let contact = self.contact,
-            contact.isFromLocalAddressBook
-        else {
+        guard isFromLocalAddressBook else {
             return nil
         }
-        guard let cnContactId = contact.cnContactId else {
+        guard let cnContactId else {
             owsFailDebug("Missing cnContactId.")
             return nil
         }
@@ -377,11 +446,16 @@ extension SignalAccount: NSCopying {
         return SignalAccount(
             id: self.id,
             uniqueId: self.uniqueId,
-            contact: self.contact,
             contactAvatarHash: self.contactAvatarHash,
             multipleAccountLabelText: self.multipleAccountLabelText,
             recipientPhoneNumber: self.recipientPhoneNumber,
-            recipientServiceId: self.recipientServiceId
+            recipientServiceId: self.recipientServiceId,
+            hasDeprecatedRepresentation: self.hasDeprecatedRepresentation,
+            cnContactId: self.cnContactId,
+            givenName: self.givenName,
+            familyName: self.familyName,
+            nickname: self.nickname,
+            fullName: self.fullName
         )
     }
 }

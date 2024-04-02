@@ -143,8 +143,7 @@ enum ContactSyncAttachmentBuilder {
 
     private static func localAccountToSync(localAddress: SignalServiceAddress) -> SignalAccount {
         // OWSContactsOutputStream requires all signalAccount to have a contact.
-        let contact = Contact(cnContactId: nil, firstName: "", lastName: "", nickname: "", fullName: "")
-        return SignalAccount(contact: contact, address: localAddress)
+        return SignalAccount(address: localAddress)
     }
 }
 

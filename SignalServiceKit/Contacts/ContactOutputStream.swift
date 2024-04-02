@@ -32,7 +32,7 @@ final class ContactOutputStream {
         // TODO: this should be removed after a 90-day timer from when Desktop stops
         // relying on names in contact sync messages, and is instead using the
         // `system[Given|Family]Name` fields from StorageService ContactRecords.
-        if let fullName = signalAccount?.contact?.fullName {
+        if let fullName = signalAccount?.fullName {
             contactBuilder.setName(fullName)
         }
 

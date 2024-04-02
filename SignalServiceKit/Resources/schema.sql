@@ -592,6 +592,11 @@ CREATE
             ,"multipleAccountLabelText" TEXT NOT NULL
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
+            ,"cnContactId" TEXT
+            ,"givenName" TEXT NOT NULL DEFAULT ''
+            ,"familyName" TEXT NOT NULL DEFAULT ''
+            ,"nickname" TEXT NOT NULL DEFAULT ''
+            ,"fullName" TEXT NOT NULL DEFAULT ''
         )
 ;
 
@@ -1580,7 +1585,7 @@ CREATE
             ,tokenize = 'unicode61'
             ,content = 'SearchableName'
             ,content_rowid = 'id'
-        ) /* SearchableNameFTS(VALUE) */
+        ) /* SearchableNameFTS(value) */
 ;
 
 CREATE

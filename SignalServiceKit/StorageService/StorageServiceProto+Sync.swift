@@ -305,14 +305,14 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             usernameBetterIdentifierChecker.add(profileFamilyName: profileFamilyName)
         }
 
-        let systemContact = { () -> Contact? in
+        let systemContact = { () -> SignalAccount? in
             guard let phoneNumber = contact.phoneNumber else {
                 return nil
             }
             return contactsManager.fetchSignalAccount(
                 forPhoneNumber: phoneNumber.stringValue,
                 transaction: tx
-            )?.contact
+            )
         }()
 
         if let systemContact {
@@ -333,11 +333,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             let isLinkedAndHasSyncedContact = !isPrimary && !systemContact.isFromLocalAddressBook
 
             if isPrimaryAndHasLocalContact || isLinkedAndHasSyncedContact {
-                let systemGivenName = systemContact.firstName
+                let systemGivenName = systemContact.givenName
                 builder.setSystemGivenName(systemGivenName)
                 usernameBetterIdentifierChecker.add(systemContactGivenName: systemGivenName)
 
-                let systemFamilyName = systemContact.lastName
+                let systemFamilyName = systemContact.familyName
                 builder.setSystemFamilyName(systemFamilyName)
                 usernameBetterIdentifierChecker.add(systemContactFamilyName: systemFamilyName)
 
@@ -662,10 +662,10 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         )
 
         if isPrimaryDevice {
-            let localContact = localAccount?.contact?.isFromLocalAddressBook == true ? localAccount?.contact : nil
-            let localSystemGivenName = localContact?.firstName
-            let localSystemFamilyName = localContact?.lastName
-            let localSystemNickname = localContact?.nickname
+            let localContact = localAccount?.isFromLocalAddressBook == true
+            let localSystemGivenName = localContact ? localAccount?.givenName : nil
+            let localSystemFamilyName = localContact ? localAccount?.familyName : nil
+            let localSystemNickname = localContact ? localAccount?.nickname : nil
             // On the primary device, we should mark it as `needsUpdate` if it doesn't match the local state.
             return (
                 localSystemGivenName != record.systemGivenName
@@ -684,14 +684,6 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             nickname: record.systemNickname
         )
         if let systemFullName {
-            let newContact = Contact(
-                cnContactId: nil,
-                firstName: record.systemGivenName ?? "",
-                lastName: record.systemFamilyName ?? "",
-                nickname: record.systemNickname ?? "",
-                fullName: systemFullName
-            )
-
             // TODO: we should find a way to fill in `multipleAccountLabelText`.
             // This is the string that helps disambiguate when multiple
             // `SignalAccount`s are associated with the same system contact.
@@ -702,11 +694,15 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             let multipleAccountLabelText = ""
 
             newAccount = SignalAccount(
-                contact: newContact,
-                contactAvatarHash: nil,
-                multipleAccountLabelText: multipleAccountLabelText,
                 recipientPhoneNumber: phoneNumber,
-                recipientServiceId: serviceIds.aciOrElsePni
+                recipientServiceId: serviceIds.aciOrElsePni,
+                multipleAccountLabelText: multipleAccountLabelText,
+                cnContactId: nil,
+                givenName: record.systemGivenName ?? "",
+                familyName: record.systemFamilyName ?? "",
+                nickname: record.systemNickname ?? "",
+                fullName: systemFullName,
+                contactAvatarHash: nil
             )
         } else {
             newAccount = nil

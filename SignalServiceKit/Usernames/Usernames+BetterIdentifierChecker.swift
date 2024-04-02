@@ -42,12 +42,11 @@ extension Usernames {
                 let account = contactManager.fetchSignalAccount(
                     for: recipient.address,
                     transaction: transaction
-                ),
-                let contact = account.contact
+                )
             {
-                checker.add(systemContactGivenName: contact.firstName)
-                checker.add(systemContactFamilyName: contact.lastName)
-                checker.add(systemContactNickname: contact.nickname)
+                checker.add(systemContactGivenName: account.givenName)
+                checker.add(systemContactFamilyName: account.familyName)
+                checker.add(systemContactNickname: account.nickname)
             }
 
             return checker

@@ -8,17 +8,6 @@ import SignalCoreKit
 
 extension Contact {
 
-    // MARK: - Equality
-
-    public static func areNamesEqual(_ lhs: Contact?, _ rhs: Contact?) -> Bool {
-        return lhs === rhs || (
-            lhs?.firstName == rhs?.firstName
-            && lhs?.lastName == rhs?.lastName
-            && lhs?.nickname == rhs?.nickname
-            && lhs?.fullName == rhs?.fullName
-        )
-    }
-
     // MARK: - Phone Numbers
 
     public static func uniquePhoneNumberLabel(
