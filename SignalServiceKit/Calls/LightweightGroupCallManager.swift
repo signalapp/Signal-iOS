@@ -44,10 +44,9 @@ open class LightweightGroupCallManager {
     private let logger = GroupCallPeekLogger.shared
 
     public let groupCallPeekClient: GroupCallPeekClient
-    public var httpClient: SignalRingRTC.HTTPClient { groupCallPeekClient.httpClient }
 
-    public init() {
-        groupCallPeekClient = GroupCallPeekClient()
+    public init(groupCallPeekClient: GroupCallPeekClient) {
+        self.groupCallPeekClient = groupCallPeekClient
     }
 
     open func peekGroupCallAndUpdateThread(

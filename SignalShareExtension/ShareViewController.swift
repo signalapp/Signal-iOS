@@ -59,12 +59,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NoopCallMessageHandler(),
+            lightweightGroupCallManagerBuilder: LightweightGroupCallManager.init(groupCallPeekClient:),
             notificationPresenter: NoopNotificationsManager()
         )
 
         // Configure the rest of the globals before preparing the database.
         SUIEnvironment.shared.setup()
-        SSKEnvironment.shared.lightweightGroupCallManagerRef = LightweightGroupCallManager()
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalContinuation in
             switch finalContinuation.finish(willResumeInProgressRegistration: false) {

@@ -24,8 +24,6 @@ public class AppEnvironment: NSObject {
         }
     }
 
-    public var callServiceRef: CallService
-
     // A temporary hack until `.shared` goes away and this can be provided to `init`.
     static let sharedNotificationPresenter = NotificationPresenter()
 
@@ -48,7 +46,6 @@ public class AppEnvironment: NSObject {
     private var usernameValidationObserverRef: UsernameValidationObserver?
 
     private override init() {
-        self.callServiceRef = CallService()
         self.notificationPresenterRef = Self.sharedNotificationPresenter
         self.pushRegistrationManagerRef = PushRegistrationManager()
 
@@ -115,8 +112,5 @@ public class AppEnvironment: NSObject {
             DependenciesBridge.shared.deletedCallRecordCleanupManager
                 .startCleanupIfNecessary()
         }
-
-        // Hang certain singletons on SSKEnvironment too.
-        SSKEnvironment.shared.lightweightGroupCallManagerRef = callServiceRef
     }
 }

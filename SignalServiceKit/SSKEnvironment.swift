@@ -19,9 +19,6 @@ public class SSKEnvironment: NSObject {
         _shared = env
     }
 
-    // This property is configured after SSKEnvironment is created.
-    public var lightweightGroupCallManagerRef: LightweightGroupCallManager?
-
     #if TESTABLE_BUILD
     private(set) public var contactManagerRef: any ContactManager
     private(set) public var messageSenderRef: MessageSender
@@ -89,6 +86,7 @@ public class SSKEnvironment: NSObject {
     public let proximityMonitoringManagerRef: OWSProximityMonitoringManager
     public let avatarBuilderRef: AvatarBuilder
     public let smJobQueuesRef: SignalMessagingJobQueues
+    public let lightweightGroupCallManagerRef: LightweightGroupCallManager
 
     private let appExpiryRef: AppExpiry
     private let aciSignalProtocolStoreRef: SignalProtocolStore
@@ -154,7 +152,8 @@ public class SSKEnvironment: NSObject {
         preferences: Preferences,
         proximityMonitoringManager: OWSProximityMonitoringManager,
         avatarBuilder: AvatarBuilder,
-        smJobQueues: SignalMessagingJobQueues
+        smJobQueues: SignalMessagingJobQueues,
+        lightweightGroupCallManager: LightweightGroupCallManager
     ) {
         self.contactManagerRef = contactManager
         self.messageSenderRef = messageSender
@@ -216,6 +215,7 @@ public class SSKEnvironment: NSObject {
         self.proximityMonitoringManagerRef = proximityMonitoringManager
         self.avatarBuilderRef = avatarBuilder
         self.smJobQueuesRef = smJobQueues
+        self.lightweightGroupCallManagerRef = lightweightGroupCallManager
     }
 
     public func signalProtocolStoreRef(for identity: OWSIdentity) -> SignalProtocolStore {

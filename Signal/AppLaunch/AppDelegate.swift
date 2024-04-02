@@ -254,7 +254,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func launchApp(in window: UIWindow, appContext: MainAppContext, launchStartedAt: CFTimeInterval) {
         assert(window.rootViewController is LoadingViewController)
         configureGlobalUI(in: window)
-        setUpMainAppEnvironment().done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
+        setUpMainAppEnvironment(appContext: appContext).done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
             self.didLoadDatabase(
                 finalContinuation: finalContinuation,
                 sleepBlockObject: sleepBlockObject,
@@ -274,15 +274,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         screenLockUI.startObserving()
     }
 
-    private func setUpMainAppEnvironment() -> Guarantee<(AppSetup.FinalContinuation, NSObject)> {
+    private func setUpMainAppEnvironment(appContext: MainAppContext) -> Guarantee<(AppSetup.FinalContinuation, NSObject)> {
         let sleepBlockObject = NSObject()
         DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
 
         let databaseContinuation = AppSetup().start(
-            appContext: CurrentAppContext(),
+            appContext: appContext,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
             callMessageHandler: WebRTCCallMessageHandler(),
+            lightweightGroupCallManagerBuilder: {
+                return CallService(appContext: appContext, groupCallPeekClient: $0)
+            },
             notificationPresenter: AppEnvironment.sharedNotificationPresenter
         )
         setupNSEInteroperation()
@@ -812,7 +815,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, NSObject)>(
             setupSskEnvironment: {
                 firstly(on: DispatchQueue.main) {
-                    self.setUpMainAppEnvironment()
+                    self.setUpMainAppEnvironment(appContext: appContext)
                 }
             },
             launchApp: { (finalContinuation, sleepBlockObject) in

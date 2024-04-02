@@ -26,17 +26,7 @@ protocol CallServiceObserver: AnyObject {
 public final class CallService: LightweightGroupCallManager {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
 
-    private var _callManager: CallManagerType! = nil
-    public private(set) var callManager: CallManagerType {
-        get { _callManager }
-        set {
-            if _callManager == nil {
-                _callManager = newValue
-            } else {
-                owsFailDebug("Should only be set once")
-            }
-        }
-    }
+    public let callManager: CallManagerType
 
     private var audioSession: AudioSession { NSObject.audioSession }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
@@ -175,13 +165,16 @@ public final class CallService: LightweightGroupCallManager {
         NotificationCenter.default.postNotificationNameAsync(Self.activeCallsDidChange, object: nil)
     }
 
-    public override init() {
-        super.init()
-        callManager = CallManager(
-            httpClient: httpClient,
-            fieldTrials: RingrtcFieldTrials.trials(with: CurrentAppContext().appUserDefaults())
+    public init(
+        appContext: any AppContext,
+        groupCallPeekClient: GroupCallPeekClient
+    ) {
+        self.callManager = CallManager(
+            httpClient: groupCallPeekClient.httpClient,
+            fieldTrials: RingrtcFieldTrials.trials(with: appContext.appUserDefaults())
         )
-        callManager.delegate = self
+        super.init(groupCallPeekClient: groupCallPeekClient)
+        self.callManager.delegate = self
         SwiftSingletons.register(self)
 
         NotificationCenter.default.addObserver(
@@ -213,15 +206,18 @@ public final class CallService: LightweightGroupCallManager {
             self,
             selector: #selector(configureDataMode),
             name: .reachabilityChanged,
-            object: nil)
+            object: nil
+        )
 
         // We don't support a rotating call screen on phones,
         // but we do still want to rotate the various icons.
         if !UIDevice.current.isIPad {
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(phoneOrientationDidChange),
-                                                   name: UIDevice.orientationDidChangeNotification,
-                                                   object: nil)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(phoneOrientationDidChange),
+                name: UIDevice.orientationDidChangeNotification,
+                object: nil
+            )
         }
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
@@ -858,7 +854,7 @@ public final class CallService: LightweightGroupCallManager {
             do {
                 membershipInfo = try self.databaseStorage.read { tx in
                     try self.groupCallPeekClient.groupMemberInfo(
-                        groupThread: groupThread, tx: tx
+                        groupThread: groupThread, tx: tx.asV2Read
                     )
                 }
             } catch {

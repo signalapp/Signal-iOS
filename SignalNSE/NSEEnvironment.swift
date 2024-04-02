@@ -128,10 +128,9 @@ class NSEEnvironment: Dependencies {
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NSECallMessageHandler(),
+            lightweightGroupCallManagerBuilder: LightweightGroupCallManager.init(groupCallPeekClient:),
             notificationPresenter: NotificationPresenter()
         )
-
-        SSKEnvironment.shared.lightweightGroupCallManagerRef = LightweightGroupCallManager()
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in
             switch finalSetupContinuation.finish(willResumeInProgressRegistration: false) {

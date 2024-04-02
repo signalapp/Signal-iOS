@@ -17,7 +17,7 @@ class NSECallMessageHandler: CallMessageHandler {
         SwiftSingletons.register(self)
     }
 
-    private var lightweightGroupCallManager: LightweightGroupCallManager? { NSObject.lightweightGroupCallManager }
+    private var lightweightGroupCallManager: LightweightGroupCallManager { NSObject.lightweightGroupCallManager }
     private var messagePipelineSupervisor: MessagePipelineSupervisor { NSObject.messagePipelineSupervisor }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
 
@@ -198,7 +198,7 @@ class NSECallMessageHandler: CallMessageHandler {
             "Received group call update message for thread \(groupThread.uniqueId), eraId \(String(describing: updateMessage.eraID))"
         )
 
-        await lightweightGroupCallManager?.peekGroupCallAndUpdateThread(
+        await lightweightGroupCallManager.peekGroupCallAndUpdateThread(
             groupThread,
             peekTrigger: .receivedGroupUpdateMessage(
                 eraId: updateMessage.eraID,

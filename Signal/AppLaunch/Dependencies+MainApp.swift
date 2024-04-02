@@ -14,12 +14,12 @@ public extension NSObject {
 
     @nonobjc
     final var callService: CallService {
-        AppEnvironment.shared.callServiceRef
+        SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
     }
 
     @nonobjc
     static var callService: CallService {
-        AppEnvironment.shared.callServiceRef
+        SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
     }
 
     final var notificationPresenter: NotificationPresenter {
@@ -78,11 +78,11 @@ public extension NSObject {
 public extension Dependencies {
 
     var callService: CallService {
-        AppEnvironment.shared.callServiceRef
+        SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
     }
 
     static var callService: CallService {
-        AppEnvironment.shared.callServiceRef
+        SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
     }
 
     var notificationPresenter: NotificationPresenter {

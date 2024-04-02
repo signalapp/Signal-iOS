@@ -827,11 +827,11 @@ public extension Dependencies {
 
 public extension NSObject {
 
-    var lightweightGroupCallManager: LightweightGroupCallManager? {
+    var lightweightGroupCallManager: LightweightGroupCallManager {
         SSKEnvironment.shared.lightweightGroupCallManagerRef
     }
 
-    static var lightweightGroupCallManager: LightweightGroupCallManager? {
+    static var lightweightGroupCallManager: LightweightGroupCallManager {
         SSKEnvironment.shared.lightweightGroupCallManagerRef
     }
 

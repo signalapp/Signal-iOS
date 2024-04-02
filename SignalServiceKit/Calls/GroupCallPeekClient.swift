@@ -14,21 +14,27 @@ public class GroupCallPeekLogger: PrefixedLogger {
     }
 }
 
-public class GroupCallPeekClient: Dependencies {
+public class GroupCallPeekClient {
     private var sfuUrl: String {
         DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
     }
 
     private let logger = GroupCallPeekLogger.shared
 
-    let httpClient: SignalRingRTC.HTTPClient
-    private let sfuClient: SignalRingRTC.SFUClient
+    private let db: any DB
+    private let groupsV2: any GroupsV2
+    public let httpClient: HTTPClient
+    private let sfuClient: SFUClient
 
-    public init() {
-        httpClient = SignalRingRTC.HTTPClient(delegate: nil)
-        sfuClient = SFUClient(httpClient: httpClient)
-
-        httpClient.delegate = self
+    init(
+        db: any DB,
+        groupsV2: any GroupsV2
+    ) {
+        self.db = db
+        self.groupsV2 = groupsV2
+        self.httpClient = SignalRingRTC.HTTPClient(delegate: nil)
+        self.sfuClient = SFUClient(httpClient: self.httpClient)
+        self.httpClient.delegate = self
     }
 
     /// Fetch the current group call peek info for the given thread.
@@ -36,7 +42,7 @@ public class GroupCallPeekClient: Dependencies {
     public func fetchPeekInfo(groupThread: TSGroupThread) async throws -> PeekInfo {
         let membershipProof = try await self.fetchGroupMembershipProof(groupThread: groupThread)
 
-        let membership = try self.databaseStorage.read { tx in
+        let membership = try self.db.read { tx in
             try self.groupMemberInfo(groupThread: groupThread, tx: tx)
         }
 
@@ -61,7 +67,7 @@ public class GroupCallPeekClient: Dependencies {
             throw OWSAssertionError("Expected V2 group model!")
         }
 
-        let credential = try await groupsV2Impl.fetchGroupExternalCredentials(groupModel: groupModel)
+        let credential = try await self.groupsV2.fetchGroupExternalCredentials(groupModel: groupModel)
 
         guard let tokenData = credential.token?.data(using: .utf8) else {
             throw OWSAssertionError("Invalid credential")
@@ -72,10 +78,10 @@ public class GroupCallPeekClient: Dependencies {
 
     public func groupMemberInfo(
         groupThread: TSGroupThread,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [GroupMemberInfo] {
         // Make sure we're working with the latest group state.
-        groupThread.anyReload(transaction: tx)
+        groupThread.anyReload(transaction: SDSDB.shimOnlyBridge(tx))
 
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Expected V2 group model!")
