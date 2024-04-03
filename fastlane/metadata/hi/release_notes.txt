@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• अब जब आप मिस्ड कॉल वाली चैट खोलेंगे तो कॉल टैब से वह मिस्ड कॉल इंडिकेटर भी क्लियर हो जाएगा। यदि आपने यह बग कभी नहीं देखा है, तो आप बहुत कुछ नहीं खो रहे हैं।

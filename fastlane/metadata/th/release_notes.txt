@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• สะดวกยิ่งขึ้นอีก! เมื่อคุณเปิดแชทที่มีสายที่ไม่ได้รับ ตัวแจ้งเตือนสายไม่ได้รับนั้นจะหายไปจากหน้าแท็บการโทรด้วยเช่นกัน

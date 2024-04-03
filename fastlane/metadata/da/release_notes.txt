@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• Når du åbner en chat med et ubesvaret opkald, ryddes indikatoren for ubesvarede opkald også fra fanen opkald. Hvis du aldrig har set denne fejl, går du ikke glip af meget.

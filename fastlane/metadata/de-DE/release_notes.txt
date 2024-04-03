@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• Wenn du einen Chat mit einem verpassten Anruf öffnest, wird der verpasste Anruf ebenso im Tab "Anrufe" nicht mehr als verpasst angezeigt. Wenn du diesen Fehler noch nie gesehen hast, hast du nicht viel verpasst.

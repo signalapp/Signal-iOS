@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• Ora quando apri una chat con una chiamata persa, l'icona che indica il numero di chiamate perse verrà rimosso anche dall'apposita schermata. Se invece sei una di quelle persone che non perde mai una chiamata, beh… allora non farai nemmeno caso a questo aggiornamento!

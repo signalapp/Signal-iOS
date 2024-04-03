@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• Тепер індикатор пропущеного виклику зникатиме з вкладки дзвінків, якщо ви відкриєте чат з пропущеним викликом. Якщо вам ще не траплялася ця помилка, ви небагато пропустили.

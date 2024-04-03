@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• Agora, ao abrir um chat com uma chamada perdida, o indicador de chamada perdida também será eliminado no separador de chamadas.
