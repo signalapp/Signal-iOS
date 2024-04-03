@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• 现在当您通过未接来电打开聊天时，该未接来电指示标记将会从通话选项卡中清除。

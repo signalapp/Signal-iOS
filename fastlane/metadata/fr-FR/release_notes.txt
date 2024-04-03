@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• Désormais, lorsque vous ouvrez une conversation affichant un appel manqué, l’indicateur d’appel manqué disparaît aussi de l’onglet Appels. Si vous n’aviez jamais remarqué ce bug, vous n’avez rien manqué.

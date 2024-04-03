@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• Als je een chat met een gemiste oproep opent, wordt de indicator voor gemiste oproepen nu ook direct gewist van het tabblad Oproepen. Heb je deze bug nog nooit gezien, dan heb je niet veel gemist.

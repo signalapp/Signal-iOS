@@ -1,1 +1,1 @@
-• Now when you open a chat with a missed call, that missed call indicator will also be cleared from the calls tab. If you’ve never seen this bug, you aren’t missing much.
+• 이제 부재중 통화가 있는 대화를 열면 해당 부재중 통화 표시기가 통화 탭에서도 지워집니다.
