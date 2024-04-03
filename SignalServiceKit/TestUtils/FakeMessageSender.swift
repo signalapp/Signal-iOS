@@ -18,10 +18,9 @@ class FakeMessageSender: MessageSender {
         if let stubbedFailingError = stubbedFailingErrors.removeFirst() { throw stubbedFailingError }
     }
 
-    override func sendTemporaryContactSyncAttachment(
+    override func sendTransientContactSyncAttachment(
         dataSource: DataSource,
-        contentType: String,
-        message: OWSSyncContactsMessage
+        thread: TSThread
     ) async throws {
         if let stubbedFailingError = stubbedFailingErrors.removeFirst() { throw stubbedFailingError }
     }

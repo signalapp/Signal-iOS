@@ -8,7 +8,14 @@ import SignalCoreKit
 
 public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
 
-    public init(thread: TSThread, tx: SDSAnyReadTransaction) {
+    private let uploadedAttachment: Upload.Result
+
+    public init(
+        uploadedAttachment: Upload.Result,
+        thread: TSThread,
+        tx: SDSAnyReadTransaction
+    ) {
+        self.uploadedAttachment = uploadedAttachment
         super.init(thread: thread, transaction: tx)
     }
 
@@ -24,31 +31,19 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
     public override var isUrgent: Bool { false }
 
     public override func syncMessageBuilder(transaction tx: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
-        let attachmentIds = self.bodyAttachmentIds(transaction: tx)
-        owsAssertDebug(attachmentIds.count == 1, "Contact sync message should have exactly one attachment.")
-        guard let attachmentId = attachmentIds.first else {
-            owsFailDebug("couldn't build protobuf")
-            return nil
-        }
-        // TODO: this object will never exist as a v2 Attachment, because
-        // the parent message is never saved to the database.
-        // Need to figure out how to represent it; it should just live in memory.
-        guard
-            let stream = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: attachmentId, transaction: tx),
-            stream.cdnKey.isEmpty.negated,
-            stream.cdnNumber > 0
-        else {
-            return nil
-        }
-        let resourceReference = TSAttachmentReference(uniqueId: attachmentId, attachment: stream)
-        let pointer = TSResourcePointer(resource: stream, cdnNumber: stream.cdnNumber, cdnKey: stream.cdnKey)
-        guard let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
-            from: resourceReference,
-            pointer: pointer
-        ) else {
-            owsFailDebug("couldn't build protobuf")
-            return nil
-        }
+
+        let attachmentBuilder = SSKProtoAttachmentPointer.builder()
+
+        // contact proto has a fixed type
+        attachmentBuilder.setContentType(OWSMimeTypeApplicationOctetStream)
+
+        attachmentBuilder.setCdnNumber(uploadedAttachment.cdnNumber)
+        attachmentBuilder.setCdnKey(uploadedAttachment.cdnKey)
+        attachmentBuilder.setSize(uploadedAttachment.localUploadMetadata.plaintextDataLength)
+        attachmentBuilder.setKey(uploadedAttachment.localUploadMetadata.key)
+        attachmentBuilder.setDigest(uploadedAttachment.localUploadMetadata.digest)
+
+        let attachmentProto = attachmentBuilder.buildInfallibly()
 
         let contactsBuilder = SSKProtoSyncMessageContacts.builder(blob: attachmentProto)
         contactsBuilder.setIsComplete(true)

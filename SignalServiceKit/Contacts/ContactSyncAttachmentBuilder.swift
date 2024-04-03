@@ -10,7 +10,6 @@ import SignalCoreKit
 
 enum ContactSyncAttachmentBuilder {
     static func buildAttachmentFile(
-        for contactSyncMessage: OWSSyncContactsMessage,
         contactsManager: OWSContactsManager,
         tx: SDSAnyReadTransaction
     ) -> URL? {

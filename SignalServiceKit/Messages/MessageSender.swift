@@ -465,23 +465,19 @@ public class MessageSender: Dependencies {
 
     // MARK: - Sending Attachments
 
-    public func sendTemporaryContactSyncAttachment(
+    public func sendTransientContactSyncAttachment(
         dataSource: DataSource,
-        contentType: String,
-        message: OWSSyncContactsMessage
+        thread: TSThread
     ) async throws {
+        let uploadResult = try await DependenciesBridge.shared.tsResourceUploadManager.uploadTransientAttachment(
+            dataSource: dataSource
+        )
+        let message = databaseStorage.read { tx in
+            return OWSSyncContactsMessage(uploadedAttachment: uploadResult, thread: thread, tx: tx)
+        }
         let outgoingMessagePreparer = OutgoingMessagePreparer(
             message,
-            unsavedAttachmentInfos: [OutgoingAttachmentInfo(
-                dataSource: dataSource,
-                contentType: contentType,
-                sourceFilename: nil,
-                caption: nil,
-                albumMessageId: nil,
-                isBorderless: false,
-                isVoiceMessage: false,
-                isLoopingVideo: false
-            )]
+            unsavedAttachmentInfos: []
         )
         let result = await Result { try await sendMessage(outgoingMessagePreparer) }
         await databaseStorage.awaitableWrite { tx in

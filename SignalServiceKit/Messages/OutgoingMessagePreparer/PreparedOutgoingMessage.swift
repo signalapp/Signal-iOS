@@ -53,6 +53,15 @@ public class PreparedOutgoingMessage {
         return PreparedOutgoingMessage(messageType: messageType)
     }
 
+    /// Use this _only_ to "prepare" outgoing contact sync that, by definition, already uploaded their attachment.
+    /// Instantly prepares because...these messages don't need any preparing.
+    public static func preprepared(
+        contactSyncMessage: OWSSyncContactsMessage
+    ) -> PreparedOutgoingMessage {
+        let messageType = MessageType.contactSync(contactSyncMessage)
+        return PreparedOutgoingMessage(messageType: messageType)
+    }
+
     /// Use this _only_ to "prepare" messages that are:
     /// (1) not saved to the interactions table
     /// AND
@@ -78,8 +87,8 @@ public class PreparedOutgoingMessage {
 
         /// A contact sync message that is not inserted into the Interactions table.
         /// It has an attachment, but that attachment is never persisted as an Attachment
-        /// in the database; it is simply in memory (or a temporary file location on disk).
-        case contactSync(ContactSync)
+        /// in the database; it is simply in memory and already uploaded.
+        case contactSync(OWSSyncContactsMessage)
 
         /// An OutgoingStoryMessage: a TSMessage subclass we use for sending a ``StoryMessage``
         /// The StoryMessage is persisted to the StoryMessages table and is the owner for any attachments;
@@ -98,11 +107,6 @@ public class PreparedOutgoingMessage {
             public let editedMessageRowId: Int64
             public let editedMessage: TSOutgoingMessage
             public let messageForSending: OutgoingEditMessage
-        }
-
-        public struct ContactSync {
-            public let message: OWSSyncContactsMessage
-            public let attachmentDataSource: DataSource
         }
 
         public struct Story {
@@ -125,8 +129,8 @@ public class PreparedOutgoingMessage {
             case .editMessage(let message):
                 // We update the send state on the _original_ edited message.
                 return message.editedMessage
-            case .contactSync(let contactSync):
-                return contactSync.message
+            case .contactSync(let message):
+                return message
             case .story(let storyMessage):
                 return storyMessage.message
             case .transient(let message):
@@ -204,8 +208,8 @@ public class PreparedOutgoingMessage {
             case .editMessage(let message):
                 // We update the send state on the _original_ edited message.
                 return message.editedMessage
-            case .contactSync(let contactSync):
-                return contactSync.message
+            case .contactSync(let message):
+                return message
             case .story(let storyMessage):
                 return storyMessage.message
             case .transient(let message):

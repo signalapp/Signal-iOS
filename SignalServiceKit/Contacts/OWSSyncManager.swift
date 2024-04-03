@@ -499,11 +499,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                     }
                 }
             }
-            try await self.messageSender.sendTemporaryContactSyncAttachment(
-                dataSource: dataSource,
-                contentType: OWSMimeTypeApplicationOctetStream,
-                message: result.message
-            )
+            try await self.messageSender.sendTransientContactSyncAttachment(dataSource: dataSource, thread: thread)
             await self.databaseStorage.awaitableWrite { tx in
                 Self.keyValueStore.setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
                 self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
@@ -512,7 +508,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     }
 
     private struct BuildContactSyncMessageResult {
-        var message: OWSSyncContactsMessage
         var syncFileUrl: URL
         var fullSyncRequestId: String?
         var previousMessageHash: Data?
@@ -534,9 +529,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return nil
         }
 
-        let message = OWSSyncContactsMessage(thread: thread, tx: tx)
         guard let syncFileUrl = ContactSyncAttachmentBuilder.buildAttachmentFile(
-            for: message,
             contactsManager: Self.contactsManagerImpl,
             tx: tx
         ) else {
@@ -544,7 +537,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             throw OWSError(error: .contactSyncFailed, description: "Could not sync contacts.", isRetryable: false)
         }
         return BuildContactSyncMessageResult(
-            message: message,
             syncFileUrl: syncFileUrl,
             fullSyncRequestId: fullSyncRequestId,
             previousMessageHash: Self.keyValueStore.getData(Constants.lastContactSyncKey, transaction: tx)

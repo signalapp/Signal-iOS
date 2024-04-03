@@ -54,13 +54,9 @@ public class UnpreparedOutgoingMessage {
     }
 
     public static func forContactSync(
-        _ contactSyncMessage: OWSSyncContactsMessage,
-        dataSource: DataSource
+        _ contactSyncMessage: OWSSyncContactsMessage
     ) -> UnpreparedOutgoingMessage {
-        return .init(messageType: .contactSync(.init(
-            message: contactSyncMessage,
-            attachmentDataSource: dataSource
-        )))
+        return .init(messageType: .contactSync(contactSyncMessage))
     }
 
     public static func forOutgoingStoryMessage(
@@ -89,8 +85,8 @@ public class UnpreparedOutgoingMessage {
             return message.message.timestamp
         case .editMessage(let message):
             return message.messageForSending.timestamp
-        case .contactSync(let contactSync):
-            return contactSync.message.timestamp
+        case .contactSync(let message):
+            return message.timestamp
         case .story(let story):
             return story.message.timestamp
         case .transient(let message):
@@ -110,8 +106,8 @@ public class UnpreparedOutgoingMessage {
 
         /// A contact sync message that is not inserted into the Interactions table.
         /// It has an attachment, but that attachment is never persisted as an Attachment
-        /// in the database; it is simply in memory (or a temporary file location on disk).
-        case contactSync(ContactSync)
+        /// in the database; it is simply in memory and already uploaded.
+        case contactSync(OWSSyncContactsMessage)
 
         /// An OutgoingStoryMessage: a TSMessage subclass we use for sending a ``StoryMessage``
         /// The StoryMessage is persisted to the StoryMessages table and is the owner for any attachments;
@@ -136,11 +132,6 @@ public class UnpreparedOutgoingMessage {
             let unsavedBodyAttachments: [TSResourceDataSource]
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
-        }
-
-        struct ContactSync {
-            let message: OWSSyncContactsMessage
-            let attachmentDataSource: DataSource
         }
 
         struct Story {
@@ -171,8 +162,8 @@ public class UnpreparedOutgoingMessage {
             }
         case .editMessage(let message):
             preparedMessageType = try prepareEditMessage(message, tx: tx)
-        case .contactSync(let contactSync):
-            preparedMessageType = prepareContactSyncMessage(contactSync)
+        case .contactSync(let message):
+            preparedMessageType = prepareContactSyncMessage(message)
         case .story(let story):
             preparedMessageType = prepareStoryMessage(story)
         case .transient(let message):
@@ -364,12 +355,9 @@ public class UnpreparedOutgoingMessage {
     }
 
     private func prepareContactSyncMessage(
-        _ contactSync: MessageType.ContactSync
+        _ message: OWSSyncContactsMessage
     ) -> PreparedOutgoingMessage.MessageType {
-        return .contactSync(PreparedOutgoingMessage.MessageType.ContactSync(
-            message: contactSync.message,
-            attachmentDataSource: contactSync.attachmentDataSource
-        ))
+        return .contactSync(message)
     }
 
     private func prepareStoryMessage(

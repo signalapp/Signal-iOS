@@ -86,7 +86,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             case .editMessage(let edit):
                 jobRecord = try .init(editMessage: edit, isHighPriority: isHighPriority, transaction: transaction)
             case .contactSync:
-                throw OWSAssertionError("Cannot create a job record for contact syncs; their in-memory attachments can't be persisted!")
+                throw OWSAssertionError("Cannot create a job record for contact syncs; they can't be persisted!")
             case .story(let story):
                 jobRecord = .init(storyMessage: story, isHighPriority: isHighPriority)
             case .transient(let message):
@@ -106,8 +106,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                     return persisted.message
                 case .editMessage(let edit):
                     return edit.editedMessage
-                case .contactSync(let contactSync):
-                    return contactSync.message
+                case .contactSync(let message):
+                    return message
                 case .story(let story):
                     return story.message
                 case .transient(let message):
