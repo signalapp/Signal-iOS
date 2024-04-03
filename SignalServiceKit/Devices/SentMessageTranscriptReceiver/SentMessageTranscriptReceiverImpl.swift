@@ -172,14 +172,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         )
         var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 
-        // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
-        // But since outgoingMessage is partially built and doesn't have the attachments yet, we check
-        // for attachments explicitly.
-        // TODO: attachments may not have been created at this point!
-        let hasRenderableContent = interactionStore.messageHasRenderableContent(outgoingMessage, tx: tx)
-        let outgoingMessageHasContent = hasRenderableContent
-            || messageParams.attachmentPointerProtos.isEmpty.negated
-        if !outgoingMessageHasContent && !outgoingMessage.isViewOnceMessage {
+        let hasRenderableContent = outgoingMessageBuilder.hasRenderableContent(
+            hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated
+        )
+        if !hasRenderableContent && !outgoingMessage.isViewOnceMessage {
             switch messageParams.target {
             case .group(let thread):
                 if thread.isGroupV2Thread {
@@ -230,7 +226,11 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 tx: tx
             )
         }
-        owsAssertDebug(hasRenderableContent)
+        owsAssertDebug(interactionStore.insertedMessageHasRenderableContent(
+            message: outgoingMessage,
+            rowId: outgoingMessage.sqliteRowId!,
+            tx: tx
+        ))
 
         interactionStore.updateRecipientsFromNonLocalDevice(
             outgoingMessage,

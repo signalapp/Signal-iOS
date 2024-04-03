@@ -715,3 +715,85 @@ public extension TSMessage {
         FullTextSearchIndexer.delete(self, tx: tx)
     }
 }
+
+// MARK: - Renderable content
+
+extension TSMessage {
+
+    /// Unsafe to use before insertion; until attachments are inserted (which happens after message insertion)
+    /// this may not return accurate results.
+    public func insertedMessageHasRenderableContent(
+        rowId: Int64,
+        tx: SDSAnyReadTransaction
+    ) -> Bool {
+        var fetchedAttachments: [TSResourceReference]?
+        func fetchAttachments() -> [TSResourceReference] {
+            if let fetchedAttachments { return fetchedAttachments }
+            let attachments = DependenciesBridge.shared.tsResourceStore.bodyAttachments(
+                for: self,
+                tx: tx.asV2Read
+            )
+            fetchedAttachments = attachments
+            return attachments
+        }
+
+        return TSMessageBuilder.hasRenderableContent(
+            hasNonemptyBody: body?.nilIfEmpty != nil,
+            hasBodyAttachmentsOrOversizeText: fetchAttachments().isEmpty.negated,
+            hasLinkPreview: linkPreview != nil,
+            hasQuotedReply: quotedMessage != nil,
+            hasContactShare: contactShare != nil,
+            hasSticker: messageSticker != nil,
+            hasGiftBadge: giftBadge != nil,
+            isStoryReply: isStoryReply,
+            storyReactionEmoji: storyReactionEmoji
+        )
+    }
+}
+
+extension TSMessageBuilder {
+
+    public func hasRenderableContent(hasBodyAttachments: Bool) -> Bool {
+        return Self.hasRenderableContent(
+            hasNonemptyBody: messageBody?.nilIfEmpty != nil,
+            hasBodyAttachmentsOrOversizeText: attachmentIds.isEmpty.negated || hasBodyAttachments,
+            hasLinkPreview: linkPreview != nil,
+            hasQuotedReply: quotedMessage != nil,
+            hasContactShare: contactShare != nil,
+            hasSticker: messageSticker != nil,
+            hasGiftBadge: giftBadge != nil,
+            isStoryReply: storyAuthorAci != nil && storyTimestamp != nil,
+            storyReactionEmoji: storyReactionEmoji
+        )
+    }
+
+    public static func hasRenderableContent(
+        hasNonemptyBody: Bool,
+        hasBodyAttachmentsOrOversizeText: @autoclosure () -> Bool,
+        hasLinkPreview: Bool,
+        hasQuotedReply: Bool,
+        hasContactShare: Bool,
+        hasSticker: Bool,
+        hasGiftBadge: Bool,
+        isStoryReply: Bool,
+        storyReactionEmoji: String?
+    ) -> Bool {
+        // Story replies currently only support a subset of message features, so may not
+        // be renderable in some circumstances where a normal message would be.
+        if isStoryReply {
+            return hasNonemptyBody || (storyReactionEmoji?.isSingleEmoji ?? false)
+        }
+
+        // We DO NOT consider a message with just a linkPreview
+        // or quotedMessage to be renderable.
+        if hasNonemptyBody || hasContactShare || hasSticker || hasGiftBadge {
+            return true
+        }
+
+        if hasBodyAttachmentsOrOversizeText() {
+            return true
+        }
+
+        return false
+    }
+}

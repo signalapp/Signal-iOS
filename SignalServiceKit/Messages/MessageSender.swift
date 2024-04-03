@@ -499,7 +499,7 @@ public class MessageSender: Dependencies {
             }
             return (
                 message,
-                Self.sendingQueuePriority(for: message, tx: tx)
+                preparedOutgoingMessage.sendingQueuePriority(tx: tx)
             )
         }
 
@@ -556,10 +556,6 @@ public class MessageSender: Dependencies {
             sendingQueueMap[sendingQueueKey] = sendingQueue
             return sendingQueue
         }
-    }
-
-    static func sendingQueuePriority(for message: TSOutgoingMessage, tx: SDSAnyReadTransaction) -> Operation.QueuePriority {
-        return message.hasRenderableContent(tx: tx) ? .normal : .low
     }
 
     private func waitForPreKeyRotationIfNeeded() async throws {
@@ -808,7 +804,10 @@ public class MessageSender: Dependencies {
                     return thread.canSendReactionToThread
                 }
                 let isChatMessage = (
-                    message.hasRenderableContent(tx: tx)
+                    (
+                        message.shouldBeSaved
+                        && message.insertedMessageHasRenderableContent(rowId: message.sqliteRowId!, tx: tx)
+                    )
                     || message is OutgoingGroupCallUpdateMessage
                     || message is OWSOutgoingCallMessage
                 )
@@ -1105,7 +1104,12 @@ public class MessageSender: Dependencies {
     /// recipient. It is far better to not unhide when should than to
     /// unhide when we should not.
     private func shouldMessageSendUnhideRecipient(_ message: TSOutgoingMessage, tx: SDSAnyReadTransaction) -> Bool {
-        if message.hasRenderableContent(tx: tx) {
+        if
+            message.shouldBeSaved,
+            let rowId = message.sqliteRowId,
+            // Its a persisted message; check if its renderable
+            message.insertedMessageHasRenderableContent(rowId: rowId, tx: tx)
+        {
             return true
         }
         if message is OWSOutgoingReactionMessage {

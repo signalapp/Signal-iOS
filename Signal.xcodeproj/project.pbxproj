@@ -731,6 +731,7 @@
 		6600F38E29918A6100B1EDB7 /* RegistrationCoordinatorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F38D29918A6100B1EDB7 /* RegistrationCoordinatorImpl.swift */; };
 		6600F39029918CBF00B1EDB7 /* RegistrationStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F38F29918CBF00B1EDB7 /* RegistrationStep.swift */; };
 		6600F39629919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F39529919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift */; };
+		660248F02BBCD29D009E2956 /* TSMessage+RenderableContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660248EF2BBCD29D009E2956 /* TSMessage+RenderableContent.swift */; };
 		6603AC2D29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6603AC2C29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift */; };
 		6605B9802B194A7900E8A68A /* ReactionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605B97F2B194A7900E8A68A /* ReactionStore.swift */; };
 		6605B9822B19547C00E8A68A /* MessageBackupReactionArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605B9812B19547C00E8A68A /* MessageBackupReactionArchiver.swift */; };
@@ -3647,6 +3648,7 @@
 		6600F38D29918A6100B1EDB7 /* RegistrationCoordinatorImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorImpl.swift; sourceTree = "<group>"; };
 		6600F38F29918CBF00B1EDB7 /* RegistrationStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStep.swift; sourceTree = "<group>"; };
 		6600F39529919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoodinatorShims.swift; sourceTree = "<group>"; };
+		660248EF2BBCD29D009E2956 /* TSMessage+RenderableContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSMessage+RenderableContent.swift"; sourceTree = "<group>"; };
 		6603AC2C29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerMock.swift; sourceTree = "<group>"; };
 		6605B97F2B194A7900E8A68A /* ReactionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionStore.swift; sourceTree = "<group>"; };
 		6605B9812B19547C00E8A68A /* MessageBackupReactionArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupReactionArchiver.swift; sourceTree = "<group>"; };
@@ -8220,6 +8222,7 @@
 				8822558C26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift */,
 				6675F64E29261C39007A311E /* SyncPushTokensJob.swift */,
 				4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */,
+				660248EF2BBCD29D009E2956 /* TSMessage+RenderableContent.swift */,
 				8811CF832295D8DA00FF6549 /* VolumeButtons.swift */,
 				667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */,
 			);
@@ -13235,6 +13238,7 @@
 				1477630B275E20D700D1067E /* ThreadSwipeHandler.swift in Sources */,
 				88A4CC10246CE2760082211F /* TransferProgressView.swift in Sources */,
 				50BF51052BB1FE7E00C2C309 /* TSInteraction+DeleteActionSheet.swift in Sources */,
+				660248F02BBCD29D009E2956 /* TSMessage+RenderableContent.swift in Sources */,
 				88D23D2823CEC0C700B0E74B /* TurnServerInfo.swift in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,

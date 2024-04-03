@@ -182,9 +182,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (BOOL)shouldStartExpireTimer;
 
-- (BOOL)hasRenderableContentWithTransaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(hasRenderableContent(tx:));
-
 #pragma mark - Update With... Methods
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction;

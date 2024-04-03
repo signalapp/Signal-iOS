@@ -1002,7 +1002,7 @@ public final class MessageReceiver: Dependencies {
         //
         // The builder() factory method requires us to specify every property so
         // that this will break if we add any new properties.
-        let message = TSIncomingMessageBuilder.builder(
+        let messageBuilder = TSIncomingMessageBuilder.builder(
             thread: thread,
             timestamp: envelope.timestamp,
             authorAci: envelope.sourceAci,
@@ -1026,20 +1026,15 @@ public final class MessageReceiver: Dependencies {
             storyReactionEmoji: nil,
             giftBadge: giftBadge,
             paymentNotification: paymentModels?.notification
-        ).build()
+        )
+        let message = messageBuilder.build()
 
         guard message.shouldBeSaved else {
             owsFailDebug("We should be able to save all incoming messages.")
             return nil
         }
 
-        // Typically `hasRenderableContent` will depend on whether or not the
-        // message has any attachmentIds. However, because the message is partially
-        // built and doesn't have the attachments yet, we check for attachments
-        // explicitly. Story replies cannot have attachments, so we can bail on
-        // them here immediately.
-        // TODO: attachments may not have been created at this point!
-        guard message.hasRenderableContent(tx: tx) || (!dataMessage.attachments.isEmpty && !message.isStoryReply) else {
+        guard messageBuilder.hasRenderableContent(hasBodyAttachments: !dataMessage.attachments.isEmpty) else {
             Logger.warn("Ignoring empty: \(messageDescription)")
             return nil
         }
@@ -1086,7 +1081,7 @@ public final class MessageReceiver: Dependencies {
             owsFailDebug("Unable to finalize attachments")
         }
 
-        owsAssertDebug(message.hasRenderableContent(tx: tx))
+        owsAssertDebug(message.insertedMessageHasRenderableContent(rowId: message.sqliteRowId!, tx: tx))
 
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
             owsFailDebug("Can't process messages when not registered.")

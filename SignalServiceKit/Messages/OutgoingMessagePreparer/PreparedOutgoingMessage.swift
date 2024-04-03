@@ -226,21 +226,15 @@ public class PreparedOutgoingMessage {
     }
 
     public func sendingQueuePriority(tx: SDSAnyReadTransaction) -> Operation.QueuePriority {
-        let messageToSend = {
-            switch messageType {
-            case .persisted(let message):
-                return message.message
-            case .editMessage(let message):
-                return message.messageForSending
-            case .contactSync(let message):
-                return message
-            case .story(let storyMessage):
-                return storyMessage.message
-            case .transient(let message):
-                return message
-            }
-        }()
-        return MessageSender.sendingQueuePriority(for: messageToSend, tx: tx)
+        switch messageType {
+        case .persisted(let message):
+            return message.message.insertedMessageHasRenderableContent(rowId: message.rowId, tx: tx) ? .normal : .low
+        case .editMessage, .story:
+            // Always have renderable content; send at normal priority.
+            return .normal
+        case .transient, .contactSync:
+            return .low
+        }
     }
 
     public func messageForIntentDonation(tx: SDSAnyReadTransaction) -> TSOutgoingMessage? {
@@ -252,7 +246,7 @@ public class PreparedOutgoingMessage {
             // At this point, the message is prepared, meaning its attachments
             // have been created and its been inserted. Any renderable content
             // should be ready.
-            guard persisted.message.hasRenderableContent(tx: tx) else {
+            guard persisted.message.insertedMessageHasRenderableContent(rowId: persisted.rowId, tx: tx) else {
                 return nil
             }
             return persisted.message

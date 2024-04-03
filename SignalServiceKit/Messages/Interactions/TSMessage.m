@@ -559,34 +559,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #endif
 
-#pragma mark - Renderable Content
-
-- (BOOL)hasRenderableContentWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    // Story replies currently only support a subset of message features, so may not
-    // be renderable in some circumstances where a normal message would be.
-    if (self.isStoryReply) {
-        return [self hasRenderableStoryReplyContent];
-    }
-
-    // We DO NOT consider a message with just a linkPreview
-    // or quotedMessage to be renderable.
-    if (self.body.length > 0 || self.contactShare != nil || self.messageSticker != nil || self.giftBadge != nil) {
-        return YES;
-    }
-
-    if ([self bodyAttachmentIdsWithTransaction:transaction].count > 0) {
-        return YES;
-    }
-
-    return NO;
-}
-
-- (BOOL)hasRenderableStoryReplyContent
-{
-    return self.body.length > 0 || self.storyReactionEmoji.isSingleEmoji;
-}
-
 #pragma mark - View Once
 
 - (void)updateWithViewOnceCompleteAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
