@@ -18,6 +18,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         case obsoleteShare
         case screenLockEnabled
         case tooManyAttachments
+        case nilInputItems
+        case noInputItems
+        case nilAttachments
+        case noAttachments
     }
 
     private var hasInitialRootViewController = false
@@ -468,19 +472,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         loadTask = Task {
             do {
                 guard let inputItems = self.extensionContext?.inputItems as? [NSExtensionItem] else {
-                    throw OWSAssertionError("no input item")
+                    throw ShareViewControllerError.nilInputItems
                 }
-                let unloadedItems = try Self.itemsToLoad(inputItems: inputItems)
-                self.conversationPicker.areAttachmentStoriesCompatPrecheck = unloadedItems.allSatisfy { item in
-                    switch item.itemType {
-                    case .movie, .image, .webUrl, .text, .richText:
-                        return true
-                    case .fileUrl, .contact, .pdf, .pkPass, .other:
-                        return false
-                    }
+                guard let inputItem = inputItems.first else {
+                    throw ShareViewControllerError.noInputItems
+                }
+                guard let itemProviders = inputItem.attachments else {
+                    throw ShareViewControllerError.nilAttachments
+                }
+                guard !itemProviders.isEmpty else {
+                    throw ShareViewControllerError.noAttachments
                 }
 
-                let loadedItems = try await self.loadItems(unloadedItems: unloadedItems)
+                let typedItemProviders = try Self.typedItemProviders(for: itemProviders)
+                self.conversationPicker.areAttachmentStoriesCompatPrecheck = typedItemProviders.allSatisfy { $0.isStoriesCompatible }
+                let loadedItems = try await self.loadItems(unloadedItems: typedItemProviders)
                 let attachments = try await self.buildAttachments(loadedItems: loadedItems)
                 try Task.checkCancellation()
 
@@ -536,81 +542,84 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.info("showing screen lock")
     }
 
-    private static func itemsToLoad(inputItems: [NSExtensionItem]) throws -> [UnloadedItem] {
-        for inputItem in inputItems {
-            guard let itemProviders = inputItem.attachments else {
-                throw OWSAssertionError("attachments was empty")
-            }
+    private struct TypedItemProvider {
+        enum ItemType {
+            case movie
+            case image
+            case webUrl
+            case fileUrl
+            case contact
+            case text
+            case pdf
+            case pkPass
+            case other
 
-            let itemsToLoad: [UnloadedItem] = itemProviders.map { itemProvider in
-                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeMovie as String) {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .movie)
+            var typeIdentifier: String {
+                switch self {
+                case .movie:
+                    kUTTypeMovie as String
+                case .image:
+                    kUTTypeImage as String
+                case .webUrl:
+                    kUTTypeURL as String
+                case .fileUrl:
+                    kUTTypeFileURL as String
+                case .contact:
+                    kUTTypeVCard as String
+                case .text:
+                    kUTTypeText as String
+                case .pdf:
+                    kUTTypePDF as String
+                case .pkPass:
+                    "com.apple.pkpass"
+                case .other:
+                    ""
                 }
-
-                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeImage as String) {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .image)
-                }
-
-                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeFileURL as String) {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .fileUrl)
-                }
-
-                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .webUrl)
-                }
-
-                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeVCard as String) {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .contact)
-                }
-
-                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeRTF as String) {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .richText)
-                }
-
-                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeText as String) {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .text)
-                }
-
-                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypePDF as String) {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .pdf)
-                }
-
-                if itemProvider.hasItemConformingToTypeIdentifier("com.apple.pkpass") {
-                    return UnloadedItem(itemProvider: itemProvider, itemType: .pkPass)
-                }
-
-                owsFailDebug("unexpected share item: \(itemProvider)")
-                return UnloadedItem(itemProvider: itemProvider, itemType: .other)
-            }
-
-            // A single inputItem can have multiple attachments, e.g. sharing from Firefox gives
-            // one url attachment and another text attachment, where the url would be https://some-news.com/articles/123-cat-stuck-in-tree
-            // and the text attachment would be something like "Breaking news - cat stuck in tree"
-            //
-            // FIXME: For now, we prefer the URL provider and discard the text provider, since it's more useful to share the URL than the caption
-            // but we *should* include both. This will be a bigger change though since our share extension is currently heavily predicated
-            // on one itemProvider per share.
-            //
-            // Prefer a URL if available. If there's an image item and a URL item,
-            // the URL is generally more useful. e.g. when sharing an app from the
-            // App Store the image would be the app icon and the URL is the link
-            // to the application.
-            if let urlItem = itemsToLoad.first(where: { $0.itemType == .webUrl }) {
-                return [urlItem]
-            }
-
-            let visualMediaItems = itemsToLoad.filter { $0.itemType == .image || $0.itemType == .movie }
-
-            // We only allow sharing 1 item, unless they are visual media items. And if they are
-            // visualMediaItems we share *only* the visual media items - a mix of visual and non
-            // visual items is not supported.
-            if visualMediaItems.count > 0 {
-                return visualMediaItems
-            } else if itemsToLoad.count > 0 {
-                return Array(itemsToLoad.prefix(1))
             }
         }
-        throw OWSAssertionError("no input item")
+
+        let itemProvider: NSItemProvider
+        let itemType: ItemType
+
+        var isWebUrl: Bool {
+            itemType == .webUrl
+        }
+
+        var isVisualMedia: Bool {
+            itemType == .image || itemType == .movie
+        }
+
+        var isStoriesCompatible: Bool {
+            switch itemType {
+            case .movie, .image, .webUrl, .text:
+                return true
+            case .fileUrl, .contact, .pdf, .pkPass, .other:
+                return false
+            }
+        }
+    }
+
+    private static func typedItemProviders(for itemProviders: [NSItemProvider]) throws -> [TypedItemProvider] {
+        // due to UT conformance fallbacks the order these are checked is important; more specific types need to come earlier in the list than their fallbacks
+        let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .fileUrl, .webUrl, .contact, .text, .pdf, .pkPass]
+        let candidates: [TypedItemProvider] = itemProviders.map { itemProvider in
+            for itemType in itemTypeOrder {
+                if itemProvider.hasItemConformingToTypeIdentifier(itemType.typeIdentifier) {
+                    return TypedItemProvider(itemProvider: itemProvider, itemType: itemType)
+                }
+            }
+            owsFailDebug("unexpected share item: \(itemProvider)")
+            return TypedItemProvider(itemProvider: itemProvider, itemType: .other)
+        }
+
+        // URL shares can come in with text preview and favicon attachments so we ignore other attachments with a URL
+        if let webUrlCandidate = candidates.first(where: { $0.isWebUrl }) {
+            return [webUrlCandidate]
+        }
+
+        // only 1 attachment is supported unless it's visual media so select just the first or just the visual media elements with a preference for visual media
+        let visualMediaCandidates = candidates.filter { $0.isVisualMedia }
+        return visualMediaCandidates.isEmpty ? Array(candidates.prefix(1)) : visualMediaCandidates
     }
 
     private struct LoadedItem {
@@ -628,25 +637,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let payload: LoadedItemPayload
     }
 
-    private struct UnloadedItem {
-        enum ItemType {
-            case movie
-            case image
-            case webUrl
-            case fileUrl
-            case contact
-            case richText
-            case text
-            case pdf
-            case pkPass
-            case other
-        }
-
-        let itemProvider: NSItemProvider
-        let itemType: ItemType
-    }
-
-    private func loadItems(unloadedItems: [UnloadedItem]) async throws -> [LoadedItem] {
+    private func loadItems(unloadedItems: [TypedItemProvider]) async throws -> [LoadedItem] {
         try await withThrowingTaskGroup(of: LoadedItem.self) { group in
             for unloadedItem in unloadedItems {
                 _ = group.addTaskUnlessCancelled {
@@ -662,7 +653,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
     }
 
-    private func loadItem(unloadedItem: UnloadedItem) async throws -> LoadedItem {
+    private func loadItem(unloadedItem: TypedItemProvider) async throws -> LoadedItem {
         Logger.info("unloadedItem: \(unloadedItem)")
 
         let itemProvider = unloadedItem.itemProvider
@@ -703,8 +694,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                                 registeredTypeIdentifiers: itemProvider.registeredTypeIdentifiers))
         case .contact:
             return LoadedItem(payload: .contact(try await itemProvider.loadData(forTypeIdentifier: kUTTypeContact as String)))
-        case .richText:
-            return LoadedItem(payload: .richText(try await itemProvider.loadAttributedText(forTypeIdentifier: kUTTypeRTF as String)))
         case .text:
             return LoadedItem(payload: .text(try await itemProvider.loadText(forTypeIdentifier: kUTTypeText as String)))
         case .pdf:

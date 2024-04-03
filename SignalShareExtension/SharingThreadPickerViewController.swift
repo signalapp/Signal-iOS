@@ -37,21 +37,15 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         }
     }
 
-    private var isViewOnce = false {
-        didSet {
-            updateStoriesState()
-        }
-    }
-
-    lazy var isTextMessage: Bool = {
+    var isTextMessage: Bool {
         guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         return attachment.isConvertibleToTextMessage && attachment.dataLength < kOversizeTextMessageSizeThreshold
-    }()
+    }
 
-    lazy var isContactShare: Bool = {
+    var isContactShare: Bool {
         guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         return attachment.isConvertibleToContactShare
-    }()
+    }
 
     var approvedAttachments: [SignalAttachment]?
     var approvedContactShare: ContactShareDraft?
@@ -103,18 +97,14 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     }
 
     private func updateStoriesState() {
-        if isViewOnce {
-            sectionOptions.remove(.stories)
+        if areAttachmentStoriesCompatPrecheck == true {
+            sectionOptions.insert(.stories)
+        } else if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
+            sectionOptions.insert(.stories)
+        } else if isTextMessage {
+            sectionOptions.insert(.stories)
         } else {
-            if areAttachmentStoriesCompatPrecheck == true {
-                sectionOptions.insert(.stories)
-            } else if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
-                sectionOptions.insert(.stories)
-            } else if isTextMessage {
-                sectionOptions.insert(.stories)
-            } else {
-                sectionOptions.remove(.stories)
-            }
+            sectionOptions.remove(.stories)
         }
     }
 }
@@ -692,7 +682,7 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) {
-        self.isViewOnce = isViewOnce
+        // We can ignore this event.
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {

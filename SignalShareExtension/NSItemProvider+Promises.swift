@@ -64,25 +64,6 @@ extension NSItemProvider {
     }
 
     @MainActor
-    func loadAttributedText(forTypeIdentifier typeIdentifier: String) async throws -> NSAttributedString {
-        try await withCheckedThrowingContinuation { continuation in
-            self.ows_loadAttributedText(forTypeIdentifier: typeIdentifier, options: nil) { attributedText, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-
-                guard let attributedText else {
-                    continuation.resume(throwing: OWSAssertionError("attributed text was unexpectedly nil"))
-                    return
-                }
-
-                continuation.resume(returning: attributedText)
-            }
-        }
-    }
-
-    @MainActor
     func loadImage(forTypeIdentifier typeIdentifier: String) async throws -> UIImage {
         try await withCheckedThrowingContinuation { continuation in
             self.ows_loadImage(forTypeIdentifier: typeIdentifier, options: nil) { image, error in
