@@ -75,6 +75,38 @@ public class PreparedOutgoingMessage {
         return PreparedOutgoingMessage(messageType: messageType)
     }
 
+    public static func alreadyPreparedFromQueue(
+        _ jobRecordType: MessageSenderJobRecord.MessageType,
+        tx: SDSAnyReadTransaction
+    ) -> PreparedOutgoingMessage? {
+        switch jobRecordType {
+        case .persisted(let messageId, _):
+            guard
+                let interaction = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: tx),
+                let message = interaction as? TSOutgoingMessage
+            else {
+                return nil
+            }
+            return .init(messageType: .persisted(.init(rowId: message.sqliteRowId!, message: message)))
+        case .editMessage(let editedMessageId, let messageForSending, _):
+            guard
+                let interaction = TSOutgoingMessage.anyFetch(uniqueId: editedMessageId, transaction: tx),
+                let editedMessage = interaction as? TSOutgoingMessage
+            else {
+                return nil
+            }
+            return .init(messageType: .editMessage(.init(
+                editedMessageRowId: editedMessage.sqliteRowId!,
+                editedMessage: editedMessage,
+                messageForSending: messageForSending
+            )))
+        case .transient(let message):
+            return .init(messageType: .transient(message))
+        case .none:
+            return nil
+        }
+    }
+
     // MARK: - Message Type
 
     public enum MessageType {
@@ -120,6 +152,21 @@ public class PreparedOutgoingMessage {
 
     // MARK: - Public mutations
 
+    public var uniqueThreadId: String {
+        switch messageType {
+        case .persisted(let message):
+            return message.message.uniqueThreadId
+        case .editMessage(let message):
+            return message.messageForSending.uniqueThreadId
+        case .contactSync(let message):
+            return message.uniqueThreadId
+        case .story(let storyMessage):
+            return storyMessage.message.uniqueThreadId
+        case .transient(let message):
+            return message.uniqueThreadId
+        }
+    }
+
     public func dequeueForSending(tx: SDSAnyWriteTransaction) -> MessageType {
         // When we start a message send, all "failed" recipients should be marked as "sending".
         let messageToUpdateRecipientsSending: TSOutgoingMessage? = {
@@ -140,6 +187,60 @@ public class PreparedOutgoingMessage {
         }()
         messageToUpdateRecipientsSending?.updateAllUnsentRecipientsAsSending(transaction: tx)
         return messageType
+    }
+
+    public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [TSResourceId] {
+        switch messageType {
+        case .persisted(let persisted):
+            return DependenciesBridge.shared.tsResourceStore.allAttachments(
+                for: persisted.message,
+                tx: tx.asV2Read
+            ).map(\.resourceId)
+        case .editMessage(let editMessage):
+            return DependenciesBridge.shared.tsResourceStore.allAttachments(
+                for: editMessage.editedMessage,
+                tx: tx.asV2Read
+            ).map(\.resourceId)
+        case .contactSync:
+            // These are pre-uploaded.
+            return []
+        case .story(let story):
+            guard let storyMessage = StoryMessage.anyFetch(uniqueId: story.message.storyMessageId, transaction: tx) else {
+                return []
+            }
+            switch storyMessage.attachment {
+            case .file, .foreignReferenceAttachment:
+                return [
+                    DependenciesBridge.shared.tsResourceStore
+                        .mediaAttachment(for: storyMessage, tx: tx.asV2Read)?.resourceId
+                ].compacted()
+            case .text:
+                return [
+                    DependenciesBridge.shared.tsResourceStore
+                        .linkPreviewAttachment(for: storyMessage, tx: tx.asV2Read)?.resourceId
+                ].compacted()
+            }
+        case .transient:
+            return []
+        }
+    }
+
+    public func sendingQueuePriority(tx: SDSAnyReadTransaction) -> Operation.QueuePriority {
+        let messageToSend = {
+            switch messageType {
+            case .persisted(let message):
+                return message.message
+            case .editMessage(let message):
+                return message.messageForSending
+            case .contactSync(let message):
+                return message
+            case .story(let storyMessage):
+                return storyMessage.message
+            case .transient(let message):
+                return message
+            }
+        }()
+        return MessageSender.sendingQueuePriority(for: messageToSend, tx: tx)
     }
 
     public func messageForIntentDonation(tx: SDSAnyReadTransaction) -> TSOutgoingMessage? {
@@ -220,6 +321,26 @@ public class PreparedOutgoingMessage {
         messageToUpdateFailedRecipients?.updateWithAllSendingRecipientsMarkedAsFailed(with: tx)
     }
 
+    public func updateWithSendingError(_ error: Error, tx: SDSAnyWriteTransaction) {
+        let messageToUpdate: TSOutgoingMessage = {
+            switch messageType {
+            case .persisted(let message):
+                return message.message
+            case .editMessage(let message):
+                // We update the send state on the _original_ edited message.
+                return message.editedMessage
+            case .contactSync(let message):
+                return message
+            case .story(let storyMessage):
+                return storyMessage.message
+            case .transient(let message):
+                // Is this even necessary for transient messages?
+                return message
+            }
+        }()
+        messageToUpdate.update(sendingError: error, transaction: tx)
+    }
+
     // MARK: - Private
 
     private let messageType: MessageType
@@ -234,6 +355,28 @@ public class PreparedOutgoingMessage {
         self.messageType = messageType
     }
 }
+
+#if TESTABLE_BUILD
+
+extension PreparedOutgoingMessage {
+
+    var testOnly_messageForSending: TSOutgoingMessage {
+        switch messageType {
+        case .persisted(let message):
+            return message.message
+        case .editMessage(let message):
+            return message.messageForSending
+        case .contactSync(let message):
+            return message
+        case .story(let storyMessage):
+            return storyMessage.message
+        case .transient(let message):
+            return message
+        }
+    }
+}
+
+#endif
 
 // TODO: remove these methods when we remove multisend; they need to exposed only
 // for that use case.

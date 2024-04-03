@@ -12,9 +12,9 @@ class FakeMessageSender: MessageSender {
     public var sentMessages = [TSOutgoingMessage]()
     public var sendMessageWasCalledBlock: ((TSOutgoingMessage) -> Void)?
 
-    override func sendMessage(_ outgoingMessagePreparer: OutgoingMessagePreparer) async throws {
-        sendMessageWasCalledBlock?(outgoingMessagePreparer.message)
-        sentMessages.append(outgoingMessagePreparer.message)
+    override func sendMessage(_ preparedMessage: PreparedOutgoingMessage) async throws {
+        sendMessageWasCalledBlock?(preparedMessage.testOnly_messageForSending)
+        sentMessages.append(preparedMessage.testOnly_messageForSending)
         if let stubbedFailingError = stubbedFailingErrors.removeFirst() { throw stubbedFailingError }
     }
 

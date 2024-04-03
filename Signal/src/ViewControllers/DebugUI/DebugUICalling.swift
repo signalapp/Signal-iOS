@@ -42,7 +42,8 @@ class DebugUICalling: DebugUIPage, Dependencies {
 
                 Task {
                     do {
-                        try await self.messageSender.sendMessage(callMessage.asPreparer)
+                        let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: callMessage)
+                        try await self.messageSender.sendMessage(preparedMessage)
                         Logger.debug("Successfully sent hangup call message to \(contactThread.contactAddress)")
                     } catch {
                         Logger.error("failed to send hangup call message to \(contactThread.contactAddress) with error: \(error)")
@@ -72,7 +73,8 @@ class DebugUICalling: DebugUIPage, Dependencies {
 
                 Task {
                     do {
-                        try await self.messageSender.sendMessage(callMessage.asPreparer)
+                        let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: callMessage)
+                        try await self.messageSender.sendMessage(preparedMessage)
                         Logger.debug("Successfully sent busy call message to \(contactThread.contactAddress)")
                     } catch {
                         Logger.error("failed to send busy call message to \(contactThread.contactAddress) with error: \(error)")

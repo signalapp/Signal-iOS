@@ -47,7 +47,8 @@ class DebugUIProfile: DebugUIPage, Dependencies {
                 let message = Self.databaseStorage.read { OWSProfileKeyMessage(thread: aThread, transaction: $0) }
                 Task {
                     do {
-                        try await self.messageSender.sendMessage(message.asPreparer)
+                        let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
+                        try await self.messageSender.sendMessage(preparedMessage)
                         Logger.info("Successfully sent profile key message to thread: \(String(describing: aThread))")
                     } catch {
                         owsFailDebug("Failed to send profile key message to thread: \(String(describing: aThread))")

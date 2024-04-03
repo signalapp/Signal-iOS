@@ -146,7 +146,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                                           validGroupModelV2: TSGroupModelV2,
                                           missingOtherUserGroupModelV2: TSGroupModelV2,
                                           missingLocalUserGroupModelV2: TSGroupModelV2) {
-        var messages = [TSOutgoingMessage]()
+        var messages = [OWSDynamicOutgoingMessage]()
 
         let groupContextInfoForGroupModel = { (groupModelV2: TSGroupModelV2) -> GroupV2ContextInfo in
             let masterKey = try! GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
@@ -342,7 +342,8 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         }
 
         for message in messages {
-            Task { try await self.messageSender.sendMessage(message.asPreparer) }
+            let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
+            Task { try await self.messageSender.sendMessage(preparedMessage) }
         }
     }
 
@@ -352,7 +353,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
             return
         }
 
-        var messages = [TSOutgoingMessage]()
+        var messages = [OWSDynamicOutgoingMessage]()
 
         let masterKey = try! GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
         let groupContextInfo = try! self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
@@ -398,7 +399,8 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         }
 
         for message in messages {
-            Task { try await self.messageSender.sendMessage(message.asPreparer) }
+            let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
+            Task { try await self.messageSender.sendMessage(preparedMessage) }
         }
     }
 

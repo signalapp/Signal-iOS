@@ -192,7 +192,8 @@ class DebugUIStress: DebugUIPage, Dependencies {
         }
         Task {
             do {
-                try await self.messageSender.sendMessage(message.asPreparer)
+                let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: message)
+                try await self.messageSender.sendMessage(preparedMessage)
                 Logger.info("Success.")
             } catch {
                 owsFailDebug("Error: \(error)")

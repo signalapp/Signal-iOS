@@ -823,7 +823,6 @@
 		664657412AC4FB720099DE1C /* NotificationsProtocolSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */; };
 		664657452ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657442ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift */; };
 		664657472ACB66630099DE1C /* TSAccountManagerObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */; };
-		664BA8422BB5CE04005638E0 /* OutgoingMessagePreparer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8412BB5CE04005638E0 /* OutgoingMessagePreparer.swift */; };
 		664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */; };
 		664BA8472BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */; };
 		664BA84A2BB5DFE1005638E0 /* ContactShareDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */; };
@@ -3742,7 +3741,6 @@
 		664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsProtocolSwift.swift; sourceTree = "<group>"; };
 		664657442ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAccountManagerImpl+Shims.swift"; sourceTree = "<group>"; };
 		664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerObjcBridge.swift; sourceTree = "<group>"; };
-		664BA8412BB5CE04005638E0 /* OutgoingMessagePreparer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingMessagePreparer.swift; sourceTree = "<group>"; };
 		664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedOutgoingMessage.swift; sourceTree = "<group>"; };
 		664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnpreparedOutgoingMessage.swift; sourceTree = "<group>"; };
 		664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareDraft.swift; sourceTree = "<group>"; };
@@ -7398,7 +7396,6 @@
 		664BA8402BB5CDF6005638E0 /* OutgoingMessagePreparer */ = {
 			isa = PBXGroup;
 			children = (
-				664BA8412BB5CE04005638E0 /* OutgoingMessagePreparer.swift */,
 				664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */,
 				664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */,
 			);
@@ -13881,7 +13878,6 @@
 				C1EAECDF2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift in Sources */,
 				D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */,
 				F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */,
-				664BA8422BB5CE04005638E0 /* OutgoingMessagePreparer.swift in Sources */,
 				F9C5CBB9289453B300548EEE /* OutgoingPaymentSyncMessage.m in Sources */,
 				F9C5CBB4289453B300548EEE /* OutgoingPaymentSyncMessage.swift in Sources */,
 				50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */,

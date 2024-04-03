@@ -475,23 +475,28 @@ public class MessageSender: Dependencies {
         let message = databaseStorage.read { tx in
             return OWSSyncContactsMessage(uploadedAttachment: uploadResult, thread: thread, tx: tx)
         }
-        let outgoingMessagePreparer = OutgoingMessagePreparer(
-            message,
-            unsavedAttachmentInfos: []
-        )
-        let result = await Result { try await sendMessage(outgoingMessagePreparer) }
-        await databaseStorage.awaitableWrite { tx in
-            message.anyRemove(transaction: tx)
-            message.removeTemporaryAttachments(with: tx)
-        }
+        let preparedMessage = PreparedOutgoingMessage.preprepared(contactSyncMessage: message)
+        let result = await Result { try await sendMessage(preparedMessage) }
         try result.get()
     }
 
     // MARK: - Constructing Message Sends
 
-    public func sendMessage(_ outgoingMessagePreparer: OutgoingMessagePreparer) async throws {
-        let (message, priority): (TSOutgoingMessage, Operation.QueuePriority)  = try await databaseStorage.awaitableWrite { tx in
-            let message = try outgoingMessagePreparer.prepareMessage(transaction: tx)
+    public func sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws {
+        let (message, priority): (TSOutgoingMessage, Operation.QueuePriority) = await databaseStorage.awaitableWrite { tx in
+            let message: TSOutgoingMessage
+            switch preparedOutgoingMessage.dequeueForSending(tx: tx) {
+            case .persisted(let persisted):
+                message = persisted.message
+            case .editMessage(let editMessage):
+                message = editMessage.messageForSending
+            case .contactSync(let contactSyncMessage):
+                message = contactSyncMessage
+            case .story(let story):
+                message = story.message
+            case .transient(let outgoingMessage):
+                message = outgoingMessage
+            }
             return (
                 message,
                 Self.sendingQueuePriority(for: message, tx: tx)
@@ -514,10 +519,14 @@ public class MessageSender: Dependencies {
             }
             sendMessageOperation.queuePriority = priority
 
-            for attachmentId in (outgoingMessagePreparer.savedAttachmentIds ?? []) {
+            let attachmentIds = databaseStorage.read { tx in
+                preparedOutgoingMessage.attachmentIdsForUpload(tx: tx)
+            }
+
+            for attachmentId in attachmentIds {
                 let uploadOperation = AsyncBlockOperation {
                     try await DependenciesBridge.shared.tsResourceUploadManager.uploadAttachment(
-                        attachmentId: .legacy(uniqueId: attachmentId),
+                        attachmentId: attachmentId,
                         legacyMessageOwnerIds: [ message.uniqueId ]
                     )
                 }

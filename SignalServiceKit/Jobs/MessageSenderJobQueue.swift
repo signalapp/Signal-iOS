@@ -157,24 +157,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public func buildOperation(jobRecord: MessageSenderJobRecord,
                                transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
-        let message: TSOutgoingMessage
-        switch jobRecord.messageType {
-        case .transient(let outgoingMessage):
-            message = outgoingMessage
-        case .editMessage(_, let messageForSending, _):
-            message = messageForSending
-        case .persisted(let messageId, _):
-            if
-                let fetchedMessage = TSOutgoingMessage.anyFetch(
-                    uniqueId: messageId,
-                    transaction: transaction
-                ) as? TSOutgoingMessage
-            {
-                message = fetchedMessage
-            } else {
-                fallthrough
-            }
-        case .none:
+        guard let message = PreparedOutgoingMessage.alreadyPreparedFromQueue(jobRecord.messageType, tx: transaction) else {
             throw JobError.obsolete(description: "message no longer exists")
         }
 
@@ -183,7 +166,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             jobRecord: jobRecord,
             future: jobFutures.pop(jobRecord.uniqueId)
         )
-        operation.queuePriority = jobRecord.isHighPriority ? .high : MessageSender.sendingQueuePriority(for: message, tx: transaction)
+        operation.queuePriority = jobRecord.isHighPriority ? .high : message.sendingQueuePriority(tx: transaction)
 
         // Media messages run on their own queue to not block future non-media sends,
         // but should not start sending until all previous operations have executed.
@@ -272,10 +255,10 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
 
     // MARK: Init
 
-    let message: TSOutgoingMessage
+    let message: PreparedOutgoingMessage
     private var future: Future<Void>?
 
-    init(message: TSOutgoingMessage, jobRecord: MessageSenderJobRecord, future: Future<Void>?) {
+    init(message: PreparedOutgoingMessage, jobRecord: MessageSenderJobRecord, future: Future<Void>?) {
         self.message = message
         self.jobRecord = jobRecord
         self.future = future
@@ -288,7 +271,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     override public func run() {
         Task {
             do {
-                try await self.messageSender.sendMessage(message.asPreparer)
+                try await self.messageSender.sendMessage(message)
                 DispatchQueue.global().async { self.reportSuccess() }
             } catch {
                 DispatchQueue.global().async { self.reportError(withUndefinedRetry: error) }
@@ -318,7 +301,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         databaseStorage.write { tx in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: tx)
 
-            self.message.update(sendingError: error, transaction: tx)
+            self.message.updateWithSendingError(error, tx: tx)
         }
         future?.reject(error)
     }

@@ -472,8 +472,11 @@ public class ConversationFactory: NSObject {
         }
 
         databaseStorage.asyncWrite { asyncTransaction in
-            let messagePreparer = OutgoingMessagePreparer(message, unsavedAttachmentInfos: attachmentInfos)
-            _ = try! messagePreparer.prepareMessage(transaction: asyncTransaction)
+            let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+                message,
+                unsavedBodyAttachments: attachmentInfos.map{ $0.asAttachmentDataSource() }
+            )
+            _ = try! unpreparedMessage.prepare(tx: asyncTransaction)
 
             for attachment in message.allAttachments(transaction: asyncTransaction) as! [TSAttachmentStream] {
                 attachment.updateAsUploaded(withEncryptionKey: Randomness.generateRandomBytes(16),
