@@ -206,8 +206,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                             linkPreview:(nullable OWSLinkPreview *)linkPreview
                          messageSticker:(nullable MessageSticker *)messageSticker;
 
-- (void)removeTemporaryAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
 @property (nonatomic, readonly) TSOutgoingMessageState messageState;
 
 @property (nonatomic, readonly) BOOL wasDeliveredToAnyRecipient;

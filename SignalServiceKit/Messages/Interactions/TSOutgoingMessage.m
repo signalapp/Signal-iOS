@@ -329,38 +329,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return self;
 }
 
-// Each message has the responsibility for eagerly cleaning up its attachments.
-// Normally this is done in [TSMessage removeWithTransaction], but that doesn't
-// apply for "transient", unsaved messages (i.e. shouldBeSaved == NO).  These
-// messages need to be cleaned up explicitly.
-- (void)removeTemporaryAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (self.shouldBeSaved) {
-        // Message is not transient; no need to clean up attachments.
-        OWSFailDebug(@"Message is not transient.");
-        return;
-    }
-    if (!AppReadiness.isAppReady) {
-        // We don't want or need to do this clean up while registering extensions,
-        // migrating, etc.
-        OWSFailDebug(@"App is not ready.");
-        return;
-    }
-    NSArray<NSString *> *_Nullable attachmentIds = [self bodyAttachmentIdsWithTransaction:transaction];
-    if (attachmentIds.count < 1) {
-        return;
-    }
-    for (NSString *attachmentId in attachmentIds) {
-        // We need to fetch each attachment, since [TSAttachment removeWithTransaction:] does important work.
-        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
-        if (!attachment) {
-            OWSLogError(@"Couldn't load interaction's attachment for deletion.");
-            continue;
-        }
-        [attachment anyRemoveWithTransaction:transaction];
-    };
-}
-
 #pragma mark -
 
 - (TSOutgoingMessageState)messageState
