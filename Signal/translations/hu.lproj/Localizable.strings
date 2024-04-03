@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "Létrehoztad a csoportot.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ hozzáadott a csoporthoz.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Csoport létrehozva.";
@@ -4457,22 +4457,22 @@
 "NEW_STORY_SHEET_TITLE" = "Történet típusának kiválasztása";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
-"NICKNAME_BUTTON_TITLE" = "Nickname";
+"NICKNAME_BUTTON_TITLE" = "Becenév";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames and notes are stored using Signal’s end-to-end encrypted storage service. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "A beceneveket és jegyzeteket a Signal végponttól végpontig titkosított tárolási szolgáltatásával tároljuk. Ezek csak számodra láthatók.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
-"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Last name";
+"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Vezetéknév";
 
 /* Placeholder text it the text field for the given name in the profile nickname editor. */
-"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "First name";
+"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "Keresztnév";
 
 /* Placeholder text it the text box for the note in the profile nickname editor. */
-"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Note";
+"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Megjegyzés";
 
 /* The title for the profile nickname editor view. */
-"NICKNAME_EDITOR_TITLE" = "Nickname";
+"NICKNAME_EDITOR_TITLE" = "Becenév";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kontaktok keresése telefonszám alapján";
@@ -5131,9 +5131,6 @@
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "A telefonszámod nem lesz látható senki számára.";
 
-/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
-
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Otthoni";
 
@@ -5157,9 +5154,6 @@
 
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "Csipogó";
-
-/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "Telefonszám";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "Munkahelyi";

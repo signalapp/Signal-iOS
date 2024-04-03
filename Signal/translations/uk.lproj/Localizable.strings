@@ -1352,7 +1352,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Люди";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Сторіз";
+"CONVERSATION_PICKER_SECTION_STORIES" = "Історії";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Обрати одержувачів";
@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "Ви створили групу.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ додав(-ла) вас до групи.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Група була створена.";
@@ -3305,16 +3305,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ до %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Вилучити групову сторі";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Вилучити групову історію";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Ви дійсно хочете вилучити «%1$@»?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Учасники групового чату «%1$@» можуть переглядати цю сторі та відповідати на неї. Змінити налаштування для цього чату можна у групі.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Учасники групового чату «%1$@» можуть переглядати цю історію та відповідати на неї. Додати / видалити учасників цього чату можна в групі.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Хто може переглядати цю сторі";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Хто може дивитися цю історію";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Групу оновлено.";
@@ -4301,7 +4301,7 @@
 "MUTED_BADGE" = "Не сповіщати";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Оновлення ваших сторіз показуватимуться тут.";
+"MY_STORIES_NO_STORIES" = "Тут будуть оновлення вашої історії.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Усі, крім…";
@@ -4313,19 +4313,19 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Ділитися тільки з…";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "Мої сторіз";
+"MY_STORIES_TITLE" = "Мої історії";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "Моя сторі";
+"MY_STORY_NAME" = "Моя історія";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Виберіть, хто може бачити вашу сторі";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Виберіть, хто зможе переглядати вашу історію.";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "Конфіденційність сторіз";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "Конфіденційність історій";
 
 /* Title for the my story settings view */
-"MY_STORY_SETTINGS_TITLE" = "Моя сторі";
+"MY_STORY_SETTINGS_TITLE" = "Моя історія";
 
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Торкніться, щоб додати";
@@ -4406,7 +4406,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Вибрати Учасників";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ до %2$@ · Сторі";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@, чат «%2$@» · Історія";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Оберіть групу";
@@ -4415,22 +4415,22 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Знайти за номером телефону";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Дайте сторі назву";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Дайте історії назву";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Створити";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Необхідно дати назву для сторі.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Ви не зазначили назву історії.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Назва сторі відсутня";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Історія не має назви";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Тільки ви можете бачити назву цієї сторі.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Назву цієї історії бачите лише ви.";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Назва сторі (обов'язкова)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Назва історії (обов'язкова)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Оберіть глядачів";
@@ -4445,34 +4445,34 @@
 "NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Можуть побачити лише окремі особи";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Нова настроювана сторі";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Нова індивідуальна історія";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Поділитись у групі";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Нова групова сторі";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Нова групова історія";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Оберіть тип сторі";
+"NEW_STORY_SHEET_TITLE" = "Оберіть тип історії";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
-"NICKNAME_BUTTON_TITLE" = "Nickname";
+"NICKNAME_BUTTON_TITLE" = "Умовне ім'я";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames and notes are stored using Signal’s end-to-end encrypted storage service. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "Для збереження приміток і умовних імен використовується служба зберігання даних Signal з наскрізним шифруванням. Їх можете бачити лише ви.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
-"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Last name";
+"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Прізвище";
 
 /* Placeholder text it the text field for the given name in the profile nickname editor. */
-"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "First name";
+"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "Ім'я";
 
 /* Placeholder text it the text box for the note in the profile nickname editor. */
-"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Note";
+"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Примітка";
 
 /* The title for the profile nickname editor view. */
-"NICKNAME_EDITOR_TITLE" = "Nickname";
+"NICKNAME_EDITOR_TITLE" = "Умовне ім'я";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Знайти контакти за номером телефону";
@@ -5131,9 +5131,6 @@
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Ніхто не зможе бачити ваш номер телефону.";
 
-/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
-
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Домашній";
 
@@ -5157,9 +5154,6 @@
 
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "Пейджер";
-
-/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "Телефон";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "Робочий";
@@ -5399,16 +5393,16 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Додати глядачів";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Видалити настроювану сторі";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Видалити індивідуальну історію";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Ви дійсно хочете видалити «%1$@»? Оновлення до цієї сторі також будуть видалені.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Ви справді хочете видалити «%1$@»? Оновлення до цієї історії також буде видалено.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Видалити";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ця людина більше не бачитиме цю сторі.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ця людина більше не зможе бачити цю історію.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Вилучити глядача %1$@?";
@@ -5555,13 +5549,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Оригінальне повідомлення не знайдено.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Реакції на вашу сторі";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Реакція на вашу історію";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реакція на сторі користувача %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реакція на історію користувача %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Сторі";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Історія";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Долучення";
@@ -7235,10 +7229,10 @@
 "STORIES_DELETE_STORY_ACTION" = "Видалити";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Видалити сторі? Вона також буде видалена в усіх, хто її отримав.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Видалити цю історію? Її також буде видалено для всіх, хто її отримав.";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Сторі збережено";
+"STORIES_DID_SAVE" = "Історію збережено";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Переслати";
@@ -7247,25 +7241,25 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Перейти до чату";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Ви не можете відповісти на цю сторі, тому що ви більше не є учасником цієї групи.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Ви не можете відповісти на цю історію, тому що ви вже не учасник цієї групи.";
 
 /* Header for the hidden stories section of the stories list */
-"STORIES_HIDDEN_SECTION_HEADER" = "Приховані сторіз";
+"STORIES_HIDDEN_SECTION_HEADER" = "Приховані історії";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Приховати сторі";
+"STORIES_HIDE_STORY_ACTION" = "Приховати історію";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Нові сторіз від користувача %1$@ більше не з'являтимуться вгорі переліку сторіз.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Нові історії користувача %1$@ більше не з'являтимуться вгорі переліку історій.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Приховати сторі?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Приховати історію?";
 
 /* Short context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION_SHORT" = "Сховати";
 
 /* Toast shown when a story is successfuly hidden */
-"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Сторі приховано";
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Історію приховано";
 
 /* Context menu action to view metadata about the story */
 "STORIES_INFO_ACTION" = "Інформація";
@@ -7283,7 +7277,7 @@
 "STORIES_NO_VIEWS_YET" = "Ще немає переглядів";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Дозвольте глядачам своїх сторіз реагувати і відповідати на них.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Дозвольте глядачам ваших історій реагувати й відповідати на них.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Відповіді і реакції";
@@ -7295,40 +7289,40 @@
 "STORIES_REPLIES_TAB" = "Відповіді";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Не вдалося зберегти сторі";
+"STORIES_SAVE_FAILED" = "Не вдалося зберегти історію";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Зберегти";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Оновлення сторіз автоматично зникають через 24 години. Оберіть, хто може переглядати вашу сторі, або створюйте нові сторіз для конкретних глядачів чи груп.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Оновлення історій автоматично зникають через 24 години. Оберіть глядачів вашої історії або створіть нові історії для конкретних глядачів або груп.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Сторіз";
+"STORIES_SETTINGS_STORIES_HEADER" = "Історії";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Ви більше не зможете публікувати чи переглядати сторіз. Оновлення сторі, які ви нещодавно публікували, також видаляться.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Ви більше не зможете публікувати й переглядати історії. Нещодавно опубліковані оновлення ваших історій також буде видалено.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Вимкнути і видалити сторіз";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Вимкнути й видалити історії";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Якщо вимкнути цю функцію, ви не зможете публікувати чи переглядати сторіз.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Якщо вимкнути історії, ви не зможете ні публікувати, ні переглядати історії.";
 
 /* Button to turn off stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Вимкнути сторіз";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Переглядайте сторіз інших користувачів і діліться власними. Сторіз автоматично зникають через 24 години.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Публікуйте свої історії і переглядайте історії інших користувачів. Історії автоматично зникають через 24 години.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Увімкнути сторіз";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Увімкнути історії";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "Сповіщення про перегляд";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Відмітки про перегляд";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Дізнавайтеся про перегляд ваших сторіз і діліться з іншими. Якщо функцію вимкнено, ви не бачитиме, коли хтось переглядатиме вашу сторі.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Увімкніть, щоб бачити перегляди ваших історій від інших і дозволити іншим бачити ваші перегляди їхніх історій. Якщо цю функцію вимкнено, ви не будете знати, чи хтось переглянув вашу історію.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Поділитися";
@@ -7349,19 +7343,19 @@
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Не вдалося надіслати";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Сторіз";
+"STORIES_TITLE" = "Історії";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Відобразити сторі";
+"STORIES_UNHIDE_STORY_ACTION" = "Не приховувати історію";
 
 /* Short context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION_SHORT" = "Відобразити";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Сторі відображено";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Історію знову видно";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Увімкніть сповіщення про перегляд, щоб знати, хто переглянув ваші сторіз.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Увімкніть відмітки про перегляд, щоб знати, хто дивився ваші історії.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Перегляди";
@@ -7373,7 +7367,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Не вдалося завантажити посилання. Перевірте підключення до мережі і спробуйте знову.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Поділитись посиланням з глядачами вашої сторі";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Поділіться посиланням з глядачами вашої історії";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Торкніться, щоб додати текст";
@@ -7394,28 +7388,28 @@
 "STORY_PRIVACY_SETTINGS" = "Конфіденційність";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Конфіденційність сторіз";
+"STORY_PRIVACY_TITLE" = "Конфіденційність історій";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Реакція на вашу сторі: %1$@";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Реакція на вашу історію: %1$@";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Реакція на сторі: %1$@";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Реакція на історію: %1$@";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Реакція на сторі: %1$@";
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Реакція на історію: %1$@";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Реакція на сторі користувача %2$@: %1$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Реакція на історію користувача %2$@: %1$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Відповісти";
 
 /* Text indicating you reacted to a story (the header on the bubble says \"You\") */
-"STORY_REPLY_REACTION_SECOND_PERSON" = "Реакція на сторі";
+"STORY_REPLY_REACTION_SECOND_PERSON" = "Реакція на історію";
 
 /* Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\") */
-"STORY_REPLY_REACTION_THIRD_PERSON" = "Реакція на сторі";
+"STORY_REPLY_REACTION_THIRD_PERSON" = "Реакція на історію";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Відповісти";
@@ -7430,10 +7424,10 @@
 "STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Відповісти користувачу %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Не вдалося надіслати сторі. Перевірте підключення до мережі і спробуйте знову";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Не вдалося надіслати історію. Перевірте з'єднання з мережею і спробуйте знову";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Не вдалося надіслати сторі усім користувачам. Перевірте підключення до мережі і спробуйте знову";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Не вдалося надіслати історію деяким користувачам. Перевірте з'єднання з мережею і спробуйте знову";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Ділитися тільки з…";
@@ -7445,7 +7439,7 @@
 "STORY_SEND_FAILED" = "Не вдалося надіслати";
 
 /* Body for notification shown when a story fails to send. */
-"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Не вдалося надіслати сторі";
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Не вдалося надіслати історію";
 
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Натисніть ще раз";
@@ -7472,25 +7466,25 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Вони є в контактах вашого пристрою";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваші контакти можуть бачити ваше ім'я та фото, а також публікації у розділі «Мої сторіз», якщо ви їх не приховали.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваші контакти можуть бачити ваше ім'я та фото, а також усе, що ви викладаєте в «Моїй історії», якщо ви її не приховали.";
 
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Контакти Signal</bold> — це люди, яким ви вирішили довіряти одним із таких способів:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Сторіз";
+"STORY_SETTINGS_TITLE" = "Історії";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Виберіть, які контакти Signal можуть переглядати ваші сторіз. Зміни не впливатимуть на вже надіслані сторіз.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Виберіть, хто з контактів Signal зможе переглядати вашу історію. Зміни не вплинуть на вже надіслані історії.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Хто може переглядати цю сторі";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Хто може дивитися цю історію";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Виберіть, які контакти Signal можуть бачити вашу сторі. Змінити дозвіл можна в налаштуваннях конфіденційності.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Виберіть, хто з контактів Signal зможе переглядати ваші історії. Змінити глядачів завжди можна в налаштуваннях конфіденційності.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Відео, надіслані до Сторіз, обріжуться до %1$d-секундних кліпів і опублікуються як декілька сторіз.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Відео, які ви додаєте, буде поділено на %1$d-секундні фрагменти та опубліковано як декілька історій.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Натисніть, щоб продовжити";
@@ -8057,7 +8051,7 @@
 "VIEW_PHOTO" = "Переглянути фото";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "Переглянути сторі";
+"VIEW_STORY" = "Переглянути історію";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Проведіть для скасування";

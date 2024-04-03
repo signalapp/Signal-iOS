@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "Ви сте креирали ову групу.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ вас је додао/ла у групу.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Група је креирана.";
@@ -4457,22 +4457,22 @@
 "NEW_STORY_SHEET_TITLE" = "Изаберите тип приче";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
-"NICKNAME_BUTTON_TITLE" = "Nickname";
+"NICKNAME_BUTTON_TITLE" = "Надимак";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames and notes are stored using Signal’s end-to-end encrypted storage service. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "Надимци и белешке се чувају помоћу Signal-овог потпуно шифрованог сервиса за складиштење. Они су видљиви само вама.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
-"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Last name";
+"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Презиме";
 
 /* Placeholder text it the text field for the given name in the profile nickname editor. */
-"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "First name";
+"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "Име";
 
 /* Placeholder text it the text box for the note in the profile nickname editor. */
-"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Note";
+"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Белешка";
 
 /* The title for the profile nickname editor view. */
-"NICKNAME_EDITOR_TITLE" = "Nickname";
+"NICKNAME_EDITOR_TITLE" = "Надимак";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Пронађите контакте по броју телефона";
@@ -5131,9 +5131,6 @@
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Ваш број телефона неће бити видљив никоме.";
 
-/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
-
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Кућни";
 
@@ -5157,9 +5154,6 @@
 
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "Пејџер";
-
-/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "Телефон";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "Пословни";

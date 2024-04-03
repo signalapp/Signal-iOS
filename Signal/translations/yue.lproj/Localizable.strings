@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "您開咗呢個谷。";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ 已加咗您入谷。";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "建立咗呢個谷。";
@@ -4457,22 +4457,22 @@
 "NEW_STORY_SHEET_TITLE" = "選擇限時動態類型";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
-"NICKNAME_BUTTON_TITLE" = "Nickname";
+"NICKNAME_BUTTON_TITLE" = "花名";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames and notes are stored using Signal’s end-to-end encrypted storage service. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "花名同備註係用 Signal 嘅端對端加密儲存服務嚟儲存，只有你先睇到。";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
-"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Last name";
+"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "姓氏";
 
 /* Placeholder text it the text field for the given name in the profile nickname editor. */
-"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "First name";
+"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "名";
 
 /* Placeholder text it the text box for the note in the profile nickname editor. */
-"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Note";
+"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "備註";
 
 /* The title for the profile nickname editor view. */
-"NICKNAME_EDITOR_TITLE" = "Nickname";
+"NICKNAME_EDITOR_TITLE" = "花名";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用電話冧把嚟搵聯絡人";
@@ -5131,9 +5131,6 @@
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "冇人會睇到你嘅電話冧把。";
 
-/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
-
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "屋企";
 
@@ -5157,9 +5154,6 @@
 
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "傳呼機";
-
-/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "電話";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "公司";

@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "તમે ગ્રુપ બનાવ્યું છે.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ એ તમને ગ્રુપમાં ઉમેર્યા છે.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "ગ્રુપ બનાવવામાં આવ્યું હતું.";
@@ -4457,22 +4457,22 @@
 "NEW_STORY_SHEET_TITLE" = "સ્ટોરીનો પ્રકાર પસંદ કરો";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
-"NICKNAME_BUTTON_TITLE" = "Nickname";
+"NICKNAME_BUTTON_TITLE" = "ઉપનામ";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames and notes are stored using Signal’s end-to-end encrypted storage service. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "ઉપનામો અને નોંધોને Signalની એન્ડ-ટુ-એન્ડ એન્ક્રિપ્ટેડ સ્ટોરેજ સેવાનો ઉપયોગ કરીને સ્ટોર કરવામાં આવે છે. તે ફક્ત તમને જ દેખાય છે. તે ફક્ત તમને જ દેખાય છે.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
-"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Last name";
+"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "અટક";
 
 /* Placeholder text it the text field for the given name in the profile nickname editor. */
-"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "First name";
+"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "પહેલું નામ";
 
 /* Placeholder text it the text box for the note in the profile nickname editor. */
-"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Note";
+"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "નોંધ";
 
 /* The title for the profile nickname editor view. */
-"NICKNAME_EDITOR_TITLE" = "Nickname";
+"NICKNAME_EDITOR_TITLE" = "ઉપનામ";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ફોન નંબર દ્વારા સંપર્કો શોધો";
@@ -5131,9 +5131,6 @@
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "તમારો ફોન નંબર કોઈને પણ દેખાશે નહીં.";
 
-/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@%2$@";
-
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "ઘર";
 
@@ -5157,9 +5154,6 @@
 
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "પેજર";
-
-/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "ફોન";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "કામ";

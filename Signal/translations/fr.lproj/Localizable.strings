@@ -872,7 +872,7 @@
 "CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "Revenir";
 
 /* Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}. */
-"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "« {0} » est introuvable.";
+"CALLS_TAB_SEARCH_NO_RESULTS_FOUND_LABEL_FORMAT" = "« %1$@ » est introuvable.";
 
 /* Title for a long-press context menu action to select a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_SELECT_CALL_ACTION_TITLE" = "Sélectionner";
@@ -1088,7 +1088,7 @@
 "CONFIRM_DELETE_DATA_TITLE" = "Voulez-vous vraiment supprimer toutes les données ?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "L’application sera réinitialisée en supprimant tous vos messages de cet appareil. Vous pourrez encore relier votre téléphone de nouveau, mais cela ne récupérera pas les messages supprimés. L’appli sera fermée une fois le processus terminé.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Cela aura pour effet de supprimer tous les messages stockés sur cet appareil et de réinitialiser l’application. Vous pourrez associer votre téléphone de nouveau, mais cela ne vous permettra pas de récupérer les messages supprimés. Une fois le processus terminé, l’application se fermera.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Voulez-vous vraiment supprimer toutes les données ?";
@@ -1100,7 +1100,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Voulez-vous vraiment quitter ce groupe ?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Relier un nouvel appareil";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Associer un nouvel appareil";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ est bloqué";
@@ -1709,7 +1709,7 @@
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Impossible de compresser les journaux.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Impossible de téléverser les journaux.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Impossible d’importer les journaux.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Que voulez-vous faire avec le lien vers votre journal de débogage ?";
@@ -2492,7 +2492,7 @@
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Impossible de créer la demande d’assistance";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Échec de téléversement des journaux.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Échec de l’importation des journaux.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Échec d’envoi du message, car vous avez bloqué cet utilisateur.";
@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "Vous avez créé le groupe.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ vous a ajouté au groupe.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Le groupe a été créé.";
@@ -3776,10 +3776,10 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Lisez le code QR affiché sur l’appareil que vous souhaitez relier.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Lisez le code QR pour relier un nouvel appareil.";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scannez le code QR pour associer un nouvel appareil.";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Relier un nouvel appareil";
+"LINK_NEW_DEVICE_TITLE" = "Associer un nouvel appareil";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Aperçu de lien";
@@ -3794,7 +3794,7 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "En savoir plus";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Appareils reliés";
+"LINKED_DEVICES_TITLE" = "Appareils associés";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Autoriser les notifications";
@@ -4046,7 +4046,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Non distribué";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Téléversement";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Importation";
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Vu par";
@@ -4229,7 +4229,7 @@
 "MESSAGE_STATUS_SENT" = "Envoyé";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Téléversement…";
+"MESSAGE_STATUS_UPLOADING" = "Importation…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Vu";
@@ -4457,22 +4457,22 @@
 "NEW_STORY_SHEET_TITLE" = "Choisir le type de story";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
-"NICKNAME_BUTTON_TITLE" = "Nickname";
+"NICKNAME_BUTTON_TITLE" = "Pseudo";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames and notes are stored using Signal’s end-to-end encrypted storage service. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "Les pseudos et les notes sont conservés dans le service de stockage Signal chiffré de bout en bout. Vous seul y avez accès.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
-"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Last name";
+"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Nom";
 
 /* Placeholder text it the text field for the given name in the profile nickname editor. */
-"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "First name";
+"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "Prénom";
 
 /* Placeholder text it the text box for the note in the profile nickname editor. */
 "NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Note";
 
 /* The title for the profile nickname editor view. */
-"NICKNAME_EDITOR_TITLE" = "Nickname";
+"NICKNAME_EDITOR_TITLE" = "Pseudo";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Trouver des contacts par numéro de téléphone";
@@ -5131,9 +5131,6 @@
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Personne n’aura accès à votre numéro de téléphone.";
 
-/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
-
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Domicile";
 
@@ -5157,9 +5154,6 @@
 
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "Téléavertisseur";
-
-/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "Téléphone";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "Travail";
@@ -6029,7 +6023,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choisir un nom pour cet appareil";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Ce nom apparaîtra sous « Appareils reliés ».";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Ce nom apparaîtra sous « Appareils associés ».";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choisissez un nom";
@@ -6050,7 +6044,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installer Signal sur votre téléphone";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Touchez votre image de profil pour accéder aux paramètres de Signal sur votre téléphone, puis « Appareils reliés » et « Relier un nouvel appareil » afin de lire ce code avec votre téléphone :";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Sur votre téléphone, touchez votre image de profil pour accéder aux paramètres Signal, puis sélectionnez « Appareils associés » et « Associer un nouvel appareil  ». Vous pouvez ensuite scanner ce code avec votre téléphone :";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtenez de l’aide ici pour relier votre iPad";
@@ -7112,10 +7106,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Impossible d’envoyer le fichier joint";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Téléversement de %1$@ sur %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Importation de %1$@ sur %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Téléversement…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Importation…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Impossible de préparer le fichier joint";
@@ -7682,7 +7676,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Membre de %1$@, %2$@ et %3$lu autres groupes.";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Vous pouvez ajouter des notes à votre intention dans cette conversation. Si des appareils sont reliés à votre compte, les nouvelles notes seront synchronisées.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Cette conversation est dédiée à vos notes personnelles. Si des appareils sont associés à votre compte, les nouvelles notes que vous ajoutez ici sont synchronisées sur tous vos appareils.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Membre de %1$@";

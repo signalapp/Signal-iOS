@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Групова сторі · %1$d глядач</string>
+			<string>Групова історія · %1$d глядач</string>
 			<key>few</key>
-			<string>Групова сторі · %1$d глядачі</string>
+			<string>Групова історія · %1$d глядачі</string>
 			<key>many</key>
-			<string>Групова сторі · %1$d глядачів</string>
+			<string>Групова історія · %1$d глядачів</string>
 			<key>other</key>
-			<string>Групова сторі · %1$d глядача</string>
+			<string>Групова історія · %1$d глядача</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -1388,13 +1388,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Настроювана сторі · %1$d глядач</string>
+			<string>Індивідуальна історія · %1$d глядач</string>
 			<key>few</key>
-			<string>Настроювана сторі · %1$d глядачі</string>
+			<string>Індивідуальна історія · %1$d глядачі</string>
 			<key>many</key>
-			<string>Настроювана сторі · %1$d глядачів</string>
+			<string>Індивідуальна історія · %1$d глядачів</string>
 			<key>other</key>
-			<string>Настроювана сторі · %1$d глядача</string>
+			<string>Індивідуальна історія · %1$d глядача</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
@@ -1428,13 +1428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Деякі елементи не було надіслано до обраної сторі, тому що такий тип файлу не підтримується.</string>
+			<string>Деякі файли не було додано до обраної історії, тому що відповідний тип файлу не підтримується.</string>
 			<key>few</key>
-			<string>Деякі елементи не було надіслано до обраних сторіз, тому що такий тип файлу не підтримується.</string>
+			<string>Деякі файли не було додано до обраних історій, тому що відповідний тип файлу не підтримується.</string>
 			<key>many</key>
-			<string>Деякі елементи не було надіслано до обраних сторіз, тому що такий тип файлу не підтримується.</string>
+			<string>Деякі файли не було додано до обраних історій, тому що відповідний тип файлу не підтримується.</string>
 			<key>other</key>
-			<string>Деякі елементи не було надіслано до обраних сторіз, тому що такий тип файлу не підтримується.</string>
+			<string>Деякі файли не було додано до обраних історій, тому що відповідний тип файлу не підтримується.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
