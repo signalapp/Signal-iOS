@@ -436,7 +436,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
         // by UIActivityViewController to determine which kinds of sharing are
         // appropriate for this text.
         // be used outside the app.
-        return [self filePathForData:uniqueId withFileExtension:@"txt" inFolder:folder];
+        return [self filePathForData:uniqueId withFileExtension:kOversizeTextAttachmentFileExtension inFolder:folder];
     } else if ([contentType isEqualToString:OWSMimeTypeUnknownForTests]) {
         // This file extension is arbitrary - it should never be exposed to the user or
         // be used outside the app.
@@ -2690,6 +2690,9 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 + (nullable NSString *)fileExtensionForMIMEType:(NSString *)mimeType
 {
+    if (mimeType == OWSMimeTypeOversizeTextMessage) {
+        return kOversizeTextAttachmentFileExtension;
+    }
     // Try to deduce the file extension by using a lookup table.
     //
     // This should be more accurate than deducing the file extension by
