@@ -823,12 +823,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             if SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: utiType) {
                 // This can happen, e.g. when sharing a quicktime-video from iCloud drive.
 
-                let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: utiType)
-
                 // TODO: How can we move waiting for this export to the end of the share flow rather than having to do it up front?
                 // Ideally we'd be able to start it here, and not block the UI on conversion unless there's still work to be done
                 // when the user hits "send".
-                if let exportSession = exportSession {
+                return try await SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: utiType, sessionCallback: { exportSession in
                     Task { @MainActor in
                         let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
 
@@ -837,9 +835,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
                         self.loadViewController.progress = progressPoller.progress
                     }
-                }
-
-                return try await promise.awaitable()
+                })
             }
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: utiType)

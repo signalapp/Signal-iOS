@@ -1166,24 +1166,24 @@ public class SignalAttachment: NSObject {
         return videoDir
     }
 
-    public class func compressVideoAsMp4(dataSource: DataSource, dataUTI: String) -> (Promise<SignalAttachment>, AVAssetExportSession?) {
+    public static func compressVideoAsMp4(dataSource: DataSource, dataUTI: String, sessionCallback: ((AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
         Logger.debug("")
 
         guard let url = dataSource.dataUrl else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
             attachment.error = .missingData
-            return (Promise.value(attachment), nil)
+            return attachment
         }
 
-        return compressVideoAsMp4(asset: AVAsset(url: url), baseFilename: dataSource.sourceFilename, dataUTI: dataUTI)
+        return try await compressVideoAsMp4(asset: AVAsset(url: url), baseFilename: dataSource.sourceFilename, dataUTI: dataUTI, sessionCallback: sessionCallback)
     }
 
-    public class func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, dataUTI: String) -> (Promise<SignalAttachment>, AVAssetExportSession?) {
+    public static func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, dataUTI: String, sessionCallback: ((AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
         Logger.debug("")
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
             attachment.error = .couldNotConvertToMpeg4
-            return (Promise.value(attachment), nil)
+            return attachment
         }
 
         exportSession.shouldOptimizeForNetworkUse = true
@@ -1193,58 +1193,50 @@ public class SignalAttachment: NSObject {
         let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
         exportSession.outputURL = exportURL
 
-        let (promise, future) = Promise<SignalAttachment>.pending()
-
         Logger.debug("Starting video export")
 
-        exportSession.exportAsynchronously {
-            if let error = exportSession.error {
-                owsFailDebug("Error: \(error)")
-                future.reject(error)
-                return
-            }
-            switch exportSession.status {
-            case .unknown:
-                future.reject(OWSAssertionError("Unknown export status."))
-                return
-            case .waiting:
-                future.reject(OWSAssertionError("Export status: .waiting."))
-                return
-            case .exporting:
-                future.reject(OWSAssertionError("Export status: .exporting."))
-                return
-            case .completed:
-                break
-            case .failed:
-                future.reject(OWSAssertionError("Export failed without error."))
-                return
-            case .cancelled:
-                future.reject(OWSGenericError("Cancelled."))
-                return
-            @unknown default:
-                future.reject(OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)"))
-                return
-            }
-            Logger.debug("Completed video export")
-            let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
+        async let exportResult: Void = exportSession.export()
 
-            do {
-                let dataSource = try DataSourcePath.dataSource(with: exportURL,
-                                                               shouldDeleteOnDeallocation: true)
-                dataSource.sourceFilename = mp4Filename
-
-                let attachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
-                future.resolve(attachment)
-            } catch {
-                owsFailDebug("Failed to build data source for exported video URL")
-                let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
-                attachment.error = .couldNotConvertToMpeg4
-                future.resolve(attachment)
-                return
-            }
+        if let sessionCallback {
+            sessionCallback(exportSession)
         }
 
-        return (promise, exportSession)
+        await exportResult
+        if let error = exportSession.error {
+            owsFailDebug("Error: \(error)")
+            throw error
+        }
+        switch exportSession.status {
+        case .unknown:
+            throw OWSAssertionError("Unknown export status.")
+        case .waiting:
+            throw OWSAssertionError("Export status: .waiting.")
+        case .exporting:
+            throw OWSAssertionError("Export status: .exporting.")
+        case .completed:
+            break
+        case .failed:
+            throw OWSAssertionError("Export failed without error.")
+        case .cancelled:
+            throw OWSGenericError("Cancelled.")
+        @unknown default:
+            throw OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)")
+        }
+        Logger.debug("Completed video export")
+        let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
+
+        do {
+            let dataSource = try DataSourcePath.dataSource(with: exportURL,
+                                                           shouldDeleteOnDeallocation: true)
+            dataSource.sourceFilename = mp4Filename
+
+            return SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+        } catch {
+            owsFailDebug("Failed to build data source for exported video URL")
+            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            attachment.error = .couldNotConvertToMpeg4
+            return attachment
+        }
     }
 
     public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {

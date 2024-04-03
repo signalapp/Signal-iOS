@@ -876,13 +876,12 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             }
 
             dataSource.sourceFilename = filename
-            let (promise, session) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource,
-                                                                         dataUTI: kUTTypeMPEG4 as String)
-            firstly { () -> Promise<SignalAttachment> in
-                promise
-            }.done(on: DispatchQueue.main) { (attachment: SignalAttachment) in
+            let promise = Promise.wrapAsync({
+                return try await SignalAttachment.compressVideoAsMp4(dataSource: dataSource,
+                                                                     dataUTI: kUTTypeMPEG4 as String)
+            })
+            promise.done(on: DispatchQueue.main) { (attachment: SignalAttachment) in
                 if modalActivityIndicator.wasCancelled {
-                    session?.cancelExport()
                     return
                 }
                 modalActivityIndicator.dismiss {

@@ -212,12 +212,13 @@ class PhotoAlbumContents {
                     baseFilename = nil
                 }
 
-                let (compressPromise, _) = SignalAttachment.compressVideoAsMp4(asset: video,
-                                                                               baseFilename: baseFilename,
-                                                                               dataUTI: dataUTI)
-                compressPromise
-                    .done { future.resolve($0) }
-                    .catch { future.reject($0) }
+                Task {
+                    do {
+                        future.resolve(try await SignalAttachment.compressVideoAsMp4(asset: video, baseFilename: baseFilename, dataUTI: dataUTI))
+                    } catch {
+                        future.reject(error)
+                    }
+                }
             }
         }
     }
