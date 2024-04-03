@@ -7,9 +7,9 @@ import SignalRingRTC
 import SignalServiceKit
 import WebRTC
 
-class GroupCallRemoteVideoManager: Dependencies {
+class GroupCallRemoteVideoManager {
     private var currentGroupCall: GroupCall? {
-        guard let call = Self.callService.currentCall, call.isGroupCall else { return nil }
+        guard let call = NSObject.callService.currentCall, call.isGroupCall else { return nil }
         return call.groupCall
     }
 
@@ -97,7 +97,7 @@ extension GroupCallRemoteVideoManager: GroupCallRemoteVideoViewSizeDelegate {
 
 extension GroupCallRemoteVideoManager: CallServiceObserver {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
-        guard oldValue != newValue else { return }
+        guard oldValue !== newValue else { return }
         videoViews.forEach { self.destroyRemoteVideoView(for: $0.key) }
         oldValue?.removeObserver(self)
         newValue?.addObserverAndSyncState(observer: self)

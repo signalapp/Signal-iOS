@@ -29,7 +29,6 @@ extension AudioSession {
      * our signaling is set up.
      */
     public func configureRTCAudio() {
-        Logger.info("rtcAudioSession.useManualAudio")
         rtcAudioSession.useManualAudio = true
     }
 

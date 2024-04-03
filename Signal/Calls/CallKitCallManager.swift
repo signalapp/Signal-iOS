@@ -11,17 +11,17 @@ import UIKit
 /**
  * Requests actions from CallKit
  *
- * @Discussion:
- *   Based on SpeakerboxCallManager, from the Apple CallKit Example app. Though, it's responsibilities are mostly 
- *   mirrored (and delegated from) CallKitCallUIAdaptee.
- *   TODO: Would it simplify things to merge this into CallKitCallUIAdaptee?
+ * @Discussion: Based on SpeakerboxCallManager, from the Apple CallKit
+ * example app. Though, its responsibilities are mostly mirrored (and
+ * delegated from) CallKitCallUIAdaptee.
+ *
+ * TODO: Would it simplify things to merge this into CallKitCallUIAdaptee?
  */
-final class CallKitCallManager: NSObject {
+final class CallKitCallManager {
 
     let callController = CXCallController()
     let showNamesOnCallScreen: Bool
 
-    @objc
     static let kAnonymousCallHandlePrefix = "Signal:"
     static let kGroupCallHandlePrefix = "SignalGroup:"
 
@@ -42,7 +42,6 @@ final class CallKitCallManager: NSObject {
         AssertIsOnMainThread()
 
         self.showNamesOnCallScreen = showNamesOnCallScreen
-        super.init()
 
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
     }
@@ -73,6 +72,10 @@ final class CallKitCallManager: NSObject {
     static func threadForHandleWithSneakyTransaction(_ handle: String) -> TSThread? {
         owsAssertDebug(!handle.isEmpty)
 
+        let databaseStorage = NSObject.databaseStorage
+        let phoneNumberUtil = NSObject.phoneNumberUtil
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
         if handle.hasPrefix(kAnonymousCallHandlePrefix) {
             return CallKitIdStore.thread(forCallKitId: handle)
         }
@@ -86,7 +89,7 @@ final class CallKitCallManager: NSObject {
         }
 
         let phoneNumber: String? = {
-            guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
+            guard let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
                 return nil
             }
             let phoneNumbers = phoneNumberUtil.parsePhoneNumbers(

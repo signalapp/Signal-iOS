@@ -48,8 +48,11 @@ public extension CallObserver {
 }
 
 /// Represents a call happening on this device.
-@objc
-public class SignalCall: NSObject, CallManagerCallReference {
+public class SignalCall: CallManagerCallReference {
+    private var audioSession: AudioSession { NSObject.audioSession }
+    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
+
     public let mode: Mode
     public enum Mode {
         case individual(IndividualCall)
@@ -82,7 +85,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return call
     }
 
-    @objc
     var isIndividualCall: Bool {
         switch mode {
         case .group: return false
@@ -193,7 +195,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
     // Distinguishes between calls locally, e.g. in CallKit
     public let localId: UUID = UUID()
 
-    @objc
     public let thread: TSThread
 
     internal struct RingRestrictions: OptionSet {
@@ -294,7 +295,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
 
         // Track the callInProgress restriction regardless; we use that for purposes other than rings.
-        let hasActiveCallMessage = Self.databaseStorage.read { transaction -> Bool in
+        let hasActiveCallMessage = NSObject.databaseStorage.read { transaction -> Bool in
             !GroupCallInteractionFinder().unendedCallsForGroupThread(groupThread, transaction: transaction).isEmpty
         }
         if hasActiveCallMessage {
@@ -302,17 +303,17 @@ public class SignalCall: NSObject, CallManagerCallReference {
             ringRestrictions.insert(.callInProgress)
         }
 
-        super.init()
-
         groupCall.delegate = self
         // Watch group membership changes.
         // The object is the group thread ID, which is a string.
         // NotificationCenter dispatches by object identity rather than equality,
         // so we watch all changes and filter later.
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(groupMembershipDidChange),
-                                               name: TSGroupThread.membershipDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(groupMembershipDidChange),
+            name: TSGroupThread.membershipDidChange,
+            object: nil
+        )
     }
 
     init(individualCall: IndividualCall) {
@@ -323,7 +324,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
         )
         thread = individualCall.thread
         ringRestrictions = .notApplicable
-        super.init()
         individualCall.delegate = self
     }
 
@@ -337,7 +337,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
         let videoCaptureController = VideoCaptureController()
         let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
 
-        guard let groupCall = Self.callService.callManager.createGroupCall(
+        guard let groupCall = NSObject.callService.callManager.createGroupCall(
             groupId: thread.groupModel.groupId,
             sfuUrl: sfuURL,
             hkdfExtraInfo: Data.init(),
@@ -401,7 +401,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
               self.thread.uniqueId == notification.object as? String else {
             return
         }
-        databaseStorage.read { transaction in
+        self.databaseStorage.read { transaction in
             self.thread.anyReload(transaction: transaction)
         }
         guard let groupModel = self.thread.groupModelIfGroupThread else {
@@ -523,10 +523,7 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onPeekChanged groupCall: GroupCall) {
-        guard
-            let localAci = DependenciesBridge.shared.tsAccountManager
-                .localIdentifiersWithMaybeSneakyTransaction?.aci
-        else {
+        guard let localAci = self.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             owsFailDebug("Peek changed for a group call, but we're not registered?")
             return
         }

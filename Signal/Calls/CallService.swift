@@ -30,6 +30,7 @@ public final class CallService: LightweightGroupCallManager {
 
     private var audioSession: AudioSession { NSObject.audioSession }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var deviceSleepManager: DeviceSleepManager { DeviceSleepManager.shared }
     private var reachabilityManager: SSKReachabilityManager { NSObject.reachabilityManager }
 
     public var callUIAdapter: CallUIAdapter!
@@ -58,31 +59,26 @@ public final class CallService: LightweightGroupCallManager {
         )
     }()
 
-    lazy private(set) var audioService = CallAudioService()
+    private(set) lazy var audioService: CallAudioService = {
+        let result = CallAudioService(audioSession: self.audioSession)
+        self.addObserverAndSyncState(observer: result)
+        return result
+    }()
 
     public var earlyRingNextIncomingCall = false
 
-    /// Current call *must* be set on the main thread. It may be read off the main thread if the current call state must be consulted,
-    /// but othere call state may race (observer state, sleep state, etc.)
-    private var _currentCallLock = UnfairLock()
-    private var _currentCall: SignalCall?
+    /// Current call *must* be set on the main thread. It may be read off the
+    /// main thread if the current call state must be consulted, but other call
+    /// state may race (observer state, sleep state, etc.)
+    private let _currentCall = AtomicValue<SignalCall?>(nil, lock: .init())
 
     /// Represents the call currently occuring on this device.
-    @objc
     public private(set) var currentCall: SignalCall? {
-        get {
-            _currentCallLock.withLock {
-                _currentCall
-            }
-        }
+        get { _currentCall.get() }
         set {
             AssertIsOnMainThread()
 
-            let oldValue: SignalCall? = _currentCallLock.withLock {
-                let oldValue = _currentCall
-                _currentCall = newValue
-                return oldValue
-            }
+            let oldValue = _currentCall.swap(newValue)
 
             oldValue?.removeObserver(self)
             newValue?.addObserverAndSyncState(observer: self)
@@ -90,17 +86,17 @@ public final class CallService: LightweightGroupCallManager {
             updateIsVideoEnabled()
 
             // Prevent device from sleeping while we have an active call.
-            if oldValue != newValue {
-                if let oldValue = oldValue {
-                    DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
+            if oldValue !== newValue {
+                if let oldValue {
+                    self.deviceSleepManager.removeBlock(blockObject: oldValue)
                     if !UIDevice.current.isIPad {
                         UIDevice.current.endGeneratingDeviceOrientationNotifications()
                     }
                 }
 
-                if let newValue = newValue {
-                    assert(calls.contains(newValue))
-                    DeviceSleepManager.shared.addBlock(blockObject: newValue)
+                if let newValue {
+                    assert(calls.contains(where: { $0 === newValue }))
+                    self.deviceSleepManager.addBlock(blockObject: newValue)
 
                     if newValue.isIndividualCall {
 
@@ -120,8 +116,6 @@ public final class CallService: LightweightGroupCallManager {
 
             // To be safe, we reset the early ring on any call change so it's not left set from an unexpected state change
             earlyRingNextIncomingCall = false
-
-            Logger.debug("\(oldValue as Optional) -> \(newValue as Optional)")
 
             let observers = self.observers
             DispatchQueue.main.async {
@@ -145,18 +139,17 @@ public final class CallService: LightweightGroupCallManager {
     /// which will let us know which one, if any, should become the "current call". But in the
     /// meanwhile, we still want to track that calls are in-play so we can prevent the user from
     /// placing an outgoing call.
-    private let _calls = AtomicSet<SignalCall>(lock: .sharedGlobal)
-    private var calls: Set<SignalCall> { _calls.allValues }
+    private let _calls = AtomicValue<[SignalCall]>([], lock: .sharedGlobal)
+    private var calls: [SignalCall] { _calls.get() }
 
     private func addCall(_ call: SignalCall) {
-        _calls.insert(call)
+        _calls.update { $0.append(call) }
         postActiveCallsDidChange()
     }
 
-    private func removeCall(_ call: SignalCall) -> Bool {
-        let didRemove = _calls.remove(call)
+    private func removeCall(_ call: SignalCall) {
+        _calls.update { $0.removeAll(where: { $0 === call }) }
         postActiveCallsDidChange()
-        return didRemove
     }
 
     public static let activeCallsDidChange = Notification.Name("activeCallsDidChange")
@@ -519,9 +512,7 @@ public final class CallService: LightweightGroupCallManager {
         // If call is for the current call, clear it out first.
         if call === currentCall { currentCall = nil }
 
-        if !removeCall(call) {
-            owsFailDebug("unknown call: \(call)")
-        }
+        removeCall(call)
 
         if !hasCallInProgress {
             audioSession.isRTCAudioEnabled = false
@@ -628,9 +619,9 @@ public final class CallService: LightweightGroupCallManager {
         owsAssertDebug(call.isGroupCall)
 
         let currentCall = self.currentCall
-        if currentCall == nil {
+        if currentCall === nil {
             self.currentCall = call
-        } else if currentCall != call {
+        } else if currentCall !== call {
             return owsFailDebug("A call is already in progress")
         }
 
@@ -1260,9 +1251,7 @@ extension CallService: CallManagerDelegate {
             return
         }
 
-        if !calls.contains(call) {
-            owsFailDebug("unknown call: \(call)")
-        }
+        owsAssertDebug(calls.contains(where: { $0 === call }), "unknown call: \(call)")
 
         call.individualCall.callId = callId
 

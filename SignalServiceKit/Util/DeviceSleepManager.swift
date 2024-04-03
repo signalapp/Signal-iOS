@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // This entity has responsibility for blocking the device from sleeping if
 // certain behaviors (e.g. recording or playing voice messages) are in progress.
@@ -23,13 +24,13 @@ public class DeviceSleepManager: Dependencies {
     let serialQueue = DispatchQueue(label: "org.signal.device-sleep")
 
     private class SleepBlock: CustomDebugStringConvertible {
-        weak var blockObject: NSObject?
+        weak var blockObject: AnyObject?
 
         var debugDescription: String {
             return "SleepBlock(\(String(reflecting: blockObject)))"
         }
 
-        init(blockObject: NSObject) {
+        init(blockObject: AnyObject) {
             self.blockObject = blockObject
         }
     }
@@ -55,21 +56,16 @@ public class DeviceSleepManager: Dependencies {
         }
     }
 
-    @objc
-    public func addBlock(blockObject: NSObject) {
+    public func addBlock(blockObject: AnyObject) {
         serialQueue.sync {
             blocks.append(SleepBlock(blockObject: blockObject))
             ensureSleepBlocking()
         }
     }
 
-    @objc
-    public func removeBlock(blockObject: NSObject) {
+    public func removeBlock(blockObject: AnyObject) {
         serialQueue.sync {
-            blocks = blocks.filter {
-                $0.blockObject != nil && $0.blockObject != blockObject
-            }
-
+            blocks.removeAll(where: { $0.blockObject === blockObject })
             ensureSleepBlocking()
         }
     }
@@ -78,10 +74,8 @@ public class DeviceSleepManager: Dependencies {
         assertOnQueue(serialQueue)
 
         // Cull expired blocks.
-        blocks = blocks.filter {
-            $0.blockObject != nil
-        }
-        let shouldBlock = blocks.count > 0
+        blocks.removeAll(where: { $0.blockObject === nil })
+        let shouldBlock = !blocks.isEmpty
 
         let description: String
         switch blocks.count {

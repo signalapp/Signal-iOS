@@ -9902,6 +9902,7 @@
 				D9CA8AAD2B698B2400787167 /* DeletedCallRecord */,
 				D9AA379D2A86C9660088EFFB /* Group */,
 				D9AA379E2A86CA3F0088EFFB /* Individual */,
+				50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */,
 				D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */,
 				32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */,
 				6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */,
@@ -10604,7 +10605,6 @@
 		F9C5CA00289453B100548EEE /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
-				50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */,
 				506A99D32B86B39F00E3C753 /* ContactManager.swift */,
 				F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */,
 				F9C5CA06289453B100548EEE /* NotificationsProtocol.h */,

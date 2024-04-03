@@ -162,7 +162,7 @@ extension ConversationViewController {
 extension ConversationViewController: CallServiceObserver {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         AssertIsOnMainThread()
-        guard oldValue != newValue else { return }
+        guard oldValue !== newValue else { return }
         updateBarButtonItems()
     }
 }

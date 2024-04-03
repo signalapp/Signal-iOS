@@ -175,7 +175,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
                 if call.isGroupCall {
                     // Wait to start ringing until all observers have recognized this as the current call.
                     DispatchQueue.main.async {
-                        guard call == self.callService.currentCall else {
+                        guard call === self.callService.currentCall else {
                             // Assume that the call failed before we got a chance to start ringing.
                             return
                         }

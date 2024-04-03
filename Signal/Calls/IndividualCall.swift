@@ -55,7 +55,12 @@ public protocol IndividualCallDelegate: AnyObject {
  *
  * This class' state should only be accessed on the main queue.
  */
-public class IndividualCall: NSObject {
+public class IndividualCall: CustomDebugStringConvertible {
+
+    private var callRecordStore: any CallRecordStore { DependenciesBridge.shared.callRecordStore }
+    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var individualCallRecordManager: any IndividualCallRecordManager { DependenciesBridge.shared.individualCallRecordManager }
+    private var notificationPresenter: NotificationPresenter { NSObject.notificationPresenter }
 
     // Mark -
 
@@ -72,7 +77,7 @@ public class IndividualCall: NSObject {
             AssertIsOnMainThread()
 
             Logger.info("CallId added for call")
-            Self.databaseStorage.asyncWrite { transaction in
+            self.databaseStorage.asyncWrite { transaction in
                 if let callInteraction = self.callInteraction {
                     self.createOrUpdateCallRecordIfNeeded(for: callInteraction, transaction: transaction)
                 } else {
@@ -175,7 +180,7 @@ public class IndividualCall: NSObject {
 
             let state = self.state
             if let callType = self.callType {
-                Self.databaseStorage.asyncWrite {
+                self.databaseStorage.asyncWrite {
                     if
                         let callInteraction = self.callInteraction,
                         let newCallType = self.validateCallType(
@@ -246,7 +251,7 @@ public class IndividualCall: NSObject {
         owsAssertDebug(isEnded, "isEnded was unexpectedly false")
     }
 
-    override public var description: String {
+    public var debugDescription: String {
         return "IndividualCall: {\(remoteAddress), signalingId: \(callId as Optional)))}"
     }
 
@@ -268,7 +273,7 @@ public class IndividualCall: NSObject {
         self.callType = callType
         // Snapshot the state at the time we enqueued the write.
         let state = self.state
-        Self.databaseStorage.asyncWrite {
+        self.databaseStorage.asyncWrite {
             self._createOrUpdateCallInteraction(
                 callType: callType,
                 state: state,
@@ -317,14 +322,13 @@ public class IndividualCall: NSObject {
                 return
             }
 
-            DependenciesBridge.shared.individualCallRecordManager
-                .updateInteractionTypeAndRecordIfExists(
-                    individualCallInteraction: existingCall,
-                    individualCallInteractionRowId: existingCallRowId,
-                    contactThread: thread,
-                    newCallInteractionType: newCallType,
-                    tx: transaction.asV2Write
-                )
+            individualCallRecordManager.updateInteractionTypeAndRecordIfExists(
+                individualCallInteraction: existingCall,
+                individualCallInteractionRowId: existingCallRowId,
+                contactThread: thread,
+                newCallInteractionType: newCallType,
+                tx: transaction.asV2Write
+            )
         }
 
         if let existingCall = self.callInteraction {
@@ -374,8 +378,8 @@ public class IndividualCall: NSObject {
                 transaction: transaction
             )
             let threadUniqueId = self.thread.uniqueId
-            DispatchQueue.main.async {
-                Self.notificationPresenter.cancelNotificationsForMissedCalls(threadUniqueId: threadUniqueId)
+            DispatchQueue.main.async { [notificationPresenter] in
+                notificationPresenter.cancelNotificationsForMissedCalls(threadUniqueId: threadUniqueId)
             }
         }
     }
@@ -398,7 +402,7 @@ public class IndividualCall: NSObject {
         }
 
         let callRecord: CallRecord? = {
-            switch DependenciesBridge.shared.callRecordStore.fetch(
+            switch self.callRecordStore.fetch(
                 callId: callId, threadRowId: threadRowId, tx: transaction.asV2Read
             ) {
             case .matchFound(let callRecord):
@@ -487,14 +491,13 @@ public class IndividualCall: NSObject {
             return
         }
 
-        DependenciesBridge.shared.individualCallRecordManager
-            .createOrUpdateRecordForInteraction(
-                individualCallInteraction: callInteraction,
-                individualCallInteractionRowId: callInteractionRowId,
-                contactThread: thread,
-                contactThreadRowId: threadRowId,
-                callId: callId,
-                tx: transaction.asV2Write
-            )
+        individualCallRecordManager.createOrUpdateRecordForInteraction(
+            individualCallInteraction: callInteraction,
+            individualCallInteractionRowId: callInteractionRowId,
+            contactThread: thread,
+            contactThreadRowId: threadRowId,
+            callId: callId,
+            tx: transaction.asV2Write
+        )
     }
 }

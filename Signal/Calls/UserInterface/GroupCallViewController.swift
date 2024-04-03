@@ -990,7 +990,7 @@ extension GroupCallViewController: CallObserver {
 
     func callMessageSendFailedUntrustedIdentity(_ call: SignalCall) {
         AssertIsOnMainThread()
-        guard call == self.call else { return owsFailDebug("Unexpected call \(call)") }
+        guard call === self.call else { return owsFailDebug("Unexpected call \(call)") }
 
         if !hasUnresolvedSafetyNumberMismatch {
             hasUnresolvedSafetyNumberMismatch = true

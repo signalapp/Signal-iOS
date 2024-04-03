@@ -33,6 +33,8 @@ final class IndividualCallService {
     private var notificationPresenter: NotificationPresenter { NSObject.notificationPresenter }
     private var preferences: Preferences { NSObject.preferences }
     private var profileManager: any ProfileManager { NSObject.profileManager }
+    private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
+    private var identityManager: any OWSIdentityManager { DependenciesBridge.shared.identityManager }
 
     // MARK: - Call Control Actions
 
@@ -52,7 +54,7 @@ final class IndividualCallService {
         call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingIncomplete)
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
+        let localDeviceId = tsAccountManager.storedDeviceIdWithMaybeTransaction
 
         do {
             try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId)
@@ -170,7 +172,6 @@ final class IndividualCallService {
     }
 
     private func getIdentityKeys(thread: TSContactThread, transaction tx: SDSAnyReadTransaction) -> CallIdentityKeys? {
-        let identityManager = DependenciesBridge.shared.identityManager
         guard let localIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)?.publicKey else {
             owsFailDebug("missing localIdentityKey")
             return nil
@@ -211,7 +212,7 @@ final class IndividualCallService {
         )
         newCall.individualCall.callId = callId
 
-        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
+        guard tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
             Logger.warn("user is not registered, skipping call.")
             newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissed, transaction: transaction)
 
@@ -221,7 +222,6 @@ final class IndividualCallService {
             return
         }
 
-        let identityManager = DependenciesBridge.shared.identityManager
         if let untrustedIdentity = identityManager.untrustedIdentityForSending(
             to: thread.contactAddress,
             untrustedThreshold: nil,
@@ -272,7 +272,7 @@ final class IndividualCallService {
             Logger.info("Ignoring call offer from \(thread.contactAddress) due to insufficient permissions.")
 
             // Send the need permission message to the caller, so they know why we rejected their call.
-            let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
+            let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
             callManager(
                 callManager,
                 shouldSendHangup: callId,
@@ -320,8 +320,8 @@ final class IndividualCallService {
         }
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
-        let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? true
+        let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
+        let isPrimaryDevice = tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? true
 
         do {
             try callManager.receivedOffer(call: newCall,

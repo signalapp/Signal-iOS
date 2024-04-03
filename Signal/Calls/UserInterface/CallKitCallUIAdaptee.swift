@@ -522,7 +522,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         _ = self.audioSession.startAudioActivity(self.audioActivity)
 
-        guard let call = self.callManager.callService.currentCall else {
+        guard let call = self.callService.currentCall else {
             owsFailDebug("No current call for AudioSession")
             return
         }

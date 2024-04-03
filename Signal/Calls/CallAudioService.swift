@@ -14,7 +14,7 @@ protocol CallAudioServiceDelegate: AnyObject {
     func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
 }
 
-class CallAudioService: NSObject, CallObserver {
+class CallAudioService: CallObserver {
 
     private var vibrateTimer: Timer?
 
@@ -35,33 +35,28 @@ class CallAudioService: NSObject, CallObserver {
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
 
-    private var observerToken: NSObjectProtocol?
+    private var observers = [NSObjectProtocol]()
 
-    var avAudioSession: AVAudioSession {
+    private var avAudioSession: AVAudioSession {
         return AVAudioSession.sharedInstance()
     }
 
     // MARK: - Initializers
 
-    override init() {
-        super.init()
-
+    init(audioSession: AudioSession) {
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
 
         // Configure audio session so we don't prompt user with Record permission until call is connected.
 
         audioSession.configureRTCAudio()
-        observerToken = NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: OperationQueue()) { [weak self] _ in
-            assert(!Thread.isMainThread)
+        observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: nil) { [weak self] _ in
             self?.audioRouteDidChange()
-        }
-
-        Self.callService.addObserverAndSyncState(observer: self)
+        })
     }
 
     deinit {
-        if let observerToken = observerToken {
-            NotificationCenter.default.removeObserver(observerToken)
+        for observer in self.observers {
+            NotificationCenter.default.removeObserver(observer)
         }
     }
 
@@ -142,13 +137,12 @@ class CallAudioService: NSObject, CallObserver {
     }
 
     private func audioRouteDidChange() {
-        guard let currentAudioSource = currentAudioSource else {
-            Logger.warn("Switched to route without audio source")
-            return
-        }
-
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+            guard let currentAudioSource = self.currentAudioSource else {
+                Logger.warn("Switched to route without audio source")
+                return
+            }
             self.delegate?.callAudioServiceDidChangeAudioSource(self, audioSource: currentAudioSource)
         }
     }
@@ -466,47 +460,26 @@ class CallAudioService: NSObject, CallObserver {
     var hasExternalInputs: Bool { return availableInputs.count > 2 }
 
     var currentAudioSource: AudioSource? {
-        get {
-            let outputsByType = avAudioSession.currentRoute.outputs.reduce(
-                into: [AVAudioSession.Port: AVAudioSessionPortDescription]()
-            ) { result, portDescription in
-                result[portDescription.portType] = portDescription
-            }
-
-            let inputsByType = avAudioSession.currentRoute.inputs.reduce(
-                into: [AVAudioSession.Port: AVAudioSessionPortDescription]()
-            ) { result, portDescription in
-                result[portDescription.portType] = portDescription
-            }
-
-            if let builtInMic = inputsByType[.builtInMic], inputsByType[.builtInReceiver] != nil {
-                return AudioSource(portDescription: builtInMic)
-            } else if outputsByType[.builtInSpeaker] != nil {
-                return AudioSource.builtInSpeaker
-            } else if let firstRemaining = inputsByType.values.first {
-                return AudioSource(portDescription: firstRemaining)
-            } else {
-                return nil
-            }
+        let outputsByType = avAudioSession.currentRoute.outputs.reduce(
+            into: [AVAudioSession.Port: AVAudioSessionPortDescription]()
+        ) { result, portDescription in
+            result[portDescription.portType] = portDescription
         }
-        set {
-            guard currentAudioSource != newValue else { return }
 
-            Logger.info("changing preferred input: \(String(describing: currentAudioSource)) -> \(String(describing: newValue))")
+        let inputsByType = avAudioSession.currentRoute.inputs.reduce(
+            into: [AVAudioSession.Port: AVAudioSessionPortDescription]()
+        ) { result, portDescription in
+            result[portDescription.portType] = portDescription
+        }
 
-            if let portDescription = newValue?.portDescription {
-                do {
-                    try avAudioSession.setPreferredInput(portDescription)
-                } catch {
-                    owsFailDebug("failed setting audio source with error: \(error)")
-                }
-            } else if newValue == AudioSource.builtInSpeaker {
-                requestSpeakerphone(isEnabled: true)
-            } else {
-                owsFailDebug("Tried to set unexpected audio source")
-            }
-
-            delegate?.callAudioServiceDidChangeAudioSource(self, audioSource: newValue)
+        if let builtInMic = inputsByType[.builtInMic], inputsByType[.builtInReceiver] != nil {
+            return AudioSource(portDescription: builtInMic)
+        } else if outputsByType[.builtInSpeaker] != nil {
+            return AudioSource.builtInSpeaker
+        } else if let firstRemaining = inputsByType.values.first {
+            return AudioSource(portDescription: firstRemaining)
+        } else {
+            return nil
         }
     }
 
