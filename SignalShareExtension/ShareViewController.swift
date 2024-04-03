@@ -626,18 +626,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
 
         let payload: LoadedItemPayload
-
-        var customFileName: String? {
-            isContactShare ? "Contact.vcf" : nil
-        }
-
-        private var isContactShare: Bool {
-            if case .contact = payload {
-                return true
-            } else {
-                return false
-            }
-        }
     }
 
     private struct UnloadedItem {
