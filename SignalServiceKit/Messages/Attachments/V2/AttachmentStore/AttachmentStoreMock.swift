@@ -34,6 +34,22 @@ open class AttachmentStoreMock: AttachmentStore {
             .filter { $0.attachmentRowId == toAttachmentId }
             .forEach(block)
     }
+
+    open func addOwner(
+        duplicating ownerReference: AttachmentReference,
+        withNewOwner: AttachmentReference.OwnerId,
+        tx: DBWriteTransaction
+    ) throws {
+        // do nothing
+    }
+
+    open func removeOwner(
+        _ owner: AttachmentReference.OwnerId,
+        for attachmentId: Attachment.IDType,
+        tx: DBWriteTransaction
+    ) {
+        // do nothing
+    }
 }
 
 #endif

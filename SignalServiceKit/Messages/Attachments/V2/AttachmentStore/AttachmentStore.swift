@@ -27,6 +27,28 @@ public protocol AttachmentStore {
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
     )
+
+    // MARK: - Writes
+
+    /// Create a new ownership reference, copying properties of an existing reference.
+    ///
+    /// Copies the database row directly, only modifying the owner column.
+    ///
+    /// Fails if the provided new owner isn't of the same type as the original
+    /// reference; e.g. trying to duplicate a story owner on a message, or
+    /// a message link preview as a message sticker. Those operations require
+    /// the explicit creation of a new owner.
+    func addOwner(
+        duplicating ownerReference: AttachmentReference,
+        withNewOwner: AttachmentReference.OwnerId,
+        tx: DBWriteTransaction
+    ) throws
+
+    func removeOwner(
+        _ owner: AttachmentReference.OwnerId,
+        for attachmentId: Attachment.IDType,
+        tx: DBWriteTransaction
+    )
 }
 
 // MARK: - Convenience

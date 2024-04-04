@@ -27,6 +27,28 @@ public class AttachmentStoreImpl: AttachmentStore {
     ) {
         fatalError("Unimplemented")
     }
+
+    // MARK: - Writes
+
+    public func addOwner(
+        duplicating ownerReference: AttachmentReference,
+        withNewOwner newOwner: AttachmentReference.OwnerId,
+        tx: DBWriteTransaction
+    ) throws{
+        // New reference should have the same root type, just a different id.
+        guard ownerReference.owner.id.raw == newOwner.raw else {
+            throw OWSAssertionError("Owner reference types don't match!")
+        }
+        fatalError("Unimplemented")
+    }
+
+    public func removeOwner(
+        _ owner: AttachmentReference.OwnerId,
+        for attachmentId: Attachment.IDType,
+        tx: DBWriteTransaction
+    ) {
+        fatalError("Unimplemented")
+    }
 }
 
 extension AttachmentStoreImpl: AttachmentUploadStore {
