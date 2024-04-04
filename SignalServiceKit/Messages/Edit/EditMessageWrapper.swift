@@ -22,7 +22,7 @@ public protocol EditMessageWrapper {
     var wasRead: Bool { get }
 
     func createMessageCopy(
-        dataStore: EditManager.Shims.DataStore,
+        dataStore: EditManagerImpl.Shims.DataStore,
         tsResourceStore: TSResourceStore,
         thread: TSThread,
         isLatestRevision: Bool,
@@ -31,7 +31,7 @@ public protocol EditMessageWrapper {
     ) -> MessageType
 
     func updateMessageCopy(
-        dataStore: EditManager.Shims.DataStore,
+        dataStore: EditManagerImpl.Shims.DataStore,
         tsResourceStore: TSResourceStore,
         newMessageCopy: MessageType,
         tx: DBWriteTransaction
@@ -82,7 +82,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
     }
 
     public func createMessageCopy(
-        dataStore: EditManager.Shims.DataStore,
+        dataStore: EditManagerImpl.Shims.DataStore,
         tsResourceStore: TSResourceStore,
         thread: TSThread,
         isLatestRevision: Bool,
@@ -134,7 +134,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
     }
 
     public func updateMessageCopy(
-        dataStore: EditManager.Shims.DataStore,
+        dataStore: EditManagerImpl.Shims.DataStore,
         tsResourceStore: TSResourceStore,
         newMessageCopy: TSIncomingMessage,
         tx: DBWriteTransaction
@@ -194,7 +194,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
     }
 
     public func createMessageCopy(
-        dataStore: EditManager.Shims.DataStore,
+        dataStore: EditManagerImpl.Shims.DataStore,
         tsResourceStore: TSResourceStore,
         thread: TSThread,
         isLatestRevision: Bool,
@@ -212,7 +212,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
     }
 
     public func updateMessageCopy(
-        dataStore: EditManager.Shims.DataStore,
+        dataStore: EditManagerImpl.Shims.DataStore,
         tsResourceStore: TSResourceStore,
         newMessageCopy: TSOutgoingMessage,
         tx: DBWriteTransaction

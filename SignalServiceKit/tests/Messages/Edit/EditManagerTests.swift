@@ -29,7 +29,7 @@ class EditManagerTests: SSKBaseTestSwift {
 
         let editMessage = createEditDataMessage { $0.setBody("FOO") }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
-        let editManager = EditManager(context:
+        let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
@@ -75,7 +75,7 @@ class EditManagerTests: SSKBaseTestSwift {
         }
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
-        let editManager = EditManager(context:
+        let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
@@ -109,7 +109,7 @@ class EditManagerTests: SSKBaseTestSwift {
 
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
-        let editManager = EditManager(context:
+        let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
@@ -142,7 +142,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
 
-        let editManager = EditManager(context:
+        let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
@@ -153,7 +153,7 @@ class EditManagerTests: SSKBaseTestSwift {
             )
         )
 
-        let expiredTS = targetMessage.receivedAtTimestamp + EditManager.Constants.editWindowMilliseconds + 1
+        let expiredTS = targetMessage.receivedAtTimestamp + EditManagerImpl.Constants.editWindowMilliseconds + 1
 
         db.write { tx in
             let result = editManager.processIncomingEditMessage(
@@ -179,7 +179,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
 
-        let editManager = EditManager(context:
+        let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
@@ -207,7 +207,7 @@ class EditManagerTests: SSKBaseTestSwift {
 
     func testEditSendWindowString() {
         let errorMessage = EditSendValidationError.editWindowClosed.localizedDescription
-        let editMilliseconds = EditManager.Constants.editSendWindowMilliseconds
+        let editMilliseconds = EditManagerImpl.Constants.editSendWindowMilliseconds
         XCTAssertEqual(editMilliseconds % UInt64(kHourInMs), 0)
         XCTAssert(errorMessage.range(of: " \(editMilliseconds / UInt64(kHourInMs)) ") != nil)
     }
@@ -298,7 +298,7 @@ class EditManagerTests: SSKBaseTestSwift {
 
     // MARK: - Test Mocks
 
-    private class EditManagerDataStoreMock: EditManager.Shims.DataStore {
+    private class EditManagerDataStoreMock: EditManagerImpl.Shims.DataStore {
         func createOutgoingEditMessage(
             thread: TSThread,
             targetMessageTimestamp: UInt64,
@@ -381,13 +381,13 @@ class EditManagerTests: SSKBaseTestSwift {
         ) throws {}
     }
 
-    private class GroupsMock: EditManager.Shims.Groups {
+    private class GroupsMock: EditManagerImpl.Shims.Groups {
         func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo? {
             return nil
         }
     }
 
-    private class ReceiptManagerMock: EditManager.Shims.ReceiptManager {
+    private class ReceiptManagerMock: EditManagerImpl.Shims.ReceiptManager {
         func messageWasRead(
             _ message: TSIncomingMessage,
             thread: TSThread,

@@ -260,13 +260,13 @@ public class AppSetup {
             sskPreferences: LinkPreviewManagerImpl.Wrappers.SSKPreferences()
         )
 
-        let editManager = EditManager(
+        let editManager = EditManagerImpl(
             context: .init(
-                dataStore: EditManager.Wrappers.DataStore(),
-                groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
+                dataStore: EditManagerImpl.Wrappers.DataStore(),
+                groupsShim: EditManagerImpl.Wrappers.Groups(groupsV2: groupsV2),
                 keyValueStoreFactory: keyValueStoreFactory,
                 linkPreviewManager: linkPreviewManager,
-                receiptManagerShim: EditManager.Wrappers.ReceiptManager(receiptManager: receiptManager),
+                receiptManagerShim: EditManagerImpl.Wrappers.ReceiptManager(receiptManager: receiptManager),
                 tsResourceStore: tsResourceStore
             )
         )

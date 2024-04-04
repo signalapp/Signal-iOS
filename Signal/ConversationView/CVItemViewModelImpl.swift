@@ -165,7 +165,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
 extension CVItemViewModelImpl {
 
     var canEditMessage: Bool {
-        return EditManager.canShowEditMenu(interaction: interaction, thread: thread)
+        return DependenciesBridge.shared.editManager.canShowEditMenu(interaction: interaction, thread: thread)
     }
 
     var canCopyOrShareOrSpeakText: Bool {

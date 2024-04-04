@@ -6,23 +6,23 @@
 import Foundation
 import LibSignalClient
 
-extension EditManager {
+extension EditManagerImpl {
     public enum Shims {
-        public typealias DataStore = _EditManager_DataStore
-        public typealias Groups = _EditManager_GroupsShim
-        public typealias ReceiptManager = _EditManager_ReceiptManagerShim
+        public typealias DataStore = _EditManagerImpl_DataStore
+        public typealias Groups = _EditManagerImpl_GroupsShim
+        public typealias ReceiptManager = _EditManagerImpl_ReceiptManagerShim
     }
 
     public enum Wrappers {
-        public typealias DataStore = _EditManager_DataStoreWrapper
-        public typealias Groups = _EditManager_GroupsWrapper
-        public typealias ReceiptManager = _EditManager_ReceiptManagerWrapper
+        public typealias DataStore = _EditManagerImpl_DataStoreWrapper
+        public typealias Groups = _EditManagerImpl_GroupsWrapper
+        public typealias ReceiptManager = _EditManagerImpl_ReceiptManagerWrapper
     }
 }
 
 // MARK: - EditManager.DataStore
 
-public protocol _EditManager_DataStore {
+public protocol _EditManagerImpl_DataStore {
 
     func createOutgoingMessage(
         with builder: TSOutgoingMessageBuilder,
@@ -90,7 +90,7 @@ public protocol _EditManager_DataStore {
     ) throws
 }
 
-public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
+public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore {
 
     public func createOutgoingEditMessage(
         thread: TSThread,
@@ -200,11 +200,11 @@ public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
 
 // MARK: - EditManager.Groups
 
-public protocol _EditManager_GroupsShim {
+public protocol _EditManagerImpl_GroupsShim {
     func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo?
 }
 
-public class _EditManager_GroupsWrapper: EditManager.Shims.Groups {
+public class _EditManagerImpl_GroupsWrapper: EditManagerImpl.Shims.Groups {
 
     private let groupsV2: GroupsV2
     public init(groupsV2: GroupsV2) { self.groupsV2 = groupsV2 }
@@ -215,7 +215,7 @@ public class _EditManager_GroupsWrapper: EditManager.Shims.Groups {
     }
 }
 
-public protocol _EditManager_ReceiptManagerShim {
+public protocol _EditManagerImpl_ReceiptManagerShim {
     func messageWasRead(
         _ message: TSIncomingMessage,
         thread: TSThread,
@@ -224,7 +224,7 @@ public protocol _EditManager_ReceiptManagerShim {
     )
 }
 
-public struct _EditManager_ReceiptManagerWrapper: EditManager.Shims.ReceiptManager {
+public struct _EditManagerImpl_ReceiptManagerWrapper: EditManagerImpl.Shims.ReceiptManager {
 
     private let receiptManager: OWSReceiptManager
     public init(receiptManager: OWSReceiptManager) {
