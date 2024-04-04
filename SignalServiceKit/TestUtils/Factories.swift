@@ -474,7 +474,7 @@ public class ConversationFactory: NSObject {
         databaseStorage.asyncWrite { asyncTransaction in
             let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
                 message,
-                unsavedBodyAttachments: attachmentInfos.map{ $0.asAttachmentDataSource() }
+                unsavedBodyMediaAttachments: attachmentInfos.map{ $0.asAttachmentDataSource() }
             )
             _ = try! unpreparedMessage.prepare(tx: asyncTransaction)
 

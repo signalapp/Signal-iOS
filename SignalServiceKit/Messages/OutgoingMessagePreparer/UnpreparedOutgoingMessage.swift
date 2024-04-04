@@ -16,7 +16,8 @@ public class UnpreparedOutgoingMessage {
 
     public static func forMessage(
         _ message: TSOutgoingMessage,
-        unsavedBodyAttachments: [TSResourceDataSource] = [],
+        unsavedBodyMediaAttachments: [TSResourceDataSource] = [],
+        oversizeTextDataSource: DataSource? = nil,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         messageStickerDraft: MessageStickerDraft? = nil,
@@ -27,16 +28,18 @@ public class UnpreparedOutgoingMessage {
             return .init(messageType: .editMessage(.init(
                 editedMessage: editMessage.editedMessage,
                 messageForSending: editMessage,
-                unsavedBodyAttachments: unsavedBodyAttachments,
+                unsavedBodyMediaAttachments: unsavedBodyMediaAttachments,
+                oversizeTextDataSource: oversizeTextDataSource,
                 linkPreviewDraft: linkPreviewDraft,
                 quotedReplyDraft: quotedReplyDraft
             )))
         } else if !message.shouldBeSaved {
             owsAssertDebug(
-                unsavedBodyAttachments.isEmpty
-                || linkPreviewDraft != nil
-                || quotedReplyDraft != nil
-                || messageStickerDraft != nil,
+                unsavedBodyMediaAttachments.isEmpty
+                && oversizeTextDataSource == nil
+                && linkPreviewDraft != nil
+                && quotedReplyDraft != nil
+                && messageStickerDraft != nil,
                 "Unknown unsaved message sent through saved path with attachments!"
             )
             Self.assertIsAllowedTransientMessage(message)
@@ -44,7 +47,8 @@ public class UnpreparedOutgoingMessage {
         } else {
             return .init(messageType: .persistable(.init(
                 message: message,
-                unsavedBodyAttachments: unsavedBodyAttachments,
+                unsavedBodyMediaAttachments: unsavedBodyMediaAttachments,
+                oversizeTextDataSource: oversizeTextDataSource,
                 linkPreviewDraft: linkPreviewDraft,
                 quotedReplyDraft: quotedReplyDraft,
                 messageStickerDraft: messageStickerDraft,
@@ -119,7 +123,8 @@ public class UnpreparedOutgoingMessage {
 
         struct Persistable {
             let message: TSOutgoingMessage
-            let unsavedBodyAttachments: [TSResourceDataSource]
+            let unsavedBodyMediaAttachments: [TSResourceDataSource]
+            let oversizeTextDataSource: DataSource?
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
             let messageStickerDraft: MessageStickerDraft?
@@ -129,7 +134,8 @@ public class UnpreparedOutgoingMessage {
         struct EditMessage {
             let editedMessage: TSOutgoingMessage
             let messageForSending: OutgoingEditMessage
-            let unsavedBodyAttachments: [TSResourceDataSource]
+            let unsavedBodyMediaAttachments: [TSResourceDataSource]
+            let oversizeTextDataSource: DataSource?
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
         }
@@ -210,7 +216,8 @@ public class UnpreparedOutgoingMessage {
 
         let thread: TSThread?
         let attachmentOwnerMessage: TSOutgoingMessage
-        let unsavedBodyAttachments: [TSResourceDataSource]
+        let unsavedBodyMediaAttachments: [TSResourceDataSource]
+        let oversizeTextDataSource: DataSource?
         let linkPreviewDraft: OWSLinkPreviewDraft?
         let quotedReplyDraft: DraftQuotedReplyModel?
         let messageStickerDraft: MessageStickerDraft?
@@ -220,7 +227,8 @@ public class UnpreparedOutgoingMessage {
         case .persistable(let persistable):
             thread = persistable.message.thread(tx: tx)
             attachmentOwnerMessage = persistable.message
-            unsavedBodyAttachments = persistable.unsavedBodyAttachments
+            unsavedBodyMediaAttachments = persistable.unsavedBodyMediaAttachments
+            oversizeTextDataSource = persistable.oversizeTextDataSource
             linkPreviewDraft = persistable.linkPreviewDraft
             quotedReplyDraft = persistable.quotedReplyDraft
             messageStickerDraft = persistable.messageStickerDraft
@@ -228,7 +236,8 @@ public class UnpreparedOutgoingMessage {
         case .editMessage(let editMessage):
             thread = editMessage.editedMessage.thread(tx: tx)
             attachmentOwnerMessage = editMessage.editedMessage
-            unsavedBodyAttachments = editMessage.unsavedBodyAttachments
+            unsavedBodyMediaAttachments = editMessage.unsavedBodyMediaAttachments
+            oversizeTextDataSource = editMessage.oversizeTextDataSource
             linkPreviewDraft = editMessage.linkPreviewDraft
             quotedReplyDraft = editMessage.quotedReplyDraft
             // Note: no sticker because you can't edit sticker messages
@@ -301,9 +310,20 @@ public class UnpreparedOutgoingMessage {
             }
         }()
 
-        if unsavedBodyAttachments.count > 0 {
+        var attachments = unsavedBodyMediaAttachments
+        if let oversizeTextDataSource {
+            let wrappedDataSource = TSResourceDataSource.from(
+                dataSource: oversizeTextDataSource,
+                mimeType: OWSMimeTypeOversizeTextMessage,
+                caption: nil,
+                renderingFlag: .default
+            )
+            // oversize text always goes first.
+            attachments.insert(wrappedDataSource, at: 0)
+        }
+        if attachments.count > 0 {
             try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentStreams(
-                consuming: unsavedBodyAttachments,
+                consuming: attachments,
                 message: attachmentOwnerMessage,
                 tx: tx.asV2Write
             )

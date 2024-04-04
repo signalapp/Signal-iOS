@@ -122,18 +122,16 @@ extension UnpreparedOutgoingMessage {
         transaction: SDSAnyReadTransaction
     ) -> UnpreparedOutgoingMessage {
 
-        var attachments = mediaAttachments
-        let (truncatedBody, oversizeTextAttachment) = handleOversizeText(messageBody: messageBody)
-        if let oversizeTextAttachment {
-            attachments.insert(oversizeTextAttachment, at: 0)
-        }
+        let (truncatedBody, oversizeTextDataSource) = handleOversizeText(messageBody: messageBody)
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
 
-        assert(attachments.allSatisfy { !$0.hasError && !$0.mimeType.isEmpty })
+        assert(mediaAttachments.allSatisfy { !$0.hasError && !$0.mimeType.isEmpty })
 
-        let isVoiceMessage = attachments.count == 1 && attachments.last?.isVoiceMessage == true
+        let isVoiceMessage = mediaAttachments.count == 1
+            && oversizeTextDataSource == nil
+            && mediaAttachments.last?.isVoiceMessage == true
 
         var isViewOnceMessage = false
         for attachment in mediaAttachments {
@@ -160,11 +158,12 @@ extension UnpreparedOutgoingMessage {
 
         let message = messageBuilder.build(transaction: transaction)
 
-        let attachmentInfos = attachments.map { $0.buildAttachmentDataSource(message: message) }
+        let attachmentInfos = mediaAttachments.map { $0.buildAttachmentDataSource(message: message) }
 
         let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
             message,
-            unsavedBodyAttachments: attachmentInfos,
+            unsavedBodyMediaAttachments: attachmentInfos,
+            oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDraft,
             quotedReplyDraft: quotedReplyDraft
         )
@@ -180,7 +179,7 @@ extension UnpreparedOutgoingMessage {
         transaction: SDSAnyReadTransaction
     ) -> UnpreparedOutgoingMessage {
 
-        let (truncatedBody, oversizeTextAttachment) = handleOversizeText(messageBody: messageBody)
+        let (truncatedBody, oversizeTextDataSource) = handleOversizeText(messageBody: messageBody)
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
@@ -198,11 +197,10 @@ extension UnpreparedOutgoingMessage {
             tx: transaction.asV2Read
         )
 
-        let attachmentInfos = [oversizeTextAttachment].compacted().map { $0.buildAttachmentDataSource(message: message) }
-
         let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
             message,
-            unsavedBodyAttachments: attachmentInfos,
+            unsavedBodyMediaAttachments: [],
+            oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDraft,
             quotedReplyDraft: quotedReplyDraft
         )
@@ -211,7 +209,7 @@ extension UnpreparedOutgoingMessage {
 
     private static func handleOversizeText(
         messageBody: MessageBody?
-    ) -> (MessageBody?, SignalAttachment?) {
+    ) -> (MessageBody?, DataSource?) {
         guard let messageBody, !messageBody.text.isEmpty else {
             return (nil, nil)
         }
@@ -221,9 +219,7 @@ extension UnpreparedOutgoingMessage {
             let truncatedBody = truncatedText.map { MessageBody(text: $0, ranges: bodyRanges) }
 
             if let dataSource = DataSourceValue.dataSource(withOversizeText: messageBody.text) {
-                let attachment = SignalAttachment.attachment(dataSource: dataSource,
-                                                             dataUTI: kOversizeTextAttachmentUTI)
-                return (truncatedBody, attachment)
+                return (truncatedBody, dataSource)
             } else {
                 owsFailDebug("dataSource was unexpectedly nil")
                 return (truncatedBody, nil)
