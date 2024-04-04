@@ -71,9 +71,9 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             }
             message = newMessage
 
-            let edits = try EditMessageFinder.findEditHistory(
+            let edits = try DependenciesBridge.shared.editMessageStore.findEditHistory(
                 for: message,
-                transaction: tx
+                tx: tx.asV2Read
             ).compactMap { $1 }
 
             guard let thread = TSThread.anyFetch(

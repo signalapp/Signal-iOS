@@ -309,9 +309,9 @@ extension ConversationViewController {
                 // If this is an older edit revision, find the current
                 // edit and use that uniqueId instead of the old one.
                 let currentEdit = databaseStorage.read { transaction in
-                    EditMessageFinder.findMessage(
+                    DependenciesBridge.shared.editMessageStore.findMessage(
                         fromEdit: quotedMessage,
-                        transaction: transaction
+                        tx: transaction.asV2Read
                     )
                 }
                 if let currentEdit {

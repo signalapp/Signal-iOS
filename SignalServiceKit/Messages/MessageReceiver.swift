@@ -1566,10 +1566,10 @@ public final class MessageReceiver: Dependencies {
         // Find the target message to edit. If missing,
         // return and enqueue the message to be handled as early delivery
         guard
-            let targetMessage = EditMessageFinder.editTarget(
+            let targetMessage = DependenciesBridge.shared.editMessageStore.editTarget(
                 timestamp: editMessage.targetSentTimestamp,
                 authorAci: nil,
-                transaction: tx
+                tx: tx.asV2Read
             )
         else {
             Logger.warn("Edit cannot find the target message")
@@ -1617,10 +1617,10 @@ public final class MessageReceiver: Dependencies {
 
         // Find the target message to edit. If missing,
         // return and enqueue the message to be handled as early delivery
-        guard let targetMessage = EditMessageFinder.editTarget(
+        guard let targetMessage = DependenciesBridge.shared.editMessageStore.editTarget(
             timestamp: editMessage.targetSentTimestamp,
             authorAci: decryptedEnvelope.sourceAci,
-            transaction: tx
+            tx: tx.asV2Read
         ) else {
             Logger.warn("Edit cannot find the target message")
             return .editedMessageMissing

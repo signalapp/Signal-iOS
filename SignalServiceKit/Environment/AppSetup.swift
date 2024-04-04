@@ -260,9 +260,11 @@ public class AppSetup {
             sskPreferences: LinkPreviewManagerImpl.Wrappers.SSKPreferences()
         )
 
+        let editMessageStore = EditMessageStoreImpl()
         let editManager = EditManagerImpl(
             context: .init(
                 dataStore: EditManagerImpl.Wrappers.DataStore(),
+                editMessageStore: editMessageStore,
                 groupsShim: EditManagerImpl.Wrappers.Groups(groupsV2: groupsV2),
                 keyValueStoreFactory: keyValueStoreFactory,
                 linkPreviewManager: linkPreviewManager,
@@ -716,6 +718,7 @@ public class AppSetup {
             deviceManager: deviceManager,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             editManager: editManager,
+            editMessageStore: editMessageStore,
             externalPendingIDEALDonationStore: externalPendingIDEALDonationStore,
             groupCallRecordManager: groupCallRecordManager,
             groupMemberStore: groupMemberStore,

@@ -208,7 +208,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
         updateBlock?(builder)
 
-        return dataStore.createOutgoingMessage(with: builder, tx: tx)
+        return dataStore.build(builder, tx: tx)
     }
 
     public func updateMessageCopy(
@@ -219,6 +219,10 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
     ) {
         // Need to copy over the recipient address from the old message
         // This is needed when procesing sync messages.
-        dataStore.copyRecipients(from: message, to: newMessageCopy, tx: tx)
+        dataStore.update(
+            newMessageCopy,
+            withRecipientAddressStates: message.recipientAddressStates,
+            tx: tx
+        )
     }
 }

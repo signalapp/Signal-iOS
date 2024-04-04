@@ -149,9 +149,9 @@ public class ReactionManager: NSObject {
             if message.editState == .pastRevision {
                 // Reaction targeted an old edit revision, fetch the latest
                 // version to ensure the reaction shows up properly.
-                if let latestEdit = EditMessageFinder.findMessage(
+                if let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
                     fromEdit: message,
-                    transaction: transaction) {
+                    tx: transaction.asV2Read) {
                     message = latestEdit
                 } else {
                     Logger.info("Ignoring reaction for missing edit target.")

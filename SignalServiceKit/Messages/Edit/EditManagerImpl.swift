@@ -36,6 +36,7 @@ public class EditManagerImpl: EditManager {
 
     public struct Context {
         let dataStore: EditManagerImpl.Shims.DataStore
+        let editMessageStore: EditMessageStore
         let groupsShim: EditManagerImpl.Shims.Groups
         let keyValueStoreFactory: KeyValueStoreFactory
         let linkPreviewManager: LinkPreviewManager
@@ -44,6 +45,7 @@ public class EditManagerImpl: EditManager {
 
         public init(
             dataStore: EditManagerImpl.Shims.DataStore,
+            editMessageStore: EditMessageStore,
             groupsShim: EditManagerImpl.Shims.Groups,
             keyValueStoreFactory: KeyValueStoreFactory,
             linkPreviewManager: LinkPreviewManager,
@@ -51,6 +53,7 @@ public class EditManagerImpl: EditManager {
             tsResourceStore: TSResourceStore
         ) {
             self.dataStore = dataStore
+            self.editMessageStore = editMessageStore
             self.groupsShim = groupsShim
             self.keyValueStoreFactory = keyValueStoreFactory
             self.linkPreviewManager = linkPreviewManager
@@ -186,7 +189,7 @@ public class EditManagerImpl: EditManager {
         thread: TSThread,
         tx: DBReadTransaction
     ) -> EditSendValidationError? {
-        guard let editTarget = context.dataStore.findEditTarget(
+        guard let editTarget = context.editMessageStore.editTarget(
             timestamp: targetMessageTimestamp,
             authorAci: nil,
             tx: tx
@@ -205,7 +208,7 @@ public class EditManagerImpl: EditManager {
             return error
         }
 
-        let numberOfEdits = context.dataStore.numberOfEdits(for: targetMessage, tx: tx)
+        let numberOfEdits = context.editMessageStore.numberOfEdits(for: targetMessage, tx: tx)
         if !thread.isNoteToSelf && numberOfEdits >= Constants.maxSendEdits {
             return .tooManyEdits(Constants.maxSendEdits)
         }
@@ -278,7 +281,7 @@ public class EditManagerImpl: EditManager {
         thread: TSThread,
         tx: DBWriteTransaction
     ) {
-        guard let editTarget = context.dataStore.findEditTarget(
+        guard let editTarget = context.editMessageStore.editTarget(
             timestamp: outgoingEditMessage.targetMessageTimestamp,
             authorAci: nil,
             tx: tx
@@ -306,7 +309,7 @@ public class EditManagerImpl: EditManager {
         tx: DBWriteTransaction
     ) {
         // Update the exiting message with edited fields
-        context.dataStore.updateEditedMessage(message: editedMessage, tx: tx)
+        context.dataStore.overwritingUpdate(editedMessage, tx: tx)
 
         // Create a new copy of the original message
         let newMessage = editTarget.createMessageCopy(
@@ -319,7 +322,7 @@ public class EditManagerImpl: EditManager {
         )
 
         // Insert a new copy of the original message to preserve edit history.
-        context.dataStore.insertMessageCopy(message: newMessage, tx: tx)
+        context.dataStore.insert(newMessage, tx: tx)
 
         // Update the newly inserted message with any data that needs to be
         // copied from the original message
@@ -339,7 +342,7 @@ public class EditManagerImpl: EditManager {
                 pastRevisionId: editId,
                 read: editTarget.wasRead
             )
-            context.dataStore.insertEditRecord(record: editRecord, tx: tx)
+            context.editMessageStore.insert(editRecord, tx: tx)
         } else {
             owsFailDebug("Missing EditRecord IDs")
         }
@@ -418,7 +421,7 @@ public class EditManagerImpl: EditManager {
             break
         }
 
-        let numberOfEdits = context.dataStore.numberOfEdits(for: targetMessage, tx: tx)
+        let numberOfEdits = context.editMessageStore.numberOfEdits(for: targetMessage, tx: tx)
         if numberOfEdits >= Constants.maxReceiveEdits {
             Logger.warn("Message edited too many times")
             return false
@@ -451,7 +454,7 @@ public class EditManagerImpl: EditManager {
         // Voice memos only ever have one attachment; only need to check the first.
         if
             let firstAttachment = currentAttachments.first,
-            context.dataStore.getIsVoiceMessage(forAttachment: firstAttachment, on: targetMessage, tx: tx)
+            context.dataStore.isVoiceMessageAttachment(firstAttachment, inContainingMessage: targetMessage, tx: tx)
         {
             // This will bail if it finds a voice memo
             // Might be able to handle image attachemnts, but fail for now.
@@ -531,7 +534,7 @@ public class EditManagerImpl: EditManager {
         thread: TSThread,
         tx: DBWriteTransaction
     ) throws {
-        try context.dataStore
+        try context.editMessageStore
             .findEditHistory(for: edit, tx: tx)
             .lazy
             .filter { item in
@@ -542,7 +545,7 @@ public class EditManagerImpl: EditManager {
                 var record: EditRecord = item.0
 
                 record.read = true
-                try self.context.dataStore.update(editRecord: record, tx: tx)
+                try self.context.editMessageStore.update(record, tx: tx)
 
                 self.context.receiptManagerShim.messageWasRead(
                     message,

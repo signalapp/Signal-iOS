@@ -29,9 +29,11 @@ class EditManagerTests: SSKBaseTestSwift {
 
         let editMessage = createEditDataMessage { $0.setBody("FOO") }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
+        let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
+                editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
@@ -75,9 +77,11 @@ class EditManagerTests: SSKBaseTestSwift {
         }
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
+        let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
+                editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
@@ -109,9 +113,11 @@ class EditManagerTests: SSKBaseTestSwift {
 
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
+        let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
+                editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
@@ -141,10 +147,12 @@ class EditManagerTests: SSKBaseTestSwift {
         }
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
+        let editMessageStoreMock = EditMessageStoreMock()
 
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
+                editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
@@ -178,10 +186,12 @@ class EditManagerTests: SSKBaseTestSwift {
         }
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
+        let editMessageStoreMock = EditMessageStoreMock()
 
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
+                editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
@@ -308,55 +318,43 @@ class EditManagerTests: SSKBaseTestSwift {
             return try! OutgoingEditMessage(dictionary: [:])
         }
 
-        func findEditTarget(
-            timestamp: UInt64,
-            authorAci: Aci?,
+        func build(
+            _ builder: TSOutgoingMessageBuilder,
             tx: DBReadTransaction
-        ) -> EditMessageTarget? {
-            return nil
+        ) -> TSOutgoingMessage {
+            return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
         }
 
-        func createOutgoingMessage(
-            with builder: TSOutgoingMessageBuilder,
-            tx: DBReadTransaction) -> TSOutgoingMessage {
-                return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
-        }
-
-        func copyRecipients(
-            from source: TSOutgoingMessage,
-            to target: TSOutgoingMessage,
-            tx: DBWriteTransaction) {
-        }
+        func update(
+            _ message: TSOutgoingMessage,
+            withRecipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?,
+            tx: DBWriteTransaction
+        ) {}
 
         let targetMessage: TSMessage?
         var editMessageCopy: TSMessage?
         var oldMessageCopy: TSMessage?
-        var editRecord: EditRecord?
         var attachment: TSAttachment?
 
         init(targetMessage: TSMessage?) {
             self.targetMessage = targetMessage
         }
 
-        func getIsVoiceMessage(
-            forAttachment attachment: TSAttachment,
-            on message: TSMessage,
+        func isVoiceMessageAttachment(
+            _ attachment: TSAttachment,
+            inContainingMessage message: TSMessage,
             tx: DBReadTransaction
         ) -> Bool {
             return false
         }
 
-        func insertMessageCopy(message: TSMessage, tx: DBWriteTransaction) {
+        func insert(_ message: TSMessage, tx: DBWriteTransaction) {
             oldMessageCopy = message
             message.replaceRowId(2, uniqueId: message.uniqueId)
         }
 
-        func updateEditedMessage(message: TSMessage, tx: DBWriteTransaction) {
+        func overwritingUpdate(_ message: TSMessage, tx: DBWriteTransaction) {
             editMessageCopy = message
-        }
-
-        func insertEditRecord(record: EditRecord, tx: DBWriteTransaction) {
-            editRecord = record
         }
 
         func insertAttachment(
@@ -365,8 +363,30 @@ class EditManagerTests: SSKBaseTestSwift {
         ) {
             self.attachment = attachment
         }
+    }
 
-        func numberOfEdits(for message: TSMessage, tx: DBReadTransaction) -> Int { 1 }
+    private class EditMessageStoreMock: EditMessageStore {
+        func editTarget(
+            timestamp: UInt64,
+            authorAci: Aci?,
+            tx: DBReadTransaction
+        ) -> EditMessageTarget? {
+            return nil
+        }
+
+        func findMessage(
+            fromEdit edit: TSMessage,
+            tx: DBReadTransaction
+        ) -> TSMessage? {
+            nil
+        }
+
+        func numberOfEdits(
+            for message: TSMessage,
+            tx: DBReadTransaction
+        ) -> Int {
+            return 1
+        }
 
         func findEditHistory(
             for message: TSMessage,
@@ -375,10 +395,21 @@ class EditManagerTests: SSKBaseTestSwift {
             return []
         }
 
-        func update(
-            editRecord: EditRecord,
-            tx: DBWriteTransaction
-        ) throws {}
+        func findEditDeleteRecords(
+            for message: TSMessage,
+            tx: DBReadTransaction
+        ) throws -> [(EditRecord, TSMessage?)] {
+            return []
+        }
+
+        var editRecord: EditRecord?
+
+        func insert(_ editRecord: EditRecord, tx: DBWriteTransaction) {
+            self.editRecord = editRecord
+        }
+
+        func update(_ editRecord: EditRecord, tx: DBWriteTransaction) throws {}
+
     }
 
     private class GroupsMock: EditManagerImpl.Shims.Groups {

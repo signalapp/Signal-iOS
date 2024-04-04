@@ -306,9 +306,9 @@ public extension TSMessage {
         transaction: SDSAnyWriteTransaction,
         block: ((EditRecord, TSMessage?) throws -> Void)
     ) throws {
-        let editsToProcess = try EditMessageFinder.findEditDeleteRecords(
+        let editsToProcess = try DependenciesBridge.shared.editMessageStore.findEditDeleteRecords(
             for: self,
-            transaction: transaction
+            tx: transaction.asV2Read
         )
         for edit in editsToProcess {
             try block(edit.0, edit.1)
@@ -368,9 +368,9 @@ public extension TSMessage {
                     // swap out the target message for the latest (or return an error)
                     // This avoids cases where older edits could be deleted and
                     // leave newer revisions
-                    if let latestEdit = EditMessageFinder.findMessage(
+                    if let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
                         fromEdit: incomingMessageToDelete,
-                        transaction: transaction) as? TSIncomingMessage {
+                        tx: transaction.asV2Read) as? TSIncomingMessage {
                         incomingMessageToDelete = latestEdit
                     } else {
                         Logger.info("Ignoring delete for missing edit target.")

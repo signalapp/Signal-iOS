@@ -24,8 +24,8 @@ extension EditManagerImpl {
 
 public protocol _EditManagerImpl_DataStore {
 
-    func createOutgoingMessage(
-        with builder: TSOutgoingMessageBuilder,
+    func build(
+        _ builder: TSOutgoingMessageBuilder,
         tx: DBReadTransaction
     ) -> TSOutgoingMessage
 
@@ -36,58 +36,33 @@ public protocol _EditManagerImpl_DataStore {
         tx: DBReadTransaction
     ) -> OutgoingEditMessage
 
-    func copyRecipients(
-        from source: TSOutgoingMessage,
-        to target: TSOutgoingMessage,
+    func update(
+        _ message: TSOutgoingMessage,
+        withRecipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?,
         tx: DBWriteTransaction
     )
 
-    func getIsVoiceMessage(
-        forAttachment attachment: TSAttachment,
-        on message: TSMessage,
+    func isVoiceMessageAttachment(
+        _ attachment: TSAttachment,
+        inContainingMessage message: TSMessage,
         tx: DBReadTransaction
     ) -> Bool
 
-    func insertMessageCopy(
-        message: TSMessage,
+    func insert(
+        _ message: TSMessage,
         tx: DBWriteTransaction
     )
 
-    func updateEditedMessage(
-        message: TSMessage,
+    func overwritingUpdate(
+        _ message: TSMessage,
         tx: DBWriteTransaction
     )
 
-    func insertEditRecord(
-        record: EditRecord,
-        tx: DBWriteTransaction
-    )
-
+    // TODO: remove this
     func insertAttachment(
         attachment: TSAttachmentPointer,
         tx: DBWriteTransaction
     )
-
-    func numberOfEdits(
-        for message: TSMessage,
-        tx: DBReadTransaction
-    ) -> Int
-
-    func findEditTarget(
-        timestamp: UInt64,
-        authorAci: Aci?,
-        tx: DBReadTransaction
-    ) -> EditMessageTarget?
-
-    func findEditHistory(
-        for message: TSMessage,
-        tx: DBReadTransaction
-    ) throws -> [(EditRecord, TSMessage?)]
-
-    func update(
-        editRecord: EditRecord,
-        tx: DBWriteTransaction
-    ) throws
 }
 
 public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore {
@@ -106,55 +81,44 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
         )
     }
 
-    public func createOutgoingMessage(
-        with builder: TSOutgoingMessageBuilder,
+    public func build(
+        _ builder: TSOutgoingMessageBuilder,
         tx: DBReadTransaction
     ) -> TSOutgoingMessage {
         return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func copyRecipients(
-        from source: TSOutgoingMessage,
-        to target: TSOutgoingMessage,
+    public func update(
+        _ message: TSOutgoingMessage,
+        withRecipientAddressStates recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?,
         tx: DBWriteTransaction
     ) {
-        target.updateWith(
-            recipientAddressStates: source.recipientAddressStates,
+        message.updateWith(
+            recipientAddressStates: recipientAddressStates,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
 
-    public func getIsVoiceMessage(
-        forAttachment attachment: TSAttachment,
-        on message: TSMessage,
+    public func isVoiceMessageAttachment(
+        _ attachment: TSAttachment,
+        inContainingMessage message: TSMessage,
         tx: DBReadTransaction
     ) -> Bool {
         attachment.isVoiceMessage(inContainingMessage: message, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func insertMessageCopy(
-        message: TSMessage,
+    public func insert(
+        _ message: TSMessage,
         tx: DBWriteTransaction
     ) {
         message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func updateEditedMessage(
-        message: TSMessage,
+    public func overwritingUpdate(
+        _ message: TSMessage,
         tx: DBWriteTransaction
     ) {
         message.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func insertEditRecord(
-        record: EditRecord,
-        tx: DBWriteTransaction
-    ) {
-        do {
-            try record.insert(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
-        } catch {
-            owsFailDebug("Unexpected edit record insertion error \(error)")
-        }
     }
 
     public func insertAttachment(
@@ -162,39 +126,6 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
         tx: DBWriteTransaction
     ) {
         attachment.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func numberOfEdits(for message: TSMessage, tx: DBReadTransaction) -> Int {
-        return EditMessageFinder.numberOfEdits(for: message, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func findEditTarget(
-        timestamp: UInt64,
-        authorAci: Aci?,
-        tx: DBReadTransaction
-    ) -> EditMessageTarget? {
-        return EditMessageFinder.editTarget(
-            timestamp: timestamp,
-            authorAci: authorAci,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func findEditHistory(
-        for message: TSMessage,
-        tx: DBReadTransaction
-    ) throws -> [(EditRecord, TSMessage?)] {
-        return try EditMessageFinder.findEditHistory(
-            for: message,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func update(
-        editRecord: EditRecord,
-        tx: DBWriteTransaction
-    ) throws {
-        try editRecord.update(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
     }
 }
 
@@ -214,6 +145,8 @@ public class _EditManagerImpl_GroupsWrapper: EditManagerImpl.Shims.Groups {
         return try? groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
     }
 }
+
+// MARK: - OWSReceiptManager
 
 public protocol _EditManagerImpl_ReceiptManagerShim {
     func messageWasRead(

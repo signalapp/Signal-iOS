@@ -21,12 +21,63 @@ public enum EditMessageTarget {
     }
 }
 
-public class EditMessageFinder {
-    public static func editTarget(
+public protocol EditMessageStore {
+
+    // MARK: - Reads
+
+    func editTarget(
         timestamp: UInt64,
         authorAci: Aci?,
-        transaction: SDSAnyReadTransaction
+        tx: DBReadTransaction
+    ) -> EditMessageTarget?
+
+    func findMessage(
+        fromEdit edit: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSMessage?
+
+    func numberOfEdits(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) -> Int
+
+    func findEditHistory(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> [(EditRecord, TSMessage?)]
+
+    /// This method is similar to findEditHistory, but will find records and interactions where the
+    /// passed in message is _either_ the latest edit, or a past revision.  This is useful when
+    /// deleting a message, since the record needs to be removed regardles of the type of edit
+    func findEditDeleteRecords(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> [(EditRecord, TSMessage?)]
+
+    // MARK: - Writes
+
+    func insert(
+        _ editRecord: EditRecord,
+        tx: DBWriteTransaction
+    )
+
+    func update(
+        _ editRecord: EditRecord,
+        tx: DBWriteTransaction
+    ) throws
+}
+
+public class EditMessageStoreImpl: EditMessageStore {
+
+    public init() {}
+
+    public func editTarget(
+        timestamp: UInt64,
+        authorAci: Aci?,
+        tx: DBReadTransaction
     ) -> EditMessageTarget? {
+        let transaction = SDSDB.shimOnlyBridge(tx)
+
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
@@ -55,10 +106,11 @@ public class EditMessageFinder {
         }
     }
 
-    public class func findMessage(
+    public func findMessage(
         fromEdit edit: TSMessage,
-        transaction: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> TSMessage? {
+        let transaction = SDSDB.shimOnlyBridge(tx)
 
         let sql = """
                 SELECT * FROM \(InteractionRecord.databaseTableName) AS interaction
@@ -76,10 +128,11 @@ public class EditMessageFinder {
         ) as? TSMessage
     }
 
-    public static func numberOfEdits(
+    public func numberOfEdits(
         for message: TSMessage,
-        transaction: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Int {
+        let transaction = SDSDB.shimOnlyBridge(tx)
 
         let sql = """
                 SELECT COUNT(*)
@@ -104,10 +157,11 @@ public class EditMessageFinder {
         }
     }
 
-    public class func findEditHistory(
+    public func findEditHistory(
         for message: TSMessage,
-        transaction: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [(EditRecord, TSMessage?)] {
+        let transaction = SDSDB.shimOnlyBridge(tx)
 
         let recordSQL = """
             SELECT * FROM \(EditRecord.databaseTableName)
@@ -139,10 +193,11 @@ public class EditMessageFinder {
     /// This method is similar to findEditHistory, but will find records and interactions where the
     /// passed in message is _either_ the latest edit, or a past revision.  This is useful when
     /// deleting a message, since the record needs to be removed regardles of the type of edit
-    public class func findEditDeleteRecords(
+    public func findEditDeleteRecords(
         for message: TSMessage,
-        transaction: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [(EditRecord, TSMessage?)] {
+        let transaction = SDSDB.shimOnlyBridge(tx)
 
         let recordSQL = """
             SELECT * FROM \(EditRecord.databaseTableName)
@@ -172,4 +227,21 @@ public class EditMessageFinder {
         }
     }
 
+    public func insert(
+        _ editRecord: EditRecord,
+        tx: DBWriteTransaction
+    ) {
+        do {
+            try editRecord.insert(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
+        } catch {
+            owsFailDebug("Unexpected edit record insertion error \(error)")
+        }
+    }
+
+    public func update(
+        _ editRecord: EditRecord,
+        tx: DBWriteTransaction
+    ) throws {
+        try editRecord.update(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
+    }
 }

@@ -58,6 +58,7 @@ public class DependenciesBridge {
     public let deviceManager: OWSDeviceManager
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     public let editManager: EditManager
+    public let editMessageStore: EditMessageStore
     public let externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore
     public let groupCallRecordManager: GroupCallRecordManager
     public let groupMemberStore: GroupMemberStore
@@ -139,6 +140,7 @@ public class DependenciesBridge {
         deviceManager: OWSDeviceManager,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         editManager: EditManager,
+        editMessageStore: EditMessageStore,
         externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore,
         groupCallRecordManager: GroupCallRecordManager,
         groupMemberStore: GroupMemberStore,
@@ -217,6 +219,7 @@ public class DependenciesBridge {
         self.deviceManager = deviceManager
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.editManager = editManager
+        self.editMessageStore = editMessageStore
         self.externalPendingIDEALDonationStore = externalPendingIDEALDonationStore
         self.groupCallRecordManager = groupCallRecordManager
         self.groupMemberStore = groupMemberStore
