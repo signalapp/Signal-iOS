@@ -39,7 +39,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         tryToSendTextMessage(messageBody, updateKeyboardState: true)
     }
 
-    public func messageWasSent(_ message: TSOutgoingMessage) {
+    public func messageWasSent() {
         AssertIsOnMainThread()
 
         if DebugFlags.internalLogging {
@@ -152,7 +152,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
-        let message = Self.databaseStorage.read { transaction in
+        Self.databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(
                 body: messageBody,
                 thread: self.thread,
@@ -167,9 +167,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             )
         }
 
-        // TODO: Audit optimistic insertion.
-        loadCoordinator.appendUnsavedOutgoingTextMessage(message)
-        messageWasSent(message)
+        messageWasSent()
 
         // Clearing the text message is a key part of the send animation.
         // It takes 10-15ms, but we do it inline rather than dispatch async
@@ -204,7 +202,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         ImpactHapticFeedback.impactOccurred(style: .light)
 
         let message = ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
-        messageWasSent(message)
+        messageWasSent()
     }
 
     public func presentManageStickersView() {
@@ -436,7 +434,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
             let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
-            let message = Self.databaseStorage.read { transaction in
+            Self.databaseStorage.read { transaction in
                 ThreadUtil.enqueueMessage(
                     body: messageBody,
                     mediaAttachments: attachments,
@@ -451,7 +449,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 )
             }
 
-            self.messageWasSent(message)
+            self.messageWasSent()
 
             if didAddToProfileWhitelist {
                 self.ensureBannerState()
@@ -731,7 +729,7 @@ extension ConversationViewController: LocationPickerDelegate {
 
             let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
-            let message = Self.databaseStorage.read { transaction in
+            Self.databaseStorage.read { transaction in
                 ThreadUtil.enqueueMessage(body: MessageBody(text: location.messageText,
                                                             ranges: .empty),
                                           mediaAttachments: [ attachment ],
@@ -743,7 +741,7 @@ extension ConversationViewController: LocationPickerDelegate {
                                           transaction: transaction)
             }
 
-            self.messageWasSent(message)
+            self.messageWasSent()
 
             if didAddToProfileWhitelist {
                 self.ensureBannerState()

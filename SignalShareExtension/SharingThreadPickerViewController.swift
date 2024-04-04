@@ -222,7 +222,7 @@ extension SharingThreadPickerViewController {
             let nonStorySendPromise = sendToOutgoingMessageThreads { thread in
                 return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                     return self.databaseStorage.write { transaction in
-                        let (_, unpreparedMessage) = UnpreparedOutgoingMessage.build(
+                        let unpreparedMessage = UnpreparedOutgoingMessage.build(
                             thread: thread,
                             messageBody: body,
                             quotedReplyDraft: nil,

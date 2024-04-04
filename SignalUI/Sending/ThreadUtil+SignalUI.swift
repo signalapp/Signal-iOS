@@ -9,7 +9,6 @@ import SignalServiceKit
 public extension ThreadUtil {
     // MARK: - Durable Message Enqueue
 
-    @discardableResult
     class func enqueueMessage(
         body messageBody: MessageBody?,
         mediaAttachments: [SignalAttachment] = [],
@@ -19,10 +18,10 @@ public extension ThreadUtil {
         editTarget: TSOutgoingMessage? = nil,
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
         transaction readTransaction: SDSAnyReadTransaction
-    ) -> TSOutgoingMessage {
+    ) {
         AssertIsOnMainThread()
 
-        let (message, unpreparedMessage) = UnpreparedOutgoingMessage.build(
+        let unpreparedMessage = UnpreparedOutgoingMessage.build(
             thread: thread,
             messageBody: messageBody,
             mediaAttachments: mediaAttachments,
@@ -38,7 +37,6 @@ public extension ThreadUtil {
             persistenceCompletionHandler: persistenceCompletion,
             transaction: readTransaction
         )
-        return message
     }
 
     // MARK: - Durable Message Enqueue
@@ -97,7 +95,7 @@ extension UnpreparedOutgoingMessage {
         linkPreviewDraft: OWSLinkPreviewDraft?,
         editTarget: TSOutgoingMessage?,
         transaction: SDSAnyReadTransaction
-    ) -> (TSOutgoingMessage, UnpreparedOutgoingMessage) {
+    ) -> UnpreparedOutgoingMessage {
 
         var attachments = mediaAttachments
         let truncatedText: String?
@@ -180,6 +178,6 @@ extension UnpreparedOutgoingMessage {
             linkPreviewDraft: linkPreviewDraft,
             quotedReplyDraft: quotedReplyDraft
         )
-        return (message, unpreparedMessage)
+        return unpreparedMessage
     }
 }

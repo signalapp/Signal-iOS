@@ -163,8 +163,8 @@ extension ConversationViewController: ContactShareViewControllerDelegate {
                 tx: transaction
             )
             transaction.addAsyncCompletionOnMain {
-                let message = ThreadUtil.enqueueMessage(withContactShare: contactShareDraft, thread: thread)
-                self.messageWasSent(message)
+                ThreadUtil.enqueueMessage(withContactShare: contactShareDraft, thread: thread)
+                self.messageWasSent()
 
                 if didAddToProfileWhitelist {
                     self.ensureBannerState()

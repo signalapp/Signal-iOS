@@ -278,21 +278,6 @@ public class CVLoadCoordinator: NSObject {
         delegate?.chatColorDidChange()
     }
 
-    func appendUnsavedOutgoingTextMessage(_ message: TSOutgoingMessage) {
-        AssertIsOnMainThread()
-        // TODO:
-        //        // Because the message isn't yet saved, we don't have sufficient information to build
-        //        // in-memory placeholder for message types more complex than plain text.
-        //        OWSAssertDebug(outgoingMessage.attachmentIds.count == 0);
-        //        OWSAssertDebug(outgoingMessage.contactShare == nil);
-        //
-        //        NSMutableArray<TSOutgoingMessage *> *unsavedOutgoingMessages = [self.unsavedOutgoingMessages mutableCopy];
-        //        [unsavedOutgoingMessages addObject:outgoingMessage];
-        //        self.unsavedOutgoingMessages = unsavedOutgoingMessages;
-        //
-        //        [self updateForTransientItems];
-    }
-
     // MARK: -
 
     public var canLoadOlderItems: Bool {
