@@ -147,12 +147,16 @@ extension UnpreparedOutgoingMessage {
 
         let message: TSOutgoingMessage
         if let editTarget {
+            let edits = MessageEdits(
+                timestamp: NSDate.ows_millisecondTimeStamp(),
+                body: .change(truncatedText),
+                bodyRanges: .change(bodyRanges)
+            )
+
             message = DependenciesBridge.shared.editManager.createOutgoingEditMessage(
                 targetMessage: editTarget,
                 thread: thread,
-                body: truncatedText,
-                bodyRanges: bodyRanges,
-                expiresInSeconds: expiresInSeconds,
+                edits: edits,
                 tx: transaction.asV2Read
             )
         } else {

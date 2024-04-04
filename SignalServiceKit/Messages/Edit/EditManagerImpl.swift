@@ -113,17 +113,21 @@ public class EditManagerImpl: EditManager {
 
         let targetMessageWrapper = editTarget.wrapper
 
+        let edits = MessageEdits(
+            timestamp: newDataMessage.timestamp,
+            body: .change(newDataMessage.body),
+            bodyRanges: .change(bodyRanges)
+        )
+
         // Create a copy of the existing message and update with the edit
         let editedMessage = createEditedMessage(
             thread: thread,
             editTarget: targetMessageWrapper,
+            edits: edits,
             tx: tx
         ) { builder in
 
-            builder.messageBody = newDataMessage.body
-            builder.bodyRanges = bodyRanges
             builder.linkPreview = linkPreviewBuilder?.info
-            builder.timestamp = newDataMessage.timestamp
 
             // If the editMessage quote field is present, preserve the exisiting
             // quote. If the field is nil, remove any quote on the current message.
@@ -237,9 +241,7 @@ public class EditManagerImpl: EditManager {
     public func createOutgoingEditMessage(
         targetMessage: TSOutgoingMessage,
         thread: TSThread,
-        body: String?,
-        bodyRanges: MessageBodyRanges?,
-        expiresInSeconds: UInt32,
+        edits: MessageEdits,
         tx: DBReadTransaction
     ) -> OutgoingEditMessage {
 
@@ -252,19 +254,14 @@ public class EditManagerImpl: EditManager {
         let editedMessage = createEditedMessage(
             thread: thread,
             editTarget: editTarget,
+            edits: edits,
             tx: tx
         ) { messageBuilder in
-            messageBuilder.messageBody = body
-            messageBuilder.bodyRanges = bodyRanges
-            messageBuilder.expiresInSeconds = expiresInSeconds
-
             let attachments = self.context.tsResourceStore.bodyMediaAttachments(
                 for: editTarget.message,
                 tx: tx
             )
             messageBuilder.attachmentIds = attachments.map(\.resourceId.bridgeUniqueId)
-
-            messageBuilder.timestamp = NSDate.ows_millisecondTimeStamp()
         }
 
         return context.dataStore.createOutgoingEditMessage(
@@ -311,14 +308,22 @@ public class EditManagerImpl: EditManager {
         // Update the exiting message with edited fields
         context.dataStore.overwritingUpdate(editedMessage, tx: tx)
 
+        let pastRevisionCopyEdits = MessageEdits(
+            // Keep the timestamp & contents from the target
+            timestamp: editTarget.message.timestamp,
+            body: .keep,
+            bodyRanges: .keep
+        )
+
         // Create a new copy of the original message
         let newMessage = editTarget.createMessageCopy(
             dataStore: context.dataStore,
             tsResourceStore: context.tsResourceStore,
             thread: thread,
             isLatestRevision: false,
+            edits: pastRevisionCopyEdits,
             tx: tx,
-            updateBlock: nil
+            attachmentUpdateBlock: nil
         )
 
         // Insert a new copy of the original message to preserve edit history.
@@ -359,8 +364,9 @@ public class EditManagerImpl: EditManager {
     private func createEditedMessage<EditTarget: EditMessageWrapper>(
         thread: TSThread,
         editTarget: EditTarget,
+        edits: MessageEdits,
         tx: DBReadTransaction,
-        editBlock: @escaping ((EditTarget.MessageBuilderType) -> Void)
+        attachmentEditBlock: @escaping ((EditTarget.MessageBuilderType) -> Void)
     ) -> EditTarget.MessageType {
 
         let editedMessage = editTarget.createMessageCopy(
@@ -368,9 +374,10 @@ public class EditManagerImpl: EditManager {
             tsResourceStore: context.tsResourceStore,
             thread: thread,
             isLatestRevision: true,
+            edits: edits,
             tx: tx) { builder in
             // Apply the edits to the new copy
-            editBlock(builder)
+            attachmentEditBlock(builder)
         }
 
         // Swap out the newly created grdbId/uniqueId with the

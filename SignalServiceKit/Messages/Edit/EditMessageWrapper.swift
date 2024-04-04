@@ -26,8 +26,9 @@ public protocol EditMessageWrapper {
         tsResourceStore: TSResourceStore,
         thread: TSThread,
         isLatestRevision: Bool,
+        edits: MessageEdits,
         tx: DBReadTransaction,
-        updateBlock: ((MessageBuilderType) -> Void)?
+        attachmentUpdateBlock: ((MessageBuilderType) -> Void)?
     ) -> MessageType
 
     func updateMessageCopy(
@@ -86,8 +87,9 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
         tsResourceStore: TSResourceStore,
         thread: TSThread,
         isLatestRevision: Bool,
+        edits: MessageEdits,
         tx: DBReadTransaction,
-        updateBlock: ((TSIncomingMessageBuilder) -> Void)?
+        attachmentUpdateBlock: ((TSIncomingMessageBuilder) -> Void)?
     ) -> TSIncomingMessage {
 
         let editState: TSEditState = {
@@ -102,14 +104,20 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             }
         }()
 
+        let timestamp = edits.timestamp
+        let body = edits.body.unwrap(keepValue: message.body)
+        let bodyRanges = edits.bodyRanges.unwrap(keepValue: message.bodyRanges)
+
         let builder = TSIncomingMessageBuilder(
             thread: thread,
-            timestamp: message.timestamp,
+            timestamp: timestamp,
             authorAci: authorAci,
-            messageBody: message.body,
-            bodyRanges: message.bodyRanges,
+            messageBody: body,
+            bodyRanges: bodyRanges,
             attachmentIds: tsResourceStore.bodyAttachments(for: message, tx: tx).map(\.resourceId.bridgeUniqueId),
             editState: editState,
+            // Prior revisions don't expire (timer=0); instead they
+            // are cascade-deleted when the latest revision expires.
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
             quotedMessage: message.quotedMessage,
@@ -128,7 +136,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             giftBadge: message.giftBadge
         )
 
-        updateBlock?(builder)
+        attachmentUpdateBlock?(builder)
 
         return builder.build()
     }
@@ -167,15 +175,22 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public func createMessageCopyBuilder(
         thread: TSThread,
-        isLatestRevision: Bool
+        isLatestRevision: Bool,
+        edits: MessageEdits
     ) -> TSOutgoingMessageBuilder {
-        TSOutgoingMessageBuilder(
+        let timestamp = edits.timestamp
+        let body = edits.body.unwrap(keepValue: message.body)
+        let bodyRanges = edits.bodyRanges.unwrap(keepValue: message.bodyRanges)
+
+        return TSOutgoingMessageBuilder(
             thread: thread,
-            timestamp: message.timestamp,
-            messageBody: message.body,
-            bodyRanges: message.bodyRanges,
+            timestamp: timestamp,
+            messageBody: body,
+            bodyRanges: bodyRanges,
             attachmentIds: messageBodyAttachmentIds,
             editState: isLatestRevision ? .latestRevisionRead : .pastRevision,
+            // Prior revisions don't expire (timer=0); instead they
+            // are cascade-deleted when the latest revision expires.
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
             isVoiceMessage: message.isVoiceMessage,
@@ -198,15 +213,17 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
         tsResourceStore: TSResourceStore,
         thread: TSThread,
         isLatestRevision: Bool,
+        edits: MessageEdits,
         tx: DBReadTransaction,
-        updateBlock: ((TSOutgoingMessageBuilder) -> Void)?
+        attachmentUpdateBlock: ((TSOutgoingMessageBuilder) -> Void)?
     ) -> TSOutgoingMessage {
         let builder = createMessageCopyBuilder(
             thread: thread,
-            isLatestRevision: isLatestRevision
+            isLatestRevision: isLatestRevision,
+            edits: edits
         )
 
-        updateBlock?(builder)
+        attachmentUpdateBlock?(builder)
 
         return dataStore.build(builder, tx: tx)
     }

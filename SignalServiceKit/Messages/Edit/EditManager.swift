@@ -80,9 +80,7 @@ public protocol EditManager {
     func createOutgoingEditMessage(
         targetMessage: TSOutgoingMessage,
         thread: TSThread,
-        body: String?,
-        bodyRanges: MessageBodyRanges?,
-        expiresInSeconds: UInt32,
+        edits: MessageEdits,
         tx: DBReadTransaction
     ) -> OutgoingEditMessage
 
