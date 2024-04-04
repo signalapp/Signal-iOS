@@ -628,7 +628,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             case inMemoryImage(_ image: UIImage)
             case webUrl(_ webUrl: URL)
             case contact(_ contactData: Data)
-            case richText(_ richText: NSAttributedString)
             case text(_ text: String)
             case pdf(_ data: Data)
             case pkPass(_ data: Data)
@@ -736,11 +735,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let dataSource = DataSourceValue.dataSource(with: contactData, utiType: kUTTypeContact as String)
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeContact as String)
             attachment.isConvertibleToContactShare = true
-            return attachment
-        case .richText(let richText):
-            let dataSource = DataSourceValue.dataSource(withOversizeText: richText.string)
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeText as String)
-            attachment.isConvertibleToTextMessage = true
             return attachment
         case .text(let text):
             let dataSource = DataSourceValue.dataSource(withOversizeText: text)
