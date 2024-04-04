@@ -35,29 +35,35 @@ public class EditManagerImpl: EditManager {
     }
 
     public struct Context {
+        let attachmentStore: AttachmentStore
         let dataStore: EditManagerImpl.Shims.DataStore
         let editMessageStore: EditMessageStore
         let groupsShim: EditManagerImpl.Shims.Groups
         let keyValueStoreFactory: KeyValueStoreFactory
         let linkPreviewManager: LinkPreviewManager
         let receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
+        let tsResourceManager: TSResourceManager
         let tsResourceStore: TSResourceStore
 
         public init(
+            attachmentStore: AttachmentStore,
             dataStore: EditManagerImpl.Shims.DataStore,
             editMessageStore: EditMessageStore,
             groupsShim: EditManagerImpl.Shims.Groups,
             keyValueStoreFactory: KeyValueStoreFactory,
             linkPreviewManager: LinkPreviewManager,
             receiptManagerShim: EditManagerImpl.Shims.ReceiptManager,
+            tsResourceManager: TSResourceManager,
             tsResourceStore: TSResourceStore
         ) {
+            self.attachmentStore = attachmentStore
             self.dataStore = dataStore
             self.editMessageStore = editMessageStore
             self.groupsShim = groupsShim
             self.keyValueStoreFactory = keyValueStoreFactory
             self.linkPreviewManager = linkPreviewManager
             self.receiptManagerShim = receiptManagerShim
+            self.tsResourceManager = tsResourceManager
             self.tsResourceStore = tsResourceStore
         }
     }

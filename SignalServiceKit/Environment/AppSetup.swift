@@ -263,12 +263,14 @@ public class AppSetup {
         let editMessageStore = EditMessageStoreImpl()
         let editManager = EditManagerImpl(
             context: .init(
+                attachmentStore: attachmentStore,
                 dataStore: EditManagerImpl.Wrappers.DataStore(),
                 editMessageStore: editMessageStore,
                 groupsShim: EditManagerImpl.Wrappers.Groups(groupsV2: groupsV2),
                 keyValueStoreFactory: keyValueStoreFactory,
                 linkPreviewManager: linkPreviewManager,
                 receiptManagerShim: EditManagerImpl.Wrappers.ReceiptManager(receiptManager: receiptManager),
+                tsResourceManager: tsResourceManager,
                 tsResourceStore: tsResourceStore
             )
         )

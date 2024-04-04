@@ -32,12 +32,14 @@ class EditManagerTests: SSKBaseTestSwift {
         let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
+                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
@@ -80,12 +82,14 @@ class EditManagerTests: SSKBaseTestSwift {
         let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
+                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
@@ -116,12 +120,14 @@ class EditManagerTests: SSKBaseTestSwift {
         let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
+                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
@@ -151,12 +157,14 @@ class EditManagerTests: SSKBaseTestSwift {
 
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
+                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
@@ -190,12 +198,14 @@ class EditManagerTests: SSKBaseTestSwift {
 
         let editManager = EditManagerImpl(context:
             .init(
+                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
+                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
