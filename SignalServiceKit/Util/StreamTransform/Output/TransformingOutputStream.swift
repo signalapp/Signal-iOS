@@ -47,7 +47,9 @@ public final class TransformingOutputStream: OutputStreamable {
     /// Once hasPendingBytes returns `false`, the stream should be considered closed
     /// and should no longer be used.
     public var hasPendingBytes: Bool {
-        return transforms.contains { $0.hasPendingBytes || !$0.hasFinalized }
+        return
+            transforms.contains { $0.hasPendingBytes }
+            || transforms.compactMap { $0 as? FinalizableStreamTransform }.contains { !$0.hasFinalized }
     }
 
     public func close() throws {

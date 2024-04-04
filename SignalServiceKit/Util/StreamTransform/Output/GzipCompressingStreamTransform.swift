@@ -6,7 +6,7 @@
 import Foundation
 import Compression
 
-public class GzipCompressingStreamTransform: StreamTransform {
+public class GzipCompressingStreamTransform: StreamTransform, FinalizableStreamTransform {
 
     public enum Error: Swift.Error {
         case StreamOutputError

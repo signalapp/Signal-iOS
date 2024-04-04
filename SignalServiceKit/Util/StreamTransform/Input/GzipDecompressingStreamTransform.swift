@@ -6,7 +6,7 @@
 import Foundation
 import Compression
 
-public class GzipDecompressingStreamTransform: StreamTransform {
+public class GzipDecompressingStreamTransform: StreamTransform, FinalizableStreamTransform {
 
     struct GZipHeader {
         let id1: UInt8

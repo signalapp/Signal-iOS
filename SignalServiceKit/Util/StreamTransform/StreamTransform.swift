@@ -24,6 +24,9 @@ public protocol StreamTransform {
 
     /// Returns `true` if the transform has pending bytes buffered.
     var hasPendingBytes: Bool { get }
+}
+
+public protocol FinalizableStreamTransform {
 
     /// Flush any remaining data transform and/or generate any necessary footer data
     /// Calling this is required before closing the stream.
@@ -59,7 +62,10 @@ public extension Array where Element == any StreamTransform {
     func readNextRemainingBytes() throws -> Data {
         return try self.reduce(Data()) { pendingResult, transform in
             if pendingResult.count > 0 {
-                if transform.hasFinalized {
+                if
+                    let finalizableTransform = transform as? FinalizableStreamTransform,
+                    finalizableTransform.hasFinalized
+                {
                     owsFailDebug("Can't pass data to a finalized transform")
                 }
                 // Still data coming through the pipeline, process it and return.
@@ -69,9 +75,12 @@ public extension Array where Element == any StreamTransform {
             // This could be before or after the transform has finalized.
             if transform.hasPendingBytes {
                 return try transform.readBufferedData()
-            } else if !transform.hasFinalized {
+            } else if
+                let finalizableTransform = transform as? FinalizableStreamTransform,
+                !finalizableTransform.hasFinalized
+            {
                 // Exhaused all bytes currently in the transform, time to finalize.
-                return try transform.finalize()
+                return try finalizableTransform.finalize()
             }
             // All done with this transform, return empty.
             return Data()

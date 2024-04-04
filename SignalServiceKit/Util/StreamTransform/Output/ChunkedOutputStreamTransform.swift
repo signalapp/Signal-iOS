@@ -9,9 +9,6 @@ public class ChunkedOutputStreamTransform: StreamTransform {
 
     public var hasPendingBytes: Bool { false }
 
-    private var finalized = false
-    public var hasFinalized: Bool { finalized }
-
     public func transform(data: Data) throws -> Data {
         let byteLength = UInt32(data.count)
         var result = Data()
@@ -29,11 +26,6 @@ public class ChunkedOutputStreamTransform: StreamTransform {
         }
         result.append(contentsOf: [UInt8(v)])
         return result
-    }
-
-    public func finalize() throws -> Data {
-        finalized = true
-        return Data()
     }
 
     public func readBufferedData() throws -> Data { Data() }

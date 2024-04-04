@@ -39,7 +39,8 @@ public final class TransformingInputStream: InputStreamable {
     public var hasBytesAvailable: Bool {
         return
             inputStream.hasBytesAvailable
-            || transforms.contains { $0.hasPendingBytes || !$0.hasFinalized}
+            || transforms.contains { $0.hasPendingBytes }
+            || transforms.compactMap { $0 as? FinalizableStreamTransform }.contains { !$0.hasFinalized }
     }
 
     /// Read up to `maxLength` bytes of transformed input stream data.

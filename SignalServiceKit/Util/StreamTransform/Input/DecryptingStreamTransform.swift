@@ -6,7 +6,7 @@
 import Foundation
 import SignalCoreKit
 
-public class DecryptingStreamTransform: StreamTransform {
+public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransform {
 
     public enum Error: Swift.Error {
         case InvalidFooter

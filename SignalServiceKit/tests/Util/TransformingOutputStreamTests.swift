@@ -28,7 +28,7 @@ final class TransformingOutputStreamTests: XCTestCase {
         XCTAssertEqual(expected, String(data: outputStream.accumulation, encoding: .utf8))
     }
 
-    private class TestStreamTransform1: StreamTransform {
+    private class TestStreamTransform1: StreamTransform, FinalizableStreamTransform {
         var hasPendingBytes: Bool { false }
         var hasFinalized = false
         private var initialized = false
@@ -58,7 +58,7 @@ final class TransformingOutputStreamTests: XCTestCase {
         func readBufferedData() throws -> Data { Data() }
     }
 
-    private class TestStreamTransform2: StreamTransform {
+    private class TestStreamTransform2: StreamTransform, FinalizableStreamTransform {
         var hasPendingBytes: Bool { false }
         var hasFinalized = false
         private var initialized = false
@@ -89,7 +89,7 @@ final class TransformingOutputStreamTests: XCTestCase {
         }
     }
 
-    private class TestStreamTransform3: StreamTransform {
+    private class TestStreamTransform3: StreamTransform, FinalizableStreamTransform {
         var hasPendingBytes: Bool { false }
         var hasFinalized = false
         private var initialized = false

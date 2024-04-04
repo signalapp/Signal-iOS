@@ -12,9 +12,6 @@ public class ChunkedInputStreamTransform: StreamTransform {
     public var hasPendingBytes: Bool { return buffer.count > 0 }
     public func readBufferedData() throws -> Data { try getNextChunk() }
 
-    private var finalized = false
-    public var hasFinalized: Bool { finalized }
-
     public func transform(data: Data) throws -> Data {
         buffer.append(data)
         return try getNextChunk()
@@ -95,10 +92,5 @@ public class ChunkedInputStreamTransform: StreamTransform {
                 shift += 7
             }
         }
-    }
-
-    public func finalize() throws -> Data {
-        finalized = true
-        return Data()
     }
 }

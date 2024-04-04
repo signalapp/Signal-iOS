@@ -6,7 +6,7 @@
 import Foundation
 import SignalCoreKit
 
-public class EncryptingStreamTransform: StreamTransform {
+public class EncryptingStreamTransform: StreamTransform, FinalizableStreamTransform {
 
     private var cipherContext: CipherContext
     private var hmacContext: HmacContext
