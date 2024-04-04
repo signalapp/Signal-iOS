@@ -2941,7 +2941,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 strongSelf.db.write { tx in
                     strongSelf.deps.ows2FAManager.markPinEnabled(pin, tx)
                 }
-                return strongSelf.restoreFromStorageService(accountIdentity: accountIdentity)
+                return strongSelf.nextStep()
             }
             .recover(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
                 guard let self else {
