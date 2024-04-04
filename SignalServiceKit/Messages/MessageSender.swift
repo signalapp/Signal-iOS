@@ -483,31 +483,12 @@ public class MessageSender: Dependencies {
     // MARK: - Constructing Message Sends
 
     public func sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws {
-        let (message, priority): (TSOutgoingMessage, Operation.QueuePriority) = await databaseStorage.awaitableWrite { tx in
-            let message: TSOutgoingMessage
-            switch preparedOutgoingMessage.dequeueForSending(tx: tx) {
-            case .persisted(let persisted):
-                message = persisted.message
-            case .editMessage(let editMessage):
-                message = editMessage.messageForSending
-            case .contactSync(let contactSyncMessage):
-                message = contactSyncMessage
-            case .story(let story):
-                message = story.message
-            case .transient(let outgoingMessage):
-                message = outgoingMessage
-            }
-            return (
-                message,
-                preparedOutgoingMessage.sendingQueuePriority(tx: tx)
-            )
+        let priority: Operation.QueuePriority = await databaseStorage.awaitableWrite { tx in
+            preparedOutgoingMessage.updateAllUnsentRecipientsAsSending(tx: tx)
+            return preparedOutgoingMessage.sendingQueuePriority(tx: tx)
         }
 
-        if let body = message.body {
-            owsAssertDebug(body.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold)
-        }
-
-        Logger.info("Sending \(type(of: message)), timestamp: \(message.timestamp)")
+        Logger.info("Sending \(preparedOutgoingMessage)")
 
         // We create a PendingTask so we can block on flushing all current message sends.
         let pendingTask = pendingTasks.buildPendingTask(label: "Message Send")
@@ -515,36 +496,26 @@ public class MessageSender: Dependencies {
 
         try await withCheckedThrowingContinuation { continuation in
             let sendMessageOperation = AwaitableAsyncBlockOperation(completionContinuation: continuation) {
-                try await self.sendPreparedMessage(message)
+                try await preparedOutgoingMessage.send(self.sendPreparedMessage(_:))
             }
             sendMessageOperation.queuePriority = priority
 
-            let attachmentIds = databaseStorage.read { tx in
-                preparedOutgoingMessage.attachmentIdsForUpload(tx: tx)
+            let uploadOperations = databaseStorage.read { tx in
+                preparedOutgoingMessage.attachmentUploadOperations(tx: tx)
             }
-
-            for attachmentId in attachmentIds {
-                let uploadOperation = AsyncBlockOperation {
-                    try await DependenciesBridge.shared.tsResourceUploadManager.uploadAttachment(
-                        attachmentId: attachmentId,
-                        legacyMessageOwnerIds: [ message.uniqueId ]
-                    )
-                }
+            uploadOperations.forEach { uploadOperation in
                 sendMessageOperation.addDependency(uploadOperation)
                 Upload.uploadQueue.addOperation(uploadOperation)
             }
 
-            sendingQueue(for: message).addOperation(sendMessageOperation)
+            sendingQueue(forUniqueThreadId: preparedOutgoingMessage.uniqueThreadId).addOperation(sendMessageOperation)
         }
-
-        // If it succeeds, it should be marked as `.sent`.
-        owsAssertDebug(message.messageState == .sent)
     }
 
     private let sendingQueueMap = AtomicValue<[String: OperationQueue]>([:], lock: .init())
 
-    private func sendingQueue(for message: TSOutgoingMessage) -> OperationQueue {
-        let sendingQueueKey = message.uniqueThreadId
+    private func sendingQueue(forUniqueThreadId: String) -> OperationQueue {
+        let sendingQueueKey = forUniqueThreadId
         return sendingQueueMap.update { sendingQueueMap in
             if let existingQueue = sendingQueueMap[sendingQueueKey] {
                 return existingQueue

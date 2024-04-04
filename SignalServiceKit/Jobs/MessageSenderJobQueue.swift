@@ -77,21 +77,10 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         transaction: SDSAnyWriteTransaction
     ) {
         assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
-        let messageRecord = message.dequeueForSending(tx: transaction)
+        // Mark as sending now so the UI updates immediately.
+        message.updateAllUnsentRecipientsAsSending(tx: transaction)
         do {
-            let jobRecord: MessageSenderJobRecord
-            switch messageRecord {
-            case .persisted(let persisted):
-                jobRecord = try .init(persistedMessage: persisted, isHighPriority: isHighPriority, transaction: transaction)
-            case .editMessage(let edit):
-                jobRecord = try .init(editMessage: edit, isHighPriority: isHighPriority, transaction: transaction)
-            case .contactSync:
-                throw OWSAssertionError("Cannot create a job record for contact syncs; they can't be persisted!")
-            case .story(let story):
-                jobRecord = .init(storyMessage: story, isHighPriority: isHighPriority)
-            case .transient(let message):
-                jobRecord = .init(transientMessage: message, isHighPriority: isHighPriority)
-            }
+            let jobRecord = try message.asMessageSenderJobRecord(isHighPriority: isHighPriority, tx: transaction)
             if exclusiveToCurrentProcessIdentifier {
                 jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
             }
@@ -100,21 +89,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                 jobFutures[jobRecord.uniqueId] = future
             }
         } catch {
-            let messageToUpdate: TSOutgoingMessage? = {
-                switch messageRecord {
-                case .persisted(let persisted):
-                    return persisted.message
-                case .editMessage(let edit):
-                    return edit.editedMessage
-                case .contactSync(let message):
-                    return message
-                case .story(let story):
-                    return story.message
-                case .transient(let message):
-                    return message
-                }
-            }()
-            messageToUpdate?.update(sendingError: error, transaction: transaction)
+            message.updateWithSendingError(error, tx: transaction)
         }
     }
 
@@ -157,7 +132,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public func buildOperation(jobRecord: MessageSenderJobRecord,
                                transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
-        guard let message = PreparedOutgoingMessage.alreadyPreparedFromQueue(jobRecord.messageType, tx: transaction) else {
+        guard let message = PreparedOutgoingMessage.restore(from: jobRecord, tx: transaction) else {
             throw JobError.obsolete(description: "message no longer exists")
         }
 

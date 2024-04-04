@@ -344,55 +344,53 @@ extension SharingThreadPickerViewController {
                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
 
         let attachmentIds: [TSResourceId]? = databaseStorage.read { tx in
-            return self.outgoingMessages.first?.mediaAttachments(tx: tx).map(\.resourceId)
+            return self.outgoingMessages.first?.attachmentIdsForUpload(tx: tx)
         }
 
-        var progressPerAttachment = [TSResourceId: Float]()
-        let observer = NotificationCenter.default.addObserver(
-            forName: Upload.Constants.resourceUploadProgressNotification,
-            object: nil,
-            queue: nil
-        ) { notification in
-            // We can safely show the progress for just the first message,
-            // all the messages share the same attachment upload progress.
-            guard let attachmentIds else { return }
-
+        var observer: NSObjectProtocol?
+        if let attachmentIds {
             // Populate the initial progress for all attachments at 0
-            if progressPerAttachment.isEmpty {
-                progressPerAttachment = Dictionary(uniqueKeysWithValues: attachmentIds.map { ($0, 0) })
+            var progressPerAttachment: [TSResourceId: Float] =
+                Dictionary(uniqueKeysWithValues: attachmentIds.map { ($0, 0) })
+            observer = NotificationCenter.default.addObserver(
+                forName: Upload.Constants.resourceUploadProgressNotification,
+                object: nil,
+                queue: nil
+            ) { notification in
+                // We can safely show the progress for just the first message,
+                // all the messages share the same attachment upload progress.
+                guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? TSResourceId else {
+                    owsFailDebug("Missing notificationAttachmentId.")
+                    return
+                }
+                guard let progress = notification.userInfo?[Upload.Constants.uploadProgressKey] as? NSNumber else {
+                    owsFailDebug("Missing progress.")
+                    return
+                }
+
+                guard attachmentIds.contains(notificationAttachmentId) else { return }
+
+                progressPerAttachment[notificationAttachmentId] = progress.floatValue
+
+                // Attachments can upload in parallel, so we show the progress
+                // of the average of all the individual attachment's progress.
+                progressView.progress = progressPerAttachment.values.reduce(0, +) / Float(attachmentIds.count)
+
+                // In order to indicate approximately how many attachments remain
+                // to upload, we look at the number that have had their progress
+                // reach 100%.
+                let totalCompleted = progressPerAttachment.values.filter { $0 == 1 }.count
+
+                progressLabel.text = String(
+                    format: progressFormat,
+                    OWSFormat.formatInt(min(totalCompleted + 1, attachmentIds.count)),
+                    OWSFormat.formatInt(attachmentIds.count)
+                )
             }
-
-            guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? TSResourceId else {
-                owsFailDebug("Missing notificationAttachmentId.")
-                return
-            }
-            guard let progress = notification.userInfo?[Upload.Constants.uploadProgressKey] as? NSNumber else {
-                owsFailDebug("Missing progress.")
-                return
-            }
-
-            guard attachmentIds.contains(notificationAttachmentId) else { return }
-
-            progressPerAttachment[notificationAttachmentId] = progress.floatValue
-
-            // Attachments can upload in parallel, so we show the progress
-            // of the average of all the individual attachment's progress.
-            progressView.progress = progressPerAttachment.values.reduce(0, +) / Float(attachmentIds.count)
-
-            // In order to indicate approximately how many attachments remain
-            // to upload, we look at the number that have had their progress
-            // reach 100%.
-            let totalCompleted = progressPerAttachment.values.filter { $0 == 1 }.count
-
-            progressLabel.text = String(
-                format: progressFormat,
-                OWSFormat.formatInt(min(totalCompleted + 1, attachmentIds.count)),
-                OWSFormat.formatInt(attachmentIds.count)
-            )
         }
 
         return { completion in
-            NotificationCenter.default.removeObserver(observer)
+            observer.map { NotificationCenter.default.removeObserver($0) }
             actionSheet.dismiss(animated: true, completion: completion)
         }
     }

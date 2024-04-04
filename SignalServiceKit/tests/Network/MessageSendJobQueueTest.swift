@@ -15,12 +15,20 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
     func test_messageIsSent() async throws {
         let jobQueue = MessageSenderJobQueue()
-        let (message, promise) = await databaseStorage.awaitableWrite { tx in
+        let (message, promise) = try await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
-            let preparedMessage = PreparedOutgoingMessage.preprepared(
-                insertedAndUploadedMessage: message,
-                messageRowId: message.sqliteRowId!
+            let jobRecord = try MessageSenderJobRecord(
+                persistedMessage: .init(
+                    rowId: message.sqliteRowId!,
+                    message: message
+                ),
+                isHighPriority: false,
+                transaction: tx
             )
+            let preparedMessage = PreparedOutgoingMessage.restore(
+                from: jobRecord,
+                tx: tx
+            )!
             let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
             return (message, promise)
         }
@@ -33,13 +41,21 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
     func test_respectsQueueOrder() async throws {
         let messageCount = 3
         let jobQueue = MessageSenderJobQueue()
-        let (messages, promises) = await databaseStorage.awaitableWrite { tx in
+        let (messages, promises) = try await databaseStorage.awaitableWrite { tx in
             let messages = (1...messageCount).map { _ in OutgoingMessageFactory().create(transaction: tx) }
-            let promises = messages.map {
-                let preparedMessage = PreparedOutgoingMessage.preprepared(
-                    insertedAndUploadedMessage: $0,
-                    messageRowId: $0.sqliteRowId!
+            let promises = try messages.map {
+                let jobRecord = try MessageSenderJobRecord(
+                    persistedMessage: .init(
+                        rowId: $0.sqliteRowId!,
+                        message: $0
+                    ),
+                    isHighPriority: false,
+                    transaction: tx
                 )
+                let preparedMessage = PreparedOutgoingMessage.restore(
+                    from: jobRecord,
+                    tx: tx
+                )!
                 return jobQueue.add(.promise, message: preparedMessage, transaction: tx)
             }
             return (messages, promises)
@@ -71,12 +87,20 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
     func test_retryableFailure() async throws {
         let jobQueue = MessageSenderJobQueue()
 
-        let (message, promise) = await databaseStorage.awaitableWrite { tx in
+        let (message, promise) = try await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
-            let preparedMessage = PreparedOutgoingMessage.preprepared(
-                insertedAndUploadedMessage: message,
-                messageRowId: message.sqliteRowId!
+            let jobRecord = try MessageSenderJobRecord(
+                persistedMessage: .init(
+                    rowId: message.sqliteRowId!,
+                    message: message
+                ),
+                isHighPriority: false,
+                transaction: tx
             )
+            let preparedMessage = PreparedOutgoingMessage.restore(
+                from: jobRecord,
+                tx: tx
+            )!
             let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
             return (message, promise)
         }
@@ -129,15 +153,23 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         XCTAssertNil(jobQueue.runAnyQueuedRetry())
     }
 
-    func test_permanentFailure() async {
+    func test_permanentFailure() async throws {
         let jobQueue = MessageSenderJobQueue()
 
-        let (message, promise) = await databaseStorage.awaitableWrite { tx in
+        let (message, promise) = try await databaseStorage.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
-            let preparedMessage = PreparedOutgoingMessage.preprepared(
-                insertedAndUploadedMessage: message,
-                messageRowId: message.sqliteRowId!
+            let jobRecord = try MessageSenderJobRecord(
+                persistedMessage: .init(
+                    rowId: message.sqliteRowId!,
+                    message: message
+                ),
+                isHighPriority: false,
+                transaction: tx
             )
+            let preparedMessage = PreparedOutgoingMessage.restore(
+                from: jobRecord,
+                tx: tx
+            )!
             let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
             return (message, promise)
         }

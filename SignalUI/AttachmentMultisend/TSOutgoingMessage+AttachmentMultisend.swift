@@ -45,7 +45,7 @@ extension TSOutgoingMessage {
             state.messages.append(preparedMessage)
             state.threads.append(destination.thread)
 
-            for (idx, attachmentId) in preparedMessage.legacyAttachmentIdsForMultisend(tx: transaction).enumerated() {
+            for (idx, attachmentId) in preparedMessage.legacyBodyAttachmentIdsForMultisend().enumerated() {
                 let attachmentUUID = attachmentUUIDs[idx]
                 var correspondingIdsForAttachment = state.correspondingAttachmentIds[attachmentUUID] ?? []
                 correspondingIdsForAttachment += [attachmentId]
@@ -73,7 +73,7 @@ extension TSOutgoingMessage {
             editTarget: nil,
             transaction: transaction)
         let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
-        _ = preparedMessage.dequeueForSending(tx: transaction)
+        preparedMessage.updateAllUnsentRecipientsAsSending(tx: transaction)
         return preparedMessage
     }
 }

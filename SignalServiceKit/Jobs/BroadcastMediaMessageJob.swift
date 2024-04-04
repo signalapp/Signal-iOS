@@ -223,7 +223,7 @@ public enum BroadcastMediaUploader: Dependencies {
                     return nil
                 }
                 return PreparedOutgoingMessage.preprepared(
-                    insertedAndUploadedMessage: message,
+                    forMultisendOf: message,
                     messageRowId: message.sqliteRowId!
                 )
             }

@@ -15,22 +15,8 @@ public class PreparedOutgoingMessage {
 
     // MARK: - Pre-prepared constructors
 
-    /// Use this _only_ for already-inserted persisted messages that already uploaded their attachments.
-    /// No insertion or attachment prep is done; its assumed any attachments are already prepared.
-    public static func preprepared(
-        insertedAndUploadedMessage message: TSOutgoingMessage,
-        messageRowId: Int64
-    ) -> PreparedOutgoingMessage {
-        let messageType = MessageType.persisted(MessageType.Persisted(
-            rowId: messageRowId,
-            message: message
-        ))
-        return PreparedOutgoingMessage(messageType: messageType)
-    }
-
-    /// Use this _only_ for already-inserted persisted messages that we are resending, but which may have
-    /// unuploaded attachments.
-    /// No insertion or attachment prep is done; its assumed any attachments are already prepared.
+    /// Use this _only_ for already-inserted persisted messages that we are resending.
+    /// No insertion or attachment prep is done; attachments should be inserted (but maybe not uploaded).
     public static func preprepared(
         forResending message: TSOutgoingMessage,
         messageRowId: Int64
@@ -75,11 +61,15 @@ public class PreparedOutgoingMessage {
         return PreparedOutgoingMessage(messageType: messageType)
     }
 
-    public static func alreadyPreparedFromQueue(
-        _ jobRecordType: MessageSenderJobRecord.MessageType,
+    /// ``MessageSenderJobRecord`` gets created from a prepared message (see that class)
+    /// and, after reading the record back into memory from disk, can be restored to a Prepared message.
+    ///
+    /// Returns nil if the message no longer exists; records keep a pointer to a message which may be since deleted.
+    public static func restore(
+        from jobRecord: MessageSenderJobRecord,
         tx: SDSAnyReadTransaction
     ) -> PreparedOutgoingMessage? {
-        switch jobRecordType {
+        switch jobRecord.messageType {
         case .persisted(let messageId, _):
             guard
                 let interaction = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: tx),
@@ -150,43 +140,12 @@ public class PreparedOutgoingMessage {
         }
     }
 
-    // MARK: - Public mutations
+    // MARK: - Public getters
 
     public var uniqueThreadId: String {
-        switch messageType {
-        case .persisted(let message):
-            return message.message.uniqueThreadId
-        case .editMessage(let message):
-            return message.messageForSending.uniqueThreadId
-        case .contactSync(let message):
-            return message.uniqueThreadId
-        case .story(let storyMessage):
-            return storyMessage.message.uniqueThreadId
-        case .transient(let message):
-            return message.uniqueThreadId
-        }
-    }
-
-    public func dequeueForSending(tx: SDSAnyWriteTransaction) -> MessageType {
-        // When we start a message send, all "failed" recipients should be marked as "sending".
-        let messageToUpdateRecipientsSending: TSOutgoingMessage? = {
-            switch messageType {
-            case .persisted(let message):
-                return message.message
-            case .editMessage(let message):
-                // We update the send state on the _original_ edited message.
-                return message.editedMessage
-            case .contactSync(let message):
-                return message
-            case .story(let storyMessage):
-                return storyMessage.message
-            case .transient(let message):
-                // Is this even necessary for transient messages?
-                return message
-            }
-        }()
-        messageToUpdateRecipientsSending?.updateAllUnsentRecipientsAsSending(transaction: tx)
-        return messageType
+        // The message we send and the message we apply updates to always
+        // have the same thread; just use this one for convenience.
+        return messageForSendStateUpdates.uniqueThreadId
     }
 
     public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [TSResourceId] {
@@ -237,15 +196,13 @@ public class PreparedOutgoingMessage {
         }
     }
 
+    /// The message, if any, we should use to donate the ``INSendMessageIntent`` to the OS for sharesheet shortcuts.
     public func messageForIntentDonation(tx: SDSAnyReadTransaction) -> TSOutgoingMessage? {
         switch messageType {
         case .persisted(let persisted):
             if persisted.message.isGroupStoryReply {
                 return nil
             }
-            // At this point, the message is prepared, meaning its attachments
-            // have been created and its been inserted. Any renderable content
-            // should be ready.
             guard persisted.message.insertedMessageHasRenderableContent(rowId: persisted.rowId, tx: tx) else {
                 return nil
             }
@@ -267,72 +224,56 @@ public class PreparedOutgoingMessage {
         }
     }
 
-    /// Used when waiting on media attachment uploads.
-    public func mediaAttachments(tx: SDSAnyReadTransaction) -> [TSResourceReference] {
-        switch messageType {
-        case .persisted(let persisted):
-            return DependenciesBridge.shared.tsResourceStore.bodyMediaAttachments(
-                for: persisted.message,
-                tx: tx.asV2Read
-            )
-        case .editMessage(let editMessage):
-            return DependenciesBridge.shared.tsResourceStore.bodyMediaAttachments(
-                for: editMessage.editedMessage,
-                tx: tx.asV2Read
-            )
-        case .contactSync:
-            return []
-        case .story(let story):
-            guard let storyMessage = StoryMessage.anyFetch(uniqueId: story.message.storyMessageId, transaction: tx) else {
-                return []
+    // MARK: - Sending
+
+    public func send(_ sender: (TSOutgoingMessage) async throws -> Void) async throws {
+        try await sender(messageForSending)
+    }
+
+    public func attachmentUploadOperations(tx: SDSAnyReadTransaction) -> [Operation] {
+        let legacyMessageOwnerId = messageForSending.uniqueId
+        return attachmentIdsForUpload(tx: tx).map { attachmentId in
+            return AsyncBlockOperation {
+                try await DependenciesBridge.shared.tsResourceUploadManager.uploadAttachment(
+                    attachmentId: attachmentId,
+                    legacyMessageOwnerIds: [legacyMessageOwnerId]
+                )
             }
-            return [DependenciesBridge.shared.tsResourceStore.mediaAttachment(
-                for: storyMessage,
-                tx: tx.asV2Read
-            )].compacted()
-        case .transient:
-            return []
         }
     }
 
+    // MARK: - Message state updates
+
+    public func updateAllUnsentRecipientsAsSending(tx: SDSAnyWriteTransaction) {
+        messageForSendStateUpdates.updateAllUnsentRecipientsAsSending(transaction: tx)
+    }
+
     public func updateWithAllSendingRecipientsMarkedAsFailed(tx: SDSAnyWriteTransaction) {
-        let messageToUpdateFailedRecipients: TSOutgoingMessage? = {
-            switch messageType {
-            case .persisted(let message):
-                return message.message
-            case .editMessage(let message):
-                // We update the send state on the _original_ edited message.
-                return message.editedMessage
-            case .contactSync(let message):
-                return message
-            case .story(let storyMessage):
-                return storyMessage.message
-            case .transient(let message):
-                // Is this even necessary for transient messages?
-                return message
-            }
-        }()
-        messageToUpdateFailedRecipients?.updateWithAllSendingRecipientsMarkedAsFailed(with: tx)
+        messageForSendStateUpdates.updateWithAllSendingRecipientsMarkedAsFailed(with: tx)
     }
 
     public func updateWithSendingError(_ error: Error, tx: SDSAnyWriteTransaction) {
-        let messageToUpdate: TSOutgoingMessage = {
-            switch messageType {
-            case .persisted(let message):
-                return message.message
-            case .editMessage(let message):
-                // We update the send state on the _original_ edited message.
-                return message.editedMessage
-            case .contactSync(let message):
-                return message
-            case .story(let storyMessage):
-                return storyMessage.message
-            case .transient(let message):
-                // Is this even necessary for transient messages?
-                return message
-            }
-        }()
-        messageToUpdate.update(sendingError: error, transaction: tx)
+        messageForSendStateUpdates.update(sendingError: error, transaction: tx)
+    }
+
+    // MARK: - Persistence
+
+    public func asMessageSenderJobRecord(
+        isHighPriority: Bool,
+        tx: SDSAnyReadTransaction
+    ) throws -> MessageSenderJobRecord {
+        switch messageType {
+        case .persisted(let persisted):
+            return try .init(persistedMessage: persisted, isHighPriority: isHighPriority, transaction: tx)
+        case .editMessage(let edit):
+            return try .init(editMessage: edit, isHighPriority: isHighPriority, transaction: tx)
+        case .contactSync:
+            throw OWSAssertionError("Cannot create a job record for contact syncs; they can't be persisted!")
+        case .story(let story):
+            return .init(storyMessage: story, isHighPriority: isHighPriority)
+        case .transient(let message):
+            return .init(transientMessage: message, isHighPriority: isHighPriority)
+        }
     }
 
     // MARK: - Private
@@ -347,14 +288,30 @@ public class PreparedOutgoingMessage {
 
     private init(messageType: MessageType) {
         self.messageType = messageType
+
+        let body: String? = {
+            switch messageType {
+            case .persisted(let message):
+                return message.message.body
+            case .editMessage(let message):
+                return message.editedMessage.body
+            case .contactSync:
+                return nil
+            case .story:
+                return nil
+            case .transient(let message):
+                return message.body
+            }
+        }()
+
+        if let body {
+            owsAssertDebug(body.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold)
+        }
     }
-}
 
-#if TESTABLE_BUILD
-
-extension PreparedOutgoingMessage {
-
-    var testOnly_messageForSending: TSOutgoingMessage {
+    // Private on purpose; too easy to abuse for the variety of fields on
+    // TSMessage if exposed.
+    private var messageForSending: TSOutgoingMessage {
         switch messageType {
         case .persisted(let message):
             return message.message
@@ -368,13 +325,55 @@ extension PreparedOutgoingMessage {
             return message
         }
     }
+
+    // Private on purpose; too easy to abuse for the variety of fields on
+    // TSMessage if exposed.
+    private var messageForSendStateUpdates: TSOutgoingMessage {
+        switch messageType {
+        case .persisted(let message):
+            return message.message
+        case .editMessage(let message):
+            // We update the send state on the _original_ edited message.
+            return message.editedMessage
+        case .contactSync(let message):
+            return message
+        case .story(let storyMessage):
+            return storyMessage.message
+        case .transient(let message):
+            // Do send states even matter for transient messages?
+            return message
+        }
+    }
 }
 
-#endif
+extension PreparedOutgoingMessage: CustomStringConvertible {
+
+    public var description: String {
+        return "Prepared message \(type(of: messageForSending)), timestamp: \(messageForSending.timestamp)"
+    }
+}
+
+extension PreparedOutgoingMessage: Equatable {
+    public static func == (lhs: PreparedOutgoingMessage, rhs: PreparedOutgoingMessage) -> Bool {
+        return lhs.messageForSending.uniqueId == rhs.messageForSending.uniqueId
+    }
+}
 
 // TODO: remove these methods when we remove multisend; they need to exposed only
 // for that use case.
 extension PreparedOutgoingMessage {
+
+    public static func preprepared(
+        forMultisendOf message: TSOutgoingMessage,
+        messageRowId: Int64
+    ) -> PreparedOutgoingMessage {
+        let messageType = MessageType.persisted(MessageType.Persisted(
+            rowId: messageRowId,
+            message: message
+        ))
+        return PreparedOutgoingMessage(messageType: messageType)
+    }
+
     public var storyMessage: OutgoingStoryMessage? {
         switch messageType {
         case .persisted, .editMessage, .contactSync, .transient:
@@ -384,17 +383,18 @@ extension PreparedOutgoingMessage {
         }
     }
 
-    public func legacyAttachmentIdsForMultisend(tx: SDSAnyReadTransaction) -> [String] {
+    public func legacyBodyAttachmentIdsForMultisend() -> [String] {
         switch messageType {
         case .persisted(let persisted):
-            return persisted.message.bodyAttachmentIds(transaction: tx)
-        case .editMessage(let persisted):
+            return persisted.message.attachmentIds
+        case .editMessage:
             owsFailDebug("We shouldn't be multisending an edit?")
-            return persisted.editedMessage.bodyAttachmentIds(transaction: tx)
+            return []
         case .contactSync:
             return []
-        case .story(let story):
-            return story.message.bodyAttachmentIds(transaction: tx)
+        case .story:
+            owsFailDebug("Body attachment getter shouldn't be used for story messages")
+            return []
         case .transient:
             return []
         }

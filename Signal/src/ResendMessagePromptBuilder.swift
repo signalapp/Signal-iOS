@@ -33,7 +33,7 @@ class ResendMessagePromptBuilder {
                     )
                 } else {
                     preparedMessage = PreparedOutgoingMessage.preprepared(
-                        insertedAndUploadedMessage: latestMessage,
+                        forResending: latestMessage,
                         messageRowId: latestMessage.sqliteRowId!
                     )
                 }
