@@ -692,7 +692,10 @@ extension MediaPageViewController: MediaGalleryDelegate {
             dismissSelf(animated: true)
             return
         }
-        setCurrentItem(reloadedItem, direction: .forward, animated: false)
+
+        if attachment.uniqueId != reloadedItem.attachmentStream.uniqueId {
+            setCurrentItem(reloadedItem, direction: .forward, animated: false)
+        }
     }
 
     func mediaGalleryShouldDeferUpdate(_ mediaGallery: MediaGallery) -> Bool {
