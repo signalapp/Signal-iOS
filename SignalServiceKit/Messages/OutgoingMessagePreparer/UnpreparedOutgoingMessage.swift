@@ -241,8 +241,8 @@ public class UnpreparedOutgoingMessage {
             throw OWSAssertionError("Outgoing message missing thread.")
         }
 
-        let linkPreviewBuilder = linkPreviewDraft.flatMap {
-            try? DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+        let linkPreviewBuilder = try linkPreviewDraft.map {
+            try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
                 from: $0,
                 tx: tx.asV2Write
             )
@@ -251,7 +251,7 @@ public class UnpreparedOutgoingMessage {
             return $0
         }
 
-        let quotedReplyBuilder = quotedReplyDraft.flatMap {
+        let quotedReplyBuilder = quotedReplyDraft.map {
             DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
                 draft: $0,
                 threadUniqueId: thread.uniqueId,
@@ -262,19 +262,15 @@ public class UnpreparedOutgoingMessage {
             return $0
         }
 
-        let messageStickerBuilder = messageStickerDraft.flatMap {
-            // TODO: message stickers, specifically and unlike the other ones, would fail
-            // the message send if they failed to finalize (create the attachment).
-            // should just unify all the error handling.
-            let builder = try? MessageSticker.buildValidatedMessageSticker(fromDraft: $0, transaction: tx)
-            if let builder {
-                attachmentOwnerMessage.update(with: builder.info, transaction: tx)
-            }
-            return builder
+        let messageStickerBuilder = try messageStickerDraft.map {
+            try MessageSticker.buildValidatedMessageSticker(fromDraft: $0, transaction: tx)
+        }.map {
+            attachmentOwnerMessage.update(with: $0.info, transaction: tx)
+            return $0
         }
 
-        let contactShareBuilder = contactShareDraft.flatMap {
-            return try? $0.builderForSending(tx: tx)
+        let contactShareBuilder = try contactShareDraft.map {
+            try $0.builderForSending(tx: tx)
         }.map {
             attachmentOwnerMessage.update(withContactShare: $0.info, transaction: tx)
             return $0
@@ -314,19 +310,16 @@ public class UnpreparedOutgoingMessage {
             )
         }
 
-        try? linkPreviewBuilder?.finalize(
+        try linkPreviewBuilder?.finalize(
             owner: .messageLinkPreview(messageRowId: attachmentOwnerMessageRowId),
             tx: tx.asV2Write
         )
-        try? quotedReplyBuilder?.finalize(
+        try quotedReplyBuilder?.finalize(
             owner: .quotedReplyAttachment(messageRowId: attachmentOwnerMessageRowId),
             tx: tx.asV2Write
         )
 
-        // TODO: message stickers, specifically and unlike the other ones, would fail
-        // the message send if they failed to finalize (create the attachment).
-        // should just unify all the error handling.
-        try? messageStickerBuilder?.finalize(
+        try messageStickerBuilder?.finalize(
             owner: .messageSticker(messageRowId: attachmentOwnerMessageRowId),
             tx: tx.asV2Write
         )
