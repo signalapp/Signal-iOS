@@ -153,18 +153,32 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         }
 
         Self.databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(
-                body: messageBody,
-                thread: self.thread,
-                quotedReplyDraft: inputToolbar.quotedReplyDraft,
-                linkPreviewDraft: inputToolbar.linkPreviewDraft,
-                editTarget: inputToolbar.editTarget,
-                persistenceCompletionHandler: {
-                    AssertIsOnMainThread()
-                    self.loadCoordinator.enqueueReload()
-                },
-                transaction: transaction
-            )
+            if let editTarget = inputToolbar.editTarget {
+                ThreadUtil.enqueueEditMessage(
+                    body: messageBody,
+                    thread: self.thread,
+                    quotedReplyDraft: inputToolbar.quotedReplyDraft,
+                    linkPreviewDraft: inputToolbar.linkPreviewDraft,
+                    editTarget: editTarget,
+                    persistenceCompletionHandler: {
+                        AssertIsOnMainThread()
+                        self.loadCoordinator.enqueueReload()
+                    },
+                    transaction: transaction
+                )
+            } else {
+                ThreadUtil.enqueueMessage(
+                    body: messageBody,
+                    thread: self.thread,
+                    quotedReplyDraft: inputToolbar.quotedReplyDraft,
+                    linkPreviewDraft: inputToolbar.linkPreviewDraft,
+                    persistenceCompletionHandler: {
+                        AssertIsOnMainThread()
+                        self.loadCoordinator.enqueueReload()
+                    },
+                    transaction: transaction
+                )
+            }
         }
 
         messageWasSent()
@@ -440,7 +454,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                     mediaAttachments: attachments,
                     thread: self.thread,
                     quotedReplyDraft: inputToolbar.quotedReplyDraft,
-                    editTarget: inputToolbar.editTarget,
                     persistenceCompletionHandler: {
                         AssertIsOnMainThread()
                         self.loadCoordinator.enqueueReload()

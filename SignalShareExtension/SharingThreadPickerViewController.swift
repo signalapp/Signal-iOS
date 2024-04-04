@@ -227,7 +227,6 @@ extension SharingThreadPickerViewController {
                             messageBody: body,
                             quotedReplyDraft: nil,
                             linkPreviewDraft: linkPreviewDraft,
-                            editTarget: nil,
                             transaction: transaction
                         )
                         do {

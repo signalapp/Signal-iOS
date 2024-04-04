@@ -70,7 +70,6 @@ extension TSOutgoingMessage {
             mediaAttachments: mediaAttachments,
             quotedReplyDraft: nil,
             linkPreviewDraft: nil,
-            editTarget: nil,
             transaction: transaction)
         let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
         preparedMessage.updateAllUnsentRecipientsAsSending(tx: transaction)

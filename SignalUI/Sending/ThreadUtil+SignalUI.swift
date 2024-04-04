@@ -6,16 +6,15 @@
 import Foundation
 import SignalServiceKit
 
-public extension ThreadUtil {
+extension ThreadUtil {
     // MARK: - Durable Message Enqueue
 
-    class func enqueueMessage(
+    public class func enqueueMessage(
         body messageBody: MessageBody?,
         mediaAttachments: [SignalAttachment] = [],
         thread: TSThread,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
-        editTarget: TSOutgoingMessage? = nil,
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
         transaction readTransaction: SDSAnyReadTransaction
     ) {
@@ -25,6 +24,33 @@ public extension ThreadUtil {
             thread: thread,
             messageBody: messageBody,
             mediaAttachments: mediaAttachments,
+            quotedReplyDraft: quotedReplyDraft,
+            linkPreviewDraft: linkPreviewDraft,
+            transaction: readTransaction
+        )
+
+        enqueueMessage(
+            unpreparedMessage,
+            thread: thread,
+            persistenceCompletionHandler: persistenceCompletion,
+            transaction: readTransaction
+        )
+    }
+
+    public class func enqueueEditMessage(
+        body messageBody: MessageBody?,
+        thread: TSThread,
+        quotedReplyDraft: DraftQuotedReplyModel? = nil,
+        linkPreviewDraft: OWSLinkPreviewDraft? = nil,
+        editTarget: TSOutgoingMessage,
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
+        transaction readTransaction: SDSAnyReadTransaction
+    ) {
+        AssertIsOnMainThread()
+
+        let unpreparedMessage = UnpreparedOutgoingMessage.buildForEdit(
+            thread: thread,
+            messageBody: messageBody,
             quotedReplyDraft: quotedReplyDraft,
             linkPreviewDraft: linkPreviewDraft,
             editTarget: editTarget,
@@ -93,33 +119,13 @@ extension UnpreparedOutgoingMessage {
         mediaAttachments: [SignalAttachment] = [],
         quotedReplyDraft: DraftQuotedReplyModel?,
         linkPreviewDraft: OWSLinkPreviewDraft?,
-        editTarget: TSOutgoingMessage?,
         transaction: SDSAnyReadTransaction
     ) -> UnpreparedOutgoingMessage {
 
         var attachments = mediaAttachments
-        let truncatedText: String?
-        let bodyRanges: MessageBodyRanges?
-
-        if let messageBody = messageBody, !messageBody.text.isEmpty {
-            if messageBody.text.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold {
-                truncatedText = messageBody.text.truncated(toByteCount: kOversizeTextMessageSizeThreshold)
-                bodyRanges = messageBody.ranges
-
-                if let dataSource = DataSourceValue.dataSource(withOversizeText: messageBody.text) {
-                    let attachment = SignalAttachment.attachment(dataSource: dataSource,
-                                                                 dataUTI: kOversizeTextAttachmentUTI)
-                    attachments.append(attachment)
-                } else {
-                    owsFailDebug("dataSource was unexpectedly nil")
-                }
-            } else {
-                truncatedText = messageBody.text
-                bodyRanges = messageBody.ranges
-            }
-        } else {
-            truncatedText = nil
-            bodyRanges = nil
+        let (truncatedBody, oversizeTextAttachment) = handleOversizeText(messageBody: messageBody)
+        if let oversizeTextAttachment {
+            attachments.insert(oversizeTextAttachment, at: 0)
         }
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
@@ -143,32 +149,16 @@ extension UnpreparedOutgoingMessage {
             }
         }
 
-        let message: TSOutgoingMessage
-        if let editTarget {
-            let edits = MessageEdits(
-                timestamp: NSDate.ows_millisecondTimeStamp(),
-                body: .change(truncatedText),
-                bodyRanges: .change(bodyRanges)
-            )
+        let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
 
-            message = DependenciesBridge.shared.editManager.createOutgoingEditMessage(
-                targetMessage: editTarget,
-                thread: thread,
-                edits: edits,
-                tx: transaction.asV2Read
-            )
-        } else {
-            let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
+        messageBuilder.messageBody = truncatedBody?.text
+        messageBuilder.bodyRanges = truncatedBody?.ranges
 
-            messageBuilder.messageBody = truncatedText
-            messageBuilder.bodyRanges = bodyRanges
+        messageBuilder.expiresInSeconds = expiresInSeconds
+        messageBuilder.isVoiceMessage = isVoiceMessage
+        messageBuilder.isViewOnceMessage = isViewOnceMessage
 
-            messageBuilder.expiresInSeconds = expiresInSeconds
-            messageBuilder.isVoiceMessage = isVoiceMessage
-            messageBuilder.isViewOnceMessage = isViewOnceMessage
-
-            message = messageBuilder.build(transaction: transaction)
-        }
+        let message = messageBuilder.build(transaction: transaction)
 
         let attachmentInfos = attachments.map { $0.buildAttachmentDataSource(message: message) }
 
@@ -179,5 +169,67 @@ extension UnpreparedOutgoingMessage {
             quotedReplyDraft: quotedReplyDraft
         )
         return unpreparedMessage
+    }
+
+    public static func buildForEdit(
+        thread: TSThread,
+        messageBody: MessageBody?,
+        quotedReplyDraft: DraftQuotedReplyModel?,
+        linkPreviewDraft: OWSLinkPreviewDraft?,
+        editTarget: TSOutgoingMessage,
+        transaction: SDSAnyReadTransaction
+    ) -> UnpreparedOutgoingMessage {
+
+        let (truncatedBody, oversizeTextAttachment) = handleOversizeText(messageBody: messageBody)
+
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
+
+        let edits = MessageEdits(
+            timestamp: NSDate.ows_millisecondTimeStamp(),
+            body: .change(truncatedBody?.text),
+            bodyRanges: .change(truncatedBody?.ranges)
+        )
+
+        let message = DependenciesBridge.shared.editManager.createOutgoingEditMessage(
+            targetMessage: editTarget,
+            thread: thread,
+            edits: edits,
+            tx: transaction.asV2Read
+        )
+
+        let attachmentInfos = [oversizeTextAttachment].compacted().map { $0.buildAttachmentDataSource(message: message) }
+
+        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+            message,
+            unsavedBodyAttachments: attachmentInfos,
+            linkPreviewDraft: linkPreviewDraft,
+            quotedReplyDraft: quotedReplyDraft
+        )
+        return unpreparedMessage
+    }
+
+    private static func handleOversizeText(
+        messageBody: MessageBody?
+    ) -> (MessageBody?, SignalAttachment?) {
+        guard let messageBody, !messageBody.text.isEmpty else {
+            return (nil, nil)
+        }
+        if messageBody.text.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold {
+            let truncatedText = messageBody.text.truncated(toByteCount: kOversizeTextMessageSizeThreshold)
+            let bodyRanges = messageBody.ranges
+            let truncatedBody = truncatedText.map { MessageBody(text: $0, ranges: bodyRanges) }
+
+            if let dataSource = DataSourceValue.dataSource(withOversizeText: messageBody.text) {
+                let attachment = SignalAttachment.attachment(dataSource: dataSource,
+                                                             dataUTI: kOversizeTextAttachmentUTI)
+                return (truncatedBody, attachment)
+            } else {
+                owsFailDebug("dataSource was unexpectedly nil")
+                return (truncatedBody, nil)
+            }
+        } else {
+            return (messageBody, nil)
+        }
     }
 }
