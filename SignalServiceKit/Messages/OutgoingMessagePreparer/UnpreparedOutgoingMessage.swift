@@ -282,7 +282,6 @@ public class UnpreparedOutgoingMessage {
                 // Write changes and insert new edit revisions/records
                 try DependenciesBridge.shared.editManager.insertOutgoingEditRevisions(
                     for: editMessage.messageForSending,
-                    thread: thread,
                     tx: tx.asV2Write
                 )
                 // All editable messages, by definition, should have been inserted.

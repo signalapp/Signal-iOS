@@ -92,12 +92,24 @@ public class EditMessageStoreImpl: EditMessageStore {
         )
         switch (interaction, authorAci) {
         case (let outgoingMessage as TSOutgoingMessage, nil):
+            guard let thread = outgoingMessage.thread(tx: transaction) else {
+                Logger.warn("No thread for message")
+                return nil
+            }
             return .outgoingMessage(OutgoingEditMessageWrapper(
                 message: outgoingMessage,
-                messageBodyAttachmentIds: outgoingMessage.bodyAttachmentIds(transaction: transaction)
+                thread: thread
             ))
         case (let incomingMessage as TSIncomingMessage, let authorAci?):
-            return .incomingMessage(IncomingEditMessageWrapper(message: incomingMessage, authorAci: authorAci))
+            guard let thread = incomingMessage.thread(tx: transaction) else {
+                Logger.warn("No thread for message")
+                return nil
+            }
+            return .incomingMessage(IncomingEditMessageWrapper(
+                message: incomingMessage,
+                thread: thread,
+                authorAci: authorAci
+            ))
         case (.some, _):
             Logger.warn("Unexpected message type found for edit")
             fallthrough

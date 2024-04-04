@@ -88,7 +88,6 @@ public protocol EditManager {
     /// and creates the necessary copies of the edits in the database.
     func insertOutgoingEditRevisions(
         for outgoingEditMessage: OutgoingEditMessage,
-        thread: TSThread,
         tx: DBWriteTransaction
     ) throws
 

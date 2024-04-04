@@ -21,14 +21,15 @@ public protocol EditMessageWrapper {
 
     var wasRead: Bool { get }
 
-    func createMessageCopy(
+    func cloneAsBuilderWithoutAttachments(
+        applying: MessageEdits,
+        isLatestRevision: Bool
+    ) -> MessageBuilderType
+
+    static func build(
+        _ builder: MessageBuilderType,
         dataStore: EditManagerImpl.Shims.DataStore,
-        tsResourceStore: TSResourceStore,
-        thread: TSThread,
-        isLatestRevision: Bool,
-        edits: MessageEdits,
-        tx: DBReadTransaction,
-        attachmentUpdateBlock: ((MessageBuilderType) -> Void)?
+        tx: DBReadTransaction
     ) -> MessageType
 
     func updateMessageCopy(
@@ -42,6 +43,7 @@ public protocol EditMessageWrapper {
 public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
     public let message: TSIncomingMessage
+    public let thread: TSThread
     public let authorAci: Aci?
 
     /// Read state is .. complicated when it comes to edit revisions.
@@ -82,16 +84,10 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
         return false
     }
 
-    public func createMessageCopy(
-        dataStore: EditManagerImpl.Shims.DataStore,
-        tsResourceStore: TSResourceStore,
-        thread: TSThread,
-        isLatestRevision: Bool,
-        edits: MessageEdits,
-        tx: DBReadTransaction,
-        attachmentUpdateBlock: ((TSIncomingMessageBuilder) -> Void)?
-    ) -> TSIncomingMessage {
-
+    public func cloneAsBuilderWithoutAttachments(
+        applying edits: MessageEdits,
+        isLatestRevision: Bool
+    ) -> TSIncomingMessageBuilder {
         let editState: TSEditState = {
             if isLatestRevision {
                 if message.editState == .none {
@@ -108,22 +104,27 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
         let body = edits.body.unwrap(keepValue: message.body)
         let bodyRanges = edits.bodyRanges.unwrap(keepValue: message.bodyRanges)
 
-        let builder = TSIncomingMessageBuilder(
+        return TSIncomingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
             authorAci: authorAci,
             messageBody: body,
             bodyRanges: bodyRanges,
-            attachmentIds: tsResourceStore.bodyAttachments(for: message, tx: tx).map(\.resourceId.bridgeUniqueId),
+            // Legacy attachment ids get set separately.
+            attachmentIds: [],
             editState: editState,
             // Prior revisions don't expire (timer=0); instead they
             // are cascade-deleted when the latest revision expires.
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
-            quotedMessage: message.quotedMessage,
-            contactShare: message.contactShare,
-            linkPreview: message.linkPreview,
-            messageSticker: message.messageSticker,
+            // Quoted message gets set separately.
+            quotedMessage: nil,
+            // Contact shares don't support edits; should already be nil but drop anyway.
+            contactShare: nil,
+            // Link preview gets set separately.
+            linkPreview: nil,
+            // Stickers don't support edits; should already be nil but drop anyway.
+            messageSticker: nil,
             read: isLatestRevision ? false : true,
             serverTimestamp: message.serverTimestamp,
             serverDeliveryTimestamp: message.serverDeliveryTimestamp,
@@ -135,9 +136,13 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             storyReactionEmoji: message.storyReactionEmoji,
             giftBadge: message.giftBadge
         )
+    }
 
-        attachmentUpdateBlock?(builder)
-
+    public static func build(
+        _ builder: TSIncomingMessageBuilder,
+        dataStore: EditManagerImpl.Shims.DataStore,
+        tx: DBReadTransaction
+    ) -> TSIncomingMessage {
         return builder.build()
     }
 
@@ -152,31 +157,22 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
 public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public let message: TSOutgoingMessage
-    public let messageBodyAttachmentIds: [String]
+    public let thread: TSThread
 
-    public init(message: TSOutgoingMessage, messageBodyAttachmentIds: [String]) {
-        self.message = message
-        self.messageBodyAttachmentIds = messageBodyAttachmentIds
-    }
-
-    public static func wrap(
+    public init(
         message: TSOutgoingMessage,
-        tsResourceStore: TSResourceStore,
-        tx: DBReadTransaction
-    ) -> Self {
-        return .init(
-            message: message,
-            messageBodyAttachmentIds: tsResourceStore.bodyAttachments(for: message, tx: tx).map(\.resourceId.bridgeUniqueId)
-        )
+        thread: TSThread
+    ) {
+        self.message = message
+        self.thread = thread
     }
 
     // Always return true for the sake of outgoing message read status
     public var wasRead: Bool { true }
 
-    public func createMessageCopyBuilder(
-        thread: TSThread,
-        isLatestRevision: Bool,
-        edits: MessageEdits
+    public func cloneAsBuilderWithoutAttachments(
+        applying edits: MessageEdits,
+        isLatestRevision: Bool
     ) -> TSOutgoingMessageBuilder {
         let timestamp = edits.timestamp
         let body = edits.body.unwrap(keepValue: message.body)
@@ -187,7 +183,8 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             timestamp: timestamp,
             messageBody: body,
             bodyRanges: bodyRanges,
-            attachmentIds: messageBodyAttachmentIds,
+            // Legacy attachment ids get set separately.
+            attachmentIds: [],
             editState: isLatestRevision ? .latestRevisionRead : .pastRevision,
             // Prior revisions don't expire (timer=0); instead they
             // are cascade-deleted when the latest revision expires.
@@ -195,10 +192,14 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             expireStartedAt: message.expireStartedAt,
             isVoiceMessage: message.isVoiceMessage,
             groupMetaMessage: message.groupMetaMessage,
-            quotedMessage: message.quotedMessage,
-            contactShare: message.contactShare,
-            linkPreview: message.linkPreview,
-            messageSticker: message.messageSticker,
+            // Quoted message gets set separately.
+            quotedMessage: nil,
+            // Contact shares don't support edits; should already be nil but drop anyway.
+            contactShare: nil,
+            // Link preview gets set separately.
+            linkPreview: nil,
+            // Stickers don't support edits; should already be nil but drop anyway.
+            messageSticker: nil,
             isViewOnceMessage: message.isViewOnceMessage,
             changeActionsProtoData: message.changeActionsProtoData,
             storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,
@@ -208,23 +209,11 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
         )
     }
 
-    public func createMessageCopy(
+    public static func build(
+        _ builder: TSOutgoingMessageBuilder,
         dataStore: EditManagerImpl.Shims.DataStore,
-        tsResourceStore: TSResourceStore,
-        thread: TSThread,
-        isLatestRevision: Bool,
-        edits: MessageEdits,
-        tx: DBReadTransaction,
-        attachmentUpdateBlock: ((TSOutgoingMessageBuilder) -> Void)?
+        tx: DBReadTransaction
     ) -> TSOutgoingMessage {
-        let builder = createMessageCopyBuilder(
-            thread: thread,
-            isLatestRevision: isLatestRevision,
-            edits: edits
-        )
-
-        attachmentUpdateBlock?(builder)
-
         return dataStore.build(builder, tx: tx)
     }
 

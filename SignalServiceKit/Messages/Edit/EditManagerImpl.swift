@@ -119,37 +119,36 @@ public class EditManagerImpl: EditManager {
             bodyRanges: .change(bodyRanges)
         )
 
+        // Reconcile the new and old attachments.
+        // This currently only affects the long text attachment but could
+        // expand out to removing/adding other attachments in the future.
+        let legacyAttachmentIds = self.updateAttachments(
+            targetMessage: targetMessageWrapper.message,
+            editMessage: newDataMessage,
+            tx: tx
+        )
+
         // Create a copy of the existing message and update with the edit
         let editedMessage = createEditedMessage(
-            thread: thread,
             editTarget: targetMessageWrapper,
             edits: edits,
+            linkPreview: linkPreviewBuilder?.info,
+            quotedMessage: {
+                guard let quote = targetMessageWrapper.message.quotedMessage else {
+                    return nil
+                }
+                // If the editMessage quote field is present, preserve the exisiting
+                // quote. If the field is nil, remove any quote on the current message.
+                if newDataMessage.quote == nil {
+                    return nil
+                }
+                return quote
+            }(),
+            legacyAttachmentIds: legacyAttachmentIds,
             tx: tx
-        ) { builder in
-
-            builder.linkPreview = linkPreviewBuilder?.info
-
-            // If the editMessage quote field is present, preserve the exisiting
-            // quote. If the field is nil, remove any quote on the current message.
-            if
-                targetMessageWrapper.message.quotedMessage != nil,
-                newDataMessage.quote == nil
-            {
-                builder.quotedMessage = nil
-            }
-
-            // Reconcile the new and old attachments.
-            // This currently only affects the long text attachment but could
-            // expand out to removing/adding other attachments in the future.
-            builder.attachmentIds = self.updateAttachments(
-                targetMessage: targetMessageWrapper.message,
-                editMessage: newDataMessage,
-                tx: tx
-            )
-        }
+        )
 
         try insertEditCopies(
-            thread: thread,
             editedMessage: editedMessage,
             editTarget: targetMessageWrapper,
             tx: tx
@@ -245,24 +244,26 @@ public class EditManagerImpl: EditManager {
         tx: DBReadTransaction
     ) -> OutgoingEditMessage {
 
-        let editTarget = OutgoingEditMessageWrapper.wrap(
+        let editTarget = OutgoingEditMessageWrapper(
             message: targetMessage,
-            tsResourceStore: context.tsResourceStore,
-            tx: tx
+            thread: thread
         )
 
-        let editedMessage = createEditedMessage(
-            thread: thread,
-            editTarget: editTarget,
-            edits: edits,
-            tx: tx
-        ) { messageBuilder in
-            let attachments = self.context.tsResourceStore.bodyMediaAttachments(
+        let legacyAttachmentIds = self.context.tsResourceStore
+            .bodyMediaAttachments(
                 for: editTarget.message,
                 tx: tx
             )
-            messageBuilder.attachmentIds = attachments.map(\.resourceId.bridgeUniqueId)
-        }
+            .map(\.resourceId.bridgeUniqueId)
+
+        let editedMessage = createEditedMessage(
+            editTarget: editTarget,
+            edits: edits,
+            linkPreview: targetMessage.linkPreview,
+            quotedMessage: targetMessage.quotedMessage,
+            legacyAttachmentIds: legacyAttachmentIds,
+            tx: tx
+        )
 
         return context.dataStore.createOutgoingEditMessage(
             thread: thread,
@@ -276,7 +277,6 @@ public class EditManagerImpl: EditManager {
     /// and creates the necessary copies of the edits in the database.
     public func insertOutgoingEditRevisions(
         for outgoingEditMessage: OutgoingEditMessage,
-        thread: TSThread,
         tx: DBWriteTransaction
     ) throws {
         guard let editTarget = context.editMessageStore.editTarget(
@@ -288,7 +288,6 @@ public class EditManagerImpl: EditManager {
         }
 
         try insertEditCopies(
-            thread: thread,
             editedMessage: outgoingEditMessage.editedMessage,
             editTarget: editTarget.wrapper,
             tx: tx
@@ -300,7 +299,6 @@ public class EditManagerImpl: EditManager {
     // The method used for updating the database with both incoming
     // and outgoing edits.
     private func insertEditCopies<EditTarget: EditMessageWrapper> (
-        thread: TSThread,
         editedMessage: TSMessage,
         editTarget: EditTarget,
         tx: DBWriteTransaction
@@ -316,14 +314,19 @@ public class EditManagerImpl: EditManager {
         )
 
         // Create a new copy of the original message
-        let newMessage = editTarget.createMessageCopy(
+        let newMessageBuilder = editTarget.cloneAsBuilderWithoutAttachments(
+            applying: pastRevisionCopyEdits,
+            isLatestRevision: false
+        )
+        // Copy over attachments as-is.
+        newMessageBuilder.attachmentIds = editTarget.message.attachmentIds
+        newMessageBuilder.quotedMessage = editTarget.message.quotedMessage
+        newMessageBuilder.linkPreview = editTarget.message.linkPreview
+
+        let newMessage = EditTarget.build(
+            newMessageBuilder,
             dataStore: context.dataStore,
-            tsResourceStore: context.tsResourceStore,
-            thread: thread,
-            isLatestRevision: false,
-            edits: pastRevisionCopyEdits,
-            tx: tx,
-            attachmentUpdateBlock: nil
+            tx: tx
         )
 
         // Insert a new copy of the original message to preserve edit history.
@@ -362,23 +365,28 @@ public class EditManagerImpl: EditManager {
     /// Using a MesageBuilder in this way allows creating an updated version of an existing
     /// message, while preserving the readonly behavior of the TSMessage
     private func createEditedMessage<EditTarget: EditMessageWrapper>(
-        thread: TSThread,
         editTarget: EditTarget,
         edits: MessageEdits,
-        tx: DBReadTransaction,
-        attachmentEditBlock: @escaping ((EditTarget.MessageBuilderType) -> Void)
+        linkPreview: OWSLinkPreview?,
+        quotedMessage: TSQuotedMessage?,
+        legacyAttachmentIds: [String],
+        tx: DBReadTransaction
     ) -> EditTarget.MessageType {
 
-        let editedMessage = editTarget.createMessageCopy(
+        let editedMessageBuilder = editTarget.cloneAsBuilderWithoutAttachments(
+            applying: edits,
+            isLatestRevision: true
+        )
+        // Apply attachment edits to the new copy
+        editedMessageBuilder.linkPreview = linkPreview
+        editedMessageBuilder.quotedMessage = quotedMessage
+        editedMessageBuilder.attachmentIds = legacyAttachmentIds
+
+        let editedMessage = EditTarget.build(
+            editedMessageBuilder,
             dataStore: context.dataStore,
-            tsResourceStore: context.tsResourceStore,
-            thread: thread,
-            isLatestRevision: true,
-            edits: edits,
-            tx: tx) { builder in
-            // Apply the edits to the new copy
-            attachmentEditBlock(builder)
-        }
+            tx: tx
+        )
 
         // Swap out the newly created grdbId/uniqueId with the
         // one from the original message

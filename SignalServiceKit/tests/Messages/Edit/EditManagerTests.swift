@@ -50,6 +50,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 thread: thread,
                 editTarget: .incomingMessage(IncomingEditMessageWrapper(
                     message: targetMessage,
+                    thread: thread,
                     authorAci: authorAci.wrappedAciValue
                 )),
                 serverTimestamp: 1,
@@ -103,6 +104,7 @@ class EditManagerTests: SSKBaseTestSwift {
                     thread: thread,
                     editTarget: .incomingMessage(IncomingEditMessageWrapper(
                         message: targetMessage,
+                        thread: thread,
                         authorAci: authorAci.wrappedAciValue
                     )),
                     serverTimestamp: 1,
@@ -149,6 +151,7 @@ class EditManagerTests: SSKBaseTestSwift {
                     thread: thread,
                     editTarget: .incomingMessage(IncomingEditMessageWrapper(
                         message: targetMessage,
+                        thread: thread,
                         authorAci: authorAci.wrappedAciValue
                     )),
                     serverTimestamp: 1,
@@ -196,6 +199,7 @@ class EditManagerTests: SSKBaseTestSwift {
                     thread: thread,
                     editTarget: .incomingMessage(IncomingEditMessageWrapper(
                         message: targetMessage,
+                        thread: thread,
                         authorAci: authorAci.wrappedAciValue
                     )),
                     serverTimestamp: expiredTS,
@@ -243,6 +247,7 @@ class EditManagerTests: SSKBaseTestSwift {
                     thread: thread,
                     editTarget: .incomingMessage(IncomingEditMessageWrapper(
                         message: targetMessage,
+                        thread: thread,
                         authorAci: authorAci.wrappedAciValue
                     )),
                     serverTimestamp: bigInt + 1,
