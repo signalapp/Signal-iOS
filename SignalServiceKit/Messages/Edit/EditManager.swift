@@ -56,7 +56,7 @@ public protocol EditManager {
         editTarget: EditMessageTarget,
         serverTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) -> TSMessage?
+    ) throws -> TSMessage
 
     // MARK: - Edit UI Validation
 
@@ -80,8 +80,10 @@ public protocol EditManager {
     func createOutgoingEditMessage(
         targetMessage: TSOutgoingMessage,
         thread: TSThread,
-        tx: DBReadTransaction,
-        updateBlock: @escaping ((TSOutgoingMessageBuilder) -> Void)
+        body: String?,
+        bodyRanges: MessageBodyRanges?,
+        expiresInSeconds: UInt32,
+        tx: DBReadTransaction
     ) -> OutgoingEditMessage
 
     /// Fetches a fresh version of the message targeted by `OutgoingEditMessage`,
@@ -90,7 +92,7 @@ public protocol EditManager {
         for outgoingEditMessage: OutgoingEditMessage,
         thread: TSThread,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     // MARK: - Edit Revision Read State
 

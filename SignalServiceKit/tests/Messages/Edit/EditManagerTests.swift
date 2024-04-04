@@ -20,7 +20,7 @@ class EditManagerTests: SSKBaseTestSwift {
         thread = TSThread(uniqueId: "1")
     }
 
-    func testBasicValidation() {
+    func testBasicValidation() throws {
         let targetMessage = createIncomingMessage(with: thread) { builder in
             builder.messageBody = "BAR"
             builder.authorAci = authorAci
@@ -44,8 +44,8 @@ class EditManagerTests: SSKBaseTestSwift {
             )
         )
 
-        db.write { tx in
-            let result = editManager.processIncomingEditMessage(
+        try db.write { tx in
+            _ = try editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
                 editTarget: .incomingMessage(IncomingEditMessageWrapper(
@@ -55,8 +55,6 @@ class EditManagerTests: SSKBaseTestSwift {
                 serverTimestamp: 1,
                 tx: tx
             )
-
-            XCTAssertNotNil(result)
 
             compare(
                 dataStoreMock.editMessageCopy,
@@ -95,17 +93,25 @@ class EditManagerTests: SSKBaseTestSwift {
         )
 
         db.write { tx in
-            let result = editManager.processIncomingEditMessage(
-                editMessage,
-                thread: thread,
-                editTarget: .incomingMessage(IncomingEditMessageWrapper(
-                    message: targetMessage,
-                    authorAci: authorAci.wrappedAciValue
-                )),
-                serverTimestamp: 1,
-                tx: tx
-            )
-            XCTAssertNil(result)
+            do {
+                OWSAssertionError.test_skipAssertions = true
+                defer {
+                    OWSAssertionError.test_skipAssertions = false
+                }
+                _ = try editManager.processIncomingEditMessage(
+                    editMessage,
+                    thread: thread,
+                    editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                        message: targetMessage,
+                        authorAci: authorAci.wrappedAciValue
+                    )),
+                    serverTimestamp: 1,
+                    tx: tx
+                )
+                XCTFail("Expected error")
+            } catch {
+                // Success!
+            }
         }
     }
 
@@ -133,17 +139,25 @@ class EditManagerTests: SSKBaseTestSwift {
         )
 
         db.write { tx in
-            let result = editManager.processIncomingEditMessage(
-                editMessage,
-                thread: thread,
-                editTarget: .incomingMessage(IncomingEditMessageWrapper(
-                    message: targetMessage,
-                    authorAci: authorAci.wrappedAciValue
-                )),
-                serverTimestamp: 1,
-                tx: tx
-            )
-            XCTAssertNil(result)
+            do {
+                OWSAssertionError.test_skipAssertions = true
+                defer {
+                    OWSAssertionError.test_skipAssertions = false
+                }
+                _ = try editManager.processIncomingEditMessage(
+                    editMessage,
+                    thread: thread,
+                    editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                        message: targetMessage,
+                        authorAci: authorAci.wrappedAciValue
+                    )),
+                    serverTimestamp: 1,
+                    tx: tx
+                )
+                XCTFail("Expected error")
+            } catch {
+                // Success!
+            }
         }
     }
 
@@ -172,17 +186,25 @@ class EditManagerTests: SSKBaseTestSwift {
         let expiredTS = targetMessage.receivedAtTimestamp + EditManagerImpl.Constants.editWindowMilliseconds + 1
 
         db.write { tx in
-            let result = editManager.processIncomingEditMessage(
-                editMessage,
-                thread: thread,
-                editTarget: .incomingMessage(IncomingEditMessageWrapper(
-                    message: targetMessage,
-                    authorAci: authorAci.wrappedAciValue
-                )),
-                serverTimestamp: expiredTS,
-                tx: tx
-            )
-            XCTAssertNil(result)
+            do {
+                OWSAssertionError.test_skipAssertions = true
+                defer {
+                    OWSAssertionError.test_skipAssertions = false
+                }
+                _ = try editManager.processIncomingEditMessage(
+                    editMessage,
+                    thread: thread,
+                    editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                        message: targetMessage,
+                        authorAci: authorAci.wrappedAciValue
+                    )),
+                    serverTimestamp: expiredTS,
+                    tx: tx
+                )
+                XCTFail("Expected error")
+            } catch {
+                // Success!
+            }
         }
     }
 
@@ -211,17 +233,25 @@ class EditManagerTests: SSKBaseTestSwift {
         )
 
         db.write { tx in
-            let result = editManager.processIncomingEditMessage(
-                editMessage,
-                thread: thread,
-                editTarget: .incomingMessage(IncomingEditMessageWrapper(
-                    message: targetMessage,
-                    authorAci: authorAci.wrappedAciValue
-                )),
-                serverTimestamp: bigInt + 1,
-                tx: tx
-            )
-            XCTAssertNil(result)
+            do {
+                OWSAssertionError.test_skipAssertions = true
+                defer {
+                    OWSAssertionError.test_skipAssertions = false
+                }
+                _ = try editManager.processIncomingEditMessage(
+                    editMessage,
+                    thread: thread,
+                    editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                        message: targetMessage,
+                        authorAci: authorAci.wrappedAciValue
+                    )),
+                    serverTimestamp: bigInt + 1,
+                    tx: tx
+                )
+                XCTFail("Expected error")
+            } catch {
+                // Success!
+            }
         }
     }
 

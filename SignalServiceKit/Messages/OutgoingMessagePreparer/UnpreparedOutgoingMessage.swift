@@ -280,7 +280,7 @@ public class UnpreparedOutgoingMessage {
             switch type {
             case .editMessage(let editMessage):
                 // Write changes and insert new edit revisions/records
-                DependenciesBridge.shared.editManager.insertOutgoingEditRevisions(
+                try DependenciesBridge.shared.editManager.insertOutgoingEditRevisions(
                     for: editMessage.messageForSending,
                     thread: thread,
                     tx: tx.asV2Write

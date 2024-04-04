@@ -150,11 +150,11 @@ extension UnpreparedOutgoingMessage {
             message = DependenciesBridge.shared.editManager.createOutgoingEditMessage(
                 targetMessage: editTarget,
                 thread: thread,
-                tx: transaction.asV2Read) { builder in
-                    builder.messageBody = truncatedText
-                    builder.bodyRanges = bodyRanges
-                    builder.expiresInSeconds = expiresInSeconds
-                }
+                body: truncatedText,
+                bodyRanges: bodyRanges,
+                expiresInSeconds: expiresInSeconds,
+                tx: transaction.asV2Read
+            )
         } else {
             let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
 

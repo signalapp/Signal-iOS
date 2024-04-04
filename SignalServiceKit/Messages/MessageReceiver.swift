@@ -1576,7 +1576,7 @@ public final class MessageReceiver: Dependencies {
             return .editedMessageMissing
         }
 
-        guard let message = handleMessageEdit(
+        guard let message = try? handleMessageEdit(
             envelope: decryptedEnvelope,
             thread: thread,
             editTarget: targetMessage,
@@ -1626,7 +1626,7 @@ public final class MessageReceiver: Dependencies {
             return .editedMessageMissing
         }
 
-        guard let message = handleMessageEdit(
+        guard let message = try? handleMessageEdit(
             envelope: decryptedEnvelope,
             thread: thread,
             editTarget: targetMessage,
@@ -1667,24 +1667,19 @@ public final class MessageReceiver: Dependencies {
         editTarget: EditMessageTarget,
         editMessage: SSKProtoEditMessage,
         transaction tx: SDSAnyWriteTransaction
-    ) -> TSMessage? {
+    ) throws -> TSMessage {
 
         guard let dataMessage = editMessage.dataMessage else {
-            owsFailDebug("Missing dataMessage in edit")
-            return nil
+            throw OWSAssertionError("Missing dataMessage in edit")
         }
 
-        let message = DependenciesBridge.shared.editManager.processIncomingEditMessage(
+        let message = try DependenciesBridge.shared.editManager.processIncomingEditMessage(
             dataMessage,
             thread: thread,
             editTarget: editTarget,
             serverTimestamp: envelope.serverTimestamp,
             tx: tx.asV2Write
         )
-
-        guard let message else {
-            return nil
-        }
 
         // Start downloading any new attachments
         DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(

@@ -87,33 +87,28 @@ public class EditManagerImpl: EditManager {
         editTarget: EditMessageTarget,
         serverTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) -> TSMessage? {
+    ) throws -> TSMessage {
 
-        guard checkForValidEdit(
+        try checkForValidEdit(
             thread: thread,
             editTarget: editTarget,
             editMessage: newDataMessage,
             serverTimestamp: serverTimestamp,
-            tx: tx)
-        else { return nil }
+            tx: tx
+        )
 
         var bodyRanges: MessageBodyRanges?
         if !newDataMessage.bodyRanges.isEmpty {
             bodyRanges = MessageBodyRanges(protos: newDataMessage.bodyRanges)
         }
 
-        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>? = newDataMessage.preview.first.flatMap {
-            do {
-                // NOTE: Currently makes no attempt to reuse existing link previews
-                return try context.linkPreviewManager.validateAndBuildLinkPreview(
-                    from: $0,
-                    dataMessage: newDataMessage,
-                    tx: tx
-                )
-            } catch {
-                owsFailDebug("Failed to build link preview")
-                return nil
-            }
+        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>? = try newDataMessage.preview.first.flatMap {
+            // NOTE: Currently makes no attempt to reuse existing link previews
+            return try context.linkPreviewManager.validateAndBuildLinkPreview(
+                from: $0,
+                dataMessage: newDataMessage,
+                tx: tx
+            )
         }
 
         let targetMessageWrapper = editTarget.wrapper
@@ -149,21 +144,17 @@ public class EditManagerImpl: EditManager {
             )
         }
 
-        insertEditCopies(
+        try insertEditCopies(
             thread: thread,
             editedMessage: editedMessage,
             editTarget: targetMessageWrapper,
             tx: tx
         )
 
-        do {
-            try linkPreviewBuilder?.finalize(
-                owner: .messageLinkPreview(messageRowId: editedMessage.sqliteRowId!),
-                tx: tx
-            )
-        } catch {
-            owsFailDebug("Failed to finalize link preview")
-        }
+        try linkPreviewBuilder?.finalize(
+            owner: .messageLinkPreview(messageRowId: editedMessage.sqliteRowId!),
+            tx: tx
+        )
 
         return editedMessage
     }
@@ -246,8 +237,10 @@ public class EditManagerImpl: EditManager {
     public func createOutgoingEditMessage(
         targetMessage: TSOutgoingMessage,
         thread: TSThread,
-        tx: DBReadTransaction,
-        updateBlock: @escaping ((TSOutgoingMessageBuilder) -> Void)
+        body: String?,
+        bodyRanges: MessageBodyRanges?,
+        expiresInSeconds: UInt32,
+        tx: DBReadTransaction
     ) -> OutgoingEditMessage {
 
         let editTarget = OutgoingEditMessageWrapper.wrap(
@@ -261,7 +254,9 @@ public class EditManagerImpl: EditManager {
             editTarget: editTarget,
             tx: tx
         ) { messageBuilder in
-            updateBlock(messageBuilder)
+            messageBuilder.messageBody = body
+            messageBuilder.bodyRanges = bodyRanges
+            messageBuilder.expiresInSeconds = expiresInSeconds
 
             let attachments = self.context.tsResourceStore.bodyMediaAttachments(
                 for: editTarget.message,
@@ -286,17 +281,16 @@ public class EditManagerImpl: EditManager {
         for outgoingEditMessage: OutgoingEditMessage,
         thread: TSThread,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         guard let editTarget = context.editMessageStore.editTarget(
             timestamp: outgoingEditMessage.targetMessageTimestamp,
             authorAci: nil,
             tx: tx
         ) else {
-            owsFailDebug("Failed to find target message")
-            return
+            throw OWSAssertionError("Failed to find target message")
         }
 
-        insertEditCopies(
+        try insertEditCopies(
             thread: thread,
             editedMessage: outgoingEditMessage.editedMessage,
             editTarget: editTarget.wrapper,
@@ -313,7 +307,7 @@ public class EditManagerImpl: EditManager {
         editedMessage: TSMessage,
         editTarget: EditTarget,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         // Update the exiting message with edited fields
         context.dataStore.overwritingUpdate(editedMessage, tx: tx)
 
@@ -350,7 +344,7 @@ public class EditManagerImpl: EditManager {
             )
             context.editMessageStore.insert(editRecord, tx: tx)
         } else {
-            owsFailDebug("Missing EditRecord IDs")
+            throw OWSAssertionError("Missing EditRecord IDs")
         }
     }
 
@@ -404,7 +398,7 @@ public class EditManagerImpl: EditManager {
         editMessage: SSKProtoDataMessage,
         serverTimestamp: UInt64,
         tx: DBReadTransaction
-    ) -> Bool {
+    ) throws {
         let targetMessage = editTarget.wrapper.message
 
         // check edit window (by comparing target message server timestamp
@@ -413,14 +407,12 @@ public class EditManagerImpl: EditManager {
         switch editTarget {
         case .incomingMessage(let incomingMessage):
             guard let originalServerTimestamp = incomingMessage.message.serverTimestamp?.uint64Value else {
-                Logger.warn("Edit message target doesn't have a server timestamp")
-                return false
+                throw OWSAssertionError("Edit message target doesn't have a server timestamp")
             }
 
             let (result, isOverflow) = originalServerTimestamp.addingReportingOverflow(Constants.editWindowMilliseconds)
             guard !isOverflow && serverTimestamp <= result else {
-                Logger.warn("Message edit outside of allowed timeframe")
-                return false
+                throw OWSAssertionError("Message edit outside of allowed timeframe")
             }
         case .outgoingMessage:
             // Don't validate the edit window for outgoing/sync messages
@@ -429,8 +421,7 @@ public class EditManagerImpl: EditManager {
 
         let numberOfEdits = context.editMessageStore.numberOfEdits(for: targetMessage, tx: tx)
         if numberOfEdits >= Constants.maxReceiveEdits {
-            Logger.warn("Message edited too many times")
-            return false
+            throw OWSAssertionError("Message edited too many times")
         }
 
         // If this is a group message, validate edit groupID matches the target
@@ -439,14 +430,12 @@ public class EditManagerImpl: EditManager {
                 let data = context.groupsShim.groupId(for: editMessage),
                 data.groupId == groupThread.groupModel.groupId
             else {
-                Logger.warn("Edit message group does not match target message")
-                return false
+                throw OWSAssertionError("Edit message group does not match target message")
             }
         }
 
         if !Self.editMessageTypeSupported(message: targetMessage) {
-            Logger.warn("Edit of message type not supported")
-            return false
+            throw OWSAssertionError("Edit of message type not supported")
         }
 
         let currentAttachmentRefs = context.tsResourceStore.bodyMediaAttachments(
@@ -464,11 +453,10 @@ public class EditManagerImpl: EditManager {
         {
             // This will bail if it finds a voice memo
             // Might be able to handle image attachemnts, but fail for now.
-            Logger.warn("Voice message edits not supported")
-            return false
+            throw OWSAssertionError("Voice message edits not supported")
         }
 
-        return true
+        // All good!
     }
 
     private static func editMessageTypeSupported(message: TSMessage) -> Bool {
