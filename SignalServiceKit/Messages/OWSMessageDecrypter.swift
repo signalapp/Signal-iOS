@@ -453,7 +453,17 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 wasReceivedByUD: false,
                 plaintextData: plaintextData
             )
-            handlePniSignatureIfNeeded(in: decryptedEnvelope, localIdentifiers: localIdentifiers, tx: transaction)
+
+            processDecryptedEnvelope(
+                decryptedEnvelope,
+                localIdentifiers: localIdentifiers,
+                mergeRecipient: { transaction in
+                    let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+                    return recipientFetcher.fetchOrCreate(serviceId: sourceAci, tx: transaction)
+                },
+                tx: transaction.asV2Write
+            )
+
             return decryptedEnvelope
         } catch {
             throw processError(
@@ -599,20 +609,19 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             plaintextData: decryptResult.paddedPayload.withoutPadding()
         )
 
-        // We need to handle the PNI signature first b/c the sender certificate
-        // might produce a visible event and the PNI signature won't.
-        handlePniSignatureIfNeeded(in: decryptedEnvelope, localIdentifiers: localIdentifiers, tx: transaction)
-
-        let recipientMerger = DependenciesBridge.shared.recipientMerger
-        let recipient = recipientMerger.applyMergeFromSealedSender(
+        processDecryptedEnvelope(
+            decryptedEnvelope,
             localIdentifiers: localIdentifiers,
-            aci: decryptResult.senderAci,
-            phoneNumber: E164(decryptResult.senderE164),
+            mergeRecipient: { transaction in
+                return DependenciesBridge.shared.recipientMerger.applyMergeFromSealedSender(
+                    localIdentifiers: localIdentifiers,
+                    aci: decryptResult.senderAci,
+                    phoneNumber: E164(decryptResult.senderE164),
+                    tx: transaction
+                )
+            },
             tx: transaction.asV2Write
         )
-
-        let recipientManager = DependenciesBridge.shared.recipientManager
-        recipientManager.markAsRegisteredAndSave(recipient, deviceId: sourceDeviceId, shouldUpdateStorageService: true, tx: transaction.asV2Write)
 
         return decryptedEnvelope
     }
@@ -643,10 +652,29 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
+    private func processDecryptedEnvelope(
+        _ decryptedEnvelope: DecryptedIncomingEnvelope,
+        localIdentifiers: LocalIdentifiers,
+        mergeRecipient: (DBWriteTransaction) -> SignalRecipient,
+        tx: DBWriteTransaction
+    ) {
+        // We need to handle the PNI signature first b/c `mergeRecipient()`
+        // might produce a visible event and the PNI signature won't.
+        handlePniSignatureIfNeeded(in: decryptedEnvelope, localIdentifiers: localIdentifiers, tx: tx)
+
+        let recipientManager = DependenciesBridge.shared.recipientManager
+        recipientManager.markAsRegisteredAndSave(
+            mergeRecipient(tx),
+            deviceId: decryptedEnvelope.sourceDeviceId,
+            shouldUpdateStorageService: true,
+            tx: tx
+        )
+    }
+
     private func handlePniSignatureIfNeeded(
         in envelope: DecryptedIncomingEnvelope,
         localIdentifiers: LocalIdentifiers,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let pniSignatureMessage = envelope.content?.pniSignatureMessage else {
             return
@@ -660,7 +688,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 pniSignatureMessage,
                 from: envelope.sourceAci,
                 localIdentifiers: localIdentifiers,
-                tx: tx.asV2Write
+                tx: tx
             )
         } catch {
             Logger.warn("Ignoring Pni signature message: \(error)")
