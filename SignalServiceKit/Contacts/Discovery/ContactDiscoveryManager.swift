@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import LibSignalClient
 import SignalCoreKit
 
 /// A ContactDiscoveryManager coordinates CDS lookup requests.
@@ -108,8 +107,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         recipientMerger: RecipientMerger,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
-        websocketFactory: WebSocketFactory,
-        libsignalNet: Net
+        websocketFactory: WebSocketFactory
     ) {
         self.init(
             contactDiscoveryTaskQueue: ContactDiscoveryTaskQueueImpl(
@@ -120,8 +118,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
                 recipientMerger: recipientMerger,
                 tsAccountManager: tsAccountManager,
                 udManager: udManager,
-                websocketFactory: websocketFactory,
-                libsignalNet: libsignalNet
+                websocketFactory: websocketFactory
             )
         )
     }

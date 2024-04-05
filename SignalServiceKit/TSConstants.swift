@@ -6,7 +6,6 @@
 // MARK: -
 
 import Foundation
-import LibSignalClient
 import SignalCoreKit
 
 public class TSConstants {
@@ -84,15 +83,6 @@ public class TSConstants {
             return TSConstantsProduction()
         case .staging:
             return TSConstantsStaging()
-        }
-    }()
-
-    public static let libSignalEnv: Net.Environment = {
-        switch environment {
-        case .production:
-            return .production
-        case .staging:
-            return .staging
         }
     }()
 }

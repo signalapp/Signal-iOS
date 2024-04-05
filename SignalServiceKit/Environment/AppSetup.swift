@@ -842,8 +842,7 @@ public class AppSetup {
             recipientMerger: recipientMerger,
             tsAccountManager: tsAccountManager,
             udManager: udManager,
-            websocketFactory: webSocketFactory,
-            libsignalNet: libsignalNet
+            websocketFactory: webSocketFactory
         )
         let messageSendLog = MessageSendLog(
             db: db,
