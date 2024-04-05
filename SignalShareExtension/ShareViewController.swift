@@ -594,23 +594,23 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             var typeIdentifier: String {
                 switch self {
                 case .movie:
-                    kUTTypeMovie as String
+                    return kUTTypeMovie as String
                 case .image:
-                    kUTTypeImage as String
+                    return kUTTypeImage as String
                 case .webUrl:
-                    kUTTypeURL as String
+                    return kUTTypeURL as String
                 case .fileUrl:
-                    kUTTypeFileURL as String
+                    return kUTTypeFileURL as String
                 case .contact:
-                    kUTTypeVCard as String
+                    return kUTTypeVCard as String
                 case .text:
-                    kUTTypeText as String
+                    return kUTTypeText as String
                 case .pdf:
-                    kUTTypePDF as String
+                    return kUTTypePDF as String
                 case .pkPass:
-                    "com.apple.pkpass"
+                    return "com.apple.pkpass"
                 case .data:
-                    kUTTypeData as String
+                    return kUTTypeData as String
                 }
             }
         }
