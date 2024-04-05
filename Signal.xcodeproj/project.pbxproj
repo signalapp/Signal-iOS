@@ -415,7 +415,6 @@
 		34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */; };
 		34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */; };
 		34EB0E722629DC2B00B62DC3 /* MessageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */; };
-		34ED55A123D0D59700446E39 /* NSItemProvider+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */; };
 		34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */; };
 		34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1071F26D005340053EF4D /* BatchUpdate.swift */; };
 		34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1072126D045290053EF4D /* BatchUpdateTest.swift */; };
@@ -556,7 +555,6 @@
 		4CBBFE4A2306F5D300B37450 /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBBFE492306F5D300B37450 /* LogViewController.swift */; };
 		4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */; };
-		4CCB567D23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */; };
 		4CD4E7D523E8CCFE00834B1B /* IndividualCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0D23CEBF6000B0E74B /* IndividualCall.swift */; };
 		4CD4E7D623E8CCFE00834B1B /* AudioSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */; };
 		4CD675BE22E7BE35008010D2 /* MediaDismissAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675BD22E7BE35008010D2 /* MediaDismissAnimationController.swift */; };
@@ -2962,7 +2960,6 @@
 		34429B3C273440420050D3EA /* DebugUIMisc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIMisc.swift; sourceTree = "<group>"; };
 		3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVColorOrGradientView.swift; sourceTree = "<group>"; };
 		34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Bridging-Header.h"; sourceTree = "<group>"; };
-		34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Prefix.pch"; sourceTree = "<group>"; };
 		34480B4D1FD0A7A300BC14EF /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
 		34480B4E1FD0A7A300BC14EF /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		344A761024B366F4009D69A5 /* FlagsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlagsViewController.swift; sourceTree = "<group>"; };
@@ -3302,7 +3299,6 @@
 		34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimerView.swift; sourceTree = "<group>"; };
 		34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationInternalViewController.swift; sourceTree = "<group>"; };
 		34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSelectionView.swift; sourceTree = "<group>"; };
-		34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Promises.swift"; sourceTree = "<group>"; };
 		34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentMemoViewController.swift; sourceTree = "<group>"; };
 		34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2IncomingChanges.swift; sourceTree = "<group>"; };
 		34F1071F26D005340053EF4D /* BatchUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchUpdate.swift; sourceTree = "<group>"; };
@@ -3454,8 +3450,6 @@
 		4CBBFE492306F5D300B37450 /* LogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewController.swift; sourceTree = "<group>"; };
 		4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateNag.swift; sourceTree = "<group>"; };
-		4CCB567B23C8D89C004A5731 /* NSItemProvider+TypedAccessors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSItemProvider+TypedAccessors.h"; sourceTree = "<group>"; };
-		4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSItemProvider+TypedAccessors.m"; sourceTree = "<group>"; };
 		4CD675BD22E7BE35008010D2 /* MediaDismissAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDismissAnimationController.swift; sourceTree = "<group>"; };
 		4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+OWS.swift"; sourceTree = "<group>"; };
 		4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPresentationContext.swift; sourceTree = "<group>"; };
@@ -6765,9 +6759,6 @@
 			children = (
 				4535186F1FC635DD00210559 /* Info.plist */,
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
-				34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */,
-				4CCB567B23C8D89C004A5731 /* NSItemProvider+TypedAccessors.h */,
-				4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */,
 				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
 				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
 				7677E40E29F79BF300AC6A75 /* SAEScreenLockViewController.swift */,
@@ -6777,7 +6768,6 @@
 				88EFF4FB25AD4230000FAFBA /* SharingThreadPickerViewController.swift */,
 				881FF30723B5B16F0023B620 /* SignalShareExtension-AppStore.entitlements */,
 				34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */,
-				34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */,
 				34B0796E1FD07B1E00E248C2 /* SignalShareExtension.entitlements */,
 			);
 			path = SignalShareExtension;
@@ -12683,8 +12673,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34ED55A123D0D59700446E39 /* NSItemProvider+Promises.swift in Sources */,
-				4CCB567D23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m in Sources */,
 				347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */,
 				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
 				7677E40F29F79BF300AC6A75 /* SAEScreenLockViewController.swift in Sources */,

@@ -1239,14 +1239,13 @@ public class SignalAttachment: NSObject {
         }
     }
 
-    public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
-        guard videoUTISet.contains(dataUTI) else {
-            // not a video
-            return false
-        }
+    public func isVideoThatNeedsCompression() -> Bool {
+        Self.isVideoThatNeedsCompression(dataSource: self.dataSource, dataUTI: self.dataUTI)
+    }
 
+    public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
         // Today we re-encode all videos for the most consistent experience.
-        return true
+        return videoUTISet.contains(dataUTI)
     }
 
     private class func isValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {

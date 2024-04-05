@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 // Separate iOS Frameworks from other imports.
-#import "NSItemProvider+TypedAccessors.h"
 #import <SignalCoreKit/NSObject+OWS.h>
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalCoreKit/OWSLogs.h>

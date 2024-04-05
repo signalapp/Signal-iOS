@@ -51,17 +51,40 @@
 				<string>INSendMessageIntent</string>
 			</array>
 			<key>NSExtensionActivationRule</key>
-			<string>SUBQUERY (
-                extensionItems,
-                $extensionItem,
+            <string>
                 SUBQUERY (
-                $extensionItem.attachments,
-                $attachment,
-                ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.data"
-                || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
-                || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "com.apple.pkpass"
-                ).@count &gt;= 1
+                    extensionItems,
+                    $extensionItem,
+                    SUBQUERY (
+                        $extensionItem.attachments,
+                        $attachment,
+                        ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.data"
+                        OR ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+                        OR ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "com.apple.pkpass"
+                    ).@count &gt;= 1
                 ).@count == 1
+                OR (
+                    SUBQUERY (
+                        extensionItems,
+                        $extensionItem,
+                        SUBQUERY (
+                            $extensionItem.attachments,
+                            $attachment,
+                            ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.data"
+                            OR ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+                            OR ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "com.apple.pkpass"
+                        ).@count &gt;= 1
+                    ).@count == 2
+                    AND SUBQUERY (
+                        extensionItems,
+                        $extensionItem,
+                        SUBQUERY (
+                            $extensionItem.attachments,
+                            $attachment,
+                            ANY $attachment.registeredTypeIdentifiers UTI-EQUALS "public.url"
+                        ).@count &gt;= 1
+                    ).@count == 1
+                )
             </string>
 		</dict>
 		<key>NSExtensionMainStoryboard</key>
