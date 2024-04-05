@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 /// The primary interface for discovering contacts through the CDS service.
@@ -20,6 +21,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
     private let websocketFactory: WebSocketFactory
+    private let libsignalNet: Net
 
     init(
         db: DB,
@@ -29,7 +31,8 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         recipientMerger: RecipientMerger,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
-        websocketFactory: WebSocketFactory
+        websocketFactory: WebSocketFactory,
+        libsignalNet: Net
     ) {
         self.db = db
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -39,6 +42,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
         self.websocketFactory = websocketFactory
+        self.libsignalNet = libsignalNet
     }
 
     func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {
@@ -59,7 +63,8 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
                 e164sToLookup: e164s,
                 mode: mode,
                 udManager: ContactDiscoveryV2Operation.Wrappers.UDManager(db: db, udManager: udManager),
-                websocketFactory: websocketFactory
+                websocketFactory: websocketFactory,
+                libsignalNet: libsignalNet
             ).perform(on: workQueue)
         }.map(on: workQueue) { (discoveryResults: [ContactDiscoveryV2Operation.DiscoveryResult]) -> Set<SignalRecipient> in
             try self.processResults(requestedPhoneNumbers: e164s, discoveryResults: discoveryResults)

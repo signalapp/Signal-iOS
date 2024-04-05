@@ -56,25 +56,26 @@ final class ContactDiscoveryV2Operation {
 
     let udManager: Shims.UDManager
 
-    let connectionFactory: SgxWebsocketConnectionFactory
+    private let connectionImpl: ConnectionImpl
 
-    init(
+    private init(
         e164sToLookup: Set<E164>,
         persistentState: ContactDiscoveryV2PersistentState?,
         udManager: Shims.UDManager,
-        connectionFactory: SgxWebsocketConnectionFactory
+        connectionImpl: ConnectionImpl
     ) {
         self.e164sToLookup = e164sToLookup
         self.persistentState = persistentState
         self.udManager = udManager
-        self.connectionFactory = connectionFactory
+        self.connectionImpl = connectionImpl
     }
 
     convenience init(
         e164sToLookup: Set<E164>,
         mode: ContactDiscoveryMode,
         udManager: Shims.UDManager,
-        websocketFactory: WebSocketFactory
+        websocketFactory: WebSocketFactory,
+        libsignalNet: LibSignalClient.Net
     ) {
         let persistentState: ContactDiscoveryV2PersistentState?
         if mode == .oneOffUserRequest {
@@ -82,17 +83,39 @@ final class ContactDiscoveryV2Operation {
         } else {
             persistentState = ContactDiscoveryV2PersistentStateImpl()
         }
+        let connectionImpl: ConnectionImpl
+        if FeatureFlags.useLibSignalNetForCdsi {
+            connectionImpl = .libSignalNet(libsignalNet)
+        } else {
+            connectionImpl = .nativeFactory(SgxWebsocketConnectionFactoryImpl(websocketFactory: websocketFactory))
+        }
         self.init(
             e164sToLookup: e164sToLookup,
             persistentState: persistentState,
             udManager: udManager,
-            connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: websocketFactory)
+            connectionImpl: connectionImpl
         )
     }
 
     func perform(on queue: DispatchQueue) -> Promise<[DiscoveryResult]> {
+        let promise = { () -> Promise<[DiscoveryResult]> in
+            switch self.connectionImpl {
+            case .nativeFactory(let connectionFactory):
+                return self.perform(on: queue, connectionFactory: connectionFactory)
+            case .libSignalNet(let net):
+                return self.perform(on: queue, net: net)
+            }
+        }()
+        return promise.recover(on: queue) { error -> Promise<[DiscoveryResult]> in
+            let resolvedError = self.handle(error: error)
+            Logger.warn("CDSv2: Failed with error: \(resolvedError)")
+            throw resolvedError
+        }
+    }
+
+    func perform(on queue: DispatchQueue, connectionFactory: SgxWebsocketConnectionFactory) -> Promise<[DiscoveryResult]> {
         firstly(on: queue) {
-            return self.connectionFactory.connectAndPerformHandshake(
+            return connectionFactory.connectAndPerformHandshake(
                 configurator: ContactDiscoveryV2WebsocketConfigurator(),
                 on: queue
             )
@@ -101,9 +124,23 @@ final class ContactDiscoveryV2Operation {
             return firstly { () -> Promise<CDSI_ClientResponse> in
                 connection.sendRequestAndReadResponse(initialRequest.request)
             }.map(on: queue) { tokenResponse in
+                let token = tokenResponse.token
+                // If the server provides an empty token, we should reject it.
+                guard !token.isEmpty else {
+                    throw ContactDiscoveryError(
+                        kind: .genericServerError,
+                        debugDescription: "token response missing token",
+                        retryable: false,
+                        retryAfterDate: nil
+                    )
+                }
                 // We need to persist the token & new e164s before dealing with the result.
                 // If we don't, a interrupted request could lead to a corrupted token.
-                try self.handle(tokenResponse: tokenResponse, initialRequest: initialRequest)
+                return try self.handle(
+                    token: token,
+                    initialRequestHadToken: initialRequest.hasToken,
+                    newE164s: initialRequest.newE164s
+                )
             }.then(on: queue) {
                 connection.sendRequestAndReadAllResponses(self.buildTokenAck())
             }.map(on: queue) { responses in
@@ -115,11 +152,38 @@ final class ContactDiscoveryV2Operation {
                 connection.disconnect(code: nil)
                 throw error
             }
-        }.recover(on: queue) { error -> Promise<[DiscoveryResult]> in
-            let resolvedError = self.handle(error: error)
-            Logger.warn("CDSv2: Failed with error: \(resolvedError)")
-            throw resolvedError
         }
+    }
+
+    func perform(on queue: DispatchQueue, net: LibSignalClient.Net) -> Promise<[DiscoveryResult]> {
+        return firstly(on: queue) {
+            ContactDiscoveryV2WebsocketConfigurator().fetchAuth()
+        }.then(on: queue) { cdsiAuth in
+            let (request, newE164s) = try self.buildLibSignalRequest()
+            let auth = LibSignalClient.Auth(username: cdsiAuth.username, password: cdsiAuth.password)
+            let hadToken = request.hasToken
+            return Promise.wrapAsync {
+                try await net.cdsiLookup(auth: auth, request: request)
+            }.then(on: queue) { cdsiLookup in
+                // We need to persist the token & new e164s before dealing with the result.
+                // If we don't, a interrupted request could lead to a corrupted token.
+                try self.handle(
+                    token: cdsiLookup.token,
+                    initialRequestHadToken: hadToken,
+                    newE164s: newE164s
+                )
+                return Promise.wrapAsync(cdsiLookup.complete)
+            }.map(on: queue) { response in
+                try self.handle(libSignalResponse: response)
+            }
+        }
+    }
+
+    // MARK: - Connection implementation
+
+    private enum ConnectionImpl {
+        case nativeFactory(SgxWebsocketConnectionFactory)
+        case libSignalNet(LibSignalClient.Net)
     }
 
     // MARK: - Request/Response
@@ -175,23 +239,47 @@ final class ContactDiscoveryV2Operation {
         )
     }
 
-    private func handle(
-        tokenResponse: CDSI_ClientResponse,
-        initialRequest: InitialRequest
-    ) throws {
-        // If the server provides an empty token, we should reject it.
-        guard !tokenResponse.token.isEmpty else {
-            throw ContactDiscoveryError(
-                kind: .genericServerError,
-                debugDescription: "token response missing token",
-                retryable: false,
-                retryAfterDate: nil
-            )
+    private func buildLibSignalRequest() throws -> (LibSignalClient.CdsiLookupRequest, Set<E164>) {
+        let prevToken: Data?
+        let prevE164s: Set<E164>
+        let newE164s: Set<E164>
+
+        if let priorFetchResult = persistentState?.load() {
+            // We've got a valid token from a prior request. Use that.
+            prevToken = priorFetchResult.token
+            prevE164s = priorFetchResult.e164s.values
+            newE164s = e164sToLookup.filter { !priorFetchResult.e164s.values.contains($0) }
+        } else {
+            // There's no token, or we're not using tokens, so mark all e164s as new.
+            prevToken = nil
+            prevE164s = Set()
+            newE164s = e164sToLookup
         }
+
+        let acisAndAccessKeys = udManager.fetchAllAciUakPairsWithSneakyTransaction().map { aci, uak in
+            LibSignalClient.AciAndAccessKey(aci: aci, accessKey: uak.keyData)
+        }
+
+        let request = try LibSignalClient.CdsiLookupRequest(
+            e164s: newE164s.map { $0.stringValue },
+            prevE164s: prevE164s.map { $0.stringValue },
+            acisAndAccessKeys: acisAndAccessKeys,
+            token: prevToken,
+            returnAcisWithoutUaks: true
+        )
+
+        return (request, newE164s)
+    }
+
+    private func handle(
+        token: Data,
+        initialRequestHadToken: Bool,
+        newE164s: Set<E164>
+    ) throws {
         try persistentState?.save(
-            newToken: tokenResponse.token,
-            clearE164s: !initialRequest.hasToken,
-            newE164s: initialRequest.newE164s
+            newToken: token,
+            clearE164s: !initialRequestHadToken,
+            newE164s: newE164s
         )
     }
 
@@ -199,6 +287,19 @@ final class ContactDiscoveryV2Operation {
         var request = CDSI_ClientRequest()
         request.tokenAck = true
         return request
+    }
+
+    private func handle(libSignalResponse response: LibSignalClient.CdsiLookupResponse) throws -> [DiscoveryResult] {
+        Logger.info("CDSv2: Consumed \(response.debugPermitsUsed) tokens")
+        return try response.entries.compactMap {entry in
+            guard let pni = entry.pni else {
+                return nil
+            }
+            guard let e164 = E164("+\(entry.e164)") else {
+                throw ContactDiscoveryError.assertionError(description: "malformed e164")
+            }
+            return DiscoveryResult(e164: e164, pni: pni, aci: entry.aci)
+        }
     }
 
     private func handle(responses: [CDSI_ClientResponse]) throws -> [DiscoveryResult] {
@@ -219,10 +320,14 @@ final class ContactDiscoveryV2Operation {
     }
 
     private func handle(error: Error) -> Error {
-        guard let socketError = error as? WebSocketError else {
+        switch error {
+        case let socketError as WebSocketError:
+            return handle(socketError: socketError)
+        case let libSignalError as LibSignalClient.SignalError:
+            return handle(libSignalError: libSignalError)
+        default:
             return error
         }
-        return handle(socketError: socketError)
     }
 
     private func handle(socketError: WebSocketError) -> ContactDiscoveryError {
@@ -278,6 +383,51 @@ final class ContactDiscoveryV2Operation {
             return ContactDiscoveryError(
                 kind: .generic,
                 debugDescription: "http error",
+                retryable: false,
+                retryAfterDate: nil
+            )
+        }
+    }
+
+    private func handle(libSignalError: LibSignalClient.SignalError) -> ContactDiscoveryError {
+        switch libSignalError {
+        case .rateLimitedError(retryAfter: let retryAfter, message: let message):
+            let retryAfterDate = Date(timeIntervalSinceNow: retryAfter)
+            Logger.warn("CDSv2: Rate limited until \(retryAfterDate): \(message)")
+            return ContactDiscoveryError(
+                kind: .rateLimit,
+                debugDescription: "quota rate limit",
+                retryable: true,
+                retryAfterDate: retryAfterDate
+            )
+        case .cdsiInvalidToken:
+            // If the token is wrong, throw away the current token. The next request
+            // will get a new, valid token, at the cost of consuming additional quota.
+            persistentState?.reset()
+            return ContactDiscoveryError(
+                kind: .genericClientError,
+                debugDescription: "invalid token",
+                retryable: true,
+                retryAfterDate: nil
+            )
+        case .networkProtocolError(let message):
+            return ContactDiscoveryError(
+                kind: .genericClientError,
+                debugDescription: "protocol error: \(message)",
+                retryable: true,
+                retryAfterDate: nil
+            )
+        case .webSocketError(let message):
+            return ContactDiscoveryError(
+                kind: .genericServerError,
+                debugDescription: "web socket error: \(message)",
+                retryable: true,
+                retryAfterDate: nil
+            )
+        default:
+            return ContactDiscoveryError(
+                kind: .generic,
+                debugDescription: "libsignal-net error: \(libSignalError)",
                 retryable: false,
                 retryAfterDate: nil
             )
