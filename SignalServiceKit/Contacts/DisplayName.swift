@@ -13,6 +13,7 @@ public enum DisplayName {
     case profileName(PersonNameComponents)
     case phoneNumber(E164)
     case username(String)
+    case deletedAccount
     case unknown
 
     public struct SystemContactName {
@@ -31,6 +32,15 @@ public enum DisplayName {
                 config: config,
                 formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:)
             ).filterForDisplay
+        }
+    }
+
+    public var hasKnownValue: Bool {
+        switch self {
+        case .systemContactName, .profileName, .phoneNumber, .username:
+            return true
+        case .deletedAccount, .unknown:
+            return false
         }
     }
 
@@ -56,6 +66,8 @@ public enum DisplayName {
             return phoneNumber.stringValue
         case .username(let username):
             return username
+        case .deletedAccount:
+            return OWSLocalizedString("DELETED_USER", comment: "Label indicating a user who deleted their account.")
         case .unknown:
             return OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
         }
@@ -127,7 +139,7 @@ public enum DisplayName {
             return .phoneNumber(phoneNumber.stringValue)
         case .username(let username):
             return .nameValue(username)
-        case .unknown:
+        case .unknown, .deletedAccount:
             return .other
         }
     }

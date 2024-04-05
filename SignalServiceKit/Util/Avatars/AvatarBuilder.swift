@@ -536,7 +536,7 @@ public class AvatarBuilder: NSObject {
             nameComponents = systemContactName.nameComponents
         case .profileName(let profileNameComponents):
             nameComponents = profileNameComponents
-        case .phoneNumber, .username, .unknown:
+        case .phoneNumber, .username, .deletedAccount, .unknown:
             return nil
         }
 

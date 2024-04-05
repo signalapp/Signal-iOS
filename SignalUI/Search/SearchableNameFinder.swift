@@ -163,7 +163,7 @@ private struct ContactMatches {
                 isValidName = contactMatch.userProfile != nil
             case .username:
                 isValidName = contactMatch.usernameLookupRecord != nil
-            case .phoneNumber, .unknown:
+            case .phoneNumber, .deletedAccount, .unknown:
                 isValidName = false
             }
             if isValidName || contactMatch.signalRecipient != nil {

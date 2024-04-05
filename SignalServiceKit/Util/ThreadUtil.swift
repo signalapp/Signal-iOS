@@ -433,7 +433,7 @@ extension TSThread {
             nameComponents = systemContactName.nameComponents
         case .profileName(let profileNameComponents):
             nameComponents = profileNameComponents
-        case .phoneNumber, .username, .unknown:
+        case .phoneNumber, .username, .deletedAccount, .unknown:
             nameComponents = nil
         }
 

@@ -105,7 +105,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
         )
 
         // If we don't have a name for this person, don't show collisions.
-        if case .unknown = targetName.displayName {
+        guard targetName.displayName.hasKnownValue else {
             return []
         }
 
@@ -116,7 +116,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
         for (candidateAddress, candidateName) in zip(candidateAddresses, candidateNames) {
             let candidateName = ComparableDisplayName(address: candidateAddress, displayName: candidateName, config: config)
             // If we don't have a name for this person, don't consider them for collisions.
-            if case .unknown = candidateName.displayName {
+            guard candidateName.displayName.hasKnownValue else {
                 continue
             }
             guard candidateName.resolvedValue() == targetName.resolvedValue() else {
@@ -166,7 +166,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         for (address, displayName) in zip(groupMembers, displayNames) {
             let comparableName = ComparableDisplayName(address: address, displayName: displayName, config: config)
             // If we don't have a name for this person, don't consider them for collisions.
-            if case .unknown = comparableName.displayName {
+            guard comparableName.displayName.hasKnownValue else {
                 continue
             }
             collisionMap[comparableName.resolvedValue(), default: []].append(comparableName)

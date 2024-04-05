@@ -1168,10 +1168,19 @@ extension OWSContactsManager: ContactManager {
                 transaction: transaction.asV2Read
             ).map { $0.map { .username($0) } }
         }.refine { addresses in
-            return addresses.lazy.map {
-                self.fetchProfile(forUnknownAddress: $0)
-                return .unknown
-            }
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            return addresses.lazy.map { address -> DisplayName in
+                let signalRecipient = recipientDatabaseTable.fetchRecipient(
+                    address: address,
+                    tx: transaction.asV2Read
+                )
+                if let signalRecipient, !signalRecipient.isRegistered {
+                    return .deletedAccount
+                } else {
+                    self.fetchProfile(forUnknownAddress: address)
+                    return .unknown
+                }
+            } as [DisplayName?]
         }
     }
 
