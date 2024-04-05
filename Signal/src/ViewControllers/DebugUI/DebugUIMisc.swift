@@ -292,18 +292,22 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
             proceedTitle: "I'm okay with this",
             proceedStyle: .destructive,
             proceedAction: { _ in
-                // This should be caught above. Fatal assert just in case.
-                owsAssert(OWSIsTestableBuild() && Platform.isSimulator)
-
-                // Note: These static strings go hand-in-hand with Scripts/sqlclient.py
-                let payload = [ "key": GRDBDatabaseStorageAdapter.debugOnly_keyData?.hexadecimalString ]
-                let payloadData = try! JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted)
-
-                let groupDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)
-                let destURL = groupDir.appendingPathComponent("dbPayload.txt")
-                try! payloadData.write(to: destURL, options: .atomic)
+                debugOnly_savePlaintextDbKey()
             }
         )
+    }
+
+    static func debugOnly_savePlaintextDbKey() {
+        // This should be caught above. Fatal assert just in case.
+        owsAssert(OWSIsTestableBuild() && Platform.isSimulator)
+
+        // Note: These static strings go hand-in-hand with Scripts/sqlclient.py
+        let payload = [ "key": GRDBDatabaseStorageAdapter.debugOnly_keyData?.hexadecimalString ]
+        let payloadData = try! JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted)
+
+        let groupDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)
+        let destURL = groupDir.appendingPathComponent("dbPayload.txt")
+        try! payloadData.write(to: destURL, options: .atomic)
     }
 
     private static func removeAllPrekeys() {

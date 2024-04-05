@@ -191,6 +191,10 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
 
     @objc
     private func didSelectRestoreLocal() {
+        if Platform.isSimulator, OWSIsTestableBuild() {
+            DebugUIMisc.debugOnly_savePlaintextDbKey()
+        }
+
         showMessageBackupPicker()
     }
 
