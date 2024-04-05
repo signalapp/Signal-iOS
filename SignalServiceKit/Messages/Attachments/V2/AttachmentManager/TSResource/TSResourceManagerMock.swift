@@ -19,7 +19,15 @@ public class TSResourceManagerMock: TSResourceManager {
         // Do nothing
     }
 
-    public func createBodyAttachmentStreams(
+    public func createOversizeTextAttachmentStream(
+        consuming dataSource: DataSource,
+        message: TSOutgoingMessage,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
+
+    public func createBodyMediaAttachmentStreams(
         consuming dataSources: [TSResourceDataSource],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction

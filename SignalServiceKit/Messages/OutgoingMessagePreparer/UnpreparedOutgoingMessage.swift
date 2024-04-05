@@ -314,20 +314,16 @@ public class UnpreparedOutgoingMessage {
             }
         }()
 
-        var attachments = unsavedBodyMediaAttachments
         if let oversizeTextDataSource {
-            let wrappedDataSource = TSResourceDataSource.from(
-                dataSource: oversizeTextDataSource,
-                mimeType: OWSMimeTypeOversizeTextMessage,
-                caption: nil,
-                renderingFlag: .default
+            try DependenciesBridge.shared.tsResourceManager.createOversizeTextAttachmentStream(
+                consuming: oversizeTextDataSource,
+                message: attachmentOwnerMessage,
+                tx: tx.asV2Write
             )
-            // oversize text always goes first.
-            attachments.insert(wrappedDataSource, at: 0)
         }
-        if attachments.count > 0 {
-            try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentStreams(
-                consuming: attachments,
+        if unsavedBodyMediaAttachments.count > 0 {
+            try DependenciesBridge.shared.tsResourceManager.createBodyMediaAttachmentStreams(
+                consuming: unsavedBodyMediaAttachments,
                 message: attachmentOwnerMessage,
                 tx: tx.asV2Write
             )

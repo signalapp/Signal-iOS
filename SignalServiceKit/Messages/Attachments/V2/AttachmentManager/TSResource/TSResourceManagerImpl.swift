@@ -52,7 +52,38 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
-    public func createBodyAttachmentStreams(
+    public func createOversizeTextAttachmentStream(
+        consuming dataSource: DataSource,
+        message: TSOutgoingMessage,
+        tx: DBWriteTransaction
+    ) throws {
+        let wrappedDataSource = TSResourceDataSource.from(
+            dataSource: dataSource,
+            mimeType: OWSMimeTypeOversizeTextMessage,
+            caption: nil,
+            renderingFlag: .default
+        )
+        switch wrappedDataSource.concreteType {
+        case .legacy(let legacyDataSource):
+            try tsAttachmentManager.createBodyAttachmentStreams(
+                consuming: [legacyDataSource],
+                message: message,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
+        case .v2(let attachmentDataSource):
+            guard let messageRowId = message.sqliteRowId else {
+                owsFailDebug("Adding attachments to an uninserted message!")
+                return
+            }
+            try attachmentManager.createAttachmentStreams(
+                consuming: [attachmentDataSource],
+                owner: .messageOversizeText(messageRowId: messageRowId),
+                tx: tx
+            )
+        }
+    }
+
+    public func createBodyMediaAttachmentStreams(
         consuming dataSources: [TSResourceDataSource],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction

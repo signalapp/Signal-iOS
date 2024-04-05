@@ -41,7 +41,13 @@ public protocol TSResourceManager {
         tx: DBWriteTransaction
     ) throws
 
-    func createBodyAttachmentStreams(
+    func createOversizeTextAttachmentStream(
+        consuming dataSource: DataSource,
+        message: TSOutgoingMessage,
+        tx: DBWriteTransaction
+    ) throws
+
+    func createBodyMediaAttachmentStreams(
         consuming dataSources: [TSResourceDataSource],
         message: TSOutgoingMessage,
         tx: DBWriteTransaction
