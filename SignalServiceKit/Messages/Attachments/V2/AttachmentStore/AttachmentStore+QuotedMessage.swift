@@ -44,7 +44,7 @@ extension AttachmentStore {
     public func quotedThumbnailAttachment(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference? {
+    ) -> AttachmentReference? {
         let ref = self.quotedAttachmentReference(for: message, tx: tx)
         switch ref {
         case .thumbnail(let attachmentRef):
