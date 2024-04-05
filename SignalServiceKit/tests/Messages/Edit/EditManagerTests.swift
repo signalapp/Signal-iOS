@@ -408,6 +408,24 @@ class EditManagerTests: SSKBaseTestSwift {
         ) {
             self.attachment = attachment
         }
+
+        func update(
+            _ message: TSMessage,
+            with quotedReply: TSQuotedMessage,
+            tx: DBWriteTransaction
+        ) {}
+
+        func update(
+            _ message: TSMessage,
+            with linkPreview: OWSLinkPreview,
+            tx: DBWriteTransaction
+        ) {}
+
+        func update(
+            _ message: TSMessage,
+            withLegacyBodyAttachmentIds attachmentIds: [String],
+            tx: DBWriteTransaction
+        ) {}
     }
 
     private class EditMessageStoreMock: EditMessageStore {
