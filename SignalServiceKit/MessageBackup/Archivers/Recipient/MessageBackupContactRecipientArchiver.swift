@@ -17,6 +17,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
     private let recipientDatabaseTable: any RecipientDatabaseTable
     private let recipientHidingManager: RecipientHidingManager
     private let recipientManager: any SignalRecipientManager
+    private let signalServiceAddressCache: SignalServiceAddressCache
     private let storyStore: StoryStore
     private let tsAccountManager: TSAccountManager
 
@@ -26,6 +27,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         recipientDatabaseTable: any RecipientDatabaseTable,
         recipientHidingManager: RecipientHidingManager,
         recipientManager: any SignalRecipientManager,
+        signalServiceAddressCache: SignalServiceAddressCache,
         storyStore: StoryStore,
         tsAccountManager: TSAccountManager
     ) {
@@ -34,6 +36,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientHidingManager = recipientHidingManager
         self.recipientManager = recipientManager
+        self.signalServiceAddressCache = signalServiceAddressCache
         self.storyStore = storyStore
         self.tsAccountManager = tsAccountManager
     }
@@ -213,28 +216,17 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         }
         context[recipientProto.recipientId] = .contact(address)
 
-        var recipient = SignalRecipient.fromBackup(
+        let recipient = SignalRecipient.fromBackup(
             address,
             isRegistered: isRegistered,
             unregisteredAtTimestamp: unregisteredTimestamp
         )
 
-        // TODO: remove this check; we should be starting with an empty database.
-        if let existingRecipient = recipientDatabaseTable.fetchRecipient(address: recipient.address, tx: tx) {
-            recipient = existingRecipient
-            if isRegistered == true, !recipient.isRegistered {
-                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
-            } else if isRegistered == false, recipient.isRegistered, let unregisteredTimestamp {
-                recipientManager.markAsUnregisteredAndSave(
-                    recipient,
-                    unregisteredAt: .specificTimeFromOtherDevice(unregisteredTimestamp),
-                    shouldUpdateStorageService: false,
-                    tx: tx
-                )
-            }
-        } else {
-            recipientDatabaseTable.insertRecipient(recipient, transaction: tx)
-        }
+        recipientDatabaseTable.insertRecipient(recipient, transaction: tx)
+        /// No Backup code should be relying on the SSA cache, but once we've
+        /// finished restoring and launched we want the cache to have accurate
+        /// mappings based on the recipients we just restored.
+        signalServiceAddressCache.updateRecipient(recipient, tx: tx)
 
         if contactProto.profileSharing {
             // Add to the whitelist.

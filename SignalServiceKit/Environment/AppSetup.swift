@@ -656,6 +656,7 @@ public class AppSetup {
                 recipientDatabaseTable: recipientDatabaseTable,
                 recipientHidingManager: recipientHidingManager,
                 recipientManager: recipientManager,
+                signalServiceAddressCache: signalServiceAddressCache,
                 storyStore: storyStore,
                 threadStore: threadStore,
                 tsAccountManager: tsAccountManager

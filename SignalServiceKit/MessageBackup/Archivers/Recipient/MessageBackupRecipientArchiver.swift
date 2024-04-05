@@ -52,6 +52,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
     private let recipientDatabaseTable: any RecipientDatabaseTable
     private let recipientHidingManager: RecipientHidingManager
     private let recipientManager: any SignalRecipientManager
+    private let signalServiceAddressCache: SignalServiceAddressCache
     private let storyStore: StoryStore
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
@@ -63,6 +64,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         recipientDatabaseTable: any RecipientDatabaseTable,
         recipientHidingManager: RecipientHidingManager,
         recipientManager: any SignalRecipientManager,
+        signalServiceAddressCache: SignalServiceAddressCache,
         storyStore: StoryStore,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager
@@ -73,6 +75,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientHidingManager = recipientHidingManager
         self.recipientManager = recipientManager
+        self.signalServiceAddressCache = signalServiceAddressCache
         self.storyStore = storyStore
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
@@ -85,6 +88,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
             recipientDatabaseTable: recipientDatabaseTable,
             recipientHidingManager: recipientHidingManager,
             recipientManager: recipientManager,
+            signalServiceAddressCache: signalServiceAddressCache,
             storyStore: storyStore,
             tsAccountManager: tsAccountManager
         ),
