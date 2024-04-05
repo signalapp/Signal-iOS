@@ -302,7 +302,8 @@ public class FullTextSearcher: NSObject {
         var addresses = SearchableNameFinder(
             contactManager: contactsManager,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
-            phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher
+            phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
         ).searchNames(
             for: searchText,
             maxResults: maxResults,
@@ -568,7 +569,8 @@ public class FullTextSearcher: NSObject {
         var addresses = try SearchableNameFinder(
             contactManager: contactsManager,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
-            phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher
+            phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
         ).searchNames(
             for: searchText,
             maxResults: remainingResultCount(),
@@ -708,7 +710,8 @@ public class FullTextSearcher: NSObject {
             let addresses = SearchableNameFinder(
                 contactManager: contactsManager,
                 searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
-                phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher
+                phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
+                recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
             ).searchNames(
                 for: searchText,
                 maxResults: maxResults - messages.count,

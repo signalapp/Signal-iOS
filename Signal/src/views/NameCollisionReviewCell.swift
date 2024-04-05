@@ -157,7 +157,7 @@ final class NameCollisionCell: UITableViewCell {
                 profileNameChange.newestProfileName
             )
             verticalStack.addArrangedSubview(ProfileDetailLabel.profile(
-                title: string,
+                displayName: string,
                 font: detailFont
             ))
         }

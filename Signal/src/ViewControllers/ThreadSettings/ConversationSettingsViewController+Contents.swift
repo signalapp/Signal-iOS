@@ -477,10 +477,31 @@ extension ConversationSettingsViewController {
             )
             return cell
         }, actionBlock: { [weak self] in
-            // [Nicknames] TODO: Pass in initial state
-            let nicknameEditor = NicknameEditorViewController(thread: thread)
+            guard let self else { return }
+            let db = DependenciesBridge.shared.db
+            let nicknameManager = DependenciesBridge.shared.nicknameManager
+
+            let (recipient, existingNickname): (SignalRecipient?, NicknameRecord?) = db.read { tx in
+                let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(
+                    address: thread.contactAddress,
+                    tx: tx
+                )
+                let nickname = recipient.flatMap { nicknameManager.fetch(recipient: $0, tx: tx) }
+                return (recipient, nickname)
+            }
+
+            guard let recipient else { return }
+
+            let nicknameEditor = NicknameEditorViewController(
+                recipient: recipient,
+                existingNickname: existingNickname,
+                context: .init(
+                    db: db,
+                    nicknameManager: nicknameManager
+                )
+            )
             let navigationController = OWSNavigationController(rootViewController: nicknameEditor)
-            self?.presentFormSheet(navigationController, animated: true)
+            self.presentFormSheet(navigationController, animated: true)
         }))
     }
 

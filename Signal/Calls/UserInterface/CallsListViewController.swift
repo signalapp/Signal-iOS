@@ -63,7 +63,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         searchableNameFinder: SearchableNameFinder(
             contactManager: NSObject.contactsManager,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
-            phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher
+            phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
         ),
         threadStore: DependenciesBridge.shared.threadStore
     )

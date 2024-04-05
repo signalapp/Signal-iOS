@@ -8,18 +8,10 @@ import GRDB
 
 public protocol NicknameRecordStore {
     func fetch(recipientRowID: Int64, tx: DBReadTransaction) -> NicknameRecord?
+    func enumerateAll(tx: DBReadTransaction, block: (NicknameRecord) -> Void)
     func insert(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
     func update(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
     func delete(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
-}
-
-public extension NicknameRecordStore {
-    func fetch(
-        recipient: SignalRecipient,
-        tx: DBReadTransaction
-    ) -> NicknameRecord? {
-        recipient.id.flatMap { self.fetch(recipientRowID: $0, tx: tx) }
-    }
 }
 
 public class NicknameRecordStoreImpl: NicknameRecordStore {
@@ -39,6 +31,17 @@ public class NicknameRecordStoreImpl: NicknameRecordStore {
         } catch {
             owsFailDebug("Error fetching nickname by user profile ID: \(error.grdbErrorForLogging)")
             return nil
+        }
+    }
+
+    public func enumerateAll(tx: DBReadTransaction, block: (NicknameRecord) -> Void) {
+        do {
+            let cursor = try NicknameRecord.fetchCursor(SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database)
+            while let value = try cursor.next() {
+                block(value)
+            }
+        } catch {
+            owsFailDebug("Error while enumerating nicknames: \(error.grdbErrorForLogging)")
         }
     }
 

@@ -109,6 +109,7 @@ class MockRecipientDatabaseTable: RecipientDatabaseTable {
 
     func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
         precondition(rowId(for: signalRecipient) == nil)
+        signalRecipient.id = nextRowId
         recipientTable[nextRowId] = signalRecipient.copyRecipient()
         nextRowId += 1
     }

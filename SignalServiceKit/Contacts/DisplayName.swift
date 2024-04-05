@@ -8,6 +8,7 @@ import Foundation
 import SignalCoreKit
 
 public enum DisplayName {
+    case nickname(ProfileName)
     case systemContactName(SystemContactName)
     case profileName(PersonNameComponents)
     case phoneNumber(E164)
@@ -35,6 +36,13 @@ public enum DisplayName {
 
     public func resolvedValue(config: Config = .current(), useShortNameIfAvailable: Bool = false) -> String {
         switch self {
+        case .nickname(let nickname):
+            return Self.formatNameComponents(
+                nickname.nameComponents,
+                multipleAccountLabel: nil,
+                config: config,
+                formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:)
+            )
         case .systemContactName(let systemContactName):
             return systemContactName.resolvedValue(config: config, useShortNameIfAvailable: useShortNameIfAvailable)
         case .profileName(let nameComponents):
@@ -54,10 +62,10 @@ public enum DisplayName {
     }
 
     public struct Config {
-        public let shouldUseNicknames: Bool
+        public let shouldUseSystemContactNicknames: Bool
 
         public static func current() -> Self {
-            return Config(shouldUseNicknames: SignalAccount.shouldUseNicknames())
+            return Config(shouldUseSystemContactNicknames: SignalAccount.shouldUseNicknames())
         }
     }
 
@@ -68,7 +76,7 @@ public enum DisplayName {
         formatBlock: (PersonNameComponents) -> String
     ) -> String {
         let formattedName: String = {
-            if config.shouldUseNicknames, let nickname = nameComponents.nickname {
+            if config.shouldUseSystemContactNicknames, let nickname = nameComponents.nickname {
                 return nickname
             } else {
                 return formatBlock(nameComponents)
@@ -94,6 +102,13 @@ public enum DisplayName {
         }
 
         switch self {
+        case .nickname(let nickname):
+            return .nameValue(Self.formatNameComponents(
+                nickname.nameComponents,
+                multipleAccountLabel: nil,
+                config: config.displayNameConfig,
+                formatBlock: formatForSorting(_:)
+            ))
         case .systemContactName(let systemContactName):
             return .nameValue(Self.formatNameComponents(
                 systemContactName.nameComponents,

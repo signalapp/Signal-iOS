@@ -11,8 +11,32 @@ public class ProfileDetailLabel: UIStackView {
     private let tapAction: (() -> Void)?
     private let longPressAction: (() -> Void)?
 
-    public init(
+    public convenience init(
         title: String,
+        icon: ThemeIcon,
+        font: UIFont = .dynamicTypeBody,
+        showDetailDisclosure: Bool = false,
+        tapAction: (() -> Void)? = nil,
+        longPressAction: (() -> Void)? = nil
+    ) {
+        self.init(
+            attributedTitle: NSMutableAttributedString(
+                string: title,
+                attributes: [
+                    .font: font,
+                    .foregroundColor: Theme.primaryTextColor,
+                ]
+            ),
+            icon: icon,
+            font: font,
+            showDetailDisclosure: showDetailDisclosure,
+            tapAction: tapAction,
+            longPressAction: longPressAction
+        )
+    }
+
+    public init(
+        attributedTitle: NSAttributedString,
         icon: ThemeIcon,
         font: UIFont = .dynamicTypeBody,
         showDetailDisclosure: Bool = false,
@@ -28,11 +52,6 @@ public class ProfileDetailLabel: UIStackView {
         self.alignment = .top
         self.layoutMargins = .zero
 
-        let textAttributes: [NSAttributedString.Key: Any] = [
-            .font: font,
-            .foregroundColor: Theme.primaryTextColor,
-        ]
-
         // Make the icon an attributed string attachment so that it
         //  1. scales with Dynamic Type.
         //  2. is vertically centered with the first line of text
@@ -40,7 +59,10 @@ public class ProfileDetailLabel: UIStackView {
         let imageString = NSAttributedString.with(
             image: Theme.iconImage(icon),
             font: font,
-            attributes: textAttributes
+            attributes: [
+                .font: font,
+                .foregroundColor: Theme.primaryTextColor,
+            ]
         )
         let imageLabel = UILabel()
         self.addArrangedSubview(imageLabel)
@@ -49,10 +71,7 @@ public class ProfileDetailLabel: UIStackView {
 
         let textLabel = UILabel()
         self.addArrangedSubview(textLabel)
-        let titleString = NSMutableAttributedString(
-            string: title,
-            attributes: textAttributes
-        )
+        let titleString = NSMutableAttributedString(attributedString: attributedTitle)
 
         if
             showDetailDisclosure,
@@ -97,10 +116,26 @@ public class ProfileDetailLabel: UIStackView {
 
 public extension ProfileDetailLabel {
     static func profile(
-        title: String,
+        displayName: String,
+        secondaryName: String? = nil,
         font: UIFont = .dynamicTypeBody
     ) -> ProfileDetailLabel {
-        .init(title: title, icon: .profileName, font: font)
+        .init(
+            attributedTitle: {
+                if let secondaryName {
+                    return NSAttributedString.composed(of: [
+                        displayName,
+                        " ",
+                        "(\(secondaryName))"
+                            .styled(with: .color(Theme.secondaryTextAndIconColor))
+                    ])
+                } else {
+                    return NSAttributedString.composed(of: [displayName])
+                }
+            }().styled(with: .font(font)),
+            icon: .profileName,
+            font: font
+        )
     }
 
     static func verified(

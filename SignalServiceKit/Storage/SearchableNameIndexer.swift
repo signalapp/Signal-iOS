@@ -39,6 +39,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
     private let userProfileStore: any UserProfileStore
     private let signalRecipientStore: any RecipientDatabaseTable
     private let usernameLookupRecordStore: any UsernameLookupRecordStore
+    private let nicknameRecordStore: any NicknameRecordStore
 
     private let dbForReadTx: (DBReadTransaction) -> Database
     private let dbForWriteTx: (DBWriteTransaction) -> Database
@@ -54,6 +55,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         userProfileStore: any UserProfileStore,
         signalRecipientStore: any RecipientDatabaseTable,
         usernameLookupRecordStore: any UsernameLookupRecordStore,
+        nicknameRecordStore: any NicknameRecordStore,
         dbForReadTx: @escaping (DBReadTransaction) -> Database,
         dbForWriteTx: @escaping (DBWriteTransaction) -> Database
     ) {
@@ -62,6 +64,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         self.userProfileStore = userProfileStore
         self.signalRecipientStore = signalRecipientStore
         self.usernameLookupRecordStore = usernameLookupRecordStore
+        self.nicknameRecordStore = nicknameRecordStore
         self.dbForReadTx = dbForReadTx
         self.dbForWriteTx = dbForWriteTx
     }
@@ -88,7 +91,8 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
                     "\(Constants.databaseTableName)"."\(IdentifierColumnName.signalAccountId.rawValue)",
                     "\(Constants.databaseTableName)"."\(IdentifierColumnName.userProfileId.rawValue)",
                     "\(Constants.databaseTableName)"."\(IdentifierColumnName.signalRecipientId.rawValue)",
-                    "\(Constants.databaseTableName)"."\(IdentifierColumnName.usernameLookupRecordId.rawValue)"
+                    "\(Constants.databaseTableName)"."\(IdentifierColumnName.usernameLookupRecordId.rawValue)",
+                    "\(Constants.databaseTableName)"."\(IdentifierColumnName.nicknameRecordRecipientId.rawValue)"
                 FROM "\(Constants.databaseTableNameFTS)"
                 LEFT JOIN "\(Constants.databaseTableName)"
                     ON "\(Constants.databaseTableName)".rowId = "\(Constants.databaseTableNameFTS)".rowId
@@ -118,6 +122,8 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
                     identifier = .signalRecipient(signalRecipientId)
                 } else if let usernameLookupRecordId = (row[4] as Data?).flatMap({ try? Aci.parseFrom(serviceIdBinary: $0) }) {
                     identifier = .usernameLookupRecord(usernameLookupRecordId)
+                } else if let nicknameRecordRecipientId = (row[5] as Int64?) {
+                    identifier = .nicknameRecord(recipientRowId: nicknameRecordRecipientId)
                 } else {
                     owsFailDebug("Couldn't find identifier for SearchableName")
                     continue
@@ -146,6 +152,8 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
             return signalRecipientStore.fetchRecipient(rowId: value, tx: tx)
         case .usernameLookupRecord(let value):
             return usernameLookupRecordStore.fetchOne(forAci: value, tx: tx)
+        case .nicknameRecord(recipientRowId: let value):
+            return nicknameRecordStore.fetch(recipientRowID: value, tx: tx)
         }
     }
 
@@ -204,6 +212,9 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         usernameLookupRecordStore.enumerateAll(tx: tx) { usernameLookupRecord in
             insert(usernameLookupRecord, tx: tx)
         }
+        nicknameRecordStore.enumerateAll(tx: tx) { nicknameRecord in
+            insert(nicknameRecord, tx: tx)
+        }
     }
 }
 
@@ -215,6 +226,7 @@ private enum IdentifierColumnName: String {
     case userProfileId
     case signalRecipientId
     case usernameLookupRecordId
+    case nicknameRecordRecipientId
 }
 
 // MARK: - IndexableNames
@@ -225,6 +237,7 @@ public enum IndexableNameIdentifier {
     case userProfile(Int64)
     case signalRecipient(Int64)
     case usernameLookupRecord(Aci)
+    case nicknameRecord(recipientRowId: Int64)
 
     fileprivate func columnNameAndValue() -> (IdentifierColumnName, DatabaseValue) {
         switch self {
@@ -238,6 +251,8 @@ public enum IndexableNameIdentifier {
             return (.signalRecipientId, value.databaseValue)
         case .usernameLookupRecord(let value):
             return (.usernameLookupRecordId, Data(value.serviceIdBinary).databaseValue)
+        case .nicknameRecord(recipientRowId: let value):
+            return (.nicknameRecordRecipientId, value.databaseValue)
         }
     }
 }
@@ -280,8 +295,8 @@ extension SignalAccount: IndexableName {
             multipleAccountLabel: nil
         )
 
-        let fullName = systemContactName.resolvedValue(config: DisplayName.Config(shouldUseNicknames: false))
-        let nickname = systemContactName.resolvedValue(config: DisplayName.Config(shouldUseNicknames: true))
+        let fullName = systemContactName.resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: false))
+        let nickname = systemContactName.resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: true))
 
         return [fullName, nickname]
             .removingDuplicates(uniquingElementsBy: { $0 })
@@ -302,8 +317,8 @@ extension OWSUserProfile: IndexableName {
         guard let nameComponents else {
             return nil
         }
-        // You can't set a nickname, so this value doesn't matter.
-        let config = DisplayName.Config(shouldUseNicknames: false)
+        // No system contact here, so this value doesn't matter.
+        let config = DisplayName.Config(shouldUseSystemContactNicknames: false)
         return DisplayName.profileName(nameComponents).resolvedValue(config: config)
     }
 }
@@ -351,5 +366,18 @@ extension UsernameLookupRecord: IndexableName {
 
     public func indexableNameContent() -> String? {
         return username
+    }
+}
+
+extension NicknameRecord: IndexableName {
+    public func indexableNameIdentifier() -> IndexableNameIdentifier {
+        return .nicknameRecord(recipientRowId: self.recipientRowID)
+    }
+
+    public func indexableNameContent() -> String? {
+        guard let profileName = ProfileName(nicknameRecord: self) else { return nil }
+        // No system contact here, so this value doesn't matter.
+        let config = DisplayName.Config(shouldUseSystemContactNicknames: false)
+        return DisplayName.nickname(profileName).resolvedValue(config: config)
     }
 }

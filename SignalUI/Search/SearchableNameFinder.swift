@@ -11,15 +11,18 @@ public class SearchableNameFinder {
     private let contactManager: any ContactManager
     private let searchableNameIndexer: any SearchableNameIndexer
     private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
+    private let recipientDatabaseTable: any RecipientDatabaseTable
 
     public init(
         contactManager: any ContactManager,
         searchableNameIndexer: any SearchableNameIndexer,
-        phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
+        phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
+        recipientDatabaseTable: any RecipientDatabaseTable
     ) {
         self.contactManager = contactManager
         self.searchableNameIndexer = searchableNameIndexer
         self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
+        self.recipientDatabaseTable = recipientDatabaseTable
     }
 
     public func searchNames(
@@ -55,6 +58,13 @@ public class SearchableNameFinder {
             case let usernameLookupRecord as UsernameLookupRecord:
                 contactMatches.addResult(for: usernameLookupRecord)
 
+            case let nicknameRecord as NicknameRecord:
+                contactMatches.addResult(
+                    for: nicknameRecord,
+                    recipientDatabaseTable: self.recipientDatabaseTable,
+                    tx: tx
+                )
+
             case let groupThread as TSGroupThread:
                 addGroupThread(groupThread)
 
@@ -74,6 +84,7 @@ public class SearchableNameFinder {
 
 private struct ContactMatches {
     private struct ContactMatch {
+        var nickname: NicknameRecord?
         var signalAccount: SignalAccount?
         var userProfile: OWSUserProfile?
         var signalRecipient: SignalRecipient?
@@ -83,6 +94,18 @@ private struct ContactMatches {
     private var rawValue = [SignalServiceAddress: ContactMatch]()
 
     public var count: Int { rawValue.count }
+
+    mutating func addResult(
+        for nickname: NicknameRecord,
+        recipientDatabaseTable: any RecipientDatabaseTable,
+        tx: DBReadTransaction
+    ) {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(rowId: nickname.recipientRowID, tx: tx) else { return }
+        let address = recipient.address
+        withUnsafeMutablePointer(to: &rawValue[address, default: ContactMatch()]) {
+            $0.pointee.nickname = nickname
+        }
+    }
 
     mutating func addResult(for signalAccount: SignalAccount) {
         let address = signalAccount.recipientAddress
@@ -132,6 +155,8 @@ private struct ContactMatches {
             let displayName = contactManager.displayName(for: address, tx: tx)
             let isValidName: Bool
             switch displayName {
+            case .nickname:
+                isValidName = contactMatch.nickname != nil
             case .systemContactName:
                 isValidName = contactMatch.signalAccount != nil
             case .profileName:

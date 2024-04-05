@@ -180,9 +180,17 @@ public class OWSContactsManagerSwiftValues {
     fileprivate let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
 
     fileprivate let usernameLookupManager: UsernameLookupManager
+    fileprivate let recipientDatabaseTable: any RecipientDatabaseTable
+    fileprivate let nicknameManager: any NicknameManager
 
-    public init(usernameLookupManager: UsernameLookupManager) {
+    public init(
+        usernameLookupManager: UsernameLookupManager,
+        recipientDatabaseTable: any RecipientDatabaseTable,
+        nicknameManager: any NicknameManager
+    ) {
         self.usernameLookupManager = usernameLookupManager
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.nicknameManager = nicknameManager
     }
 }
 
@@ -805,8 +813,7 @@ extension OWSContactsManager: ContactManager {
         guard let aciToUpdate else {
             return
         }
-        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aciToUpdate, transaction: tx)
+        let recipient = swiftValues.recipientDatabaseTable.fetchRecipient(serviceId: aciToUpdate, transaction: tx)
         guard let recipient else {
             return
         }
@@ -1138,7 +1145,15 @@ extension OWSContactsManager: ContactManager {
         for addresses: [SignalServiceAddress],
         transaction: SDSAnyReadTransaction
     ) -> Refinery<SignalServiceAddress, DisplayName> {
+        let tx = transaction.asV2Read
         return .init(addresses).refine { addresses -> [DisplayName?] in
+            return addresses.map { address -> DisplayName? in
+                swiftValues.recipientDatabaseTable.fetchRecipient(address: address, tx: tx)
+                    .flatMap { swiftValues.nicknameManager.fetch(recipient: $0, tx: tx) }
+                    .flatMap(ProfileName.init(nicknameRecord:))
+                    .map(DisplayName.nickname(_:))
+            }
+        }.refine { addresses -> [DisplayName?] in
             // Prefer a saved name from system contacts, if available.
             return systemContactNames(for: addresses, tx: transaction)
                 .map { $0.map { .systemContactName($0) } }

@@ -256,6 +256,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addIndexForUnreadByThreadRowIdToCallRecord
         case addNicknamesTable
         case expandSignalAccountContactFields
+        case addNicknamesToSearchableName
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2767,6 +2768,15 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "familyName", .text).notNull().defaults(to: "")
                 table.add(column: "nickname", .text).notNull().defaults(to: "")
                 table.add(column: "fullName", .text).notNull().defaults(to: "")
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addNicknamesToSearchableName) { tx in
+            try tx.database.alter(table: "SearchableName") { table in
+                table.add(column: "nicknameRecordRecipientId", .integer)
+                    .references("NicknameRecord", column: "recipientRowID", onDelete: .cascade)
             }
 
             return .success(())

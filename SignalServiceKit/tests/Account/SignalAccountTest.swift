@@ -107,11 +107,11 @@ class SignalAccountTest: XCTestCase {
         )
 
         XCTAssertEqual(
-            systemContactName.resolvedValue(config: DisplayName.Config(shouldUseNicknames: false)),
+            systemContactName.resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: false)),
             "Shabby Thesealion (Mobile)"
         )
         XCTAssertEqual(
-            systemContactName.resolvedValue(config: DisplayName.Config(shouldUseNicknames: true)),
+            systemContactName.resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: true)),
             "Shabs (Mobile)"
         )
     }

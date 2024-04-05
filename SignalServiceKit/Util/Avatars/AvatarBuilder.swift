@@ -530,6 +530,8 @@ public class AvatarBuilder: NSObject {
         let nameComponents: PersonNameComponents
 
         switch displayName {
+        case .nickname(let nickname):
+            nameComponents = nickname.nameComponents
         case .systemContactName(let systemContactName):
             nameComponents = systemContactName.nameComponents
         case .profileName(let profileNameComponents):

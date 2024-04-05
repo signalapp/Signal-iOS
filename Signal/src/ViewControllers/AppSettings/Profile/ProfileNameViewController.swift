@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 protocol ProfileNameViewControllerDelegate: AnyObject {
-    func profileNameViewDidComplete(with profileName: ProfileName)
+    func profileNameViewDidComplete(givenName: OWSUserProfile.NameComponent, familyName: OWSUserProfile.NameComponent?)
 }
 
 // MARK: -
@@ -161,11 +161,6 @@ class ProfileNameViewController: OWSTableViewController2 {
             givenName: givenNameTextField.text,
             familyName: familyNameTextField.text
         ) {
-        case .failure(.givenNameMissing):
-            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
-                "PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
-                comment: "Error message shown when user tries to update profile without a given name"
-            ))
         case .failure(.givenNameTooLong):
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
@@ -177,8 +172,17 @@ class ProfileNameViewController: OWSTableViewController2 {
                 comment: "Error message shown when user tries to update profile with a family name that is too long."
             ))
         case let .success(profileName):
-            profileDelegate?.profileNameViewDidComplete(with: profileName)
+            guard let givenName = profileName.givenNameComponent else { fallthrough }
+            profileDelegate?.profileNameViewDidComplete(
+                givenName: givenName,
+                familyName: profileName.familyNameComponent
+            )
             dismiss(animated: true)
+        case .failure(.nameEmpty):
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                "PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
+                comment: "Error message shown when user tries to update profile without a given name"
+            ))
         }
     }
 }

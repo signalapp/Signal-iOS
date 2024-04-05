@@ -13,22 +13,34 @@ class NicknameEditorViewController: OWSTableViewController2 {
     static let maxNoteLengthGlyphs: Int = 240
     static let maxNoteLengthBytes: Int = 2048
 
-    /// The Nickname that was already set when the view appeared.
-    private var initialNickname: ProfileName?
-    /// The note that was already set when the view appeared.
-    private var initialNote: String?
+    struct Context {
+        let db: DB
+        let nicknameManager: any NicknameManager
+    }
 
-    private let thread: TSContactThread
+    private let context: Context
+
+    /// The Nickname that was already set when the view appeared.
+    private let initialNickname: ProfileName?
+    /// The note that was already set when the view appeared.
+    private var initialNote: String? {
+        self.initialNicknameRecord?.note
+    }
+
+    private let recipient: SignalRecipient
+    private let initialNicknameRecord: NicknameRecord?
 
     init(
-        thread: TSContactThread,
-        initialNickname: ProfileName? = nil,
-        initialNote: String? = nil
+        recipient: SignalRecipient,
+        existingNickname: NicknameRecord?,
+        context: Context
     ) {
-        // [Nicknames] TODO: Read the initial values here instead of having them passed in
-        self.thread = thread
-        self.initialNickname = initialNickname
-        self.initialNote = initialNote
+        self.recipient = recipient
+        self.context = context
+
+        self.initialNickname = .init(nicknameRecord: existingNickname)
+        self.initialNicknameRecord = existingNickname
+
         super.init()
 
         if let initialNickname {
@@ -83,7 +95,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
             badged: false
         )
         avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .thread(self.thread)
+            config.dataSource = .address(self.recipient.address)
         }
         return avatarView
     }()
@@ -198,13 +210,88 @@ class NicknameEditorViewController: OWSTableViewController2 {
             self.textViewItem(self.noteTextView),
         ]))
 
+        if self.initialNicknameRecord != nil {
+            contents.add(.init(items: [
+                .item(
+                    name: CommonStrings.deleteButton,
+                    textColor: .ows_accentRed,
+                    actionBlock: { [weak self] in
+                        self?.showDeleteNicknameConfirmation()
+                    }
+                )
+            ]))
+        }
+
         self.contents = contents
     }
 
     // MARK: Handlers
 
     private func saveChanges() {
-        // [Nicknames] TODO: Save nickname and note
+        guard self.canSaveChanges else {
+            owsFail("Shouldn't be able to save")
+        }
+
+        let nickname = self.enteredNickname
+
+        if nickname == nil, self.note == nil {
+            // All fields are empty
+            deleteNickname()
+            return
+        }
+
+        guard let nicknameRecord = NicknameRecord(
+            recipient: self.recipient,
+            givenName: nickname?.givenName,
+            familyName: nickname?.familyName,
+            note: self.note
+        ) else {
+            owsFailBeta("Nickname record could not be initialized")
+            return
+        }
+
+        let nicknameManager = context.nicknameManager
+
+        self.context.db.write { tx in
+            if self.initialNicknameRecord == nil {
+                nicknameManager.insert(nicknameRecord, tx: tx)
+            } else {
+                nicknameManager.update(nicknameRecord, tx: tx)
+            }
+        }
+
+        self.dismiss(animated: true)
+    }
+
+    private func showDeleteNicknameConfirmation() {
+        OWSActionSheets.showConfirmationAlert(
+            title: OWSLocalizedString(
+                "NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE",
+                comment: "The title for a prompt confirming that the user wants to delete the nickname and note."
+            ),
+            message: OWSLocalizedString(
+                "NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE",
+                comment: "The message for a prompt confirming that the user wants to delete the nickname and note."
+            ),
+            proceedTitle: CommonStrings.deleteButton,
+            proceedStyle: .destructive,
+            proceedAction: { [weak self] _ in
+                self?.deleteNickname()
+            },
+            fromViewController: self
+        )
+    }
+
+    private func deleteNickname() {
+        guard let nicknameRecord = self.initialNicknameRecord else {
+            owsFailBeta("Delete button should not be present if there is no nickname to delete")
+            return
+        }
+
+        self.context.db.write { tx in
+            self.context.nicknameManager.delete(nicknameRecord, tx: tx)
+        }
+
         self.dismiss(animated: true)
     }
 }

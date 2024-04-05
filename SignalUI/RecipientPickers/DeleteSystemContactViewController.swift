@@ -125,7 +125,10 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
             return []
         }
         let config: DisplayName.Config = .current()
-        if config.shouldUseNicknames, let nickname = systemContactName.nameComponents.nickname {
+        if
+            config.shouldUseSystemContactNicknames,
+            let nickname = systemContactName.nameComponents.nickname
+        {
             return [nickname]
         }
         var names = [String]()

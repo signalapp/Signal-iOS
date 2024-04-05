@@ -119,12 +119,14 @@ public class AppSetup {
         let threadStore = ThreadStoreImpl()
         let userProfileStore = UserProfileStoreImpl()
         let usernameLookupRecordStore = UsernameLookupRecordStoreImpl()
+        let nicknameRecordStore = NicknameRecordStoreImpl()
         let searchableNameIndexer = SearchableNameIndexerImpl(
             threadStore: threadStore,
             signalAccountStore: signalAccountStore,
             userProfileStore: userProfileStore,
             signalRecipientStore: recipientDatabaseTable,
             usernameLookupRecordStore: usernameLookupRecordStore,
+            nicknameRecordStore: nicknameRecordStore,
             dbForReadTx: { SDSDB.shimOnlyBridge($0).unwrapGrdbRead.database },
             dbForWriteTx: { SDSDB.shimOnlyBridge($0).unwrapGrdbWrite.database }
         )
@@ -132,11 +134,19 @@ public class AppSetup {
             searchableNameIndexer: searchableNameIndexer,
             usernameLookupRecordStore: usernameLookupRecordStore
         )
-        let contactManager = testDependencies?.contactManager ?? OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
-            usernameLookupManager: usernameLookupManager
-        ))
 
         let schedulers = DispatchQueueSchedulers()
+        let nicknameManager = NicknameManagerImpl(
+            nicknameRecordStore: nicknameRecordStore,
+            searchableNameIndexer: searchableNameIndexer,
+            schedulers: schedulers
+        )
+        let contactManager = testDependencies?.contactManager ?? OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
+            usernameLookupManager: usernameLookupManager,
+            recipientDatabaseTable: recipientDatabaseTable,
+            nicknameManager: nicknameManager
+        ))
+
         let db = SDSDB(databaseStorage: databaseStorage)
 
         let authCredentialStore = AuthCredentialStore(keyValueStoreFactory: keyValueStoreFactory)
@@ -655,8 +665,6 @@ public class AppSetup {
             )
         )
 
-        let nicknameRecordStore = NicknameRecordStoreImpl()
-
         let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
 
         // TODO: Move this into ProfileFetcherJob.
@@ -743,7 +751,7 @@ public class AppSetup {
             masterKeySyncManager: masterKeySyncManager,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             messageBackupManager: messageBackupManager,
-            nicknameRecordStore: nicknameRecordStore,
+            nicknameManager: nicknameManager,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             pinnedThreadManager: pinnedThreadManager,

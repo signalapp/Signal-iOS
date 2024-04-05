@@ -127,7 +127,7 @@ class ContactAboutSheet: StackSheetViewController {
         stackView.addArrangedSubview(titleLabel)
         stackView.setCustomSpacing(12, after: titleLabel)
 
-        stackView.addArrangedSubview(ProfileDetailLabel.profile(title: self.contactName))
+        stackView.addArrangedSubview(ProfileDetailLabel.profile(displayName: self.displayName, secondaryName: self.secondaryName))
 
         if isVerified {
             stackView.addArrangedSubview(ProfileDetailLabel.verified())
@@ -141,17 +141,17 @@ class ContactAboutSheet: StackSheetViewController {
         case .connection:
             stackView.addArrangedSubview(ProfileDetailLabel.signalConnectionLink(shouldDismissOnNavigation: true, presentEducationFrom: fromViewController))
         case .blocked:
-            stackView.addArrangedSubview(ProfileDetailLabel.blocked(name: self.contactShortName))
+            stackView.addArrangedSubview(ProfileDetailLabel.blocked(name: self.shortDisplayName))
         case .pending:
-            stackView.addArrangedSubview(ProfileDetailLabel.pendingRequest(name: self.contactShortName))
+            stackView.addArrangedSubview(ProfileDetailLabel.pendingRequest(name: self.shortDisplayName))
         case .noConnection:
-            stackView.addArrangedSubview(ProfileDetailLabel.noDirectChat(name: self.contactShortName))
+            stackView.addArrangedSubview(ProfileDetailLabel.noDirectChat(name: self.shortDisplayName))
         case nil:
             break
         }
 
         if isInSystemContacts {
-            stackView.addArrangedSubview(ProfileDetailLabel.inSystemContacts(name: self.contactShortName))
+            stackView.addArrangedSubview(ProfileDetailLabel.inSystemContacts(name: self.shortDisplayName))
         }
 
         let recipientAddress = thread.contactAddress
@@ -166,24 +166,46 @@ class ContactAboutSheet: StackSheetViewController {
 
     // MARK: Name
 
-    private var contactName: String = ""
-    private var contactShortName: String = ""
+    private var displayName: String = ""
+    private var shortDisplayName: String = ""
+    /// A secondary name to show after the primary name. Used to show a
+    /// contact's profile name when it is overridden by a nickname.
+    private var secondaryName: String?
     private func updateContactNames(tx: SDSAnyReadTransaction) {
         if isLocalUser {
             let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
-            contactName = snapshot.fullName ?? ""
+            displayName = snapshot.fullName ?? ""
             // contactShortName not needed for local user
             return
         }
 
         let displayName = contactsManager.displayName(for: thread.contactAddress, tx: tx)
-        self.contactName = displayName.resolvedValue()
-        self.contactShortName = displayName.resolvedValue(useShortNameIfAvailable: true)
+        self.displayName = displayName.resolvedValue()
+        self.shortDisplayName = displayName.resolvedValue(useShortNameIfAvailable: true)
 
         if case .phoneNumber(let phoneNumber) = displayName {
-            self.contactName = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(
+            self.displayName = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(
                 toLookLikeAPhoneNumber: phoneNumber.stringValue
             )
+        }
+
+        switch displayName {
+        case .nickname:
+            guard
+                let profile = profileManager.fetchUserProfiles(
+                    for: [thread.contactAddress],
+                    tx: tx
+                ).first,
+                let profileName = profile?.nameComponents
+                    .map(DisplayName.profileName(_:))?
+                    .resolvedValue(),
+                profileName != displayName.resolvedValue()
+            else {
+                fallthrough
+            }
+            secondaryName = profileName
+        case .systemContactName, .profileName, .phoneNumber, .username, .unknown:
+            secondaryName = nil
         }
     }
 

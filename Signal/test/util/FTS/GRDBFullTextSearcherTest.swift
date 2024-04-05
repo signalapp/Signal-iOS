@@ -32,7 +32,11 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         let localIdentifiers: LocalIdentifiers = .forUnitTests
 
         SSKEnvironment.shared.setContactManagerForUnitTests(OWSContactsManager(
-            swiftValues: OWSContactsManagerSwiftValues(usernameLookupManager: DependenciesBridge.shared.usernameLookupManager)
+            swiftValues: OWSContactsManagerSwiftValues(
+                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
+                recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
+                nicknameManager: DependenciesBridge.shared.nicknameManager
+            )
         ))
 
         // ensure local client has necessary "registered" state

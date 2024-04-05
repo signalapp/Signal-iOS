@@ -34,7 +34,7 @@ public class FakeContactsManager: NSObject, ContactManager {
     }
 
     public func displayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return displayName(for: address, tx: transaction).resolvedValue(config: DisplayName.Config(shouldUseNicknames: false))
+        return displayName(for: address, tx: transaction).resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: false))
     }
 
     public func shortDisplayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {

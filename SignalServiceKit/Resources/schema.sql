@@ -1544,13 +1544,17 @@ CREATE
             ,"signalRecipientId" INTEGER UNIQUE
             ,"usernameLookupRecordId" BLOB UNIQUE
             ,"value" TEXT NOT NULL
-            ,FOREIGN KEY ("threadId") REFERENCES "model_TSThread"("id"
+            ,"nicknameRecordRecipientId" INTEGER REFERENCES "NicknameRecord"("recipientRowID"
         )
             ON DELETE
                 CASCADE
-                    ON UPDATE
-                        CASCADE
-                        ,FOREIGN KEY ("signalAccountId") REFERENCES "model_SignalAccount"("id"
+                ,FOREIGN KEY ("threadId") REFERENCES "model_TSThread"("id"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+                ,FOREIGN KEY ("signalAccountId") REFERENCES "model_SignalAccount"("id"
 )
     ON DELETE
         CASCADE

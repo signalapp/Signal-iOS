@@ -13,6 +13,8 @@ class OWSContactsManagerTest: SignalBaseTest {
     private let dbV2: MockDB = .init()
 
     private let mockUsernameLookupMananger: MockUsernameLookupManager = .init()
+    private let mockNicknameManager = MockNicknameManager()
+    private let mockRecipientDatabaseTable = MockRecipientDatabaseTable()
 
     override func setUp() {
         super.setUp()
@@ -35,8 +37,22 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     private func makeContactsManager() -> OWSContactsManager {
         return OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
-            usernameLookupManager: mockUsernameLookupMananger
+            usernameLookupManager: mockUsernameLookupMananger,
+            recipientDatabaseTable: mockRecipientDatabaseTable,
+            nicknameManager: mockNicknameManager
         ))
+    }
+
+    private func makeAndInsertRecipient(address: SignalServiceAddress) -> SignalRecipient {
+        let recipient = SignalRecipient(
+            aci: address.aci,
+            pni: nil,
+            phoneNumber: address.e164
+        )
+        self.dbV2.write { tx in
+            mockRecipientDatabaseTable.insertRecipient(recipient, transaction: tx)
+        }
+        return recipient
     }
 
     private func createRecipients(_ serviceIds: [ServiceId]) {
@@ -101,6 +117,45 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     // MARK: - Display Names
+
+    func testGetDisplayNamesWithNicknames() throws {
+        let aliceAddress = SignalServiceAddress(phoneNumber: "+16505550101")
+        let bobAddress = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550102")
+
+        let aliceRecipient = makeAndInsertRecipient(address: aliceAddress)
+        let bobRecipient = makeAndInsertRecipient(address: bobAddress)
+
+        let aliceRecipientRowID = try XCTUnwrap(aliceRecipient.id)
+        let bobRecipientRowID = try XCTUnwrap(bobRecipient.id)
+
+        let aliceNickname = NicknameRecord(
+            recipientRowID: aliceRecipientRowID,
+            givenName: "Alice",
+            familyName: "Doe",
+            note: nil
+        )
+        let bobNickname = NicknameRecord(
+            recipientRowID: bobRecipientRowID,
+            givenName: "Bob",
+            familyName: nil,
+            note: nil
+        )
+
+        self.dbV2.write { tx in
+            mockNicknameManager.insert(aliceNickname, tx: tx)
+            mockNicknameManager.insert(bobNickname, tx: tx)
+        }
+
+        self.read { tx in
+            let contactsManager = self.contactsManager as! OWSContactsManager
+            let actual = contactsManager.displayNames(
+                for: [aliceAddress, bobAddress],
+                tx: tx
+            ).map { $0.resolvedValue() }
+            let expected = ["Alice Doe", "Bob"]
+            XCTAssertEqual(actual, expected)
+        }
+    }
 
     func testGetDisplayNamesWithCachedContactNames() {
         let addresses = [
@@ -188,7 +243,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         }
     }
 
-    func testGetDisplayNamesMixed() {
+    func testGetDisplayNamesMixed() throws {
         let aliceAci = Aci.randomForTesting()
         let aliceAddress = SignalServiceAddress(serviceId: aliceAci, phoneNumber: "+16505550100")
         let aliceAccount = makeAccount(serviceId: aliceAci, phoneNumber: aliceAddress.e164!, fullName: "Alice Aliceson")
@@ -210,11 +265,29 @@ class OWSContactsManagerTest: SignalBaseTest {
 
         let eveAddress = SignalServiceAddress.randomForTesting()
 
+        let feliciaAci = Aci.randomForTesting()
+        let feliciaAddress = SignalServiceAddress(serviceId: feliciaAci, phoneNumber: "+16505550109")
+        // Test that it doesn't show this account name
+        let feliciaProfileName = UUID().uuidString
+        let feliciaAccount = makeAccount(serviceId: feliciaAci, phoneNumber: feliciaAddress.e164!, fullName: feliciaProfileName)
+        createAccounts([feliciaAccount])
+        let feliciaRecipient = makeAndInsertRecipient(address: feliciaAddress)
+        let feliciaRowID = try XCTUnwrap(feliciaRecipient.id)
+        let feliciaNickname = NicknameRecord(
+            recipientRowID: feliciaRowID,
+            givenName: "Felicia",
+            familyName: "Felicity",
+            note: nil
+        )
+        dbV2.write { tx in
+            mockNicknameManager.insert(feliciaNickname, tx: tx)
+        }
+
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
-            let addresses = [aliceAddress, bobAddress, carolAddress, daveAddress, eveAddress]
+            let addresses = [aliceAddress, bobAddress, carolAddress, daveAddress, eveAddress, feliciaAddress]
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
-            let expected = ["Alice Aliceson (home)", "Bob Bobson", "+17035559900", "dave", "Unknown"]
+            let expected = ["Alice Aliceson (home)", "Bob Bobson", "+17035559900", "dave", "Unknown", "Felicia Felicity"]
             XCTAssertEqual(actual, expected)
         }
     }
