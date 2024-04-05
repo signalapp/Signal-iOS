@@ -37,7 +37,7 @@ public enum DisplayName {
 
     public var hasKnownValue: Bool {
         switch self {
-        case .systemContactName, .profileName, .phoneNumber, .username:
+        case .nickname, .systemContactName, .profileName, .phoneNumber, .username:
             return true
         case .deletedAccount, .unknown:
             return false

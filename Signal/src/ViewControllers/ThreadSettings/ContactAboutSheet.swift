@@ -204,7 +204,7 @@ class ContactAboutSheet: StackSheetViewController {
                 fallthrough
             }
             secondaryName = profileName
-        case .systemContactName, .profileName, .phoneNumber, .username, .unknown:
+        case .systemContactName, .profileName, .phoneNumber, .username, .unknown, .deletedAccount:
             secondaryName = nil
         }
     }
