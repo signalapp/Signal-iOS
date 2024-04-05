@@ -96,7 +96,7 @@ public class SignalProxy: NSObject {
             fragment.utf8.count <= 2048,
             let proxyUrl = URL(string: "fake-protocol://\(fragment)"),
             proxyUrl.scheme == "fake-protocol",
-            proxyUrl.user == nil,
+            proxyUrl.user == nil || (DebugFlags.internalSettings && proxyUrl.user == "UNENCRYPTED_FOR_TESTING"),
             proxyUrl.password == nil,
             proxyUrl.path.isEmpty,
             proxyUrl.query == nil,

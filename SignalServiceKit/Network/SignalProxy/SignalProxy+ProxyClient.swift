@@ -39,12 +39,25 @@ extension SignalProxy {
                 proxyPort = 443
             }
 
+            // Special case for testing: UNENCRYPTED_FOR_TESTING@foo.bar connects over TCP instead of TLS.
+            // (This is only the "outer" layer of the proxy; the inner connection to the Signal servers
+            // still uses TLS with a pinned root cert.)
+            let actualHost: String
+            let networkParams: NWParameters
+            if let atSign = proxyHost.firstIndex(of: "@"), proxyHost[..<atSign] == "UNENCRYPTED_FOR_TESTING" {
+                actualHost = String(proxyHost[atSign...].dropFirst())
+                networkParams = .tcp
+            } else {
+                actualHost = proxyHost
+                networkParams = .tls
+            }
+
             connection = NWConnection(
                 to: NWEndpoint.hostPort(
-                    host: NWEndpoint.Host(proxyHost),
+                    host: NWEndpoint.Host(actualHost),
                     port: NWEndpoint.Port(integerLiteral: proxyPort)
                 ),
-                using: .tls
+                using: networkParams
             )
             connection?.stateUpdateHandler = stateDidChange
             receive()
