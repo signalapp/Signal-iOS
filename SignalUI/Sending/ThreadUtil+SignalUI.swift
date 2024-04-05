@@ -40,8 +40,8 @@ extension ThreadUtil {
     public class func enqueueEditMessage(
         body messageBody: MessageBody?,
         thread: TSThread,
-        quotedReplyDraft: DraftQuotedReplyModel? = nil,
-        linkPreviewDraft: OWSLinkPreviewDraft? = nil,
+        quotedReplyEdit: MessageEdits.Edit<Void>,
+        linkPreviewDraft: OWSLinkPreviewDraft?,
         editTarget: TSOutgoingMessage,
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
         transaction readTransaction: SDSAnyReadTransaction
@@ -51,7 +51,7 @@ extension ThreadUtil {
         let unpreparedMessage = UnpreparedOutgoingMessage.buildForEdit(
             thread: thread,
             messageBody: messageBody,
-            quotedReplyDraft: quotedReplyDraft,
+            quotedReplyEdit: quotedReplyEdit,
             linkPreviewDraft: linkPreviewDraft,
             editTarget: editTarget,
             transaction: readTransaction
@@ -173,7 +173,7 @@ extension UnpreparedOutgoingMessage {
     public static func buildForEdit(
         thread: TSThread,
         messageBody: MessageBody?,
-        quotedReplyDraft: DraftQuotedReplyModel?,
+        quotedReplyEdit: MessageEdits.Edit<Void>,
         linkPreviewDraft: OWSLinkPreviewDraft?,
         editTarget: TSOutgoingMessage,
         transaction: SDSAnyReadTransaction
@@ -195,7 +195,7 @@ extension UnpreparedOutgoingMessage {
             edits: edits,
             oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDraft,
-            quotedReplyDraft: quotedReplyDraft
+            quotedReplyEdit: quotedReplyEdit
         )
         return unpreparedMessage
     }

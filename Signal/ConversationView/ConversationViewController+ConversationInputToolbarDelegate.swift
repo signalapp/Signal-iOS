@@ -157,7 +157,9 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 ThreadUtil.enqueueEditMessage(
                     body: messageBody,
                     thread: self.thread,
-                    quotedReplyDraft: inputToolbar.quotedReplyDraft,
+                    // If we have _any_ quoted reply populated, keep the existing quoted reply.
+                    // If its cleared, "change" it to nothing (clear it).
+                    quotedReplyEdit: inputToolbar.quotedReplyDraft == nil ? .change(()) : .keep,
                     linkPreviewDraft: inputToolbar.linkPreviewDraft,
                     editTarget: editTarget,
                     persistenceCompletionHandler: {

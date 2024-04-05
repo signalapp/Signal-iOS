@@ -52,14 +52,14 @@ public class UnpreparedOutgoingMessage {
         edits: MessageEdits,
         oversizeTextDataSource: DataSource?,
         linkPreviewDraft: OWSLinkPreviewDraft?,
-        quotedReplyDraft: DraftQuotedReplyModel?
+        quotedReplyEdit: MessageEdits.Edit<Void>
     ) -> UnpreparedOutgoingMessage {
         return .init(messageType: .editMessage(.init(
             targetMessage: targetMessage,
             edits: edits,
             oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDraft,
-            quotedReplyDraft: quotedReplyDraft
+            quotedReplyEdit: quotedReplyEdit
         )))
     }
 
@@ -142,7 +142,7 @@ public class UnpreparedOutgoingMessage {
             let edits: MessageEdits
             let oversizeTextDataSource: DataSource?
             let linkPreviewDraft: OWSLinkPreviewDraft?
-            let quotedReplyDraft: DraftQuotedReplyModel?
+            let quotedReplyEdit: MessageEdits.Edit<Void>
         }
 
         struct Story {
@@ -317,17 +317,6 @@ public class UnpreparedOutgoingMessage {
             return $0
         }
 
-        let quotedReplyBuilder = message.quotedReplyDraft.map {
-            DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
-                draft: $0,
-                threadUniqueId: thread.uniqueId,
-                tx: tx.asV2Write
-            )
-        }.map {
-            outgoingEditMessage.editedMessage.update(with: $0.info, transaction: tx)
-            return $0
-        }
-
         // All editable messages, by definition, should have been inserted.
         // Fail if we have no row id.
         guard let editedMessageRowId = outgoingEditMessage.editedMessage.sqliteRowId else {
@@ -345,10 +334,6 @@ public class UnpreparedOutgoingMessage {
 
         try linkPreviewBuilder?.finalize(
             owner: .messageLinkPreview(messageRowId: editedMessageRowId),
-            tx: tx.asV2Write
-        )
-        try quotedReplyBuilder?.finalize(
-            owner: .quotedReplyAttachment(messageRowId: editedMessageRowId),
             tx: tx.asV2Write
         )
 
