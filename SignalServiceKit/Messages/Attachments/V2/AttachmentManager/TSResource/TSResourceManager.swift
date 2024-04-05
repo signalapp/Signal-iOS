@@ -35,6 +35,12 @@ public protocol TSResourceManager {
 
     // MARK: Body Attachments (special treatment)
 
+    func createOversizeTextAttachmentPointer(
+        from proto: SSKProtoAttachmentPointer,
+        message: TSMessage,
+        tx: DBWriteTransaction
+    ) throws
+
     func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
         message: TSMessage,

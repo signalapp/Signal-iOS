@@ -28,6 +28,30 @@ public class TSResourceManagerImpl: TSResourceManager {
 
     // MARK: Body Attachments (special treatment)
 
+    public func createOversizeTextAttachmentPointer(
+        from proto: SSKProtoAttachmentPointer,
+        message: TSMessage,
+        tx: DBWriteTransaction
+    ) throws {
+        if FeatureFlags.newAttachmentsUseV2 {
+            guard let messageRowId = message.sqliteRowId else {
+                owsFailDebug("Adding attachments to an uninserted message!")
+                return
+            }
+            try attachmentManager.createAttachmentPointers(
+                from: [proto],
+                owner: .messageOversizeText(messageRowId: messageRowId),
+                tx: tx
+            )
+        } else {
+            tsAttachmentManager.createBodyAttachmentPointers(
+                from: [proto],
+                message: message,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
+        }
+    }
+
     public func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
         message: TSMessage,

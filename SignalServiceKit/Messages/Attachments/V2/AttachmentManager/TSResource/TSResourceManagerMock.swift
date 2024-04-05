@@ -11,6 +11,14 @@ public class TSResourceManagerMock: TSResourceManager {
 
     public init() {}
 
+    public func createOversizeTextAttachmentPointer(
+        from proto: SSKProtoAttachmentPointer,
+        message: TSMessage,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
+
     public func createBodyAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
         message: TSMessage,
