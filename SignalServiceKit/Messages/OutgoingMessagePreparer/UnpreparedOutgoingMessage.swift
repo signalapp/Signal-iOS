@@ -48,14 +48,15 @@ public class UnpreparedOutgoingMessage {
     }
 
     public static func forEditMessage(
-        _ message: OutgoingEditMessage,
+        targetMessage: TSOutgoingMessage,
+        edits: MessageEdits,
         oversizeTextDataSource: DataSource?,
         linkPreviewDraft: OWSLinkPreviewDraft?,
         quotedReplyDraft: DraftQuotedReplyModel?
     ) -> UnpreparedOutgoingMessage {
         return .init(messageType: .editMessage(.init(
-            editedMessage: message.editedMessage,
-            messageForSending: message,
+            targetMessage: targetMessage,
+            edits: edits,
             oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDraft,
             quotedReplyDraft: quotedReplyDraft
@@ -93,7 +94,7 @@ public class UnpreparedOutgoingMessage {
         case .persistable(let message):
             return message.message.timestamp
         case .editMessage(let message):
-            return message.messageForSending.timestamp
+            return message.edits.timestamp
         case .contactSync(let message):
             return message.timestamp
         case .story(let story):
@@ -137,8 +138,8 @@ public class UnpreparedOutgoingMessage {
         }
 
         struct EditMessage {
-            let editedMessage: TSOutgoingMessage
-            let messageForSending: OutgoingEditMessage
+            let targetMessage: TSOutgoingMessage
+            let edits: MessageEdits
             let oversizeTextDataSource: DataSource?
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
@@ -198,148 +199,77 @@ public class UnpreparedOutgoingMessage {
         _ message: MessageType.Persistable,
         tx: SDSAnyWriteTransaction
     ) throws -> PreparedOutgoingMessage.MessageType {
-        return try Self.prepareMessageAttachments(.persistable(message), tx: tx)
-    }
-
-    private func prepareEditMessage(
-        _ message: MessageType.EditMessage,
-        tx: SDSAnyWriteTransaction
-    ) throws -> PreparedOutgoingMessage.MessageType {
-        return try Self.prepareMessageAttachments(.editMessage(message), tx: tx)
-    }
-
-    private enum AttachmentPrepMessage {
-        case persistable(MessageType.Persistable)
-        case editMessage(MessageType.EditMessage)
-    }
-
-    private static func prepareMessageAttachments(
-        _ type: AttachmentPrepMessage,
-        tx: SDSAnyWriteTransaction
-    ) throws -> PreparedOutgoingMessage.MessageType {
-
-        let thread: TSThread?
-        let attachmentOwnerMessage: TSOutgoingMessage
-        let unsavedBodyMediaAttachments: [TSResourceDataSource]
-        let oversizeTextDataSource: DataSource?
-        let linkPreviewDraft: OWSLinkPreviewDraft?
-        let quotedReplyDraft: DraftQuotedReplyModel?
-        let messageStickerDraft: MessageStickerDraft?
-        let contactShareDraft: ContactShareDraft?
-
-        switch type {
-        case .persistable(let persistable):
-            thread = persistable.message.thread(tx: tx)
-            attachmentOwnerMessage = persistable.message
-            unsavedBodyMediaAttachments = persistable.unsavedBodyMediaAttachments
-            oversizeTextDataSource = persistable.oversizeTextDataSource
-            linkPreviewDraft = persistable.linkPreviewDraft
-            quotedReplyDraft = persistable.quotedReplyDraft
-            messageStickerDraft = persistable.messageStickerDraft
-            contactShareDraft = persistable.contactShareDraft
-        case .editMessage(let editMessage):
-            thread = editMessage.editedMessage.thread(tx: tx)
-            attachmentOwnerMessage = editMessage.editedMessage
-            unsavedBodyMediaAttachments = []
-            oversizeTextDataSource = editMessage.oversizeTextDataSource
-            linkPreviewDraft = editMessage.linkPreviewDraft
-            quotedReplyDraft = editMessage.quotedReplyDraft
-            // Note: no sticker because you can't edit sticker messages
-            messageStickerDraft = nil
-            // Note: no contact share because you can't edit contact share messages
-            contactShareDraft = nil
-        }
-
-        guard let thread else {
+        guard let thread = message.message.thread(tx: tx) else {
             throw OWSAssertionError("Outgoing message missing thread.")
         }
 
-        let linkPreviewBuilder = try linkPreviewDraft.map {
+        let linkPreviewBuilder = try message.linkPreviewDraft.map {
             try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
                 from: $0,
                 tx: tx.asV2Write
             )
         }.map {
-            attachmentOwnerMessage.update(with: $0.info, transaction: tx)
+            message.message.update(with: $0.info, transaction: tx)
             return $0
         }
 
-        let quotedReplyBuilder = quotedReplyDraft.map {
+        let quotedReplyBuilder = message.quotedReplyDraft.map {
             DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
                 draft: $0,
                 threadUniqueId: thread.uniqueId,
                 tx: tx.asV2Write
             )
         }.map {
-            attachmentOwnerMessage.update(with: $0.info, transaction: tx)
+            message.message.update(with: $0.info, transaction: tx)
             return $0
         }
 
-        let messageStickerBuilder = try messageStickerDraft.map {
+        let messageStickerBuilder = try message.messageStickerDraft.map {
             try MessageSticker.buildValidatedMessageSticker(fromDraft: $0, transaction: tx)
         }.map {
-            attachmentOwnerMessage.update(with: $0.info, transaction: tx)
+            message.message.update(with: $0.info, transaction: tx)
             return $0
         }
 
-        let contactShareBuilder = try contactShareDraft.map {
+        let contactShareBuilder = try message.contactShareDraft.map {
             try $0.builderForSending(tx: tx)
         }.map {
-            attachmentOwnerMessage.update(withContactShare: $0.info, transaction: tx)
+            message.message.update(withContactShare: $0.info, transaction: tx)
             return $0
         }
 
-        let attachmentOwnerMessageRowId = try {
-            switch type {
-            case .editMessage(let editMessage):
-                // Write changes and insert new edit revisions/records
-                try DependenciesBridge.shared.editManager.insertOutgoingEditRevisions(
-                    for: editMessage.messageForSending,
-                    tx: tx.asV2Write
-                )
-                // All editable messages, by definition, should have been inserted.
-                // Fail if we have no row id.
-                guard let messageRowId = editMessage.editedMessage.sqliteRowId else {
-                    // We failed to insert!
-                    throw OWSAssertionError("Failed to insert message!")
-                }
-                return messageRowId
-            case .persistable(let persistable):
-                persistable.message.anyInsert(transaction: tx)
-                guard let messageRowId = persistable.message.sqliteRowId else {
-                    // We failed to insert!
-                    throw OWSAssertionError("Failed to insert message!")
-                }
-                return messageRowId
-            }
-        }()
+        message.message.anyInsert(transaction: tx)
+        guard let messageRowId = message.message.sqliteRowId else {
+            // We failed to insert!
+            throw OWSAssertionError("Failed to insert message!")
+        }
 
-        if let oversizeTextDataSource {
+        if let oversizeTextDataSource = message.oversizeTextDataSource {
             try DependenciesBridge.shared.tsResourceManager.createOversizeTextAttachmentStream(
                 consuming: oversizeTextDataSource,
-                message: attachmentOwnerMessage,
+                message: message.message,
                 tx: tx.asV2Write
             )
         }
-        if unsavedBodyMediaAttachments.count > 0 {
+        if message.unsavedBodyMediaAttachments.count > 0 {
             try DependenciesBridge.shared.tsResourceManager.createBodyMediaAttachmentStreams(
-                consuming: unsavedBodyMediaAttachments,
-                message: attachmentOwnerMessage,
+                consuming: message.unsavedBodyMediaAttachments,
+                message: message.message,
                 tx: tx.asV2Write
             )
         }
 
         try linkPreviewBuilder?.finalize(
-            owner: .messageLinkPreview(messageRowId: attachmentOwnerMessageRowId),
+            owner: .messageLinkPreview(messageRowId: messageRowId),
             tx: tx.asV2Write
         )
         try quotedReplyBuilder?.finalize(
-            owner: .quotedReplyAttachment(messageRowId: attachmentOwnerMessageRowId),
+            owner: .quotedReplyAttachment(messageRowId: messageRowId),
             tx: tx.asV2Write
         )
 
         try messageStickerBuilder?.finalize(
-            owner: .messageSticker(messageRowId: attachmentOwnerMessageRowId),
+            owner: .messageSticker(messageRowId: messageRowId),
             tx: tx.asV2Write
         )
         if let stickerInfo = messageStickerBuilder?.info {
@@ -347,23 +277,86 @@ public class UnpreparedOutgoingMessage {
         }
 
         try? contactShareBuilder?.finalize(
-            owner: .messageContactAvatar(messageRowId: attachmentOwnerMessageRowId),
+            owner: .messageContactAvatar(messageRowId: messageRowId),
             tx: tx.asV2Write
         )
 
-        switch type {
-        case .editMessage(let editMessage):
-            return .editMessage(PreparedOutgoingMessage.MessageType.EditMessage(
-                editedMessageRowId: attachmentOwnerMessageRowId,
-                editedMessage: editMessage.editedMessage,
-                messageForSending: editMessage.messageForSending
-            ))
-        case .persistable(let persistable):
-            return .persisted(PreparedOutgoingMessage.MessageType.Persisted(
-                rowId: attachmentOwnerMessageRowId,
-                message: persistable.message
-            ))
+        return .persisted(PreparedOutgoingMessage.MessageType.Persisted(
+            rowId: messageRowId,
+            message: message.message
+        ))
+    }
+
+    private func prepareEditMessage(
+        _ message: MessageType.EditMessage,
+        tx: SDSAnyWriteTransaction
+    ) throws -> PreparedOutgoingMessage.MessageType {
+        guard let thread = message.targetMessage.thread(tx: tx) else {
+            throw OWSAssertionError("Outgoing message missing thread.")
         }
+
+        let outgoingEditMessage = DependenciesBridge.shared.editManager.createOutgoingEditMessage(
+            targetMessage: message.targetMessage,
+            thread: thread,
+            edits: message.edits,
+            tx: tx.asV2Read
+        )
+        // Write changes and insert new edit revisions/records
+        try DependenciesBridge.shared.editManager.insertOutgoingEditRevisions(
+            for: outgoingEditMessage,
+            tx: tx.asV2Write
+        )
+
+        let linkPreviewBuilder = try message.linkPreviewDraft.map {
+            try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+                from: $0,
+                tx: tx.asV2Write
+            )
+        }.map {
+            outgoingEditMessage.editedMessage.update(with: $0.info, transaction: tx)
+            return $0
+        }
+
+        let quotedReplyBuilder = message.quotedReplyDraft.map {
+            DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
+                draft: $0,
+                threadUniqueId: thread.uniqueId,
+                tx: tx.asV2Write
+            )
+        }.map {
+            outgoingEditMessage.editedMessage.update(with: $0.info, transaction: tx)
+            return $0
+        }
+
+        // All editable messages, by definition, should have been inserted.
+        // Fail if we have no row id.
+        guard let editedMessageRowId = outgoingEditMessage.editedMessage.sqliteRowId else {
+            // We failed to insert!
+            throw OWSAssertionError("Failed to insert message!")
+        }
+
+        if let oversizeTextDataSource = message.oversizeTextDataSource {
+            try DependenciesBridge.shared.tsResourceManager.createOversizeTextAttachmentStream(
+                consuming: oversizeTextDataSource,
+                message: outgoingEditMessage.editedMessage,
+                tx: tx.asV2Write
+            )
+        }
+
+        try linkPreviewBuilder?.finalize(
+            owner: .messageLinkPreview(messageRowId: editedMessageRowId),
+            tx: tx.asV2Write
+        )
+        try quotedReplyBuilder?.finalize(
+            owner: .quotedReplyAttachment(messageRowId: editedMessageRowId),
+            tx: tx.asV2Write
+        )
+
+        return .editMessage(.init(
+            editedMessageRowId: editedMessageRowId,
+            editedMessage: outgoingEditMessage.editedMessage,
+            messageForSending: outgoingEditMessage
+        ))
     }
 
     private func prepareContactSyncMessage(

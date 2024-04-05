@@ -190,15 +190,9 @@ extension UnpreparedOutgoingMessage {
             bodyRanges: .change(truncatedBody?.ranges)
         )
 
-        let message = DependenciesBridge.shared.editManager.createOutgoingEditMessage(
-            targetMessage: editTarget,
-            thread: thread,
-            edits: edits,
-            tx: transaction.asV2Read
-        )
-
         let unpreparedMessage = UnpreparedOutgoingMessage.forEditMessage(
-            message,
+            targetMessage: editTarget,
+            edits: edits,
             oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDraft,
             quotedReplyDraft: quotedReplyDraft
