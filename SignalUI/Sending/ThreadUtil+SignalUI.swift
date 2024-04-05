@@ -197,9 +197,8 @@ extension UnpreparedOutgoingMessage {
             tx: transaction.asV2Read
         )
 
-        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+        let unpreparedMessage = UnpreparedOutgoingMessage.forEditMessage(
             message,
-            unsavedBodyMediaAttachments: [],
             oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDraft,
             quotedReplyDraft: quotedReplyDraft

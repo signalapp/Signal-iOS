@@ -23,17 +23,7 @@ public class UnpreparedOutgoingMessage {
         messageStickerDraft: MessageStickerDraft? = nil,
         contactShareDraft: ContactShareDraft? = nil
     ) -> UnpreparedOutgoingMessage {
-        if let editMessage = message as? OutgoingEditMessage {
-            owsAssertDebug(messageStickerDraft == nil, "Can't edit sticker messages")
-            return .init(messageType: .editMessage(.init(
-                editedMessage: editMessage.editedMessage,
-                messageForSending: editMessage,
-                unsavedBodyMediaAttachments: unsavedBodyMediaAttachments,
-                oversizeTextDataSource: oversizeTextDataSource,
-                linkPreviewDraft: linkPreviewDraft,
-                quotedReplyDraft: quotedReplyDraft
-            )))
-        } else if !message.shouldBeSaved {
+        if !message.shouldBeSaved {
             owsAssertDebug(
                 unsavedBodyMediaAttachments.isEmpty
                 && oversizeTextDataSource == nil
@@ -55,6 +45,21 @@ public class UnpreparedOutgoingMessage {
                 contactShareDraft: contactShareDraft
             )))
         }
+    }
+
+    public static func forEditMessage(
+        _ message: OutgoingEditMessage,
+        oversizeTextDataSource: DataSource?,
+        linkPreviewDraft: OWSLinkPreviewDraft?,
+        quotedReplyDraft: DraftQuotedReplyModel?
+    ) -> UnpreparedOutgoingMessage {
+        return .init(messageType: .editMessage(.init(
+            editedMessage: message.editedMessage,
+            messageForSending: message,
+            oversizeTextDataSource: oversizeTextDataSource,
+            linkPreviewDraft: linkPreviewDraft,
+            quotedReplyDraft: quotedReplyDraft
+        )))
     }
 
     public static func forContactSync(
@@ -134,7 +139,6 @@ public class UnpreparedOutgoingMessage {
         struct EditMessage {
             let editedMessage: TSOutgoingMessage
             let messageForSending: OutgoingEditMessage
-            let unsavedBodyMediaAttachments: [TSResourceDataSource]
             let oversizeTextDataSource: DataSource?
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
@@ -236,7 +240,7 @@ public class UnpreparedOutgoingMessage {
         case .editMessage(let editMessage):
             thread = editMessage.editedMessage.thread(tx: tx)
             attachmentOwnerMessage = editMessage.editedMessage
-            unsavedBodyMediaAttachments = editMessage.unsavedBodyMediaAttachments
+            unsavedBodyMediaAttachments = []
             oversizeTextDataSource = editMessage.oversizeTextDataSource
             linkPreviewDraft = editMessage.linkPreviewDraft
             quotedReplyDraft = editMessage.quotedReplyDraft
