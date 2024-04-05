@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public extension OWSFileSystem {
@@ -172,25 +173,18 @@ public extension OWSFileSystem {
         do {
             try FileManager.default.removeItem(atPath: filePath)
             return true
+        } catch POSIXError.ENOENT where ignoreIfMissing, CocoaError.fileNoSuchFile where ignoreIfMissing {
+            // Ignore "No such file or directory" error.
+            return true
+        } catch CocoaError.fileWriteNoPermission {
+            let attemptedUrl = URL(fileURLWithPath: filePath)
+            let knownNoWritePermissionUrls = [
+                OWSFileSystem.appSharedDataDirectoryURL().appendingPathComponent(".com.apple.mobile_container_manager.metadata.plist")
+            ]
+            owsAssertDebug(knownNoWritePermissionUrls.contains(attemptedUrl))
+            return false
         } catch {
-            let nsError = error as NSError
-
-            let isPosixNoSuchFileError = (nsError.domain == NSPOSIXErrorDomain && nsError.code == ENOENT)
-            let isCocoaNoSuchFileError = (nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileNoSuchFileError)
-            if ignoreIfMissing,
-                isPosixNoSuchFileError || isCocoaNoSuchFileError {
-                // Ignore "No such file or directory" error.
-                return true
-            } else if nsError.hasDomain(NSCocoaErrorDomain, code: NSFileWriteNoPermissionError) {
-                let attemptedUrl = URL(fileURLWithPath: filePath)
-                let knownNoWritePermissionUrls = [
-                    OWSFileSystem.appSharedDataDirectoryURL().appendingPathComponent(".com.apple.mobile_container_manager.metadata.plist")
-                ]
-                owsAssertDebug(knownNoWritePermissionUrls.contains(attemptedUrl))
-                return false
-            } else {
-                owsFailDebug("Error: \(nsError.shortDescription)")
-            }
+            owsFailDebug("\(error.shortDescription)")
             return false
         }
     }
