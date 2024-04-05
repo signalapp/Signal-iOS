@@ -74,22 +74,15 @@ public protocol EditManager {
 
     // MARK: - Outgoing Edit Send
 
-    /// Creates a copy of the passed in `targetMessage`, then constructs
-    /// an `OutgoingEditMessage` with this new copy.  Note that this only creates an
-    /// in-memory copy and doesn't persist the new message.
+    /// Fetches a fresh version of the `targetMessage`, creates and inserts
+    /// copies into the database with edits applied as needed, and finally
+    /// constructs and returns an `OutgoingEditMessage` with the newest copy.
     func createOutgoingEditMessage(
         targetMessage: TSOutgoingMessage,
         thread: TSThread,
         edits: MessageEdits,
-        tx: DBReadTransaction
-    ) -> OutgoingEditMessage
-
-    /// Fetches a fresh version of the message targeted by `OutgoingEditMessage`,
-    /// and creates the necessary copies of the edits in the database.
-    func insertOutgoingEditRevisions(
-        for outgoingEditMessage: OutgoingEditMessage,
         tx: DBWriteTransaction
-    ) throws
+    ) throws -> OutgoingEditMessage
 
     // MARK: - Edit Revision Read State
 

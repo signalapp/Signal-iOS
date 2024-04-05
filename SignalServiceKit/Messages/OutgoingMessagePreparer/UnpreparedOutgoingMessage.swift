@@ -295,15 +295,10 @@ public class UnpreparedOutgoingMessage {
             throw OWSAssertionError("Outgoing message missing thread.")
         }
 
-        let outgoingEditMessage = DependenciesBridge.shared.editManager.createOutgoingEditMessage(
+        let outgoingEditMessage = try DependenciesBridge.shared.editManager.createOutgoingEditMessage(
             targetMessage: message.targetMessage,
             thread: thread,
             edits: message.edits,
-            tx: tx.asV2Read
-        )
-        // Write changes and insert new edit revisions/records
-        try DependenciesBridge.shared.editManager.insertOutgoingEditRevisions(
-            for: outgoingEditMessage,
             tx: tx.asV2Write
         )
 

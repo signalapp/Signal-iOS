@@ -241,8 +241,8 @@ public class EditManagerImpl: EditManager {
         targetMessage: TSOutgoingMessage,
         thread: TSThread,
         edits: MessageEdits,
-        tx: DBReadTransaction
-    ) -> OutgoingEditMessage {
+        tx: DBWriteTransaction
+    ) throws -> OutgoingEditMessage {
 
         let editTarget = OutgoingEditMessageWrapper(
             message: targetMessage,
@@ -265,20 +265,13 @@ public class EditManagerImpl: EditManager {
             tx: tx
         )
 
-        return context.dataStore.createOutgoingEditMessage(
+        let outgoingEditMessage = context.dataStore.createOutgoingEditMessage(
             thread: thread,
             targetMessageTimestamp: targetMessage.timestamp,
             editMessage: editedMessage,
             tx: tx
         )
-    }
 
-    /// Fetches a fresh version of the message targeted by `OutgoingEditMessage`,
-    /// and creates the necessary copies of the edits in the database.
-    public func insertOutgoingEditRevisions(
-        for outgoingEditMessage: OutgoingEditMessage,
-        tx: DBWriteTransaction
-    ) throws {
         guard let editTarget = context.editMessageStore.editTarget(
             timestamp: outgoingEditMessage.targetMessageTimestamp,
             authorAci: nil,
@@ -292,6 +285,8 @@ public class EditManagerImpl: EditManager {
             editTarget: editTarget.wrapper,
             tx: tx
         )
+
+        return outgoingEditMessage
     }
 
     // MARK: - Edit Utilities
