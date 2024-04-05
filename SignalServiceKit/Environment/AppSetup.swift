@@ -659,7 +659,8 @@ public class AppSetup {
                 signalServiceAddressCache: signalServiceAddressCache,
                 storyStore: storyStore,
                 threadStore: threadStore,
-                tsAccountManager: tsAccountManager
+                tsAccountManager: tsAccountManager,
+                usernameLookupManager: usernameLookupManager
             ),
             streamProvider: MessageBackupProtoStreamProviderImpl(
                 backupKeyMaterial: MessageBackupKeyMaterialImpl(svr: svr)

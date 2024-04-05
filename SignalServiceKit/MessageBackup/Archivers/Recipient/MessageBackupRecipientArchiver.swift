@@ -56,6 +56,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
     private let storyStore: StoryStore
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
+    private let usernameLookupManager: UsernameLookupManager
 
     public init(
         blockingManager: MessageBackup.Shims.BlockingManager,
@@ -67,7 +68,8 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         signalServiceAddressCache: SignalServiceAddressCache,
         storyStore: StoryStore,
         threadStore: ThreadStore,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        usernameLookupManager: UsernameLookupManager
     ) {
         self.blockingManager = blockingManager
         self.groupsV2 = groupsV2
@@ -79,6 +81,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         self.storyStore = storyStore
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
+        self.usernameLookupManager = usernameLookupManager
     }
 
     private lazy var destinationArchivers: [MessageBackupRecipientDestinationArchiver] = [
@@ -90,7 +93,8 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
             recipientManager: recipientManager,
             signalServiceAddressCache: signalServiceAddressCache,
             storyStore: storyStore,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
+            usernameLookupManager: usernameLookupManager
         ),
         MessageBackupGroupRecipientArchiver(
             groupsV2: groupsV2,

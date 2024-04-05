@@ -20,6 +20,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
     private let signalServiceAddressCache: SignalServiceAddressCache
     private let storyStore: StoryStore
     private let tsAccountManager: TSAccountManager
+    private let usernameLookupManager: UsernameLookupManager
 
     public init(
         blockingManager: MessageBackup.Shims.BlockingManager,
@@ -29,7 +30,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         recipientManager: any SignalRecipientManager,
         signalServiceAddressCache: SignalServiceAddressCache,
         storyStore: StoryStore,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        usernameLookupManager: UsernameLookupManager
     ) {
         self.blockingManager = blockingManager
         self.profileManager = profileManager
@@ -39,6 +41,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         self.signalServiceAddressCache = signalServiceAddressCache
         self.storyStore = storyStore
         self.tsAccountManager = tsAccountManager
+        self.usernameLookupManager = usernameLookupManager
     }
 
     private typealias ArchivingAddress = MessageBackup.RecipientArchivingContext.Address
@@ -90,7 +93,12 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             contact.aci = recipient.aci.map(\.rawUUID.data)
             contact.pni = recipient.pni.map(\.rawUUID.data)
             contact.e164 = recipient.address.e164.map(\.uint64Value)
-            // TODO: username?
+
+            if let aci = recipient.aci {
+                contact.username = usernameLookupManager.fetchUsername(
+                    forAci: aci, transaction: tx
+                )
+            }
 
             let userProfile = self.profileManager.getUserProfile(for: recipient.address, tx: tx)
             contact.profileKey = userProfile?.profileKey.map(\.keyData)
@@ -227,6 +235,13 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         /// finished restoring and launched we want the cache to have accurate
         /// mappings based on the recipients we just restored.
         signalServiceAddressCache.updateRecipient(recipient, tx: tx)
+
+        if
+            let aci = recipient.aci,
+            let username = contactProto.username
+        {
+            usernameLookupManager.saveUsername(username, forAci: aci, transaction: tx)
+        }
 
         if contactProto.profileSharing {
             // Add to the whitelist.
