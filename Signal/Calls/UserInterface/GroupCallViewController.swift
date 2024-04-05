@@ -43,6 +43,8 @@ class GroupCallViewController: UIViewController {
 
     private let scrollView = UIScrollView()
 
+    private let incomingReactionsView = IncomingReactionsView()
+
     private var isCallMinimized = false {
         didSet { speakerView.isCallMinimized = isCallMinimized }
     }
@@ -259,6 +261,14 @@ class GroupCallViewController: UIViewController {
 
         scrollView.addSubview(videoGrid)
         scrollView.addSubview(speakerPage)
+
+        if FeatureFlags.callReactionReceiveSupport {
+            view.addSubview(incomingReactionsView)
+            incomingReactionsView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 22)
+            incomingReactionsView.autoPinEdge(.bottom, to: .top, of: videoOverflow, withOffset: -25)
+            incomingReactionsView.widthAnchor.constraint(equalToConstant: IncomingReactionsView.Constants.viewWidth).isActive = true
+            incomingReactionsView.heightAnchor.constraint(equalToConstant: IncomingReactionsView.viewHeight).isActive = true
+        }
 
         scrollView.addSubview(swipeToastView)
         swipeToastView.autoPinEdge(.bottom, to: .bottom, of: videoGrid, withOffset: -22)
@@ -986,6 +996,25 @@ extension GroupCallViewController: CallObserver {
             }
         ))
         presentActionSheet(actionSheet)
+    }
+
+    func groupCallReceivedReactions(_ call: SignalCall, reactions: [SignalRingRTC.Reaction]) {
+        let mappedReactions = databaseStorage.read { tx in
+            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+            return reactions.map { reaction in
+                let name: String
+                if
+                    let remoteDeviceState = call.groupCall.remoteDeviceStates[reaction.demuxId],
+                    remoteDeviceState.aci != localIdentifiers?.aci
+                {
+                    name = contactsManager.displayName(for: remoteDeviceState.address, tx: tx).resolvedValue()
+                } else {
+                    name = CommonStrings.you
+                }
+                return Reaction(emoji: reaction.value, name: name, timestamp: Date.timeIntervalSinceReferenceDate)
+            }
+        }
+        self.incomingReactionsView.addReactions(reactions: mappedReactions)
     }
 
     func callMessageSendFailedUntrustedIdentity(_ call: SignalCall) {

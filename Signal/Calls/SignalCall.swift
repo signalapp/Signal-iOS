@@ -23,6 +23,7 @@ public protocol CallObserver: AnyObject {
     func groupCallRequestMembershipProof(_ call: SignalCall)
     func groupCallRequestGroupMembers(_ call: SignalCall)
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason)
+    func groupCallReceivedReactions(_ call: SignalCall, reactions: [SignalRingRTC.Reaction])
 
     /// Invoked if a call message failed to send because of a safety number change
     /// UI observing call state may choose to alert the user (e.g. presenting a SafetyNumberConfirmationSheet)
@@ -43,6 +44,7 @@ public extension CallObserver {
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
+    func groupCallReceivedReactions(_ call: SignalCall, reactions: [SignalRingRTC.Reaction]) {}
 
     func callMessageSendFailedUntrustedIdentity(_ call: SignalCall) {}
 }
@@ -515,7 +517,13 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onReactions groupCall: SignalRingRTC.GroupCall, reactions: [SignalRingRTC.Reaction]) {
-        // TODO: Implement handling of reactions.
+        guard FeatureFlags.callReactionReceiveSupport else { return }
+        observers.elements.forEach {
+            $0.groupCallReceivedReactions(
+                self,
+                reactions: reactions
+            )
+        }
     }
 
     public func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [UInt32]) {

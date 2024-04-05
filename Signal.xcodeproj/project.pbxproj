@@ -1868,11 +1868,13 @@
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E14592632B59A86E00536BF2 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
+		E16B440E2BBF242C00D2583E /* ReactionsModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */; };
 		E17283DE2B2A713C00302DC7 /* CallControlsConfirmationToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */; };
 		E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */; };
 		E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */; };
 		E1C2A54B2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */; };
 		E1DB073D2BA4FEDD00181E4C /* FlipCameraTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DB073C2BA4FEDD00181E4C /* FlipCameraTooltip.swift */; };
+		E1DDFC202BAB5A97007C67FB /* IncomingReactionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DDFC1F2BAB5A97007C67FB /* IncomingReactionsView.swift */; };
 		E1E78CAD2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E78CAC2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift */; };
 		E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */; };
 		E1E78CB12B573C3100B6FC2D /* CallMemberWaitingAndErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E78CB02B573C3100B6FC2D /* CallMemberWaitingAndErrorView.swift */; };
@@ -4810,12 +4812,14 @@
 		D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitializationTests.swift; sourceTree = "<group>"; };
 		E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
+		E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionsModelTest.swift; sourceTree = "<group>"; };
 		E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsConfirmationToast.swift; sourceTree = "<group>"; };
 		E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountTest.swift; sourceTree = "<group>"; };
 		E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientHidingManager.swift; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteSystemContactViewController.swift; sourceTree = "<group>"; };
 		E1DB073C2BA4FEDD00181E4C /* FlipCameraTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCameraTooltip.swift; sourceTree = "<group>"; };
+		E1DDFC1F2BAB5A97007C67FB /* IncomingReactionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingReactionsView.swift; sourceTree = "<group>"; };
 		E1E78CAC2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberChromeOverlayView.swift; sourceTree = "<group>"; };
 		E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberCameraOffView.swift; sourceTree = "<group>"; };
 		E1E78CB02B573C3100B6FC2D /* CallMemberWaitingAndErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberWaitingAndErrorView.swift; sourceTree = "<group>"; };
@@ -6964,6 +6968,7 @@
 			isa = PBXGroup;
 			children = (
 				50552C302BAC079A00815474 /* CallLinkTest.swift */,
+				E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -8730,6 +8735,7 @@
 				88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */,
 				88588D17252D312800405414 /* GroupCallViewController.swift */,
 				1700E33E28B856FB0073D949 /* IncomingCallControls.swift */,
+				E1DDFC1F2BAB5A97007C67FB /* IncomingReactionsView.swift */,
 				34B3F83B1E8DF1700035BE1A /* IndividualCallViewController.swift */,
 				88238EA124E9DDB700F28079 /* LocalVideoView.swift */,
 				B935268F2B0E63C300421E6A /* NewCallViewController.swift */,
@@ -13010,6 +13016,7 @@
 				D9E7C8792B9B9072005BD3B9 /* IdentifierIndexedArray.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				1700E33F28B856FC0073D949 /* IncomingCallControls.swift in Sources */,
+				E1DDFC202BAB5A97007C67FB /* IncomingReactionsView.swift in Sources */,
 				4CD4E7D523E8CCFE00834B1B /* IndividualCall.swift in Sources */,
 				88D23D2023CEC0C700B0E74B /* IndividualCallService.swift in Sources */,
 				34B3F8751E8DF1700035BE1A /* IndividualCallViewController.swift in Sources */,
@@ -13365,6 +13372,7 @@
 				66CDB7602AFC45CF009A36EC /* ProvisioningCoordinator+Mocks.swift in Sources */,
 				66CDB75D2AFC42FC009A36EC /* ProvisioningCoordinatorTest.swift in Sources */,
 				349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */,
+				E16B440E2BBF242C00D2583E /* ReactionsModelTest.swift in Sources */,
 				661278082996BA8900A1D5A1 /* RegistrationCoordinatorTest.swift in Sources */,
 				6612780D2996BD0300A1D5A1 /* RegistrationCoordinatorTestShims.swift in Sources */,
 				F963164B291AE06C00218FB7 /* ScrubbingLogFormatterTest.swift in Sources */,
