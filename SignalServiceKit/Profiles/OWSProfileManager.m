@@ -1041,10 +1041,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                        authedAccount:authedAccount
                          transaction:transaction
                           completion:nil];
-
-    if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
-        [self downloadAndDecryptAvatarIfNeededObjCWithUserProfile:userProfile authedAccount:authedAccount];
-    }
 }
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
@@ -1115,7 +1111,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 }
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
-                            downloadIfMissing:(BOOL)downloadIfMissing
                                 authedAccount:(AuthedAccount *)authedAccount
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -1125,11 +1120,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     if (userProfile.avatarFileName.length > 0) {
         return [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
-    }
-
-    if (downloadIfMissing && (userProfile.avatarUrlPath.length > 0)) {
-        // Try to fill in missing avatar.
-        [self downloadAndDecryptAvatarIfNeededObjCWithUserProfile:userProfile authedAccount:authedAccount];
     }
 
     return nil;
@@ -1161,18 +1151,12 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 }
 
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
-                                    downloadIfMissing:(BOOL)downloadIfMissing
                                         authedAccount:(AuthedAccount *)authedAccount
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
-
-    if (downloadIfMissing && userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
-        // Try to fill in missing avatar.
-        [self downloadAndDecryptAvatarIfNeededObjCWithUserProfile:userProfile authedAccount:authedAccount];
-    }
 
     return userProfile.avatarUrlPath;
 }

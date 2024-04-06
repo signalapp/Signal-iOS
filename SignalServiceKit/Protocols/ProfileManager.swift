@@ -42,18 +42,6 @@ public protocol ProfileManager: ProfileManagerProtocol {
     func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile>
     func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?]
 
-    /// Downloads an avatar if it hasn't been downloaded yet.
-    ///
-    /// We may know a profile's avatar URL (avatarUrlPath != nil) but not have
-    /// downloaded the avatar data yet (avatarFileName == nil). We use this
-    /// method to fill in these missing avatars.
-    ///
-    /// If the avatar has already been downloaded, this method is a no-op.
-    func downloadAndDecryptAvatarIfNeeded(
-        userProfile: OWSUserProfile,
-        authedAccount: AuthedAccount
-    ) async throws
-
     /// Downloads & decrypts the avatar at a particular URL.
     ///
     /// While this method de-dupes in-flight requests, it won't de-dupe requests

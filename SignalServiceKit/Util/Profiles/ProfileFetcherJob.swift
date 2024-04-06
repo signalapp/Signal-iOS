@@ -259,7 +259,6 @@ public class ProfileFetcherJob: NSObject {
         let didAlreadyDownloadAvatar = databaseStorage.read { transaction -> Bool in
             let oldAvatarUrlPath = profileManager.profileAvatarURLPath(
                 for: profileAddress,
-                downloadIfMissing: false,
                 authedAccount: options.authedAccount,
                 transaction: transaction
             )

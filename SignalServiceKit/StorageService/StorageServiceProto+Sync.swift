@@ -1152,7 +1152,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
         if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(
             for: localAddress,
-            downloadIfMissing: true,
             authedAccount: authedAccount,
             transaction: transaction
         ) {
@@ -1258,7 +1257,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction)
         let localAvatarUrl = profileManager.profileAvatarURLPath(
             for: localAddress,
-            downloadIfMissing: true,
             authedAccount: authedAccount,
             transaction: transaction
         )

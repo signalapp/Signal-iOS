@@ -118,7 +118,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                                 transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
-                            downloadIfMissing:(BOOL)downloadIfMissing
                                 authedAccount:(AuthedAccount *)authedAccount
                                   transaction:(SDSAnyReadTransaction *)transaction;
 

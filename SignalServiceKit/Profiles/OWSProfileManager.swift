@@ -1342,19 +1342,6 @@ extension OWSProfileManager {
         let profileKey: Data
     }
 
-    @objc
-    func downloadAndDecryptAvatarIfNeededObjC(userProfile: OWSUserProfile, authedAccount: AuthedAccount) {
-        Task {
-            try await self.downloadAndDecryptAvatarIfNeeded(userProfile: userProfile, authedAccount: authedAccount)
-        }
-    }
-
-    public func downloadAndDecryptAvatarIfNeeded(userProfile: OWSUserProfile, authedAccount: AuthedAccount) async throws {
-        let backgroundTask = OWSBackgroundTask(label: #function)
-        defer { backgroundTask.end() }
-        try await _downloadAndDecryptAvatarIfNeeded(internalAddress: userProfile.internalAddress, authedAccount: authedAccount)
-    }
-
     private func _downloadAndDecryptAvatarIfNeeded(internalAddress: SignalServiceAddress, authedAccount: AuthedAccount) async throws {
         let oldProfile = databaseStorage.read { tx in OWSUserProfile.getUserProfile(for: internalAddress, transaction: tx) }
         guard

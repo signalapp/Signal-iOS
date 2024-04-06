@@ -225,7 +225,6 @@ extension ContactsViewHelper {
                 }
                 if let profileAvatar = profileManagerImpl.profileAvatar(
                     for: address,
-                    downloadIfMissing: true,
                     authedAccount: .implicit(),
                     transaction: tx
                 ) {

@@ -49,10 +49,6 @@ extension OWSFakeProfileManager: ProfileManager {
         return Promise(error: OWSGenericError("Not supported."))
     }
 
-    public func downloadAndDecryptAvatarIfNeeded(userProfile: OWSUserProfile, authedAccount: AuthedAccount) async throws {
-        throw OWSGenericError("Not supported.")
-    }
-
     public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> Data {
         throw OWSGenericError("Not supported.")
     }
