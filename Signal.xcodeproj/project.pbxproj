@@ -8107,9 +8107,15 @@
 		724D47B32B97C226001BE973 /* Profiles */ = {
 			isa = PBXGroup;
 			children = (
+				F9C5CB69289453B200548EEE /* BadgeAssets.swift */,
+				F9C5CB66289453B200548EEE /* BadgeStore.swift */,
+				F9C5CB68289453B200548EEE /* BulkProfileFetch.swift */,
+				50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */,
 				346129B11FD1F7E800532771 /* OWSProfileManager.h */,
 				346129B21FD1F7E800532771 /* OWSProfileManager.m */,
 				3470249D2385B6360078D72C /* OWSProfileManager.swift */,
+				F9C5CB67289453B200548EEE /* ProfileFetcherJob.swift */,
+				F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */,
 				3470249F238C85850078D72C /* VersionedProfilesImpl.swift */,
 			);
 			path = Profiles;
@@ -10986,7 +10992,6 @@
 			isa = PBXGroup;
 			children = (
 				720547F12B9C8F5E00E2CF2F /* Avatars */,
-				F9C5CB65289453B200548EEE /* Profiles */,
 				C1A0F7A52BA0A11E0009DC0D /* StreamTransform */,
 				6675F64C2925C012007A311E /* APNSRotationStore.swift */,
 				F9C5CB00289453B200548EEE /* AppContext.h */,
@@ -11132,19 +11137,6 @@
 				F9C5CB29289453B200548EEE /* WeakTimer.swift */,
 			);
 			path = Util;
-			sourceTree = "<group>";
-		};
-		F9C5CB65289453B200548EEE /* Profiles */ = {
-			isa = PBXGroup;
-			children = (
-				F9C5CB69289453B200548EEE /* BadgeAssets.swift */,
-				F9C5CB66289453B200548EEE /* BadgeStore.swift */,
-				F9C5CB68289453B200548EEE /* BulkProfileFetch.swift */,
-				50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */,
-				F9C5CB67289453B200548EEE /* ProfileFetcherJob.swift */,
-				F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */,
-			);
-			path = Profiles;
 			sourceTree = "<group>";
 		};
 		F9C5CB82289453B200548EEE /* TestUtils */ = {
