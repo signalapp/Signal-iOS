@@ -389,7 +389,7 @@ public class OWSChatConnection: NSObject {
         owsAssertDebug(requestUrl.host == nil)
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
         let requestBuilder = WebSocketProtoWebSocketRequestMessage.builder(verb: requestInfo.httpMethod,
-                                                                           path: "/\(requestUrl)",
+                                                                           path: "/\(requestUrl.relativeString)",
                                                                            requestID: requestInfo.requestId)
 
         let httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
