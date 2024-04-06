@@ -404,7 +404,7 @@ public class OWSChatConnection: NSObject {
         owsAssertDebug(requestUrl.host == nil)
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
         let requestBuilder = WebSocketProtoWebSocketRequestMessage.builder(verb: httpMethod,
-                                                                           path: "/\(requestUrl)",
+                                                                           path: "/\(requestUrl.relativeString)",
                                                                            requestID: requestInfo.requestId)
 
         let httpHeaders = OWSHttpHeaders()
