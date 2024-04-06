@@ -23,10 +23,6 @@ class NSEContext: NSObject, AppContext {
     // In NSE foreground and launch are the same.
     var appForegroundTime: Date { return appLaunchTime }
 
-    func keychainStorage() -> SSKKeychainStorage {
-        return SSKDefaultKeychainStorage.shared
-    }
-
     func appDocumentDirectoryPath() -> String {
         guard let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last else {
             owsFail("failed to query document directory")

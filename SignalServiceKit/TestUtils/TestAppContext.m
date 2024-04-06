@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TestAppContext ()
 
-@property (nonatomic) SSKTestKeychainStorage *testKeychainStorage;
 @property (nonatomic) NSString *mockAppDocumentDirectoryPath;
 @property (nonatomic) NSString *mockAppSharedDataDirectoryPath;
 @property (nonatomic) NSUserDefaults *appUserDefaults;
@@ -34,8 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
-
-    self.testKeychainStorage = [SSKTestKeychainStorage new];
 
     // Avoid using OWSTemporaryDirectory(); it can consult the current app context.
     NSString *dirName = [NSString stringWithFormat:@"ows_temp_%@", NSUUID.UUID.UUIDString];
@@ -83,8 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIApplicationState)mainApplicationStateOnLaunch
 {
-    OWSFailDebug(@"Not main app.");
-
     return UIApplicationStateInactive;
 }
 
@@ -160,11 +155,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runAppActiveBlocks
 {
-}
-
-- (id<SSKKeychainStorage>)keychainStorage
-{
-    return self.testKeychainStorage;
 }
 
 - (NSString *)appDocumentDirectoryPath

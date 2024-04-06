@@ -43,10 +43,8 @@ public extension DatabaseRecovery {
     ///
     /// This just runs `REINDEX` for now. We might be able to do other things in the future like
     /// rebuilding the FTS index.
-    static func rebuildExistingDatabase(at databaseFileUrl: URL) {
+    static func rebuildExistingDatabase(databaseStorage: SDSDatabaseStorage) {
         Logger.info("Attempting to reindex the database...")
-
-        let databaseStorage = DatabaseRecovery.databaseStorage(at: databaseFileUrl)
         databaseStorage.write { transaction in
             do {
                 try SqliteUtil.reindex(db: transaction.unwrapGrdbWrite.database)
@@ -65,7 +63,8 @@ public extension DatabaseRecovery {
     ///
     /// Remember: this isn't everything you need to do to recover a database! See earlier docs.
     class DumpAndRestore {
-        private let databaseFileUrl: URL
+        private let corruptDatabaseStorage: SDSDatabaseStorage
+        private let keychainStorage: any KeychainStorage
 
         private let unitCountForCheckpoint: Int64 = 1
         private let unitCountForOldDatabaseMigration: Int64 = 1
@@ -76,9 +75,9 @@ public extension DatabaseRecovery {
 
         public let progress: Progress
 
-        public init(databaseFileUrl: URL) {
-            self.databaseFileUrl = databaseFileUrl
-
+        public init(corruptDatabaseStorage: SDSDatabaseStorage, keychainStorage: any KeychainStorage) {
+            self.corruptDatabaseStorage = corruptDatabaseStorage
+            self.keychainStorage = keychainStorage
             let totalUnitCount = Int64(
                 unitCountForCheckpoint +
                 unitCountForOldDatabaseMigration +
@@ -110,7 +109,7 @@ public extension DatabaseRecovery {
 
             Logger.info("Attempting database dump and restore")
 
-            let oldDatabaseStorage = DatabaseRecovery.databaseStorage(at: databaseFileUrl)
+            let oldDatabaseStorage = self.corruptDatabaseStorage
 
             progress.performAsCurrent(withPendingUnitCount: unitCountForCheckpoint) {
                 Self.attemptToCheckpoint(oldDatabaseStorage: oldDatabaseStorage)
@@ -128,8 +127,12 @@ public extension DatabaseRecovery {
             let newDatabaseStorage = try progress.performAsCurrent(
                 withPendingUnitCount: unitCountForNewDatabaseCreation
             ) {
-                let newDatabaseStorage = DatabaseRecovery.databaseStorage(at: newTemporaryDatabaseFileUrl)
+                let newDatabaseStorage: SDSDatabaseStorage
                 do {
+                    newDatabaseStorage = try SDSDatabaseStorage(
+                        databaseFileUrl: newTemporaryDatabaseFileUrl,
+                        keychainStorage: self.keychainStorage
+                    )
                     try Self.runMigrationsOn(databaseStorage: newDatabaseStorage, databaseIs: .new)
                 } catch {
                     throw DatabaseRecoveryError.unrecoverablyCorrupted
@@ -160,9 +163,7 @@ public extension DatabaseRecovery {
             try progress.performAsCurrent(withPendingUnitCount: unitCountForNewDatabasePromotion) {
                 try Self.promoteNewDatabase(
                     oldDatabaseStorage: oldDatabaseStorage,
-                    newDatabaseStorage: newDatabaseStorage,
-                    databaseFileUrl: databaseFileUrl,
-                    newTemporaryDatabaseFileUrl: newTemporaryDatabaseFileUrl
+                    newDatabaseStorage: newDatabaseStorage
                 )
             }
 
@@ -384,9 +385,7 @@ public extension DatabaseRecovery {
         /// Neither database instance should be used after this.
         private static func promoteNewDatabase(
             oldDatabaseStorage: SDSDatabaseStorage,
-            newDatabaseStorage: SDSDatabaseStorage,
-            databaseFileUrl: URL,
-            newTemporaryDatabaseFileUrl: URL
+            newDatabaseStorage: SDSDatabaseStorage
         ) throws {
             try checkpointAndClose(databaseStorage: oldDatabaseStorage, logLabel: "old")
             try checkpointAndClose(databaseStorage: newDatabaseStorage, logLabel: "new")
@@ -394,10 +393,9 @@ public extension DatabaseRecovery {
             Logger.info("Replacing old database with the new one...")
 
             let newDatabaseFileUrl = try FileManager.default.replaceItemAt(
-                databaseFileUrl,
-                withItemAt: newTemporaryDatabaseFileUrl
+                oldDatabaseStorage.databaseFileUrl,
+                withItemAt: newDatabaseStorage.databaseFileUrl
             )
-            owsAssert(databaseFileUrl == newDatabaseFileUrl)
 
             Logger.info("Out with the old database, in with the new!")
         }
@@ -659,23 +657,9 @@ extension DatabaseRecovery {
         }
     }
 
-    public static func databaseFileSize(forDatabaseAt url: URL) -> UInt64 {
-        databaseStorage(at: url).databaseCombinedFileSize
-    }
-
-    private class RecovererDatabaseStorageDelegate: SDSDatabaseStorageDelegate {
-        var storageCoordinatorState: StorageCoordinatorState { .GRDB }
-    }
-
-    private static let databaseStorageDelegate = RecovererDatabaseStorageDelegate()
-
-    private static func databaseStorage(at url: URL) -> SDSDatabaseStorage {
-        SDSDatabaseStorage(databaseFileUrl: url, delegate: databaseStorageDelegate)
-    }
-
-    public static func integrityCheck(databaseFileUrl: URL) -> SqliteUtil.IntegrityCheckResult {
+    public static func integrityCheck(databaseStorage: SDSDatabaseStorage) -> SqliteUtil.IntegrityCheckResult {
         Logger.info("Running integrity check on database...")
-        let result = databaseStorage(at: databaseFileUrl).write { transaction in
+        let result = databaseStorage.write { transaction in
             let db = transaction.unwrapGrdbWrite.database
             return SqliteUtil.quickCheck(db: db)
         }

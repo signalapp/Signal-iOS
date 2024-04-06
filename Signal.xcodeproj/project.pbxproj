@@ -2040,7 +2040,6 @@
 		F97217F828DC9F3700113D9F /* DatabaseCorruptionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */; };
 		F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */; };
 		F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */; };
-		F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */; };
 		F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180128DCFDF100113D9F /* TSContactThreadTest.swift */; };
 		F972180628DE37A200113D9F /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180528DE37A200113D9F /* AppVersion.swift */; };
 		F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */; };
@@ -2404,7 +2403,6 @@
 		F9C5CD2D289453B300548EEE /* SDSCodableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */; };
 		F9C5CD2E289453B300548EEE /* SDSSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4F289453B100548EEE /* SDSSerializable.swift */; };
 		F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA50289453B100548EEE /* SDSCrossProcess.m */; };
-		F9C5CD30289453B300548EEE /* StorageCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA51289453B100548EEE /* StorageCoordinator.m */; };
 		F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA54289453B100548EEE /* CallKitIdStore.m */; };
 		F9C5CD33289453B300548EEE /* SSKSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */; };
 		F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */; };
@@ -2448,7 +2446,6 @@
 		F9C5CD5D289453B300548EEE /* MediaGalleryFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA80289453B100548EEE /* MediaGalleryFinder.swift */; };
 		F9C5CD5E289453B300548EEE /* YDBStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA81289453B100548EEE /* YDBStorage.m */; };
 		F9C5CD5F289453B300548EEE /* RecipientIdFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA82289453B100548EEE /* RecipientIdFinder.swift */; };
-		F9C5CD60289453B300548EEE /* StorageCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA83289453B100548EEE /* StorageCoordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD61289453B300548EEE /* TSYapDatabaseObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA84289453B100548EEE /* TSYapDatabaseObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD77289453B300548EEE /* BaseModel.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA9B289453B100548EEE /* BaseModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD78289453B300548EEE /* PendingReadReceiptRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA9C289453B100548EEE /* PendingReadReceiptRecord.swift */; };
@@ -2631,7 +2628,7 @@
 		F9C5CE61289453B400548EEE /* FakeAccountServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */; };
 		F9C5CE62289453B400548EEE /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */; };
 		F9C5CE65289453B400548EEE /* TestAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB95289453B200548EEE /* TestAppContext.m */; };
-		F9C5CE66289453B400548EEE /* TestKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB96289453B200548EEE /* TestKeychainStorage.swift */; };
+		F9C5CE66289453B400548EEE /* MockKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB96289453B200548EEE /* MockKeychainStorage.swift */; };
 		F9C5CE67289453B400548EEE /* TSConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB97289453B200548EEE /* TSConstants.swift */; };
 		F9C5CE68289453B400548EEE /* OWSRecipientIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB99289453B200548EEE /* OWSRecipientIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE69289453B400548EEE /* OWSHTTPSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB9A289453B200548EEE /* OWSHTTPSecurityPolicy.m */; };
@@ -4998,7 +4995,6 @@
 		F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionState.swift; sourceTree = "<group>"; };
 		F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionStateTest.swift; sourceTree = "<group>"; };
 		F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigratorTest.swift; sourceTree = "<group>"; };
-		F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTestHelpers.swift; sourceTree = "<group>"; };
 		F972180128DCFDF100113D9F /* TSContactThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThreadTest.swift; sourceTree = "<group>"; };
 		F972180528DE37A200113D9F /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtoParsingTest.swift; sourceTree = "<group>"; };
@@ -5366,7 +5362,6 @@
 		F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSCodableModel.swift; sourceTree = "<group>"; };
 		F9C5CA4F289453B100548EEE /* SDSSerializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSSerializable.swift; sourceTree = "<group>"; };
 		F9C5CA50289453B100548EEE /* SDSCrossProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDSCrossProcess.m; sourceTree = "<group>"; };
-		F9C5CA51289453B100548EEE /* StorageCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StorageCoordinator.m; sourceTree = "<group>"; };
 		F9C5CA54289453B100548EEE /* CallKitIdStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallKitIdStore.m; sourceTree = "<group>"; };
 		F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSignedPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalProtocolStore.swift; sourceTree = "<group>"; };
@@ -5410,7 +5405,6 @@
 		F9C5CA80289453B100548EEE /* MediaGalleryFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaGalleryFinder.swift; sourceTree = "<group>"; };
 		F9C5CA81289453B100548EEE /* YDBStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBStorage.m; sourceTree = "<group>"; };
 		F9C5CA82289453B100548EEE /* RecipientIdFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipientIdFinder.swift; sourceTree = "<group>"; };
-		F9C5CA83289453B100548EEE /* StorageCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StorageCoordinator.h; sourceTree = "<group>"; };
 		F9C5CA84289453B100548EEE /* TSYapDatabaseObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSYapDatabaseObject.h; sourceTree = "<group>"; };
 		F9C5CA9B289453B100548EEE /* BaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseModel.h; sourceTree = "<group>"; };
 		F9C5CA9C289453B100548EEE /* PendingReadReceiptRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingReadReceiptRecord.swift; sourceTree = "<group>"; };
@@ -5593,7 +5587,7 @@
 		F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeAccountServiceClient.swift; sourceTree = "<group>"; };
 		F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
 		F9C5CB95289453B200548EEE /* TestAppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestAppContext.m; sourceTree = "<group>"; };
-		F9C5CB96289453B200548EEE /* TestKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestKeychainStorage.swift; sourceTree = "<group>"; };
+		F9C5CB96289453B200548EEE /* MockKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockKeychainStorage.swift; sourceTree = "<group>"; };
 		F9C5CB97289453B200548EEE /* TSConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSConstants.swift; sourceTree = "<group>"; };
 		F9C5CB99289453B200548EEE /* OWSRecipientIdentity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSRecipientIdentity.h; sourceTree = "<group>"; };
 		F9C5CB9A289453B200548EEE /* OWSHTTPSecurityPolicy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSHTTPSecurityPolicy.m; sourceTree = "<group>"; };
@@ -10002,7 +9996,6 @@
 				66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */,
 				F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */,
 				F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */,
-				F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */,
 				F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */,
 				F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */,
 				D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */,
@@ -10725,8 +10718,6 @@
 				F9C5CA82289453B100548EEE /* RecipientIdFinder.swift */,
 				5008672E2B91432F00E34B5F /* SearchableNameIndexer.swift */,
 				F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */,
-				F9C5CA83289453B100548EEE /* StorageCoordinator.h */,
-				F9C5CA51289453B100548EEE /* StorageCoordinator.m */,
 				50F86FC32AFEFEC20045F58B /* TimeGatedBatch.swift */,
 				F9C5CA7E289453B100548EEE /* TSStorageKeys.h */,
 				F9C5CA84289453B100548EEE /* TSYapDatabaseObject.h */,
@@ -11159,6 +11150,7 @@
 				F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */,
 				F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */,
 				F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */,
+				F9C5CB96289453B200548EEE /* MockKeychainStorage.swift */,
 				F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */,
 				F9C5CB86289453B200548EEE /* MockSubscriptionManager.swift */,
 				F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */,
@@ -11169,7 +11161,6 @@
 				F9C5CB8E289453B200548EEE /* OWSMockSyncManager.swift */,
 				F9C5CB89289453B200548EEE /* TestAppContext.h */,
 				F9C5CB95289453B200548EEE /* TestAppContext.m */,
-				F9C5CB96289453B200548EEE /* TestKeychainStorage.swift */,
 				F9C5CB8C289453B200548EEE /* TestProtocolRunner.swift */,
 			);
 			path = TestUtils;
@@ -11363,7 +11354,6 @@
 				F9C5CD51289453B300548EEE /* SSKSignedPreKeyStore.h in Headers */,
 				F9C5CC1C289453B300548EEE /* StickerInfo.h in Headers */,
 				F9C5CC0F289453B300548EEE /* StickerPack.h in Headers */,
-				F9C5CD60289453B300548EEE /* StorageCoordinator.h in Headers */,
 				F9C5CE59289453B400548EEE /* TestAppContext.h in Headers */,
 				F9C5CDEA289453B400548EEE /* TestModel.h in Headers */,
 				F9C5CC73289453B300548EEE /* TSAttachment.h in Headers */,
@@ -11991,7 +11981,6 @@
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/MobileCoinMinimal/MobileCoinMinimal.framework",
-				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -12012,7 +12001,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoinMinimal.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -12130,7 +12118,6 @@
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
 				"${BUILT_PRODUCTS_DIR}/MobileCoinMinimal/MobileCoinMinimal.framework",
-				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -12157,7 +12144,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoinMinimal.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -12210,7 +12196,6 @@
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/MobileCoinMinimal/MobileCoinMinimal.framework",
-				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -12231,7 +12216,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoinMinimal.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -13875,6 +13859,7 @@
 				D9C42C312B6C60FE0086B142 /* MockDeletedCallRecordCleanupManager.swift in Sources */,
 				D91AC9382B62F5D700814975 /* MockDeletedCallRecordStore.swift in Sources */,
 				50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */,
+				F9C5CE66289453B400548EEE /* MockKeychainStorage.swift in Sources */,
 				6600BB1D2BA3ABDD0005A035 /* MockLinkPreviewManager.swift in Sources */,
 				D990CAC92B4CCB97000A99A2 /* MockLocalUsernameManager.swift in Sources */,
 				B9327B3E2BBCC2EB00CCDBBA /* MockNicknameManager.swift in Sources */,
@@ -14281,7 +14266,6 @@
 				F9C5CC0E289453B300548EEE /* StickerPack+SDS.swift in Sources */,
 				F9C5CC17289453B300548EEE /* StickerPack.m in Sources */,
 				F9479EF8293D212C003B3503 /* StickerPackInfo.swift in Sources */,
-				F9C5CD30289453B300548EEE /* StorageCoordinator.m in Sources */,
 				725465532BA0282D00EABFD2 /* StorageService+GroupsV2.swift in Sources */,
 				F9C5CCA3289453B300548EEE /* StorageService.pb.swift in Sources */,
 				F9C5CDE4289453B400548EEE /* StorageService.swift in Sources */,
@@ -14330,7 +14314,6 @@
 				669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */,
 				669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */,
 				F9C5CE65289453B400548EEE /* TestAppContext.m in Sources */,
-				F9C5CE66289453B400548EEE /* TestKeychainStorage.swift in Sources */,
 				F9C5CDCE289453B400548EEE /* TestModel+SDS.swift in Sources */,
 				F9C5CE22289453B400548EEE /* TestModel.m in Sources */,
 				F9C5CE5C289453B400548EEE /* TestProtocolRunner.swift in Sources */,
@@ -14554,7 +14537,6 @@
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
 				F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */,
 				F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */,
-				F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
 				F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */,
 				D9CA8AB32B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift in Sources */,

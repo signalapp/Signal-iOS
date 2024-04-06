@@ -84,7 +84,7 @@ extension DeviceTransferService {
             return false
         }
 
-        guard database.key.count == GRDBDatabaseStorageAdapter.kSQLCipherKeySpecLength else {
+        guard database.key.count == GRDBKeyFetcher.Constants.kSQLCipherKeySpecLength else {
             owsFailDebug("incorrect database key length")
             return false
         }
@@ -145,7 +145,7 @@ extension DeviceTransferService {
         }
 
         do {
-            try GRDBDatabaseStorageAdapter.keyspec.store(data: database.key)
+            try databaseStorage.keyFetcher.store(data: database.key)
         } catch {
             owsFailDebug("failed to restore database key")
             return false
@@ -539,7 +539,7 @@ extension DeviceTransferService {
             throw OWSAssertionError("No manifest database available")
         }
 
-        try GRDBDatabaseStorageAdapter.keyspec.store(data: database.key)
+        try databaseStorage.keyFetcher.store(data: database.key)
         GRDBDatabaseStorageAdapter.promoteTransferDirectoryToPrimary()
     }
 

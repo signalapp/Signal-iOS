@@ -53,9 +53,22 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
+        let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
+        let databaseStorage: SDSDatabaseStorage
+        do {
+            databaseStorage = try SDSDatabaseStorage(
+                databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
+                keychainStorage: keychainStorage
+            )
+        } catch {
+            self.showNotRegisteredView()
+            return
+        }
+
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         let databaseContinuation = AppSetup().start(
             appContext: appContext,
+            databaseStorage: databaseStorage,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NoopCallMessageHandler(),

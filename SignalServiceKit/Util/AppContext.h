@@ -44,8 +44,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 @class ActionSheetAction;
 @class OWSAES256Key;
 
-@protocol SSKKeychainStorage;
-
 @protocol AppContext <NSObject>
 
 @property (nonatomic, readonly) BOOL isMainApp;
@@ -115,8 +113,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 // Will be updated every time the app is foregrounded.
 @property (atomic, readonly) NSDate *appForegroundTime;
-
-- (id<SSKKeychainStorage>)keychainStorage;
 
 - (NSString *)appDocumentDirectoryPath;
 

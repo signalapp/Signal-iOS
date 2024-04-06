@@ -302,7 +302,7 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
         owsAssert(OWSIsTestableBuild() && Platform.isSimulator)
 
         // Note: These static strings go hand-in-hand with Scripts/sqlclient.py
-        let payload = [ "key": GRDBDatabaseStorageAdapter.debugOnly_keyData?.hexadecimalString ]
+        let payload = [ "key": NSObject.databaseStorage.keyFetcher.debugOnly_keyData()?.hexadecimalString ]
         let payloadData = try! JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted)
 
         let groupDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)

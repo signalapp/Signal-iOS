@@ -40,7 +40,6 @@ PODS:
     - SwiftProtobuf
   - PureLayout (3.1.4)
   - Reachability (3.2)
-  - SAMKeychain (1.5.3)
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack (~> 3.7.4)
   - SignalCoreKit/Tests (1.0.0):
@@ -82,7 +81,6 @@ DEPENDENCIES:
   - MobileCoinMinimal/Tests (from `https://github.com/signalapp/MobileCoin-Swift.git`, branch `charlesmchen/mobileCoinMinimal`)
   - PureLayout
   - Reachability
-  - SAMKeychain
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.39.3`)
@@ -102,7 +100,6 @@ SPEC REPOS:
     - lottie-ios
     - PureLayout
     - Reachability
-    - SAMKeychain
     - SwiftProtobuf
     - Wire
 
@@ -196,7 +193,6 @@ SPEC CHECKSUMS:
   MobileCoinMinimal: 627ed590d8a0d5d57c39ec25727bde3d976d2f7a
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 7658a72244fa81858df4618e92044b0db0dcf59e
   SignalRingRTC: ce13dcbbb9efed7ad1965699d4092593463d7e46
   SQLCipher: 838309284f29953a28ad2e81d87d55ea6b7c74fd
@@ -205,6 +201,6 @@ SPEC CHECKSUMS:
   Wire: f5fe13fcad476bfd248f23a45a2004167c0ebae2
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: c4a76553c110b31fd0838ab35b7634fc5bfbfefa
+PODFILE CHECKSUM: 4cbfb4f3b865ec42529f34ecb02eb2f7efdd38e0
 
 COCOAPODS: 1.15.2

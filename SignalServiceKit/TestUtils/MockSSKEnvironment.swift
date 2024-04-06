@@ -14,8 +14,12 @@ public class MockSSKEnvironment: NSObject {
     /// Set up a mock SSK environment as well as ``DependenciesBridge``.
     @objc
     public static func activate() {
-        _ = AppSetup().start(
+        let finalContinuation = AppSetup().start(
             appContext: TestAppContext(),
+            databaseStorage: try! SDSDatabaseStorage(
+                databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
+                keychainStorage: MockKeychainStorage()
+            ),
             paymentsEvents: PaymentsEventsNoop(),
             mobileCoinHelper: MobileCoinHelperMock(),
             callMessageHandler: NoopCallMessageHandler(),
@@ -44,9 +48,11 @@ public class MockSSKEnvironment: NSObject {
                 versionedProfiles: MockVersionedProfiles(),
                 webSocketFactory: WebSocketFactoryMock()
             )
+        ).prepareDatabase(
+            backgroundScheduler: SyncScheduler(),
+            mainScheduler: SyncScheduler()
         )
-        configureGrdb()
-        SSKEnvironment.shared.warmCaches()
+        owsAssert(finalContinuation.isSealed)
     }
 
     @objc
@@ -68,18 +74,6 @@ public class MockSSKEnvironment: NSObject {
         DispatchQueue.main.async { done = true }
         while !done {
             CFRunLoopRunInMode(.defaultMode, 0.0, true)
-        }
-    }
-
-    private static func configureGrdb() {
-        do {
-            try GRDBSchemaMigrator.migrateDatabase(
-                databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-                isMainDatabase: true,
-                runDataMigrations: true
-            )
-        } catch {
-            owsFail("\(error)")
         }
     }
 }

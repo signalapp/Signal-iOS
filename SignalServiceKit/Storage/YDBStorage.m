@@ -9,10 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *keychainService = @"TSKeyChainService";
-static NSString *keychainDBLegacyPassphrase = @"TSDatabasePass";
-static NSString *keychainDBCipherKeySpec = @"OWSDatabaseCipherKeySpec";
-
 #pragma mark -
 
 @implementation YDBStorage
@@ -77,7 +73,6 @@ static NSString *keychainDBCipherKeySpec = @"OWSDatabaseCipherKeySpec";
 + (void)deleteYDBStorage
 {
     [self deleteDatabaseFiles];
-    [self deleteDBKeys];
 }
 
 + (void)deleteDatabaseFiles
@@ -91,25 +86,6 @@ static NSString *keychainDBCipherKeySpec = @"OWSDatabaseCipherKeySpec";
     // NOTE: It's NOT safe to delete OWSPrimaryStorage.legacyDatabaseDirPath
     //       which is the app document dir.
     [OWSFileSystem deleteContentsOfDirectory:self.sharedDataDatabaseDirPath];
-}
-
-#pragma mark - Keychain
-
-+ (void)deleteDBKeys
-{
-    NSError *_Nullable error;
-    BOOL result = [CurrentAppContext().keychainStorage removeWithService:keychainService
-                                                                     key:keychainDBLegacyPassphrase
-                                                                   error:&error];
-    if (error || !result) {
-        OWSFailDebug(@"could not remove legacy passphrase.");
-    }
-    result = [CurrentAppContext().keychainStorage removeWithService:keychainService
-                                                                key:keychainDBCipherKeySpec
-                                                              error:&error];
-    if (error || !result) {
-        OWSFailDebug(@"could not remove cipher key spec.");
-    }
 }
 
 

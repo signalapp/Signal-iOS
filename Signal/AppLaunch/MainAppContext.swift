@@ -178,8 +178,6 @@ class MainAppContext: NSObject, AppContext {
         for block in appActiveBlocks { block() }
     }
 
-    func keychainStorage() -> SSKKeychainStorage { SSKDefaultKeychainStorage.shared }
-
     func appDocumentDirectoryPath() -> String {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!.path
     }

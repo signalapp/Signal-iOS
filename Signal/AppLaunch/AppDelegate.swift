@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
 import Intents
 import SignalServiceKit
 import SignalUI
@@ -187,8 +188,26 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             block: { DeviceTransferService.shared.launchCleanup() }
         )
 
-        // XXX - careful when moving this. It must happen before we load GRDB.
-        verifyDBKeysAvailableBeforeBackgroundLaunch()
+        let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
+        let databaseStorage: SDSDatabaseStorage
+        do {
+            databaseStorage = try SDSDatabaseStorage(
+                databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
+                keychainStorage: keychainStorage
+            )
+        } catch KeychainError.notAllowed where application.applicationState == .background {
+            notifyThatPhoneMustBeUnlocked()
+        } catch let error as DatabaseError where error.resultCode == .SQLITE_CORRUPT {
+            // It's so corrupt that we can't even try to repair it.
+            didAppLaunchFail = true
+            Logger.error("Couldn't launch with corrupt database")
+            let viewController = terminalErrorViewController()
+            _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: viewController)
+            presentDatabaseUnrecoverablyCorruptedError(from: viewController, action: .submitDebugLogsAndCrash)
+            return true
+        } catch {
+            owsFail("Couldn't load database: \(error.grdbErrorForLogging)")
+        }
 
         // This must happen in appDidFinishLaunching or earlier to ensure we don't
         // miss notifications. Setting the delegate also seems to prevent us from
@@ -206,6 +225,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Do this even if `appVersion` isn't used -- there's side effects.
         let appVersion = AppVersionImpl.shared
 
+        let launchContext = LaunchContext(
+            appContext: mainAppContext,
+            databaseStorage: databaseStorage,
+            keychainStorage: keychainStorage,
+            launchStartedAt: launchStartedAt
+        )
+
+        // Ensure this exists on the main thread before attempting database
+        // restore. Otherwise it may try to access it for the first time in the
+        // background and crash.
+        _ = OWSBackgroundTaskManager.shared()
+
         // We need to do this _after_ we set up logging, when the keychain is unlocked,
         // but before we access the database or files on disk.
         let preflightError = checkIfAllowedToLaunch(
@@ -215,14 +246,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
 
         if let preflightError {
+            didAppLaunchFail = true
             let viewController = terminalErrorViewController()
             let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: viewController)
             showPreflightErrorUI(
                 preflightError,
-                appContext: mainAppContext,
+                launchContext: launchContext,
                 window: window,
-                viewController: viewController,
-                launchStartedAt: launchStartedAt
+                viewController: viewController
             )
             return true
         }
@@ -236,7 +267,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Show LoadingViewController until the database migrations are complete.
         let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: LoadingViewController())
-        self.launchApp(in: window, appContext: mainAppContext, launchStartedAt: launchStartedAt)
+        self.launchApp(in: window, launchContext: launchContext)
         return true
     }
 
@@ -251,16 +282,27 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         return window
     }
 
-    private func launchApp(in window: UIWindow, appContext: MainAppContext, launchStartedAt: CFTimeInterval) {
+    private struct LaunchContext {
+        var appContext: MainAppContext
+        var databaseStorage: SDSDatabaseStorage
+        var keychainStorage: any KeychainStorage
+        var launchStartedAt: CFTimeInterval
+    }
+
+    private func launchApp(
+        in window: UIWindow,
+        launchContext: LaunchContext
+    ) {
         assert(window.rootViewController is LoadingViewController)
         configureGlobalUI(in: window)
-        setUpMainAppEnvironment(appContext: appContext).done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
+        setUpMainAppEnvironment(
+            launchContext: launchContext
+        ).done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
             self.didLoadDatabase(
                 finalContinuation: finalContinuation,
+                launchContext: launchContext,
                 sleepBlockObject: sleepBlockObject,
-                appContext: appContext,
-                window: window,
-                launchStartedAt: launchStartedAt
+                window: window
             )
         }
     }
@@ -274,17 +316,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         screenLockUI.startObserving()
     }
 
-    private func setUpMainAppEnvironment(appContext: MainAppContext) -> Guarantee<(AppSetup.FinalContinuation, NSObject)> {
+    private func setUpMainAppEnvironment(launchContext: LaunchContext) -> Guarantee<(AppSetup.FinalContinuation, NSObject)> {
         let sleepBlockObject = NSObject()
         DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
 
         let databaseContinuation = AppSetup().start(
-            appContext: appContext,
+            appContext: launchContext.appContext,
+            databaseStorage: launchContext.databaseStorage,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
             callMessageHandler: WebRTCCallMessageHandler(),
             lightweightGroupCallManagerBuilder: {
-                return CallService(appContext: appContext, groupCallPeekClient: $0)
+                return CallService(appContext: launchContext.appContext, groupCallPeekClient: $0)
             },
             notificationPresenter: AppEnvironment.sharedNotificationPresenter
         )
@@ -333,10 +376,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func didLoadDatabase(
         finalContinuation: AppSetup.FinalContinuation,
+        launchContext: LaunchContext,
         sleepBlockObject: NSObject,
-        appContext: MainAppContext,
-        window: UIWindow,
-        launchStartedAt: CFTimeInterval
+        window: UIWindow
     ) {
         AssertIsOnMainThread()
 
@@ -371,7 +413,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             window.rootViewController = viewController
             presentLaunchFailureActionSheet(
                 from: viewController,
-                launchStartedAt: launchStartedAt,
                 supportTag: "CorruptRegistrationState",
                 title: OWSLocalizedString(
                     "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE",
@@ -392,8 +433,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }.done(on: DispatchQueue.main) {
                 self.setAppIsReady(
                     launchInterface: launchInterface,
-                    launchStartedAt: launchStartedAt,
-                    appContext: appContext
+                    launchContext: launchContext
                 )
                 DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
             }
@@ -402,13 +442,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func setAppIsReady(
         launchInterface: LaunchInterface,
-        launchStartedAt: CFTimeInterval,
-        appContext: MainAppContext
+        launchContext: LaunchContext
     ) {
         Logger.info("")
         AssertIsOnMainThread()
         owsAssert(!AppReadiness.isAppReady)
         owsAssert(!CurrentAppContext().isRunningTests)
+
+        let appContext = launchContext.appContext
 
         if DebugFlags.internalLogging {
             DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
@@ -479,6 +520,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             ).scheduleProfileFetches()
         }
 
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            Task.detached(priority: .low) {
+                YDBStorage.deleteYDBStorage()
+                SSKPreferences.clearLegacyDatabaseFlags(from: appContext.appUserDefaults())
+                try? launchContext.keychainStorage.removeValue(service: "TSKeyChainService", key: "TSDatabasePass")
+                try? launchContext.keychainStorage.removeValue(service: "TSKeyChainService", key: "OWSDatabaseCipherKeySpec")
+            }
+        }
+
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
 
@@ -543,7 +593,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         checkDatabaseIntegrityIfNecessary(isRegistered: tsRegistrationState.isRegistered)
 
-        SignalApp.shared.showLaunchInterface(launchInterface, launchStartedAt: launchStartedAt)
+        SignalApp.shared.showLaunchInterface(launchInterface, launchStartedAt: launchContext.launchStartedAt)
     }
 
     private func scheduleBgAppRefresh() {
@@ -551,14 +601,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     /// The user must unlock the device once after reboot before the database encryption key can be accessed.
-    private func verifyDBKeysAvailableBeforeBackgroundLaunch() {
-        guard UIApplication.shared.applicationState == .background else {
-            return
-        }
-        if StorageCoordinator.hasGrdbFile && GRDBDatabaseStorageAdapter.isKeyAccessible {
-            return
-        }
-
+    private func notifyThatPhoneMustBeUnlocked() -> Never {
         Logger.warn("Exiting because we are in the background and the database password is not accessible.")
 
         let notificationContent = UNMutableNotificationContent()
@@ -682,7 +725,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Prevent:
         // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
-        guard !StorageCoordinator.hasInvalidDatabaseVersion else {
+        if SSKPreferences.hasUnknownGRDBSchema() {
             return .unknownDatabaseVersion
         }
 
@@ -720,15 +763,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func showPreflightErrorUI(
         _ preflightError: LaunchPreflightError,
-        appContext: MainAppContext,
+        launchContext: LaunchContext,
         window: UIWindow,
-        viewController: UIViewController,
-        launchStartedAt: CFTimeInterval
+        viewController: UIViewController
     ) {
         Logger.warn("preflightError: \(preflightError)")
-
-        // Disable normal functioning of app.
-        didAppLaunchFail = true
 
         let title: String
         let message: String
@@ -738,22 +777,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         case .databaseCorruptedAndMightBeRecoverable, .possibleReadCorruptionCrashed:
             presentDatabaseRecovery(
                 from: viewController,
-                appContext: appContext,
-                window: window,
-                launchStartedAt: launchStartedAt
+                launchContext: launchContext,
+                window: window
             )
             return
 
         case .databaseUnrecoverablyCorrupted:
-            title = OWSLocalizedString(
-                "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
-                comment: "Error indicating that the app could not launch because the database could not be loaded."
+            presentDatabaseUnrecoverablyCorruptedError(
+                from: viewController,
+                action: .submitDebugLogsWithDatabaseIntegrityCheckAndCrash(databaseStorage: launchContext.databaseStorage)
             )
-            message = OWSLocalizedString(
-                "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
-                comment: "Default message for the 'app launch failed' alert."
-            )
-            actions = [.submitDebugLogsWithDatabaseIntegrityCheckAndCrash]
+            return
 
         case .unknownDatabaseVersion:
             title = OWSLocalizedString(
@@ -787,8 +821,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 comment: "Error indicating that the app crashed during the previous launch."
             )
             actions = [
-                .submitDebugLogsAndLaunchApp(window: window, appContext: appContext),
-                .launchApp(window: window, appContext: appContext)
+                .submitDebugLogsAndLaunchApp(window: window, launchContext: launchContext),
+                .launchApp(window: window, launchContext: launchContext)
             ]
 
         case .lowStorageSpaceAvailable:
@@ -806,7 +840,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         presentLaunchFailureActionSheet(
             from: viewController,
-            launchStartedAt: launchStartedAt,
             supportTag: preflightError.supportTag,
             title: title,
             message: message,
@@ -816,14 +849,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func presentDatabaseRecovery(
         from viewController: UIViewController,
-        appContext: MainAppContext,
-        window: UIWindow,
-        launchStartedAt: CFTimeInterval
+        launchContext: LaunchContext,
+        window: UIWindow
     ) {
+        var launchContext = launchContext
         let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, NSObject)>(
-            setupSskEnvironment: {
+            corruptDatabaseStorage: launchContext.databaseStorage,
+            keychainStorage: launchContext.keychainStorage,
+            setupSskEnvironment: { databaseStorage in
                 firstly(on: DispatchQueue.main) {
-                    self.setUpMainAppEnvironment(appContext: appContext)
+                    launchContext.databaseStorage = databaseStorage
+                    return self.setUpMainAppEnvironment(launchContext: launchContext)
                 }
             },
             launchApp: { (finalContinuation, sleepBlockObject) in
@@ -832,10 +868,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 self.configureGlobalUI(in: window)
                 self.didLoadDatabase(
                     finalContinuation: finalContinuation,
+                    launchContext: launchContext,
                     sleepBlockObject: sleepBlockObject,
-                    appContext: appContext,
-                    window: window,
-                    launchStartedAt: launchStartedAt
+                    window: window
                 )
             }
         )
@@ -853,16 +888,34 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         viewController.present(recoveryViewController, animated: true)
     }
 
+    private func presentDatabaseUnrecoverablyCorruptedError(
+        from viewController: UIViewController,
+        action: LaunchFailureActionSheetAction
+    ) {
+        presentLaunchFailureActionSheet(
+            from: viewController,
+            supportTag: LaunchPreflightError.databaseUnrecoverablyCorrupted.supportTag,
+            title: OWSLocalizedString(
+                "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
+                comment: "Error indicating that the app could not launch because the database could not be loaded."
+            ),
+            message: OWSLocalizedString(
+                "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
+                comment: "Default message for the 'app launch failed' alert."
+            ),
+            actions: [action]
+        )
+    }
+
     private enum LaunchFailureActionSheetAction {
         case submitDebugLogsAndCrash
-        case submitDebugLogsAndLaunchApp(window: UIWindow, appContext: MainAppContext)
-        case submitDebugLogsWithDatabaseIntegrityCheckAndCrash
-        case launchApp(window: UIWindow, appContext: MainAppContext)
+        case submitDebugLogsAndLaunchApp(window: UIWindow, launchContext: LaunchContext)
+        case submitDebugLogsWithDatabaseIntegrityCheckAndCrash(databaseStorage: SDSDatabaseStorage)
+        case launchApp(window: UIWindow, launchContext: LaunchContext)
     }
 
     private func presentLaunchFailureActionSheet(
         from viewController: UIViewController,
-        launchStartedAt: CFTimeInterval,
         supportTag: String,
         title: String,
         message: String,
@@ -875,7 +928,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 SignalApp.showExportDatabaseUI(from: viewController) {
                     self.presentLaunchFailureActionSheet(
                         from: viewController,
-                        launchStartedAt: launchStartedAt,
                         supportTag: supportTag,
                         title: title,
                         message: message,
@@ -892,11 +944,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             })
         }
 
-        func ignoreErrorAndLaunchApp(in window: UIWindow, appContext: MainAppContext) {
+        func ignoreErrorAndLaunchApp(in window: UIWindow, launchContext: LaunchContext) {
             // Pretend we didn't fail!
             self.didAppLaunchFail = false
             window.rootViewController = LoadingViewController()
-            self.launchApp(in: window, appContext: appContext, launchStartedAt: launchStartedAt)
+            self.launchApp(in: window, launchContext: launchContext)
         }
 
         for action in actions {
@@ -907,21 +959,21 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         owsFail("Exiting after submitting debug logs")
                     }
                 }
-            case .submitDebugLogsAndLaunchApp(let window, let appContext):
+            case .submitDebugLogsAndLaunchApp(let window, let launchContext):
                 addSubmitDebugLogsAction { [unowned window] in
                     DebugLogs.submitLogsWithSupportTag(supportTag) {
-                        ignoreErrorAndLaunchApp(in: window, appContext: appContext)
+                        ignoreErrorAndLaunchApp(in: window, launchContext: launchContext)
                     }
                 }
-            case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash:
+            case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash(let databaseStorage):
                 addSubmitDebugLogsAction { [unowned viewController] in
-                    SignalApp.showDatabaseIntegrityCheckUI(from: viewController) {
+                    SignalApp.showDatabaseIntegrityCheckUI(from: viewController, databaseStorage: databaseStorage) {
                         DebugLogs.submitLogsWithSupportTag(supportTag) {
                             owsFail("Exiting after submitting debug logs")
                         }
                     }
                 }
-            case .launchApp(let window, let appContext):
+            case .launchApp(let window, let launchContext):
                 actionSheet.addAction(.init(
                     title: OWSLocalizedString(
                         "APP_LAUNCH_FAILURE_CONTINUE",
@@ -929,7 +981,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     ),
                     style: .cancel, // Use a cancel-style button to draw attention.
                     handler: { [unowned window] _ in
-                        ignoreErrorAndLaunchApp(in: window, appContext: appContext)
+                        ignoreErrorAndLaunchApp(in: window, launchContext: launchContext)
                     }
                 ))
             }
@@ -1414,8 +1466,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) {
         guard isRegistered, FeatureFlags.periodicallyCheckDatabaseIntegrity else { return }
 
-        DispatchQueue.sharedUtility.async {
-            switch GRDBDatabaseStorageAdapter.checkIntegrity() {
+        DispatchQueue.sharedUtility.async { [databaseStorage] in
+            switch GRDBDatabaseStorageAdapter.checkIntegrity(databaseStorage: databaseStorage) {
             case .ok: break
             case .notOk:
                 AppReadiness.runNowOrWhenUIDidBecomeReadySync {

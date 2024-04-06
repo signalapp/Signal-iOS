@@ -97,34 +97,46 @@ class NSEEnvironment: Dependencies {
 
     // MARK: - Setup
 
+    private var didStartAppSetup = false
+    private var didFinishDatabaseSetup = false
+
     /// Called for each notification the NSE receives.
     ///
     /// Will be invoked multiple times in the same NSE process.
-    func setUpBeforeCheckingForFirstDeviceUnlock(logger: NSELogger) {
+    func setUp(logger: NSELogger) throws {
         AssertIsOnMainThread()
 
         let debugLogger = DebugLogger.shared()
-        debugLogger.enableTTYLoggingIfNeeded()
+
+        // Do this every time in case the setting is changed.
         debugLogger.setUpFileLoggingIfNeeded(appContext: appContext, canLaunchInBackground: true)
-    }
 
-    private var didStartAppSetup = false
+        if !didStartAppSetup {
+            debugLogger.enableTTYLoggingIfNeeded()
+            Cryptography.seedRandom()
+            didStartAppSetup = true
+        }
 
-    /// Called for each notification the NSE receives.
-    ///
-    /// Will be invoked multiple times in the same NSE process.
-    func setUpAfterCheckingForFirstDeviceUnlock(logger: NSELogger) {
-        logger.info("pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString)", flushImmediately: true)
+        logger.info(
+            "pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString)",
+            flushImmediately: true
+        )
 
-        if didStartAppSetup {
+        if didFinishDatabaseSetup {
             return
         }
-        didStartAppSetup = true
 
-        Cryptography.seedRandom()
+        let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
+        let databaseStorage = try SDSDatabaseStorage(
+            databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
+            keychainStorage: keychainStorage
+        )
+
+        didFinishDatabaseSetup = true
 
         let databaseContinuation = AppSetup().start(
             appContext: CurrentAppContext(),
+            databaseStorage: databaseStorage,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NSECallMessageHandler(),
@@ -145,20 +157,6 @@ class NSEEnvironment: Dependencies {
         logger.info("completed.")
 
         listenForMainAppLaunch(logger: logger)
-    }
-
-    func verifyDBKeysAvailable(logger: NSELogger) -> UNNotificationContent? {
-        guard !StorageCoordinator.hasGrdbFile || !GRDBDatabaseStorageAdapter.isKeyAccessible else { return nil }
-
-        logger.info("Database password is not accessible, posting generic notification.")
-
-        let content = UNMutableNotificationContent()
-        let notificationFormat = OWSLocalizedString(
-            "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
-            comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')"
-        )
-        content.body = String(format: notificationFormat, UIDevice.current.localizedModel)
-        return content
     }
 
     private func setAppIsReady() {

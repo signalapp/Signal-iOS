@@ -160,14 +160,6 @@ public extension NSObject {
         SSKEnvironment.shared.reachabilityManagerRef
     }
 
-    final var storageCoordinator: StorageCoordinator {
-        SSKEnvironment.shared.storageCoordinatorRef
-    }
-
-    static var storageCoordinator: StorageCoordinator {
-        SSKEnvironment.shared.storageCoordinatorRef
-    }
-
     final var syncManager: SyncManagerProtocol {
         SSKEnvironment.shared.syncManagerRef
     }
@@ -564,14 +556,6 @@ public extension Dependencies {
 
     static var reachabilityManager: SSKReachabilityManager {
         SSKEnvironment.shared.reachabilityManagerRef
-    }
-
-    var storageCoordinator: StorageCoordinator {
-        SSKEnvironment.shared.storageCoordinatorRef
-    }
-
-    static var storageCoordinator: StorageCoordinator {
-        SSKEnvironment.shared.storageCoordinatorRef
     }
 
     var syncManager: SyncManagerProtocol {

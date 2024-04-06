@@ -45,8 +45,6 @@ class MockObserver: DatabaseChangeDelegate {
 
 class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
     func testGRDBSyncWrite() {
-        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
-
         // Make sure there's already at least one thread.
         let someThread = self.write { transaction in
             let recipient = SignalServiceAddress(phoneNumber: "+1222333444")

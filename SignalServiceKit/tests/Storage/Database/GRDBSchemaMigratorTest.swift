@@ -10,9 +10,9 @@ import XCTest
 
 class GRDBSchemaMigratorTest: XCTestCase {
     func testMigrateFromScratch() throws {
-        let databaseStorage = SDSDatabaseStorage(
+        let databaseStorage = try SDSDatabaseStorage(
             databaseFileUrl: OWSFileSystem.temporaryFileUrl(),
-            delegate: DatabaseTestHelpers.TestSDSDatabaseStorageDelegate()
+            keychainStorage: MockKeychainStorage()
         )
 
         try GRDBSchemaMigrator.migrateDatabase(

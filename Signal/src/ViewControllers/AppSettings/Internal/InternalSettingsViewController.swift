@@ -72,7 +72,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 guard let self = self else {
                     return
                 }
-                SignalApp.showDatabaseIntegrityCheckUI(from: self)
+                SignalApp.showDatabaseIntegrityCheckUI(from: self, databaseStorage: NSObject.databaseStorage)
             }
         ))
         debugSection.add(.actionItem(
@@ -143,7 +143,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.label(withText: "Database WAL size: \(byteCountFormatter.string(for: databaseStorage.databaseWALFileSize) ?? "Unknown")"))
         infoSection.add(.label(withText: "Database SHM size: \(byteCountFormatter.string(for: databaseStorage.databaseSHMFileSize) ?? "Unknown")"))
 
-        infoSection.add(.label(withText: "hasGrdbFile: \(StorageCoordinator.hasGrdbFile)"))
         infoSection.add(.label(withText: "isCensorshipCircumventionActive: \(self.signalService.isCensorshipCircumventionActive)"))
 
         infoSection.add(.copyableItem(label: "Push Token", value: preferences.pushToken))

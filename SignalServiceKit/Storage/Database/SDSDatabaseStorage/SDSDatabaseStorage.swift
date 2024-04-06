@@ -7,11 +7,6 @@ import Foundation
 import GRDB
 import SignalCoreKit
 
-@objc
-public protocol SDSDatabaseStorageDelegate {
-    var storageCoordinatorState: StorageCoordinatorState { get }
-}
-
 // MARK: -
 
 @objc
@@ -19,37 +14,24 @@ public class SDSDatabaseStorage: NSObject {
 
     private let asyncWriteQueue = DispatchQueue(label: "org.signal.database.write-async", qos: .userInitiated)
 
-    private weak var delegate: SDSDatabaseStorageDelegate?
-
     private var hasPendingCrossProcessWrite = false
 
     private let crossProcess = SDSCrossProcess()
 
     // MARK: - Initialization / Setup
 
-    private let databaseFileUrl: URL
+    public let databaseFileUrl: URL
+    public let keyFetcher: GRDBKeyFetcher
 
-    private var _grdbStorage: GRDBDatabaseStorageAdapter?
+    private(set) public var grdbStorage: GRDBDatabaseStorageAdapter
 
-    @objc
-    public var grdbStorage: GRDBDatabaseStorageAdapter {
-        if let storage = _grdbStorage {
-            return storage
-        } else {
-            do {
-                let storage = try createGrdbStorage()
-                _grdbStorage = storage
-                return storage
-            } catch {
-                owsFail("Unable to initialize storage \(error.grdbErrorForLogging)")
-            }
-        }
-    }
-
-    @objc
-    public init(databaseFileUrl: URL, delegate: SDSDatabaseStorageDelegate) {
+    public init(databaseFileUrl: URL, keychainStorage: any KeychainStorage) throws {
         self.databaseFileUrl = databaseFileUrl
-        self.delegate = delegate
+        self.keyFetcher = GRDBKeyFetcher(keychainStorage: keychainStorage)
+        self.grdbStorage = try GRDBDatabaseStorageAdapter(
+            databaseFileUrl: databaseFileUrl,
+            keyFetcher: self.keyFetcher
+        )
 
         super.init()
 
@@ -93,14 +75,7 @@ public class SDSDatabaseStorage: NSObject {
     @objc
     public static let storageDidReload = Notification.Name("storageDidReload")
 
-    // completion is performed on the main queue.
-    @objc
-    public func runGrdbSchemaMigrationsOnMainDatabase(completion: @escaping () -> Void) {
-        guard storageCoordinatorState == .GRDB else {
-            owsFailDebug("Not GRDB.")
-            return
-        }
-
+    func runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: Scheduler, completion: @escaping () -> Void) {
         let didPerformIncrementalMigrations: Bool = {
             do {
                 return try GRDBSchemaMigrator.migrateDatabase(
@@ -118,16 +93,16 @@ public class SDSDatabaseStorage: NSObject {
 
         if didPerformIncrementalMigrations {
             do {
-                try reopenGRDBStorage(completion: completion)
+                try reopenGRDBStorage(completionScheduler: completionScheduler, completion: completion)
             } catch {
                 owsFail("Unable to reopen storage \(error.grdbErrorForLogging)")
             }
         } else {
-            DispatchQueue.main.async(execute: completion)
+            completionScheduler.async(completion)
         }
     }
 
-    public func reopenGRDBStorage(completion: @escaping () -> Void = {}) throws {
+    public func reopenGRDBStorage(completionScheduler: Scheduler, completion: @escaping () -> Void = {}) throws {
         // There seems to be a rare issue where at least one reader or writer
         // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
         // a schema migration and does not reflect the migrations.
@@ -136,9 +111,9 @@ public class SDSDatabaseStorage: NSObject {
         weak var weakGrdbStorage = grdbStorage
         owsAssertDebug(weakPool != nil)
         owsAssertDebug(weakGrdbStorage != nil)
-        _grdbStorage = try createGrdbStorage()
+        grdbStorage = try GRDBDatabaseStorageAdapter(databaseFileUrl: databaseFileUrl, keyFetcher: keyFetcher)
 
-        DispatchQueue.main.async {
+        completionScheduler.async {
             // We want to make sure all db connections from the old adapter/pool are closed.
             //
             // We only reach this point by a predictable code path; the autoreleasepool
@@ -178,7 +153,6 @@ public class SDSDatabaseStorage: NSObject {
 
     public func reloadTransferredDatabase() -> Guarantee<TransferredDbReloadResult> {
         AssertIsOnMainThread()
-        assert(storageCoordinatorState == .GRDB)
 
         Logger.info("")
 
@@ -209,7 +183,8 @@ public class SDSDatabaseStorage: NSObject {
             future.resolve(.success)
         }
         do {
-            try reopenGRDBStorage(completion: completion)
+            try reopenGRDBStorage(completionScheduler: DispatchQueue.main, completion: completion)
+            try grdbStorage.setupDatabaseChangeObserver()
         } catch {
             // A SQL logic error when reading the master table
             // is probably (but not necessarily! this is a hack!)
@@ -217,7 +192,7 @@ public class SDSDatabaseStorage: NSObject {
             // resolve on relaunch.
             if
                 let grdbError = error as? GRDB.DatabaseError,
-                grdbError.resultCode.rawValue == 1,
+                grdbError.resultCode == .SQLITE_ERROR,
                 grdbError.sql == "SELECT * FROM sqlite_master LIMIT 1"
             {
                 future.resolve(.relaunchRequired)
@@ -228,10 +203,6 @@ public class SDSDatabaseStorage: NSObject {
         return promise
     }
 
-    func createGrdbStorage() throws -> GRDBDatabaseStorageAdapter {
-        return try GRDBDatabaseStorageAdapter(databaseFileUrl: databaseFileUrl)
-    }
-
     @objc
     public func deleteGrdbFiles() {
         GRDBDatabaseStorageAdapter.removeAllFiles()
@@ -239,7 +210,12 @@ public class SDSDatabaseStorage: NSObject {
 
     public func resetAllStorage() {
         YDBStorage.deleteYDBStorage()
-        GRDBDatabaseStorageAdapter.resetAllStorage()
+        do {
+            try keyFetcher.clear()
+        } catch {
+            owsFailDebug("Could not clear keychain: \(error)")
+        }
+        grdbStorage.resetAllStorage()
     }
 
     // MARK: - Observation
@@ -706,18 +682,6 @@ public class SDSDatabaseStorage: NSObject {
         // We format the filename & line number in a format compatible
         // with XCode's "Open Quickly..." feature.
         return "[\(filename):\(line) \(function)]"
-    }
-}
-
-// MARK: - Coordination
-
-extension SDSDatabaseStorage {
-
-    private var storageCoordinatorState: StorageCoordinatorState {
-        guard let delegate = delegate else {
-            owsFail("Missing delegate.")
-        }
-        return delegate.storageCoordinatorState
     }
 }
 

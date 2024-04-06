@@ -7,13 +7,19 @@ import SignalServiceKit
 import SignalUI
 
 class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
-    private let setupSskEnvironment: () -> Guarantee<SetupResult>
+    private let corruptDatabaseStorage: SDSDatabaseStorage
+    private let keychainStorage: any KeychainStorage
+    private let setupSskEnvironment: (SDSDatabaseStorage) -> Guarantee<SetupResult>
     private let launchApp: (SetupResult) -> Void
 
     public init(
-        setupSskEnvironment: @escaping () -> Guarantee<SetupResult>,
+        corruptDatabaseStorage: SDSDatabaseStorage,
+        keychainStorage: any KeychainStorage,
+        setupSskEnvironment: @escaping (SDSDatabaseStorage) -> Guarantee<SetupResult>,
         launchApp: @escaping (SetupResult) -> Void
     ) {
+        self.corruptDatabaseStorage = corruptDatabaseStorage
+        self.keychainStorage = keychainStorage
         self.setupSskEnvironment = setupSskEnvironment
         self.launchApp = launchApp
         super.init()
@@ -37,10 +43,8 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     }
     private var previouslyRenderedState: State?
 
-    private var databaseFileUrl: URL { GRDBDatabaseStorageAdapter.databaseFileUrl() }
-
     private var currentDatabaseSize: UInt64 {
-        DatabaseRecovery.databaseFileSize(forDatabaseAt: databaseFileUrl)
+        return corruptDatabaseStorage.databaseCombinedFileSize
     }
 
     // MARK: - Views
@@ -242,10 +246,10 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         case .corrupted, .readCorrupted:
             promise = firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Bool> in
                 progress.performAsCurrent(withPendingUnitCount: 1) {
-                    DatabaseRecovery.rebuildExistingDatabase(at: self.databaseFileUrl)
+                    DatabaseRecovery.rebuildExistingDatabase(databaseStorage: self.corruptDatabaseStorage)
                 }
                 let integrity = progress.performAsCurrent(withPendingUnitCount: 1) {
-                    return DatabaseRecovery.integrityCheck(databaseFileUrl: self.databaseFileUrl)
+                    return DatabaseRecovery.integrityCheck(databaseStorage: self.corruptDatabaseStorage)
                 }
 
                 let shouldDumpAndRecreate: Bool
@@ -255,7 +259,10 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
                 }
 
                 if shouldDumpAndRecreate {
-                    let dumpAndRestore = DatabaseRecovery.DumpAndRestore(databaseFileUrl: self.databaseFileUrl)
+                    let dumpAndRestore = DatabaseRecovery.DumpAndRestore(
+                        corruptDatabaseStorage: self.corruptDatabaseStorage,
+                        keychainStorage: self.keychainStorage
+                    )
                     progress.addChild(dumpAndRestore.progress, withPendingUnitCount: 1)
                     do {
                         try dumpAndRestore.run()
@@ -269,9 +276,14 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
                 return .value(shouldDumpAndRecreate)
             }.then(on: DispatchQueue.sharedUserInitiated) { shouldDumpAndRecreate in
-                self.setupSskEnvironment().map(on: DispatchQueue.sharedUserInitiated) { setupResult in
+                // Create a *new* SDSDatabaseStorage since we replaced the file.
+                let databaseStorage = try SDSDatabaseStorage(
+                    databaseFileUrl: self.corruptDatabaseStorage.databaseFileUrl,
+                    keychainStorage: self.keychainStorage
+                )
+                return self.setupSskEnvironment(databaseStorage).map(on: DispatchQueue.sharedUserInitiated) { setupResult in
                     if shouldDumpAndRecreate {
-                        let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: SDSDatabaseStorage.shared)
+                        let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: databaseStorage)
                         progress.addChild(manualRecreation.progress, withPendingUnitCount: 1)
                         manualRecreation.run()
                     } else {
@@ -282,9 +294,9 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
             }
         case .corruptedButAlreadyDumpedAndRestored:
             promise = firstly(on: DispatchQueue.sharedUserInitiated) {
-                self.setupSskEnvironment()
+                self.setupSskEnvironment(self.corruptDatabaseStorage)
             }.map(on: DispatchQueue.sharedUserInitiated) { setupResult in
-                let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: SDSDatabaseStorage.shared)
+                let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: self.corruptDatabaseStorage)
                 progress.addChild(
                     manualRecreation.progress,
                     withPendingUnitCount: progress.remainingUnitCount
@@ -569,7 +581,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     /// - Returns: `true` if the user has approximately enough disk space, or if any part of the check fails. `false` if they do not have enough disk space.
     private func hasApproximatelyEnoughDiskSpace() -> Bool {
         do {
-            let freeSpace = try OWSFileSystem.freeSpaceInBytes(forPath: databaseFileUrl)
+            let freeSpace = try OWSFileSystem.freeSpaceInBytes(forPath: self.corruptDatabaseStorage.databaseFileUrl)
             return freeSpace >= currentDatabaseSize
         } catch {
             owsFailDebug("\(error)")

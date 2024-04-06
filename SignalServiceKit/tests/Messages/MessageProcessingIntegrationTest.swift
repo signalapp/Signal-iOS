@@ -29,10 +29,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
 
-        // Use DatabaseChangeObserver to be notified of DB writes so we
-        // can verify the expected changes occur.
-        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
-
         // ensure local client has necessary "registered" state
         let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)

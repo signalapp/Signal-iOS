@@ -14,8 +14,6 @@ extension DeviceTransferService {
         // Database
 
         do {
-            assert(StorageCoordinator.hasGrdbFile)
-
             let database: DeviceTransferProtoFile = try {
                 let file = databaseStorage.grdbStorage.databaseFilePath
                 guard let size = OWSFileSystem.fileSize(ofPath: file), size.uint64Value > 0 else {
@@ -45,7 +43,7 @@ extension DeviceTransferService {
             }()
 
             let databaseBuilder = DeviceTransferProtoDatabase.builder(
-                key: try GRDBDatabaseStorageAdapter.keyspec.fetchData(),
+                key: try databaseStorage.keyFetcher.fetchData(),
                 database: database,
                 wal: wal
             )

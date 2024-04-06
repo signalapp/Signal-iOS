@@ -11,9 +11,6 @@ import UIKit
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
 
-    // 256 bit key + 128 bit salt
-    public static let kSQLCipherKeySpecLength: UInt = 48
-
     @objc
     public enum DirectoryMode: Int {
         public static let commonGRDBPrefix = "grdb"
@@ -131,41 +128,20 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return storage.pool
     }
 
-    init(databaseFileUrl: URL) throws {
+    init(databaseFileUrl: URL, keyFetcher: GRDBKeyFetcher) throws {
         self.databaseFileUrl = databaseFileUrl
 
-        do {
-            // Crash if keychain is inaccessible.
-            try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists()
-        } catch {
-            owsFail("\(error)")
-        }
+        try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists(keyFetcher: keyFetcher)
 
         do {
             // Crash if storage can't be initialized.
-            storage = try GRDBStorage(dbURL: databaseFileUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
+            self.storage = try GRDBStorage(dbURL: databaseFileUrl, keyFetcher: keyFetcher)
         } catch {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
             throw error
         }
 
         super.init()
         setUpDatabasePathKVO()
-
-        AppReadiness.runNowOrWhenAppWillBecomeReady { [weak self] in
-            // This adapter may have been discarded after running
-            // schema migrations.            
-            guard let self = self else { return }
-
-            do {
-                try self.setup()
-            } catch {
-                owsFail("unable to setup database: \(error)")
-            }
-        }
     }
 
     deinit {
@@ -258,11 +234,9 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // MARK: - DatabaseChangeObserver
 
-    @objc
-    public private(set) var databaseChangeObserver: DatabaseChangeObserver?
+    private(set) public var databaseChangeObserver: DatabaseChangeObserver?
 
-    @objc
-    public func setupDatabaseChangeObserver() throws {
+    func setupDatabaseChangeObserver() throws {
         owsAssertDebug(self.databaseChangeObserver == nil)
 
         // DatabaseChangeObserver is a general purpose observer, whose delegates
@@ -289,80 +263,29 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         self.databaseChangeObserver = nil
     }
 
-    func setup() throws {
-        try setupDatabaseChangeObserver()
-    }
-
     // MARK: -
 
-    private static let keyServiceName: String = "GRDBKeyChainService"
-    private static let keyName: String = "GRDBDatabaseCipherKeySpec"
-    public static var keyspec: GRDBKeySpecSource {
-        return GRDBKeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
-    }
-
-    @objc
-    public static var isKeyAccessible: Bool {
-        do {
-            return try !keyspec.fetchString().isEmpty
-        } catch {
-            owsFailDebug("Key not accessible: \(error)")
-            return false
-        }
-    }
-
-    /// Fetches the GRDB key data from the keychain.
-    /// - Note: Will fatally assert if not running in a debug or test build.
-    /// - Returns: The key data, if available.
-    @objc
-    public static var debugOnly_keyData: Data? {
-        owsAssert(OWSIsTestableBuild() || DebugFlags.internalSettings)
-        return try? keyspec.fetchData()
-    }
-
-    @objc
-    public static func ensureDatabaseKeySpecExists() throws {
-        do {
-            _ = try keyspec.fetchString()
-            // Key exists and is valid.
-            return
-        } catch where CurrentAppContext().isMainApp && !CurrentAppContext().isInBackground() {
-            // We're the main app, so we can proceed to create a new database key.
-            //
-            // However, if we're in the background, we don't create a new key (because
-            // it might exist and not be accessible). Note that we should catch this
-            // earlier using `isKeyAccessible` and terminate before this point.
-            //
-            // TODO: Handle "not set" vs. "permission denied" errors here.
-        }
-
+    private static func ensureDatabaseKeySpecExists(keyFetcher: GRDBKeyFetcher) throws {
         // Because we use kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly, the
         // keychain will be inaccessible after device restart until device is
         // unlocked for the first time. If the app receives a push notification, we
         // won't be able to access the keychain to process that notification, so we
         // should just terminate by throwing an uncaught exception.
-
-        // At this point, either:
-        //
-        // * This is a new install so there's no existing password to retrieve.
-        // * The keychain has become corrupt.
-        let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl()
-        let doesDBExist = FileManager.default.fileExists(atPath: databaseUrl.path)
-        if doesDBExist {
-            owsFail("Could not load database metadata")
+        do {
+            _ = try keyFetcher.fetchString()
+        } catch KeychainError.notFound {
+            try keyFetcher.generateAndStore()
+            // belt and suspenders: make sure we can fetch it
+            _ = try keyFetcher.fetchString()
         }
-
-        keyspec.generateAndStore()
     }
 
-    public static func resetAllStorage() {
+    public func resetAllStorage() {
         Logger.info("")
 
         // This might be redundant but in the spirit of thoroughness...
 
         GRDBDatabaseStorageAdapter.removeAllFiles()
-
-        deleteDBKeys()
 
         if CurrentAppContext().isMainApp {
             TSAttachmentStream.deleteAttachmentsFromDisk()
@@ -371,17 +294,9 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // TODO: Delete Profiles on Disk?
     }
 
-    private static func deleteDBKeys() {
-        do {
-            try keyspec.clear()
-        } catch {
-            owsFailDebug("Could not clear keychain: \(error)")
-        }
-    }
-
-    static func prepareDatabase(db: Database, keyspec: GRDBKeySpecSource) throws {
-        let keyspec = try keyspec.fetchString()
-        try db.execute(sql: "PRAGMA key = \"\(keyspec)\"")
+    static func prepareDatabase(db: Database, keyFetcher: GRDBKeyFetcher) throws {
+        let key = try keyFetcher.fetchString()
+        try db.execute(sql: "PRAGMA key = \"\(key)\"")
         try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
         try db.execute(sql: "PRAGMA checkpoint_fullfsync = ON")
         try SqliteUtil.setBarrierFsync(db: db, enabled: true)
@@ -831,10 +746,10 @@ private struct GRDBStorage {
 
     fileprivate static let maxBusyTimeoutMs = 50
 
-    init(dbURL: URL, keyspec: GRDBKeySpecSource) throws {
+    init(dbURL: URL, keyFetcher: GRDBKeyFetcher) throws {
         self.dbURL = dbURL
 
-        self.poolConfiguration = Self.buildConfiguration(keyspec: keyspec)
+        self.poolConfiguration = Self.buildConfiguration(keyFetcher: keyFetcher)
         self.pool = try Self.buildPool(dbURL: dbURL, poolConfiguration: poolConfiguration)
 
         OWSFileSystem.protectFileOrFolder(atPath: dbURL.path)
@@ -880,7 +795,7 @@ private struct GRDBStorage {
 
     fileprivate static var maximumReaderCountInExtensions: Int { 4 }
 
-    private static func buildConfiguration(keyspec: GRDBKeySpecSource) -> Configuration {
+    private static func buildConfiguration(keyFetcher: GRDBKeyFetcher) -> Configuration {
         var configuration = Configuration()
         configuration.readonly = false
         configuration.foreignKeysEnabled = true // Default is already true
@@ -920,7 +835,7 @@ private struct GRDBStorage {
             }
         })
         configuration.prepareDatabase { db in
-            try GRDBDatabaseStorageAdapter.prepareDatabase(db: db, keyspec: keyspec)
+            try GRDBDatabaseStorageAdapter.prepareDatabase(db: db, keyFetcher: keyFetcher)
 
             #if DEBUG
             let shouldLogDbQueries = false
@@ -940,14 +855,16 @@ private struct GRDBStorage {
 
 // MARK: -
 
-public struct GRDBKeySpecSource {
+public struct GRDBKeyFetcher {
 
-    private var kSQLCipherKeySpecLength: UInt {
-        GRDBDatabaseStorageAdapter.kSQLCipherKeySpecLength
+    public enum Constants {
+        fileprivate static let keyServiceName: String = "GRDBKeyChainService"
+        fileprivate static let keyName: String = "GRDBDatabaseCipherKeySpec"
+        // 256 bit key + 128 bit salt
+        public static let kSQLCipherKeySpecLength: Int32 = 48
     }
 
-    let keyServiceName: String
-    let keyName: String
+    let keychainStorage: any KeychainStorage
 
     func fetchString() throws -> String {
         // Use a raw key spec, where the 96 hexadecimal digits are provided
@@ -957,7 +874,7 @@ public struct GRDBKeySpecSource {
         // x'98483C6EB40B6C31A448C22A66DED3B5E5E8D5119CAC8327B655C8B5C483648101010101010101010101010101010101'
         let data = try fetchData()
 
-        guard data.count == kSQLCipherKeySpecLength else {
+        guard data.count == Constants.kSQLCipherKeySpecLength else {
             owsFail("unexpected keyspec length")
         }
 
@@ -966,31 +883,31 @@ public struct GRDBKeySpecSource {
     }
 
     public func fetchData() throws -> Data {
-        return try CurrentAppContext().keychainStorage().data(forService: keyServiceName, key: keyName)
+        return try keychainStorage.dataValue(service: Constants.keyServiceName, key: Constants.keyName)
     }
 
     func clear() throws {
-        Logger.info("")
-
-        try CurrentAppContext().keychainStorage().remove(service: keyServiceName, key: keyName)
+        try keychainStorage.removeValue(service: Constants.keyServiceName, key: Constants.keyName)
     }
 
-    func generateAndStore() {
-        Logger.info("")
-
-        do {
-            let keyData = Randomness.generateRandomBytes(Int32(kSQLCipherKeySpecLength))
-            try store(data: keyData)
-        } catch {
-            owsFail("Could not generate key for GRDB: \(error)")
-        }
+    func generateAndStore() throws {
+        let keyData = Randomness.generateRandomBytes(Constants.kSQLCipherKeySpecLength)
+        try store(data: keyData)
     }
 
     public func store(data: Data) throws {
-        guard data.count == kSQLCipherKeySpecLength else {
+        guard data.count == Constants.kSQLCipherKeySpecLength else {
             owsFail("unexpected keyspec length")
         }
-        try CurrentAppContext().keychainStorage().set(data: data, service: keyServiceName, key: keyName)
+        try keychainStorage.setDataValue(data, service: Constants.keyServiceName, key: Constants.keyName)
+    }
+
+    /// Fetches the GRDB key data from the keychain.
+    /// - Note: Will fatally assert if not running in a debug or test build.
+    /// - Returns: The key data, if available.
+    public func debugOnly_keyData() -> Data? {
+        owsAssert(OWSIsTestableBuild() || DebugFlags.internalSettings)
+        return try? fetchData()
     }
 }
 
@@ -1071,15 +988,7 @@ extension GRDBDatabaseStorageAdapter {
 
     /// Run database integrity checks and log their results.
     @discardableResult
-    public static func checkIntegrity() -> SqliteUtil.IntegrityCheckResult {
-        let storageCoordinator: StorageCoordinator
-        if SSKEnvironment.hasShared {
-            storageCoordinator = SSKEnvironment.shared.storageCoordinator
-        } else {
-            storageCoordinator = StorageCoordinator()
-        }
-        let databaseStorage = storageCoordinator.nonGlobalDatabaseStorage
-
+    public static func checkIntegrity(databaseStorage: SDSDatabaseStorage) -> SqliteUtil.IntegrityCheckResult {
         func read<T>(block: (Database) -> T) -> T {
             return databaseStorage.read { block($0.unwrapGrdbRead.database) }
         }
@@ -1137,13 +1046,8 @@ extension GRDBDatabaseStorageAdapter {
 // MARK: - Checkpoints
 
 extension GRDBDatabaseStorageAdapter {
-    @objc
     public func syncTruncatingCheckpoint() throws {
-        SDSDatabaseStorage.shared.logFileSizes()
-
         try GRDBDatabaseStorageAdapter.checkpoint(pool: pool)
-
-        SDSDatabaseStorage.shared.logFileSizes()
     }
 
     private static func checkpoint(pool: DatabasePool) throws {

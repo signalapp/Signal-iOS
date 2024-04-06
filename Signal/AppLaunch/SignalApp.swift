@@ -334,8 +334,7 @@ extension SignalApp {
             let databaseFileUrl = GRDBDatabaseStorageAdapter.databaseFileUrl()
             let shareSheet = UIActivityViewController(activityItems: [databaseFileUrl], applicationActivities: nil)
             shareSheet.completionWithItemsHandler = { _, completed, _, error in
-                guard completed && error == nil,
-                      let password = GRDBDatabaseStorageAdapter.debugOnly_keyData?.hexadecimalString else {
+                guard completed, error == nil, let password = NSObject.databaseStorage.keyFetcher.debugOnly_keyData()?.hexadecimalString else {
                     completion()
                     return
                 }
@@ -356,8 +355,11 @@ extension SignalApp {
         parentVC.present(alert, animated: true)
     }
 
-    public static func showDatabaseIntegrityCheckUI(from parentVC: UIViewController,
-                                                    completion: @escaping () -> Void = {}) {
+    public static func showDatabaseIntegrityCheckUI(
+        from parentVC: UIViewController,
+        databaseStorage: SDSDatabaseStorage,
+        completion: @escaping () -> Void = {}
+    ) {
         let alert = UIAlertController(
             title: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_TITLE",
                                      comment: "Title for alert before running a database integrity check"),
@@ -376,7 +378,7 @@ extension SignalApp {
             var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
 
             DispatchQueue.sharedUserInitiated.async {
-                GRDBDatabaseStorageAdapter.checkIntegrity()
+                GRDBDatabaseStorageAdapter.checkIntegrity(databaseStorage: databaseStorage)
 
                 owsAssertDebug(backgroundTask != nil)
                 backgroundTask = nil

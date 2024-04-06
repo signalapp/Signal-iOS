@@ -55,7 +55,6 @@ public class SSKEnvironment: NSObject {
     public let signalServiceRef: OWSSignalServiceProtocol
     public let accountServiceClientRef: AccountServiceClient
     public let storageServiceManagerRef: StorageServiceManager
-    public let storageCoordinatorRef: StorageCoordinator
     public let sskPreferencesRef: SSKPreferences
     public let groupV2UpdatesRef: GroupV2Updates
     public let messageFetcherJobRef: MessageFetcherJob
@@ -119,7 +118,6 @@ public class SSKEnvironment: NSObject {
         signalService: OWSSignalServiceProtocol,
         accountServiceClient: AccountServiceClient,
         storageServiceManager: StorageServiceManager,
-        storageCoordinator: StorageCoordinator,
         sskPreferences: SSKPreferences,
         groupsV2: GroupsV2,
         groupV2Updates: GroupV2Updates,
@@ -181,7 +179,6 @@ public class SSKEnvironment: NSObject {
         self.signalServiceRef = signalService
         self.accountServiceClientRef = accountServiceClient
         self.storageServiceManagerRef = storageServiceManager
-        self.storageCoordinatorRef = storageCoordinator
         self.sskPreferencesRef = sskPreferences
         self.groupsV2Ref = groupsV2
         self.groupV2UpdatesRef = groupV2Updates

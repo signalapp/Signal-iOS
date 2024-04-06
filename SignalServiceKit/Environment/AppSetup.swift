@@ -36,6 +36,7 @@ public class AppSetup {
 
     public func start(
         appContext: AppContext,
+        databaseStorage: SDSDatabaseStorage,
         paymentsEvents: PaymentsEvents,
         mobileCoinHelper: MobileCoinHelper,
         callMessageHandler: CallMessageHandler,
@@ -58,8 +59,6 @@ public class AppSetup {
 
         let appVersion = AppVersionImpl.shared
         let webSocketFactory = testDependencies?.webSocketFactory ?? WebSocketFactoryNative()
-        let storageCoordinator = StorageCoordinator()
-        let databaseStorage = storageCoordinator.nonGlobalDatabaseStorage
 
         // AFNetworking (via CFNetworking) spools its attachments in
         // NSTemporaryDirectory(). If you receive a media message while the device
@@ -885,7 +884,6 @@ public class AppSetup {
             signalService: signalService,
             accountServiceClient: accountServiceClient,
             storageServiceManager: storageServiceManager,
-            storageCoordinator: storageCoordinator,
             sskPreferences: sskPreferences,
             groupsV2: groupsV2,
             groupV2Updates: groupV2Updates,
@@ -971,20 +969,30 @@ extension AppSetup {
 }
 
 extension AppSetup.DatabaseContinuation {
-    public func prepareDatabase() -> Guarantee<AppSetup.FinalContinuation> {
+    public func prepareDatabase(
+        backgroundScheduler: Scheduler = DispatchQueue.global(),
+        mainScheduler: Scheduler = DispatchQueue.main
+    ) -> Guarantee<AppSetup.FinalContinuation> {
         let databaseStorage = sskEnvironment.databaseStorageRef
 
         let (guarantee, future) = Guarantee<AppSetup.FinalContinuation>.pending()
-        DispatchQueue.global().async {
+        backgroundScheduler.async {
             if self.shouldTruncateGrdbWal() {
                 // Try to truncate GRDB WAL before any readers or writers are active.
                 do {
+                    databaseStorage.logFileSizes()
                     try databaseStorage.grdbStorage.syncTruncatingCheckpoint()
+                    databaseStorage.logFileSizes()
                 } catch {
                     owsFailDebug("Failed to truncate database: \(error)")
                 }
             }
-            databaseStorage.runGrdbSchemaMigrationsOnMainDatabase {
+            databaseStorage.runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: mainScheduler) {
+                do {
+                    try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
+                } catch {
+                    owsFail("Couldn't set up change observer: \(error.grdbErrorForLogging)")
+                }
                 self.sskEnvironment.warmCaches()
                 self.backgroundTask.end()
                 future.resolve(AppSetup.FinalContinuation(

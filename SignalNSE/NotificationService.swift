@@ -89,15 +89,19 @@ class NotificationService: UNNotificationServiceExtension {
     ) {
         let logger = NSELogger()
 
-        DispatchQueue.main.sync { globalEnvironment.setUpBeforeCheckingForFirstDeviceUnlock(logger: logger) }
-
-        // Detect and handle "no GRDB file" and "no keychain access; device
-        // not yet unlocked for first time" cases _before_ calling
-        // setupIfNecessary().
-        if let errorContent = globalEnvironment.verifyDBKeysAvailable(logger: logger) {
+        do {
+            try DispatchQueue.main.sync(execute: { try globalEnvironment.setUp(logger: logger) })
+        } catch KeychainError.notAllowed {
+            // Detect and handle "no GRDB file" and "no keychain access".
             if hasShownFirstUnlockError.tryToSetFlag() {
                 logger.error("DB Keys not accessible; showing error.", flushImmediately: true)
-                contentHandler(errorContent)
+                let content = UNMutableNotificationContent()
+                let notificationFormat = OWSLocalizedString(
+                    "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
+                    comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')"
+                )
+                content.body = String(format: notificationFormat, UIDevice.current.localizedModel)
+                contentHandler(content)
             } else {
                 // Only show a single error if we receive multiple pushes
                 // before first device unlock.
@@ -106,9 +110,9 @@ class NotificationService: UNNotificationServiceExtension {
                 contentHandler(emptyContent)
             }
             return
+        } catch {
+            owsFail("Couldn't load database: \(error.grdbErrorForLogging)")
         }
-
-        DispatchQueue.main.sync { globalEnvironment.setUpAfterCheckingForFirstDeviceUnlock(logger: logger) }
 
         self.contentHandler.set(contentHandler)
 

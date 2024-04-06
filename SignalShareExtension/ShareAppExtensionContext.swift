@@ -153,10 +153,6 @@ extension ShareAppExtensionContext: AppContext {
         owsFailBeta("Cannot run main app active blocks in share extension.")
     }
 
-    func keychainStorage() -> SignalServiceKit.SSKKeychainStorage {
-        SSKDefaultKeychainStorage.shared
-    }
-
     func appDocumentDirectoryPath() -> String {
         guard let documentDirectoryURL = FileManager.default.urls(
             for: .documentDirectory,

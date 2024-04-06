@@ -4,164 +4,114 @@
 //
 
 import Foundation
-import SAMKeychain
+import SignalCoreKit
 
-public enum KeychainStorageError: Error {
-    case failure(description: String)
-    case missing(description: String)
-}
+public enum KeychainError: Error {
+    case notFound
+    case notAllowed
+    case unknownError(OSStatus)
 
-// MARK: -
-
-@objc
-public protocol SSKKeychainStorage: AnyObject {
-
-    @objc
-    func string(forService service: String, key: String) throws -> String
-
-    @objc(setString:service:key:error:)
-    func set(string: String, service: String, key: String) throws
-
-    @objc
-    func data(forService service: String, key: String) throws -> Data
-
-    @objc
-    func set(data: Data, service: String, key: String) throws
-
-    @objc
-    func remove(service: String, key: String) throws
-}
-
-// MARK: -
-
-public extension SSKKeychainStorage {
-    func optionalString(forService service: String, key: String) throws -> String? {
-        do {
-            return try self.string(forService: service, key: key)
-        } catch KeychainStorageError.missing {
-            return nil
-        } catch let error {
-            throw error
-        }
-    }
-
-    func optionalData(forService service: String, key: String) throws -> Data? {
-        do {
-            return try self.data(forService: service, key: key)
-        } catch KeychainStorageError.missing {
-            return nil
-        } catch let error {
-            throw error
+    fileprivate init(_ status: OSStatus) {
+        switch status {
+        case errSecItemNotFound:
+            self = .notFound
+        case errSecInteractionNotAllowed:
+            self = .notAllowed
+        default:
+            self = .unknownError(status)
         }
     }
 }
 
 // MARK: -
 
-@objc
-public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
+public protocol KeychainStorage {
+    func dataValue(service: String, key: String) throws -> Data
+    func setDataValue(_ dataValue: Data, service: String, key: String) throws
+    func removeValue(service: String, key: String) throws
+}
 
-    @objc
-    public static let shared = SSKDefaultKeychainStorage()
+// MARK: -
 
-    // Force usage as a singleton
-    override private init() {
-        super.init()
+public class KeychainStorageImpl: KeychainStorage {
+    private let isUsingProductionService: Bool
 
+    public init(isUsingProductionService: Bool) {
+        self.isUsingProductionService = isUsingProductionService
         SwiftSingletons.register(self)
     }
 
-    private func normalizeService(service: String) -> String {
-        return (TSConstants.isUsingProductionService
-            ? service
-            : service + ".staging")
+    private func normalizeService(_ service: String) -> String {
+        return self.isUsingProductionService ? service : service + ".staging"
     }
 
-    @objc
-    public func string(forService service: String, key: String) throws -> String {
-        let service = normalizeService(service: service)
-
-        var error: NSError?
-        let result = SAMKeychain.password(forService: service, account: key, error: &error)
-        if let error = error {
-            if error.code == errSecItemNotFound {
-                throw KeychainStorageError.missing(description: "\(logTag) item not found")
-            }
-
-            throw KeychainStorageError.failure(description: "\(logTag) error retrieving string: \(error)")
-        }
-        guard let string = result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not retrieve string")
-        }
-        return string
+    private func baseQuery(service: String, key: String) -> [String: Any] {
+        return [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: normalizeService(service),
+            kSecAttrAccount as String: key,
+        ]
     }
 
-    @objc
-    public func set(string: String, service: String, key: String) throws {
-        let service = normalizeService(service: service)
+    public func dataValue(service: String, key: String) throws -> Data {
+        var query = self.baseQuery(service: service, key: key)
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        query[kSecReturnData as String] = true
 
-        SAMKeychain.setAccessibilityType(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
-
-        var error: NSError?
-        let result = SAMKeychain.setPassword(string, forService: service, account: key, error: &error)
-        if let error = error {
-            throw KeychainStorageError.failure(description: "\(logTag) error setting string: \(error)")
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        guard status == errSecSuccess else {
+            throw KeychainError(status)
         }
-        guard result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not set string")
-        }
+        return item as! Data
     }
 
-    @objc
-    public func data(forService service: String, key: String) throws -> Data {
-        let service = normalizeService(service: service)
+    public func setDataValue(_ dataValue: Data, service: String, key: String) throws {
+        let query = self.baseQuery(service: service, key: key)
+        let setValueQuery: [String: Any] = [
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+            kSecValueData as String: dataValue,
+        ]
 
-        var error: NSError?
-        let result = SAMKeychain.passwordData(forService: service, account: key, error: &error)
-        if let error = error {
-            if error.code == errSecItemNotFound {
-                throw KeychainStorageError.missing(description: "\(logTag) item not found")
-            }
+        Logger.info("Inserting \(key)")
 
-            throw KeychainStorageError.failure(description: "\(logTag) error retrieving data: \(error)")
-        }
-        guard let data = result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not retrieve data")
-        }
-        return data
-    }
-
-    @objc
-    public func set(data: Data, service: String, key: String) throws {
-        let service = normalizeService(service: service)
-
-        SAMKeychain.setAccessibilityType(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
-
-        var error: NSError?
-        let result = SAMKeychain.setPasswordData(data, forService: service, account: key, error: &error)
-        if let error = error {
-            throw KeychainStorageError.failure(description: "\(logTag) error setting data: \(error)")
-        }
-        guard result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not set data")
-        }
-    }
-
-    @objc
-    public func remove(service: String, key: String) throws {
-        let service = normalizeService(service: service)
-
-        var error: NSError?
-        let result = SAMKeychain.deletePassword(forService: service, account: key, error: &error)
-        if let error = error {
-            // If deletion failed because the specified item could not be found in the keychain, consider it success.
-            if error.code == errSecItemNotFound {
+        // Insert
+        do {
+            let addValueQuery = query.merging(setValueQuery, uniquingKeysWith: { _, new in new })
+            let status = SecItemAdd(addValueQuery as CFDictionary, nil)
+            switch status {
+            case errSecSuccess:
                 return
+            case errSecDuplicateItem:
+                break
+            default:
+                throw KeychainError(status)
             }
-            throw KeychainStorageError.failure(description: "\(logTag) error removing data: \(error)")
         }
-        guard result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not remove data")
+
+        Logger.info("Updating \(key)")
+
+        // or Update; if it already exists
+        do {
+            let status = SecItemUpdate(query as CFDictionary, setValueQuery as CFDictionary)
+            switch status {
+            case errSecSuccess:
+                return
+            default:
+                throw KeychainError(status)
+            }
+        }
+    }
+
+    public func removeValue(service: String, key: String) throws {
+        Logger.info("Removing \(key)")
+        let query = self.baseQuery(service: service, key: key)
+        let status = SecItemDelete(query as CFDictionary)
+        switch status {
+        case errSecSuccess, errSecItemNotFound:
+            return
+        default:
+            throw KeychainError(status)
         }
     }
 }
