@@ -51,7 +51,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
     func downloadAndDecryptAvatar(
         avatarUrlPath: String,
         profileKey: OWSAES256Key
-    ) async throws -> Data
+    ) async throws -> URL
 
     func updateProfile(
         address: SignalServiceAddress,

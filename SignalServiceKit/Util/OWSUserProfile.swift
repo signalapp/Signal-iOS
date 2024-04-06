@@ -486,12 +486,36 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
         if fileNameDidChange, let oldAvatarFileName, !oldAvatarFileName.isEmpty {
             let oldAvatarFilePath = Self.profileAvatarFilePath(for: oldAvatarFileName)
-            DispatchQueue.global().async { OWSFileSystem.deleteFileIfExists(oldAvatarFilePath) }
+            OWSFileSystem.deleteFileIfExists(oldAvatarFilePath)
         }
 
         self.avatarUrlPath = newAvatarUrlPath
         self.avatarFileName = newAvatarFileName
         return true
+    }
+
+    /// Moves a temporary avatar file into its permanent location.
+    ///
+    /// This method accepts a `tx` parameter to ensure that this move occurs
+    /// within a write transaction. Callers must ensure that it's the same write
+    /// transaction that assigns the result to an OWSUserProfile. In doing so,
+    /// callers ensure that the orphaned cleanup logic doesn't delete avatars
+    /// that are about to be referenced.
+    static func consumeTemporaryAvatarFileUrl(
+        _ avatarFileUrl: OptionalChange<URL?>,
+        tx: SDSAnyWriteTransaction
+    ) throws -> OptionalChange<String?> {
+        switch avatarFileUrl {
+        case .noChange:
+            return .noChange
+        case .setTo(.none):
+            return .setTo(nil)
+        case .setTo(.some(let temporaryFileUrl)):
+            let filename = generateAvatarFilename()
+            let filePath = profileAvatarFilePath(for: filename)
+            try FileManager.default.moveItem(atPath: temporaryFileUrl.path, toPath: filePath)
+            return .setTo(filename)
+        }
     }
 
     @objc
@@ -510,8 +534,12 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return result
     }()
 
+    static func generateAvatarFilename() -> String {
+        return UUID().uuidString + ".jpg"
+    }
+
     @objc
-    public static func profileAvatarFilePath(for filename: String) -> String {
+    static func profileAvatarFilePath(for filename: String) -> String {
         owsAssertDebug(!filename.isEmpty)
         return Self.profileAvatarsDirPath.appendingPathComponent(filename)
     }

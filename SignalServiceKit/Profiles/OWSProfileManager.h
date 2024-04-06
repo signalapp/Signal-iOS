@@ -132,9 +132,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 #pragma mark -
 
-// This method is only exposed for usage by the Swift extensions.
-- (NSString *)generateAvatarFilename;
-
 - (NSString *)groupKeyForGroupId:(NSData *)groupId;
 
 #pragma mark - Internals exposed for Swift

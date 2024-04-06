@@ -270,9 +270,9 @@ public class ProfileFetcherJob: NSObject {
         if didAlreadyDownloadAvatar {
             return AvatarDownloadResult(remoteRelativePath: .noChange, localFileUrl: .noChange)
         }
-        let avatarData: Data?
+        let temporaryAvatarUrl: URL?
         do {
-            avatarData = try await profileManager.downloadAndDecryptAvatar(
+            temporaryAvatarUrl = try await profileManager.downloadAndDecryptAvatar(
                 avatarUrlPath: newAvatarUrlPath,
                 profileKey: profileKey
             )
@@ -294,11 +294,11 @@ public class ProfileFetcherJob: NSObject {
             //   afterward). This might be due to a race with an update that is in
             //   flight. We should eventually recover since profile updates are
             //   durable.
-            avatarData = nil
+            temporaryAvatarUrl = nil
         }
         return AvatarDownloadResult(
             remoteRelativePath: .setTo(newAvatarUrlPath),
-            localFileUrl: .setTo(avatarData.flatMap { profileManager.writeAvatarDataToFile($0) })
+            localFileUrl: .setTo(temporaryAvatarUrl)
         )
     }
 
@@ -336,11 +336,22 @@ public class ProfileFetcherJob: NSObject {
                 .map { $0.0 }
                 .filter { persistedBadgeIds.contains($0.badgeId) }
 
+            let avatarFilename: OptionalChange<String?>
+            do {
+                avatarFilename = try OWSUserProfile.consumeTemporaryAvatarFileUrl(
+                    avatarDownloadResult.localFileUrl,
+                    tx: transaction
+                )
+            } catch {
+                Logger.warn("Couldn't move downloaded avatar: \(error)")
+                avatarFilename = .noChange
+            }
+
             self.profileManager.updateProfile(
                 address: SignalServiceAddress(serviceId),
                 decryptedProfile: fetchedProfile.decryptedProfile,
                 avatarUrlPath: avatarDownloadResult.remoteRelativePath,
-                avatarFileName: avatarDownloadResult.localFileUrl.map { $0?.lastPathComponent },
+                avatarFileName: avatarFilename,
                 profileBadges: profileBadgeMetadata,
                 lastFetchDate: Date(),
                 userProfileWriter: .profileFetch,

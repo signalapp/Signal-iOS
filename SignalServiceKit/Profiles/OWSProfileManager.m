@@ -1190,45 +1190,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [self.modelReadCaches.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
 }
 
-- (nullable NSURL *)writeAvatarDataToFile:(NSData *)avatarData
-{
-    OWSAssertDebug(avatarData.length > 0);
-    if (![avatarData ows_isValidImage]) {
-        OWSFailDebug(@"Invalid avatar format");
-        return nil;
-    }
-
-    NSString *filename = [self generateAvatarFilename];
-    NSString *avatarPath = [OWSUserProfile profileAvatarFilePathFor:filename];
-    NSURL *avatarUrl = [NSURL fileURLWithPath:avatarPath];
-    if (!avatarUrl) {
-        OWSFailDebug(@"Invalid URL for avatarPath %@", avatarPath);
-        return nil;
-    }
-
-    NSError *error = nil;
-    BOOL success = [avatarData writeToURL:avatarUrl options:NSDataWritingAtomic error:&error];
-    if (!success || error) {
-        OWSFailDebug(@"Failed write to url %@: %@", avatarUrl, error);
-        return nil;
-    }
-
-    // We were double checking that a UIImage could be instantiated from this file before recording the
-    // avatar to the profile. That behavior is preserved here:
-    UIImage *_Nullable avatarImage = [UIImage imageWithContentsOfFile:avatarUrl.path];
-    if (avatarImage) {
-        return avatarUrl;
-    } else {
-        OWSFailDebug(@"Failed to open avatar image written to disk");
-        return nil;
-    }
-}
-
-- (NSString *)generateAvatarFilename
-{
-    return [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
-}
-
 #pragma mark - Avatar Disk Cache
 
 - (nullable NSData *)loadProfileAvatarDataWithFilename:(NSString *)filename

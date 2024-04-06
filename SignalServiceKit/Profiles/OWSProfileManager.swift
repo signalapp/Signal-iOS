@@ -9,7 +9,6 @@ import SignalCoreKit
 
 public class OWSProfileManagerSwiftValues {
     fileprivate let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: .init())
-    fileprivate let avatarDownloadRequests = AtomicValue<[OWSProfileManager.AvatarDownloadKey: Promise<Data>]>([:], lock: .init())
 
     public init() {
     }
@@ -1031,7 +1030,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     }
 
     private func writeProfileAvatarToDisk(avatarData: Data) throws -> String {
-        let filename = self.generateAvatarFilename()
+        let filename = OWSUserProfile.generateAvatarFilename()
         let filePath = OWSUserProfile.profileAvatarFilePath(for: filename)
         do {
             try avatarData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
@@ -1355,18 +1354,12 @@ extension OWSProfileManager {
         }
         let shouldRetry: Bool
         do {
-            let filename = generateAvatarFilename()
-            let filePath = OWSUserProfile.profileAvatarFilePath(for: filename)
-            let avatarData = try await downloadAndDecryptAvatar(avatarUrlPath: avatarUrlPath, profileKey: profileKey).awaitable()
-            try avatarData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
+            let temporaryFileUrl = try await downloadAndDecryptAvatar(avatarUrlPath: avatarUrlPath, profileKey: profileKey)
             var didConsumeFilePath = false
             defer {
-                if !didConsumeFilePath { try? FileManager.default.removeItem(atPath: filePath) }
+                if !didConsumeFilePath { try? FileManager.default.removeItem(at: temporaryFileUrl) }
             }
-            guard UIImage(contentsOfFile: filePath) != nil else {
-                throw OWSGenericError("Avatar image can't be decoded.")
-            }
-            (shouldRetry, didConsumeFilePath) = await databaseStorage.awaitableWrite { tx in
+            (shouldRetry, didConsumeFilePath) = try await databaseStorage.awaitableWrite { tx in
                 let newProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, authedAccount: authedAccount, transaction: tx)
                 guard newProfile.avatarFileName == nil else {
                     return (false, false)
@@ -1375,8 +1368,9 @@ extension OWSProfileManager {
                 guard newProfile.profileKey == profileKey, newProfile.avatarUrlPath == avatarUrlPath else {
                     return (true, false)
                 }
+                let avatarFilename = try OWSUserProfile.consumeTemporaryAvatarFileUrl(.setTo(temporaryFileUrl), tx: tx)
                 newProfile.update(
-                    avatarFileName: .setTo(filename),
+                    avatarFileName: avatarFilename,
                     userProfileWriter: .avatarDownload,
                     authedAccount: authedAccount,
                     transaction: tx,
@@ -1390,65 +1384,127 @@ extension OWSProfileManager {
         }
     }
 
-    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> Data {
-        try await downloadAndDecryptAvatar(avatarUrlPath: avatarUrlPath, profileKey: profileKey).awaitable()
-    }
+    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> URL {
+        let backgroundTask = OWSBackgroundTask(label: "\(#function)")
+        defer { backgroundTask.end() }
 
-    fileprivate func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) -> Promise<Data> {
-        let key = AvatarDownloadKey(avatarUrlPath: avatarUrlPath, profileKey: profileKey.keyData)
-        let (promise, futureToStart): (Promise<Data>, Future<Data>?) = swiftValues.avatarDownloadRequests.update {
-            if let existingPromise = $0[key] {
-                return (existingPromise, nil)
-            }
-            let (promise, futureToStart) = Promise<Data>.pending()
-            $0[key] = promise.ensure(on: DispatchQueue.global()) { [weak self] in
-                self?.swiftValues.avatarDownloadRequests.update { _ = $0.removeValue(forKey: key) }
-            }
-            return (promise, futureToStart)
-        }
-        if let futureToStart {
-            futureToStart.resolve(on: SyncScheduler(), with: Promise.wrapAsync {
-                let backgroundTask = OWSBackgroundTask(label: "\(#function)")
-                defer { backgroundTask.end() }
-
-                return try await Self._downloadAndDecryptAvatar(
-                    avatarUrlPath: avatarUrlPath,
-                    profileKey: profileKey,
-                    remainingRetries: 3
-                )
-            })
-        }
-        return promise
+        return try await Self._downloadAndDecryptAvatar(
+            avatarUrlPath: avatarUrlPath,
+            profileKey: profileKey,
+            remainingRetries: 3
+        )
     }
 
     private static func _downloadAndDecryptAvatar(
         avatarUrlPath: String,
         profileKey: OWSAES256Key,
         remainingRetries: Int
-    ) async throws -> Data {
+    ) async throws -> URL {
         assert(!avatarUrlPath.isEmpty)
         do {
             Logger.info("")
-
             let urlSession = self.avatarUrlSession
             let response = try await urlSession.downloadTaskPromise(avatarUrlPath, method: .get).awaitable()
-
-            let encryptedData: Data
-            do {
-                encryptedData = try Data(contentsOf: response.downloadUrl)
-            } catch {
-                owsFailDebug("Could not load data failed: \(error)")
-                // Fail immediately; do not retry.
-                throw SSKUnretryableError.couldNotLoadFileData
+            let decryptedFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+            try decryptAvatar(at: response.downloadUrl, to: decryptedFileUrl, profileKey: profileKey)
+            guard NSData.ows_isValidImage(at: decryptedFileUrl, mimeType: nil) else {
+                throw OWSGenericError("Couldn't validate avatar")
             }
-
-            return try OWSUserProfile.decrypt(profileData: encryptedData, profileKey: profileKey)
+            guard UIImage(contentsOfFile: decryptedFileUrl.path) != nil else {
+                throw OWSGenericError("Couldn't decode image")
+            }
+            return decryptedFileUrl
         } catch where error.isNetworkFailureOrTimeout && remainingRetries > 0 {
             return try await _downloadAndDecryptAvatar(
                 avatarUrlPath: avatarUrlPath,
                 profileKey: profileKey,
                 remainingRetries: remainingRetries - 1
             )
+        }
+    }
+
+    private static func decryptAvatar(
+        at encryptedFileUrl: URL,
+        to decryptedFileUrl: URL,
+        profileKey: OWSAES256Key
+    ) throws {
+        let readHandle = try FileHandle(forReadingFrom: encryptedFileUrl)
+        defer {
+            try? readHandle.close()
+        }
+        guard
+            FileManager.default.createFile(
+                atPath: decryptedFileUrl.path,
+                contents: nil,
+                attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication]
+            )
+        else {
+            throw OWSGenericError("Couldn't create temporary file")
+        }
+        let writeHandle = try FileHandle(forWritingTo: decryptedFileUrl)
+        defer {
+            try? writeHandle.close()
+        }
+
+        let concatenatedLength = Int(try readHandle._seekToEnd())
+        try readHandle._seek(toOffset: 0)
+
+        let nonceLength = Aes256GcmEncryptedData.nonceLength
+        let authenticationTagLength = Aes256GcmEncryptedData.authenticationTagLength
+
+        var remainingLength = concatenatedLength - nonceLength - authenticationTagLength
+        guard remainingLength >= 0 else {
+            throw OWSGenericError("ciphertext too short")
+        }
+
+        let nonceData = try readHandle._read(count: nonceLength)
+
+        let decryptor = try Aes256GcmDecryption(key: profileKey.keyData, nonce: nonceData, associatedData: [])
+        while remainingLength > 0 {
+            let kBatchLimit = 32768
+            var payloadData: Data = try readHandle._read(count: min(remainingLength, kBatchLimit))
+            try decryptor.decrypt(&payloadData)
+            try writeHandle._write(contentsOf: payloadData)
+            remainingLength -= payloadData.count
+        }
+
+        let authenticationTag = try readHandle._read(count: authenticationTagLength)
+        guard try decryptor.verifyTag(authenticationTag) else {
+            throw OWSGenericError("failed to decrypt")
+        }
+    }
+}
+
+private extension FileHandle {
+    func _seekToEnd() throws -> UInt64 {
+        if #available(iOS 13.4, *) {
+            return try seekToEnd()
+        } else {
+            return seekToEndOfFile()
+        }
+    }
+
+    func _seek(toOffset offset: UInt64) throws {
+        if #available(iOS 13.4, *) {
+            try seek(toOffset: offset)
+        } else {
+            seek(toFileOffset: offset)
+        }
+    }
+
+    func _read(count: Int) throws -> Data {
+        if #available(iOS 13.4, *) {
+            return try read(upToCount: count) ?? Data()
+        } else {
+            return readData(ofLength: count)
+        }
+    }
+
+    func _write(contentsOf data: Data) throws {
+        if #available(iOS 13.4, *) {
+            try write(contentsOf: data)
+        } else {
+            write(data)
         }
     }
 }
