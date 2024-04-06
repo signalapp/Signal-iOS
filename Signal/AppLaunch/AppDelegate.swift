@@ -471,6 +471,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            StaleProfileFetcher(
+                bulkProfileFetcher: NSObject.bulkProfileFetch,
+                db: DependenciesBridge.shared.db,
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager
+            ).scheduleProfileFetches()
+        }
+
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
 

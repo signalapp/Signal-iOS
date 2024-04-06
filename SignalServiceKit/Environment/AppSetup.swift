@@ -824,7 +824,6 @@ public class AppSetup {
         let groupV2Updates = testDependencies?.groupV2Updates ?? GroupV2UpdatesImpl()
         let messageFetcherJob = MessageFetcherJob()
         let bulkProfileFetch = BulkProfileFetch(
-            databaseStorage: databaseStorage,
             reachabilityManager: reachabilityManager,
             tsAccountManager: tsAccountManager
         )

@@ -176,12 +176,11 @@ class GRDBFinderTest: SignalBaseTest {
     }
 
     func testUserProfileFinder_missingAndStaleUserProfiles() {
+        let now = Date()
 
         let dateWithOffsetFromNow = { (offset: TimeInterval) -> Date in
-            return Date(timeInterval: offset, since: Date())
+            return Date(timeInterval: offset, since: now)
         }
-
-        let finder = UserProfileFinder()
 
         var expectedAddresses = Set<SignalServiceAddress>()
         self.write { transaction in
@@ -282,7 +281,7 @@ class GRDBFinderTest: SignalBaseTest {
 
         var missingAndStaleAddresses = Set<SignalServiceAddress>()
         self.read { transaction in
-            finder.enumerateMissingAndStaleUserProfiles(transaction: transaction) { (userProfile: OWSUserProfile) in
+            StaleProfileFetcher.enumerateMissingAndStaleUserProfiles(now: now, tx: transaction) { userProfile in
                 XCTAssertFalse(missingAndStaleAddresses.contains(userProfile.internalAddress))
                 missingAndStaleAddresses.insert(userProfile.internalAddress)
             }

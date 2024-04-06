@@ -34,16 +34,13 @@ public actor BulkProfileFetch {
 
     private var observers = [NSObjectProtocol]()
 
-    private let databaseStorage: SDSDatabaseStorage
     private let reachabilityManager: SSKReachabilityManager
     private let tsAccountManager: TSAccountManager
 
     public init(
-        databaseStorage: SDSDatabaseStorage,
         reachabilityManager: SSKReachabilityManager,
         tsAccountManager: TSAccountManager
     ) {
-        self.databaseStorage = databaseStorage
         self.reachabilityManager = reachabilityManager
         self.tsAccountManager = tsAccountManager
 
@@ -53,8 +50,6 @@ public actor BulkProfileFetch {
             Task {
                 await self.registerObservers()
                 await self.process()
-                // Try to update missing & stale profiles on launch.
-                await self.fetchMissingAndStaleProfiles()
             }
         }
     }
@@ -236,30 +231,5 @@ public actor BulkProfileFetch {
         }
 
         return -lastOutcome.date.timeIntervalSinceNow >= retryDelay
-    }
-
-    private func fetchMissingAndStaleProfiles() {
-        guard CurrentAppContext().isMainApp else {
-            return
-        }
-        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            return
-        }
-
-        let userProfiles = databaseStorage.read { tx in
-            var userProfiles = [OWSUserProfile]()
-            UserProfileFinder().enumerateMissingAndStaleUserProfiles(transaction: tx) { userProfile in
-                guard !userProfile.publicAddress.isLocalAddress else {
-                    // Ignore the local user.
-                    return
-                }
-                userProfiles.append(userProfile)
-            }
-            return userProfiles
-        }
-
-        // Limit how many profiles we try to update on launch.
-        let limit: Int = 25
-        fetchProfiles(addresses: Array(userProfiles.lazy.map({ $0.publicAddress }).shuffled().prefix(limit)))
     }
 }

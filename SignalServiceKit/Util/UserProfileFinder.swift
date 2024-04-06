@@ -130,50 +130,6 @@ public class UserProfileFinder: NSObject {
         return userProfiles
     }
 
-    func enumerateMissingAndStaleUserProfiles(
-        transaction tx: SDSAnyReadTransaction,
-        block: (OWSUserProfile) -> Void
-    ) {
-        // We are only interested in active users, e.g. users
-        // which the local user has sent or received a message
-        // from in the last N days.
-        let activeTimestamp = NSDate.ows_millisecondTimeStamp() - (30 * kDayInMs)
-        let activeDate = NSDate.ows_date(withMillisecondsSince1970: activeTimestamp)
-
-        // We are only interested in stale profiles, e.g. profiles
-        // that have never been fetched or haven't been fetched
-        // in the last N days.
-        let staleTimestamp = NSDate.ows_millisecondTimeStamp() - (1 * kDayInMs)
-        let staleDate = NSDate.ows_date(withMillisecondsSince1970: staleTimestamp)
-
-        // TODO: Skip if no profile key?
-
-        // SQLite treats NULL as less than any other value for the purposes of ordering, so:
-        //
-        // * ".lastFetchDate ASC" will correct order rows without .lastFetchDate first.
-        //
-        // But SQLite date comparison clauses will be false if a date is NULL, so:
-        //
-        // * ".lastMessagingDate > activeDate" will correctly filter out rows without .lastMessagingDate.
-        // * ".lastFetchDate < staleDate" will _NOT_ correctly include rows without .lastFetchDate;
-        //   we need to explicitly test for NULL.
-        let sql = """
-        SELECT *
-        FROM \(OWSUserProfile.databaseTableName)
-        WHERE \(userProfileColumn: .lastMessagingDate) > ?
-        AND (
-            \(userProfileColumn: .lastFetchDate) < ? OR
-            \(userProfileColumn: .lastFetchDate) IS NULL
-        )
-        ORDER BY \(userProfileColumn: .lastFetchDate) ASC
-        LIMIT 50
-        """
-        let arguments: StatementArguments = [convertDateForGrdb(activeDate), convertDateForGrdb(staleDate)]
-        OWSUserProfile.anyEnumerate(transaction: tx, sql: sql, arguments: arguments) { userProfile, _ in
-            block(userProfile)
-        }
-    }
-
     func fetchAcisWithSharedPhoneNumbers(tx: SDSAnyReadTransaction) throws -> [Aci] {
         let sql: String
         if OWSUserProfile.isPhoneNumberSharedByDefault {
