@@ -34,6 +34,15 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         return .withoutFinalizer(.init())
     }
 
+    public func validateAndBuildLinkPreview<Builder: LinkPreviewBuilder>(
+        from proto: SSKProtoPreview,
+        dataMessage: SSKProtoDataMessage,
+        builder: Builder,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        return .withoutFinalizer(.init())
+    }
+
     public func validateAndBuildStoryLinkPreview(
         from proto: SSKProtoPreview,
         tx: DBWriteTransaction
@@ -43,6 +52,14 @@ public class MockLinkPreviewManager: LinkPreviewManager {
 
     public func validateAndBuildLinkPreview(
         from draft: OWSLinkPreviewDraft,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        return .withoutFinalizer(.init())
+    }
+
+    public func validateAndBuildLinkPreview<Builder: LinkPreviewBuilder>(
+        from draft: OWSLinkPreviewDraft,
+        builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())

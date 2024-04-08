@@ -11,9 +11,17 @@ public protocol LinkPreviewManager {
 
     func fetchLinkPreview(for url: URL) -> Promise<OWSLinkPreviewDraft>
 
+    /// Uses the default builder.
     func validateAndBuildLinkPreview(
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
+
+    func validateAndBuildLinkPreview<Builder: LinkPreviewBuilder>(
+        from proto: SSKProtoPreview,
+        dataMessage: SSKProtoDataMessage,
+        builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 
@@ -22,8 +30,15 @@ public protocol LinkPreviewManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 
+    /// Uses the default builder.
     func validateAndBuildLinkPreview(
         from draft: OWSLinkPreviewDraft,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
+
+    func validateAndBuildLinkPreview<Builder: LinkPreviewBuilder>(
+        from draft: OWSLinkPreviewDraft,
+        builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 
