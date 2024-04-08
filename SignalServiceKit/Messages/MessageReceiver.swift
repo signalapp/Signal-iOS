@@ -1009,7 +1009,6 @@ public final class MessageReceiver: Dependencies {
             authorE164: nil,
             messageBody: body,
             bodyRanges: bodyRanges,
-            attachmentIds: [],
             editState: .none,
             expiresInSeconds: dataMessage.expireTimer,
             quotedMessage: quotedMessageBuilder?.info,

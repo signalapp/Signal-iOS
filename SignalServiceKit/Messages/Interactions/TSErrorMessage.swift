@@ -25,7 +25,6 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
                 timestamp: UInt64? = nil,
                 messageBody: String? = nil,
                 bodyRanges: MessageBodyRanges? = nil,
-                attachmentIds: [String]? = nil,
                 expiresInSeconds: UInt32 = 0,
                 quotedMessage: TSQuotedMessage? = nil,
                 contactShare: OWSContact? = nil,
@@ -46,7 +45,6 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
                    timestamp: timestamp,
                    messageBody: messageBody,
                    bodyRanges: bodyRanges,
-                   attachmentIds: attachmentIds,
                    expiresInSeconds: expiresInSeconds,
                    // expireStartedAt is always initialized to zero
                    // for error messages.

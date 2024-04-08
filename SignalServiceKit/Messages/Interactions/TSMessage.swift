@@ -756,7 +756,7 @@ extension TSMessageBuilder {
     public func hasRenderableContent(hasBodyAttachments: Bool) -> Bool {
         return Self.hasRenderableContent(
             hasNonemptyBody: messageBody?.nilIfEmpty != nil,
-            hasBodyAttachmentsOrOversizeText: attachmentIds.isEmpty.negated || hasBodyAttachments,
+            hasBodyAttachmentsOrOversizeText: hasBodyAttachments,
             hasLinkPreview: linkPreview != nil,
             hasQuotedReply: quotedMessage != nil,
             hasContactShare: contactShare != nil,

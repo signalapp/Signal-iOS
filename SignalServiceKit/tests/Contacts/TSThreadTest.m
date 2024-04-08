@@ -102,8 +102,8 @@
         [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Incoming message body"];
     incomingMessageBuilder.authorAci = aci;
     incomingMessageBuilder.timestamp = 10000;
-    incomingMessageBuilder.attachmentIds = [@[ incomingAttachment.uniqueId ] mutableCopy];
     TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
+    [incomingMessage setLegacyBodyAttachmentIds:[@[ incomingAttachment.uniqueId ] mutableCopy]];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [incomingMessage anyInsertWithTransaction:transaction];
     }];
@@ -123,8 +123,8 @@
     TSOutgoingMessageBuilder *messageBuilder =
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"outgoing message body"];
     messageBuilder.timestamp = 10000;
-    messageBuilder.attachmentIds = [@[ outgoingAttachment.uniqueId ] mutableCopy];
     TSOutgoingMessage *outgoingMessage = [messageBuilder buildWithSneakyTransaction];
+    [outgoingMessage setLegacyBodyAttachmentIds:[@[ outgoingAttachment.uniqueId ] mutableCopy]];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [outgoingMessage anyInsertWithTransaction:transaction];
     }];

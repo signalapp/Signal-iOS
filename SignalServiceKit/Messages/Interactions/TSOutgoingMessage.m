@@ -212,13 +212,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return self;
 }
 
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread
-                            messageBody:(nullable NSString *)body
-                           attachmentId:(nullable NSString *)attachmentId
++ (instancetype)outgoingMessageInThread:(TSThread *)thread messageBody:(nullable NSString *)body
 {
     return [self outgoingMessageInThread:thread
                              messageBody:body
-                            attachmentId:attachmentId
                         expiresInSeconds:0
                            quotedMessage:nil
                              linkPreview:nil
@@ -227,12 +224,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
-                           attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
 {
     return [self outgoingMessageInThread:thread
                              messageBody:body
-                            attachmentId:attachmentId
                         expiresInSeconds:expiresInSeconds
                            quotedMessage:nil
                              linkPreview:nil
@@ -241,20 +236,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
-                           attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             linkPreview:(nullable OWSLinkPreview *)linkPreview
                          messageSticker:(nullable MessageSticker *)messageSticker
 {
-    NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
-    if (attachmentId) {
-        [attachmentIds addObject:attachmentId];
-    }
-
     TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     builder.messageBody = body;
-    builder.attachmentIds = attachmentIds;
     builder.expiresInSeconds = expiresInSeconds;
     builder.quotedMessage = quotedMessage;
     builder.linkPreview = linkPreview;

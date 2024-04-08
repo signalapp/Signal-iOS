@@ -21,8 +21,6 @@ public class TSMessageBuilder: NSObject {
     @objc
     public var bodyRanges: MessageBodyRanges?
     @objc
-    public var attachmentIds = [String]()
-    @objc
     public var editState: TSEditState = .none
     @objc
     public var expiresInSeconds: UInt32 = 0
@@ -57,7 +55,6 @@ public class TSMessageBuilder: NSObject {
          timestamp: UInt64? = nil,
          messageBody: String? = nil,
          bodyRanges: MessageBodyRanges? = nil,
-         attachmentIds: [String]? = nil,
          editState: TSEditState = .none,
          expiresInSeconds: UInt32? = nil,
          expireStartedAt: UInt64? = nil,
@@ -78,9 +75,6 @@ public class TSMessageBuilder: NSObject {
         }
         self.messageBody = messageBody
         self.bodyRanges = bodyRanges
-        if let attachmentIds = attachmentIds {
-            self.attachmentIds = attachmentIds
-        }
         self.editState = editState
         self.expiresInSeconds = expiresInSeconds ?? 0
         self.expireStartedAt = expireStartedAt ?? 0
@@ -116,11 +110,4 @@ public class TSMessageBuilder: NSObject {
                                 timestamp: timestamp,
                                 messageBody: messageBody)
     }
-
-    #if TESTABLE_BUILD
-    @objc
-    public func addAttachmentId(_ attachmentId: String) {
-        attachmentIds.append(attachmentId)
-    }
-    #endif
 }

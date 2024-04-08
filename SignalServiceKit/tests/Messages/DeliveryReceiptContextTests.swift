@@ -12,7 +12,7 @@ class DeliveryReceiptContextTests: SSKBaseTestSwift {
         var timestamp: UInt64?
         write { transaction in
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction)
-            let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
+            let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice")
             helloAlice.anyInsert(transaction: transaction)
             timestamp = helloAlice.timestamp
         }

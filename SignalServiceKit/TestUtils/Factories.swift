@@ -122,27 +122,33 @@ public class OutgoingMessageFactory: NSObject, Factory {
     public func build(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
         // The builder() factory method requires us to specify every
         // property so that this will break if we add any new properties.
-        return TSOutgoingMessageBuilder.builder(thread: threadCreator(transaction),
-                                                timestamp: timestampBuilder(),
-                                                messageBody: messageBodyBuilder(),
-                                                bodyRanges: bodyRangesBuilder(),
-                                                attachmentIds: attachmentIdsBuilder(transaction),
-                                                expiresInSeconds: expiresInSecondsBuilder(),
-                                                expireStartedAt: expireStartedAtBuilder(),
-                                                isVoiceMessage: isVoiceMessageBuilder(),
-                                                groupMetaMessage: groupMetaMessageBuilder(),
-                                                quotedMessage: quotedMessageBuilder(),
-                                                contactShare: contactShareBuilder(),
-                                                linkPreview: linkPreviewBuilder(),
-                                                messageSticker: messageStickerBuilder(),
-                                                isViewOnceMessage: isViewOnceMessageBuilder(),
-                                                changeActionsProtoData: changeActionsProtoDataBuilder(),
-                                                additionalRecipients: additionalRecipientsBuilder(),
-                                                skippedRecipients: skippedRecipientsBuilder(),
-                                                storyAuthorAci: storyAuthorAciBuilder(),
-                                                storyTimestamp: storyTimestampBuilder(),
-                                                storyReactionEmoji: storyReactionEmojiBuilder(),
-                                                giftBadge: giftBadgeBuilder()).build(transaction: transaction)
+        let message = TSOutgoingMessageBuilder.builder(
+            thread: threadCreator(transaction),
+            timestamp: timestampBuilder(),
+            messageBody: messageBodyBuilder(),
+            bodyRanges: bodyRangesBuilder(),
+            expiresInSeconds: expiresInSecondsBuilder(),
+            expireStartedAt: expireStartedAtBuilder(),
+            isVoiceMessage: isVoiceMessageBuilder(),
+            groupMetaMessage: groupMetaMessageBuilder(),
+            quotedMessage: quotedMessageBuilder(),
+            contactShare: contactShareBuilder(),
+            linkPreview: linkPreviewBuilder(),
+            messageSticker: messageStickerBuilder(),
+            isViewOnceMessage: isViewOnceMessageBuilder(),
+            changeActionsProtoData: changeActionsProtoDataBuilder(),
+            additionalRecipients: additionalRecipientsBuilder(),
+            skippedRecipients: skippedRecipientsBuilder(),
+            storyAuthorAci: storyAuthorAciBuilder(),
+            storyTimestamp: storyTimestampBuilder(),
+            storyReactionEmoji: storyReactionEmojiBuilder(),
+            giftBadge: giftBadgeBuilder()
+        ).build(transaction: transaction)
+        let attachmentIds = attachmentIdsBuilder(transaction)
+        if !attachmentIds.isEmpty {
+            message.setLegacyBodyAttachmentIds(attachmentIds)
+        }
+        return message
     }
 
     public func create(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
@@ -280,7 +286,6 @@ public class IncomingMessageFactory: NSObject, Factory {
             authorE164: nil,
             messageBody: messageBodyBuilder(),
             bodyRanges: bodyRangesBuilder(),
-            attachmentIds: attachmentIdsBuilder(transaction),
             editState: editStateBuilder(),
             expiresInSeconds: expiresInSecondsBuilder(),
             quotedMessage: quotedMessageBuilder(),
@@ -299,6 +304,10 @@ public class IncomingMessageFactory: NSObject, Factory {
             paymentNotification: paymentNotificationBuilder()
         )
         let item = builder.build()
+        let attachmentIds = attachmentIdsBuilder(transaction)
+        if !attachmentIds.isEmpty {
+            item.setLegacyBodyAttachmentIds(attachmentIds)
+        }
         item.anyInsert(transaction: transaction)
         return item
     }

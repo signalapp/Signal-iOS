@@ -105,11 +105,11 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         let (lastMessage, unsavedMessage) = self.write { transaction in
             let recipient = SignalServiceAddress(phoneNumber: "+12345678900")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: recipient, transaction: transaction)
-            let message = TSOutgoingMessage(in: thread, messageBody: "Hello Alice", attachmentId: nil)
+            let message = TSOutgoingMessage(in: thread, messageBody: "Hello Alice")
             message.anyInsert(transaction: transaction)
             message.anyReload(transaction: transaction)
 
-            let unsavedMessage = TSOutgoingMessage(in: thread, messageBody: "Goodbyte Alice", attachmentId: nil)
+            let unsavedMessage = TSOutgoingMessage(in: thread, messageBody: "Goodbyte Alice")
 
             return (message, unsavedMessage)
         }

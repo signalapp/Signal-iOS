@@ -109,8 +109,6 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             authorAci: authorAci,
             messageBody: body,
             bodyRanges: bodyRanges,
-            // Legacy attachment ids get set separately.
-            attachmentIds: [],
             editState: editState,
             // Prior revisions don't expire (timer=0); instead they
             // are cascade-deleted when the latest revision expires.
@@ -181,8 +179,6 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             timestamp: timestamp,
             messageBody: body,
             bodyRanges: bodyRanges,
-            // Legacy attachment ids get set separately.
-            attachmentIds: [],
             editState: isLatestRevision ? .latestRevisionRead : .pastRevision,
             // Prior revisions don't expire (timer=0); instead they
             // are cascade-deleted when the latest revision expires.

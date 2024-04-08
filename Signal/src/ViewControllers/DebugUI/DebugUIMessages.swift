@@ -3436,9 +3436,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
                 let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread)
                 incomingMessageBuilder.authorAci = AciObjC(incomingSenderAci)
-                incomingMessageBuilder.attachmentIds = [ pointer.uniqueId ]
 
                 let message = incomingMessageBuilder.build()
+                message.setLegacyBodyAttachmentIds([pointer.uniqueId])
                 message.anyInsert(transaction: transaction)
                 message.debugonly_markAsReadNow(transaction: transaction)
 
@@ -3534,7 +3534,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             let text = randomText()
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-            let message = TSOutgoingMessage(in: thread, messageBody: text, attachmentId: nil, expiresInSeconds: expiresInSeconds)
+            let message = TSOutgoingMessage(in: thread, messageBody: text, expiresInSeconds: expiresInSeconds)
             Logger.info("insertAndDeleteNewOutgoingMessages timestamp: \(message.timestamp)")
             return message
         }
@@ -3555,7 +3555,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             let text = randomText()
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-            let message = TSOutgoingMessage(in: thread, messageBody: text, attachmentId: nil, expiresInSeconds: expiresInSeconds)
+            let message = TSOutgoingMessage(in: thread, messageBody: text, expiresInSeconds: expiresInSeconds)
             Logger.info("resurrectNewOutgoingMessages1 timestamp: \(message.timestamp)")
             return message
         }
@@ -4074,9 +4074,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
         incomingMessageBuilder.authorAci = AciObjC(authorAci)
-        incomingMessageBuilder.attachmentIds = attachmentIds
         incomingMessageBuilder.quotedMessage = quotedMessage
         let message = incomingMessageBuilder.build()
+        message.setLegacyBodyAttachmentIds(attachmentIds)
         message.anyInsert(transaction: transaction)
         message.debugonly_markAsReadNow(transaction: transaction)
 

@@ -26,9 +26,11 @@ class InteractionFinderTest: SSKBaseTestSwift {
                                              byteCount: UInt32(attachmentData2.count),
                                              sourceFilename: "some.df", caption: nil, attachmentType: .default, albumMessageId: nil)
         // Messages
-        let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens", attachmentId: attachment1.uniqueId)
-        let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes", attachmentId: attachment2.uniqueId)
-        let outgoingMessage3 = TSOutgoingMessage(in: contactThread2, messageBody: "oh my word", attachmentId: nil)
+        let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens")
+        outgoingMessage1.setLegacyBodyAttachmentIds([attachment1.uniqueId])
+        let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes")
+        outgoingMessage2.setLegacyBodyAttachmentIds([attachment2.uniqueId])
+        let outgoingMessage3 = TSOutgoingMessage(in: contactThread2, messageBody: "oh my word")
         let errorMessage1 = TSErrorMessage.nonblockingIdentityChange(in: contactThread1,
                                                                      address: address1,
                                                                      wasIdentityVerified: false)

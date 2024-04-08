@@ -168,7 +168,6 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             authorE164: authorE164,
             messageBody: messageBody?.text,
             bodyRanges: messageBody?.ranges,
-            attachmentIds: nil,
             // TODO: handle edit states
             editState: .none,
             // TODO: expose + set expire start time

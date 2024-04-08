@@ -189,18 +189,14 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 // --- CODE GENERATION MARKER
 
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread
-                            messageBody:(nullable NSString *)body
-                           attachmentId:(nullable NSString *)attachmentId;
++ (instancetype)outgoingMessageInThread:(TSThread *)thread messageBody:(nullable NSString *)body;
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
-                           attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
-                           attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             linkPreview:(nullable OWSLinkPreview *)linkPreview

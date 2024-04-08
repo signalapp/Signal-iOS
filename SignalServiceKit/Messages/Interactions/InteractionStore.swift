@@ -324,8 +324,7 @@ open class MockInteractionStore: InteractionStore {
         // Override in a subclass if you want more detailed instantiation.
         return TSOutgoingMessage(
             in: builder.thread,
-            messageBody: builder.messageBody,
-            attachmentId: builder.attachmentIds.first
+            messageBody: builder.messageBody
         )
     }
 

@@ -129,22 +129,22 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 transaction: transaction
             )
 
-            let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
+            let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice")
             helloAlice.anyInsert(transaction: transaction)
 
-            let goodbyeAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Goodbye Alice", attachmentId: nil)
+            let goodbyeAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Goodbye Alice")
             goodbyeAlice.anyInsert(transaction: transaction)
 
-            let helloBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Hello Book Club", attachmentId: nil)
+            let helloBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Hello Book Club")
             helloBookClub.anyInsert(transaction: transaction)
 
-            let goodbyeBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Goodbye Book Club", attachmentId: nil)
+            let goodbyeBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Goodbye Book Club")
             goodbyeBookClub.anyInsert(transaction: transaction)
 
-            let bobsPhoneNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My phone number is: 234-555-0100", attachmentId: nil)
+            let bobsPhoneNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My phone number is: 234-555-0100")
             bobsPhoneNumber.anyInsert(transaction: transaction)
 
-            let bobsFaxNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My fax is: 234-555-0101", attachmentId: nil)
+            let bobsFaxNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My fax is: 234-555-0101")
             bobsFaxNumber.anyInsert(transaction: transaction)
         }
     }
@@ -366,8 +366,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             )
         }
 
-        let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
-        let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.", attachmentId: nil)
+        let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.")
+        let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.")
 
         XCTAssertEqual(0, getResultSet(searchText: "GLORY").messageResults.count)
         XCTAssertEqual(0, getResultSet(searchText: "HOPE").messageResults.count)
@@ -421,8 +421,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 transaction: transaction
             )
 
-            let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
-            let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.", attachmentId: nil)
+            let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.")
+            let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.")
 
             message1.anyInsert(transaction: transaction)
             message2.anyInsert(transaction: transaction)
@@ -452,7 +452,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 transaction: transaction
             )
 
-            TSOutgoingMessage(in: thread, messageBody: "NOËL and SØRINA and ADRIÁN and FRANÇOIS and NUÑEZ and Björk.", attachmentId: nil).anyInsert(transaction: transaction)
+            TSOutgoingMessage(in: thread, messageBody: "NOËL and SØRINA and ADRIÁN and FRANÇOIS and NUÑEZ and Björk.").anyInsert(transaction: transaction)
         }
 
         XCTAssertEqual(1, getResultSet(searchText: "NOËL").messageResults.count)
@@ -505,8 +505,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             )
         }
 
-        let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
-        let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.", attachmentId: nil)
+        let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.")
+        let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.")
 
         AssertValidResultSet(query: "GLORY", expectedResultCount: 0)
         AssertValidResultSet(query: "HOPE", expectedResultCount: 0)
@@ -546,15 +546,15 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                     transaction: transaction
                 )
 
-                TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction)
+                TSOutgoingMessage(in: thread, messageBody: string1).anyInsert(transaction: transaction)
 
                 for _ in 0...messageCount {
-                    let message = TSOutgoingMessage(in: thread, messageBody: UUID().uuidString, attachmentId: nil)
+                    let message = TSOutgoingMessage(in: thread, messageBody: UUID().uuidString)
                     message.anyInsert(transaction: transaction)
                     message.update(withMessageBody: UUID().uuidString, transaction: transaction)
                 }
 
-                TSOutgoingMessage(in: thread, messageBody: string2, attachmentId: nil).anyInsert(transaction: transaction)
+                TSOutgoingMessage(in: thread, messageBody: string2).anyInsert(transaction: transaction)
             }
         }
 
