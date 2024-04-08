@@ -50,6 +50,14 @@ open class AttachmentStoreMock: AttachmentStore {
     ) {
         // do nothing
     }
+
+    open func insert(
+        _ attachment: Attachment,
+        reference: AttachmentReference,
+        tx: DBWriteTransaction
+    ) {
+        // do nothing
+    }
 }
 
 #endif

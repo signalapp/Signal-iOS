@@ -49,6 +49,14 @@ public class AttachmentStoreImpl: AttachmentStore {
     ) {
         fatalError("Unimplemented")
     }
+
+    public func insert(
+        _ attachment: Attachment,
+        reference: AttachmentReference,
+        tx: DBWriteTransaction
+    ) {
+        fatalError("Unimplemented")
+    }
 }
 
 extension AttachmentStoreImpl: AttachmentUploadStore {

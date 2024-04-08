@@ -400,14 +400,6 @@ public class TSResourceManagerImpl: TSResourceManager {
         originalMessage: TSMessage,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
-        // Normally, we decide whether to create a v1 or v2 attachment based on
-        // FeatureFlags.newAttachmentsUseV2. Here, though, we re-use whatever type
-        // v1 or v2 that the original message was using.
-        // This does mean we could end up creating v1 attachments even after starting creating
-        // v2 ones, but the migration should eventually catch up.
-        // Remember that both this code and any migrations use write transactions, so
-        // that serves as a global lock that ensures there aren't races; new quotes create
-        // new v1 attachments but not while the migration is running.
         let originalAttachmentRef = tsResourceStore.attachmentToUseInQuote(
             originalMessage: originalMessage,
             tx: tx
@@ -419,15 +411,48 @@ public class TSResourceManagerImpl: TSResourceManager {
             guard let attachment = tSAttachmentReference.attachment else {
                 return nil
             }
-            guard
-                let info = tsAttachmentManager.cloneThumbnailForNewQuotedReplyMessage(
-                    originalAttachment: attachment,
-                    tx: SDSDB.shimOnlyBridge(tx)
+            if FeatureFlags.newAttachmentsUseV2 {
+                // Create a copy of the v1 attachment _as a v2 attachment_.
+                // This ensures once we start writing v2 attachments, all new attachments
+                // are v2 (with the exception of edits, which have special handling and DONT
+                // create new quoted replies.)
+                guard
+                    let info = attachmentManager.quotedReplyAttachmentInfo(
+                        originalMessage: originalMessage,
+                        tx: tx
+                    )
+                else {
+                    return nil
+                }
+                return OwnedAttachmentBuilder<OWSAttachmentInfo>(
+                    info: info,
+                    finalize: { [attachmentStore] ownerId, tx in
+                        let quotedReplyMessageId: Int64
+                        switch ownerId {
+                        case .quotedReplyAttachment(let messageRowId):
+                            quotedReplyMessageId = messageRowId
+                        default:
+                            owsFailDebug("Invalid owner sent to quoted reply builder!")
+                            return
+                        }
+                        let attachment = try LegacyAttachmentMigrator.createQuotedReplyMessageThumbnail(
+                            migratingLegacyAttachment: attachment,
+                            quotedReplyMessageId: quotedReplyMessageId
+                        )
+                        attachmentStore.insert(attachment, tx: tx)
+                    }
                 )
-            else {
-                return nil
+            } else {
+                guard
+                    let info = tsAttachmentManager.cloneThumbnailForNewQuotedReplyMessage(
+                        originalAttachment: attachment,
+                        tx: SDSDB.shimOnlyBridge(tx)
+                    )
+                else {
+                    return nil
+                }
+                return .withoutFinalizer(info)
             }
-            return .withoutFinalizer(info)
         case .v2:
             guard
                 let info = attachmentManager.quotedReplyAttachmentInfo(

@@ -49,6 +49,12 @@ public protocol AttachmentStore {
         for attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
     )
+
+    func insert(
+        _ attachment: Attachment,
+        reference: AttachmentReference,
+        tx: DBWriteTransaction
+    )
 }
 
 // MARK: - Convenience
@@ -145,5 +151,12 @@ extension AttachmentStore {
             }
             .sorted(by: { $0.0 < $1.0 })
             .map(\.1)
+    }
+
+    public func insert(
+        _ attachment: ReferencedAttachment,
+        tx: DBWriteTransaction
+    ) {
+        self.insert(attachment.attachment, reference: attachment.reference, tx: tx)
     }
 }
