@@ -81,6 +81,9 @@ public protocol EditManager {
         targetMessage: TSOutgoingMessage,
         thread: TSThread,
         edits: MessageEdits,
+        oversizeText: DataSource?,
+        quotedReplyEdit: MessageEdits.Edit<Void>,
+        linkPreview: OWSLinkPreviewDraft?,
         tx: DBWriteTransaction
     ) throws -> OutgoingEditMessage
 

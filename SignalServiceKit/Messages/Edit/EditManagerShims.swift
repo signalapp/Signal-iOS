@@ -58,12 +58,6 @@ public protocol _EditManagerImpl_DataStore {
         tx: DBWriteTransaction
     )
 
-    // TODO: remove this
-    func insertAttachment(
-        attachment: TSAttachmentPointer,
-        tx: DBWriteTransaction
-    )
-
     func update(
         _ message: TSMessage,
         with quotedReply: TSQuotedMessage,
@@ -137,13 +131,6 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
         tx: DBWriteTransaction
     ) {
         message.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func insertAttachment(
-        attachment: TSAttachmentPointer,
-        tx: DBWriteTransaction
-    ) {
-        attachment.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func update(

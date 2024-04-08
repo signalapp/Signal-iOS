@@ -402,13 +402,6 @@ class EditManagerTests: SSKBaseTestSwift {
             editMessageCopy = message
         }
 
-        func insertAttachment(
-            attachment: TSAttachmentPointer,
-            tx: DBWriteTransaction
-        ) {
-            self.attachment = attachment
-        }
-
         func update(
             _ message: TSMessage,
             with quotedReply: TSQuotedMessage,

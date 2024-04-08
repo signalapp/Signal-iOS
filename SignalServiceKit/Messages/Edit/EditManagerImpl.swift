@@ -102,14 +102,24 @@ public class EditManagerImpl: EditManager {
             bodyRanges = MessageBodyRanges(protos: newDataMessage.bodyRanges)
         }
 
-        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>? = try newDataMessage.preview.first.flatMap {
-            // NOTE: Currently makes no attempt to reuse existing link previews
-            return try context.linkPreviewManager.validateAndBuildLinkPreview(
-                from: $0,
-                dataMessage: newDataMessage,
-                tx: tx
-            )
-        }
+        let oversizeText = newDataMessage.attachments
+            .first(where: {
+                $0.contentType == OWSMimeTypeOversizeTextMessage
+            })
+            .map {
+                OversizeTextSource.proto($0)
+            }
+
+        let quotedReplyEdit: MessageEdits.Edit<Void> = {
+            // If the editMessage quote field is present, preserve the exisiting
+            // quote. If the field is nil, remove any quote on the current message.
+            if newDataMessage.quote == nil {
+                return .change(())
+            }
+            return .keep
+        }()
+
+        let linkPreview = newDataMessage.preview.first.map { LinkPreviewSource.proto($0, newDataMessage) }
 
         let targetMessageWrapper = editTarget.wrapper
 
@@ -119,43 +129,19 @@ public class EditManagerImpl: EditManager {
             bodyRanges: .change(bodyRanges)
         )
 
-        // Reconcile the new and old attachments.
-        // This currently only affects the long text attachment but could
-        // expand out to removing/adding other attachments in the future.
-        let legacyAttachmentIds = self.updateAttachments(
-            targetMessage: targetMessageWrapper.message,
-            editMessage: newDataMessage,
-            tx: tx
-        )
-
         // Create a copy of the existing message and update with the edit
         let editedMessage = createEditedMessage(
             editTarget: targetMessageWrapper,
             edits: edits,
-            linkPreview: linkPreviewBuilder?.info,
-            quotedMessage: {
-                guard let quote = targetMessageWrapper.message.quotedMessage else {
-                    return nil
-                }
-                // If the editMessage quote field is present, preserve the exisiting
-                // quote. If the field is nil, remove any quote on the current message.
-                if newDataMessage.quote == nil {
-                    return nil
-                }
-                return quote
-            }(),
-            legacyAttachmentIds: legacyAttachmentIds,
             tx: tx
         )
 
         try insertEditCopies(
             editedMessage: editedMessage,
             editTarget: targetMessageWrapper,
-            tx: tx
-        )
-
-        try linkPreviewBuilder?.finalize(
-            owner: .messageLinkPreview(messageRowId: editedMessage.sqliteRowId!),
+            newOversizeText: oversizeText,
+            quotedReplyEdit: quotedReplyEdit,
+            newLinkPreview: linkPreview,
             tx: tx
         )
 
@@ -241,6 +227,9 @@ public class EditManagerImpl: EditManager {
         targetMessage: TSOutgoingMessage,
         thread: TSThread,
         edits: MessageEdits,
+        oversizeText: DataSource?,
+        quotedReplyEdit: MessageEdits.Edit<Void>,
+        linkPreview: OWSLinkPreviewDraft?,
         tx: DBWriteTransaction
     ) throws -> OutgoingEditMessage {
 
@@ -249,19 +238,9 @@ public class EditManagerImpl: EditManager {
             thread: thread
         )
 
-        let legacyAttachmentIds = self.context.tsResourceStore
-            .bodyMediaAttachments(
-                for: editTarget.message,
-                tx: tx
-            )
-            .map(\.resourceId.bridgeUniqueId)
-
         let editedMessage = createEditedMessage(
             editTarget: editTarget,
             edits: edits,
-            linkPreview: targetMessage.linkPreview,
-            quotedMessage: targetMessage.quotedMessage,
-            legacyAttachmentIds: legacyAttachmentIds,
             tx: tx
         )
 
@@ -283,6 +262,9 @@ public class EditManagerImpl: EditManager {
         try insertEditCopies(
             editedMessage: outgoingEditMessage.editedMessage,
             editTarget: editTarget.wrapper,
+            newOversizeText: oversizeText.map { .dataSource($0) },
+            quotedReplyEdit: quotedReplyEdit,
+            newLinkPreview: linkPreview.map { .draft($0) },
             tx: tx
         )
 
@@ -296,6 +278,9 @@ public class EditManagerImpl: EditManager {
     private func insertEditCopies<EditTarget: EditMessageWrapper> (
         editedMessage: TSMessage,
         editTarget: EditTarget,
+        newOversizeText: OversizeTextSource?,
+        quotedReplyEdit: MessageEdits.Edit<Void>,
+        newLinkPreview: LinkPreviewSource?,
         tx: DBWriteTransaction
     ) throws {
         // Update the exiting message with edited fields
@@ -313,10 +298,6 @@ public class EditManagerImpl: EditManager {
             applying: pastRevisionCopyEdits,
             isLatestRevision: false
         )
-        // Copy over attachments as-is.
-        newMessageBuilder.attachmentIds = editTarget.message.attachmentIds
-        newMessageBuilder.quotedMessage = editTarget.message.quotedMessage
-        newMessageBuilder.linkPreview = editTarget.message.linkPreview
 
         let newMessage = EditTarget.build(
             newMessageBuilder,
@@ -326,6 +307,42 @@ public class EditManagerImpl: EditManager {
 
         // Insert a new copy of the original message to preserve edit history.
         context.dataStore.insert(newMessage, tx: tx)
+
+        try reconcileQuotedReply(
+            editTarget: editTarget,
+            latestRevision: editedMessage,
+            latestRevisionRowId: editedMessage.sqliteRowId!,
+            priorRevision: newMessage,
+            priorRevisionRowId: newMessage.sqliteRowId!,
+            quotedReplyEdit: quotedReplyEdit,
+            tx: tx
+        )
+        try reconcileLinkPreview(
+            editTarget: editTarget,
+            latestRevision: editedMessage,
+            latestRevisionRowId: editedMessage.sqliteRowId!,
+            priorRevision: newMessage,
+            priorRevisionRowId: newMessage.sqliteRowId!,
+            newLinkPreview: newLinkPreview,
+            tx: tx
+        )
+        try reconcileOversizeText(
+            editTarget: editTarget,
+            latestRevision: editedMessage,
+            latestRevisionRowId: editedMessage.sqliteRowId!,
+            priorRevision: newMessage,
+            priorRevisionRowId: newMessage.sqliteRowId!,
+            newOversizeText: newOversizeText,
+            tx: tx
+        )
+        try reconcileBodyMediaAttachments(
+            editTarget: editTarget,
+            latestRevision: editedMessage,
+            latestRevisionRowId: editedMessage.sqliteRowId!,
+            priorRevision: newMessage,
+            priorRevisionRowId: newMessage.sqliteRowId!,
+            tx: tx
+        )
 
         // Update the newly inserted message with any data that needs to be
         // copied from the original message
@@ -362,9 +379,6 @@ public class EditManagerImpl: EditManager {
     private func createEditedMessage<EditTarget: EditMessageWrapper>(
         editTarget: EditTarget,
         edits: MessageEdits,
-        linkPreview: OWSLinkPreview?,
-        quotedMessage: TSQuotedMessage?,
-        legacyAttachmentIds: [String],
         tx: DBReadTransaction
     ) -> EditTarget.MessageType {
 
@@ -372,10 +386,6 @@ public class EditManagerImpl: EditManager {
             applying: edits,
             isLatestRevision: true
         )
-        // Apply attachment edits to the new copy
-        editedMessageBuilder.linkPreview = linkPreview
-        editedMessageBuilder.quotedMessage = quotedMessage
-        editedMessageBuilder.attachmentIds = legacyAttachmentIds
 
         let editedMessage = EditTarget.build(
             editedMessageBuilder,
@@ -492,43 +502,267 @@ public class EditManagerImpl: EditManager {
         return true
     }
 
-    private func updateAttachments(
-        targetMessage: TSMessage,
-        editMessage: SSKProtoDataMessage,
-        tx: DBWriteTransaction
-    ) -> [String] {
+    // MARK: - Attachments
 
-        let newAttachments = TSAttachmentPointer.attachmentPointers(
-            fromProtos: editMessage.attachments,
-            albumMessage: targetMessage
+    private func reconcileQuotedReply<EditTarget: EditMessageWrapper>(
+        editTarget: EditTarget,
+        latestRevision: TSMessage,
+        latestRevisionRowId: Int64,
+        priorRevision: TSMessage,
+        priorRevisionRowId: Int64,
+        quotedReplyEdit: MessageEdits.Edit<Void>,
+        tx: DBWriteTransaction
+    ) throws {
+        // This copy of the message has no edits applied.
+        let quotedReplyPriorToEdit = editTarget.message.quotedMessage
+
+        let attachmentReferencePriorToEdit: AttachmentReference? = FeatureFlags.readV2Attachments
+            ? context.attachmentStore.quotedThumbnailAttachment(
+                for: editTarget.message,
+                tx: tx
+            )
+            : nil
+
+        if let quotedReplyPriorToEdit {
+            // If we had a quoted reply, always keep it on the prior revision.
+            context.dataStore.update(priorRevision, with: quotedReplyPriorToEdit, tx: tx)
+        }
+        if let attachmentReferencePriorToEdit {
+            // Always assign the prior revision as an owner of the existing attachment.
+            try context.attachmentStore.addOwner(
+                duplicating: attachmentReferencePriorToEdit,
+                withNewOwner: .quotedReplyAttachment(messageRowId: priorRevisionRowId),
+                tx: tx
+            )
+        }
+
+        switch quotedReplyEdit {
+        case .keep:
+            if let quotedReplyPriorToEdit {
+                // The latest revision keeps the prior revision's quoted reply.
+                context.dataStore.update(latestRevision, with: quotedReplyPriorToEdit, tx: tx)
+            }
+            // No need to touch ownership edges, the latest revision message is already an owner
+            // because it maintained the original's row id.
+        case .change:
+            // Drop the quoted reply on the latest revision.
+            if let attachmentReferencePriorToEdit {
+                // Break the owner edge from the latest revision.
+                context.attachmentStore.removeOwner(
+                    .quotedReplyAttachment(messageRowId: latestRevisionRowId),
+                    for: attachmentReferencePriorToEdit.attachmentRowId,
+                    tx: tx
+                )
+            }
+            // No need to touch the TSMessage.quotedReply as it is already nil by default.
+        }
+    }
+
+    private enum LinkPreviewSource {
+        case draft(OWSLinkPreviewDraft)
+        case proto(SSKProtoPreview, SSKProtoDataMessage)
+    }
+
+    private func reconcileLinkPreview<EditTarget: EditMessageWrapper>(
+        editTarget: EditTarget,
+        latestRevision: TSMessage,
+        latestRevisionRowId: Int64,
+        priorRevision: TSMessage,
+        priorRevisionRowId: Int64,
+        newLinkPreview: LinkPreviewSource?,
+        tx: DBWriteTransaction
+    ) throws {
+        // This copy of the message has no edits applied.
+        let linkPreviewPriorToEdit = editTarget.message.linkPreview
+
+        let attachmentReferencePriorToEdit: AttachmentReference? = FeatureFlags.readV2Attachments
+            ? context.attachmentStore.fetchFirstReference(
+                owner: .messageLinkPreview(messageRowId: editTarget.message.sqliteRowId!),
+                tx: tx
+            )
+            : nil
+
+        if let linkPreviewPriorToEdit {
+            // If we had a link preview, always keep it on the prior revision.
+            context.dataStore.update(priorRevision, with: linkPreviewPriorToEdit, tx: tx)
+        }
+        if let attachmentReferencePriorToEdit {
+            // Always assign the prior revision as an owner of the existing attachment.
+            try context.attachmentStore.addOwner(
+                duplicating: attachmentReferencePriorToEdit,
+                withNewOwner: .messageLinkPreview(messageRowId: priorRevisionRowId),
+                tx: tx
+            )
+
+            // Break the owner edge from the latest revision since we always
+            // either drop the link preview or create a new one.
+            context.attachmentStore.removeOwner(
+                .messageLinkPreview(messageRowId: latestRevisionRowId),
+                for: attachmentReferencePriorToEdit.attachmentRowId,
+                tx: tx
+            )
+        }
+
+        // Create and assign the new link preview.
+        switch newLinkPreview {
+        case .none:
+            break
+        case .draft(let draft):
+            let builder = try context.linkPreviewManager.validateAndBuildLinkPreview(from: draft, tx: tx)
+            context.dataStore.update(latestRevision, with: builder.info, tx: tx)
+            try builder.finalize(
+                owner: .messageLinkPreview(messageRowId: latestRevisionRowId),
+                tx: tx
+            )
+        case .proto(let preview, let dataMessage):
+            let builder = try context.linkPreviewManager.validateAndBuildLinkPreview(
+                from: preview,
+                dataMessage: dataMessage,
+                tx: tx
+            )
+            context.dataStore.update(latestRevision, with: builder.info, tx: tx)
+            try builder.finalize(
+                owner: .messageLinkPreview(messageRowId: latestRevisionRowId),
+                tx: tx
+            )
+        }
+    }
+
+    private enum OversizeTextSource {
+        case dataSource(DataSource)
+        case proto(SSKProtoAttachmentPointer)
+    }
+
+    private func reconcileOversizeText<EditTarget: EditMessageWrapper>(
+        editTarget: EditTarget,
+        latestRevision: TSMessage,
+        latestRevisionRowId: Int64,
+        priorRevision: TSMessage,
+        priorRevisionRowId: Int64,
+        newOversizeText: OversizeTextSource?,
+        tx: DBWriteTransaction
+    ) throws {
+        let oversizeTextReferencePriorToEdit = context.tsResourceStore.oversizeTextAttachment(
+            for: editTarget.message,
+            tx: tx
         )
 
-        // check for any oversized text in the edit
-        let oversizeText = newAttachments.filter({ $0.isOversizeTextMimeType }).first
+        if let oversizeTextReferencePriorToEdit {
+            // If we had oversize text, always keep it on the prior revision.
+            switch oversizeTextReferencePriorToEdit.concreteType {
+            case .legacy(let legacyReference):
+                // For legacy references, we update the message's attachment id array.
+                if let oversizeTextAttachmentId = legacyReference.attachment?.uniqueId {
+                    var priorRevisionAttachmentIds = priorRevision.attachmentIds
+                    if !priorRevisionAttachmentIds.contains(oversizeTextAttachmentId) {
+                        // oversize text goes first
+                        priorRevisionAttachmentIds.insert(oversizeTextAttachmentId, at: 0)
+                    }
+                    context.dataStore.update(
+                        priorRevision,
+                        withLegacyBodyAttachmentIds: priorRevisionAttachmentIds,
+                        tx: tx
+                    )
 
-        // check for existing oversized text
-        let existingText: TSAttachment? = context.tsResourceStore.oversizeTextAttachment(
-            for: targetMessage,
-            tx: tx
-        ).flatMap { attachmentRef in
-            return context.tsResourceStore.fetch(attachmentRef.resourceId, tx: tx)?.bridge
-        }
-
-        var newAttachmentIds = context.tsResourceStore
-            .bodyAttachments(for: targetMessage, tx: tx)
-            .compactMap { ref -> String? in
-                guard ref.resourceId.bridgeUniqueId != existingText?.uniqueId else {
-                    return nil
+                    var latestRevisionAttachmentIds = latestRevision.attachmentIds
+                    if latestRevisionAttachmentIds.removeFirst(where: { $0 == oversizeTextAttachmentId}) != nil {
+                        // Remove it from the latest revision since we always
+                        // either drop the oversize text or create a new one.
+                        context.dataStore.update(
+                            latestRevision,
+                            withLegacyBodyAttachmentIds: latestRevisionAttachmentIds,
+                            tx: tx
+                        )
+                    }
                 }
-                return ref.resourceId.bridgeUniqueId
+            case .v2(let attachmentReference):
+                // Always assign the prior revision as an owner of the existing attachment.
+                try context.attachmentStore.addOwner(
+                    duplicating: attachmentReference,
+                    withNewOwner: .messageOversizeText(messageRowId: priorRevisionRowId),
+                    tx: tx
+                )
+
+                // Break the owner edge from the latest revision since we always
+                // either drop the oversize text or create a new one.
+                context.attachmentStore.removeOwner(
+                    .messageOversizeText(messageRowId: latestRevisionRowId),
+                    for: attachmentReference.attachmentRowId,
+                    tx: tx
+                )
             }
-        if let oversizeText {
-            // insert the new oversized text attachment
-            context.dataStore.insertAttachment(attachment: oversizeText, tx: tx)
-            newAttachmentIds.append(oversizeText.uniqueId)
         }
 
-        return newAttachmentIds
+        // Create and assign the new oversize text.
+        switch newOversizeText {
+        case .none:
+            break
+        case .dataSource(let dataSource):
+            guard let latestRevisionOutgoing = latestRevision as? TSOutgoingMessage else {
+                throw OWSAssertionError("Can only set local data source oversize text on outgoing edits")
+            }
+            try context.tsResourceManager.createOversizeTextAttachmentStream(
+                consuming: dataSource,
+                message: latestRevisionOutgoing,
+                tx: tx
+            )
+        case .proto(let protoPointer):
+            try context.tsResourceManager.createOversizeTextAttachmentPointer(
+                from: protoPointer,
+                message: latestRevision,
+                tx: tx
+            )
+        }
+    }
+
+    private func reconcileBodyMediaAttachments<EditTarget: EditMessageWrapper>(
+        editTarget: EditTarget,
+        latestRevision: TSMessage,
+        latestRevisionRowId: Int64,
+        priorRevision: TSMessage,
+        priorRevisionRowId: Int64,
+        tx: DBWriteTransaction
+    ) throws {
+        let attachmentReferencesPriorToEdit = context.tsResourceStore.bodyMediaAttachments(
+            for: editTarget.message,
+            tx: tx
+        )
+
+        var priorRevisionLegacyAttachmentIds = priorRevision.attachmentIds
+        var latestRevisionLegacyAttachmentIds = latestRevision.attachmentIds
+        for attachmentReferencePriorToEdit in attachmentReferencesPriorToEdit {
+            // If we had a body attachment, always keep it on the prior revision.
+            switch attachmentReferencePriorToEdit.concreteType {
+            case .legacy(let legacyReference):
+                // Keep every legacy id on both the old and new revision.
+                if let attachmentId = legacyReference.attachment?.uniqueId {
+                    if !priorRevisionLegacyAttachmentIds.contains(attachmentId) {
+                        priorRevisionLegacyAttachmentIds.append(attachmentId)
+                    }
+                    if !latestRevisionLegacyAttachmentIds.contains(attachmentId) {
+                        latestRevisionLegacyAttachmentIds.append(attachmentId)
+                    }
+                }
+            case .v2(let attachmentReference):
+                // Always assign the prior revision as a new owner of the existing attachment.
+                // The latest revision stays an owner; no change needed as its row id is already the owner.
+                try context.attachmentStore.addOwner(
+                    duplicating: attachmentReference,
+                    withNewOwner: .messageBodyAttachment(messageRowId: priorRevisionRowId),
+                    tx: tx
+                )
+            }
+        }
+        context.dataStore.update(
+            priorRevision,
+            withLegacyBodyAttachmentIds: priorRevisionLegacyAttachmentIds,
+            tx: tx
+        )
+        context.dataStore.update(
+            latestRevision,
+            withLegacyBodyAttachmentIds: latestRevisionLegacyAttachmentIds,
+            tx: tx
+        )
     }
 
     // MARK: - Edit Revision Read State

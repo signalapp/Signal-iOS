@@ -299,18 +299,11 @@ public class UnpreparedOutgoingMessage {
             targetMessage: message.targetMessage,
             thread: thread,
             edits: message.edits,
+            oversizeText: message.oversizeTextDataSource,
+            quotedReplyEdit: message.quotedReplyEdit,
+            linkPreview: message.linkPreviewDraft,
             tx: tx.asV2Write
         )
-
-        let linkPreviewBuilder = try message.linkPreviewDraft.map {
-            try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
-                from: $0,
-                tx: tx.asV2Write
-            )
-        }.map {
-            outgoingEditMessage.editedMessage.update(with: $0.info, transaction: tx)
-            return $0
-        }
 
         // All editable messages, by definition, should have been inserted.
         // Fail if we have no row id.
@@ -318,19 +311,6 @@ public class UnpreparedOutgoingMessage {
             // We failed to insert!
             throw OWSAssertionError("Failed to insert message!")
         }
-
-        if let oversizeTextDataSource = message.oversizeTextDataSource {
-            try DependenciesBridge.shared.tsResourceManager.createOversizeTextAttachmentStream(
-                consuming: oversizeTextDataSource,
-                message: outgoingEditMessage.editedMessage,
-                tx: tx.asV2Write
-            )
-        }
-
-        try linkPreviewBuilder?.finalize(
-            owner: .messageLinkPreview(messageRowId: editedMessageRowId),
-            tx: tx.asV2Write
-        )
 
         return .editMessage(.init(
             editedMessageRowId: editedMessageRowId,
