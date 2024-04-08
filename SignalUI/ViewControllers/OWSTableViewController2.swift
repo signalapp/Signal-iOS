@@ -1251,11 +1251,7 @@ extension TextViewWithPlaceholderDelegate where Self: OWSTableViewController2 {
             /// `UITextView` has default top and bottom insets of 8 which we
             /// need to subtract off. See ``TextViewWithPlaceholder``'s
             /// `buildTextView()`  for why they can't just be set to 0.
-            let vMargin = Self.cellVInnerMargin - 8
-            textView.autoPinEdgesToSuperviewEdges(with: .init(
-                hMargin: self.cellOuterInsets.totalWidth,
-                vMargin: vMargin
-            ))
+            textView.autoPinEdgesToSuperviewMargins(with: .init(hMargin: 0, vMargin: -8))
 
             if let minimumHeight {
                 textView.autoSetDimension(

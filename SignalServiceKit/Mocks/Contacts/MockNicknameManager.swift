@@ -10,20 +10,28 @@ import Foundation
 public class MockNicknameManager: NicknameManager {
     private var mockNicknames: [Int64: NicknameRecord] = [:]
 
-    public func fetch(recipient: SignalRecipient, tx: DBReadTransaction) -> NicknameRecord? {
+    public func fetchNickname(for recipient: SignalRecipient, tx: DBReadTransaction) -> NicknameRecord? {
         recipient.id.flatMap { mockNicknames[$0] }
     }
 
-    public func insert(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
+    public func createOrUpdate(
+        nicknameRecord: NicknameRecord,
+        updateStorageServiceFor accountId: AccountId?,
+        tx: DBWriteTransaction
+    ) {
+        self.insert(nicknameRecord, tx: tx)
+    }
+
+    func insert(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
         mockNicknames[nicknameRecord.recipientRowID] = nicknameRecord
     }
 
-    public func update(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
-        mockNicknames[nicknameRecord.recipientRowID] = nicknameRecord
-    }
-
-    public func delete(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
-        mockNicknames.removeValue(forKey: nicknameRecord.recipientRowID)
+    public func deleteNickname(
+        recipientRowID: Int64,
+        updateStorageServiceFor accountId: AccountId?,
+        tx: DBWriteTransaction
+    ) {
+        mockNicknames.removeValue(forKey: recipientRowID)
     }
 }
 

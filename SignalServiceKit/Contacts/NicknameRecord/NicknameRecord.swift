@@ -6,7 +6,7 @@
 import Foundation
 import GRDB
 
-public struct NicknameRecord: Codable, FetchableRecord, PersistableRecord {
+public struct NicknameRecord: Codable, FetchableRecord, PersistableRecord, Equatable {
     public static let databaseTableName: String = "NicknameRecord"
 
     enum CodingKeys: String, CodingKey, ColumnExpression {

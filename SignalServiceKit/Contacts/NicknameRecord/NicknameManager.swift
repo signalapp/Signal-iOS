@@ -7,24 +7,34 @@ import Foundation
 import GRDB
 
 public protocol NicknameManager {
-    func fetch(recipient: SignalRecipient, tx: DBReadTransaction) -> NicknameRecord?
-    func insert(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
-    func update(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
-    func delete(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
+    func fetchNickname(for recipient: SignalRecipient, tx: DBReadTransaction) -> NicknameRecord?
+    func createOrUpdate(
+        nicknameRecord: NicknameRecord,
+        updateStorageServiceFor accountId: AccountId?,
+        tx: DBWriteTransaction
+    )
+    func deleteNickname(
+        recipientRowID: Int64,
+        updateStorageServiceFor accountId: AccountId?,
+        tx: DBWriteTransaction
+    )
 }
 
 public struct NicknameManagerImpl: NicknameManager {
     private let nicknameRecordStore: any NicknameRecordStore
     private let searchableNameIndexer: any SearchableNameIndexer
+    private let storageServiceManager: any StorageServiceManager
     private let schedulers: any Schedulers
 
     public init(
         nicknameRecordStore: any NicknameRecordStore,
         searchableNameIndexer: any SearchableNameIndexer,
+        storageServiceManager: any StorageServiceManager,
         schedulers: any Schedulers
     ) {
         self.nicknameRecordStore = nicknameRecordStore
         self.searchableNameIndexer = searchableNameIndexer
+        self.storageServiceManager = storageServiceManager
         self.schedulers = schedulers
     }
 
@@ -36,32 +46,63 @@ public struct NicknameManagerImpl: NicknameManager {
 
     // MARK: Read
 
-    public func fetch(
-        recipient: SignalRecipient,
+    public func fetchNickname(
+        for recipient: SignalRecipient,
         tx: DBReadTransaction
     ) -> NicknameRecord? {
         recipient.id.flatMap { nicknameRecordStore.fetch(recipientRowID: $0, tx: tx) }
     }
 
-    // MARK: Insert
+    // MARK: Write
 
-    public func insert(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
+    public func createOrUpdate(
+        nicknameRecord: NicknameRecord,
+        updateStorageServiceFor accountId: AccountId?,
+        tx: DBWriteTransaction
+    ) {
+        if self.nicknameRecordStore.nicknameExists(
+            recipientRowID: nicknameRecord.recipientRowID,
+            tx: tx
+        ) {
+            self.update(nicknameRecord, tx: tx)
+        } else {
+            self.insert(nicknameRecord, tx: tx)
+        }
+
+        if let accountId {
+            self.storageServiceManager.recordPendingUpdates(updatedAccountIds: [accountId])
+        }
+    }
+
+    private func insert(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
         self.nicknameRecordStore.insert(nicknameRecord, tx: tx)
         self.searchableNameIndexer.insert(nicknameRecord, tx: tx)
         self.notifyContactChanges(tx: tx)
     }
 
-    // MARK: Update
-
-    public func update(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
+    private func update(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
         self.nicknameRecordStore.update(nicknameRecord, tx: tx)
         self.searchableNameIndexer.update(nicknameRecord, tx: tx)
         self.notifyContactChanges(tx: tx)
     }
 
-    // MARK: Delete
+    public func deleteNickname(
+        recipientRowID: Int64,
+        updateStorageServiceFor accountId: AccountId?,
+        tx: DBWriteTransaction
+    ) {
+        guard let nicknameRecord = self.nicknameRecordStore.fetch(
+            recipientRowID: recipientRowID,
+            tx: tx
+        ) else { return }
+        self.delete(nicknameRecord, tx: tx)
 
-    public func delete(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
+        if let accountId {
+            self.storageServiceManager.recordPendingUpdates(updatedAccountIds: [accountId])
+        }
+    }
+
+    private func delete(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction) {
         self.searchableNameIndexer.delete(nicknameRecord, tx: tx)
         self.nicknameRecordStore.delete(nicknameRecord, tx: tx)
         self.notifyContactChanges(tx: tx)

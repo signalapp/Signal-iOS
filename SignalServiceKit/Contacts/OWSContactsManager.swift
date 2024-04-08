@@ -1149,7 +1149,7 @@ extension OWSContactsManager: ContactManager {
         return .init(addresses).refine { addresses -> [DisplayName?] in
             return addresses.map { address -> DisplayName? in
                 swiftValues.recipientDatabaseTable.fetchRecipient(address: address, tx: tx)
-                    .flatMap { swiftValues.nicknameManager.fetch(recipient: $0, tx: tx) }
+                    .flatMap { swiftValues.nicknameManager.fetchNickname(for: $0, tx: tx) }
                     .flatMap(ProfileName.init(nicknameRecord:))
                     .map(DisplayName.nickname(_:))
             }

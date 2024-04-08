@@ -1209,6 +1209,148 @@ extension StorageServiceProtoStorageRecordBuilder {
 
 #endif
 
+// MARK: - StorageServiceProtoContactRecordName
+
+public struct StorageServiceProtoContactRecordName: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_ContactRecord.Name
+
+    public var given: String? {
+        guard hasGiven else {
+            return nil
+        }
+        return proto.given
+    }
+    public var hasGiven: Bool {
+        return !proto.given.isEmpty
+    }
+
+    public var family: String? {
+        guard hasFamily else {
+            return nil
+        }
+        return proto.family
+    }
+    public var hasFamily: Bool {
+        return !proto.family.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_ContactRecord.Name) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_ContactRecord.Name(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_ContactRecord.Name) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoContactRecordName {
+    public static func builder() -> StorageServiceProtoContactRecordNameBuilder {
+        return StorageServiceProtoContactRecordNameBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoContactRecordNameBuilder {
+        var builder = StorageServiceProtoContactRecordNameBuilder()
+        if let _value = given {
+            builder.setGiven(_value)
+        }
+        if let _value = family {
+            builder.setFamily(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoContactRecordNameBuilder {
+
+    private var proto = StorageServiceProtos_ContactRecord.Name()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setGiven(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.given = valueParam
+    }
+
+    public mutating func setGiven(_ valueParam: String) {
+        proto.given = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setFamily(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.family = valueParam
+    }
+
+    public mutating func setFamily(_ valueParam: String) {
+        proto.family = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoContactRecordName {
+        return StorageServiceProtoContactRecordName(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoContactRecordName(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoContactRecordName {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoContactRecordNameBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoContactRecordName? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - StorageServiceProtoContactRecordIdentityState
 
 public enum StorageServiceProtoContactRecordIdentityState: SwiftProtobuf.Enum {
@@ -1264,6 +1406,8 @@ private func StorageServiceProtoContactRecordIdentityStateUnwrap(_ value: Storag
 public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConvertible {
 
     fileprivate let proto: StorageServiceProtos_ContactRecord
+
+    public let nickname: StorageServiceProtoContactRecordName?
 
     public var aci: String? {
         guard hasAci else {
@@ -1449,6 +1593,16 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var note: String? {
+        guard hasNote else {
+            return nil
+        }
+        return proto.note
+    }
+    public var hasNote: Bool {
+        return !proto.note.isEmpty
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1457,8 +1611,10 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return proto.unknownFields
     }
 
-    private init(proto: StorageServiceProtos_ContactRecord) {
+    private init(proto: StorageServiceProtos_ContactRecord,
+                 nickname: StorageServiceProtoContactRecordName?) {
         self.proto = proto
+        self.nickname = nickname
     }
 
     public func serializedData() throws -> Data {
@@ -1471,7 +1627,13 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
     }
 
     fileprivate init(_ proto: StorageServiceProtos_ContactRecord) {
-        self.init(proto: proto)
+        var nickname: StorageServiceProtoContactRecordName?
+        if proto.hasNickname {
+            nickname = StorageServiceProtoContactRecordName(proto.nickname)
+        }
+
+        self.init(proto: proto,
+                  nickname: nickname)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -1556,6 +1718,12 @@ extension StorageServiceProtoContactRecord {
         }
         if hasHidden {
             builder.setHidden(hidden)
+        }
+        if let _value = nickname {
+            builder.setNickname(_value)
+        }
+        if let _value = note {
+            builder.setNote(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -1714,6 +1882,26 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setHidden(_ valueParam: Bool) {
         proto.hidden = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setNickname(_ valueParam: StorageServiceProtoContactRecordName?) {
+        guard let valueParam = valueParam else { return }
+        proto.nickname = valueParam.proto
+    }
+
+    public mutating func setNickname(_ valueParam: StorageServiceProtoContactRecordName) {
+        proto.nickname = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setNote(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.note = valueParam
+    }
+
+    public mutating func setNote(_ valueParam: String) {
+        proto.note = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

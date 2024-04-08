@@ -250,14 +250,15 @@ class NicknameEditorViewController: OWSTableViewController2 {
             return
         }
 
-        let nicknameManager = context.nicknameManager
-
         self.context.db.write { tx in
-            if self.initialNicknameRecord == nil {
-                nicknameManager.insert(nicknameRecord, tx: tx)
-            } else {
-                nicknameManager.update(nicknameRecord, tx: tx)
-            }
+            // A Storage Service sync might have happened while this was open,
+            // so we can't make assumptions about whether to create or update
+            // based only on `self.initialNicknameRecord`.
+            context.nicknameManager.createOrUpdate(
+                nicknameRecord: nicknameRecord,
+                updateStorageServiceFor: self.recipient.accountId,
+                tx: tx
+            )
         }
 
         self.dismiss(animated: true)
@@ -283,13 +284,13 @@ class NicknameEditorViewController: OWSTableViewController2 {
     }
 
     private func deleteNickname() {
-        guard let nicknameRecord = self.initialNicknameRecord else {
-            owsFailBeta("Delete button should not be present if there is no nickname to delete")
-            return
-        }
-
+        guard let recipientRowID = self.recipient.id else { return }
         self.context.db.write { tx in
-            self.context.nicknameManager.delete(nicknameRecord, tx: tx)
+            self.context.nicknameManager.deleteNickname(
+                recipientRowID: recipientRowID,
+                updateStorageServiceFor: self.recipient.accountId,
+                tx: tx
+            )
         }
 
         self.dismiss(animated: true)

@@ -182,6 +182,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let bulkProfileFetch: BulkProfileFetch
     private let contactsManager: OWSContactsManager
     private let identityManager: OWSIdentityManager
+    private let nicknameManager: NicknameManager
     private let profileManager: OWSProfileManager
     private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
@@ -198,6 +199,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         bulkProfileFetch: BulkProfileFetch,
         contactsManager: OWSContactsManager,
         identityManager: OWSIdentityManager,
+        nicknameManager: NicknameManager,
         profileManager: OWSProfileManager,
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager,
@@ -213,6 +215,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.bulkProfileFetch = bulkProfileFetch
         self.contactsManager = contactsManager
         self.identityManager = identityManager
+        self.nicknameManager = nicknameManager
         self.profileManager = profileManager
         self.tsAccountManager = tsAccountManager
         self.usernameLookupManager = usernameLookupManager
@@ -371,6 +374,16 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }()
         if let username {
             builder.setUsername(username)
+        }
+
+        // Nickname/note
+
+        if let nicknameRecord = nicknameManager.fetchNickname(for: recipient, tx: tx.asV2Read) {
+            var nicknameBuilder = StorageServiceProtoContactRecordName.builder()
+            nicknameRecord.givenName.map { nicknameBuilder.setGiven($0) }
+            nicknameRecord.familyName.map { nicknameBuilder.setFamily($0) }
+            builder.setNickname(nicknameBuilder.buildInfallibly())
+            nicknameRecord.note.map { builder.setNote($0) }
         }
 
         // Unknown
@@ -628,6 +641,30 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 usernameIsBestIdentifierOnRecord ? record.username : nil,
                 forAci: aci,
                 transaction: tx
+            )
+        }
+
+        if
+            record.nickname?.hasGiven == true || record.nickname?.hasFamily == true || record.hasNote,
+            let nicknameRecord = NicknameRecord(
+                recipient: recipient,
+                givenName: record.nickname?.given,
+                familyName: record.nickname?.family,
+                note: record.note
+            )
+        {
+            nicknameManager.createOrUpdate(
+                nicknameRecord: nicknameRecord,
+                // Don't create a recursive Storage Service sync
+                updateStorageServiceFor: nil,
+                tx: tx
+            )
+        } else if let recipientRowID = recipient.id {
+            nicknameManager.deleteNickname(
+                recipientRowID: recipientRowID,
+                // Don't create a recursive Storage Service sync
+                updateStorageServiceFor: nil,
+                tx: tx
             )
         }
 

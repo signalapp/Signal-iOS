@@ -486,7 +486,7 @@ extension ConversationSettingsViewController {
                     address: thread.contactAddress,
                     tx: tx
                 )
-                let nickname = recipient.flatMap { nicknameManager.fetch(recipient: $0, tx: tx) }
+                let nickname = recipient.flatMap { nicknameManager.fetchNickname(for: $0, tx: tx) }
                 return (recipient, nickname)
             }
 

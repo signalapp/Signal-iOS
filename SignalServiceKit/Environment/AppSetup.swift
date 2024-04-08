@@ -138,6 +138,7 @@ public class AppSetup {
         let nicknameManager = NicknameManagerImpl(
             nicknameRecordStore: nicknameRecordStore,
             searchableNameIndexer: searchableNameIndexer,
+            storageServiceManager: storageServiceManager,
             schedulers: schedulers
         )
         let contactManager = testDependencies?.contactManager ?? OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(

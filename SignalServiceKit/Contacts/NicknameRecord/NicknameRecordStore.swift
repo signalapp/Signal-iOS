@@ -8,6 +8,7 @@ import GRDB
 
 public protocol NicknameRecordStore {
     func fetch(recipientRowID: Int64, tx: DBReadTransaction) -> NicknameRecord?
+    func nicknameExists(recipientRowID: Int64, tx: DBReadTransaction) -> Bool
     func enumerateAll(tx: DBReadTransaction, block: (NicknameRecord) -> Void)
     func insert(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
     func update(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
@@ -31,6 +32,21 @@ public class NicknameRecordStoreImpl: NicknameRecordStore {
         } catch {
             owsFailDebug("Error fetching nickname by user profile ID: \(error.grdbErrorForLogging)")
             return nil
+        }
+    }
+
+    public func nicknameExists(
+        recipientRowID: Int64,
+        tx: DBReadTransaction
+    ) -> Bool {
+        do {
+            return try NicknameRecord.exists(
+                SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+                key: recipientRowID
+            )
+        } catch {
+            owsFailDebug("Error fetching nickname by user profile ID: \(error.grdbErrorForLogging)")
+            return false
         }
     }
 

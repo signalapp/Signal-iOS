@@ -1596,6 +1596,7 @@ class StorageServiceOperation: OWSOperation {
                 bulkProfileFetch: bulkProfileFetch,
                 contactsManager: contactsManagerImpl,
                 identityManager: DependenciesBridge.shared.identityManager,
+                nicknameManager: DependenciesBridge.shared.nicknameManager,
                 profileManager: profileManagerImpl,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                 usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,

@@ -442,6 +442,20 @@ struct StorageServiceProtos_ContactRecord {
     set {_uniqueStorage()._hidden = newValue}
   }
 
+  var nickname: StorageServiceProtos_ContactRecord.Name {
+    get {return _storage._nickname ?? StorageServiceProtos_ContactRecord.Name()}
+    set {_uniqueStorage()._nickname = newValue}
+  }
+  /// Returns true if `nickname` has been explicitly set.
+  var hasNickname: Bool {return _storage._nickname != nil}
+  /// Clears the value of `nickname`. Subsequent reads from it will return its default value.
+  mutating func clearNickname() {_uniqueStorage()._nickname = nil}
+
+  var note: String {
+    get {return _storage._note}
+    set {_uniqueStorage()._note = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum IdentityState: SwiftProtobuf.Enum {
@@ -473,6 +487,20 @@ struct StorageServiceProtos_ContactRecord {
       }
     }
 
+  }
+
+  struct Name {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var given: String = String()
+
+    var family: String = String()
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
   }
 
   init() {}
@@ -1019,6 +1047,7 @@ extension StorageServiceProtos_StorageRecord: @unchecked Sendable {}
 extension StorageServiceProtos_StorageRecord.OneOf_Record: @unchecked Sendable {}
 extension StorageServiceProtos_ContactRecord: @unchecked Sendable {}
 extension StorageServiceProtos_ContactRecord.IdentityState: @unchecked Sendable {}
+extension StorageServiceProtos_ContactRecord.Name: @unchecked Sendable {}
 extension StorageServiceProtos_GroupV1Record: @unchecked Sendable {}
 extension StorageServiceProtos_GroupV2Record: @unchecked Sendable {}
 extension StorageServiceProtos_GroupV2Record.StorySendMode: @unchecked Sendable {}
@@ -1479,6 +1508,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     18: .same(proto: "systemFamilyName"),
     19: .same(proto: "systemNickname"),
     20: .same(proto: "hidden"),
+    22: .same(proto: "nickname"),
+    23: .same(proto: "note"),
   ]
 
   fileprivate class _StorageClass {
@@ -1502,6 +1533,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     var _systemFamilyName: String = String()
     var _systemNickname: String = String()
     var _hidden: Bool = false
+    var _nickname: StorageServiceProtos_ContactRecord.Name? = nil
+    var _note: String = String()
 
     static let defaultInstance = _StorageClass()
 
@@ -1528,6 +1561,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       _systemFamilyName = source._systemFamilyName
       _systemNickname = source._systemNickname
       _hidden = source._hidden
+      _nickname = source._nickname
+      _note = source._note
     }
   }
 
@@ -1566,6 +1601,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         case 18: try { try decoder.decodeSingularStringField(value: &_storage._systemFamilyName) }()
         case 19: try { try decoder.decodeSingularStringField(value: &_storage._systemNickname) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._hidden) }()
+        case 22: try { try decoder.decodeSingularMessageField(value: &_storage._nickname) }()
+        case 23: try { try decoder.decodeSingularStringField(value: &_storage._note) }()
         default: break
         }
       }
@@ -1574,6 +1611,10 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
       if !_storage._aci.isEmpty {
         try visitor.visitSingularStringField(value: _storage._aci, fieldNumber: 1)
       }
@@ -1634,6 +1675,12 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._hidden != false {
         try visitor.visitSingularBoolField(value: _storage._hidden, fieldNumber: 20)
       }
+      try { if let v = _storage._nickname {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
+      } }()
+      if !_storage._note.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._note, fieldNumber: 23)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1663,6 +1710,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._systemFamilyName != rhs_storage._systemFamilyName {return false}
         if _storage._systemNickname != rhs_storage._systemNickname {return false}
         if _storage._hidden != rhs_storage._hidden {return false}
+        if _storage._nickname != rhs_storage._nickname {return false}
+        if _storage._note != rhs_storage._note {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -1678,6 +1727,44 @@ extension StorageServiceProtos_ContactRecord.IdentityState: SwiftProtobuf._Proto
     1: .same(proto: "VERIFIED"),
     2: .same(proto: "UNVERIFIED"),
   ]
+}
+
+extension StorageServiceProtos_ContactRecord.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = StorageServiceProtos_ContactRecord.protoMessageName + ".Name"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "given"),
+    2: .same(proto: "family"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.given) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.family) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.given.isEmpty {
+      try visitor.visitSingularStringField(value: self.given, fieldNumber: 1)
+    }
+    if !self.family.isEmpty {
+      try visitor.visitSingularStringField(value: self.family, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_ContactRecord.Name, rhs: StorageServiceProtos_ContactRecord.Name) -> Bool {
+    if lhs.given != rhs.given {return false}
+    if lhs.family != rhs.family {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }
 
 extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
