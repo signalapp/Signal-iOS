@@ -385,14 +385,6 @@ class EditManagerTests: SSKBaseTestSwift {
             self.targetMessage = targetMessage
         }
 
-        func isVoiceMessageAttachment(
-            _ attachment: TSAttachment,
-            inContainingMessage message: TSMessage,
-            tx: DBReadTransaction
-        ) -> Bool {
-            return false
-        }
-
         func insert(_ message: TSMessage, tx: DBWriteTransaction) {
             oldMessageCopy = message
             message.replaceRowId(2, uniqueId: message.uniqueId)

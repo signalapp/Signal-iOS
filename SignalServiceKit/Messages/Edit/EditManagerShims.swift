@@ -42,12 +42,6 @@ public protocol _EditManagerImpl_DataStore {
         tx: DBWriteTransaction
     )
 
-    func isVoiceMessageAttachment(
-        _ attachment: TSAttachment,
-        inContainingMessage message: TSMessage,
-        tx: DBReadTransaction
-    ) -> Bool
-
     func insert(
         _ message: TSMessage,
         tx: DBWriteTransaction
@@ -109,14 +103,6 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
             recipientAddressStates: recipientAddressStates,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
-    }
-
-    public func isVoiceMessageAttachment(
-        _ attachment: TSAttachment,
-        inContainingMessage message: TSMessage,
-        tx: DBReadTransaction
-    ) -> Bool {
-        attachment.isVoiceMessage(inContainingMessage: message, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func insert(

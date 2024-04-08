@@ -34,7 +34,6 @@ public protocol EditMessageWrapper {
 
     func updateMessageCopy(
         dataStore: EditManagerImpl.Shims.DataStore,
-        tsResourceStore: TSResourceStore,
         newMessageCopy: MessageType,
         tx: DBWriteTransaction
     )
@@ -148,7 +147,6 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
     public func updateMessageCopy(
         dataStore: EditManagerImpl.Shims.DataStore,
-        tsResourceStore: TSResourceStore,
         newMessageCopy: TSIncomingMessage,
         tx: DBWriteTransaction
     ) {}
@@ -219,7 +217,6 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public func updateMessageCopy(
         dataStore: EditManagerImpl.Shims.DataStore,
-        tsResourceStore: TSResourceStore,
         newMessageCopy: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) {

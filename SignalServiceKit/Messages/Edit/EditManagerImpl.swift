@@ -348,7 +348,6 @@ public class EditManagerImpl: EditManager {
         // copied from the original message
         editTarget.updateMessageCopy(
             dataStore: context.dataStore,
-            tsResourceStore: context.tsResourceStore,
             newMessageCopy: newMessage,
             tx: tx
         )
@@ -462,14 +461,11 @@ public class EditManagerImpl: EditManager {
             for: targetMessage,
             tx: tx
         )
-        let currentAttachments = context.tsResourceStore
-            .fetch(currentAttachmentRefs.map(\.resourceId), tx: tx)
-            .map(\.bridge)
 
         // Voice memos only ever have one attachment; only need to check the first.
         if
-            let firstAttachment = currentAttachments.first,
-            context.dataStore.isVoiceMessageAttachment(firstAttachment, inContainingMessage: targetMessage, tx: tx)
+            let firstAttachmentRef = currentAttachmentRefs.first,
+            firstAttachmentRef.renderingFlag == .voiceMessage
         {
             // This will bail if it finds a voice memo
             // Might be able to handle image attachemnts, but fail for now.
