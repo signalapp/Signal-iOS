@@ -48,6 +48,13 @@ public class OWSLinkPreviewDraft: NSObject {
 @objc
 public class OWSLinkPreview: MTLModel, Codable {
 
+    public struct Metadata {
+        public let urlString: String
+        public let title: String?
+        public let previewDescription: String?
+        public let date: Date?
+    }
+
     @objc
     public var urlString: String?
 
@@ -94,6 +101,20 @@ public class OWSLinkPreview: MTLModel, Codable {
         )
     }
 
+    public static func withLegacyImageAttachment(
+        metadata: Metadata,
+        attachmentId: String
+    ) -> OWSLinkPreview {
+        let linkPreview = OWSLinkPreview.withLegacyImageAttachment(
+            urlString: metadata.urlString,
+            title: metadata.title,
+            attachmentId: attachmentId
+        )
+        linkPreview.previewDescription = metadata.previewDescription
+        linkPreview.date = metadata.date
+        return linkPreview
+    }
+
     public static func withForeignReferenceImageAttachment(
         urlString: String,
         title: String? = nil
@@ -104,6 +125,15 @@ public class OWSLinkPreview: MTLModel, Codable {
             legacyImageAttachmentId: nil,
             usesV2AttachmentReference: true
         )
+    }
+
+    public static func withForeignReferenceImageAttachment(
+        metadata: Metadata
+    ) -> OWSLinkPreview {
+        let linkPreview = OWSLinkPreview.withoutImage(urlString: metadata.urlString, title: metadata.title)
+        linkPreview.previewDescription = metadata.previewDescription
+        linkPreview.date = metadata.date
+        return linkPreview
     }
 
     public static func withoutImage(
@@ -120,6 +150,15 @@ public class OWSLinkPreview: MTLModel, Codable {
             legacyImageAttachmentId: nil,
             usesV2AttachmentReference: usesV2AttachmentReference
         )
+    }
+
+    public static func withoutImage(
+        metadata: Metadata
+    ) -> OWSLinkPreview {
+        let linkPreview = OWSLinkPreview.withoutImage(urlString: metadata.urlString, title: metadata.title)
+        linkPreview.previewDescription = metadata.previewDescription
+        linkPreview.date = metadata.date
+        return linkPreview
     }
 
     public override init() {
