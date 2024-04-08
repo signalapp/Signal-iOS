@@ -89,21 +89,23 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         quotedReplyEdit: MessageEdits.Edit<Void>,
         tx: DBWriteTransaction
     ) throws {
-        // This copy of the message has no edits applied.
+        // The editTarget's copy of the message has no edits applied.
         let quotedReplyPriorToEdit = editTarget.message.quotedMessage
 
-        let attachmentReferencePriorToEdit: AttachmentReference? = FeatureFlags.readV2Attachments
-            ? attachmentStore.quotedThumbnailAttachment(
-                for: editTarget.message,
-                tx: tx
-            )
-            : nil
+        let attachmentReferencePriorToEdit = attachmentStore.quotedThumbnailAttachment(
+            for: editTarget.message,
+            tx: tx
+        )
 
         if let quotedReplyPriorToEdit {
             // If we had a quoted reply, always keep it on the prior revision.
             tsMessageStore.update(priorRevision, with: quotedReplyPriorToEdit, tx: tx)
         }
         if let attachmentReferencePriorToEdit {
+            // IMPORTANT: we MUST assign the prior revision owner BEFORE removing
+            // the new revision as owner; otherwise the removal could delete the attachment
+            // before we get the chance to reassign!
+
             // Always assign the prior revision as an owner of the existing attachment.
             try attachmentStore.addOwner(
                 duplicating: attachmentReferencePriorToEdit,
@@ -143,21 +145,23 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         tx: DBWriteTransaction
     ) throws {
-        // This copy of the message has no edits applied.
+        // The editTarget's copy of the message has no edits applied.
         let linkPreviewPriorToEdit = editTarget.message.linkPreview
 
-        let attachmentReferencePriorToEdit: AttachmentReference? = FeatureFlags.readV2Attachments
-            ? attachmentStore.fetchFirstReference(
-                owner: .messageLinkPreview(messageRowId: editTarget.message.sqliteRowId!),
-                tx: tx
-            )
-            : nil
+        let attachmentReferencePriorToEdit = attachmentStore.fetchFirstReference(
+            owner: .messageLinkPreview(messageRowId: editTarget.message.sqliteRowId!),
+            tx: tx
+        )
 
         if let linkPreviewPriorToEdit {
             // If we had a link preview, always keep it on the prior revision.
             tsMessageStore.update(priorRevision, with: linkPreviewPriorToEdit, tx: tx)
         }
         if let attachmentReferencePriorToEdit {
+            // IMPORTANT: we MUST assign the prior revision owner BEFORE removing
+            // the new revision as owner; otherwise the removal could delete the attachment
+            // before we get the chance to reassign!
+
             // Always assign the prior revision as an owner of the existing attachment.
             try attachmentStore.addOwner(
                 duplicating: attachmentReferencePriorToEdit,
@@ -175,11 +179,16 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         }
 
         // Create and assign the new link preview.
+        let builder = LinkPreviewAttachmentBuilder(attachmentManager: attachmentManager)
         switch newLinkPreview {
         case .none:
             break
         case .draft(let draft):
-            let builder = try linkPreviewManager.validateAndBuildLinkPreview(from: draft, tx: tx)
+            let builder = try linkPreviewManager.validateAndBuildLinkPreview(
+                from: draft,
+                builder: builder,
+                tx: tx
+            )
             tsMessageStore.update(latestRevision, with: builder.info, tx: tx)
             try builder.finalize(
                 owner: .messageLinkPreview(messageRowId: latestRevisionRowId),
@@ -189,6 +198,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             let builder = try linkPreviewManager.validateAndBuildLinkPreview(
                 from: preview,
                 dataMessage: dataMessage,
+                builder: builder,
                 tx: tx
             )
             tsMessageStore.update(latestRevision, with: builder.info, tx: tx)
@@ -208,55 +218,32 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         newOversizeText: MessageEdits.OversizeTextSource?,
         tx: DBWriteTransaction
     ) throws {
-        let oversizeTextReferencePriorToEdit = tsResourceStore.oversizeTextAttachment(
-            for: editTarget.message,
+        // The editTarget's copy of the message has no edits applied;
+        // fetch _its_ attachment.
+        let oversizeTextReferencePriorToEdit = attachmentStore.fetchFirstReference(
+            owner: .messageOversizeText(messageRowId: editTarget.message.sqliteRowId!),
             tx: tx
         )
 
         if let oversizeTextReferencePriorToEdit {
+            // IMPORTANT: we MUST assign the prior revision owner BEFORE removing
+            // the new revision as owner; otherwise the removal could delete the attachment
+            // before we get the chance to reassign!
+
             // If we had oversize text, always keep it on the prior revision.
-            switch oversizeTextReferencePriorToEdit.concreteType {
-            case .legacy(let legacyReference):
-                // For legacy references, we update the message's attachment id array.
-                if let oversizeTextAttachmentId = legacyReference.attachment?.uniqueId {
-                    var priorRevisionAttachmentIds = priorRevision.attachmentIds
-                    if !priorRevisionAttachmentIds.contains(oversizeTextAttachmentId) {
-                        // oversize text goes first
-                        priorRevisionAttachmentIds.insert(oversizeTextAttachmentId, at: 0)
-                    }
-                    tsMessageStore.update(
-                        priorRevision,
-                        withLegacyBodyAttachmentIds: priorRevisionAttachmentIds,
-                        tx: tx
-                    )
+            try attachmentStore.addOwner(
+                duplicating: oversizeTextReferencePriorToEdit,
+                withNewOwner: .messageOversizeText(messageRowId: priorRevisionRowId),
+                tx: tx
+            )
 
-                    var latestRevisionAttachmentIds = latestRevision.attachmentIds
-                    if latestRevisionAttachmentIds.removeFirst(where: { $0 == oversizeTextAttachmentId}) != nil {
-                        // Remove it from the latest revision since we always
-                        // either drop the oversize text or create a new one.
-                        tsMessageStore.update(
-                            latestRevision,
-                            withLegacyBodyAttachmentIds: latestRevisionAttachmentIds,
-                            tx: tx
-                        )
-                    }
-                }
-            case .v2(let attachmentReference):
-                // Always assign the prior revision as an owner of the existing attachment.
-                try attachmentStore.addOwner(
-                    duplicating: attachmentReference,
-                    withNewOwner: .messageOversizeText(messageRowId: priorRevisionRowId),
-                    tx: tx
-                )
-
-                // Break the owner edge from the latest revision since we always
-                // either drop the oversize text or create a new one.
-                attachmentStore.removeOwner(
-                    .messageOversizeText(messageRowId: latestRevisionRowId),
-                    for: attachmentReference.attachmentRowId,
-                    tx: tx
-                )
-            }
+            // Break the owner edge from the latest revision since we always
+            // either drop the oversize text or create a new one.
+            attachmentStore.removeOwner(
+                .messageOversizeText(messageRowId: latestRevisionRowId),
+                for: oversizeTextReferencePriorToEdit.attachmentRowId,
+                tx: tx
+            )
         }
 
         // Create and assign the new oversize text.
@@ -264,18 +251,21 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         case .none:
             break
         case .dataSource(let dataSource):
-            guard let latestRevisionOutgoing = latestRevision as? TSOutgoingMessage else {
-                throw OWSAssertionError("Can only set local data source oversize text on outgoing edits")
-            }
-            try tsResourceManager.createOversizeTextAttachmentStream(
-                consuming: dataSource,
-                message: latestRevisionOutgoing,
+            try attachmentManager.createAttachmentStream(
+                consuming: AttachmentDataSource(
+                    mimeType: OWSMimeTypeOversizeTextMessage,
+                    caption: nil,
+                    renderingFlag: .default,
+                    sourceFilename: nil,
+                    dataSource: .dataSource(dataSource, shouldCopy: false)
+                ),
+                owner: .messageOversizeText(messageRowId: latestRevisionRowId),
                 tx: tx
             )
         case .proto(let protoPointer):
-            try tsResourceManager.createOversizeTextAttachmentPointer(
+            try attachmentManager.createAttachmentPointer(
                 from: protoPointer,
-                message: latestRevision,
+                owner: .messageOversizeText(messageRowId: latestRevisionRowId),
                 tx: tx
             )
         }
@@ -289,45 +279,21 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         priorRevisionRowId: Int64,
         tx: DBWriteTransaction
     ) throws {
-        let attachmentReferencesPriorToEdit = tsResourceStore.bodyMediaAttachments(
-            for: editTarget.message,
+        // The editTarget's copy of the message has no edits applied;
+        // fetch _its_ attachment(s).
+        let attachmentReferencesPriorToEdit = attachmentStore.fetchReferences(
+            owner: .messageBodyAttachment(messageRowId: editTarget.message.sqliteRowId!),
             tx: tx
         )
 
-        var priorRevisionLegacyAttachmentIds = priorRevision.attachmentIds
-        var latestRevisionLegacyAttachmentIds = latestRevision.attachmentIds
-        for attachmentReferencePriorToEdit in attachmentReferencesPriorToEdit {
-            // If we had a body attachment, always keep it on the prior revision.
-            switch attachmentReferencePriorToEdit.concreteType {
-            case .legacy(let legacyReference):
-                // Keep every legacy id on both the old and new revision.
-                if let attachmentId = legacyReference.attachment?.uniqueId {
-                    if !priorRevisionLegacyAttachmentIds.contains(attachmentId) {
-                        priorRevisionLegacyAttachmentIds.append(attachmentId)
-                    }
-                    if !latestRevisionLegacyAttachmentIds.contains(attachmentId) {
-                        latestRevisionLegacyAttachmentIds.append(attachmentId)
-                    }
-                }
-            case .v2(let attachmentReference):
-                // Always assign the prior revision as a new owner of the existing attachment.
-                // The latest revision stays an owner; no change needed as its row id is already the owner.
-                try attachmentStore.addOwner(
-                    duplicating: attachmentReference,
-                    withNewOwner: .messageBodyAttachment(messageRowId: priorRevisionRowId),
-                    tx: tx
-                )
-            }
+        for attachmentReference in attachmentReferencesPriorToEdit {
+            // Always assign the prior revision as a new owner of the existing attachment.
+            // The latest revision stays an owner; no change needed as its row id is already the owner.
+            try attachmentStore.addOwner(
+                duplicating: attachmentReference,
+                withNewOwner: .messageBodyAttachment(messageRowId: priorRevisionRowId),
+                tx: tx
+            )
         }
-        tsMessageStore.update(
-            priorRevision,
-            withLegacyBodyAttachmentIds: priorRevisionLegacyAttachmentIds,
-            tx: tx
-        )
-        tsMessageStore.update(
-            latestRevision,
-            withLegacyBodyAttachmentIds: latestRevisionLegacyAttachmentIds,
-            tx: tx
-        )
     }
 }

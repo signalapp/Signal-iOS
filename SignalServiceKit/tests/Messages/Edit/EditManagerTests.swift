@@ -33,7 +33,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
-                editManagerAttachments: MockEditManagerAttachments(),
+                editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
@@ -80,7 +80,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
-                editManagerAttachments: MockEditManagerAttachments(),
+                editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
@@ -125,7 +125,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
-                editManagerAttachments: MockEditManagerAttachments(),
+                editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
@@ -169,7 +169,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
-                editManagerAttachments: MockEditManagerAttachments(),
+                editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
@@ -217,7 +217,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let editManager = EditManagerImpl(context:
             .init(
                 dataStore: dataStoreMock,
-                editManagerAttachments: MockEditManagerAttachments(),
+                editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),

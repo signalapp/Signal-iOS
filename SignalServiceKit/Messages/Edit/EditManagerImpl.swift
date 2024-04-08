@@ -36,7 +36,7 @@ public class EditManagerImpl: EditManager {
 
     public struct Context {
         let dataStore: EditManagerImpl.Shims.DataStore
-        let editManagerAttachments: EditManagerAttachments
+        let editManagerAttachments: EditManagerTSResources
         let editMessageStore: EditMessageStore
         let groupsShim: EditManagerImpl.Shims.Groups
         let keyValueStoreFactory: KeyValueStoreFactory
@@ -45,7 +45,7 @@ public class EditManagerImpl: EditManager {
 
         public init(
             dataStore: EditManagerImpl.Shims.DataStore,
-            editManagerAttachments: EditManagerAttachments,
+            editManagerAttachments: EditManagerTSResources,
             editMessageStore: EditMessageStore,
             groupsShim: EditManagerImpl.Shims.Groups,
             keyValueStoreFactory: KeyValueStoreFactory,
