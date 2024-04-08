@@ -32,14 +32,12 @@ class EditManagerTests: SSKBaseTestSwift {
         let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
-                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
+                editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
-                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
@@ -81,14 +79,12 @@ class EditManagerTests: SSKBaseTestSwift {
         let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
-                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
+                editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
-                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
@@ -128,14 +124,12 @@ class EditManagerTests: SSKBaseTestSwift {
         let editMessageStoreMock = EditMessageStoreMock()
         let editManager = EditManagerImpl(context:
             .init(
-                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
+                editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
-                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
@@ -174,14 +168,12 @@ class EditManagerTests: SSKBaseTestSwift {
 
         let editManager = EditManagerImpl(context:
             .init(
-                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
+                editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
-                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
@@ -224,14 +216,12 @@ class EditManagerTests: SSKBaseTestSwift {
 
         let editManager = EditManagerImpl(context:
             .init(
-                attachmentStore: AttachmentStoreMock(),
                 dataStore: dataStoreMock,
+                editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewManager: MockLinkPreviewManager(),
                 receiptManagerShim: ReceiptManagerMock(),
-                tsResourceManager: TSResourceManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
         )
@@ -393,24 +383,6 @@ class EditManagerTests: SSKBaseTestSwift {
         func overwritingUpdate(_ message: TSMessage, tx: DBWriteTransaction) {
             editMessageCopy = message
         }
-
-        func update(
-            _ message: TSMessage,
-            with quotedReply: TSQuotedMessage,
-            tx: DBWriteTransaction
-        ) {}
-
-        func update(
-            _ message: TSMessage,
-            with linkPreview: OWSLinkPreview,
-            tx: DBWriteTransaction
-        ) {}
-
-        func update(
-            _ message: TSMessage,
-            withLegacyBodyAttachmentIds attachmentIds: [String],
-            tx: DBWriteTransaction
-        ) {}
     }
 
     private class EditMessageStoreMock: EditMessageStore {

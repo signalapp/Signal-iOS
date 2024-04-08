@@ -51,24 +51,6 @@ public protocol _EditManagerImpl_DataStore {
         _ message: TSMessage,
         tx: DBWriteTransaction
     )
-
-    func update(
-        _ message: TSMessage,
-        with quotedReply: TSQuotedMessage,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSMessage,
-        with linkPreview: OWSLinkPreview,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSMessage,
-        withLegacyBodyAttachmentIds: [String],
-        tx: DBWriteTransaction
-    )
 }
 
 public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore {
@@ -117,32 +99,6 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
         tx: DBWriteTransaction
     ) {
         message.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSMessage,
-        with quotedReply: TSQuotedMessage,
-        tx: DBWriteTransaction
-    ) {
-        message.update(with: quotedReply, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSMessage,
-        with linkPreview: OWSLinkPreview,
-        tx: DBWriteTransaction
-    ) {
-        message.update(with: linkPreview, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSMessage,
-        withLegacyBodyAttachmentIds attachmentIds: [String],
-        tx: DBWriteTransaction
-    ) {
-        message.anyUpdateMessage(transaction: SDSDB.shimOnlyBridge(tx)) { message in
-            message.setLegacyBodyAttachmentIds(attachmentIds)
-        }
     }
 }
 
