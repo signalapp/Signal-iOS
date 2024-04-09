@@ -271,12 +271,16 @@ public class UnpreparedOutgoingMessage {
             tx: tx.asV2Write
         )
 
-        try messageStickerBuilder?.finalize(
-            owner: .messageSticker(messageRowId: messageRowId),
-            tx: tx.asV2Write
-        )
-        if let stickerInfo = messageStickerBuilder?.info {
-            StickerManager.stickerWasSent(stickerInfo.info, transaction: tx)
+        try messageStickerBuilder.map {
+            try $0.finalize(
+                owner: .messageSticker(.init(
+                    messageRowId: messageRowId,
+                    stickerPackId: $0.info.packId,
+                    stickerId: $0.info.stickerId
+                )),
+                tx: tx.asV2Write
+            )
+            StickerManager.stickerWasSent($0.info.info, transaction: tx)
         }
 
         try? contactShareBuilder?.finalize(

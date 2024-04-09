@@ -231,10 +231,16 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     tx: tx
                 )
 
-                try messageParams.messageStickerBuilder?.finalize(
-                    owner: .messageSticker(messageRowId: outgoingMessage.sqliteRowId!),
-                    tx: tx
-                )
+                try messageParams.messageStickerBuilder.map {
+                    try $0.finalize(
+                        owner: .messageSticker(.init(
+                            messageRowId: outgoingMessage.sqliteRowId!,
+                            stickerPackId: $0.info.packId,
+                            stickerId: $0.info.stickerId
+                        )),
+                        tx: tx
+                    )
+                }
                 try messageParams.contactBuilder?.finalize(
                     owner: .messageContactAvatar(messageRowId: outgoingMessage.sqliteRowId!),
                     tx: tx

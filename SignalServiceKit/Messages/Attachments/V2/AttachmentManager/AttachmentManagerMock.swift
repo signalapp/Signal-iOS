@@ -11,7 +11,7 @@ open class AttachmentManagerMock: AttachmentManager {
 
     open func createAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing
@@ -19,7 +19,7 @@ open class AttachmentManagerMock: AttachmentManager {
 
     open func createAttachmentStreams(
         consuming dataSources: [AttachmentDataSource],
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing

@@ -30,7 +30,7 @@ public final class OwnedAttachmentBuilder<InfoType> {
     /// Must be called after the owner has been inserted into the database,
     /// within the same write transaction.
     public func finalize(
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws {
         if self.hasBeenFinalized {
@@ -56,7 +56,7 @@ public final class OwnedAttachmentBuilder<InfoType> {
     }
 
     public typealias FinalizeFn = (
-        _ owner: AttachmentReference.OwnerId,
+        _ owner: AttachmentReference.OwnerBuilder,
         _ tx: DBWriteTransaction
     ) throws -> Void
 

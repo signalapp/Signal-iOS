@@ -46,6 +46,64 @@ extension AttachmentReference {
         case threadWallpaperImage(threadRowId: Int64)
     }
 
+    /// A builder for the "owner" metadata of the attachment, with per-type
+    /// metadata required for construction.
+    ///
+    /// Note: some metadata is generically available on the source (proto or in-memory draft);
+    /// this enum contains only type-specific fields.
+    public enum OwnerBuilder: Equatable {
+        case messageBodyAttachment(MessageBodyAttachmentBuilder)
+
+        case messageOversizeText(messageRowId: Int64)
+        case messageLinkPreview(messageRowId: Int64)
+        /// Note that the row id is for the parent message containing the quoted reply,
+        /// not the original message being quoted.
+        case quotedReplyAttachment(messageRowId: Int64)
+        case messageSticker(MessageStickerBuilder)
+        case messageContactAvatar(messageRowId: Int64)
+        case storyMessageMedia(StoryMediaBuilder)
+        case storyMessageLinkPreview(storyMessageRowId: Int64)
+        case threadWallpaperImage(threadRowId: Int64)
+
+        public struct MessageBodyAttachmentBuilder: Equatable {
+            public let messageRowId: Int64
+
+            /// Note: index/orderInOwner is inferred from the order of the provided array at creation time.
+
+            /// Note: at time of writing message captions are unused; not taken as input here.
+
+            public init(messageRowId: Int64) {
+                self.messageRowId = messageRowId
+            }
+        }
+
+        public struct MessageStickerBuilder: Equatable {
+            public let messageRowId: Int64
+            public let stickerPackId: Data
+            public let stickerId: UInt32
+
+            public init(
+                messageRowId: Int64,
+                stickerPackId: Data,
+                stickerId: UInt32
+            ) {
+                self.messageRowId = messageRowId
+                self.stickerPackId = stickerPackId
+                self.stickerId = stickerId
+            }
+        }
+
+        public struct StoryMediaBuilder: Equatable {
+            public let storyMessageRowId: Int64
+            public let caption: StyleOnlyMessageBody?
+
+            public init(storyMessageRowId: Int64, caption: StyleOnlyMessageBody?) {
+                self.storyMessageRowId = storyMessageRowId
+                self.caption = caption
+            }
+        }
+    }
+
     /// A more friendly in-memory representation of the "owner" of the attachment
     /// with any associated metadata.
     public enum Owner {
@@ -95,7 +153,7 @@ extension AttachmentReference {
 
             public class StickerMetadata: Metadata {
                 public var stickerPackId: Data { _stickerPackId! }
-                public var stickerId: UInt64 { _stickerId! }
+                public var stickerId: UInt32 { _stickerId! }
 
                 override class var requiredFields: [AnyKeyPath] { [\Self._stickerPackId, \Self._stickerId] }
             }
@@ -197,7 +255,7 @@ extension AttachmentReference {
 
         /// Sticker pack info, only used (and required) for sticker messages.
         fileprivate let _stickerPackId: Data?
-        fileprivate let _stickerId: UInt64?
+        fileprivate let _stickerId: UInt32?
 
         /// Validated type of the actual file content on disk, if we have it.
         /// Mirrors `Attachment.contentType`.
@@ -225,7 +283,7 @@ extension AttachmentReference {
             threadRowId: UInt64?,
             caption: MessageBody?,
             stickerPackId: Data?,
-            stickerId: UInt64?,
+            stickerId: UInt32?,
             contentType: AttachmentReference.ContentType?
         ) throws {
             self._ownerRowId = ownerRowId
@@ -258,7 +316,7 @@ extension AttachmentReference.Owner {
         caption: String?,
         captionBodyRanges: MessageBodyRanges,
         stickerPackId: Data?,
-        stickerId: UInt64?,
+        stickerId: UInt32?,
         contentType: AttachmentReference.ContentType?
     ) -> AttachmentReference.Owner? {
 
@@ -327,6 +385,32 @@ extension AttachmentReference.Owner {
             return .storyMessageLinkPreview(storyMessageRowId: metadata._ownerRowId)
         case .thread(let metadata):
             return .threadWallpaperImage(threadRowId: metadata._ownerRowId)
+        }
+    }
+}
+
+extension AttachmentReference.OwnerBuilder {
+
+    internal var id: AttachmentReference.OwnerId {
+        switch self {
+        case .messageBodyAttachment(let bodyOwnerBuilder):
+            return .messageBodyAttachment(messageRowId: bodyOwnerBuilder.messageRowId)
+        case .messageOversizeText(let messageRowId):
+            return .messageOversizeText(messageRowId: messageRowId)
+        case .messageLinkPreview(let messageRowId):
+            return .messageLinkPreview(messageRowId: messageRowId)
+        case .quotedReplyAttachment(let messageRowId):
+            return .quotedReplyAttachment(messageRowId: messageRowId)
+        case .messageSticker(let stickerOwnerBuilder):
+            return .messageSticker(messageRowId: stickerOwnerBuilder.messageRowId)
+        case .messageContactAvatar(let messageRowId):
+            return .messageContactAvatar(messageRowId: messageRowId)
+        case .storyMessageMedia(let mediaOwnerBuilder):
+            return .storyMessageMedia(storyMessageRowId: mediaOwnerBuilder.storyMessageRowId)
+        case .storyMessageLinkPreview(let storyMessageRowId):
+            return .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId)
+        case .threadWallpaperImage(let threadRowId):
+            return .threadWallpaperImage(threadRowId: threadRowId)
         }
     }
 }

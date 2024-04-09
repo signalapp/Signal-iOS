@@ -176,6 +176,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         manifest: StoryManifest,
         replyCount: UInt64,
         attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>,
+        mediaCaption: StyleOnlyMessageBody?,
         transaction: SDSAnyWriteTransaction
     ) throws -> StoryMessage {
         let storyMessage = StoryMessage(
@@ -190,10 +191,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         guard let id = storyMessage.id else {
             throw OWSAssertionError("No sqlite id after insert!")
         }
-        let ownerId: AttachmentReference.OwnerId
+        let ownerId: AttachmentReference.OwnerBuilder
         switch attachmentBuilder.info {
         case .file, .foreignReferenceAttachment:
-            ownerId = .storyMessageMedia(storyMessageRowId: id)
+            ownerId = .storyMessageMedia(.init(storyMessageRowId: id, caption: mediaCaption))
         case .text:
             ownerId = .storyMessageLinkPreview(storyMessageRowId: id)
         }

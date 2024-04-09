@@ -70,6 +70,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     public class func createUnsentMessage(
         thread: TSThread,
         attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>,
+        mediaCaption: StyleOnlyMessageBody?,
         transaction: SDSAnyWriteTransaction
     ) throws -> OutgoingStoryMessage {
         let storyManifest: StoryManifest = .outgoing(
@@ -95,6 +96,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             manifest: storyManifest,
             replyCount: 0,
             attachmentBuilder: attachmentBuilder,
+            mediaCaption: mediaCaption,
             transaction: transaction
         )
 

@@ -17,7 +17,7 @@ public protocol AttachmentManager {
     /// Throws an error if any of the provided protos are invalid.
     func createAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws
 
@@ -27,7 +27,7 @@ public protocol AttachmentManager {
     /// Creates a reference from the owner to the attachments.
     func createAttachmentStreams(
         consuming dataSources: [AttachmentDataSource],
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws
 
@@ -90,7 +90,7 @@ extension AttachmentManager {
     /// Throws an error if the provided proto is invalid.
     public func createAttachmentPointer(
         from proto: SSKProtoAttachmentPointer,
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws {
         try createAttachmentPointers(
@@ -106,7 +106,7 @@ extension AttachmentManager {
     /// Creates a reference from the owner to the attachment.
     public func createAttachmentStream(
         consuming dataSource: AttachmentDataSource,
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws {
         try createAttachmentStreams(

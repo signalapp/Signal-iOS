@@ -1095,10 +1095,16 @@ public final class MessageReceiver: Dependencies {
                 owner: .messageLinkPreview(messageRowId: message.sqliteRowId!),
                 tx: tx.asV2Write
             )
-            try messageStickerBuilder?.finalize(
-                owner: .messageSticker(messageRowId: message.sqliteRowId!),
-                tx: tx.asV2Write
-            )
+            try messageStickerBuilder.map {
+                try $0.finalize(
+                    owner: .messageSticker(.init(
+                        messageRowId: message.sqliteRowId!,
+                        stickerPackId: $0.info.packId,
+                        stickerId: $0.info.stickerId
+                    )),
+                    tx: tx.asV2Write
+                )
+            }
             try contactBuilder?.finalize(
                 owner: .messageContactAvatar(messageRowId: message.sqliteRowId!),
                 tx: tx.asV2Write

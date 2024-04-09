@@ -49,6 +49,7 @@ extension OutgoingStoryMessage {
                         message = try OutgoingStoryMessage.createUnsentMessage(
                             thread: destination.thread,
                             attachmentBuilder: attachmentBuilder,
+                            mediaCaption: captionBody,
                             transaction: transaction
                         )
                         if destination.thread is TSPrivateStoryThread {
@@ -85,6 +86,7 @@ extension OutgoingStoryMessage {
                     message = try OutgoingStoryMessage.createUnsentMessage(
                         thread: destination.thread,
                         attachmentBuilder: textAttachmentBuilder.wrap { .text($0) },
+                        mediaCaption: nil,
                         transaction: transaction
                     )
                     if destination.thread is TSPrivateStoryThread {

@@ -50,7 +50,7 @@ public class AttachmentReference {
         sourceMediaHeightPixels: UInt32,
         sourceMediaWidthPixels: UInt32,
         stickerPackId: Data?,
-        stickerId: UInt64?,
+        stickerId: UInt32?,
         contentType: ContentType?
     ) {
         let ownerId = ownerTypeRaw.with(ownerId: ownerRowId)

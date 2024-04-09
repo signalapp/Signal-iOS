@@ -19,7 +19,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     public func createAttachmentPointers(
         from protos: [SSKProtoAttachmentPointer],
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws {
         try createAttachments(
@@ -33,7 +33,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     public func createAttachmentStreams(
         consuming dataSources: [AttachmentDataSource],
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws {
         try createAttachments(
@@ -94,14 +94,15 @@ public class AttachmentManagerImpl: AttachmentManager {
     // MARK: - Helpers
 
     private typealias OwnerId = AttachmentReference.OwnerId
+    private typealias OwnerBuilder = AttachmentReference.OwnerBuilder
 
     // MARK: Creating Attachments from source
 
     private func createAttachments<T>(
         _ inputArray: [T],
         mimeType: (T) -> String?,
-        owner: OwnerId,
-        createFn: (T, OwnerId, Int?, DBWriteTransaction) throws -> Void,
+        owner: OwnerBuilder,
+        createFn: (T, OwnerBuilder, Int?, DBWriteTransaction) throws -> Void,
         tx: DBWriteTransaction
     ) throws {
         var indexOffset = 0
@@ -109,10 +110,10 @@ public class AttachmentManagerImpl: AttachmentManager {
             let sourceOrder: Int?
             var ownerForInput = owner
             switch owner {
-            case .messageBodyAttachment(let messageRowId):
+            case .messageBodyAttachment(let bodyOwnerBuilder):
                 // Convert text mime type attachments in the first spot to oversize text.
                 if mimeType(input) == OWSMimeTypeOversizeTextMessage {
-                    ownerForInput = .messageOversizeText(messageRowId: messageRowId)
+                    ownerForInput = .messageOversizeText(messageRowId: bodyOwnerBuilder.messageRowId)
                     indexOffset = -1
                 }
                 sourceOrder = i + indexOffset
@@ -130,7 +131,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private func _createAttachmentPointer(
         from proto: SSKProtoAttachmentPointer,
-        owner: OwnerId,
+        owner: OwnerBuilder,
         // Nil if no order is to be applied.
         sourceOrder: Int?,
         tx: DBWriteTransaction
@@ -175,7 +176,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private func _createAttachmentStream(
         consuming dataSource: AttachmentDataSource,
-        owner: AttachmentReference.OwnerId,
+        owner: OwnerBuilder,
         // Nil if no order is to be applied.
         sourceOrder: Int?,
         tx: DBWriteTransaction

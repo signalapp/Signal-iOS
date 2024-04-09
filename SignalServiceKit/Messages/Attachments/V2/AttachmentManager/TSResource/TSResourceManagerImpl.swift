@@ -64,7 +64,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             }
             try attachmentManager.createAttachmentPointers(
                 from: protos,
-                owner: .messageBodyAttachment(messageRowId: messageRowId),
+                owner: .messageBodyAttachment(.init(messageRowId: messageRowId)),
                 tx: tx
             )
         } else {
@@ -129,7 +129,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             }
             try attachmentManager.createAttachmentStreams(
                 consuming: v2DataSources,
-                owner: .messageBodyAttachment(messageRowId: messageRowId),
+                owner: .messageBodyAttachment(.init(messageRowId: messageRowId)),
                 tx: tx
             )
         }
