@@ -79,6 +79,7 @@ public class DependenciesBridge {
     public let masterKeySyncManager: MasterKeySyncManager
     public let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     public let messageBackupManager: MessageBackupManager
+    public let messageStickerManager: MessageStickerManager
     public let nicknameManager: any NicknameManager
     public let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
     public let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
@@ -161,6 +162,7 @@ public class DependenciesBridge {
         masterKeySyncManager: MasterKeySyncManager,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageBackupManager: MessageBackupManager,
+        messageStickerManager: MessageStickerManager,
         nicknameManager: any NicknameManager,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
@@ -240,6 +242,7 @@ public class DependenciesBridge {
         self.masterKeySyncManager = masterKeySyncManager
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
         self.messageBackupManager = messageBackupManager
+        self.messageStickerManager = messageStickerManager
         self.nicknameManager = nicknameManager
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
         self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher

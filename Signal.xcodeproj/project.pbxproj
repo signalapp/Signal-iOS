@@ -1046,6 +1046,7 @@
 		66E1AD9A2B91499700C56B7B /* TSResourceUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD992B91499700C56B7B /* TSResourceUploadStore.swift */; };
 		66E1ADA02B9155C200C56B7B /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */; };
 		66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */; };
+		66E793E52BC0D8A600929E5E /* MessageStickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */; };
 		66EB029B2BAB9F1C004F0580 /* ReferencedAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */; };
 		66EB029D2BAB9F55004F0580 /* ReferencedTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */; };
 		66F0F1DD29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */; };
@@ -3982,6 +3983,7 @@
 		66E1AD992B91499700C56B7B /* TSResourceUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceUploadStore.swift; sourceTree = "<group>"; };
 		66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
 		66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinator.swift; sourceTree = "<group>"; };
+		66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStickerManager.swift; sourceTree = "<group>"; };
 		66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedAttachment.swift; sourceTree = "<group>"; };
 		66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedTSResource.swift; sourceTree = "<group>"; };
 		66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorLoader.swift; sourceTree = "<group>"; };
@@ -10446,6 +10448,7 @@
 				F9C5C924289453B100548EEE /* KnownStickerPack.h */,
 				F9C5C91E289453B100548EEE /* KnownStickerPack.m */,
 				F9C5C927289453B100548EEE /* MessageSticker.swift */,
+				66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */,
 				F9C5C929289453B100548EEE /* StickerError.swift */,
 				F9C5C92A289453B100548EEE /* StickerInfo.h */,
 				F9C5C921289453B100548EEE /* StickerInfo.m */,
@@ -13919,6 +13922,7 @@
 				D9AE0AD929187F850063488B /* MessageSenderJobRecord.swift in Sources */,
 				F9C5CC64289453B300548EEE /* MessageSendLog.swift in Sources */,
 				F9C5CC19289453B300548EEE /* MessageSticker.swift in Sources */,
+				66E793E52BC0D8A600929E5E /* MessageStickerManager.swift in Sources */,
 				F9C5CE30289453B400548EEE /* MIMETypeUtil.m in Sources */,
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,
 				72345D202B9A2035000237B3 /* MobileCoinHelperMinimal.swift in Sources */,

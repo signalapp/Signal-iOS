@@ -254,15 +254,17 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
         }
 
         let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
-        do {
-            messageStickerBuilder = try MessageSticker.buildValidatedMessageSticker(
-                dataMessage: dataMessage,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
-        } catch {
-            if !MessageSticker.isNoStickerError(error) {
+        if let stickerProto = dataMessage.sticker {
+            do {
+                messageStickerBuilder = try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(
+                    from: stickerProto,
+                    tx: tx
+                )
+            } catch {
                 owsFailDebug("stickerError: \(error)")
+                messageStickerBuilder = nil
             }
+        } else {
             messageStickerBuilder = nil
         }
 

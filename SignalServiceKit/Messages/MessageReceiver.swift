@@ -954,12 +954,17 @@ public final class MessageReceiver: Dependencies {
         }
 
         var messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
-        do {
-            messageStickerBuilder = try MessageSticker.buildValidatedMessageSticker(dataMessage: dataMessage, transaction: tx)
-        } catch StickerError.noSticker {
-            // this is fine
-        } catch {
-            Logger.warn("stickerError: \(error)")
+        if let stickerProto = dataMessage.sticker {
+            do {
+                messageStickerBuilder = try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(
+                    from: stickerProto,
+                    tx: tx.asV2Write
+                )
+            } catch {
+                Logger.warn("stickerError: \(error)")
+            }
+        } else {
+            messageStickerBuilder = nil
         }
 
         let giftBadge = OWSGiftBadge.maybeBuild(from: dataMessage)

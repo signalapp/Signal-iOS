@@ -13,6 +13,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private let earlyMessageManager: Shims.EarlyMessageManager
     private let groupManager: Shims.GroupManager
     private let interactionStore: InteractionStore
+    private let messageStickerManager: MessageStickerManager
     private let paymentsHelper: Shims.PaymentsHelper
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let tsAccountManager: TSAccountManager
@@ -25,6 +26,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         earlyMessageManager: Shims.EarlyMessageManager,
         groupManager: Shims.GroupManager,
         interactionStore: InteractionStore,
+        messageStickerManager: MessageStickerManager,
         paymentsHelper: Shims.PaymentsHelper,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         tsAccountManager: TSAccountManager,
@@ -36,6 +38,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         self.earlyMessageManager = earlyMessageManager
         self.groupManager = groupManager
         self.interactionStore = interactionStore
+        self.messageStickerManager = messageStickerManager
         self.paymentsHelper = paymentsHelper
         self.signalProtocolStoreManager = signalProtocolStoreManager
         self.tsAccountManager = tsAccountManager

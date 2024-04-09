@@ -225,7 +225,7 @@ public class UnpreparedOutgoingMessage {
         }
 
         let messageStickerBuilder = try message.messageStickerDraft.map {
-            try MessageSticker.buildValidatedMessageSticker(fromDraft: $0, transaction: tx)
+            try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(fromDraft: $0, tx: tx.asV2Write)
         }.map {
             message.message.update(with: $0.info, transaction: tx)
             return $0

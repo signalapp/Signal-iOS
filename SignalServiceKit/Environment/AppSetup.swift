@@ -625,12 +625,18 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let messageStickerManager = MessageStickerManagerImpl(
+            attachmentManager: tsResourceManager,
+            stickerManager: MessageStickerManagerImpl.Wrappers.StickerManager()
+        )
+
         let sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
             attachmentDownloads: tsResourceDownloadManager,
             disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
             earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
             groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
             interactionStore: interactionStore,
+            messageStickerManager: messageStickerManager,
             paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
             signalProtocolStoreManager: signalProtocolStoreManager,
             tsAccountManager: tsAccountManager,
@@ -762,6 +768,7 @@ public class AppSetup {
             masterKeySyncManager: masterKeySyncManager,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             messageBackupManager: messageBackupManager,
+            messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
