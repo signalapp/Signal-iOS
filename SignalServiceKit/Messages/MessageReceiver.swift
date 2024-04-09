@@ -1674,21 +1674,21 @@ public final class MessageReceiver: Dependencies {
         if request.wasReceivedByUD {
             let receiptSender = SSKEnvironment.shared.receiptSenderRef
             receiptSender.enqueueDeliveryReceipt(for: decryptedEnvelope, messageUniqueId: message.uniqueId, tx: tx)
+        }
 
-            if
-                case let .incomingMessage(incoming) = targetMessage,
-                let message = message as? TSIncomingMessage
-            {
-                // Only update notifications for unread/unedited message targets
-                let targetEditState = incoming.message.editState
-                if targetEditState == .latestRevisionUnread || targetEditState == .none {
-                    self.notificationsManager.notifyUser(
-                        forIncomingMessage: message,
-                        editTarget: incoming.message,
-                        thread: thread,
-                        transaction: tx
-                    )
-                }
+        if
+            case let .incomingMessage(incoming) = targetMessage,
+            let message = message as? TSIncomingMessage
+        {
+            // Only update notifications for unread/unedited message targets
+            let targetEditState = incoming.message.editState
+            if targetEditState == .latestRevisionUnread || targetEditState == .none {
+                self.notificationPresenter.notifyUser(
+                    forIncomingMessage: message,
+                    editTarget: incoming.message,
+                    thread: thread,
+                    transaction: tx
+                )
             }
         }
 
