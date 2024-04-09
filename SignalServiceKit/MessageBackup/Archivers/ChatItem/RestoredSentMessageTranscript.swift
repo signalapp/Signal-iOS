@@ -57,7 +57,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             attachmentPointerProtos: [],
             quotedMessageBuilder: quotedMessageBuilder,
             // TODO: contact message
-            contact: nil,
+            contactBuilder: nil,
             // TODO: linkPreview message
             linkPreviewBuilder: nil,
             // TODO: gift badge message

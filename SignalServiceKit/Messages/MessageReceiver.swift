@@ -935,10 +935,10 @@ public final class MessageReceiver: Dependencies {
             thread: thread,
             tx: tx.asV2Write
         )
-        let contact: OWSContact?
+        let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
         if let contactProto = dataMessage.contact.first {
             do {
-                contact = try DependenciesBridge.shared.contactShareManager.validateAndBuild(
+                contactBuilder = try DependenciesBridge.shared.contactShareManager.validateAndBuild(
                     for: contactProto,
                     tx: tx.asV2Write
                 )
@@ -947,7 +947,7 @@ public final class MessageReceiver: Dependencies {
                 return nil
             }
         } else {
-            contact = nil
+            contactBuilder = nil
         }
 
         let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
@@ -1052,7 +1052,7 @@ public final class MessageReceiver: Dependencies {
             hasBodyAttachments: !dataMessage.attachments.isEmpty,
             hasLinkPreview: linkPreviewBuilder != nil,
             hasQuotedReply: quotedMessageBuilder != nil,
-            hasContactShare: contact != nil,
+            hasContactShare: contactBuilder != nil,
             hasSticker: messageStickerBuilder != nil
         )
         guard hasRenderableContent else {
@@ -1067,7 +1067,7 @@ public final class MessageReceiver: Dependencies {
 
         // Update attachment fields before inserting.
         quotedMessageBuilder.map { message.update(with: $0.info, transaction: tx) }
-        contact.map { message.update(withContactShare: $0, transaction: tx) }
+        contactBuilder.map { message.update(withContactShare: $0.info, transaction: tx) }
         linkPreviewBuilder.map { message.update(with: $0.info, transaction: tx) }
         messageStickerBuilder.map { message.update(with: $0.info, transaction: tx) }
 
@@ -1097,6 +1097,10 @@ public final class MessageReceiver: Dependencies {
             )
             try messageStickerBuilder?.finalize(
                 owner: .messageSticker(messageRowId: message.sqliteRowId!),
+                tx: tx.asV2Write
+            )
+            try contactBuilder?.finalize(
+                owner: .messageContactAvatar(messageRowId: message.sqliteRowId!),
                 tx: tx.asV2Write
             )
         } catch {

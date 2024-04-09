@@ -9,7 +9,7 @@ public protocol ContactShareManager {
     func validateAndBuild(
         for contactProto: SSKProtoDataMessageContact,
         tx: DBWriteTransaction
-    ) throws -> OWSContact
+    ) throws -> OwnedAttachmentBuilder<OWSContact>
 
     func validateAndBuild(
         draft: ContactShareDraft,
@@ -39,7 +39,7 @@ public class ContactShareManagerImpl: ContactShareManager {
     public func validateAndBuild(
         for contactProto: SSKProtoDataMessageContact,
         tx: DBWriteTransaction
-    ) throws -> OWSContact {
+    ) throws -> OwnedAttachmentBuilder<OWSContact> {
         var givenName: String?
         var familyName: String?
         var namePrefix: String?
@@ -87,14 +87,26 @@ public class ContactShareManagerImpl: ContactShareManager {
 
         if
             let avatar = contactProto.avatar,
-            let avatarAttachment = avatar.avatar,
-            let attachmentPointer  = TSAttachmentPointer(fromProto: avatarAttachment, albumMessage: nil) {
-            // TODO: use TSResource.
-            attachmentPointer.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
-            contact.setLegacyAvatarAttachmentId(attachmentPointer.uniqueId)
-        }
+            let avatarAttachmentProto = avatar.avatar
+        {
+            let avatarAttachmentBuilder = try attachmentManager.createAttachmentPointerBuilder(
+                from: avatarAttachmentProto,
+                tx: tx
+            )
 
-        return contact
+            return avatarAttachmentBuilder.wrap { _ in
+                switch avatarAttachmentBuilder.info {
+                case .legacy(let attachmentUniqueId):
+                    contact.setLegacyAvatarAttachmentId(attachmentUniqueId)
+                    return contact
+                case .v2:
+                    // Nothing to change; the reference is foreign.
+                    return contact
+                }
+            }
+        } else {
+            return .withoutFinalizer(contact)
+        }
     }
 
     public func validateAndBuild(
@@ -222,8 +234,8 @@ public class MockContactShareManager: ContactShareManager {
     public func validateAndBuild(
         for contactProto: SSKProtoDataMessageContact,
         tx: DBWriteTransaction
-    ) throws -> OWSContact {
-        return OWSContact()
+    ) throws -> OwnedAttachmentBuilder<OWSContact> {
+        return .withoutFinalizer(OWSContact())
     }
 
     public func validateAndBuild(

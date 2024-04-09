@@ -229,7 +229,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             bodyRanges = nil
         }
 
-        let contact = try dataMessage.contact.first.map {
+        let contactBuilder = try dataMessage.contact.first.map {
             try DependenciesBridge.shared.contactShareManager.validateAndBuild(
                 for: $0,
                 tx: tx
@@ -282,7 +282,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             bodyRanges: bodyRanges,
             attachmentPointerProtos: dataMessage.attachments,
             quotedMessageBuilder: quotedMessageBuilder,
-            contact: contact,
+            contactBuilder: contactBuilder,
             linkPreviewBuilder: linkPreviewBuilder,
             giftBadge: giftBadge,
             messageStickerBuilder: messageStickerBuilder,

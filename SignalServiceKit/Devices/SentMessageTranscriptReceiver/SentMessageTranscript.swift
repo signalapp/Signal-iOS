@@ -35,7 +35,7 @@ public enum SentMessageTranscriptType {
 
         public let quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>?
 
-        public let contact: OWSContact?
+        public let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
 
         public let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
 

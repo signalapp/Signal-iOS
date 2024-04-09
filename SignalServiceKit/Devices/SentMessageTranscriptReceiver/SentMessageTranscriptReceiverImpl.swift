@@ -174,7 +174,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated,
             hasLinkPreview: messageParams.linkPreviewBuilder != nil,
             hasQuotedReply: messageParams.quotedMessageBuilder != nil,
-            hasContactShare: messageParams.contact != nil,
+            hasContactShare: messageParams.contactBuilder != nil,
             hasSticker: messageParams.messageStickerBuilder != nil
         )
         if !hasRenderableContent && !outgoingMessage.isViewOnceMessage {
@@ -206,7 +206,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
             // Update attachment fields before inserting.
             messageParams.quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
-            messageParams.contact.map { interactionStore.update(outgoingMessage, with: $0, tx: tx) }
+            messageParams.contactBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
             messageParams.linkPreviewBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
             messageParams.messageStickerBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
 
@@ -233,6 +233,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
                 try messageParams.messageStickerBuilder?.finalize(
                     owner: .messageSticker(messageRowId: outgoingMessage.sqliteRowId!),
+                    tx: tx
+                )
+                try messageParams.contactBuilder?.finalize(
+                    owner: .messageContactAvatar(messageRowId: outgoingMessage.sqliteRowId!),
                     tx: tx
                 )
             } catch let error {
