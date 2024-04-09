@@ -937,20 +937,20 @@ public final class MessageReceiver: Dependencies {
         )
         let contact = OWSContact.contact(for: dataMessage, transaction: tx)
 
-        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>? = dataMessage.preview.first.flatMap {
+        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
+        if let linkPreview = dataMessage.preview.first {
             do {
-                return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
-                    from: $0,
+                linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+                    from: linkPreview,
                     dataMessage: dataMessage,
                     tx: tx.asV2Write
                 )
-            } catch LinkPreviewError.noPreview {
-                // this is fine
-                return nil
             } catch {
-                Logger.warn("linkPreviewError: \(error)")
+                Logger.error("linkPreviewError: \(error)")
                 return nil
             }
+        } else {
+            linkPreviewBuilder = nil
         }
 
         var messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
@@ -961,7 +961,8 @@ public final class MessageReceiver: Dependencies {
                     tx: tx.asV2Write
                 )
             } catch {
-                Logger.warn("stickerError: \(error)")
+                Logger.error("stickerError: \(error)")
+                return nil
             }
         } else {
             messageStickerBuilder = nil
@@ -1072,12 +1073,7 @@ public final class MessageReceiver: Dependencies {
                 message: message,
                 tx: tx.asV2Write
             )
-        } catch {
-            owsFailDebug("Could not build attachments!")
-            return nil
-        }
 
-        do {
             try quotedMessageBuilder?.finalize(
                 owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
                 tx: tx.asV2Write
@@ -1091,7 +1087,9 @@ public final class MessageReceiver: Dependencies {
                 tx: tx.asV2Write
             )
         } catch {
-            owsFailDebug("Unable to finalize attachments")
+            owsFailDebug("Could not build attachments!")
+            message.anyRemove(transaction: tx)
+            return nil
         }
 
         owsAssertDebug(message.insertedMessageHasRenderableContent(rowId: message.sqliteRowId!, tx: tx))
