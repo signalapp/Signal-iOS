@@ -229,7 +229,12 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             bodyRanges = nil
         }
 
-        let contact = OWSContact.contact(for: dataMessage, transaction: SDSDB.shimOnlyBridge(tx))
+        let contact = try dataMessage.contact.first.map {
+            try DependenciesBridge.shared.contactShareManager.validateAndBuild(
+                for: $0,
+                tx: tx
+            )
+        }
 
         let linkPreviewBuilder = try dataMessage.preview.first.map { linkPreview in
             return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(

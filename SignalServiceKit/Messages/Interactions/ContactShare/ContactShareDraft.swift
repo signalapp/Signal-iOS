@@ -132,53 +132,6 @@ public class ContactShareDraft {
         )
     }
 
-    public func builderForSending(tx: SDSAnyWriteTransaction) throws -> OwnedAttachmentBuilder<OWSContact> {
-        func buildContact(legacyAttachmentId: String? = nil) -> OWSContact {
-            return OWSContact(
-                name: name,
-                phoneNumbers: phoneNumbers,
-                emails: emails,
-                addresses: addresses,
-                avatarAttachmentId: legacyAttachmentId
-            )
-        }
-
-        let avatarDataSource: TSResourceDataSource
-        if let existingAvatarAttachment, let stream = existingAvatarAttachment.attachment.asResourceStream() {
-            avatarDataSource = .forwarding(
-                existingAttachment: stream,
-                with: existingAvatarAttachment.reference
-            )
-        } else if let avatarImage {
-            guard let imageData = avatarImage.jpegData(compressionQuality: 0.9) else {
-                throw OWSAssertionError("Failed to get JPEG")
-            }
-            let mimeType = OWSMimeTypeImageJpeg
-            avatarDataSource = .from(
-                data: imageData,
-                mimeType: mimeType,
-                caption: nil,
-                renderingFlag: .default,
-                sourceFilename: nil
-            )
-        } else {
-            return .withoutFinalizer(buildContact())
-        }
-
-        return try DependenciesBridge.shared.tsResourceManager.createAttachmentStreamBuilder(
-            from: avatarDataSource,
-            tx: tx.asV2Write
-        ).wrap { attachmentInfo in
-            switch attachmentInfo {
-            case .legacy(uniqueId: let uniqueId):
-                return buildContact(legacyAttachmentId: uniqueId)
-            case .v2:
-                return buildContact()
-            }
-        }
-
-    }
-
     // MARK: Convenience getters
 
     public var displayName: String {

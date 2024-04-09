@@ -303,6 +303,18 @@ extension TSOutgoingMessage {
     }
 
     @objc
+    func buildContactShareProto(
+        _ contact: OWSContact,
+        tx: SDSAnyReadTransaction
+    ) throws -> SSKProtoDataMessageContact {
+        return try DependenciesBridge.shared.contactShareManager.buildProtoForSending(
+            from: contact,
+            parentMessage: self,
+            tx: tx.asV2Read
+        )
+    }
+
+    @objc
     func buildProtoForStickerAttachment(tx: SDSAnyReadTransaction) -> SSKProtoAttachmentPointer? {
         let reference = DependenciesBridge.shared.tsResourceStore.stickerAttachment(for: self, tx: tx.asV2Read)
         return buildProtosForSending([reference].compacted(), tx: tx.asV2Read).first

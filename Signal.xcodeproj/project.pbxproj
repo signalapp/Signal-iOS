@@ -1005,6 +1005,11 @@
 		66CDE5C42A58928000B7C607 /* SpoilerableTextViewAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */; };
 		66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */; };
 		66D13F0A2A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */; };
+		66D31DA72BC47F2C00EAF735 /* ContactShareManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31DA62BC47F2C00EAF735 /* ContactShareManager.swift */; };
+		66D31DA92BC48D7900EAF735 /* OWSContactPhoneNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31DA82BC48D7900EAF735 /* OWSContactPhoneNumber.swift */; };
+		66D31DAB2BC48D9C00EAF735 /* OWSContactEmail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31DAA2BC48D9C00EAF735 /* OWSContactEmail.swift */; };
+		66D31DAD2BC48E0100EAF735 /* OWSContactAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31DAC2BC48E0100EAF735 /* OWSContactAddress.swift */; };
+		66D31DAF2BC48E3A00EAF735 /* OWSContactName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31DAE2BC48E3A00EAF735 /* OWSContactName.swift */; };
 		66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */; };
 		66D7B8FD2B9285EB0005C98B /* AttachmentStoreMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B8FC2B9285EB0005C98B /* AttachmentStoreMock.swift */; };
 		66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */; };
@@ -3942,6 +3947,11 @@
 		66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableTextViewAnimator.swift; sourceTree = "<group>"; };
 		66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentOnboarding.swift; sourceTree = "<group>"; };
 		66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecipientHidingManager+SignalServiceAddress.swift"; sourceTree = "<group>"; };
+		66D31DA62BC47F2C00EAF735 /* ContactShareManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareManager.swift; sourceTree = "<group>"; };
+		66D31DA82BC48D7900EAF735 /* OWSContactPhoneNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactPhoneNumber.swift; sourceTree = "<group>"; };
+		66D31DAA2BC48D9C00EAF735 /* OWSContactEmail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactEmail.swift; sourceTree = "<group>"; };
+		66D31DAC2BC48E0100EAF735 /* OWSContactAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactAddress.swift; sourceTree = "<group>"; };
+		66D31DAE2BC48E3A00EAF735 /* OWSContactName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactName.swift; sourceTree = "<group>"; };
 		66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextAssociatedData.swift; sourceTree = "<group>"; };
 		66D7B8FC2B9285EB0005C98B /* AttachmentStoreMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStoreMock.swift; sourceTree = "<group>"; };
 		66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManager.swift; sourceTree = "<group>"; };
@@ -7491,7 +7501,12 @@
 			isa = PBXGroup;
 			children = (
 				664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */,
+				66D31DA62BC47F2C00EAF735 /* ContactShareManager.swift */,
 				763A15FF2AEC3A490081D7E5 /* OWSContact.swift */,
+				66D31DAC2BC48E0100EAF735 /* OWSContactAddress.swift */,
+				66D31DAA2BC48D9C00EAF735 /* OWSContactEmail.swift */,
+				66D31DAE2BC48E3A00EAF735 /* OWSContactName.swift */,
+				66D31DA82BC48D7900EAF735 /* OWSContactPhoneNumber.swift */,
 			);
 			path = ContactShare;
 			sourceTree = "<group>";
@@ -13650,6 +13665,7 @@
 				506A99D42B86B39F00E3C753 /* ContactManager.swift in Sources */,
 				7254655D2BA0294100EABFD2 /* ContactOutputStream.swift in Sources */,
 				664BA84A2BB5DFE1005638E0 /* ContactShareDraft.swift in Sources */,
+				66D31DA72BC47F2C00EAF735 /* ContactShareManager.swift in Sources */,
 				F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */,
 				7254655C2BA0293900EABFD2 /* ContactSyncAttachmentBuilder.swift in Sources */,
 				F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */,
@@ -14008,6 +14024,10 @@
 				F9C5CD9C289453B400548EEE /* OWSCensorshipConfiguration.m in Sources */,
 				F9C5CD9A289453B400548EEE /* OWSChatConnection.swift in Sources */,
 				763A16002AEC3A490081D7E5 /* OWSContact.swift in Sources */,
+				66D31DAD2BC48E0100EAF735 /* OWSContactAddress.swift in Sources */,
+				66D31DAB2BC48D9C00EAF735 /* OWSContactEmail.swift in Sources */,
+				66D31DAF2BC48E3A00EAF735 /* OWSContactName.swift in Sources */,
+				66D31DA92BC48D7900EAF735 /* OWSContactPhoneNumber.swift in Sources */,
 				725465192BA00F7500EABFD2 /* OWSContactsManager.swift in Sources */,
 				F9C5CD98289453B300548EEE /* OWSCountryMetadata.m in Sources */,
 				F9C5CCFD289453B300548EEE /* OWSDevice.swift in Sources */,

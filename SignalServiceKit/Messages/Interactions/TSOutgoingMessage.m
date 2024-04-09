@@ -894,12 +894,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // Contact Share
     if (self.contactShare) {
-        SSKProtoDataMessageContact *_Nullable contactProto =
-            [self.contactShare buildProtoWithParentMessage:self tx:transaction];
-        if (contactProto) {
-            [builder addContact:contactProto];
+        NSError *error;
+        SSKProtoDataMessageContact *_Nullable contactProto = [self buildContactShareProto:self.contactShare
+                                                                                       tx:transaction
+                                                                                    error:&error];
+        if (error || !contactProto) {
+            OWSFailDebug(@"Could not build contact share protobuf: %@.", error);
         } else {
-            OWSFailDebug(@"contactProto was unexpectedly nil");
+            [builder addContact:contactProto];
         }
     }
 

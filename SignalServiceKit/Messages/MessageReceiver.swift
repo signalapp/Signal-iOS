@@ -935,7 +935,20 @@ public final class MessageReceiver: Dependencies {
             thread: thread,
             tx: tx.asV2Write
         )
-        let contact = OWSContact.contact(for: dataMessage, transaction: tx)
+        let contact: OWSContact?
+        if let contactProto = dataMessage.contact.first {
+            do {
+                contact = try DependenciesBridge.shared.contactShareManager.validateAndBuild(
+                    for: contactProto,
+                    tx: tx.asV2Write
+                )
+            } catch {
+                Logger.error("contact share error: \(error)")
+                return nil
+            }
+        } else {
+            contact = nil
+        }
 
         let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
         if let linkPreview = dataMessage.preview.first {

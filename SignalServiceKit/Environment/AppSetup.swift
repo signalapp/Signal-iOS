@@ -630,6 +630,11 @@ public class AppSetup {
             stickerManager: MessageStickerManagerImpl.Wrappers.StickerManager()
         )
 
+        let contactShareManager = ContactShareManagerImpl(
+            attachmentManager: tsResourceManager,
+            attachmentStore: tsResourceStore
+        )
+
         let sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
             attachmentDownloads: tsResourceDownloadManager,
             disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
@@ -741,6 +746,7 @@ public class AppSetup {
             changePhoneNumberPniManager: changePhoneNumberPniManager,
             chatColorSettingStore: chatColorSettingStore,
             chatConnectionManager: chatConnectionManager,
+            contactShareManager: contactShareManager,
             db: db,
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,

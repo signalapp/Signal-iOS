@@ -232,7 +232,10 @@ public class UnpreparedOutgoingMessage {
         }
 
         let contactShareBuilder = try message.contactShareDraft.map {
-            try $0.builderForSending(tx: tx)
+            try DependenciesBridge.shared.contactShareManager.validateAndBuild(
+                draft: $0,
+                tx: tx.asV2Write
+            )
         }.map {
             message.message.update(withContactShare: $0.info, transaction: tx)
             return $0
