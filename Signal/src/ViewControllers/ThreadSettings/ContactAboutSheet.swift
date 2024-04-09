@@ -9,14 +9,34 @@ import SignalServiceKit
 // MARK: - ContactAboutSheet
 
 class ContactAboutSheet: StackSheetViewController {
+    struct Context {
+        let contactManager: any ContactManager
+        let identityManager: any OWSIdentityManager
+        let recipientDatabaseTable: any RecipientDatabaseTable
+        let nicknameManager: any NicknameManager
+
+        static let `default` = Context(
+            contactManager: NSObject.contactsManager,
+            identityManager: DependenciesBridge.shared.identityManager,
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
+            nicknameManager: DependenciesBridge.shared.nicknameManager
+        )
+    }
+
     private let thread: TSContactThread
     private let isLocalUser: Bool
     private let spoilerState: SpoilerRenderState
+    private let context: Context
 
-    init(thread: TSContactThread, spoilerState: SpoilerRenderState) {
+    init(
+        thread: TSContactThread,
+        spoilerState: SpoilerRenderState,
+        context: Context = .default
+    ) {
         self.thread = thread
         self.isLocalUser = thread.isNoteToSelf
         self.spoilerState = spoilerState
+        self.context = context
         super.init()
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -96,11 +116,12 @@ class ContactAboutSheet: StackSheetViewController {
     private func updateContents() {
         databaseStorage.read { tx in
             updateContactNames(tx: tx)
-            updateIsVerified(tx: tx)
+            updateIsVerified(tx: tx.asV2Read)
             updateProfileBio(tx: tx)
             updateConnectionState(tx: tx)
             updateIsInSystemContacts(tx: tx)
             updateMutualGroupThreadCount(tx: tx)
+            updateNote(tx: tx.asV2Read)
         }
 
         loadContents()
@@ -162,6 +183,19 @@ class ContactAboutSheet: StackSheetViewController {
         if let mutualGroupThreads {
             stackView.addArrangedSubview(ProfileDetailLabel.mutualGroups(for: thread, mutualGroups: mutualGroupThreads))
         }
+
+        if let note {
+            let noteLabel = ProfileDetailLabel(
+                title: note,
+                icon: .contactInfoNote,
+                showDetailDisclosure: true,
+                shouldLineWrap: false,
+                tapAction: { [weak self] in
+                    self?.didTapNote()
+                }
+            )
+            stackView.addArrangedSubview(noteLabel)
+        }
     }
 
     // MARK: Name
@@ -174,12 +208,12 @@ class ContactAboutSheet: StackSheetViewController {
     private func updateContactNames(tx: SDSAnyReadTransaction) {
         if isLocalUser {
             let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
-            displayName = snapshot.fullName ?? ""
+            self.displayName = snapshot.fullName ?? ""
             // contactShortName not needed for local user
             return
         }
 
-        let displayName = contactsManager.displayName(for: thread.contactAddress, tx: tx)
+        let displayName = self.context.contactManager.displayName(for: thread.contactAddress, tx: tx)
         self.displayName = displayName.resolvedValue()
         self.shortDisplayName = displayName.resolvedValue(useShortNameIfAvailable: true)
 
@@ -203,18 +237,32 @@ class ContactAboutSheet: StackSheetViewController {
             else {
                 fallthrough
             }
-            secondaryName = profileName
-        case .systemContactName, .profileName, .phoneNumber, .username, .unknown, .deletedAccount:
-            secondaryName = nil
+            self.secondaryName = profileName
+        case .systemContactName, .profileName, .phoneNumber, .username, .deletedAccount, .unknown:
+            self.secondaryName = nil
+        }
+    }
+
+    private func didTapNote() {
+        self.dismiss(animated: true) { [weak fromViewController = self.fromViewController, thread = self.thread] in
+            guard let fromViewController else { return }
+            let noteSheet = ContactNoteSheet(
+                thread: thread,
+                context: .init(
+                    db: DependenciesBridge.shared.db,
+                    recipientDatabaseTable: self.context.recipientDatabaseTable,
+                    nicknameManager: self.context.nicknameManager
+                )
+            )
+            noteSheet.present(from: fromViewController)
         }
     }
 
     // MARK: Verified
 
     private var isVerified = false
-    private func updateIsVerified(tx: SDSAnyReadTransaction) {
-        let identityManager = DependenciesBridge.shared.identityManager
-        isVerified = identityManager.verificationState(for: thread.contactAddress, tx: tx.asV2Read) == .verified
+    private func updateIsVerified(tx: DBReadTransaction) {
+        isVerified = context.identityManager.verificationState(for: thread.contactAddress, tx: tx) == .verified
     }
 
     // MARK: Bio
@@ -256,7 +304,7 @@ class ContactAboutSheet: StackSheetViewController {
             isInSystemContacts = false
             return
         }
-        isInSystemContacts = contactsManager.fetchSignalAccount(for: thread.contactAddress, transaction: tx) != nil
+        isInSystemContacts = self.context.contactManager.fetchSignalAccount(for: thread.contactAddress, transaction: tx) != nil
     }
 
     // MARK: Threads
@@ -277,6 +325,21 @@ class ContactAboutSheet: StackSheetViewController {
         // We don't want to show "no groups in common",
         // so return nil instead of an empty array.
         .nilIfEmpty
+    }
+
+    // MARK: Note
+
+    private var note: String?
+    private func updateNote(tx: DBReadTransaction) {
+        guard let recipient = context.recipientDatabaseTable.fetchRecipient(
+            address: thread.contactAddress,
+            tx: tx
+        ) else {
+            self.note = nil
+            return
+        }
+        let nicknameRecord = context.nicknameManager.fetchNickname(for: recipient, tx: tx)
+        self.note = nicknameRecord?.note
     }
 }
 

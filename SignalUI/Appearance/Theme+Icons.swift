@@ -45,6 +45,7 @@ public enum ThemeIcon: UInt {
     case contactInfoPendingRequest
     case contactInfoPhone
     case contactInfoGroups
+    case contactInfoNote
     case groupInfoLeaveGroup
     case groupInfoAddMembers
     case groupInfoShowAllMembers
@@ -272,6 +273,8 @@ public extension Theme {
             return "phone"
         case .contactInfoGroups:
             return "group-resizable"
+        case .contactInfoNote:
+            return "note-resizable"
         case .groupInfoLeaveGroup:
             return "leave"
         case .groupInfoAddMembers:

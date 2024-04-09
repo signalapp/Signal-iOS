@@ -16,6 +16,7 @@ public class ProfileDetailLabel: UIStackView {
         icon: ThemeIcon,
         font: UIFont = .dynamicTypeBody,
         showDetailDisclosure: Bool = false,
+        shouldLineWrap: Bool = true,
         tapAction: (() -> Void)? = nil,
         longPressAction: (() -> Void)? = nil
     ) {
@@ -30,6 +31,7 @@ public class ProfileDetailLabel: UIStackView {
             icon: icon,
             font: font,
             showDetailDisclosure: showDetailDisclosure,
+            shouldLineWrap: shouldLineWrap,
             tapAction: tapAction,
             longPressAction: longPressAction
         )
@@ -40,6 +42,7 @@ public class ProfileDetailLabel: UIStackView {
         icon: ThemeIcon,
         font: UIFont = .dynamicTypeBody,
         showDetailDisclosure: Bool = false,
+        shouldLineWrap: Bool = true,
         tapAction: (() -> Void)? = nil,
         longPressAction: (() -> Void)? = nil
     ) {
@@ -82,11 +85,23 @@ public class ProfileDetailLabel: UIStackView {
                 font: font,
                 attributes: [.foregroundColor: Theme.primaryIconColor]
             )
-            titleString.append(attachmentString)
+            if shouldLineWrap {
+                // Add the chevron at the end of the last line of text
+                titleString.append(attachmentString)
+            } else {
+                // Add the chevron at the end of the truncated line
+                let chevronLabel = UILabel()
+                chevronLabel.attributedText = attachmentString
+                chevronLabel.setCompressionResistanceHigh()
+                self.addArrangedSubview(chevronLabel)
+                self.addArrangedSubview(.hStretchingSpacer())
+                self.setCustomSpacing(0, after: textLabel)
+                self.setCustomSpacing(0, after: chevronLabel)
+            }
         }
         textLabel.attributedText = titleString
         textLabel.textAlignment = .natural
-        textLabel.numberOfLines = 0
+        textLabel.numberOfLines = shouldLineWrap ? 0 : 1
 
         if tapAction != nil {
             addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
@@ -274,6 +289,17 @@ public extension ProfileDetailLabel {
             title: mutualGroupsString(for: thread, mutualGroups: mutualGroups),
             icon: .contactInfoGroups,
             font: font
+        )
+    }
+
+    static func note(
+        _ noteText: String,
+        font: UIFont = .dynamicTypeBody,
+        onTap: () -> Void
+    ) -> ProfileDetailLabel {
+        .init(
+            title: noteText,
+            icon: .contactInfoNote
         )
     }
 
