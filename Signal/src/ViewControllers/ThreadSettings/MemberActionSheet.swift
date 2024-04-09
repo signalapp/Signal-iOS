@@ -68,6 +68,13 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         tableViewController.defaultSeparatorInsetLeading =
             OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(recipientUpdated(notification:)),
+            name: .OWSContactsManagerSignalAccountsDidChange,
+            object: nil
+        )
     }
 
     fileprivate static func fetchThreadViewModel(address: SignalServiceAddress) -> ThreadViewModel {
@@ -105,11 +112,6 @@ class MemberActionSheet: OWSTableSheetViewController {
         viewController.present(self, animated: true)
     }
 
-    func reloadThreadViewModel() {
-        threadViewModel  = Self.fetchThreadViewModel(address: address)
-        updateTableContents()
-    }
-
     // When presenting the contact view, we must retain ourselves
     // as we are the delegate. This will get released when contact
     // editing has concluded.
@@ -134,6 +136,35 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         // If the local user, show no options.
         guard !address.isLocalAddress else { return }
+
+        // Nickname
+        if FeatureFlags.nicknames {
+            section.add(.item(
+                icon: .buttonEdit,
+                name: OWSLocalizedString(
+                    "NICKNAME_BUTTON_TITLE",
+                    comment: "Title for the table cell in conversation settings for presenting the profile nickname editor."
+                ),
+                actionBlock: { [weak self] in
+                    guard let self else { return }
+                    let db = DependenciesBridge.shared.db
+
+                    let nicknameEditor = db.read { tx in
+                        NicknameEditorViewController.create(
+                            for: self.address,
+                            context: .init(
+                                db: db,
+                                nicknameManager: DependenciesBridge.shared.nicknameManager
+                            ),
+                            tx: tx
+                        )
+                    }
+                    guard let nicknameEditor else { return }
+                    let navigationController = OWSNavigationController(rootViewController: nicknameEditor)
+                    self.presentFormSheet(navigationController, animated: true)
+                }
+            ))
+        }
 
         // If blocked, only show unblock as an option
         guard !threadViewModel.isBlocked else {
@@ -334,6 +365,13 @@ class MemberActionSheet: OWSTableSheetViewController {
 
             viewController.presentActionSheet(actionSheet)
         }
+    }
+
+    @objc
+    private func recipientUpdated(notification: NSNotification) {
+        guard self.isViewLoaded else { return }
+        AssertIsOnMainThread()
+        updateTableContents()
     }
 }
 

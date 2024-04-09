@@ -30,6 +30,24 @@ class NicknameEditorViewController: OWSTableViewController2 {
     private let recipient: SignalRecipient
     private let initialNicknameRecord: NicknameRecord?
 
+    static func create(for address: SignalServiceAddress, context: Context, tx: DBReadTransaction) -> NicknameEditorViewController? {
+        guard let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(
+            address: address,
+            tx: tx
+        ) else {
+            owsFailDebug("Could not find recipient for address")
+            return nil
+        }
+
+        let nickname = context.nicknameManager.fetchNickname(for: recipient, tx: tx)
+
+        return NicknameEditorViewController(
+            recipient: recipient,
+            existingNickname: nickname,
+            context: context
+        )
+    }
+
     init(
         recipient: SignalRecipient,
         existingNickname: NicknameRecord?,

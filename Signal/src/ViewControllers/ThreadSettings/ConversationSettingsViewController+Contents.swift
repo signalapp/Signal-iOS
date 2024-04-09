@@ -466,43 +466,31 @@ extension ConversationSettingsViewController {
             !self.thread.isNoteToSelf,
             let thread = self.thread as? TSContactThread
         else { return }
-        section.add(.init(customCellBlock: {
-            let cell = OWSTableItem.buildCell(
-                icon: .buttonEdit,
-                itemName: OWSLocalizedString(
-                    "NICKNAME_BUTTON_TITLE",
-                    comment: "Title for the table cell in conversation settings for presenting the profile nickname editor."
-                ),
-                accessoryType: .disclosureIndicator
-            )
-            return cell
-        }, actionBlock: { [weak self] in
-            guard let self else { return }
-            let db = DependenciesBridge.shared.db
-            let nicknameManager = DependenciesBridge.shared.nicknameManager
+        section.add(.item(
+            icon: .buttonEdit,
+            name: OWSLocalizedString(
+                "NICKNAME_BUTTON_TITLE",
+                comment: "Title for the table cell in conversation settings for presenting the profile nickname editor."
+            ),
+            accessoryType: .disclosureIndicator,
+            actionBlock: { [weak self] in
+                guard let self else { return }
+                let db = DependenciesBridge.shared.db
 
-            let (recipient, existingNickname): (SignalRecipient?, NicknameRecord?) = db.read { tx in
-                let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(
-                    address: thread.contactAddress,
-                    tx: tx
-                )
-                let nickname = recipient.flatMap { nicknameManager.fetchNickname(for: $0, tx: tx) }
-                return (recipient, nickname)
-            }
-
-            guard let recipient else { return }
-
-            let nicknameEditor = NicknameEditorViewController(
-                recipient: recipient,
-                existingNickname: existingNickname,
-                context: .init(
-                    db: db,
-                    nicknameManager: nicknameManager
-                )
-            )
-            let navigationController = OWSNavigationController(rootViewController: nicknameEditor)
-            self.presentFormSheet(navigationController, animated: true)
-        }))
+                let nicknameEditor = db.read { tx in
+                    NicknameEditorViewController.create(
+                        for: thread.contactAddress,
+                        context: .init(
+                            db: db,
+                            nicknameManager: DependenciesBridge.shared.nicknameManager
+                        ),
+                        tx: tx
+                    )
+                }
+                guard let nicknameEditor else { return }
+                let navigationController = OWSNavigationController(rootViewController: nicknameEditor)
+                self.presentFormSheet(navigationController, animated: true)
+            }))
     }
 
     // MARK: Bottom sections
