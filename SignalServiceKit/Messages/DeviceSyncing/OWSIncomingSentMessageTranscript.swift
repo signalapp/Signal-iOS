@@ -148,7 +148,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             ) else {
                 return nil
             }
-            guard let messageParams = self.parseMessageParams(
+            guard let messageParams = try? self.parseMessageParams(
                 sentProto: sentProto,
                 serverTimestamp: serverTimestamp,
                 dataMessage: dataMessage,
@@ -215,7 +215,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
         dataMessage: SSKProtoDataMessage,
         target: SentMessageTranscriptTarget,
         tx: DBWriteTransaction
-    ) -> SentMessageTranscriptType.Message? {
+    ) throws -> SentMessageTranscriptType.Message? {
         let isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce
 
         let requiredProtocolVersion = dataMessage.requiredProtocolVersion == 0 ? nil : dataMessage.requiredProtocolVersion
@@ -231,41 +231,24 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
 
         let contact = OWSContact.contact(for: dataMessage, transaction: SDSDB.shimOnlyBridge(tx))
 
-        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
-        do {
-            if let linkPreview = dataMessage.preview.first {
-                linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
-                    from: linkPreview,
-                    dataMessage: dataMessage,
-                    tx: tx
-                )
-            } else {
-                linkPreviewBuilder = nil
-            }
-        } catch {
-            Logger.error("linkPreviewError: \(error)")
-            linkPreviewBuilder = nil
+        let linkPreviewBuilder = try dataMessage.preview.first.map { linkPreview in
+            return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+                from: linkPreview,
+                dataMessage: dataMessage,
+                tx: tx
+            )
         }
 
         let giftBadge = OWSGiftBadge.maybeBuild(from: dataMessage)
         if giftBadge != nil, target.thread.isGroupThread {
-            owsFailDebug("Ignoring gift sent to group")
-            return nil
+            throw OWSAssertionError("Ignoring gift sent to group")
         }
 
-        let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
-        if let stickerProto = dataMessage.sticker {
-            do {
-                messageStickerBuilder = try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(
-                    from: stickerProto,
-                    tx: tx
-                )
-            } catch {
-                owsFailDebug("stickerError: \(error)")
-                messageStickerBuilder = nil
-            }
-        } else {
-            messageStickerBuilder = nil
+        let messageStickerBuilder = try dataMessage.sticker.map { stickerProto in
+            return try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(
+                from: stickerProto,
+                tx: tx
+            )
         }
 
         let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.quotedMessage(
@@ -282,12 +265,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             let authorAci = storyContext.authorAci
         {
             storyTimestamp = storyContext.sentTimestamp
-            storyAuthorAci = try? Aci.parseFrom(serviceIdString: authorAci)
-
-            if storyAuthorAci == nil {
-                owsFailDebug("Discarding story reply transcript with invalid aci")
-                return nil
-            }
+            storyAuthorAci = try Aci.parseFrom(serviceIdString: authorAci)
         } else {
             storyTimestamp = nil
             storyAuthorAci = nil
