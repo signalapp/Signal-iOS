@@ -42,7 +42,16 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
         return
     }
 
-    public func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction) {
+    public func setHasViewedOnboardingStory(source: OnboardingStoryViewSource, transaction: SDSAnyWriteTransaction) {
+        return
+    }
+
+    public var isOnboardingOverlayViewed: Bool = false
+    public func isOnboardingOverlayViewed(transaction: SDSAnyReadTransaction) -> Bool {
+        return isOnboardingOverlayViewed
+    }
+
+    public func setOnboardingOverlayViewed(value: Bool, transaction: SDSAnyWriteTransaction) {
         return
     }
 

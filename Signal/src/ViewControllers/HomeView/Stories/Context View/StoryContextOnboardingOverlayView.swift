@@ -18,9 +18,6 @@ protocol StoryContextOnboardingOverlayViewDelegate: AnyObject {
 
 class StoryContextOnboardingOverlayView: UIView, Dependencies {
 
-    private let kvStore = SDSKeyValueStore(collection: "StoryViewerOnboardingOverlay")
-    static let kvStoreKey = "hasSeenStoryViewerOnboardingOverlay"
-
     private weak var delegate: StoryContextOnboardingOverlayViewDelegate?
 
     public init(delegate: StoryContextOnboardingOverlayViewDelegate) {
@@ -51,17 +48,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
 
     func checkIfShouldDisplay() {
         Self.shouldDisplay = Self.databaseStorage.read { transaction in
-            if self.kvStore.getBool(Self.kvStoreKey, defaultValue: false, transaction: transaction) {
-                return false
-            }
-
-            if Self.systemStoryManager.isOnboardingStoryViewed(transaction: transaction) {
-                // We don't sync view state for the onboarding overlay. But we can use
-                // viewing of the onboarding story as an imperfect proxy; if they viewed it
-                // that means they also definitely saw the viewer overlay.
-                return false
-            }
-            return true
+            Self.systemStoryManager.isOnboardingOverlayViewed(transaction: transaction)
         }
     }
 
@@ -105,7 +92,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
     func dismiss() {
         // Mark as viewed from now on.
         Self.databaseStorage.write { transaction in
-            self.kvStore.setBool(true, key: Self.kvStoreKey, transaction: transaction)
+            systemStoryManager.setOnboardingOverlayViewed(value: true, transaction: transaction)
         }
         Self.shouldDisplay = false
 

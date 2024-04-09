@@ -9,12 +9,12 @@ extension NSNotification.Name {
     public static let onboardingStoryStateDidChange = NSNotification.Name("onboardingStoryStateDidChange")
 }
 
-/// Expose to objc for dependency injection support (SSKEnvironment is objc-only) but put the
-/// actual methods on a swift protocol that inherits from this one.
-@objc
-public protocol SystemStoryManagerProtocolObjc: AnyObject {}
+public enum OnboardingStoryViewSource {
+    case local(timestamp: UInt64, shouldUpdateStorageService: Bool)
+    case otherDevice
+}
 
-public protocol SystemStoryManagerProtocol: SystemStoryManagerProtocolObjc {
+public protocol SystemStoryManagerProtocol {
 
     /// Downloads the onboarding story if it has not been downloaded before.
     /// Called on its own when the main app starts up.
@@ -38,7 +38,10 @@ public protocol SystemStoryManagerProtocol: SystemStoryManagerProtocolObjc {
     func setHasReadOnboardingStory(transaction: SDSAnyWriteTransaction, updateStorageService: Bool)
 
     /// "Viewed" means the user actually opened the onboarding story.
-    func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction)
+    func setHasViewedOnboardingStory(source: OnboardingStoryViewSource, transaction: SDSAnyWriteTransaction) throws
+
+    func isOnboardingOverlayViewed(transaction: SDSAnyReadTransaction) -> Bool
+    func setOnboardingOverlayViewed(value: Bool, transaction: SDSAnyWriteTransaction)
 
     // MARK: Hidden State
 

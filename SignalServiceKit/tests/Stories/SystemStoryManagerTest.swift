@@ -252,8 +252,11 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
         }
 
         try write {
-            try manager.setOnboardingStoryViewedOnThisDevice(
-                atTimestamp: viewedDate.ows_millisecondsSince1970,
+            try manager.setHasViewedOnboardingStory(
+                source: .local(
+                    timestamp: viewedDate.ows_millisecondsSince1970,
+                    shouldUpdateStorageService: false
+                ),
                 transaction: $0
             )
         }

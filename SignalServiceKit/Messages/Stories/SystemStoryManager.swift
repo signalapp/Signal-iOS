@@ -58,6 +58,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     private let storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.Type
 
     private let kvStore = SDSKeyValueStore(collection: "OnboardingStory")
+    private let overlayKvStore = SDSKeyValueStore(collection: "StoryViewerOnboardingOverlay")
 
     private lazy var queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .utility)
 
@@ -136,9 +137,45 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         try? setOnboardingStoryRead(transaction: transaction, updateStorageService: updateStorageService)
     }
 
-    public func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction) {
+    public func setHasViewedOnboardingStory(
+        source: OnboardingStoryViewSource,
+        transaction: SDSAnyWriteTransaction
+    ) throws {
+        switch source {
+        case .local(let timestamp, let updateStorageService):
+            try setOnboardingStoryViewedOnThisDevice(
+                atTimestamp: timestamp,
+                shouldUpdateStorageService: updateStorageService,
+                transaction: transaction
+            )
+        case .otherDevice:
+            setHasViewedOnboardingStoryOnAnotherDevice(transaction: transaction)
+        }
+    }
+
+    private func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction) {
         try? setOnboardingStoryViewedOnAnotherDevice(transaction: transaction)
         self.cleanUpOnboardingStoryIfNeeded()
+    }
+
+    // MARK: OnboardingOverlay state
+
+    public func isOnboardingOverlayViewed(transaction: SDSAnyReadTransaction) -> Bool {
+        if overlayKvStore.getBool(Constants.kvStoreOnboardingOverlayViewedKey, defaultValue: false, transaction: transaction) {
+            return false
+        }
+
+        if isOnboardingStoryViewed(transaction: transaction) {
+            // We don't sync view state for the onboarding overlay. But we can use
+            // viewing of the onboarding story as an imperfect proxy; if they viewed it
+            // that means they also definitely saw the viewer overlay.
+            return false
+        }
+        return true
+    }
+
+    public func setOnboardingOverlayViewed(value: Bool, transaction: SDSAnyWriteTransaction) {
+        overlayKvStore.setBool(value, key: Constants.kvStoreOnboardingOverlayViewedKey, transaction: transaction)
     }
 
     // MARK: Hidden State
@@ -265,7 +302,11 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 }
                 do {
                     try Self.databaseStorage.write {
-                        try self?.setOnboardingStoryViewedOnThisDevice(atTimestamp: viewedTimstamp, transaction: $0)
+                        try self?.setOnboardingStoryViewedOnThisDevice(
+                            atTimestamp: viewedTimstamp,
+                            shouldUpdateStorageService: true,
+                            transaction: $0
+                        )
                     }
                     self?.cleanUpOnboardingStoryIfNeeded()
                     self?.stopObservingOnboardingStoryEvents()
@@ -445,6 +486,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 // we kept track of viewed state independently.
                 try self.setOnboardingStoryViewedOnThisDevice(
                     atTimestamp: Date.distantPast.ows_millisecondsSince1970,
+                    shouldUpdateStorageService: true,
                     transaction: transaction
                 )
             }
@@ -593,10 +635,9 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 
-    // TODO: exposed to internal for testing, it really shouldn't be. But we dont have
-    // testing hooks into database observation.
-    internal func setOnboardingStoryViewedOnThisDevice(
+    private func setOnboardingStoryViewedOnThisDevice(
         atTimestamp timestamp: UInt64,
+        shouldUpdateStorageService: Bool,
         transaction: SDSAnyWriteTransaction
     ) throws {
         let oldStatus = onboardingStoryViewStatus(transaction: transaction)
@@ -608,7 +649,9 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             key: Constants.kvStoreOnboardingStoryViewStatusKey,
             transaction: transaction
         )
-        Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        if shouldUpdateStorageService {
+            Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        }
         NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 
@@ -665,6 +708,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         static let kvStoreOnboardingStoryViewStatusKey = "OnboardingStoryViewStatus"
         static let kvStoreOnboardingStoryDownloadStatusKey = "OnboardingStoryStatus"
         static let kvStoreHiddenStateKey = "SystemStoriesAreHidden"
+        static let kvStoreOnboardingOverlayViewedKey = "hasSeenStoryViewerOnboardingOverlay" // leading 'h' lowercase for legacy reasons
 
         static let manifestPath = "dynamic/ios/stories/onboarding/manifest.json"
         static let manifestVersionKey = "version"

@@ -1547,7 +1547,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
         let localHasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(transaction: transaction)
         if !localHasViewedOnboardingStory && record.viewedOnboardingStory {
-            systemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice(transaction: transaction)
+            try? systemStoryManager.setHasViewedOnboardingStory(source: .otherDevice, transaction: transaction)
         }
 
         let localStoriesDisabled = !StoryManager.areStoriesEnabled(transaction: transaction)
