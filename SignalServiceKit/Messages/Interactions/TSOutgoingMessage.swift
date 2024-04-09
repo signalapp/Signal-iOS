@@ -285,9 +285,23 @@ public extension TSOutgoingMessage {
 extension TSOutgoingMessage {
 
     @objc
-    func buildProtosForBodyAttachments(tx: SDSAnyReadTransaction) -> [SSKProtoAttachmentPointer] {
+    func buildProtosForBodyAttachments(tx: SDSAnyReadTransaction) throws -> [SSKProtoAttachmentPointer] {
         let references = DependenciesBridge.shared.tsResourceStore.bodyAttachments(for: self, tx: tx.asV2Read)
-        return buildProtosForSending(references, tx: tx.asV2Read)
+        let attachments = DependenciesBridge.shared.tsResourceStore.fetch(references.map(\.resourceId), tx: tx.asV2Read)
+        return references.compactMap { reference in
+            guard let attachment = attachments.first(where: { $0.resourceId == reference.resourceId }) else {
+                owsFailDebug("Missing attachment for sending!")
+                return nil
+            }
+            guard let pointer = attachment.asTransitTierPointer() else {
+                owsFailDebug("Generating proto for non-uploaded attachment!")
+                return nil
+            }
+            return DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+                from: reference,
+                pointer: pointer
+            )
+        }
     }
 
     @objc
@@ -315,83 +329,27 @@ extension TSOutgoingMessage {
     }
 
     @objc
-    func buildProtoForStickerAttachment(tx: SDSAnyReadTransaction) -> SSKProtoAttachmentPointer? {
-        let reference = DependenciesBridge.shared.tsResourceStore.stickerAttachment(for: self, tx: tx.asV2Read)
-        return buildProtosForSending([reference].compacted(), tx: tx.asV2Read).first
+    func buildStickerProto(
+        sticker: MessageSticker,
+        tx: SDSAnyReadTransaction
+    ) throws -> SSKProtoDataMessageSticker {
+        return try DependenciesBridge.shared.messageStickerManager.buildProtoForSending(
+            sticker,
+            parentMessage: self,
+            tx: tx.asV2Read
+        )
     }
 
     @objc
-    func buildQuotedMessageAttachmentProto(
+    func buildQuoteProto(
+        quote: TSQuotedMessage,
         tx: SDSAnyReadTransaction
-    ) -> SSKProtoDataMessageQuoteQuotedAttachment? {
-        guard
-            let reference = DependenciesBridge.shared.tsResourceStore
-                .quotedAttachmentReference(for: self, tx: tx.asV2Read)
-        else {
-            return nil
-        }
-        let builder = SSKProtoDataMessageQuoteQuotedAttachment.builder()
-        let mimeType: String?
-        let sourceFilename: String?
-        switch reference {
-        case .thumbnail(let attachmentRef):
-            sourceFilename = attachmentRef.sourceFilename
-
-            if
-                let attachment = DependenciesBridge.shared.tsResourceStore.fetch(
-                    attachmentRef.resourceId,
-                    tx: tx.asV2Read
-                )
-            {
-                mimeType = attachment.mimeType
-                if
-                    let pointer = attachment.asTransitTierPointer(),
-                    let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
-                        from: attachmentRef,
-                        pointer: pointer
-                    )
-                {
-                    builder.setThumbnail(attachmentProto)
-                }
-            } else {
-                mimeType = nil
-            }
-        case .stub(let stub):
-            mimeType = stub.mimeType
-            sourceFilename = stub.sourceFilename
-        }
-
-        mimeType.map(builder.setContentType(_:))
-        sourceFilename.map(builder.setFileName(_:))
-
-        return builder.buildInfallibly()
-    }
-
-    private func buildProtosForSending(
-        _ references: [TSResourceReference],
-        tx: DBReadTransaction
-    ) -> [SSKProtoAttachmentPointer] {
-        let attachments = DependenciesBridge.shared.tsResourceStore.fetch(references.map(\.resourceId), tx: tx)
-        var pointers = [TSResourceId: TSResourcePointer]()
-        attachments.forEach { attachment in
-            guard let cdnNumber = attachment.transitCdnNumber, let cdnKey = attachment.transitCdnKey else {
-                owsFailDebug("Generating proto for non-uploaded attachment!")
-                return
-            }
-            let pointer = TSResourcePointer(resource: attachment, cdnNumber: cdnNumber, cdnKey: cdnKey)
-            pointers[attachment.resourceId] = pointer
-        }
-
-        return references.compactMap { reference in
-            guard let pointer = pointers[reference.resourceId] else {
-                owsFailDebug("Missing pointer for attachment being sent!")
-                return nil
-            }
-            return DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
-                from: reference,
-                pointer: pointer
-            )
-        }
+    ) throws -> SSKProtoDataMessageQuote {
+        return try DependenciesBridge.shared.quotedReplyManager.buildProtoForSending(
+            quote,
+            parentMessage: self,
+            tx: tx.asV2Read
+        )
     }
 }
 

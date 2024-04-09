@@ -627,6 +627,7 @@ public class AppSetup {
 
         let messageStickerManager = MessageStickerManagerImpl(
             attachmentManager: tsResourceManager,
+            attachmentStore: tsResourceStore,
             stickerManager: MessageStickerManagerImpl.Wrappers.StickerManager()
         )
 

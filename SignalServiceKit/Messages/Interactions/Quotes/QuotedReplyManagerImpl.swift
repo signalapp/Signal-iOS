@@ -674,4 +674,96 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             ranges: .empty
         ))
     }
+
+    // MARK: - Outgoing proto
+
+    public func buildProtoForSending(
+        _ quote: TSQuotedMessage,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoDataMessageQuote {
+        guard let timestamp = quote.timestampValue?.uint64Value else {
+            throw OWSAssertionError("Missing timestamp")
+        }
+        let quoteBuilder = SSKProtoDataMessageQuote.builder(id: timestamp)
+
+        guard let authorAci = quote.authorAddress.aci else {
+            throw OWSAssertionError("It should be impossible to quote a message without a UUID")
+        }
+        quoteBuilder.setAuthorAci(authorAci.serviceIdString)
+
+        var hasQuotedText = false
+        var hasQuotedAttachment = false
+        var hasQuotedGiftBadge = false
+
+        if let body = quote.body?.nilIfEmpty {
+            hasQuotedText = true
+            quoteBuilder.setText(body)
+            if let bodyRanges = quote.bodyRanges {
+                quoteBuilder.setBodyRanges(bodyRanges.toProtoBodyRanges(bodyLength: (body as NSString).length))
+            }
+        }
+
+        if let attachmentProto = buildAttachmentProtoForSending(for: parentMessage, tx: tx) {
+            hasQuotedAttachment = true
+            quoteBuilder.setAttachments([attachmentProto])
+        }
+
+        if quote.isGiftBadge {
+            hasQuotedGiftBadge = true
+            quoteBuilder.setType(.giftBadge)
+        }
+
+        guard hasQuotedText || hasQuotedAttachment || hasQuotedGiftBadge else {
+            throw OWSAssertionError("Invalid quoted message data.")
+        }
+
+        return try quoteBuilder.build()
+    }
+
+    private func buildAttachmentProtoForSending(
+        for parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> SSKProtoDataMessageQuoteQuotedAttachment? {
+        guard
+            let reference = attachmentStore.quotedAttachmentReference(for: parentMessage, tx: tx)
+        else {
+            return nil
+        }
+        let builder = SSKProtoDataMessageQuoteQuotedAttachment.builder()
+        let mimeType: String?
+        let sourceFilename: String?
+        switch reference {
+        case .thumbnail(let attachmentRef):
+            sourceFilename = attachmentRef.sourceFilename
+
+            if
+                let attachment = attachmentStore.fetch(
+                    attachmentRef.resourceId,
+                    tx: tx
+                )
+            {
+                mimeType = attachment.mimeType
+                if
+                    let pointer = attachment.asTransitTierPointer(),
+                    let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
+                        from: attachmentRef,
+                        pointer: pointer
+                    )
+                {
+                    builder.setThumbnail(attachmentProto)
+                }
+            } else {
+                mimeType = nil
+            }
+        case .stub(let stub):
+            mimeType = stub.mimeType
+            sourceFilename = stub.sourceFilename
+        }
+
+        mimeType.map(builder.setContentType(_:))
+        sourceFilename.map(builder.setFileName(_:))
+
+        return builder.buildInfallibly()
+    }
 }

@@ -16,18 +16,27 @@ public protocol MessageStickerManager {
         fromDraft draft: MessageStickerDraft,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<MessageSticker>
+
+    func buildProtoForSending(
+        _ messageSticker: MessageSticker,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoDataMessageSticker
 }
 
 public class MessageStickerManagerImpl: MessageStickerManager {
 
     private let attachmentManager: TSResourceManager
+    private let attachmentStore: TSResourceStore
     private let stickerManager: Shims.StickerManager
 
     public init(
         attachmentManager: TSResourceManager,
+        attachmentStore: TSResourceStore,
         stickerManager: Shims.StickerManager
     ) {
         self.attachmentManager = attachmentManager
+        self.attachmentStore = attachmentStore
         self.stickerManager = stickerManager
     }
 
@@ -211,6 +220,49 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             tx: tx
         )
     }
+
+    public func buildProtoForSending(
+        _ messageSticker: MessageSticker,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoDataMessageSticker {
+
+        guard
+            let attachmentReference = attachmentStore.stickerAttachment(
+                for: parentMessage,
+                tx: tx
+            ),
+            let attachment = attachmentStore.fetch(attachmentReference.resourceId, tx: tx)
+        else {
+            throw OWSAssertionError("Could not find sticker attachment")
+        }
+
+        guard let attachmentPointer = attachment.asTransitTierPointer() else {
+            throw OWSAssertionError("Generating proto for non-uploaded attachment!")
+        }
+
+        guard
+            let attachmentProto = attachmentManager.buildProtoForSending(
+                from: attachmentReference,
+                pointer: attachmentPointer
+            )
+        else {
+            throw OWSAssertionError("Could not build sticker attachment protobuf.")
+        }
+
+        let protoBuilder = SSKProtoDataMessageSticker.builder(
+            packID: messageSticker.packId,
+            packKey: messageSticker.packKey,
+            stickerID: messageSticker.stickerId,
+            data: attachmentProto
+        )
+
+        if let emoji = messageSticker.emoji?.nilIfEmpty {
+            protoBuilder.setEmoji(emoji)
+        }
+
+        return try protoBuilder.build()
+    }
 }
 
 #if TESTABLE_BUILD
@@ -232,6 +284,14 @@ public class MockMessageStickerManager: MessageStickerManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<MessageSticker> {
         return .withoutFinalizer(.withForeignReferenceAttachment(info: draft.info, emoji: draft.emoji))
+    }
+
+    public func buildProtoForSending(
+        _ messageSticker: MessageSticker,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoDataMessageSticker {
+        throw OWSAssertionError("Unimplemented")
     }
 }
 

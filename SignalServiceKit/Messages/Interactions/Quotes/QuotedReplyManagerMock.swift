@@ -42,6 +42,14 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
     ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
         fatalError("Unimplemented!")
     }
+
+    open func buildProtoForSending(
+        _ quote: TSQuotedMessage,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoDataMessageQuote {
+        fatalError("Unimplemented!")
+    }
 }
 
 #endif

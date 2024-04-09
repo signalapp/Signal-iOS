@@ -870,24 +870,30 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 
     // Message Attachments
-    NSArray<SSKProtoAttachmentPointer *> *attachments = [self buildProtosForBodyAttachmentsWithTx:transaction];
-    [builder setAttachments:attachments];
+    NSError *bodyError;
+    NSArray<SSKProtoAttachmentPointer *> *attachments = [self buildProtosForBodyAttachmentsWithTx:transaction
+                                                                                            error:&bodyError];
+    if (bodyError) {
+        OWSFailDebug(@"Could not build body attachments");
+    } else {
+        [builder setAttachments:attachments];
+    }
 
     // Quoted Reply
-    SSKProtoDataMessageQuoteBuilder *_Nullable quotedMessageBuilder =
-        [self quotedMessageBuilderWithTransaction:transaction];
-    if (quotedMessageBuilder) {
+    if (self.quotedMessage) {
         NSError *error;
-        SSKProtoDataMessageQuote *_Nullable quoteProto = [quotedMessageBuilder buildAndReturnError:&error];
+        SSKProtoDataMessageQuote *_Nullable quoteProto = [self buildQuoteProtoWithQuote:self.quotedMessage
+                                                                                     tx:transaction
+                                                                                  error:&error];
         if (error || !quoteProto) {
-            OWSFailDebug(@"could not build protobuf: %@.", error);
-            return nil;
-        }
-        [builder setQuote:quoteProto];
+            OWSFailDebug(@"Could not build quote protobuf: %@.", error);
+        } else {
+            [builder setQuote:quoteProto];
 
-        if (quoteProto.bodyRanges.count > 0) {
-            if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionMentions) {
-                requiredProtocolVersion = SSKProtoDataMessageProtocolVersionMentions;
+            if (quoteProto.bodyRanges.count > 0) {
+                if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionMentions) {
+                    requiredProtocolVersion = SSKProtoDataMessageProtocolVersionMentions;
+                }
             }
         }
     }
@@ -920,26 +926,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // Sticker
     if (self.messageSticker) {
-        SSKProtoAttachmentPointer *_Nullable attachmentProto = [self buildProtoForStickerAttachmentWithTx:transaction];
-        if (!attachmentProto) {
-            OWSFailDebug(@"Could not build sticker attachment protobuf.");
+        NSError *error;
+        SSKProtoDataMessageSticker *_Nullable stickerProto = [self buildStickerProtoWithSticker:self.messageSticker
+                                                                                             tx:transaction
+                                                                                          error:&error];
+        if (error || !stickerProto) {
+            OWSFailDebug(@"Could not build sticker protobuf: %@.", error);
         } else {
-            SSKProtoDataMessageStickerBuilder *stickerBuilder =
-                [SSKProtoDataMessageSticker builderWithPackID:self.messageSticker.packId
-                                                      packKey:self.messageSticker.packKey
-                                                    stickerID:self.messageSticker.stickerId
-                                                         data:attachmentProto];
-            if (self.messageSticker.emoji.length > 0) {
-                [stickerBuilder setEmoji:self.messageSticker.emoji];
-            }
-
-            NSError *error;
-            SSKProtoDataMessageSticker *_Nullable stickerProto = [stickerBuilder buildAndReturnError:&error];
-            if (error || !stickerProto) {
-                OWSFailDebug(@"Could not build sticker protobuf: %@.", error);
-            } else {
-                [builder setSticker:stickerProto];
-            }
+            [builder setSticker:stickerProto];
         }
     }
 
@@ -954,61 +948,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return builder;
 }
 
-- (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    if (!self.quotedMessage) {
-        return nil;
-    }
-    TSQuotedMessage *quotedMessage = self.quotedMessage;
-
-    if (!quotedMessage.timestampValue) {
-        return nil;
-    }
-    uint64_t timestamp = quotedMessage.timestampValue.unsignedLongLongValue;
-
-    SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuote builderWithId:timestamp];
-
-    if (quotedMessage.authorAddress.aciString) {
-        [quoteBuilder setAuthorAci:quotedMessage.authorAddress.aciString];
-    } else {
-        OWSFailDebug(@"It should be impossible to quote a message without a UUID");
-        return nil;
-    }
-
-    BOOL hasQuotedText = NO;
-    BOOL hasQuotedAttachment = NO;
-    BOOL hasQuotedGiftBadge = NO;
-
-    if (quotedMessage.body.length > 0) {
-        hasQuotedText = YES;
-        [quoteBuilder setText:quotedMessage.body];
-
-        NSArray<SSKProtoBodyRange *> *bodyRanges =
-            [self.quotedMessage.bodyRanges toProtoBodyRangesWithBodyLength:(NSInteger)self.quotedMessage.body.length];
-        if (bodyRanges.count > 0) {
-            [quoteBuilder setBodyRanges:bodyRanges];
-        }
-    }
-
-    SSKProtoDataMessageQuoteQuotedAttachment *attachmentProto =
-        [self buildQuotedMessageAttachmentProtoWithTx:transaction];
-    if (attachmentProto) {
-        [quoteBuilder addAttachments:attachmentProto];
-        hasQuotedAttachment = YES;
-    }
-
-    if (quotedMessage.isGiftBadge) {
-        [quoteBuilder setType:SSKProtoDataMessageQuoteTypeGiftBadge];
-        hasQuotedGiftBadge = YES;
-    }
-
-    if (hasQuotedText || hasQuotedAttachment || hasQuotedGiftBadge) {
-        return quoteBuilder;
-    } else {
-        OWSFailDebug(@"Invalid quoted message data.");
-        return nil;
-    }
-}
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
 - (nullable SSKProtoDataMessage *)buildDataMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction

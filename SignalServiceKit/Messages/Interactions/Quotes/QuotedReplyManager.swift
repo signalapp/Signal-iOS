@@ -31,4 +31,10 @@ public protocol QuotedReplyManager {
         threadUniqueId: String,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<TSQuotedMessage>
+
+    func buildProtoForSending(
+        _ quote: TSQuotedMessage,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoDataMessageQuote
 }
