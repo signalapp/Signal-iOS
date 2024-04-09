@@ -145,13 +145,17 @@ public class EditManagerImpl: EditManager {
     // MARK: - Edit UI Validation
 
     public func canShowEditMenu(interaction: TSInteraction, thread: TSThread) -> Bool {
-        return Self.validateCanShowEditMenu(interaction: interaction, thread: thread) == nil
+        return Self.validateCanShowEditMenu(interaction: interaction, thread: thread, dataStore: context.dataStore) == nil
     }
 
-    private static func validateCanShowEditMenu(interaction: TSInteraction, thread: TSThread) -> EditSendValidationError? {
+    private static func validateCanShowEditMenu(
+        interaction: TSInteraction,
+        thread: TSThread,
+        dataStore: EditManagerImpl.Shims.DataStore
+    ) -> EditSendValidationError? {
         guard let message = interaction as? TSOutgoingMessage else { return .messageTypeNotSupported }
 
-        if !Self.editMessageTypeSupported(message: message) {
+        if !Self.editMessageTypeSupported(message: message, dataStore: dataStore) {
             return .messageTypeNotSupported
         }
 
@@ -184,7 +188,7 @@ public class EditManagerImpl: EditManager {
 
         let targetMessage = targetMessageWrapper.message
 
-        if let error = Self.validateCanShowEditMenu(interaction: targetMessage, thread: thread) {
+        if let error = Self.validateCanShowEditMenu(interaction: targetMessage, thread: thread, dataStore: context.dataStore) {
             return error
         }
 
@@ -423,7 +427,7 @@ public class EditManagerImpl: EditManager {
             }
         }
 
-        if !Self.editMessageTypeSupported(message: targetMessage) {
+        if !Self.editMessageTypeSupported(message: targetMessage, dataStore: context.dataStore) {
             throw OWSAssertionError("Edit of message type not supported")
         }
 
@@ -445,7 +449,10 @@ public class EditManagerImpl: EditManager {
         // All good!
     }
 
-    private static func editMessageTypeSupported(message: TSMessage) -> Bool {
+    private static func editMessageTypeSupported(
+        message: TSMessage,
+        dataStore: EditManagerImpl.Shims.DataStore
+    ) -> Bool {
         // Skip remotely deleted
         if message.wasRemotelyDeleted {
             return false
@@ -457,7 +464,7 @@ public class EditManagerImpl: EditManager {
         }
 
         // Skip contact shares
-        if message.contactShare != nil {
+        if dataStore.isMessageContactShare(message) {
             return false
         }
 

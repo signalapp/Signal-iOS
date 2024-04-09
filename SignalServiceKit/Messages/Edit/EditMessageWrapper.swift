@@ -114,14 +114,6 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             // are cascade-deleted when the latest revision expires.
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
-            // Quoted message gets set separately.
-            quotedMessage: nil,
-            // Contact shares don't support edits; should already be nil but drop anyway.
-            contactShare: nil,
-            // Link preview gets set separately.
-            linkPreview: nil,
-            // Stickers don't support edits; should already be nil but drop anyway.
-            messageSticker: nil,
             read: isLatestRevision ? false : true,
             serverTimestamp: message.serverTimestamp,
             serverDeliveryTimestamp: message.serverDeliveryTimestamp,
@@ -186,14 +178,6 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             expireStartedAt: message.expireStartedAt,
             isVoiceMessage: message.isVoiceMessage,
             groupMetaMessage: message.groupMetaMessage,
-            // Quoted message gets set separately.
-            quotedMessage: nil,
-            // Contact shares don't support edits; should already be nil but drop anyway.
-            contactShare: nil,
-            // Link preview gets set separately.
-            linkPreview: nil,
-            // Stickers don't support edits; should already be nil but drop anyway.
-            messageSticker: nil,
             isViewOnceMessage: message.isViewOnceMessage,
             changeActionsProtoData: message.changeActionsProtoData,
             storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,

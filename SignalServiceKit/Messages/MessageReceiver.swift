@@ -1011,10 +1011,6 @@ public final class MessageReceiver: Dependencies {
             bodyRanges: bodyRanges,
             editState: .none,
             expiresInSeconds: dataMessage.expireTimer,
-            quotedMessage: quotedMessageBuilder?.info,
-            contactShare: contact,
-            linkPreview: linkPreviewBuilder?.info,
-            messageSticker: messageStickerBuilder?.info,
             serverTimestamp: envelope.serverTimestamp,
             serverDeliveryTimestamp: request.serverDeliveryTimestamp,
             serverGuid: serverGuid?.uuidString.lowercased(),
@@ -1033,7 +1029,14 @@ public final class MessageReceiver: Dependencies {
             return nil
         }
 
-        guard messageBuilder.hasRenderableContent(hasBodyAttachments: !dataMessage.attachments.isEmpty) else {
+        let hasRenderableContent = messageBuilder.hasRenderableContent(
+            hasBodyAttachments: !dataMessage.attachments.isEmpty,
+            hasLinkPreview: linkPreviewBuilder != nil,
+            hasQuotedReply: quotedMessageBuilder != nil,
+            hasContactShare: contact != nil,
+            hasSticker: messageStickerBuilder != nil
+        )
+        guard hasRenderableContent else {
             Logger.warn("Ignoring empty: \(messageDescription)")
             return nil
         }
@@ -1042,6 +1045,12 @@ public final class MessageReceiver: Dependencies {
             owsFailDebug("Ignoring gift sent to group.")
             return nil
         }
+
+        // Update attachment fields before inserting.
+        quotedMessageBuilder.map { message.update(with: $0.info, transaction: tx) }
+        contact.map { message.update(withContactShare: $0, transaction: tx) }
+        linkPreviewBuilder.map { message.update(with: $0.info, transaction: tx) }
+        messageStickerBuilder.map { message.update(with: $0.info, transaction: tx) }
 
         // Check for any placeholders inserted because of a previously
         // undecryptable message. The sender may have resent the message. If so, we

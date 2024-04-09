@@ -195,13 +195,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                             messageBody:(nullable NSString *)body
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread
-                            messageBody:(nullable NSString *)body
-                       expiresInSeconds:(uint32_t)expiresInSeconds
-                          quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            linkPreview:(nullable OWSLinkPreview *)linkPreview
-                         messageSticker:(nullable MessageSticker *)messageSticker;
-
 @property (nonatomic, readonly) TSOutgoingMessageState messageState;
 
 @property (nonatomic, readonly) BOOL wasDeliveredToAnyRecipient;

@@ -753,14 +753,20 @@ extension TSMessage {
 
 extension TSMessageBuilder {
 
-    public func hasRenderableContent(hasBodyAttachments: Bool) -> Bool {
+    public func hasRenderableContent(
+        hasBodyAttachments: Bool,
+        hasLinkPreview: Bool,
+        hasQuotedReply: Bool,
+        hasContactShare: Bool,
+        hasSticker: Bool
+    ) -> Bool {
         return Self.hasRenderableContent(
             hasNonemptyBody: messageBody?.nilIfEmpty != nil,
             hasBodyAttachmentsOrOversizeText: hasBodyAttachments,
-            hasLinkPreview: linkPreview != nil,
-            hasQuotedReply: quotedMessage != nil,
-            hasContactShare: contactShare != nil,
-            hasSticker: messageSticker != nil,
+            hasLinkPreview: hasLinkPreview,
+            hasQuotedReply: hasQuotedReply,
+            hasContactShare: hasContactShare,
+            hasSticker: hasSticker,
             hasGiftBadge: giftBadge != nil,
             isStoryReply: storyAuthorAci != nil && storyTimestamp != nil,
             storyReactionEmoji: storyReactionEmoji

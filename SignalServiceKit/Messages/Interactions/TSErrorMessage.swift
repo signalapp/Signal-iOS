@@ -26,10 +26,6 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
                 messageBody: String? = nil,
                 bodyRanges: MessageBodyRanges? = nil,
                 expiresInSeconds: UInt32 = 0,
-                quotedMessage: TSQuotedMessage? = nil,
-                contactShare: OWSContact? = nil,
-                linkPreview: OWSLinkPreview? = nil,
-                messageSticker: MessageSticker? = nil,
                 isViewOnceMessage: Bool = false,
                 errorType: TSErrorMessageType,
                 senderAddress: SignalServiceAddress? = nil,
@@ -49,10 +45,6 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
                    // expireStartedAt is always initialized to zero
                    // for error messages.
                    expireStartedAt: 0,
-                   quotedMessage: quotedMessage,
-                   contactShare: contactShare,
-                   linkPreview: linkPreview,
-                   messageSticker: messageSticker,
                    isViewOnceMessage: isViewOnceMessage)
     }
 

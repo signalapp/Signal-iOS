@@ -36,6 +36,8 @@ public protocol _EditManagerImpl_DataStore {
         tx: DBReadTransaction
     ) -> OutgoingEditMessage
 
+    func isMessageContactShare(_ message: TSMessage) -> Bool
+
     func update(
         _ message: TSOutgoingMessage,
         withRecipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?,
@@ -74,6 +76,10 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
         tx: DBReadTransaction
     ) -> TSOutgoingMessage {
         return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func isMessageContactShare(_ message: TSMessage) -> Bool {
+        return message.contactShare != nil
     }
 
     public func update(

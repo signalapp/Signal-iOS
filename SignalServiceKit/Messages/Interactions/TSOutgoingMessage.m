@@ -214,39 +214,16 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread messageBody:(nullable NSString *)body
 {
-    return [self outgoingMessageInThread:thread
-                             messageBody:body
-                        expiresInSeconds:0
-                           quotedMessage:nil
-                             linkPreview:nil
-                          messageSticker:nil];
+    return [self outgoingMessageInThread:thread messageBody:body expiresInSeconds:0];
 }
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                        expiresInSeconds:(uint32_t)expiresInSeconds
-{
-    return [self outgoingMessageInThread:thread
-                             messageBody:body
-                        expiresInSeconds:expiresInSeconds
-                           quotedMessage:nil
-                             linkPreview:nil
-                          messageSticker:nil];
-}
-
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread
-                            messageBody:(nullable NSString *)body
-                       expiresInSeconds:(uint32_t)expiresInSeconds
-                          quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            linkPreview:(nullable OWSLinkPreview *)linkPreview
-                         messageSticker:(nullable MessageSticker *)messageSticker
 {
     TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     builder.messageBody = body;
     builder.expiresInSeconds = expiresInSeconds;
-    builder.quotedMessage = quotedMessage;
-    builder.linkPreview = linkPreview;
-    builder.messageSticker = messageSticker;
     return [builder buildWithSneakyTransaction];
 }
 

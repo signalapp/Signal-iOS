@@ -172,10 +172,6 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             editState: .none,
             // TODO: expose + set expire start time
             expiresInSeconds: chatItem.expiresInMs.map { UInt32($0) } ?? 0,
-            quotedMessage: contents.quotedMessage,
-            contactShare: nil,
-            linkPreview: nil,
-            messageSticker: nil,
             serverTimestamp: nil,
             serverDeliveryTimestamp: chatItem.dateSent,
             serverGuid: nil,
@@ -188,6 +184,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             paymentNotification: nil
         )
         let message = messageBuilder.build()
+        contents.quotedMessage.map { interactionStore.update(message, with: $0, tx: tx) }
         interactionStore.insertInteraction(message, tx: tx)
 
         let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(

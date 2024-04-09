@@ -116,7 +116,6 @@ class EditManagerTests: SSKBaseTestSwift {
     func testContactShareEditMessageFails() {
         let targetMessage = createIncomingMessage(with: thread) { builder in
             builder.authorAci = authorAci
-            builder.contactShare = OWSContact()
         }
 
         let editMessage = createEditDataMessage { _ in }
@@ -133,6 +132,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 tsResourceStore: TSResourceStoreMock()
             )
         )
+
+        dataStoreMock.isContactShare = true
 
         db.write { tx in
             do {
@@ -358,6 +359,12 @@ class EditManagerTests: SSKBaseTestSwift {
             tx: DBReadTransaction
         ) -> TSOutgoingMessage {
             return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
+        }
+
+        var isContactShare = false
+
+        func isMessageContactShare(_ message: TSMessage) -> Bool {
+            return isContactShare
         }
 
         func update(

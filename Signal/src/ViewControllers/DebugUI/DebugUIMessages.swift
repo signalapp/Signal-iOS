@@ -3887,12 +3887,14 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: messageBody)
         messageBuilder.isVoiceMessage = false
-        messageBuilder.quotedMessage = quotedMessageBuilder?.info
-        messageBuilder.contactShare = contactShare
-        messageBuilder.linkPreview = linkPreview
-        messageBuilder.messageSticker = messageSticker
 
         let message = messageBuilder.build(transaction: transaction)
+
+        quotedMessageBuilder.map { message.update(with: $0.info, transaction: transaction) }
+        contactShare.map { message.update(withContactShare: $0, transaction: transaction) }
+        linkPreview.map { message.update(with: $0, transaction: transaction) }
+        messageSticker.map { message.update(with: $0, transaction: transaction) }
+
         message.anyInsert(transaction: transaction)
         message.update(withFakeMessageState: messageState, transaction: transaction)
 
@@ -4074,8 +4076,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
         incomingMessageBuilder.authorAci = AciObjC(authorAci)
-        incomingMessageBuilder.quotedMessage = quotedMessage
         let message = incomingMessageBuilder.build()
+        quotedMessage.map { message.update(with: $0, transaction: transaction) }
         message.setLegacyBodyAttachmentIds(attachmentIds)
         message.anyInsert(transaction: transaction)
         message.debugonly_markAsReadNow(transaction: transaction)
@@ -4114,8 +4116,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
         incomingMessageBuilder.authorAci = AciObjC(authorAci)
-        incomingMessageBuilder.quotedMessage = quotedMessageBuilder?.info
         let message = incomingMessageBuilder.build()
+        quotedMessageBuilder.map { message.update(with: $0.info, transaction: transaction) }
         message.anyInsert(transaction: transaction)
         message.debugonly_markAsReadNow(transaction: transaction)
 

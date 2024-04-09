@@ -27,14 +27,6 @@ public class TSMessageBuilder: NSObject {
     @objc
     public var expireStartedAt: UInt64 = 0
     @objc
-    public var quotedMessage: TSQuotedMessage?
-    @objc
-    public var contactShare: OWSContact?
-    @objc
-    public var linkPreview: OWSLinkPreview?
-    @objc
-    public var messageSticker: MessageSticker?
-    @objc
     public var isViewOnceMessage = false
     @objc
     public var read = false
@@ -58,10 +50,6 @@ public class TSMessageBuilder: NSObject {
          editState: TSEditState = .none,
          expiresInSeconds: UInt32? = nil,
          expireStartedAt: UInt64? = nil,
-         quotedMessage: TSQuotedMessage? = nil,
-         contactShare: OWSContact? = nil,
-         linkPreview: OWSLinkPreview? = nil,
-         messageSticker: MessageSticker? = nil,
          isViewOnceMessage: Bool = false,
          read: Bool = false,
          storyAuthorAci: AciObjC? = nil,
@@ -78,10 +66,6 @@ public class TSMessageBuilder: NSObject {
         self.editState = editState
         self.expiresInSeconds = expiresInSeconds ?? 0
         self.expireStartedAt = expireStartedAt ?? 0
-        self.quotedMessage = quotedMessage
-        self.contactShare = contactShare
-        self.linkPreview = linkPreview
-        self.messageSticker = messageSticker
         self.isViewOnceMessage = isViewOnceMessage
         self.read = read
         self.storyAuthorAci = storyAuthorAci

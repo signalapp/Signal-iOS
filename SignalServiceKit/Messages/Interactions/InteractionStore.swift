@@ -52,6 +52,30 @@ public protocol InteractionStore {
     /// Deletes the given interaction from the database.
     func deleteInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction)
 
+    func update(
+        _ message: TSMessage,
+        with quotedMessage: TSQuotedMessage,
+        tx: DBWriteTransaction
+    )
+
+    func update(
+        _ message: TSMessage,
+        with linkPreview: OWSLinkPreview,
+        tx: DBWriteTransaction
+    )
+
+    func update(
+        _ message: TSMessage,
+        with contact: OWSContact,
+        tx: DBWriteTransaction
+    )
+
+    func update(
+        _ message: TSMessage,
+        with sticker: MessageSticker,
+        tx: DBWriteTransaction
+    )
+
     /// Applies the given block to the given already-inserted interaction, and
     /// saves the updated interaction to the database.
     func updateInteraction<InteractionType: TSInteraction>(
@@ -165,6 +189,38 @@ public class InteractionStoreImpl: InteractionStore {
 
     public func deleteInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
         interaction.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func update(
+        _ message: TSMessage,
+        with quotedMessage: TSQuotedMessage,
+        tx: DBWriteTransaction
+    ) {
+        message.update(with: quotedMessage, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func update(
+        _ message: TSMessage,
+        with linkPreview: OWSLinkPreview,
+        tx: DBWriteTransaction
+    ) {
+        message.update(with: linkPreview, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func update(
+        _ message: TSMessage,
+        with contact: OWSContact,
+        tx: DBWriteTransaction
+    ) {
+        message.update(withContactShare: contact, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func update(
+        _ message: TSMessage,
+        with sticker: MessageSticker,
+        tx: DBWriteTransaction
+    ) {
+        message.update(with: sticker, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func updateInteraction<InteractionType: TSInteraction>(
@@ -306,6 +362,30 @@ open class MockInteractionStore: InteractionStore {
     open func deleteInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
         _ = insertedInteractions.removeFirst { $0.sqliteRowId! == interaction.sqliteRowId! }
     }
+
+    open func update(
+        _ message: TSMessage,
+        with quotedMessage: TSQuotedMessage,
+        tx: DBWriteTransaction
+    ) {}
+
+    public func update(
+        _ message: TSMessage,
+        with linkPreview: OWSLinkPreview,
+        tx: DBWriteTransaction
+    ) {}
+
+    public func update(
+        _ message: TSMessage,
+        with contact: OWSContact,
+        tx: DBWriteTransaction
+    ) {}
+
+    public func update(
+        _ message: TSMessage,
+        with sticker: MessageSticker,
+        tx: DBWriteTransaction
+    ) {}
 
     open func updateInteraction<InteractionType: TSInteraction>(
         _ interaction: InteractionType,

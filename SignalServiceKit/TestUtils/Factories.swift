@@ -131,10 +131,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
             expireStartedAt: expireStartedAtBuilder(),
             isVoiceMessage: isVoiceMessageBuilder(),
             groupMetaMessage: groupMetaMessageBuilder(),
-            quotedMessage: quotedMessageBuilder(),
-            contactShare: contactShareBuilder(),
-            linkPreview: linkPreviewBuilder(),
-            messageSticker: messageStickerBuilder(),
             isViewOnceMessage: isViewOnceMessageBuilder(),
             changeActionsProtoData: changeActionsProtoDataBuilder(),
             additionalRecipients: additionalRecipientsBuilder(),
@@ -196,22 +192,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     public var groupMetaMessageBuilder: () -> TSGroupMetaMessage = {
         return .unspecified
-    }
-
-    public var quotedMessageBuilder: () -> TSQuotedMessage? = {
-        return nil
-    }
-
-    public var contactShareBuilder: () -> OWSContact? = {
-        return nil
-    }
-
-    public var linkPreviewBuilder: () -> OWSLinkPreview? = {
-        return nil
-    }
-
-    public var messageStickerBuilder: () -> MessageSticker? = {
-        return nil
     }
 
     public var isViewOnceMessageBuilder: () -> Bool = {
@@ -288,10 +268,6 @@ public class IncomingMessageFactory: NSObject, Factory {
             bodyRanges: bodyRangesBuilder(),
             editState: editStateBuilder(),
             expiresInSeconds: expiresInSecondsBuilder(),
-            quotedMessage: quotedMessageBuilder(),
-            contactShare: contactShareBuilder(),
-            linkPreview: linkPreviewBuilder(),
-            messageSticker: messageStickerBuilder(),
             serverTimestamp: serverTimestampBuilder(),
             serverDeliveryTimestamp: serverDeliveryTimestampBuilder(),
             serverGuid: serverGuidBuilder(),
@@ -357,22 +333,6 @@ public class IncomingMessageFactory: NSObject, Factory {
 
     public var expiresInSecondsBuilder: () -> UInt32 = {
         return 0
-    }
-
-    public var quotedMessageBuilder: () -> TSQuotedMessage? = {
-        return nil
-    }
-
-    public var contactShareBuilder: () -> OWSContact? = {
-        return nil
-    }
-
-    public var linkPreviewBuilder: () -> OWSLinkPreview? = {
-        return nil
-    }
-
-    public var messageStickerBuilder: () -> MessageSticker? = {
-        return nil
     }
 
     public var serverTimestampBuilder: () -> UInt64? = {

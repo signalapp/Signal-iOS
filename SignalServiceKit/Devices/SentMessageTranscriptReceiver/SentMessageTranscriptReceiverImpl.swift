@@ -156,10 +156,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             expireStartedAt: messageParams.expirationStartedAt,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
-            quotedMessage: messageParams.quotedMessageBuilder?.info,
-            contactShare: messageParams.contact,
-            linkPreview: messageParams.linkPreviewBuilder?.info,
-            messageSticker: messageParams.messageStickerBuilder?.info,
             isViewOnceMessage: messageParams.isViewOnceMessage,
             changeActionsProtoData: nil,
             additionalRecipients: nil,
@@ -172,7 +168,11 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 
         let hasRenderableContent = outgoingMessageBuilder.hasRenderableContent(
-            hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated
+            hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated,
+            hasLinkPreview: messageParams.linkPreviewBuilder != nil,
+            hasQuotedReply: messageParams.quotedMessageBuilder != nil,
+            hasContactShare: messageParams.contact != nil,
+            hasSticker: messageParams.messageStickerBuilder != nil
         )
         if !hasRenderableContent && !outgoingMessage.isViewOnceMessage {
             switch messageParams.target {
@@ -200,6 +200,13 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // existing copy, and just throw away the new copy before we insert it.
             outgoingMessage = existingFailedMessage
         } else {
+
+            // Update attachment fields before inserting.
+            messageParams.quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
+            messageParams.contact.map { interactionStore.update(outgoingMessage, with: $0, tx: tx) }
+            messageParams.linkPreviewBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
+            messageParams.messageStickerBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
+
             // Check for any placeholders inserted because of a previously undecryptable message
             // The sender may have resent the message. If so, we should swap it in place of the placeholder
             interactionStore.insertOrReplacePlaceholder(for: outgoingMessage, from: localIdentifiers.aciAddress, tx: tx)
