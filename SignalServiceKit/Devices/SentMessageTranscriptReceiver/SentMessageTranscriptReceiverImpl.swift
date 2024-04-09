@@ -214,26 +214,33 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // The sender may have resent the message. If so, we should swap it in place of the placeholder
             interactionStore.insertOrReplacePlaceholder(for: outgoingMessage, from: localIdentifiers.aciAddress, tx: tx)
 
-            try? tsResourceManager.createBodyAttachmentPointers(
-                from: messageParams.attachmentPointerProtos,
-                message: outgoingMessage,
-                tx: tx
-            )
+            do {
+                try tsResourceManager.createBodyAttachmentPointers(
+                    from: messageParams.attachmentPointerProtos,
+                    message: outgoingMessage,
+                    tx: tx
+                )
 
-            try? messageParams.quotedMessageBuilder?.finalize(
-                owner: .quotedReplyAttachment(messageRowId: outgoingMessage.sqliteRowId!),
-                tx: tx
-            )
+                try messageParams.quotedMessageBuilder?.finalize(
+                    owner: .quotedReplyAttachment(messageRowId: outgoingMessage.sqliteRowId!),
+                    tx: tx
+                )
 
-            try? messageParams.linkPreviewBuilder?.finalize(
-                owner: .messageLinkPreview(messageRowId: outgoingMessage.sqliteRowId!),
-                tx: tx
-            )
+                try messageParams.linkPreviewBuilder?.finalize(
+                    owner: .messageLinkPreview(messageRowId: outgoingMessage.sqliteRowId!),
+                    tx: tx
+                )
 
-            try? messageParams.messageStickerBuilder?.finalize(
-                owner: .messageSticker(messageRowId: outgoingMessage.sqliteRowId!),
-                tx: tx
-            )
+                try messageParams.messageStickerBuilder?.finalize(
+                    owner: .messageSticker(messageRowId: outgoingMessage.sqliteRowId!),
+                    tx: tx
+                )
+            } catch let error {
+                Logger.error("Attachment failure: \(error)")
+                // Roll back the message
+                interactionStore.deleteInteraction(outgoingMessage, tx: tx)
+                return .failure(error)
+            }
         }
         owsAssertDebug(interactionStore.insertedMessageHasRenderableContent(
             message: outgoingMessage,
