@@ -29,7 +29,8 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
         }
         manager = SystemStoryManager(
             fileSystem: OnboardingStoryManagerFilesystemMock.self,
-            schedulers: TestSchedulers(scheduler: scheduler)
+            schedulers: TestSchedulers(scheduler: scheduler),
+            storyMessageFactory: OnboardingStoryManagerStoryMessageFactoryMock.self
         )
 
         // Make everything sync.

@@ -557,7 +557,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
     }
 
     private func storyThumbnailSize(for presentingMessage: StoryMessage) throws -> CGSize? {
-        let attachment: TSAttachment?
+        let attachment: TSResource?
         switch presentingMessage.attachment {
         case .file, .foreignReferenceAttachment:
             attachment = databaseStorage.read { tx in
@@ -570,7 +570,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             throw OWSAssertionError("Unexpectedly missing attachment for story message")
         }
 
-        if let stream = attachment as? TSAttachmentStream, let thumbnailImage = stream.thumbnailImageSmallSync() {
+        if let stream = attachment.asResourceStream(), let thumbnailImage = stream.thumbnailImageSync(quality: .small) {
             return thumbnailImage.size
         } else {
             return nil
@@ -589,7 +589,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             let view = UIView()
             storyView = view
 
-            if let stream = attachment as? TSAttachmentStream, let thumbnailImage = stream.thumbnailImageSmallSync() {
+            if let stream = attachment.asResourceStream(), let thumbnailImage = stream.thumbnailImageSync(quality: .small) {
                 let blurredImageView = UIImageView()
                 blurredImageView.contentMode = .scaleAspectFill
                 blurredImageView.image = thumbnailImage
@@ -606,7 +606,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
                 imageView.image = thumbnailImage
                 view.addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
-            } else if let blurHash = attachment.blurHash, let blurHashImage = BlurHash.image(for: blurHash) {
+            } else if let blurHash = attachment.resourceBlurHash, let blurHashImage = BlurHash.image(for: blurHash) {
                 let blurHashImageView = UIImageView()
                 blurHashImageView.contentMode = .scaleAspectFill
                 blurHashImageView.image = blurHashImage

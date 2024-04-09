@@ -16,7 +16,7 @@ class StoryThumbnailView: UIView {
             switch storyMessage.attachment {
             case .file, .foreignReferenceAttachment:
                 guard
-                    let attachment = storyMessage.fileAttachment(tx: transaction)
+                    let attachment = storyMessage.fileAttachment(tx: transaction)?.bridge
                 else {
                     owsFailDebug("Unexpectedly missing attachment for story")
                     return .missing

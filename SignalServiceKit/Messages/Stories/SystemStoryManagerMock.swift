@@ -87,3 +87,30 @@ public class OnboardingStoryManagerFilesystemMock: OnboardingStoryManagerFilesys
         return true
     }
 }
+
+public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManagerStoryMessageFactory {
+
+    public override class func createFromSystemAuthor(
+        attachmentSource: TSResourceDataSource,
+        timestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> StoryMessage {
+        return try StoryMessage.createAndInsert(
+            timestamp: timestamp,
+            authorAci: StoryMessage.systemStoryAuthor,
+            groupId: nil,
+            manifest: StoryManifest.incoming(
+                receivedState: StoryReceivedState(
+                    allowsReplies: false,
+                    receivedTimestamp: timestamp,
+                    readTimestamp: nil,
+                    viewedTimestamp: nil
+                )
+            ),
+            replyCount: 0,
+            attachmentBuilder: .withoutFinalizer(.foreignReferenceAttachment),
+            mediaCaption: nil,
+            transaction: transaction
+        )
+    }
+}

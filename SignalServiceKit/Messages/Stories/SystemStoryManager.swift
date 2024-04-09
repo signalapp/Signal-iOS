@@ -33,11 +33,29 @@ public class OnboardingStoryManagerFilesystem: NSObject {
     }
 }
 
+// TODO: Support stubbing out StoryMessage init more generally.
+@objc
+public class OnboardingStoryManagerStoryMessageFactory: NSObject {
+
+    public class func createFromSystemAuthor(
+        attachmentSource: TSResourceDataSource,
+        timestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> StoryMessage {
+        return try StoryMessage.createFromSystemAuthor(
+            attachmentSource: attachmentSource,
+            timestamp: timestamp,
+            transaction: transaction
+        )
+    }
+}
+
 @objc
 public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProtocol {
 
     private let fileSystem: OnboardingStoryManagerFilesystem.Type
     private let schedulers: Schedulers
+    private let storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.Type
 
     private let kvStore = SDSKeyValueStore(collection: "OnboardingStory")
 
@@ -49,16 +67,19 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     public override convenience init() {
         self.init(
             fileSystem: OnboardingStoryManagerFilesystem.self,
-            schedulers: DispatchQueueSchedulers()
+            schedulers: DispatchQueueSchedulers(),
+            storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.self
         )
     }
 
     init(
         fileSystem: OnboardingStoryManagerFilesystem.Type,
-        schedulers: Schedulers
+        schedulers: Schedulers,
+        storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.Type
     ) {
         self.fileSystem = fileSystem
         self.schedulers = schedulers
+        self.storyMessageFactory = storyMessageFactory
         super.init()
 
         if CurrentAppContext().isMainApp {
@@ -329,20 +350,20 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 }
                 let urlSession = Self.signalService.urlSessionForUpdates2()
                 return strongSelf.fetchFilenames(urlSession: urlSession)
-                    .then(on: queue) { [weak self] (fileNames: [String]) -> Promise<[TSAttachmentStream]> in
+                    .then(on: queue) { [weak self] (fileNames: [String]) -> Promise<[TSResourceDataSource]> in
                         let promises = fileNames.compactMap {
                             self?.downloadOnboardingAsset(urlSession: urlSession, url: $0)
                         }
                         return Promise.when(on: SyncScheduler(), fulfilled: promises)
                     }
-                    .then(on: queue) { [weak self] (attachmentStreams: [TSAttachmentStream]) -> Promise<Void> in
+                    .then(on: queue) { [weak self] (attachmentSources: [TSResourceDataSource]) -> Promise<Void> in
                         guard let strongSelf = self else {
                             return .init(error: OWSAssertionError("SystemStoryManager unretained"))
                         }
                         do {
                             return .value(try strongSelf.databaseStorage.write { transaction in
                                 let uniqueIds = try strongSelf.createStoryMessages(
-                                    attachmentStreams: attachmentStreams,
+                                    attachmentSources: attachmentSources,
                                     transaction: transaction
                                 )
                                 try strongSelf.markOnboardingStoryDownloaded(
@@ -473,7 +494,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     private func downloadOnboardingAsset(
         urlSession: OWSURLSessionProtocol,
         url: String
-    ) -> Promise<TSAttachmentStream> {
+    ) -> Promise<TSResourceDataSource> {
         return urlSession.downloadTaskPromise(
             on: schedulers.global(),
             url,
@@ -485,48 +506,32 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 throw OWSAssertionError("Onboarding story url missing")
             }
             guard
-                fileSystem.isValidImage(at: resultUrl, mimeType: Constants.imageExtension),
-                let byteCount = fileSystem.fileSize(of: resultUrl)
+                fileSystem.isValidImage(at: resultUrl, mimeType: Constants.imageExtension)
             else {
                 throw OWSAssertionError("Invalid onboarding asset")
             }
-
-            let attachmentStream = TSAttachmentStream(
-                contentType: Constants.imageMimeType,
-                byteCount: UInt32(truncating: byteCount),
-                sourceFilename: resultUrl.lastPathComponent,
-                caption: nil,
-                attachmentType: .default,
-                albumMessageId: nil
+            let dataSource = try DataSourcePath.dataSource(
+                with: resultUrl,
+                shouldDeleteOnDeallocation: CurrentAppContext().isRunningTests.negated
             )
-            attachmentStream.isUploaded = false
-            attachmentStream.cdnKey = ""
-            attachmentStream.cdnNumber = 0
-
-            guard let attachmentFilePath = attachmentStream.originalFilePath else {
-                throw OWSAssertionError("Created an attachment from a file but no filePath")
-            }
-            let finalUrl = URL(fileURLWithPath: attachmentFilePath)
-            if fileSystem.fileOrFolderExists(url: finalUrl) {
-                // Delete an existing file, doesn't matter since we just redownloaded.
-                try fileSystem.deleteFile(url: finalUrl)
-            }
-            // Move from the temporary download location to its final location.
-            try fileSystem.moveFile(from: resultUrl, to: finalUrl)
-
-            return attachmentStream
+            return TSResourceDataSource.from(
+                dataSource: dataSource,
+                mimeType: Constants.imageMimeType,
+                caption: nil,
+                renderingFlag: .default
+            )
         }
     }
 
     /// Returns unique Ids for the created messages. Fails if any one message creation fails.
     private func createStoryMessages(
-        attachmentStreams: [TSAttachmentStream],
+        attachmentSources: [TSResourceDataSource],
         transaction: SDSAnyWriteTransaction
     ) throws -> [String] {
         let baseTimestamp = Date().ows_millisecondsSince1970
-        let ids = try attachmentStreams.lazy.enumerated().map { (i, attachment) throws -> String in
-            let message = try StoryMessage.createFromSystemAuthor(
-                attachment: attachment,
+        let ids = try attachmentSources.lazy.enumerated().map { (i, attachmentSource) throws -> String in
+            let message = try storyMessageFactory.createFromSystemAuthor(
+                attachmentSource: attachmentSource,
                 // Ensure timestamps are unique since they are sometimes used for uniquing.
                 timestamp: baseTimestamp + UInt64(i),
                 transaction: transaction

@@ -136,8 +136,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    public func fileAttachment(tx: SDSAnyReadTransaction) -> TSAttachment? {
-        return DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: tx.asV2Read)?.fetch(tx: tx)?.bridge
+    public func fileAttachment(tx: SDSAnyReadTransaction) -> TSResource? {
+        return DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: tx.asV2Read)?.fetch(tx: tx)
     }
 
     public var replyCount: UInt64
@@ -239,18 +239,29 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             receivedTimestamp: receivedTimestamp
         ))
 
+        let caption = storyMessage.fileAttachment?.caption.map { caption in
+            return StyleOnlyMessageBody(text: caption, protos: storyMessage.bodyRanges)
+        }
+
         let attachment: StoryMessageAttachment
+        let mediaAttachmentBuilder: OwnedAttachmentBuilder<TSResourceRetrievalInfo>?
         let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
 
         if let fileAttachment = storyMessage.fileAttachment {
-            guard let attachmentPointer = TSAttachmentPointer(fromProto: fileAttachment, albumMessage: nil) else {
-                throw OWSAssertionError("Invalid file attachment for StoryMessage.")
+            let attachmentBuilder = try DependenciesBridge.shared.tsResourceManager.createAttachmentPointerBuilder(
+                from: fileAttachment,
+                tx: transaction.asV2Write
+            )
+            switch attachmentBuilder.info {
+            case .legacy(let attachmentUniqueId):
+                attachment = .file(StoryMessageFileAttachment(
+                    attachmentId: attachmentUniqueId,
+                    storyBodyRangeProtos: caption?.toProtoBodyRanges() ?? []
+                ))
+            case .v2:
+                attachment = .foreignReferenceAttachment
             }
-            attachmentPointer.anyInsert(transaction: transaction)
-            attachment = .file(StoryMessageFileAttachment(
-                attachmentId: attachmentPointer.uniqueId,
-                storyBodyRangeProtos: storyMessage.bodyRanges
-            ))
+            mediaAttachmentBuilder = attachmentBuilder
             linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
             linkPreviewBuilder = textAttachmentProto.preview.flatMap {
@@ -264,6 +275,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                     return nil
                 }
             }
+            mediaAttachmentBuilder = nil
             attachment = .text(try TextAttachment(
                 from: textAttachmentProto,
                 bodyRanges: storyMessage.bodyRanges,
@@ -298,6 +310,13 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         try linkPreviewBuilder?.finalize(
             owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
+            tx: transaction.asV2Write
+        )
+        try mediaAttachmentBuilder?.finalize(
+            owner: .storyMessageMedia(.init(
+                storyMessageRowId: record.id!,
+                caption: caption
+            )),
             tx: transaction.asV2Write
         )
 
@@ -341,18 +360,29 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             )
         }))
 
+        let caption = storyMessage.fileAttachment?.caption.map { caption in
+            return StyleOnlyMessageBody(text: caption, protos: storyMessage.bodyRanges)
+        }
+
         let attachment: StoryMessageAttachment
+        let mediaAttachmentBuilder: OwnedAttachmentBuilder<TSResourceRetrievalInfo>?
         let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
 
         if let fileAttachment = storyMessage.fileAttachment {
-            guard let attachmentPointer = TSAttachmentPointer(fromProto: fileAttachment, albumMessage: nil) else {
-                throw OWSAssertionError("Invalid file attachment for StoryMessage.")
+            let attachmentBuilder = try DependenciesBridge.shared.tsResourceManager.createAttachmentPointerBuilder(
+                from: fileAttachment,
+                tx: transaction.asV2Write
+            )
+            switch attachmentBuilder.info {
+            case .legacy(let attachmentUniqueId):
+                attachment = .file(StoryMessageFileAttachment(
+                    attachmentId: attachmentUniqueId,
+                    storyBodyRangeProtos: caption?.toProtoBodyRanges() ?? []
+                ))
+            case .v2:
+                attachment = .foreignReferenceAttachment
             }
-            attachmentPointer.anyInsert(transaction: transaction)
-            attachment = .file(StoryMessageFileAttachment(
-                attachmentId: attachmentPointer.uniqueId,
-                storyBodyRangeProtos: storyMessage.bodyRanges
-            ))
+            mediaAttachmentBuilder = attachmentBuilder
             linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
             linkPreviewBuilder = textAttachmentProto.preview.flatMap {
@@ -366,6 +396,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                     return nil
                 }
             }
+            mediaAttachmentBuilder = nil
             attachment = .text(try TextAttachment(
                 from: textAttachmentProto,
                 bodyRanges: storyMessage.bodyRanges,
@@ -410,6 +441,13 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
             tx: transaction.asV2Write
         )
+        try mediaAttachmentBuilder?.finalize(
+            owner: .storyMessageMedia(.init(
+                storyMessageRowId: record.id!,
+                caption: caption
+            )),
+            tx: transaction.asV2Write
+        )
 
         return record
     }
@@ -420,7 +458,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     @discardableResult
     public static func createFromSystemAuthor(
-        attachment: TSAttachment,
+        attachmentSource: TSResourceDataSource,
         timestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) throws -> StoryMessage {
@@ -435,11 +473,24 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             )
         )
 
-        attachment.anyInsert(transaction: transaction)
-        let attachment: StoryMessageAttachment = .file(StoryMessageFileAttachment(
-            attachmentId: attachment.uniqueId,
-            captionStyles: [] /* If someday a system story caption has styles, they'd go here. */
-        ))
+        // If someday a system story caption has styles, they'd go here.
+        let caption: StyleOnlyMessageBody? = nil
+
+        let attachmentBuilder = try DependenciesBridge.shared.tsResourceManager.createAttachmentStreamBuilder(
+            from: attachmentSource,
+            tx: transaction.asV2Write
+        )
+
+        let attachment: StoryMessageAttachment
+        switch attachmentBuilder.info {
+        case .legacy(let attachmentUniqueId):
+            attachment = .file(StoryMessageFileAttachment(
+                attachmentId: attachmentUniqueId,
+                captionStyles: caption?.collapsedStyles ?? []
+            ))
+        case .v2:
+            attachment = .foreignReferenceAttachment
+        }
 
         let record = StoryMessage(
             // NOTE: As of now these only get created for the onboarding story, and that happens
@@ -454,6 +505,14 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             replyCount: 0
         )
         record.anyInsert(transaction: transaction)
+
+        try attachmentBuilder.finalize(
+            owner: .storyMessageMedia(.init(
+                storyMessageRowId: record.id!,
+                caption: caption
+            )),
+            tx: transaction.asV2Write
+        )
 
         return record
     }

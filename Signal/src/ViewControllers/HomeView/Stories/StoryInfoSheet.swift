@@ -102,7 +102,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         switch storyMessage.attachment {
         case .text: break
         case .file, .foreignReferenceAttachment:
-            guard let attachment = databaseStorage.read(block: { storyMessage.fileAttachment(tx: $0) }) else {
+            guard let attachment = databaseStorage.read(block: { storyMessage.fileAttachment(tx: $0) })?.bridge else {
                 owsFailDebug("Missing attachment for story message")
                 break
             }

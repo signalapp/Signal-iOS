@@ -70,8 +70,15 @@ extension TSAttachmentDownloadManager {
             let attachmentPointer: TSAttachmentPointer? = {
                 switch storyMessage.attachment {
                 case .file, .foreignReferenceAttachment:
-                    guard let attachment = storyMessage.fileAttachment(tx: tx) else {
+                    let attachment: TSAttachment
+                    switch storyMessage.fileAttachment(tx: tx)?.concreteType {
+                    case .none:
                         owsFailDebug("Missing attachment: \(storyMessage.timestamp)")
+                        return nil
+                    case .legacy(let tsAttachment):
+                        attachment = tsAttachment
+                    case .v2:
+                        // This class doesn't download v2 attachments.
                         return nil
                     }
                     guard let pointer = attachment as? TSAttachmentPointer else {
