@@ -46,7 +46,7 @@ extension JobRecord {
 
         // MARK: IncomingContactSyncJobRecord & IncomingGroupSyncJobRecord
 
-        case attachmentId
+        case legacyAttachmentId = "attachmentId"
 
         // MARK: LocalUserLeaveGroupJobRecord
 

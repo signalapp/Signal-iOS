@@ -115,7 +115,7 @@ extension OWSOrphanDataCleaner {
 
         findAttachmentIds(
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: IncomingGroupSyncJobRecord) in [jobRecord.attachmentId] }
+            jobRecordAttachmentIds: { (jobRecord: IncomingGroupSyncJobRecord) in [jobRecord.legacyAttachmentId].compacted() }
         )
 
         if shouldAbort {
@@ -124,7 +124,7 @@ extension OWSOrphanDataCleaner {
 
         findAttachmentIds(
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: IncomingContactSyncJobRecord) in [jobRecord.attachmentId] }
+            jobRecordAttachmentIds: { (jobRecord: IncomingContactSyncJobRecord) in [jobRecord.legacyAttachmentId].compacted() }
         )
 
         if shouldAbort {

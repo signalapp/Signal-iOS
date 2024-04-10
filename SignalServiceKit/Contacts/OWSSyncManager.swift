@@ -99,7 +99,11 @@ public class OWSSyncManager: NSObject, SyncManagerProtocolObjc {
             return
         }
         attachmentPointer.anyInsert(transaction: transaction)
-        self.smJobQueues.incomingContactSyncJobQueue.add(attachmentId: attachmentPointer.uniqueId, isComplete: syncMessage.isComplete, transaction: transaction)
+        self.smJobQueues.incomingContactSyncJobQueue.add(
+            legacyAttachmentId: attachmentPointer.uniqueId,
+            isComplete: syncMessage.isComplete,
+            transaction: transaction
+        )
     }
 }
 

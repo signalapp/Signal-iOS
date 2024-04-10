@@ -25,11 +25,11 @@ final class JobQueueRunnerTest: XCTestCase {
     }
 
     func testConcurrent() async throws {
-        let job1 = IncomingContactSyncJobRecord(attachmentId: "A", isCompleteContactSync: true)
+        let job1 = IncomingContactSyncJobRecord(legacyAttachmentId: "A", isCompleteContactSync: true)
         jobFinder.addJob(job1)
         concurrentRunner.addPersistedJob(job1, runner: jobRunnerFactory.buildRunner(retryInterval: 0.001))
 
-        let job2 = IncomingContactSyncJobRecord(attachmentId: "B", isCompleteContactSync: true)
+        let job2 = IncomingContactSyncJobRecord(legacyAttachmentId: "B", isCompleteContactSync: true)
         jobFinder.addJob(job2)
         concurrentRunner.addPersistedJob(job2, runner: jobRunnerFactory.buildRunner(retryInterval: nil))
 
@@ -43,7 +43,7 @@ final class JobQueueRunnerTest: XCTestCase {
         }
         try await Task.sleep(nanoseconds: NSEC_PER_USEC)
 
-        let job3 = IncomingContactSyncJobRecord(attachmentId: "C", isCompleteContactSync: true)
+        let job3 = IncomingContactSyncJobRecord(legacyAttachmentId: "C", isCompleteContactSync: true)
         jobFinder.addJob(job3)
         _ = await withCheckedContinuation { continuation in
             concurrentRunner.addPersistedJob(job3, runner: jobRunnerFactory.buildRunner(completionContinuation: continuation))
@@ -59,12 +59,12 @@ final class JobQueueRunnerTest: XCTestCase {
     func testEnqueuedWhileStarting() async throws {
         // Add an old job.
         do {
-            let job = IncomingContactSyncJobRecord(attachmentId: "A", isCompleteContactSync: true)
+            let job = IncomingContactSyncJobRecord(legacyAttachmentId: "A", isCompleteContactSync: true)
             jobFinder.addJob(job)
         }
         // Add a new job.
         async let result1: JobResult = withCheckedContinuation { continuation in
-            let job = IncomingContactSyncJobRecord(attachmentId: "B", isCompleteContactSync: true)
+            let job = IncomingContactSyncJobRecord(legacyAttachmentId: "B", isCompleteContactSync: true)
             jobFinder.addJob(job)
             serialRunner.addPersistedJob(job, runner: jobRunnerFactory.buildRunner(completionContinuation: continuation))
         }
@@ -74,7 +74,7 @@ final class JobQueueRunnerTest: XCTestCase {
         // Add another job that will hopefully restart a stopped queue.
         try await Task.sleep(nanoseconds: NSEC_PER_USEC)
         async let result2: JobResult = withCheckedContinuation { continuation in
-            let job = IncomingContactSyncJobRecord(attachmentId: "C", isCompleteContactSync: true)
+            let job = IncomingContactSyncJobRecord(legacyAttachmentId: "C", isCompleteContactSync: true)
             jobFinder.addJob(job)
             serialRunner.addPersistedJob(job, runner: jobRunnerFactory.buildRunner(completionContinuation: continuation))
         }
@@ -84,7 +84,7 @@ final class JobQueueRunnerTest: XCTestCase {
 
     func testRetryWaitingJobs() async throws {
         serialRunner.start(shouldRestartExistingJobs: false)
-        let job = IncomingContactSyncJobRecord(attachmentId: "A", isCompleteContactSync: true)
+        let job = IncomingContactSyncJobRecord(legacyAttachmentId: "A", isCompleteContactSync: true)
         jobFinder.addJob(job)
         serialRunner.addPersistedJob(job, runner: jobRunnerFactory.buildRunner(completionContinuation: nil, retryInterval: kHourInterval))
         while true {
@@ -97,7 +97,7 @@ final class JobQueueRunnerTest: XCTestCase {
     }
 
     func testRemovedElsewhere() async {
-        let job = IncomingContactSyncJobRecord(attachmentId: "A", isCompleteContactSync: true)
+        let job = IncomingContactSyncJobRecord(legacyAttachmentId: "A", isCompleteContactSync: true)
         jobFinder.addJob(job)
         mockDb.write { tx in jobFinder.removeJob(job, tx: tx) }
         async let result: JobResult = withCheckedContinuation { continuation in
@@ -187,7 +187,7 @@ private class MockJobRunner: JobRunner {
     }
 
     func runJobAttempt(_ jobRecord: IncomingContactSyncJobRecord) async -> JobAttemptResult {
-        executedJobs.append(jobRecord.attachmentId)
+        jobRecord.legacyAttachmentId.map(executedJobs.append(_:))
         if let retryInterval = self.retryInterval {
             self.retryInterval = nil
             return .retryAfter(retryInterval)

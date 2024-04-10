@@ -17,12 +17,12 @@ public final class IncomingGroupSyncJobRecord: JobRecord, FactoryInitializableFr
     #if TESTABLE_BUILD
 
     init(
-        attachmentId: String,
+        legacyAttachmentId: String,
         exclusiveProcessIdentifier: String?,
         failureCount: UInt,
         status: Status
     ) {
-        self.attachmentId = attachmentId
+        self.legacyAttachmentId = legacyAttachmentId
         super.init(
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
@@ -32,17 +32,17 @@ public final class IncomingGroupSyncJobRecord: JobRecord, FactoryInitializableFr
 
     #endif
 
-    public let attachmentId: String
+    public let legacyAttachmentId: String
 
     required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        attachmentId = try container.decode(String.self, forKey: .attachmentId)
+        legacyAttachmentId = try container.decode(String.self, forKey: .legacyAttachmentId)
         try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
     }
 
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try super.encode(to: container.superEncoder())
-        try container.encode(attachmentId, forKey: .attachmentId)
+        try container.encode(legacyAttachmentId, forKey: .legacyAttachmentId)
     }
 }

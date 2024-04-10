@@ -33,9 +33,9 @@ public class IncomingContactSyncJobQueue: NSObject {
     }
 
     @objc
-    public func add(attachmentId: String, isComplete: Bool, transaction tx: SDSAnyWriteTransaction) {
+    public func add(legacyAttachmentId: String, isComplete: Bool, transaction tx: SDSAnyWriteTransaction) {
         let jobRecord = IncomingContactSyncJobRecord(
-            attachmentId: attachmentId,
+            legacyAttachmentId: legacyAttachmentId,
             isCompleteContactSync: isComplete
         )
         jobRecord.anyInsert(transaction: tx)
@@ -64,7 +64,13 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
     func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
 
     private func _runJob(_ jobRecord: IncomingContactSyncJobRecord) async throws {
-        let attachmentId = jobRecord.attachmentId
+        // TODO: handle v2 attachments
+        guard let attachmentId = jobRecord.legacyAttachmentId else {
+            await databaseStorage.awaitableWrite { tx in
+                jobRecord.anyRemove(transaction: tx)
+            }
+            return
+        }
         let attachmentStream = try await getAttachmentStream(attachmentId: attachmentId)
         let insertedThreads = try await firstly(on: DispatchQueue.global()) {
             try self.processAttachmentStream(attachmentStream, isComplete: jobRecord.isCompleteContactSync)

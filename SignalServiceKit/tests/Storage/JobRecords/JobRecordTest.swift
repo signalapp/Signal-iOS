@@ -165,19 +165,29 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
     static let constants: [(IncomingContactSyncJobRecord, base64JsonData: Data)] = [
         (
             IncomingContactSyncJobRecord(
-                attachmentId: "darth revan",
+                legacyAttachmentId: "darth revan",
                 isCompleteContactSync: true,
                 exclusiveProcessIdentifier: "star wars character",
                 failureCount: 12,
                 status: .ready
             ),
             Data(base64Encoded: "eyJzdXBlciI6eyJmYWlsdXJlQ291bnQiOjEyLCJsYWJlbCI6IkluY29taW5nQ29udGFjdFN5bmMiLCJzdGF0dXMiOjEsInVuaXF1ZUlkIjoiRkYzNzUzQjMtQjFGRC00QjRBLTk2QzMtMjM5OEVCMTIwMTM2IiwiZXhjbHVzaXZlUHJvY2Vzc0lkZW50aWZpZXIiOiJzdGFyIHdhcnMgY2hhcmFjdGVyIiwicmVjb3JkVHlwZSI6NjF9LCJpc0NvbXBsZXRlQ29udGFjdFN5bmMiOnRydWUsImF0dGFjaG1lbnRJZCI6ImRhcnRoIHJldmFuIn0=")!
+        ),
+        (
+            IncomingContactSyncJobRecord(
+                legacyAttachmentId: nil,
+                isCompleteContactSync: false,
+                exclusiveProcessIdentifier: "star wars villain",
+                failureCount: 6,
+                status: .permanentlyFailed
+            ),
+            Data(base64Encoded: "eyJpc0NvbXBsZXRlQ29udGFjdFN5bmMiOmZhbHNlLCJzdXBlciI6eyJ1bmlxdWVJZCI6IkIxMzQxNDU5LTNCQTMtNEFBNy04NUZGLURFQ0YxMDlBNzRFQSIsImV4Y2x1c2l2ZVByb2Nlc3NJZGVudGlmaWVyIjoic3RhciB3YXJzIHZpbGxhaW4iLCJmYWlsdXJlQ291bnQiOjYsInJlY29yZFR5cGUiOjYxLCJzdGF0dXMiOjMsImxhYmVsIjoiSW5jb21pbmdDb250YWN0U3luYyJ9fQ==")!
         )
     ]
 
     func validate(against: IncomingContactSyncJobRecord) throws {
         guard
-            attachmentId == against.attachmentId,
+            legacyAttachmentId == against.legacyAttachmentId,
             isCompleteContactSync == against.isCompleteContactSync
         else {
             throw ValidatableModelError.failedToValidate
@@ -189,7 +199,7 @@ extension IncomingGroupSyncJobRecord: ValidatableModel {
     static let constants: [(IncomingGroupSyncJobRecord, base64JsonData: Data)] = [
         (
             IncomingGroupSyncJobRecord(
-                attachmentId: "happy birthday",
+                legacyAttachmentId: "happy birthday",
                 exclusiveProcessIdentifier: "happy birthday TO YOOOU",
                 failureCount: 0,
                 status: .permanentlyFailed
@@ -200,7 +210,7 @@ extension IncomingGroupSyncJobRecord: ValidatableModel {
 
     func validate(against: IncomingGroupSyncJobRecord) throws {
         guard
-            attachmentId == against.attachmentId
+            legacyAttachmentId == against.legacyAttachmentId
         else {
             throw ValidatableModelError.failedToValidate
         }

@@ -9,17 +9,17 @@ import GRDB
 public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializableFromRecordType {
     override class var jobRecordType: JobRecordType { .incomingContactSync }
 
-    public let attachmentId: String
+    public let legacyAttachmentId: String?
     public let isCompleteContactSync: Bool
 
     public init(
-        attachmentId: String,
+        legacyAttachmentId: String?,
         isCompleteContactSync: Bool,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
-        self.attachmentId = attachmentId
+        self.legacyAttachmentId = legacyAttachmentId
         self.isCompleteContactSync = isCompleteContactSync
 
         super.init(
@@ -32,7 +32,7 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
     required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        attachmentId = try container.decode(String.self, forKey: .attachmentId)
+        legacyAttachmentId = try container.decodeIfPresent(String.self, forKey: .legacyAttachmentId)
         isCompleteContactSync = try container.decode(Bool.self, forKey: .isCompleteContactSync)
 
         try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
@@ -43,7 +43,7 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
 
         try super.encode(to: container.superEncoder())
 
-        try container.encode(attachmentId, forKey: .attachmentId)
+        try container.encodeIfPresent(legacyAttachmentId, forKey: .legacyAttachmentId)
         try container.encode(isCompleteContactSync, forKey: .isCompleteContactSync)
     }
 }
