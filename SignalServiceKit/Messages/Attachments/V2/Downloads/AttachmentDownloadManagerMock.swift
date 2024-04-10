@@ -11,6 +11,10 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
 
     public init() {}
 
+    public func downloadTransientAttachment(metadata: AttachmentDownloads.DownloadMetadata) -> Promise<URL> {
+        return .pending().0
+    }
+
     open func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,

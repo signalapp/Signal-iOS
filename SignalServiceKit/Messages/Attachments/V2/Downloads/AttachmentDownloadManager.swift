@@ -14,9 +14,35 @@ public enum AttachmentDownloads {
 
     /// Key for a ``Attachment.IdType`` value.
     public static var attachmentDownloadAttachmentIDKey: String { "attachmentDownloadAttachmentIDKey" }
+
+    public struct DownloadMetadata {
+        public let cdnNumber: UInt32
+        public let cdnKey: String
+        public let encryptionKey: Data
+        public let digest: Data
+        public let plaintextLength: UInt32
+
+        public init(
+            cdnNumber: UInt32,
+            cdnKey: String,
+            encryptionKey: Data,
+            digest: Data,
+            plaintextLength: UInt32
+        ) {
+            self.cdnNumber = cdnNumber
+            self.cdnKey = cdnKey
+            self.encryptionKey = encryptionKey
+            self.digest = digest
+            self.plaintextLength = plaintextLength
+        }
+    }
 }
 
 public protocol AttachmentDownloadManager {
+
+    func downloadTransientAttachment(
+        metadata: AttachmentDownloads.DownloadMetadata
+    ) -> Promise<URL>
 
     @discardableResult
     func enqueueDownloadOfAttachmentsForMessage(
