@@ -464,7 +464,6 @@ extension ConversationSettingsViewController {
 
     private func addNicknameItemIfNecessary(to section: OWSTableSection) {
         guard
-            FeatureFlags.nicknames,
             !self.thread.isNoteToSelf,
             let thread = self.thread as? TSContactThread
         else { return }

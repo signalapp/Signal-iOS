@@ -97,8 +97,6 @@ public class FeatureFlags: NSObject {
 
     public static let callLinkJoin = build.includes(.dev)
 
-    public static let nicknames = build.includes(.dev)
-
     public static let callReactionReceiveSupport = build.includes(.internal)
 }
 

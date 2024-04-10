@@ -138,33 +138,31 @@ class MemberActionSheet: OWSTableSheetViewController {
         guard !address.isLocalAddress else { return }
 
         // Nickname
-        if FeatureFlags.nicknames {
-            section.add(.item(
-                icon: .buttonEdit,
-                name: OWSLocalizedString(
-                    "NICKNAME_BUTTON_TITLE",
-                    comment: "Title for the table cell in conversation settings for presenting the profile nickname editor."
-                ),
-                actionBlock: { [weak self] in
-                    guard let self else { return }
-                    let db = DependenciesBridge.shared.db
+        section.add(.item(
+            icon: .buttonEdit,
+            name: OWSLocalizedString(
+                "NICKNAME_BUTTON_TITLE",
+                comment: "Title for the table cell in conversation settings for presenting the profile nickname editor."
+            ),
+            actionBlock: { [weak self] in
+                guard let self else { return }
+                let db = DependenciesBridge.shared.db
 
-                    let nicknameEditor = db.read { tx in
-                        NicknameEditorViewController.create(
-                            for: self.address,
-                            context: .init(
-                                db: db,
-                                nicknameManager: DependenciesBridge.shared.nicknameManager
-                            ),
-                            tx: tx
-                        )
-                    }
-                    guard let nicknameEditor else { return }
-                    let navigationController = OWSNavigationController(rootViewController: nicknameEditor)
-                    self.presentFormSheet(navigationController, animated: true)
+                let nicknameEditor = db.read { tx in
+                    NicknameEditorViewController.create(
+                        for: self.address,
+                        context: .init(
+                            db: db,
+                            nicknameManager: DependenciesBridge.shared.nicknameManager
+                        ),
+                        tx: tx
+                    )
                 }
-            ))
-        }
+                guard let nicknameEditor else { return }
+                let navigationController = OWSNavigationController(rootViewController: nicknameEditor)
+                self.presentFormSheet(navigationController, animated: true)
+            }
+        ))
 
         // If blocked, only show unblock as an option
         guard !threadViewModel.isBlocked else {
