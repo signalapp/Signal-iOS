@@ -153,7 +153,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         infoSection.add(.label(withText: "MobileCoin Environment: \(MobileCoinAPI.Environment.current)"))
         infoSection.add(.label(withText: "Payments EnabledKey: \(paymentsHelper.arePaymentsEnabled ? "Yes" : "No")"))
-        if let paymentsEntropy = paymentsSwift.paymentsEntropy {
+        if paymentsHelper.arePaymentsEnabled, let paymentsEntropy = paymentsSwift.paymentsEntropy {
             infoSection.add(.copyableItem(label: "Payments Entropy", value: paymentsEntropy.hexadecimalString))
             if let passphrase = paymentsSwift.passphrase {
                 infoSection.add(.copyableItem(label: "Payments mnemonic", value: passphrase.asPassphrase))
