@@ -68,13 +68,8 @@ class GroupDescriptionViewController: OWSTableViewController2 {
 
         updateNavigation()
         updateTableContents()
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-
         helper.descriptionTextView.linkTextAttributes = [
-            .foregroundColor: Theme.primaryTextColor,
+            .foregroundColor: UIColor.link,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
     }
