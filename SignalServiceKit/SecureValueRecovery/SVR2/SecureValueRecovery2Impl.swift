@@ -1234,17 +1234,14 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
             )
         }
-        if !hasMasterKey, pinCode == nil, isRegisteredPrimary {
+        if !hasMasterKey, isRegisteredPrimary {
             db.write { tx in
-                setLocalDataAndSyncStorageServiceIfNeeded(
-                    masterKey: Cryptography.generateRandomBytes(SVR.masterKeyLengthBytes),
-                    isMasterKeyBackedUp: false,
-                    pinType: .alphanumeric,
-                    encodedPINVerificationString: nil,
-                    mrEnclaveStringValue: nil,
-                    mode: .dontSyncStorageService,
-                    transaction: tx
-                )
+                if pinCode != nil {
+                    // We have a pin code but no master key? We know this has happened
+                    // in the wild but have no idea how.
+                    Logger.error("Have PIN but no master key")
+                }
+                self.useDeviceLocalMasterKey(authedAccount: .implicit(), transaction: tx)
             }
         }
     }

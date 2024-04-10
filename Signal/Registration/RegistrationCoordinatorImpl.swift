@@ -2939,6 +2939,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 strongSelf.inMemoryState.hasBackedUpToSVR = true
                 strongSelf.db.write { tx in
+                    Logger.info("Setting pin code after SVR backup")
                     strongSelf.deps.ows2FAManager.markPinEnabled(pin, tx)
                 }
                 return strongSelf.nextStep()

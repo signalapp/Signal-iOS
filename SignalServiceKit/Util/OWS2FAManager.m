@@ -327,6 +327,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                          result(isValid);
 
                          if (isValid) {
+                             OWSLogInfo(@"Verified PIN code");
                              DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                  [self setPinCode:pin transaction:transaction];
                              });

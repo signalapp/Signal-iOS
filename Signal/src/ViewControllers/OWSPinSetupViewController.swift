@@ -617,7 +617,8 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
 
         firstly { () -> Promise<Void> in
-            OWS2FAManager.shared.requestEnable2FA(withPin: pin, mode: .V2)
+            Logger.info("Setting v2 pin code")
+            return OWS2FAManager.shared.requestEnable2FA(withPin: pin, mode: .V2)
         }.recover { error in
             // If we have a network failure before even requesting to enable 2FA, we
             // can just ask the user to retry without altering any state. We can be
