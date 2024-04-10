@@ -168,43 +168,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         updateRecentAttachments()
         updateMutualGroupThreads()
         reloadThreadAndUpdateContent()
-
-        updateNavigationBar()
-    }
-
-    private var shouldShowEditButton: Bool {
-        if isGroupThread {
-            return true
-        }
-        switch contactsManagerImpl.editingAuthorization {
-        case .notAllowed:
-            return false
-        case .denied, .restricted:
-            return false
-        case .authorized:
-            return isSystemContact
-        }
-    }
-
-    func updateNavigationBar() {
-        guard canEditConversationAttributes else {
-            navigationItem.rightBarButtonItem = nil
-            return
-        }
-
-        if shouldShowEditButton {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_EDIT",
-                    comment: "Label for the 'edit' button in conversation settings view."
-                ),
-                style: .plain,
-                target: self,
-                action: #selector(editButtonWasPressed)
-            )
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {

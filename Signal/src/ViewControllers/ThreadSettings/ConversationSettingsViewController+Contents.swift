@@ -52,12 +52,12 @@ extension ConversationSettingsViewController {
         addNicknameItemIfNecessary(to: mainSection)
         addColorAndWallpaperSettingsItem(to: mainSection)
         if !isNoteToSelf { addSoundAndNotificationSettingsItem(to: mainSection) }
-        addSystemContactItemIfNecessary(to: mainSection)
         addSafetyNumberItemIfNecessary(to: mainSection)
 
         contents.add(mainSection)
 
         // Middle sections
+        addSystemContactSectionIfNecessary(to: contents)
         addAllMediaSectionIfNecessary(to: contents)
         addBadgesItemIfNecessary(to: contents)
 
@@ -89,8 +89,6 @@ extension ConversationSettingsViewController {
         contents.add(emptySection)
 
         setContents(contents, shouldReload: shouldReload)
-
-        updateNavigationBar()
     }
 
     // MARK: Calls section
@@ -327,8 +325,10 @@ extension ConversationSettingsViewController {
         }))
     }
 
-    private func addSystemContactItemIfNecessary(to section: OWSTableSection) {
+    private func addSystemContactSectionIfNecessary(to contents: OWSTableContents) {
         guard !thread.isNoteToSelf, let contactThread = thread as? TSContactThread else { return }
+
+        let section = OWSTableSection()
 
         if isSystemContact {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
@@ -372,6 +372,8 @@ extension ConversationSettingsViewController {
                 self?.showAddToSystemContactsActionSheet(contactThread: contactThread)
             }))
         }
+
+        contents.add(section)
     }
 
     private func addColorAndWallpaperSettingsItem(to section: OWSTableSection) {
