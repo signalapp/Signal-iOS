@@ -53,6 +53,14 @@ public class TextViewWithPlaceholder: UIView {
         }
     }
 
+    public var textContainerInset: UIEdgeInsets {
+        get { textView.textContainerInset }
+        set {
+            textView.textContainerInset = newValue
+            placeholderTextView.textContainerInset = newValue
+        }
+    }
+
     public var returnKeyType: UIReturnKeyType {
         get { textView.returnKeyType }
         set { textView.returnKeyType = newValue }

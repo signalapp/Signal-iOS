@@ -147,7 +147,19 @@ class NicknameEditorViewController: OWSTableViewController2 {
             comment: "Placeholder text it the text box for the note in the profile nickname editor."
         )
         textView.delegate = self
+
+        textView.addSubview(noteCharacterLimitLabel)
+        noteCharacterLimitLabel.autoPinEdge(toSuperviewEdge: .trailing)
+        noteCharacterLimitLabel.autoPinEdge(toSuperviewEdge: .bottom)
+
         return textView
+    }()
+
+    private lazy var noteCharacterLimitLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeSubheadline
+        label.isHidden = true
+        return label
     }()
 
     private func createNameTextField(placeholder: String) -> OWSTextField {
@@ -165,6 +177,29 @@ class NicknameEditorViewController: OWSTableViewController2 {
 
     private func editingChanged() {
         navigationItem.rightBarButtonItem?.isEnabled = canSaveChanges
+
+        let glyphCount = noteTextView.text?.glyphCount ?? 0
+        if glyphCount < 140 {
+            noteCharacterLimitLabel.isHidden = true
+        } else {
+            noteCharacterLimitLabel.isHidden = false
+            let remainingCharacters = Self.maxNoteLengthGlyphs - glyphCount
+            noteCharacterLimitLabel.text = "\(remainingCharacters)"
+            if remainingCharacters > 5 {
+                noteCharacterLimitLabel.textColor = Theme.secondaryTextAndIconColor
+            } else {
+                noteCharacterLimitLabel.textColor = .ows_accentRed
+            }
+        }
+    }
+
+    private func updateFonts() {
+        let font = UIFont.dynamicTypeSubheadlineClamped
+        noteCharacterLimitLabel.font = font
+        noteTextView.textContainerInset.trailing = NSAttributedString(
+            string: noteCharacterLimitLabel.text ?? "",
+            attributes: [.font: font]
+        ).size().width + 8
     }
 
     // MARK: Lifecycle
@@ -174,6 +209,8 @@ class NicknameEditorViewController: OWSTableViewController2 {
 
         super.viewDidLoad()
         self.updateTableContents()
+        self.updateFonts()
+
         self.title = OWSLocalizedString(
             "NICKNAME_EDITOR_TITLE",
             comment: "The title for the profile nickname editor view."
@@ -186,6 +223,15 @@ class NicknameEditorViewController: OWSTableViewController2 {
             self?.saveChanges()
         }
         editingChanged()
+
+        if self.initialNicknameRecord == nil, self.initialNote == nil {
+            givenNameTextField.becomeFirstResponder()
+        }
+    }
+
+    override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
+        self.updateFonts()
     }
 
     private func updateTableContents() {
