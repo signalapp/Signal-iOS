@@ -194,7 +194,7 @@
 "APN_Message" = "Можливо, у вас є нові повідомлення";
 
 /* Default message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal не запускається. Надішліть лог помилки на support@signal.org, щоб ми її виправили.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal не запускається. Надішліть журнал налагодження на support@signal.org, щоб ми могли виправити помилку.";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "Відкрити Signal натомість";
@@ -215,7 +215,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Невідома версія бази даних.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal зіткнувся з проблемою під час відкриття. Будь ласка, надішліть журнал зневадження на support@signal.org, щоб допомогти усунути цю проблему.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Під час відкриття Signal виникла проблема. Будь ласка, надішліть журнал налагодження на support@signal.org, щоб допомогти її усунути.";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Не вдається відкрити Signal";
@@ -227,7 +227,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Немає місця в сховищі";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Не вдалося відновити дані, перенесені з вашого старого пристрою. Будь ласка, надішліть журнал налагодження на support@signal.org, щоб ми могли виправити цю проблему. Якщо ви заново встановите Signal, історія повідомлень може бути втрачена.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Не вдалося відновити дані, перенесені з вашого старого пристрою. Будь ласка, надішліть журнал налагодження на support@signal.org, щоб ми могли виправити цю проблему. Якщо ви заново встановите Signal, історію повідомлень може бути втрачено.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Не вдається завершити перенесення";
@@ -500,7 +500,7 @@
 "BADGE_EXPIRED_DONATE_BUTTON" = "Задонатити";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Дізнатись більше.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Дізнатися більше.";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Щомісячний донат скасовано";
@@ -989,7 +989,7 @@
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "Ваша інформація є конфіденційною";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information. */
-"CARD_DONATION_SUBHEADER_LEARN_MORE" = "Дізнатись більше.";
+"CARD_DONATION_SUBHEADER_LEARN_MORE" = "Дізнатися більше.";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
 "CARD_DONATION_SUBHEADER_TEXT" = "Введіть дані банківської картки. Signal не збирає і не зберігає вашу особисту інформацію.";
@@ -1205,7 +1205,7 @@
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Надати доступ до контактів";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Зверніться в службу підтримки";
+"CONTACT_SUPPORT" = "Звернутися в службу підтримки";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
 "CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Внески та відзнаки";
@@ -1259,19 +1259,19 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Спробувати знову";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Ваш журнал зневадження допоможе нам швидше усунути вашу проблему. Надсилання журналу необов'язкове.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Ваш журнал налагодження допоможе нам швидше усунути проблему. Надсилання журналу необов'язкове.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Надіслати журнал зневадження?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Надіслати журнал налагодження?";
 
 /* Placeholder telling user they must select a filter. */
 "CONTACT_SUPPORT_SELECT_A_FILTER" = "Оберіть причину";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Відправити з журналом відладки";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Відправити з журналом налагодження";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Відправити без журналу відладки";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Відправити без журналу налагодження";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Відкрити у Картах";
@@ -1673,7 +1673,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Відновити початковий стан Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Відіслати журнал відладки";
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Надіслати журнал налагодження";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Дані не відновлено";
@@ -1712,7 +1712,7 @@
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Не вдалося вивантажити логи.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "Що ви хочете зробити із посиланням на логи помилок?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Що зробити з посиланням на ваш журнал налагодження?";
 
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "Неможливо знайти логи.";
@@ -1733,7 +1733,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Ще один крок";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Інформація про журнал відладки";
+"DEBUG_LOG_INFO_BUTTON" = "Інформація про журнали налагодження";
 
 /* info message text in conversation view */
 "DECLINED_AUDIO_CALL" = "Ви відхилили голосовий дзвінок";
@@ -2264,7 +2264,7 @@
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "Конфіденційний обмін повідомленнями можливий — завдяки вашим коштам. Без реклами, відстежування й поступок. Підтримайте Signal донатом.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
-"DONATION_SCREENS_HEADER_READ_MORE" = "Дізнатись більше";
+"DONATION_SCREENS_HEADER_READ_MORE" = "Дізнатися більше";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "Конфіденційність важливіша за прибуток";
@@ -2570,7 +2570,7 @@
 "ERROR_NETWORK_FAILURE" = "Помилка мережі";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Будь ласка, допоможіть нам покращити Signal та відправте цю помилку разом із журналом відладки з вашого пристрою до support@signal.org; %1$@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Будь ласка, допоможіть нам покращити Signal. Відправте цю помилку разом з журналами налагодження з вашого пристрою на адресу support@signal.org; %1$@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal Beta: Виникла помилка";
@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "Ви створили групу.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ створив цю групу.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Група була створена.";
@@ -3836,7 +3836,7 @@
 "LOGGING_SECTION" = "Логування";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Журнали відладки можуть допомогти представникам Signal виправити помилки та аварійні завершення роботи.";
+"LOGGING_SECTION_FOOTER" = "Журнали налагодження можуть допомогти фахівцям Signal усунути помилки та збої.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Повідомлення";
@@ -5411,25 +5411,25 @@
 "PROCEED_BUTTON" = "Продовжити";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Напишіть кілька слів про себе…";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Кілька слів про себе…";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Будьте милими";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Несіть добро";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Люблю каву";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Шифруюсь";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Шифруюся";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Вільний для листування";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Маю час початитися";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Готовий до розмов";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Радо поспілкуюся";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "На перерві";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Відпочиваю";
 
 /* The 'Working on something new' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Працюю над чимось новим";
@@ -6188,7 +6188,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Обхід цензури не потрібен. З'єднання з Signal вже встановлено.";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Вести журнал відладки";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Вести журнал налагодження";
 
 /* Label for the 'advanced pin settings' button. */
 "SETTINGS_ADVANCED_PIN_SETTINGS" = "Розширені налаштування PIN";
@@ -6203,7 +6203,7 @@
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Ввімкнути PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Відіслати журнал відладки";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Надіслати журнал налагодження";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Журнали Помилок";
@@ -7217,7 +7217,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "Видалити";
 
 /* Text indication a story caption can be tapped to read more. */
-"STORIES_CAPTION_READ_MORE" = "Дізнатись більше";
+"STORIES_CAPTION_READ_MORE" = "Дізнатися більше";
 
 /* Context menu action to copy the selected story reply */
 "STORIES_COPY_REPLY_ACTION" = "Копіювати";
@@ -7754,7 +7754,7 @@
 "TRANSFER_RELAUNCH_NOTIFICATION" = "Відкрийте Signal, щоб почати спілкування";
 
 /* Label for the cancel button in an alert or action sheet. */
-"TXT_CANCEL_TITLE" = "Скасувати";
+"TXT_CANCEL_TITLE" = "Закрити";
 
 /* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "Видалити";
@@ -7967,7 +7967,7 @@
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Імена користувачів завжди поєднуються з кількома цифрами. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Виберіть ім’я користувача";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Створіть ім'я користувача";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Ім'я користувача може містити лише a-z, 0-9, та _";
@@ -7976,7 +7976,7 @@
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Недійсне ім'я користувача, введіть мінімум 2 цифри";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Ці цифри зберігають конфіденційність вашого імені користувача і допомагають захистити вас від небажаних повідомлень. Діліться своїм іменем користувача тільки з тими людьми і групами, з якими ви хочете спілкуватися. Якщо змінити ім'я користувача, цифри також зміняться.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Завдяки цим цифрам ваше ім'я користувача конфіденційне, а ви не отримуєте небажаних повідомлень. Повідомляйте своє ім'я користувача тільки тим людям і групам, з якими хочете спілкуватися. Якщо змінити ім'я користувача, цифри також зміняться.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Що означають ці цифри?";
@@ -8006,16 +8006,16 @@
 "VALIDATION_ERROR_TOO_LONG" = "Ім'я пристрою занадто довге";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Ви позначили %1$@ як неперевірений контакт.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Ви позначили користувача %1$@ як неперевірений контакт.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Ви позначили %1$@ як неперевірений контакт на іншому пристрої.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Ви позначили з іншого пристрою користувача %1$@ як неперевірений контакт.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Ви позначили %1$@ як перевірений контакт.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Ви позначили користувача %1$@ як перевірений контакт.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Ви позначили %1$@ як перевірений контакт на іншому пристрої.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Ви позначили з іншого пристрою користувача %1$@ як перевірений контакт.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Стан підтвердження змінено.";

@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "آپ نے گروپ بنایا ہے۔";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ بنایا۔";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "گروپ بنایا گیا تھا۔";

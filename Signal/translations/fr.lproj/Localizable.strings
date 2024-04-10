@@ -443,7 +443,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Message vocal";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Message audio";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Message vocal";
 
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "Appel vocal";
@@ -704,7 +704,7 @@
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Appel vocal manqué le %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Vous pouvez accorder l’accès au microphone dans l’appli Réglages d’iOS pour passer des appels et enregistrer des messages vocaux avec Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Pour passer des appels et enregistrer des messages vocaux avec Signal, accordez l’accès au microphone dans l’appli Réglages d’iOS.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "L’accès au microphone est requis";
@@ -923,7 +923,7 @@
 "CAMERA_VO_CLOSE_BUTTON" = "Fermer";
 
 /* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
-"CAMERA_VO_COMPOSER_MODE" = "Mode composer";
+"CAMERA_VO_COMPOSER_MODE" = "Mode Rédaction";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "Automatique";
@@ -1076,7 +1076,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Ouvrir les paramètres";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour voir qui de vos contacts utilise Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Pour savoir qui utilise Signal parmi vos contacts, accordez l’accès aux contacts via l’appli Réglages d’iOS.";
 
 /* Configure reactions title text */
 "CONFIGURE_REACTIONS" = "Configurer les réactions";
@@ -1199,7 +1199,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Le contact est invalide";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal doit pouvoir accéder à vos contacts. Rendez-vous dans les paramètres iOS et autorisez l'accès aux contacts. Votre liste de contacts est chiffrée et le service Signal n’y a pas accès.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal a besoin d’accéder à vos contacts. Accédez au Réglages iOS et autorisez l’accès aux contacts. Votre liste de contacts est chiffrée et le service Signal n’y a pas accès.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Autoriser l’accès aux contacts";
@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "Vous avez créé le groupe.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ a créé le groupe.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Le groupe a été créé.";
@@ -3662,7 +3662,7 @@
 "INVALID_PROXY_HOST_ERROR" = "L’adresse proxy que vous avez saisie est incorrecte. Veuillez la vérifier et réessayer.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour inviter vos amis à se joindre à Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Pour inviter vos amis à vous rejoindre sur Signal, accordez l’accès aux contacts via l’appli Réglages d’iOS.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Autoriser l’accès aux contacts";
@@ -4271,7 +4271,7 @@
 "MISSED_VIDEO_CALL" = "Appel vidéo manqué";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Vous pouvez accorder l’accès à l’appareil photo dans l’appli Réglages d’iOS pour passer des appels vidéo avec Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Pour passer des appels vidéo avec Signal, accordez l’accès à l’appareil photo via l’appli Réglages d’iOS.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal a besoin d’accéder à votre appareil photo.";
@@ -4469,7 +4469,7 @@
 "NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "Prénom";
 
 /* Placeholder text it the text box for the note in the profile nickname editor. */
-"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Note";
+"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "Notes";
 
 /* The title for the profile nickname editor view. */
 "NICKNAME_EDITOR_TITLE" = "Pseudo";
@@ -4790,13 +4790,13 @@
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Trop d’essais infructueux d’authentification. Veuillez réessayer plus tard.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Vous devez activer un code dans vos réglages iOS pour verrouiller les paiements.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Pour utiliser la fonctionnalité de verrouillage des paiements, vous devez activer un code dans vos réglages iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Vous devez activer un code dans vos réglages iOS pour verrouiller les paiements.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Pour utiliser la fonctionnalité de verrouillage des paiements, vous devez activer un code dans vos réglages iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Vous devez activer un code dans vos réglages iOS pour verrouiller les paiements.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Pour utiliser la fonctionnalité de verrouillage des paiements, vous devez activer un code dans vos réglages iOS.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Ajoutez une couche de sécurité supplémentaire et exigez la saisie de votre code d’accès ou l’utilisation de Touch ID pour envoyer des fonds.";
@@ -4868,10 +4868,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Le paiement n’est pas encore confirmé.";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Authentification des paiements verrouillés annulée.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Verrouillage des paiements : authentification annulée.";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Échec de l’authentification des paiements verrouillés.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Verrouillage des paiements : échec de l’authentification.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Le paiement n’a pas pu être finalisé. Veuillez vérifier votre connexion et réessayer.";
@@ -5954,13 +5954,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Trop d’essais infructueux d’authentification. Veuillez réessayer plus tard.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Vous devez activer un code dans vos réglages iOS pour utiliser le verrou d’écran.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Pour utiliser la fonctionnalité de verrouillage d’écran, vous devez activer un code dans vos réglages iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Vous devez activer un code dans vos réglages iOS pour utiliser le verrou d’écran.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Pour utiliser la fonctionnalité de verrouillage d’écran, vous devez activer un code dans vos réglages•iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Vous devez activer un code dans vos réglages iOS pour utiliser le verrou d’écran.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Pour utiliser la fonctionnalité de verrouillage d’écran, vous devez activer un code dans vos réglages•iOS.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authentifiez-vous pour ouvrir Signal.";
@@ -6533,7 +6533,7 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Autoriser les paiements";
 
 /* Title for the 'enable payments lock' view of the payments activation flow. */
-"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Verrouiller les paiements";
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Verrouillage des paiements";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin est une nouvelle monnaie numérique axée sur la protection des données personnelles.";
@@ -6575,7 +6575,7 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Adresse de portefeuille non valide";
 
 /* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
-"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Verrouiller les paiements";
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Verrouillage des paiements";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Pas d'activité récente.";
@@ -7457,13 +7457,13 @@
 "STORY_SENDING" = "Envoi…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Engageant une conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Vous avez démarré une conversation avec eux";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Acceptant une demande d’échange de messages";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Vous avez accepté leur invitation par message";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Les ayant enregistré comme contacts système";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Il s’agit de contacts système";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Vos connexions peuvent voir votre nom, votre photo de profil et les contenus que vous publiez dans « Ma story » à moins que vous en décidiez autrement.";

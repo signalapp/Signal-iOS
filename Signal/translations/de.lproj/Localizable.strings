@@ -2909,7 +2909,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "Du hast die Gruppe erstellt.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat die Gruppe erstellt.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Gruppe wurde erstellt.";
@@ -3047,7 +3047,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Aktualisiere Signal auf diesem Gerät, um dieser Gruppe beizutreten.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Für Beitrittsanfragen über den Gruppen-Link einen Admin zum Bestätigen erforderlich machen.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Ein Admin muss Beitrittsanfragen von neuen Mitgliedern über den Gruppen-Link bestätigen.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Neue Mitglieder bestätigen";
@@ -3086,7 +3086,7 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Gruppen-Link";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Für Beitrittsanfragen über den Gruppen-Link einen Admin zum Bestätigen erforderlich machen.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Ein Admin muss Beitrittsanfragen von neuen Mitgliedern über den Gruppen-Link bestätigen.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "Link zurücksetzen";
@@ -7058,7 +7058,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registrierungssperre";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal-PIN Eingabe erforderlich machen, sobald du deine Telefonnummer erneut bei Signal registrierst.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Erfordert Signal-PIN Eingabe, sobald du deine Telefonnummer erneut bei Signal registrierst.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Tipp-Indikatoren";
@@ -7463,7 +7463,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Annehmen einer Unterhaltungsanfrage";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Speicherung in den Telefonkontakten";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "In deinen Telefonkontakten gespeichert";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Deine Verbindungen können deinen Namen und dein Foto sowie Beiträge unter »Meine Story« sehen, es sei denn, du verbirgst sie vor ihnen.";
