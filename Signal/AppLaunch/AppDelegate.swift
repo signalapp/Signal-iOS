@@ -60,6 +60,7 @@ private func uncaughtExceptionHandler(_ exception: NSException) {
     Logger.flush()
 }
 
+@main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Constants
 
