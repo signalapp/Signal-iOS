@@ -6,20 +6,20 @@
 import Foundation
 import SignalCoreKit
 
-private enum FeatureBuild: Int {
+enum FeatureBuild: Int {
     case dev
     case `internal`
     case beta
     case production
 }
 
-extension FeatureBuild {
+private extension FeatureBuild {
     func includes(_ level: FeatureBuild) -> Bool {
         return self.rawValue <= level.rawValue
     }
 }
 
-private let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .internal
+private let build = FeatureBuild.current
 
 // MARK: -
 

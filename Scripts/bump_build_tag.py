@@ -261,9 +261,9 @@ def get_tag_variant(args):
     current_flag = feature_flags_common.get_feature_flag()
 
     # Some of these flags are legacy.
-    if current_flag in ["dev", "internalPreview", "internal", "qa"]:
+    if current_flag in ["internal"]:
         feature_flag_tag = "internal"
-    elif current_flag in ["beta", "openPreview"]:
+    elif current_flag in ["beta"]:
         feature_flag_tag = "beta"
     elif current_flag in ["production"]:
         feature_flag_tag = ""
