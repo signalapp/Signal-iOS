@@ -84,4 +84,27 @@ public class MimeTypeUtil: NSObject {
         MimeType.imageHeif.rawValue: "heif",
         MimeType.imageWebp.rawValue: "webp",
     ]
+    @objc
+    public static let supportedDefinitelyAnimatedMimeTypesToExtensionTypes: [String: String] = {
+        var result = [
+            MimeType.imageGif.rawValue: "gif",
+            MimeType.imageApng.rawValue: "png",
+            MimeType.imageVndMozillaApng.rawValue: "png",
+        ]
+        if FeatureFlags.supportAnimatedStickers_Lottie {
+            result[MimeType.textXSignalStickerLottie.rawValue] = lottieStickerFileExtension
+        }
+        return result
+    }()
+    @objc
+    public static let supportedMaybeAnimatedMimeTypesToExtensionTypes: [String: String] = {
+        var result = supportedDefinitelyAnimatedMimeTypesToExtensionTypes;
+        result[MimeType.imageWebp.rawValue] = "webp"
+        result[MimeType.imagePng.rawValue] = "png"
+        return result
+    }()
+    @objc
+    public static let supportedBinaryDataMimeTypesToExtensionTypes: [String: String] = [
+        MimeType.applicationOctetStream.rawValue: "dat",
+    ]
 }

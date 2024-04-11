@@ -42,50 +42,6 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
-+ (NSDictionary *)supportedDefinitelyAnimatedMIMETypesToExtensionTypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSMutableDictionary<NSString *, NSString *> *value = [@ {
-            OWSMimeTypeImageGif : @"gif",
-            OWSMimeTypeImageApng1 : @"png",
-            OWSMimeTypeImageApng2 : @"png",
-        } mutableCopy];
-        if (SSKFeatureFlags.supportAnimatedStickers_Lottie) {
-            value[OWSMimeTypeLottieSticker] = kLottieStickerFileExtension;
-        }
-        result = [value copy];
-    });
-    return result;
-}
-
-+ (NSDictionary *)supportedMaybeAnimatedMIMETypesToExtensionTypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSMutableDictionary<NSString *, NSString *> *value =
-            [[MIMETypeUtil supportedDefinitelyAnimatedMIMETypesToExtensionTypes] mutableCopy];
-        value[OWSMimeTypeImageWebp] = @"webp";
-        value[OWSMimeTypeImagePng] = @"png";
-        result = [value copy];
-    });
-    return result;
-}
-
-+ (NSDictionary *)supportedBinaryDataMIMETypesToExtensionTypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = @ {
-            OWSMimeTypeApplicationOctetStream : @"dat",
-        };
-    });
-    return result;
-}
-
 + (NSDictionary *)supportedVideoExtensionTypesToMIMETypes
 {
     static NSDictionary *result = nil;
@@ -190,7 +146,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 + (BOOL)isSupportedBinaryDataMIMEType:(NSString *)contentType
 {
-    return [[self supportedBinaryDataMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
+    return [[MimeTypeUtil supportedBinaryDataMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
 + (BOOL)isSupportedVideoFile:(NSString *)filePath
@@ -231,24 +187,24 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 + (nullable NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType
 {
-    return [[self supportedMaybeAnimatedMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
+    return [[MimeTypeUtil supportedMaybeAnimatedMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
 + (nullable NSString *)getSupportedExtensionFromBinaryDataMIMEType:(NSString *)supportedMIMEType
 {
-    return [[self supportedBinaryDataMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
+    return [[MimeTypeUtil supportedBinaryDataMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
 #pragma mark - Full attachment utilities
 
 + (BOOL)isDefinitelyAnimated:(NSString *)contentType
 {
-    return [[self supportedDefinitelyAnimatedMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
+    return [[MimeTypeUtil supportedDefinitelyAnimatedMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
 + (BOOL)isMaybeAnimated:(NSString *)contentType
 {
-    return [[self supportedMaybeAnimatedMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
+    return [[MimeTypeUtil supportedMaybeAnimatedMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
 + (BOOL)isBinaryData:(NSString *)contentType
@@ -532,7 +488,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken,
-        ^{ result = [self utiTypesForMIMETypes:[self supportedMaybeAnimatedMIMETypesToExtensionTypes].allKeys]; });
+        ^{ result = [self utiTypesForMIMETypes:[MimeTypeUtil supportedMaybeAnimatedMimeTypesToExtensionTypes].allKeys]; });
     return result;
 }
 
