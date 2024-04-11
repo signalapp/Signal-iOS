@@ -1581,7 +1581,7 @@ public class MessageSender: Dependencies {
 
             Self.profileManager.didSendOrReceiveMessage(
                 from: SignalServiceAddress(messageSend.serviceId),
-                authedAccount: .implicit(),
+                localIdentifiers: messageSend.localIdentifiers,
                 transaction: transaction
             )
         }

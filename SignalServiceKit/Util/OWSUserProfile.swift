@@ -759,10 +759,9 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return UserProfileFinder().userProfile(for: localProfileAddress, transaction: tx) != nil
     }
 
-    @objc(getOrBuildUserProfileForAddress:authedAccount:transaction:)
+    @objc(getOrBuildUserProfileForAddress:transaction:)
     public class func getOrBuildUserProfile(
         for address: SignalServiceAddress,
-        authedAccount: AuthedAccount,
         transaction tx: SDSAnyWriteTransaction
     ) -> OWSUserProfile {
         let address = internalAddress(for: address.withNormalizedPhoneNumber())
@@ -781,7 +780,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             userProfile.update(
                 profileKey: .setTo(OWSAES256Key.generateRandom()),
                 userProfileWriter: .localUser,
-                authedAccount: authedAccount,
                 transaction: tx,
                 completion: nil
             )
@@ -1101,7 +1099,6 @@ extension OWSUserProfile {
     private func applyChanges(
         _ changes: UserProfileChanges,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction,
         completion: (() -> Void)?
     ) {
@@ -1269,7 +1266,6 @@ extension OWSUserProfile {
         badges: OptionalChange<[OWSUserProfileBadgeInfo]> = .noChange,
         isPhoneNumberShared: OptionalChange<Bool?> = .noChange,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction,
         completion: (() -> Void)?
     ) {
@@ -1288,46 +1284,8 @@ extension OWSUserProfile {
                 isPhoneNumberShared: isPhoneNumberShared
             ),
             userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
             tx: transaction,
             completion: completion
-        )
-    }
-
-    @available(swift, obsoleted: 1.0)
-    @objc(updateWithGivenName:familyName:userProfileWriter:authedAccount:transaction:completion:)
-    func update(
-        givenName: String?,
-        familyName: String?,
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
-        transaction: SDSAnyWriteTransaction,
-        completion: (() -> Void)?
-    ) {
-        update(
-            givenName: .setTo(givenName),
-            familyName: .setTo(familyName),
-            userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
-            transaction: transaction,
-            completion: completion
-        )
-    }
-
-    @available(swift, obsoleted: 1.0)
-    @objc
-    public func update(
-        avatarFileName: String?,
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        update(
-            avatarFileName: .setTo(avatarFileName),
-            userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
-            transaction: transaction,
-            completion: nil
         )
     }
 
@@ -1336,7 +1294,6 @@ extension OWSUserProfile {
     public func clearProfile(
         profileKey: OWSAES256Key,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction,
         completion: (() -> Void)?
     ) {
@@ -1351,7 +1308,6 @@ extension OWSUserProfile {
             avatarFileName: .setTo(nil),
             profileKey: .setTo(profileKey),
             userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
             transaction: transaction,
             completion: completion
         )
@@ -1362,55 +1318,14 @@ extension OWSUserProfile {
     public func update(
         profileKey: OWSAES256Key,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction,
         completion: (() -> Void)?
     ) {
         update(
             profileKey: .setTo(profileKey),
             userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
             transaction: transaction,
             completion: completion
-        )
-    }
-
-    @available(swift, obsoleted: 1.0)
-    @objc(updateWithGivenName:familyName:avatarUrlPath:userProfileWriter:authedAccount:transaction:completion:)
-    func update(
-        givenName: String?,
-        familyName: String?,
-        avatarUrlPath: String?,
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
-        transaction: SDSAnyWriteTransaction,
-        completion: (() -> Void)?
-    ) {
-        update(
-            givenName: .setTo(givenName),
-            familyName: .setTo(familyName),
-            avatarUrlPath: .setTo(avatarUrlPath),
-            userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
-            transaction: transaction,
-            completion: completion
-        )
-    }
-
-    @available(swift, obsoleted: 1.0)
-    @objc
-    public func update(
-        lastMessagingDate: Date,
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        update(
-            lastMessagingDate: .setTo(lastMessagingDate),
-            userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
-            transaction: transaction,
-            completion: nil
         )
     }
 }

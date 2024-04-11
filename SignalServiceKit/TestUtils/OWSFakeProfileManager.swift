@@ -25,7 +25,7 @@ extension OWSFakeProfileManager: ProfileManager {
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
     }
@@ -51,6 +51,12 @@ extension OWSFakeProfileManager: ProfileManager {
 
     public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> URL {
         throw OWSGenericError("Not supported.")
+    }
+
+    public func didSendOrReceiveMessage(from address: SignalServiceAddress, localIdentifiers: LocalIdentifiers, transaction: SDSAnyWriteTransaction) {
+    }
+
+    public func setProfile(for address: SignalServiceAddress, givenName: OptionalChange<String?>, familyName: OptionalChange<String?>, avatarUrlPath: OptionalChange<String?>, userProfileWriter: UserProfileWriter, localIdentifiers: LocalIdentifiers, transaction: SDSAnyWriteTransaction) {
     }
 }
 

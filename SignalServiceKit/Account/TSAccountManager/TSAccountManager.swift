@@ -77,6 +77,18 @@ extension TSAccountManager {
             return localIdentifiers
         }
     }
+
+    public func localIdentifiers(authedAccount: AuthedAccount, tx: DBReadTransaction) throws -> LocalIdentifiers {
+        switch authedAccount.info {
+        case .explicit(let info):
+            return info.localIdentifiers
+        case .implicit:
+            guard let localIdentifiers = localIdentifiers(tx: tx) else {
+                throw OWSAssertionError("Missing localIdentifiers.")
+            }
+            return localIdentifiers
+        }
+    }
 }
 
 /// Should only be used in ``PhoneNumberDiscoverabilityManager``, so that necessary

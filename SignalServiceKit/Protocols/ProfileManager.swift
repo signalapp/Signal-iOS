@@ -61,7 +61,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     )
 
@@ -83,4 +83,20 @@ public protocol ProfileManager: ProfileManagerProtocol {
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     ) -> Promise<Void>
+
+    func didSendOrReceiveMessage(
+        from address: SignalServiceAddress,
+        localIdentifiers: LocalIdentifiers,
+        transaction: SDSAnyWriteTransaction
+    )
+
+    func setProfile(
+        for address: SignalServiceAddress,
+        givenName: OptionalChange<String?>,
+        familyName: OptionalChange<String?>,
+        avatarUrlPath: OptionalChange<String?>,
+        userProfileWriter: UserProfileWriter,
+        localIdentifiers: LocalIdentifiers,
+        transaction: SDSAnyWriteTransaction
+    )
 }

@@ -109,12 +109,13 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         address: SignalServiceAddress,
         tx: DBWriteTransaction
     ) {
-        profileManager.setProfileGivenName(
-            givenName,
-            familyName: familyName,
+        profileManager.setProfile(
             for: address,
+            givenName: .setTo(givenName),
+            familyName: .setTo(familyName),
+            avatarUrlPath: .noChange,
             userProfileWriter: .storageService /* TODO */,
-            authedAccount: .implicit(),
+            localIdentifiers: .forUnitTests /* TODO */,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
         if let profileKey {

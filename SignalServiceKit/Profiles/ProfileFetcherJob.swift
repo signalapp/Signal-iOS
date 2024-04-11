@@ -259,7 +259,6 @@ public class ProfileFetcherJob: NSObject {
         let didAlreadyDownloadAvatar = databaseStorage.read { transaction -> Bool in
             let oldAvatarUrlPath = profileManager.profileAvatarURLPath(
                 for: profileAddress,
-                authedAccount: options.authedAccount,
                 transaction: transaction
             )
             return (
@@ -355,7 +354,7 @@ public class ProfileFetcherJob: NSObject {
                 profileBadges: profileBadgeMetadata,
                 lastFetchDate: Date(),
                 userProfileWriter: .profileFetch,
-                authedAccount: self.options.authedAccount,
+                localIdentifiers: localIdentifiers,
                 tx: transaction
             )
 

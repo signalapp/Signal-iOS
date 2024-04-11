@@ -92,14 +92,12 @@ class SignalRecipientTest: SSKBaseTestSwift {
         write { transaction in
             let aciProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: SignalServiceAddress(aci),
-                authedAccount: .implicit(),
                 transaction: transaction
             )
             aciProfile.anyInsert(transaction: transaction)
             aciProfile.update(
                 isPhoneNumberShared: .setTo(true),
                 userProfileWriter: .tests,
-                authedAccount: .implicit(),
                 transaction: transaction,
                 completion: nil
             )
@@ -155,20 +153,17 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             let oldPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: oldAddress,
-                authedAccount: .implicit(),
                 transaction: transaction
             )
             oldPhoneNumberProfile.anyInsert(transaction: transaction)
             oldPhoneNumberProfile.update(
                 isPhoneNumberShared: .setTo(true),
                 userProfileWriter: .tests,
-                authedAccount: .implicit(),
                 transaction: transaction,
                 completion: nil
             )
             let newPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: SignalServiceAddress(phoneNumber: newPhoneNumber.stringValue),
-                authedAccount: .implicit(),
                 transaction: transaction
             )
             newPhoneNumberProfile.anyInsert(transaction: transaction)
@@ -191,7 +186,6 @@ class SignalRecipientTest: SSKBaseTestSwift {
             )!
             let newProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: newAddress,
-                authedAccount: .implicit(),
                 transaction: transaction
             )
             let newAccount = SignalAccount.anyFetch(
@@ -246,14 +240,12 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             var oldProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: oldAddress,
-                authedAccount: .implicit(),
                 transaction: transaction
             )
             oldProfile.anyInsert(transaction: transaction)
             oldProfile.update(
                 isPhoneNumberShared: .setTo(true),
                 userProfileWriter: .tests,
-                authedAccount: .implicit(),
                 transaction: transaction,
                 completion: nil
             )
@@ -276,7 +268,6 @@ class SignalRecipientTest: SSKBaseTestSwift {
             )!
             let newProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: newAddress,
-                authedAccount: .implicit(),
                 transaction: transaction
             )
             let newAccount = SignalAccount.anyFetch(

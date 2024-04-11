@@ -60,7 +60,6 @@ public class ReturnToCallViewController: UIViewController {
             }
             return self.profileManagerImpl.profileAvatar(
                 for: callViewController.remoteVideoAddress,
-                authedAccount: .implicit(),
                 transaction: transaction
             )
         }

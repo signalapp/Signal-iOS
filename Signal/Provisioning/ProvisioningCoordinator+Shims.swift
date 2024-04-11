@@ -86,7 +86,6 @@ public class _ProvisioningCoordinator_ProfileManagerWrapper: _ProvisioningCoordi
         profileManager.setLocalProfileKey(
             key,
             userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }

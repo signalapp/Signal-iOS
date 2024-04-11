@@ -36,19 +36,20 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
         AssertNotOnMainThread()
 
-        var address = OWSUserProfile.internalAddress(for: address)
-        if authedAccount.isAddressForLocalUser(address) {
-            address = OWSUserProfile.localProfileAddress
+        let internalAddress: SignalServiceAddress
+        if localIdentifiers.contains(address: address) {
+            internalAddress = OWSUserProfile.localProfileAddress
+        } else {
+            internalAddress = address
         }
 
         let userProfile = OWSUserProfile.getOrBuildUserProfile(
-            for: address,
-            authedAccount: authedAccount,
+            for: internalAddress,
             transaction: tx
         )
 
@@ -100,7 +101,6 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             badges: .setTo(profileBadges),
             isPhoneNumberShared: isPhoneNumberSharedChange,
             userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
             transaction: tx,
             completion: nil
         )
@@ -357,7 +357,6 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                 self.setLocalProfileKey(
                     newProfileKey,
                     userProfileWriter: .localUser,
-                    authedAccount: authedAccount,
                     transaction: tx
                 )
 
@@ -609,33 +608,72 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
     // MARK: - Other User's Profiles
 
+    /// Set profile key data similar to ``setProfileKeyData()``, but also schedule
+    /// a profile fetch for the address
     @objc
-    func setProfileKeyData(
+    public func setProfileKeyDataAndFetchProfile(
         _ profileKeyData: Data,
-        forAddress addressParam: SignalServiceAddress,
+        forAddress address: SignalServiceAddress,
         onlyFillInIfMissing: Bool,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         transaction tx: SDSAnyWriteTransaction
     ) {
-        let address = OWSUserProfile.internalAddress(for: addressParam)
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localIdentifiers = try? tsAccountManager.localIdentifiers(authedAccount: authedAccount, tx: tx.asV2Read)
+        guard let localIdentifiers else {
+            owsFailDebug("Failed to find LocalIdentifiers")
+            return
+        }
+
+        let shouldFetchProfile = setProfileKeyData(
+            profileKeyData,
+            for: address,
+            onlyFillInIfMissing: onlyFillInIfMissing,
+            userProfileWriter: userProfileWriter,
+            localIdentifiers: localIdentifiers,
+            transaction: tx
+        )
+
+        if shouldFetchProfile {
+            tx.addAsyncCompletionOffMain {
+                ProfileFetcherJob.fetchProfile(address: address, authedAccount: authedAccount)
+            }
+        }
+    }
+
+    private func setProfileKeyData(
+        _ profileKeyData: Data,
+        for address: SignalServiceAddress,
+        onlyFillInIfMissing: Bool,
+        userProfileWriter: UserProfileWriter,
+        localIdentifiers: LocalIdentifiers,
+        transaction tx: SDSAnyWriteTransaction
+    ) -> Bool {
+
+        var internalAddress = address
+        var isLocalAddress = false
+        if localIdentifiers.contains(address: address) {
+            isLocalAddress = true
+            internalAddress = OWSUserProfile.localProfileAddress
+        }
 
         guard let profileKey = OWSAES256Key(data: profileKeyData) else {
             owsFailDebug("Invalid profile key data.")
-            return
+            return false
         }
 
-        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: address, authedAccount: authedAccount, transaction: tx)
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, transaction: tx)
 
         if onlyFillInIfMissing, userProfile.profileKey != nil {
-            return
+            return false
         }
 
         if profileKey.keyData == userProfile.profileKey?.keyData {
-            return
+            return false
         }
 
-        if let addressAci = addressParam.serviceId as? Aci {
+        if let addressAci = internalAddress.serviceId as? Aci {
             // Whenever a user's profile key changes, we need to fetch a new
             // profile key credential for them.
             versionedProfiles.clearProfileKeyCredential(for: AciObjC(addressAci), transaction: tx)
@@ -643,21 +681,18 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
         // If this is the profile for the local user, we always want to defer to local state
         // so skip the update profile for address call.
-        let isLocalAddress = OWSUserProfile.isLocalProfileAddress(address) || authedAccount.isAddressForLocalUser(address)
-        if !isLocalAddress, let serviceId = address.serviceId {
+        if !isLocalAddress, let serviceId = internalAddress.serviceId {
             udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: tx)
-            tx.addAsyncCompletionOffMain {
-                ProfileFetcherJob.fetchProfile(address: address, authedAccount: authedAccount)
-            }
         }
 
         userProfile.update(
             profileKey: .setTo(profileKey),
             userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
             transaction: tx,
             completion: nil
         )
+
+        return !isLocalAddress
     }
 
     // MARK: - Bulk Fetching
@@ -944,7 +979,6 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                 // Apply the changes to our local profile.
                 let userProfile = OWSUserProfile.getOrBuildUserProfile(
                     for: OWSUserProfile.localProfileAddress,
-                    authedAccount: authedAccount,
                     transaction: tx
                 )
                 userProfile.update(
@@ -955,7 +989,6 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                     avatarUrlPath: .setTo(versionedUpdate.avatarUrlPath.orExistingValue(userProfile.avatarUrlPath)),
                     avatarFileName: .setTo(avatarUpdate.filenameChange.orExistingValue(userProfile.avatarFileName)),
                     userProfileWriter: profileChanges.userProfileWriter,
-                    authedAccount: authedAccount,
                     transaction: tx,
                     completion: nil
                 )
@@ -1360,7 +1393,7 @@ extension OWSProfileManager {
                 if !didConsumeFilePath { try? FileManager.default.removeItem(at: temporaryFileUrl) }
             }
             (shouldRetry, didConsumeFilePath) = try await databaseStorage.awaitableWrite { tx in
-                let newProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, authedAccount: authedAccount, transaction: tx)
+                let newProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, transaction: tx)
                 guard newProfile.avatarFileName == nil else {
                     return (false, false)
                 }
@@ -1372,7 +1405,6 @@ extension OWSProfileManager {
                 newProfile.update(
                     avatarFileName: avatarFilename,
                     userProfileWriter: .avatarDownload,
-                    authedAccount: authedAccount,
                     transaction: tx,
                     completion: nil
                 )
@@ -1472,6 +1504,59 @@ extension OWSProfileManager {
         guard try decryptor.verifyTag(authenticationTag) else {
             throw OWSGenericError("failed to decrypt")
         }
+    }
+
+    public func didSendOrReceiveMessage(
+        from address: SignalServiceAddress,
+        localIdentifiers: LocalIdentifiers,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        if localIdentifiers.contains(address: address) {
+            return
+        }
+        let internalAddress = OWSUserProfile.internalAddress(for: address)
+
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, transaction: transaction)
+
+        if userProfile.lastMessagingDate != nil {
+            let lasMessagingInterval = fabs(userProfile.lastMessagingDate?.timeIntervalSinceNow ?? Date.distantPast.timeIntervalSinceNow)
+            if lasMessagingInterval < kHourInterval {
+                return
+            }
+        }
+        userProfile.update(
+            lastMessagingDate: .setTo(Date()),
+            userProfileWriter: .metadataUpdate,
+            transaction: transaction,
+            completion: nil
+        )
+    }
+
+    public func setProfile(
+        for address: SignalServiceAddress,
+        givenName: OptionalChange<String?>,
+        familyName: OptionalChange<String?>,
+        avatarUrlPath: OptionalChange<String?>,
+        userProfileWriter: UserProfileWriter,
+        localIdentifiers: LocalIdentifiers,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        let internalAddress: SignalServiceAddress
+        if localIdentifiers.contains(address: address) {
+            internalAddress = OWSUserProfile.localProfileAddress
+        } else {
+            internalAddress = address
+        }
+
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, transaction: transaction)
+        userProfile.update(
+            givenName: givenName,
+            familyName: familyName,
+            avatarUrlPath: avatarUrlPath,
+            userProfileWriter: userProfileWriter,
+            transaction: transaction,
+            completion: nil
+        )
     }
 }
 

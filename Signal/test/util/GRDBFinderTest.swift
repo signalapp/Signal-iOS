@@ -187,7 +187,6 @@ class GRDBFinderTest: SignalBaseTest {
             let buildUserProfile = { () -> OWSUserProfile in
                 return OWSUserProfile.getOrBuildUserProfile(
                     for: SignalServiceAddress.randomForTesting(),
-                    authedAccount: .implicit(),
                     transaction: transaction
                 )
             }
@@ -201,7 +200,6 @@ class GRDBFinderTest: SignalBaseTest {
                     lastFetchDate: lastFetchDate,
                     lastMessagingDate: lastMessagingDate,
                     userProfileWriter: .metadataUpdate,
-                    authedAccount: .implicit(),
                     transaction: transaction,
                     completion: nil
                 )

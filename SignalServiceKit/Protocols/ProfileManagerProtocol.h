@@ -74,7 +74,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
                                      transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
-                                        authedAccount:(AuthedAccount *)authedAccount
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys
@@ -82,21 +81,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                          userProfileWriter:(UserProfileWriter)userProfileWriter
                              authedAccount:(AuthedAccount *)authedAccount
     NS_SWIFT_NAME(fillInProfileKeys(allProfileKeys:authoritativeProfileKeys:userProfileWriter:authedAccount:));
-
-- (void)setProfileGivenName:(nullable NSString *)firstName
-                 familyName:(nullable NSString *)lastName
-                 forAddress:(SignalServiceAddress *)address
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-              authedAccount:(AuthedAccount *)authedAccount
-                transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)setProfileGivenName:(nullable NSString *)firstName
-                 familyName:(nullable NSString *)lastName
-              avatarUrlPath:(nullable NSString *)avatarUrlPath
-                 forAddress:(SignalServiceAddress *)address
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-              authedAccount:(AuthedAccount *)authedAccount
-                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
@@ -136,10 +120,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 // This is an internal implementation detail and should only be used by OWSUserProfile.
 - (void)localProfileWasUpdated:(OWSUserProfile *)localUserProfile;
-
-- (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)address
-                             authedAccount:(AuthedAccount *)authedAccount
-                               transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)reuploadLocalProfileWithAuthedAccount:(AuthedAccount *)authedAccount
     NS_SWIFT_NAME(reuploadLocalProfile(authedAccount:));

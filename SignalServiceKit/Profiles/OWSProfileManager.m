@@ -207,12 +207,12 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     // Since localUserProfile can create a transaction, we want to make sure it's not called for the first
     // time unexpectedly (e.g. in a nested transaction.)
-    __unused OWSUserProfile *profile = [self localUserProfileWithAuthedAccount:AuthedAccount.implicit];
+    __unused OWSUserProfile *profile = [self localUserProfile];
 }
 
 #pragma mark - Local Profile
 
-- (OWSUserProfile *)localUserProfileWithAuthedAccount:(AuthedAccount *)authedAccount
+- (OWSUserProfile *)localUserProfile
 {
     OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
     @synchronized(self) {
@@ -243,7 +243,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         localUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress
-                                                             authedAccount:authedAccount
                                                                transaction:transaction];
     });
 
@@ -477,7 +476,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [userProfile clearProfileWithProfileKey:[OWSAES256Key generateRandomKey]
                               userProfileWriter:UserProfileWriter_Debugging
-                                  authedAccount:AuthedAccount.implicit
                                     transaction:transaction
                                      completion:nil];
     });
@@ -487,7 +485,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (void)setLocalProfileKey:(OWSAES256Key *)key
          userProfileWriter:(UserProfileWriter)userProfileWriter
-             authedAccount:(AuthedAccount *)authedAccount
                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
@@ -504,7 +501,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             OWSFailDebug(@"Missing local profile when setting key.");
 
             localUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress
-                                                                 authedAccount:authedAccount
                                                                    transaction:transaction];
 
             _localUserProfile = localUserProfile;
@@ -515,7 +511,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     [localUserProfile updateWithProfileKey:key
                          userProfileWriter:userProfileWriter
-                             authedAccount:authedAccount
                                transaction:transaction
                                 completion:nil];
 }
@@ -933,12 +928,12 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             authedAccount:(AuthedAccount *)authedAccount
               transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self setProfileKeyData:profileKeyData
-                 forAddress:address
-        onlyFillInIfMissing:NO
-          userProfileWriter:userProfileWriter
-              authedAccount:authedAccount
-                transaction:transaction];
+    [self setProfileKeyDataAndFetchProfile:profileKeyData
+                                forAddress:address
+                       onlyFillInIfMissing:NO
+                         userProfileWriter:userProfileWriter
+                             authedAccount:authedAccount
+                               transaction:transaction];
 }
 
 - (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys
@@ -953,12 +948,12 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                 OWSFailDebug(@"Missing profileKeyData.");
                 continue;
             }
-            [self setProfileKeyData:profileKeyData
-                         forAddress:address
-                onlyFillInIfMissing:NO
-                  userProfileWriter:userProfileWriter
-                      authedAccount:authedAccount
-                        transaction:transaction];
+            [self setProfileKeyDataAndFetchProfile:profileKeyData
+                                        forAddress:address
+                               onlyFillInIfMissing:NO
+                                 userProfileWriter:userProfileWriter
+                                     authedAccount:authedAccount
+                                       transaction:transaction];
         }
 
         for (SignalServiceAddress *address in allProfileKeys) {
@@ -983,64 +978,14 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                 continue;
             }
             OWSLogInfo(@"Filling in missing profile key for: %@", address);
-            [self setProfileKeyData:profileKeyData
-                         forAddress:address
-                onlyFillInIfMissing:YES
-                  userProfileWriter:userProfileWriter
-                      authedAccount:authedAccount
-                        transaction:transaction];
+            [self setProfileKeyDataAndFetchProfile:profileKeyData
+                                        forAddress:address
+                               onlyFillInIfMissing:YES
+                                 userProfileWriter:userProfileWriter
+                                     authedAccount:authedAccount
+                                       transaction:transaction];
         }
     });
-}
-
-- (void)setProfileGivenName:(nullable NSString *)givenName
-                 familyName:(nullable NSString *)familyName
-                 forAddress:(SignalServiceAddress *)addressParam
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-              authedAccount:(AuthedAccount *)authedAccount
-                transaction:(SDSAnyWriteTransaction *)transaction
-{
-    SignalServiceAddress *address = [OWSUserProfile internalAddressFor:addressParam];
-    if ([authedAccount isAddressForLocalUser:address]) {
-        address = [OWSUserProfile localProfileAddress];
-    }
-    OWSAssertDebug(address.isValid);
-
-    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address
-                                                                    authedAccount:authedAccount
-                                                                      transaction:transaction];
-    [userProfile updateWithGivenName:givenName
-                          familyName:familyName
-                   userProfileWriter:userProfileWriter
-                       authedAccount:authedAccount
-                         transaction:transaction
-                          completion:nil];
-}
-
-- (void)setProfileGivenName:(nullable NSString *)givenName
-                 familyName:(nullable NSString *)familyName
-              avatarUrlPath:(nullable NSString *)avatarUrlPath
-                 forAddress:(SignalServiceAddress *)addressParam
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-              authedAccount:(AuthedAccount *)authedAccount
-                transaction:(SDSAnyWriteTransaction *)transaction
-{
-    SignalServiceAddress *address = [OWSUserProfile internalAddressFor:addressParam];
-    if ([authedAccount isAddressForLocalUser:address]) {
-        address = [OWSUserProfile localProfileAddress];
-    }
-    OWSAssertDebug(address.isValid);
-
-    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address
-                                                                    authedAccount:authedAccount
-                                                                      transaction:transaction];
-    [userProfile updateWithGivenName:givenName
-                          familyName:familyName
-                       avatarUrlPath:avatarUrlPath
-                   userProfileWriter:userProfileWriter
-                       authedAccount:authedAccount
-                         transaction:transaction
-                          completion:nil];
 }
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
@@ -1111,7 +1056,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 }
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
-                                authedAccount:(AuthedAccount *)authedAccount
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -1151,7 +1095,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 }
 
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
-                                        authedAccount:(AuthedAccount *)authedAccount
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -1238,38 +1181,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 }
 
 #pragma mark - Messaging History
-
-- (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)addressParam
-                             authedAccount:(AuthedAccount *)authedAccount
-                               transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (addressParam.isLocalAddress || [authedAccount isAddressForLocalUser:addressParam]) {
-        return;
-    }
-
-    SignalServiceAddress *address = [OWSUserProfile internalAddressFor:addressParam];
-    OWSAssertDebug(address.isValid);
-
-    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address
-                                                                    authedAccount:authedAccount
-                                                                      transaction:transaction];
-
-    if (userProfile.lastMessagingDate != nil) {
-        // lastMessagingDate is coarse; we don't need to track every single message
-        // sent or received. It is sufficient to update it only when the value
-        // changes by more than an hour.
-        NSTimeInterval lastMessagingInterval = fabs(userProfile.lastMessagingDate.timeIntervalSinceNow);
-        const NSTimeInterval lastMessagingResolution = 1 * kHourInterval;
-        if (lastMessagingInterval < lastMessagingResolution) {
-            return;
-        }
-    }
-
-    [userProfile updateWithLastMessagingDate:[NSDate new]
-                           userProfileWriter:UserProfileWriter_MetadataUpdate
-                               authedAccount:authedAccount
-                                 transaction:transaction];
-}
 
 - (void)rotateProfileKeyUponRecipientHideWithTx:(nonnull SDSAnyWriteTransaction *)tx
 {

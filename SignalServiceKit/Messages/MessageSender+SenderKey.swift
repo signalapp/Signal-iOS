@@ -192,6 +192,13 @@ extension MessageSender {
             }
         }
 
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localIdentifiers = self.databaseStorage.read(block: { tx in
+            tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+        }) else {
+            return .init(error: OWSAssertionError("Not registered."))
+        }
+
         // To ensure we don't accidentally throw an error early in our promise chain
         // Without calling the perRecipient failures, we declare this as a guarantee.
         // All errors must be caught and handled. If not, we may end up with sends that
@@ -206,6 +213,7 @@ extension MessageSender {
                     thread: thread,
                     originalMessage: message,
                     udAccessMap: udAccessMap,
+                    localIdentifiers: localIdentifiers,
                     sendErrorBlock: wrappedSendErrorBlock)
             } else {
                 return .value(status.readyParticipants)
@@ -257,7 +265,7 @@ extension MessageSender {
 
                         self.profileManager.didSendOrReceiveMessage(
                             from: SignalServiceAddress(recipient.serviceId),
-                            authedAccount: .implicit(),
+                            localIdentifiers: localIdentifiers,
                             transaction: tx
                         )
 
@@ -311,6 +319,7 @@ extension MessageSender {
         thread: TSThread,
         originalMessage: TSOutgoingMessage,
         udAccessMap: [ServiceId: OWSUDSendingAccess],
+        localIdentifiers: LocalIdentifiers,
         sendErrorBlock: @escaping (ServiceId, Error) -> Void
     ) -> Guarantee<[ServiceId]> {
 
@@ -318,9 +327,6 @@ extension MessageSender {
         return databaseStorage.write(.promise) { writeTx -> [(OWSMessageSend, SealedSenderParameters?)] in
             // Here we fetch all of the recipients that need an SKDM
             // We then construct an OWSMessageSend for each recipient that needs an SKDM.
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: writeTx.asV2Read) else {
-                throw OWSAssertionError("Not registered.")
-            }
 
             // Even though earlier in the promise chain we check key expiration and who needs an SKDM
             // We should recheck all of this info again just in case that data is no longer valid.

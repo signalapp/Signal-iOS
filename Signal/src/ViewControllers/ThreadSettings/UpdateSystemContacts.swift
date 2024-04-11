@@ -223,11 +223,7 @@ extension ContactsViewHelper {
                 if let familyName = profileManagerImpl.familyName(for: address, transaction: tx) {
                     newContact.familyName = familyName
                 }
-                if let profileAvatar = profileManagerImpl.profileAvatar(
-                    for: address,
-                    authedAccount: .implicit(),
-                    transaction: tx
-                ) {
+                if let profileAvatar = profileManagerImpl.profileAvatar(for: address, transaction: tx) {
                     newContact.imageData = profileAvatar.pngData()
                 }
             }

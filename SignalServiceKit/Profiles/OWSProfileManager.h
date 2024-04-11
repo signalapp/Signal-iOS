@@ -100,7 +100,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)debug_regenerateLocalProfileWithSneakyTransaction;
 - (void)setLocalProfileKey:(OWSAES256Key *)key
          userProfileWriter:(UserProfileWriter)userProfileWriter
-             authedAccount:(AuthedAccount *)authedAccount
                transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Other User's Profiles
@@ -118,7 +117,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                                 transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
-                                authedAccount:(AuthedAccount *)authedAccount
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address

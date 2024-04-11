@@ -516,12 +516,13 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             if localGivenName != nil {
                 bulkProfileFetch.fetchProfile(address: anyAddress)
             } else {
-                profileManager.setProfileGivenName(
-                    record.givenName,
-                    familyName: record.familyName,
+                profileManager.setProfile(
                     for: anyAddress,
+                    givenName: .setTo(record.givenName),
+                    familyName: .setTo(record.familyName),
+                    avatarUrlPath: .noChange,
                     userProfileWriter: .storageService,
-                    authedAccount: authedAccount,
+                    localIdentifiers: localIdentifiers,
                     transaction: SDSDB.shimOnlyBridge(tx)
                 )
             }
@@ -1189,7 +1190,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
         if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(
             for: localAddress,
-            authedAccount: authedAccount,
             transaction: transaction
         ) {
             Logger.info("profileAvatarUrlPath: yes")
@@ -1294,7 +1294,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction)
         let localAvatarUrl = profileManager.profileAvatarURLPath(
             for: localAddress,
-            authedAccount: authedAccount,
             transaction: transaction
         )
 
@@ -1346,13 +1345,13 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             || localFamilyName != normalizedRemoteFamilyName
             || localAvatarUrl != record.avatarURL
         ) {
-            profileManager.setProfileGivenName(
-                normalizedRemoteGivenName,
-                familyName: normalizedRemoteFamilyName,
-                avatarUrlPath: record.avatarURL,
+            profileManager.setProfile(
                 for: localAddress,
+                givenName: .setTo(normalizedRemoteGivenName),
+                familyName: .setTo(normalizedRemoteFamilyName),
+                avatarUrlPath: .setTo(record.avatarURL),
                 userProfileWriter: .storageService,
-                authedAccount: authedAccount,
+                localIdentifiers: localIdentifiers,
                 transaction: transaction
             )
         } else if localGivenName != nil && !record.hasGivenName || localFamilyName != nil && !record.hasFamilyName || localAvatarUrl != nil && !record.hasAvatarURL {

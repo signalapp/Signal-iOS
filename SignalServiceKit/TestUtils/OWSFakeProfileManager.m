@@ -280,17 +280,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
-                                        authedAccount:(nonnull AuthedAccount *)authedAccount
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     return nil;
-}
-
-- (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)address
-                             authedAccount:(nonnull AuthedAccount *)authedAccount
-                               transaction:(SDSAnyWriteTransaction *)transaction
-{
-    // Do nothing.
 }
 
 - (void)reuploadLocalProfileWithAuthedAccount:(AuthedAccount *)authedAccount

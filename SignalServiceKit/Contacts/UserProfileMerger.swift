@@ -26,7 +26,6 @@ class UserProfileMerger: RecipientMergeObserver {
                 userProfile.update(
                     profileKey: .setTo(profileKey),
                     userProfileWriter: .localUser,
-                    authedAccount: .implicit(),
                     transaction: SDSDB.shimOnlyBridge(tx),
                     completion: {
                         ProfileFetcherJob.fetchProfile(address: userProfile.internalAddress, authedAccount: .implicit())
