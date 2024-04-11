@@ -178,22 +178,14 @@ class UserNotificationPresenter: Dependencies {
     }
 
     /// Request notification permissions.
-    func registerNotificationSettings() -> Guarantee<Void> {
-        return Guarantee { done in
-            Self.notificationCenter.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
-                Self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
-
-                if granted {
-                    Logger.info("User granted notification permission")
-                } else if let error {
-                    owsFailDebug("Notification permission request failed with error: \(error)")
-                } else {
-                    Logger.info("User denied notification permission")
-                }
-
-                done(())
-            }
+    func registerNotificationSettings() async {
+        do {
+            let granted = try await Self.notificationCenter.requestAuthorization(options: [.badge, .sound, .alert])
+            Logger.info("Notification permission? \(granted)")
+        } catch {
+            owsFailDebug("Notification permission request failed with error: \(error)")
         }
+        Self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
     }
 
     // MARK: - Notify
@@ -290,7 +282,7 @@ class UserNotificationPresenter: Dependencies {
     }
 
     // This method is thread-safe.
-    func postGenericIncomingMessageNotification() -> Promise<Void> {
+    func postGenericIncomingMessageNotification() async {
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = AppNotificationCategory.incomingMessageGeneric.identifier
         content.userInfo = [:]
@@ -302,18 +294,13 @@ class UserNotificationPresenter: Dependencies {
 
         Logger.info("Presenting generic incoming message notification with identifier \(notificationIdentifier)")
 
-        let (promise, future) = Promise<Void>.pending()
-        Self.notificationCenter.add(request) { (error: Error?) in
-            if let error = error {
-                owsFailDebug("Error presenting generic incoming message notification with identifier \(notificationIdentifier): \(error)")
-            } else {
-                Logger.info("Presented notification with identifier \(notificationIdentifier)")
-            }
-
-            future.resolve(())
+        do {
+            try await Self.notificationCenter.add(request)
+        } catch {
+            owsFailDebug("Error presenting generic incoming message notification with identifier \(notificationIdentifier): \(error)")
         }
 
-        return promise
+        Logger.info("Presented notification with identifier \(notificationIdentifier)")
     }
 
     private func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {

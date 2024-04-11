@@ -210,8 +210,8 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
 
     // MARK: - Notifications Permissions
 
-    public func registerNotificationSettings() -> Guarantee<Void> {
-        return presenter.registerNotificationSettings()
+    public func registerNotificationSettings() async {
+        return await presenter.registerNotificationSettings()
     }
 
     // MARK: - Calls
@@ -1264,8 +1264,8 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
 
     /// Note that this method is not serialized with other notifications
     /// actions.
-    public func postGenericIncomingMessageNotification() -> Promise<Void> {
-        presenter.postGenericIncomingMessageNotification()
+    public func postGenericIncomingMessageNotification() async {
+        await presenter.postGenericIncomingMessageNotification()
     }
 
     // MARK: - Cancellation

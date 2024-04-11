@@ -68,9 +68,8 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         timeOutEventually: Bool = false
     ) -> Promise<ApnRegistrationId> {
         Logger.info("")
-
-        return firstly {
-            return self.registerUserNotificationSettings()
+        return Promise.wrapAsync {
+            await self.registerUserNotificationSettings()
         }.then { (_) -> Promise<ApnRegistrationId> in
             guard !Platform.isSimulator else {
                 throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
@@ -286,14 +285,16 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         // * Block on completion of both activities to avoid
         //   being terminated by PKPush for not starting a call.
         let completionSignal = DispatchSemaphore(value: 0)
-        firstly { () -> Promise<Void> in
-            let notificationPromise = notificationPresenterImpl.postGenericIncomingMessageNotification()
-            let pushTokensPromise = Promise.wrapAsync { try await SyncPushTokensJob(mode: .forceUpload).run() }
-            return Promise.when(resolved: [ notificationPromise, pushTokensPromise ]).asVoid()
-        }.ensure(on: DispatchQueue.global()) {
-            completionSignal.signal()
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebugUnlessNetworkFailure(error)
+        Task {
+            defer {
+                completionSignal.signal()
+            }
+            await notificationPresenterImpl.postGenericIncomingMessageNotification()
+            do {
+                try await SyncPushTokensJob(mode: .forceUpload).run()
+            } catch {
+                owsFailDebugUnlessNetworkFailure(error)
+            }
         }
         let waitInterval = DispatchTimeInterval.seconds(20)
         let didTimeout = (completionSignal.wait(timeout: .now() + waitInterval) == .timedOut)
@@ -326,10 +327,10 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // User notification settings must be registered *before* AppDelegate will
     // return any requested push tokens.
-    public func registerUserNotificationSettings() -> Guarantee<Void> {
+    public func registerUserNotificationSettings() async {
         Logger.info("registering user notification settings")
 
-        return notificationPresenterImpl.registerNotificationSettings()
+        await notificationPresenterImpl.registerNotificationSettings()
     }
 
     /**

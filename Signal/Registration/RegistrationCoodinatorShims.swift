@@ -352,7 +352,9 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
     }
 
     public func registerUserNotificationSettings() -> Guarantee<Void> {
-        return manager.registerUserNotificationSettings()
+        return Guarantee.wrapAsync { [manager] in
+            await manager.registerUserNotificationSettings()
+        }
     }
 
     public func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult> {

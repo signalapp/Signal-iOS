@@ -89,12 +89,9 @@ public class ProvisioningPermissionsViewController: ProvisioningBaseViewControll
 
         // If you request any additional permissions, make sure to add them to
         // `needsToAskForAnyPermissions`.
-        firstly {
-            PushRegistrationManager.shared.registerUserNotificationSettings()
-        }.done {
+        Task { @MainActor in
+            await PushRegistrationManager.shared.registerUserNotificationSettings()
             self.provisioningController.provisioningPermissionsDidComplete(viewController: self)
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
         }
     }
 
