@@ -6,7 +6,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSMimeTypeApplicationOctetStream;
-extern NSString *const OWSMimeTypeApplicationZip;
 extern NSString *const OWSMimeTypeImagePng;
 extern NSString *const OWSMimeTypeImageJpeg;
 extern NSString *const OWSMimeTypeImageGif;
@@ -25,7 +24,6 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 
 extern NSString *const kOversizeTextAttachmentFileExtension;
 extern NSString *const kSyncMessageFileExtension;
-extern NSString *const kLottieStickerFileExtension;
 
 @interface MIMETypeUtil : NSObject
 

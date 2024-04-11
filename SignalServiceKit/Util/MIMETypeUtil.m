@@ -30,7 +30,6 @@ NSString *const OWSMimeTypeImageHeic = @"image/heic";
 NSString *const OWSMimeTypeImageHeif = @"image/heif";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
-NSString *const OWSMimeTypeApplicationZip = @"application/zip";
 // TODO: We're still finalizing the MIME type.
 NSString *const OWSMimeTypeLottieSticker = @"text/x-signal-sticker-lottie";
 NSString *const OWSMimeTypeImageApng1 = @"image/apng";
@@ -38,7 +37,6 @@ NSString *const OWSMimeTypeImageApng2 = @"image/vnd.mozilla.apng";
 
 NSString *const kOversizeTextAttachmentFileExtension = @"txt";
 NSString *const kSyncMessageFileExtension = @"bin";
-NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
