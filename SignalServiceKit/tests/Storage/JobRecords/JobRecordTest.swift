@@ -164,7 +164,7 @@ extension BroadcastMediaMessageJobRecord: ValidatableModel {
 extension IncomingContactSyncJobRecord: ValidatableModel {
     static let constants: [(IncomingContactSyncJobRecord, base64JsonData: Data)] = [
         (
-            IncomingContactSyncJobRecord(
+            IncomingContactSyncJobRecord.legacy(
                 legacyAttachmentId: "darth revan",
                 isCompleteContactSync: true,
                 exclusiveProcessIdentifier: "star wars character",
@@ -174,7 +174,7 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
             Data(base64Encoded: "eyJzdXBlciI6eyJmYWlsdXJlQ291bnQiOjEyLCJsYWJlbCI6IkluY29taW5nQ29udGFjdFN5bmMiLCJzdGF0dXMiOjEsInVuaXF1ZUlkIjoiRkYzNzUzQjMtQjFGRC00QjRBLTk2QzMtMjM5OEVCMTIwMTM2IiwiZXhjbHVzaXZlUHJvY2Vzc0lkZW50aWZpZXIiOiJzdGFyIHdhcnMgY2hhcmFjdGVyIiwicmVjb3JkVHlwZSI6NjF9LCJpc0NvbXBsZXRlQ29udGFjdFN5bmMiOnRydWUsImF0dGFjaG1lbnRJZCI6ImRhcnRoIHJldmFuIn0=")!
         ),
         (
-            IncomingContactSyncJobRecord(
+            IncomingContactSyncJobRecord.legacy(
                 legacyAttachmentId: nil,
                 isCompleteContactSync: false,
                 exclusiveProcessIdentifier: "star wars villain",
@@ -182,16 +182,45 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
                 status: .permanentlyFailed
             ),
             Data(base64Encoded: "eyJpc0NvbXBsZXRlQ29udGFjdFN5bmMiOmZhbHNlLCJzdXBlciI6eyJ1bmlxdWVJZCI6IkIxMzQxNDU5LTNCQTMtNEFBNy04NUZGLURFQ0YxMDlBNzRFQSIsImV4Y2x1c2l2ZVByb2Nlc3NJZGVudGlmaWVyIjoic3RhciB3YXJzIHZpbGxhaW4iLCJmYWlsdXJlQ291bnQiOjYsInJlY29yZFR5cGUiOjYxLCJzdGF0dXMiOjMsImxhYmVsIjoiSW5jb21pbmdDb250YWN0U3luYyJ9fQ==")!
+        ),
+        (
+            IncomingContactSyncJobRecord(
+                cdnNumber: 3,
+                cdnKey: "hello",
+                encryptionKey: Data(base64URLEncoded: "mMiOmZhbHNlLCJzdXBlciI6eyJ1b")!,
+                digest: Data(base64URLEncoded: "291bnQiOjYsInJlY29yZFR5cGUiO")!,
+                plaintextLength: 55,
+                isCompleteContactSync: true
+            ),
+            Data(base64Encoded: "eyJJQ1NKUl9kaWdlc3QiOiIyOTFiblFpT2pZc0luSmxZMjl5WkZSNWNHVWlPIiwiSUNTSlJfcGxhaW50ZXh0TGVuZ3RoIjo1NSwiSUNTSlJfY2RuS2V5IjoiaGVsbG8iLCJzdXBlciI6eyJzdGF0dXMiOjEsImZhaWx1cmVDb3VudCI6MCwibGFiZWwiOiJJbmNvbWluZ0NvbnRhY3RTeW5jIiwidW5pcXVlSWQiOiI4OTRFQUM1RS05MThCLTQzNEMtQTdDRS1DMjRCQjhGNDc5MzIiLCJyZWNvcmRUeXBlIjo2MX0sIklDU0pSX2Nkbk51bWJlciI6MywiSUNTSlJfZW5jcnlwdGlvbktleSI6Im1NaU9tWmhiSE5sTENKemRYQmxjaUk2ZXlKMWIiLCJpc0NvbXBsZXRlQ29udGFjdFN5bmMiOnRydWV9")!
         )
     ]
 
     func validate(against: IncomingContactSyncJobRecord) throws {
         guard
-            legacyAttachmentId == against.legacyAttachmentId,
             isCompleteContactSync == against.isCompleteContactSync
         else {
             throw ValidatableModelError.failedToValidate
         }
+        switch (downloadInfo, against.downloadInfo) {
+        case (.invalid, .invalid):
+            break
+        case let (.legacy(lhsId), .legacy(rhsId)):
+            guard
+                lhsId == rhsId
+            else {
+                throw ValidatableModelError.failedToValidate
+            }
+        case let (.transient(lhsInfo), .transient(rhsInfo)):
+            guard
+                lhsInfo == rhsInfo
+            else {
+                throw ValidatableModelError.failedToValidate
+            }
+        case (.invalid, _), (.legacy, _), (.transient, _):
+            throw ValidatableModelError.failedToValidate
+        }
+
     }
 }
 

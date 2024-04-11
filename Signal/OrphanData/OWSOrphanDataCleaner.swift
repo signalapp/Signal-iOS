@@ -124,7 +124,14 @@ extension OWSOrphanDataCleaner {
 
         findAttachmentIds(
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: IncomingContactSyncJobRecord) in [jobRecord.legacyAttachmentId].compacted() }
+            jobRecordAttachmentIds: { (jobRecord: IncomingContactSyncJobRecord) -> [String] in
+                switch jobRecord.downloadInfo {
+                case .invalid, .transient:
+                    return []
+                case .legacy(let attachmentId):
+                    return [attachmentId]
+                }
+            }
         )
 
         if shouldAbort {

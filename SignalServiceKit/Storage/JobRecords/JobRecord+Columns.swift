@@ -43,6 +43,11 @@ extension JobRecord {
         // MARK: IncomingContactSyncJobRecord
 
         case isCompleteContactSync
+        case ICSJR_cdnNumber
+        case ICSJR_cdnKey
+        case ICSJR_encryptionKey
+        case ICSJR_digest
+        case ICSJR_plaintextLength
 
         // MARK: IncomingContactSyncJobRecord & IncomingGroupSyncJobRecord
 

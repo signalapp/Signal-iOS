@@ -257,6 +257,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addNicknamesTable
         case expandSignalAccountContactFields
         case addNicknamesToSearchableName
+        case addAttachmentMetadataColumnsToIncomingContactSyncJobRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -318,7 +319,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 68
+    public static let grdbSchemaVersionLatest: UInt = 69
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2777,6 +2778,18 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.alter(table: "SearchableName") { table in
                 table.add(column: "nicknameRecordRecipientId", .integer)
                     .references("NicknameRecord", column: "recipientRowID", onDelete: .cascade)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addAttachmentMetadataColumnsToIncomingContactSyncJobRecord) { tx in
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "ICSJR_cdnNumber", .integer)
+                table.add(column: "ICSJR_cdnKey", .text)
+                table.add(column: "ICSJR_encryptionKey", .blob)
+                table.add(column: "ICSJR_digest", .blob)
+                table.add(column: "ICSJR_plaintextLength", .integer)
             }
 
             return .success(())

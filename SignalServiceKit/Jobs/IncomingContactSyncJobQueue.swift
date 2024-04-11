@@ -32,10 +32,17 @@ public class IncomingContactSyncJobQueue: NSObject {
         jobQueueRunner.start(shouldRestartExistingJobs: appContext.isMainApp)
     }
 
-    @objc
-    public func add(legacyAttachmentId: String, isComplete: Bool, transaction tx: SDSAnyWriteTransaction) {
+    public func add(
+        downloadMetadata: AttachmentDownloads.DownloadMetadata,
+        isComplete: Bool,
+        tx: SDSAnyWriteTransaction
+    ) {
         let jobRecord = IncomingContactSyncJobRecord(
-            legacyAttachmentId: legacyAttachmentId,
+            cdnNumber: downloadMetadata.cdnNumber,
+            cdnKey: downloadMetadata.cdnKey,
+            encryptionKey: downloadMetadata.encryptionKey,
+            digest: downloadMetadata.digest,
+            plaintextLength: downloadMetadata.plaintextLength,
             isCompleteContactSync: isComplete
         )
         jobRecord.anyInsert(transaction: tx)
@@ -64,19 +71,52 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
     func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
 
     private func _runJob(_ jobRecord: IncomingContactSyncJobRecord) async throws {
-        // TODO: handle v2 attachments
-        guard let attachmentId = jobRecord.legacyAttachmentId else {
+        let fileUrl: URL
+        let legacyAttachmentId: String?
+        switch jobRecord.downloadInfo {
+        case .invalid:
+            owsFailDebug("Invalid contact sync job!")
             await databaseStorage.awaitableWrite { tx in
                 jobRecord.anyRemove(transaction: tx)
             }
             return
+        case .legacy(let attachmentId):
+            guard let attachment = (databaseStorage.read { transaction in
+                return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
+            }) else {
+                throw OWSAssertionError("missing attachment")
+            }
+
+            let attachmentStream: TSAttachmentStream
+            switch attachment {
+            case let attachmentPointer as TSAttachmentPointer:
+                attachmentStream = try await DependenciesBridge.shared.tsResourceDownloadManager
+                    .enqueueContactSyncDownload(attachmentPointer: attachmentPointer)
+                    .bridgeStream
+            case let attachmentStreamValue as TSAttachmentStream:
+                attachmentStream = attachmentStreamValue
+            default:
+                throw OWSAssertionError("unexpected attachment type: \(attachment)")
+            }
+            guard let url = attachmentStream.originalMediaURL else {
+                throw OWSAssertionError("fileUrl was unexpectedly nil")
+            }
+            fileUrl = url
+            legacyAttachmentId = attachmentStream.uniqueId
+        case .transient(let downloadMetadata):
+            fileUrl = try await DependenciesBridge.shared.attachmentDownloadManager.downloadTransientAttachment(
+                metadata: downloadMetadata
+            ).awaitable()
+            legacyAttachmentId = nil
         }
-        let attachmentStream = try await getAttachmentStream(attachmentId: attachmentId)
+
         let insertedThreads = try await firstly(on: DispatchQueue.global()) {
-            try self.processAttachmentStream(attachmentStream, isComplete: jobRecord.isCompleteContactSync)
+            try self.processContactSync(decryptedFileUrl: fileUrl, isComplete: jobRecord.isCompleteContactSync)
         }.awaitable()
         await databaseStorage.awaitableWrite { tx in
-            TSAttachmentStream.anyFetch(uniqueId: attachmentId, transaction: tx)?.anyRemove(transaction: tx)
+            if let legacyAttachmentId {
+                TSAttachmentStream.anyFetch(uniqueId: legacyAttachmentId, transaction: tx)?.anyRemove(transaction: tx)
+            }
             jobRecord.anyRemove(transaction: tx)
         }
         NotificationCenter.default.post(name: .incomingContactSyncDidComplete, object: self, userInfo: [
@@ -86,32 +126,11 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
 
     // MARK: - Private
 
-    private func getAttachmentStream(attachmentId: String) async throws -> TSAttachmentStream {
-        guard let attachment = (databaseStorage.read { transaction in
-            return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
-        }) else {
-            throw OWSAssertionError("missing attachment")
-        }
-
-        switch attachment {
-        case let attachmentPointer as TSAttachmentPointer:
-            return try await DependenciesBridge.shared.tsResourceDownloadManager
-                .enqueueContactSyncDownload(attachmentPointer: attachmentPointer)
-                .bridgeStream
-        case let attachmentStream as TSAttachmentStream:
-            return attachmentStream
-        default:
-            throw OWSAssertionError("unexpected attachment type: \(attachment)")
-        }
-    }
-
-    private func processAttachmentStream(
-        _ attachmentStream: TSAttachmentStream,
+    private func processContactSync(
+        decryptedFileUrl fileUrl: URL,
         isComplete: Bool
     ) throws -> [(threadUniqueId: String, sortOrder: UInt32)] {
-        guard let fileUrl = attachmentStream.originalMediaURL else {
-            throw OWSAssertionError("fileUrl was unexpectedly nil")
-        }
+
         var insertedThreads = [(threadUniqueId: String, sortOrder: UInt32)]()
         try Data(contentsOf: fileUrl, options: .mappedIfSafe).withUnsafeBytes { bufferPtr in
             if let baseAddress = bufferPtr.baseAddress, bufferPtr.count > 0 {

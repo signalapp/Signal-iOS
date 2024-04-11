@@ -94,15 +94,26 @@ public class OWSSyncManager: NSObject, SyncManagerProtocolObjc {
     }
 
     public func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction) {
-        guard let attachmentPointer = TSAttachmentPointer(fromProto: syncMessage.blob, albumMessage: nil) else {
-            owsFailDebug("failed to create attachment pointer from incoming contacts sync message")
+        guard
+            syncMessage.blob.hasCdnNumber,
+            let cdnKey = syncMessage.blob.cdnKey?.nilIfEmpty,
+            let encryptionKey = syncMessage.blob.key?.nilIfEmpty,
+            let digest = syncMessage.blob.digest?.nilIfEmpty,
+            syncMessage.blob.hasSize
+        else {
+            owsFailDebug("failed to create attachment download info from incoming contacts sync message")
             return
         }
-        attachmentPointer.anyInsert(transaction: transaction)
         self.smJobQueues.incomingContactSyncJobQueue.add(
-            legacyAttachmentId: attachmentPointer.uniqueId,
+            downloadMetadata: .init(
+                cdnNumber: syncMessage.blob.cdnNumber,
+                cdnKey: cdnKey,
+                encryptionKey: encryptionKey,
+                digest: digest,
+                plaintextLength: syncMessage.blob.size
+            ),
             isComplete: syncMessage.isComplete,
-            transaction: transaction
+            tx: transaction
         )
     }
 }

@@ -18,9 +18,9 @@ public final class IncomingGroupSyncJobRecord: JobRecord, FactoryInitializableFr
 
     init(
         legacyAttachmentId: String,
-        exclusiveProcessIdentifier: String?,
-        failureCount: UInt,
-        status: Status
+        exclusiveProcessIdentifier: String? = nil,
+        failureCount: UInt = 0,
+        status: Status = .ready
     ) {
         self.legacyAttachmentId = legacyAttachmentId
         super.init(

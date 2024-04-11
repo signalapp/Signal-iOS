@@ -15,7 +15,7 @@ public enum AttachmentDownloads {
     /// Key for a ``Attachment.IdType`` value.
     public static var attachmentDownloadAttachmentIDKey: String { "attachmentDownloadAttachmentIDKey" }
 
-    public struct DownloadMetadata {
+    public struct DownloadMetadata: Equatable {
         public let cdnNumber: UInt32
         public let cdnKey: String
         public let encryptionKey: Data

@@ -285,6 +285,11 @@ CREATE
             ,"CRDAJR_deleteAllBeforeTimestamp" INTEGER
             ,"CRDAJR_deleteAllBeforeCallId" TEXT
             ,"CRDAJR_deleteAllBeforeConversationId" BLOB
+            ,"ICSJR_cdnNumber" INTEGER
+            ,"ICSJR_cdnKey" TEXT
+            ,"ICSJR_encryptionKey" BLOB
+            ,"ICSJR_digest" BLOB
+            ,"ICSJR_plaintextLength" INTEGER
         )
 ;
 
