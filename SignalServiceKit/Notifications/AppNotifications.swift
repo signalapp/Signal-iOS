@@ -758,7 +758,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
             if mediaAttachments.count > 1 {
                 notificationBody = String(format: NotificationStrings.incomingReactionAlbumMessageFormat, reaction.emoji)
             } else if
-                let firstAttachmentStream = firstAttachment as? TSAttachmentStream,
+                let firstAttachmentStream = firstAttachment?.asResourceStream()?.bridgeStream,
                 firstAttachmentStream.isAnimatedContent
             {
                 notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)

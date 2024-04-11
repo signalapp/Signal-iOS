@@ -447,7 +447,7 @@ class MediaGallery: Dependencies {
         spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> MediaGalleryItem? {
-        guard let attachmentStream = attachment as? TSAttachmentStream else {
+        guard let attachmentStream = attachment.asResourceStream()?.bridgeStream else {
             owsFailDebug("gallery doesn't yet support showing undownloaded attachments")
             return nil
         }

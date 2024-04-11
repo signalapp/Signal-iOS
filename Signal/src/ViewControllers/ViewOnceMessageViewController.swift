@@ -105,7 +105,7 @@ class ViewOnceMessageViewController: OWSViewController {
             guard let attachmentId = message.bodyAttachmentIds(transaction: transaction).first else {
                 return
             }
-            guard let attachmentStream = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) as? TSAttachmentStream else {
+            guard let attachmentStream = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)?.asResourceStream()?.bridgeStream else {
                 return
             }
             guard attachmentStream.isValidVisualMedia else {

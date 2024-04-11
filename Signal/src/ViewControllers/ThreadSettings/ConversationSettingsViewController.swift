@@ -874,7 +874,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: transaction.asV2Read)
         }
         recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
-            guard let attachmentStream = attachment as? TSAttachmentStream else {
+            guard let attachmentStream = attachment.asResourceStream()?.bridgeStream else {
                 return owsFailDebug("Unexpected type of attachment")
             }
 

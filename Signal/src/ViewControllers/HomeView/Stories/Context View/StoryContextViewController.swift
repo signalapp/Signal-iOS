@@ -367,7 +367,7 @@ class StoryContextViewController: OWSViewController {
                 numberOfReplies: replyCount,
                 attachment: .pointer(pointer)
             )
-        } else if let attachment = attachment as? TSAttachmentStream {
+        } else if let attachment = attachment.asResourceStream()?.bridgeStream {
             let stream = StoryItem.Attachment.Stream(
                 attachment: attachment,
                 isLoopingVideo: isLoopingVideo,

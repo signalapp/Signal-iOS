@@ -42,7 +42,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private var attachments: [TSAttachment]?
     private var attachmentStreams: [TSAttachmentStream]? {
-        return attachments?.compactMap { $0 as? TSAttachmentStream }
+        return attachments?.compactMap { $0.asResourceStream()?.bridgeStream }
     }
     var hasMediaAttachment: Bool {
         guard let attachmentStreams = self.attachmentStreams, !attachmentStreams.isEmpty else {

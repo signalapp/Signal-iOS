@@ -25,14 +25,14 @@ public class AudioAttachment {
         metadata: MediaMetadata?,
         isVoiceMessage: Bool
     ) {
-        if let attachmentStream = attachment as? TSAttachmentStream {
+        if let attachmentStream = attachment.asResourceStream()?.bridgeStream {
             let audioDurationSeconds = attachmentStream.audioDurationSeconds()
             guard audioDurationSeconds > 0 else {
                 return nil
             }
             state = .attachmentStream(attachmentStream: attachmentStream, isVoiceMessage: isVoiceMessage, audioDurationSeconds: audioDurationSeconds)
             isDownloading = false
-        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
+        } else if let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointer {
             state = .attachmentPointer(attachmentPointer: attachmentPointer, isVoiceMessage: isVoiceMessage)
 
             switch attachmentPointer.state {

@@ -33,7 +33,7 @@ class DebugUIDiskUsage: DebugUIPage, Dependencies {
         databaseStorage.write { transaction in
             var attachmentStreams: [TSAttachmentStream] = []
             TSAttachment.anyEnumerate(transaction: transaction) { attachment, _ in
-                guard let attachmentStream = attachment as? TSAttachmentStream else { return }
+                guard let attachmentStream = attachment.asResourceStream()?.bridgeStream else { return }
                 attachmentStreams.append(attachmentStream)
             }
             Logger.info("Saving \(attachmentStreams.count) attachment streams.")

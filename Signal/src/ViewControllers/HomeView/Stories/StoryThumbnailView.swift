@@ -36,7 +36,7 @@ class StoryThumbnailView: UIView {
 
         switch attachment {
         case .file(let attachment):
-            if let pointer = attachment as? TSAttachmentPointer {
+            if let pointer = attachment.asTransitTierPointer()?.bridgePointer {
                 let pointerView = UIView()
 
                 if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
@@ -46,7 +46,7 @@ class StoryThumbnailView: UIView {
 
                 addSubview(pointerView)
                 pointerView.autoPinEdgesToSuperviewEdges()
-            } else if let stream = attachment as? TSAttachmentStream {
+            } else if let stream = attachment.asResourceStream()?.bridgeStream {
                 let imageView = buildThumbnailImageView(stream: stream)
                 addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()

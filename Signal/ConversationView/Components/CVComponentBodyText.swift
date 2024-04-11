@@ -270,13 +270,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         // TODO: We might want to treat text that is completely stripped
         // as not present.
         if let oversizeTextAttachment = message.oversizeTextAttachment(transaction: transaction) {
-            if let oversizeTextAttachmentStream = oversizeTextAttachment as? TSAttachmentStream {
+            if let oversizeTextAttachmentStream = oversizeTextAttachment.asResourceStream()?.bridgeStream {
                 let displayableText = CVComponentState.displayableBodyText(oversizeTextAttachment: oversizeTextAttachmentStream,
                                                                            ranges: message.bodyRanges,
                                                                            interaction: message,
                                                                            transaction: transaction)
                 return build(displayableText: displayableText)
-            } else if nil != oversizeTextAttachment as? TSAttachmentPointer {
+            } else if nil != oversizeTextAttachment.asTransitTierPointer()?.bridgePointer {
                 // TODO: Handle backup restore.
                 // TODO: If there's media, should we display that while the oversize text is downloading?
                 return .oversizeTextDownloading

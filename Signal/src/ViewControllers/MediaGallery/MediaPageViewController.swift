@@ -419,7 +419,7 @@ class MediaPageViewController: UIPageViewController {
         }
 
         let mediaAttachmentStreams: [TSAttachmentStream] = mediaAttachments.compactMap { attachment in
-            guard let attachmentStream = attachment as? TSAttachmentStream else {
+            guard let attachmentStream = attachment.asResourceStream()?.bridgeStream else {
                 // Our current media item should always be an attachment
                 // stream (downloaded). However, we can't guarantee that the
                 // same is true for other media in the message to forward. For

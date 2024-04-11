@@ -590,7 +590,7 @@ extension StoryThumbnailView.Attachment {
         case .text:
             return true
         case .file(let attachment):
-            return (attachment as? TSAttachmentStream)?.isVisualMediaMimeType ?? false
+            return (attachment.asResourceStream()?.bridgeStream)?.isVisualMediaMimeType ?? false
         }
     }
 
@@ -602,7 +602,7 @@ extension StoryThumbnailView.Attachment {
         switch self {
         case .file(let attachment):
             guard
-                let attachment = attachment as? TSAttachmentStream,
+                let attachment = attachment.asResourceStream()?.bridgeStream,
                 attachment.isVisualMediaMimeType,
                 let mediaURL = attachment.originalMediaURL
             else { break }
@@ -769,7 +769,7 @@ extension StoryContextMenuGenerator {
                 }
                 switch attachment {
                 case .file(let attachment):
-                    guard let attachment = attachment as? TSAttachmentStream else {
+                    guard let attachment = attachment.asResourceStream()?.bridgeStream else {
                         completion(false)
                         return owsFailDebug("Unexpectedly tried to share undownloaded attachment")
                     }

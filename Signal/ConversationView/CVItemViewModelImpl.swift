@@ -144,7 +144,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         if componentState.bodyText == .oversizeTextDownloading {
             return true
         }
-        if componentState.audioAttachment?.attachment as? TSAttachmentPointer != nil {
+        if componentState.audioAttachment?.attachment.asTransitTierPointer()?.bridgePointer != nil {
             return true
         }
         if componentState.genericAttachment?.attachmentPointer != nil {
@@ -156,7 +156,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         guard let bodyMedia = componentState.bodyMedia else {
             return false
         }
-        return !bodyMedia.items.compactMap { $0.attachment as? TSAttachmentPointer }.isEmpty
+        return !bodyMedia.items.compactMap { $0.attachment.asTransitTierPointer()?.bridgePointer }.isEmpty
     }
 }
 

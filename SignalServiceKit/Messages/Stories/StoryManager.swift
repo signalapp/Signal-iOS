@@ -251,7 +251,7 @@ public class StoryManager: NSObject {
             return
         }
 
-        guard let attachmentPointer = attachmentPointerToDownload?.resource.bridge as? TSAttachmentPointer else {
+        guard let attachmentPointer = attachmentPointerToDownload?.resource.bridge.asTransitTierPointer()?.bridgePointer else {
             // Already downloaded or couldn't find it, nothing to do.
             return
         }
@@ -267,7 +267,7 @@ public class StoryManager: NSObject {
                     owsFailDebug("Missing attachment")
                     return
                 }
-                if let pointer = attachment.bridge as? TSAttachmentPointer, [.downloading, .enqueued].contains(pointer.state) {
+                if let pointer = attachment.bridge.asTransitTierPointer()?.bridgePointer, [.downloading, .enqueued].contains(pointer.state) {
                     unviewedDownloadedStoriesForContext += 1
                 } else if attachment.asResourceStream() != nil {
                     unviewedDownloadedStoriesForContext += 1

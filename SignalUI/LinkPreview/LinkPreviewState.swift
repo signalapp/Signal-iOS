@@ -243,7 +243,7 @@ public class LinkPreviewSent: LinkPreviewState {
         guard let imageAttachment = imageAttachment else {
             return .none
         }
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
+        guard let attachmentStream = imageAttachment.asResourceStream()?.bridgeStream else {
             return .loading
         }
         guard attachmentStream.isImageMimeType,
@@ -256,7 +256,7 @@ public class LinkPreviewSent: LinkPreviewState {
     public func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
+        guard let attachmentStream = imageAttachment?.asResourceStream()?.bridgeStream else {
             owsFailDebug("Could not load image.")
             return
         }
@@ -292,7 +292,7 @@ public class LinkPreviewSent: LinkPreviewState {
     }
 
     public func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String? {
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
+        guard let attachmentStream = imageAttachment?.asResourceStream()?.bridgeStream else {
             return nil
         }
         return "\(attachmentStream.uniqueId).\(NSStringForAttachmentThumbnailQuality(thumbnailQuality))"
@@ -305,7 +305,7 @@ public class LinkPreviewSent: LinkPreviewState {
             return cachedValue
         }
         owsAssertDebug(imageState == .loaded)
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
+        guard let attachmentStream = imageAttachment?.asResourceStream()?.bridgeStream else {
             return CGSize.zero
         }
         let result = attachmentStream.imageSizePixels
