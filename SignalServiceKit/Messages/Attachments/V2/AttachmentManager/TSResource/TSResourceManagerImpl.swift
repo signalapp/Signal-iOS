@@ -78,7 +78,7 @@ public class TSResourceManagerImpl: TSResourceManager {
 
     public func createOversizeTextAttachmentStream(
         consuming dataSource: DataSource,
-        message: TSOutgoingMessage,
+        message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
         let wrappedDataSource = TSResourceDataSource.from(
@@ -109,7 +109,7 @@ public class TSResourceManagerImpl: TSResourceManager {
 
     public func createBodyMediaAttachmentStreams(
         consuming dataSources: [TSResourceDataSource],
-        message: TSOutgoingMessage,
+        message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
         var legacyDataSources = [TSAttachmentDataSource]()

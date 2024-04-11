@@ -749,51 +749,6 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    public func enumerateMessagesWithAttachments(
-        transaction: SDSAnyReadTransaction,
-        block: (TSMessage, inout Bool) -> Void
-    ) throws {
-        let emptyArraySerializedData = try! NSKeyedArchiver.archivedData(withRootObject: [String](), requiringSecureCoding: true)
-
-        let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .attachmentIds) IS NOT NULL
-            AND \(interactionColumn: .attachmentIds) != ?
-        """
-        let arguments: StatementArguments = [threadUniqueId, emptyArraySerializedData]
-        let cursor = TSInteraction.grdbFetchCursor(
-            sql: sql,
-            arguments: arguments,
-            transaction: transaction.unwrapGrdbRead
-        )
-
-        while let interaction = try cursor.next() {
-            var stop: Bool = false
-
-            guard let message = interaction as? TSMessage else {
-                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
-                continue
-            }
-
-            // NOTE: this doesn't actually do a db lookup on TSAttachment.
-            // Attachment (once it exists) will not use this method; this is used
-            // for orphan data cleanup which will take just a completely different
-            // form with Attachment, this message enumeration will be obsolete.
-            guard message.hasBodyAttachments(transaction: transaction) else {
-                owsFailDebug("message unexpectedly has no attachments")
-                continue
-            }
-
-            block(message, &stop)
-
-            if stop {
-                return
-            }
-        }
-    }
-
     /// Enumerates all the unread interactions in this thread, sorted by sort id.
     public func fetchAllUnreadMessages(
         transaction: SDSAnyReadTransaction

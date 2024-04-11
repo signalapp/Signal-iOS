@@ -28,7 +28,7 @@ public class TSAttachmentManager {
 
     public func createBodyAttachmentStreams(
         consuming dataSources: [TSAttachmentDataSource],
-        message: TSOutgoingMessage,
+        message: TSMessage,
         tx: SDSAnyWriteTransaction
     ) throws {
         try _createBodyAttachmentStreams(
@@ -57,7 +57,7 @@ public class TSAttachmentManager {
 
     private func _createBodyAttachmentStreams(
         consuming dataSources: [TSAttachmentDataSource],
-        message: TSOutgoingMessage,
+        message: TSMessage,
         albumMessageId: String?,
         tx: SDSAnyWriteTransaction
     ) throws {

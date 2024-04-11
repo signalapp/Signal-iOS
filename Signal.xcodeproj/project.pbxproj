@@ -1052,6 +1052,7 @@
 		66E1ADA02B9155C200C56B7B /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */; };
 		66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */; };
 		66E793E52BC0D8A600929E5E /* MessageStickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */; };
+		66EA22872BC70B9A00A36B97 /* TSAttachmentDownloadManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EA22852BC70B9500A36B97 /* TSAttachmentDownloadManagerTest.swift */; };
 		66EB029B2BAB9F1C004F0580 /* ReferencedAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */; };
 		66EB029D2BAB9F55004F0580 /* ReferencedTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */; };
 		66F0F1DD29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */; };
@@ -3994,6 +3995,7 @@
 		66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
 		66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinator.swift; sourceTree = "<group>"; };
 		66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStickerManager.swift; sourceTree = "<group>"; };
+		66EA22852BC70B9500A36B97 /* TSAttachmentDownloadManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentDownloadManagerTest.swift; sourceTree = "<group>"; };
 		66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedAttachment.swift; sourceTree = "<group>"; };
 		66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedTSResource.swift; sourceTree = "<group>"; };
 		66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorLoader.swift; sourceTree = "<group>"; };
@@ -8044,6 +8046,7 @@
 				66D7B9422B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift */,
 				669FAE142B75968D009EE2FE /* TSAttachmentDownloadJob.swift */,
 				F9C5C985289453B100548EEE /* TSAttachmentDownloadManager.swift */,
+				66EA22852BC70B9500A36B97 /* TSAttachmentDownloadManagerTest.swift */,
 				66D7B9362B99463C0005C98B /* TSResourceDownloadManager.swift */,
 				66D7B9382B99466F0005C98B /* TSResourceDownloadManagerImpl.swift */,
 				66BED7E72B9B992800236BAD /* TSResourceDownloadManagerMock.swift */,
@@ -14779,6 +14782,7 @@
 				66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */,
 				C1F09B9F2BB307E100F9E7F5 /* TransformingInputStreamTests.swift in Sources */,
 				C1E307422BA4D388009F015B /* TransformingOutputStreamTests.swift in Sources */,
+				66EA22872BC70B9A00A36B97 /* TSAttachmentDownloadManagerTest.swift in Sources */,
 				C18CA8342B6D6F8400D411B0 /* TSAttachmentUploadManagerTestHelper.swift in Sources */,
 				C1DF3F4D2B028409004B6986 /* TSAttachmentUploadManagerTestMocks.swift in Sources */,
 				C1DF3F4E2B028409004B6986 /* TSAttachmentUploadManagerTests.swift in Sources */,

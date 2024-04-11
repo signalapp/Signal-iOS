@@ -16,7 +16,7 @@ class TSAttachmentUploadManagerMockHelper {
     var mockBlurHash = TSAttachmentUpload.Mocks.BlurHash()
     var mockFileSystem = AttachmentUpload.Mocks.FileSystem()
     var mockInteractionStore = MockInteractionStore()
-    var mockResourceStore = TSResourceUploadStoreMock()
+    var mockResourceStore = TSAttachmentUploadStoreMock()
 
     var capturedRequests = [MockResultType]()
 
@@ -179,5 +179,37 @@ class TSAttachmentUploadManagerMockHelper {
         var mocks = authToUploadRequestMockMap[auth] ?? [MockRequestType]()
         mocks.append(request)
         authToUploadRequestMockMap[auth] = mocks
+    }
+}
+
+class TSAttachmentUploadStoreMock: TSResourceStoreMock, TSResourceUploadStore {
+    var filename: String!
+    var size: Int!
+    var uploadedAttachments = [TSResourceStream]()
+
+    override func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
+        return ids.map { _ in
+            return TSAttachmentStream(
+                contentType: "image/jpeg",
+                byteCount: UInt32(size),
+                sourceFilename: filename,
+                caption: nil,
+                attachmentType: .default,
+                albumMessageId: nil
+            )
+        }
+    }
+
+    func updateAsUploaded(
+        attachmentStream: TSResourceStream,
+        encryptionKey: Data,
+        encryptedByteLength: UInt32,
+        digest: Data,
+        cdnKey: String,
+        cdnNumber: UInt32,
+        uploadTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        uploadedAttachments.append(attachmentStream)
     }
 }

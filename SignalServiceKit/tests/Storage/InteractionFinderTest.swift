@@ -13,23 +13,9 @@ class InteractionFinderTest: SSKBaseTestSwift {
         // Threads
         let contactThread1 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334444"))
         let contactThread2 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334445"))
-        // Attachments
-        let attachmentData1 = Randomness.generateRandomBytes(1024)
-        let attachment1 = TSAttachmentStream(contentType: OWSMimeTypeImageGif,
-                                             byteCount: UInt32(attachmentData1.count),
-                                             sourceFilename: "some.gif",
-                                             caption: nil,
-                                             attachmentType: .default,
-                                             albumMessageId: nil)
-        let attachmentData2 = Randomness.generateRandomBytes(2048)
-        let attachment2 = TSAttachmentStream(contentType: OWSMimeTypePdf,
-                                             byteCount: UInt32(attachmentData2.count),
-                                             sourceFilename: "some.df", caption: nil, attachmentType: .default, albumMessageId: nil)
         // Messages
         let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens")
-        outgoingMessage1.setLegacyBodyAttachmentIds([attachment1.uniqueId])
         let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes")
-        outgoingMessage2.setLegacyBodyAttachmentIds([attachment2.uniqueId])
         let outgoingMessage3 = TSOutgoingMessage(in: contactThread2, messageBody: "oh my word")
         let errorMessage1 = TSErrorMessage.nonblockingIdentityChange(in: contactThread1,
                                                                      address: address1,
@@ -53,9 +39,6 @@ class InteractionFinderTest: SSKBaseTestSwift {
             // Threads
             contactThread1.anyInsert(transaction: transaction)
             contactThread2.anyInsert(transaction: transaction)
-            // Attachments
-            attachment1.anyInsert(transaction: transaction)
-            attachment2.anyInsert(transaction: transaction)
             // Messages
             outgoingMessage1.anyInsert(transaction: transaction)
             outgoingMessage2.anyInsert(transaction: transaction)
@@ -103,49 +86,5 @@ class InteractionFinderTest: SSKBaseTestSwift {
             let unreadCount = InteractionFinder.unreadCountInAllThreads(transaction: transaction)
             XCTAssertEqual(unarchivedCount, unreadCount)
         }
-    }
-
-    func testEnumerateMessagesWithAttachments() throws {
-        func makeRandomAttachment(tx: SDSAnyWriteTransaction) -> TSAttachment {
-            let attachmentData = Randomness.generateRandomBytes(1024)
-            let attachment = TSAttachmentStream(
-                contentType: OWSMimeTypeImageGif,
-                byteCount: UInt32(attachmentData.count),
-                sourceFilename: "some.gif",
-                caption: nil,
-                attachmentType: .default,
-                albumMessageId: nil
-            )
-            attachment.anyInsert(transaction: tx)
-            return attachment
-        }
-
-        // Create some messages with attachments.
-        let threads = ContactThreadFactory().create(count: 2)
-        let threadMessages = threads.map { thread in
-            let messageFactory = IncomingMessageFactory()
-            messageFactory.threadCreator = { _ in thread }
-            var n = 0
-            messageFactory.attachmentIdsBuilder = { tx in
-                defer { n += 1 }
-                return (0..<n).map { _ in
-                    return makeRandomAttachment(tx: tx).uniqueId
-                }
-            }
-            return messageFactory.create(count: 3)
-        }
-
-        // Query for the attachments in one specific thread.
-        var actualUniqueIds = Set<String>()
-        let finder = InteractionFinder(threadUniqueId: threads[0].uniqueId)
-        read { transaction in
-            try! finder.enumerateMessagesWithAttachments(transaction: transaction) { message, _ in
-                actualUniqueIds.insert(message.uniqueId)
-            }
-        }
-
-        // Make sure we got back the right messages from the right thread.
-        let expectedUniqueIds = Set(threadMessages[0].dropFirst().lazy.map { $0.uniqueId })
-        XCTAssertEqual(actualUniqueIds, expectedUniqueIds)
     }
 }

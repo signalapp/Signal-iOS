@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 import SignalCoreKit
 
 @objc
@@ -667,8 +668,10 @@ public extension TSAttachmentDownloadManager {
     ) -> [(messageId: String, jobRequest: MessageJobRequest)] {
         do {
             var requestsToEnqueue = [(messageId: String, jobRequest: MessageJobRequest)]()
-            let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
-            try finder.enumerateMessagesWithAttachments(transaction: tx) { (message, _) in
+            try Self.enumerateMessagesWithLegacyAttachments(
+                inThreadUniqueId: thread.uniqueId,
+                transaction: tx
+            ) { (message, _) in
                 let messageId = message.uniqueId
                 let jobRequest = buildMessageJobRequest(
                     for: messageId,
@@ -1291,5 +1294,53 @@ public extension TSAttachmentDownloadManager {
                 TSResourceDownloads.attachmentDownloadProgressKey: NSNumber(value: progress),
                 TSResourceDownloads.attachmentDownloadAttachmentIDKey: TSResourceId.legacy(uniqueId: attachmentId)
             ])
+    }
+
+    // MARK: - Fetching
+
+    static func enumerateMessagesWithLegacyAttachments(
+        inThreadUniqueId threadUniqueId: String,
+        transaction: SDSAnyReadTransaction,
+        block: (TSMessage, inout Bool) -> Void
+    ) throws {
+        let emptyArraySerializedData = try! NSKeyedArchiver.archivedData(withRootObject: [String](), requiringSecureCoding: true)
+
+        let sql = """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .attachmentIds) IS NOT NULL
+            AND \(interactionColumn: .attachmentIds) != ?
+        """
+        let arguments: StatementArguments = [threadUniqueId, emptyArraySerializedData]
+        let cursor = TSInteraction.grdbFetchCursor(
+            sql: sql,
+            arguments: arguments,
+            transaction: transaction.unwrapGrdbRead
+        )
+
+        while let interaction = try cursor.next() {
+            var stop: Bool = false
+
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
+                continue
+            }
+
+            // NOTE: this doesn't actually do a db lookup on TSAttachment.
+            // Attachment (once it exists) will not use this method; this is used
+            // for orphan data cleanup which will take just a completely different
+            // form with Attachment, this message enumeration will be obsolete.
+            guard message.hasBodyAttachments(transaction: transaction) else {
+                owsFailDebug("message unexpectedly has no attachments")
+                continue
+            }
+
+            block(message, &stop)
+
+            if stop {
+                return
+            }
+        }
     }
 }

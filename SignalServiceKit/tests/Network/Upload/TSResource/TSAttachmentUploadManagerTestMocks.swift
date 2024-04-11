@@ -26,16 +26,7 @@ class TSResourceUploadStoreMock: TSResourceStoreMock, TSResourceUploadStore {
     var uploadedAttachments = [TSResourceStream]()
 
     override func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
-        return ids.map { _ in
-            return TSAttachmentStream(
-                contentType: "image/jpeg",
-                byteCount: UInt32(size),
-                sourceFilename: filename,
-                caption: nil,
-                attachmentType: .default,
-                albumMessageId: nil
-            )
-        }
+        return []
     }
 
     func updateAsUploaded(

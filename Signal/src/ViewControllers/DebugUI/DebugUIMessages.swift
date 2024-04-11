@@ -2470,7 +2470,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
     // MARK: Contact Shares
 
-    private typealias CreateContactBlock = (SDSAnyWriteTransaction) -> OWSContact
+    private typealias CreateContactBlock = (TSMessage, SDSAnyWriteTransaction) -> Void
 
     private static func fakeAllContactShareAction(thread: TSThread) -> DebugUIMessagesAction {
         return DebugUIMessagesGroupAction.allGroupActionWithLabel(
@@ -2493,20 +2493,20 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         actions.append(fakeContactShareMessageAction(
             thread: thread,
             label: "Name & Number",
-            contact: { _ in
+            contact: { message, tx in
                 let contact = OWSContact(name: OWSContactName(givenName: "Alice"))
                 contact.phoneNumbers = [ OWSContactPhoneNumber(type: .home, phoneNumber: "+13213214321") ]
-                return contact
+                message.update(withContactShare: contact, transaction: tx)
             }
         ))
 
         actions.append(fakeContactShareMessageAction(
             thread: thread,
             label: "Name & Email",
-            contact: { _ in
+            contact: { message, tx in
                 let contact = OWSContact(name: OWSContactName(givenName: "Bob"))
                 contact.emails = [ OWSContactEmail(type: .home, email: "a@b.com") ]
-                return contact
+                message.update(withContactShare: contact, transaction: tx)
             }
         ))
 
@@ -2514,7 +2514,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             fakeContactShareMessageAction(
                 thread: thread,
                 label: "Complicated",
-                contact: { transaction in
+                contact: { message, transaction in
                     let contact = OWSContact(name: OWSContactName(
                         givenName: "Alice",
                         familyName: "Carol",
@@ -2558,19 +2558,29 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                         .buildRandomAvatar(diameterPoints: 200)!
                         .jpegData(compressionQuality: 0.9)!
 
-                    let attachmentStream = TSAttachmentStream(
-                        contentType: OWSMimeTypeImageJpeg,
-                        byteCount: UInt32(avatarData.count),
-                        sourceFilename: nil,
+                    let avatarDataSource = TSResourceDataSource.from(
+                        data: avatarData,
+                        mimeType: OWSMimeTypeImageJpeg,
                         caption: nil,
-                        attachmentType: .default,
-                        albumMessageId: nil
+                        renderingFlag: .default,
+                        sourceFilename: nil
                     )
-                    try! attachmentStream.write(avatarData)
-                    attachmentStream.anyInsert(transaction: transaction)
-                    contact.setLegacyAvatarAttachmentId(attachmentStream.uniqueId)
 
-                    return contact
+                    let avatarBuilder = try! DependenciesBridge.shared.tsResourceManager.createAttachmentStreamBuilder(
+                        from: avatarDataSource,
+                        tx: transaction.asV2Write
+                    )
+                    switch avatarBuilder.info {
+                    case .legacy(let uniqueId):
+                        contact.setLegacyAvatarAttachmentId(uniqueId)
+                    case .v2:
+                        break
+                    }
+                    message.update(withContactShare: contact, transaction: transaction)
+                    try! avatarBuilder.finalize(
+                        owner: .messageContactAvatar(messageRowId: message.sqliteRowId!),
+                        tx: transaction.asV2Write
+                    )
                 }
             )
         )
@@ -2578,33 +2588,33 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         actions.append(fakeContactShareMessageAction(
             thread: thread,
             label: "Long values",
-            contact: { _ in
+            contact: { message, tx in
                 let contact = OWSContact(name: OWSContactName(
                     givenName: "Bobasdjasdlkjasldkjas",
                     familyName: "Bobasdjasdlkjasldkjas"
                 ))
                 contact.emails = [ OWSContactEmail(type: .mobile, email: "asdlakjsaldkjasldkjasdlkjasdlkjasdlkajsa@b.com") ]
-                return contact
+                message.update(withContactShare: contact, transaction: tx)
             }
         ))
 
         actions.append(fakeContactShareMessageAction(
             thread: thread,
             label: "System Contact w/o Signal",
-            contact: { _ in
+            contact: { message, tx in
                 let contact = OWSContact(name: OWSContactName(givenName: "Add Me To Your Contacts"))
                 contact.phoneNumbers = [ OWSContactPhoneNumber(type: .work, phoneNumber: "+32460205391") ]
-                return contact
+                message.update(withContactShare: contact, transaction: tx)
             }
         ))
 
         actions.append(fakeContactShareMessageAction(
             thread: thread,
             label: "System Contact w. Signal",
-            contact: { _ in
+            contact: { message, tx in
                 let contact = OWSContact(name: OWSContactName(givenName: "Add Me To Your Contacts"))
                 contact.phoneNumbers = [ OWSContactPhoneNumber(type: .work, phoneNumber: "+32460205392") ]
-                return contact
+                message.update(withContactShare: contact, transaction: tx)
             }
         ))
 
@@ -2623,7 +2633,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     thread: thread,
                     messageBody: nil,
                     messageState: .sent,
-                    contactShare: contact(transaction),
+                    contactShareBlock: contact,
                     transaction: transaction
                 )
             })
@@ -3413,34 +3423,25 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 )
 
             case 2:
-                let filesize: UInt32 = 64
-                let pointer = TSAttachmentPointer(
-                    serverId: 237391539706350548,
-                    cdnKey: "",
-                    cdnNumber: 0,
-                    key: createRandomDataOfSize(filesize),
-                    digest: nil,
-                    byteCount: filesize,
-                    contentType: "image/jpg",
-                    sourceFilename: "test.jpg",
-                    caption: nil,
-                    albumMessageId: nil,
-                    attachmentType: .default,
-                    mediaSize: .zero,
-                    blurHash: nil,
-                    uploadTimestamp: 0,
-                    videoDuration: nil
-                )
-                pointer.setAttachmentPointerStateDebug(.failed)
-                pointer.anyInsert(transaction: transaction)
-
                 let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread)
                 incomingMessageBuilder.authorAci = AciObjC(incomingSenderAci)
 
                 let message = incomingMessageBuilder.build()
-                message.setLegacyBodyAttachmentIds([pointer.uniqueId])
                 message.anyInsert(transaction: transaction)
                 message.debugonly_markAsReadNow(transaction: transaction)
+
+                let dataSource = TSResourceDataSource.from(
+                    data: UIImage(color: .blue, size: .square(100)).jpegData(compressionQuality: 0.1)!,
+                    mimeType: "image/jpg",
+                    caption: nil,
+                    renderingFlag: .default,
+                    sourceFilename: "test.jpg"
+                )
+                try? DependenciesBridge.shared.tsResourceManager.createBodyMediaAttachmentStreams(
+                    consuming: [dataSource],
+                    message: message,
+                    tx: transaction.asV2Write
+                )
 
             case 3:
                 let conversationFactory = ConversationFactory()
@@ -3865,7 +3866,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         isDelivered: Bool = false,
         isRead: Bool = false,
         quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>? = nil,
-        contactShare: OWSContact? = nil,
+        contactShareBlock: CreateContactBlock? = nil,
         linkPreview: OWSLinkPreview? = nil,
         messageSticker: MessageSticker? = nil,
         transaction: SDSAnyWriteTransaction
@@ -3883,7 +3884,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             fakeAssetLoader = fakeAssetLoaderParam
         }
 
-        owsAssertDebug(!messageBody.isEmptyOrNil || fakeAssetLoader != nil || contactShare != nil)
+        owsAssertDebug(!messageBody.isEmptyOrNil || fakeAssetLoader != nil || contactShareBlock != nil)
 
         let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: messageBody)
         messageBuilder.isVoiceMessage = false
@@ -3891,11 +3892,14 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let message = messageBuilder.build(transaction: transaction)
 
         quotedMessageBuilder.map { message.update(with: $0.info, transaction: transaction) }
-        contactShare.map { message.update(withContactShare: $0, transaction: transaction) }
         linkPreview.map { message.update(with: $0, transaction: transaction) }
         messageSticker.map { message.update(with: $0, transaction: transaction) }
 
         message.anyInsert(transaction: transaction)
+
+        contactShareBlock?(message, transaction)
+
+        let messageRowId = message.sqliteRowId!
         message.update(withFakeMessageState: messageState, transaction: transaction)
 
         try? quotedMessageBuilder?.finalize(
@@ -3903,21 +3907,14 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             tx: transaction.asV2Write
         )
 
-        let attachment: TSAttachment?
         if let fakeAssetLoader {
-            attachment = createFakeAttachment(
+            createFakeBodyAttachment(
                 fakeAssetLoader: fakeAssetLoader,
                 isAttachmentDownloaded: true,
-                albumMessageId: message.uniqueId,
+                message: message,
+                messageRowId: messageRowId,
                 transaction: transaction
             )
-            owsAssertDebug(attachment != nil)
-        } else {
-            attachment = nil
-        }
-
-        if let attachment {
-            updateAttachment(attachment, albumMessage: message, transaction: transaction)
         }
 
         if isDelivered {
@@ -3948,12 +3945,13 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         return message
     }
 
-    private static func createFakeAttachment(
+    private static func createFakeBodyAttachment(
         fakeAssetLoader: DebugUIMessagesAssetLoader,
         isAttachmentDownloaded: Bool,
-        albumMessageId: String,
+        message: TSMessage,
+        messageRowId: Int64,
         transaction: SDSAnyWriteTransaction
-    ) -> TSAttachment? {
+    ) {
 
         owsAssertDebug(!fakeAssetLoader.filePath.isEmptyOrNil)
 
@@ -3963,63 +3961,58 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 dataSource = try DataSourcePath.dataSource(withFilePath: fakeAssetLoader.filePath!, shouldDeleteOnDeallocation: false)
             } catch {
                 owsFailDebug("Failed to create dataSource: \(error)")
-                return nil
+                return
             }
 
             guard let filename = dataSource.sourceFilename else {
                 owsFailDebug("Empty filename: \(dataSource)")
-                return nil
+                return
             }
-            // To support "fake missing" attachments, we sometimes lie about the length of the data.
-            let nominalDataLength: UInt32 = UInt32(max(1, dataSource.dataLength))
-            let attachmentStream = TSAttachmentStream(
-                contentType: fakeAssetLoader.mimeType,
-                byteCount: nominalDataLength,
-                sourceFilename: filename,
+            let resourceDataSource = TSResourceDataSource.from(
+                data: dataSource.data,
+                mimeType: fakeAssetLoader.mimeType,
                 caption: nil,
-                attachmentType: .default,
-                albumMessageId: albumMessageId
+                renderingFlag: .default,
+                sourceFilename: filename
             )
+
             do {
-                try attachmentStream.write(dataSource.data)
-                attachmentStream.anyInsert(transaction: transaction)
+                try DependenciesBridge.shared.tsResourceManager.createBodyMediaAttachmentStreams(
+                    consuming: [resourceDataSource],
+                    message: message,
+                    tx: transaction.asV2Write
+                )
             } catch {
                 owsFailDebug("Failed to write data: \(error)")
-                return nil
+                return
             }
-
-            return attachmentStream
         } else {
             let filesize: UInt32 = 64
-            let attachmentPointer = TSAttachmentPointer(
-                serverId: 237391539706350548,
-                cdnKey: "",
-                cdnNumber: 0,
-                key: createRandomDataOfSize(filesize),
-                digest: nil,
-                byteCount: filesize,
-                contentType: fakeAssetLoader.mimeType,
-                sourceFilename: fakeAssetLoader.filename,
-                caption: nil,
-                albumMessageId: albumMessageId,
-                attachmentType: .default,
-                mediaSize: .zero,
-                blurHash: nil,
-                uploadTimestamp: 0,
-                videoDuration: nil
-            )
-            attachmentPointer.setAttachmentPointerStateDebug(.failed)
-            attachmentPointer.anyInsert(transaction: transaction)
-            return attachmentPointer
-        }
-    }
 
-    private static func updateAttachment(
-        _ attachment: TSAttachment,
-        albumMessage: TSMessage,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        // This doesn't work anymore. deal with it.
+            let pointerBuilder = SSKProtoAttachmentPointer.builder()
+            pointerBuilder.setCdnID(237391539706350548)
+            pointerBuilder.setCdnKey("")
+            pointerBuilder.setCdnNumber(0)
+            pointerBuilder.setKey(createRandomDataOfSize(filesize))
+            pointerBuilder.setSize(filesize)
+            pointerBuilder.setContentType(fakeAssetLoader.mimeType)
+            pointerBuilder.setFileName(fakeAssetLoader.filename)
+            pointerBuilder.setWidth(0)
+            pointerBuilder.setHeight(0)
+            pointerBuilder.setUploadTimestamp(0)
+            let pointer = pointerBuilder.buildInfallibly()
+
+            do {
+                try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentPointers(
+                    from: [pointer],
+                    message: message,
+                    tx: transaction.asV2Write
+                )
+            } catch {
+                owsFailDebug("Failed to write data: \(error)")
+                return
+            }
+        }
     }
 
     private static func actionLabelForHasCaption(
@@ -4056,21 +4049,13 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     private static func createFakeIncomingMessage(
         thread: TSThread,
         messageBody: String?,
-        attachment: TSAttachment?,
         filename: String? = nil,
         isAttachmentDownloaded: Bool = false,
         quotedMessage: TSQuotedMessage? = nil,
         transaction: SDSAnyWriteTransaction
     ) -> TSIncomingMessage {
 
-        owsAssertDebug(!messageBody.isEmptyOrNil || attachment != nil)
-
-        let attachmentIds: [String]
-        if let attachmentId = attachment?.uniqueId {
-            attachmentIds = [attachmentId]
-        } else {
-            attachmentIds = []
-        }
+        owsAssertDebug(!messageBody.isEmptyOrNil)
 
         let authorAci = DebugUIMessages.anyIncomingSenderAddress(forThread: thread)!.aci!
 
@@ -4078,13 +4063,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         incomingMessageBuilder.authorAci = AciObjC(authorAci)
         let message = incomingMessageBuilder.build()
         quotedMessage.map { message.update(with: $0, transaction: transaction) }
-        message.setLegacyBodyAttachmentIds(attachmentIds)
         message.anyInsert(transaction: transaction)
         message.debugonly_markAsReadNow(transaction: transaction)
-
-        if let attachment {
-            updateAttachment(attachment, albumMessage: message, transaction: transaction)
-        }
 
         return message
     }
@@ -4119,6 +4099,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let message = incomingMessageBuilder.build()
         quotedMessageBuilder.map { message.update(with: $0.info, transaction: transaction) }
         message.anyInsert(transaction: transaction)
+        let messageRowId = message.sqliteRowId!
         message.debugonly_markAsReadNow(transaction: transaction)
 
         try? quotedMessageBuilder?.finalize(
@@ -4126,20 +4107,14 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             tx: transaction.asV2Write
         )
 
-        let attachment: TSAttachment?
         if let fakeAssetLoader {
-            attachment = createFakeAttachment(
+            createFakeBodyAttachment(
                 fakeAssetLoader: fakeAssetLoader,
                 isAttachmentDownloaded: isAttachmentDownloaded,
-                albumMessageId: message.uniqueId,
+                message: message,
+                messageRowId: messageRowId,
                 transaction: transaction
             )
-        } else {
-            attachment = nil
-        }
-
-        if let attachment {
-            updateAttachment(attachment, albumMessage: message, transaction: transaction)
         }
 
         return message
