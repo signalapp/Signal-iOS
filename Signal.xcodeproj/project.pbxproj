@@ -891,6 +891,10 @@
 		667DEE5D2BC7171D00EFF32D /* DatedMediaGalleryRecordId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE5C2BC7171D00EFF32D /* DatedMediaGalleryRecordId.swift */; };
 		667DEE5F2BC7175300EFF32D /* AllMediaCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE5E2BC7175300EFF32D /* AllMediaCategory.swift */; };
 		667DEE612BC71C3300EFF32D /* TSAttachmentStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE602BC71C3300EFF32D /* TSAttachmentStream.swift */; };
+		667DEE632BC72F1700EFF32D /* DatedMediaGalleryItemId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE622BC72F1700EFF32D /* DatedMediaGalleryItemId.swift */; };
+		667DEE652BC72F4000EFF32D /* MediaGalleryItemId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE642BC72F4000EFF32D /* MediaGalleryItemId.swift */; };
+		667DEE672BC7342900EFF32D /* AttachmentReferenceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE662BC7342900EFF32D /* AttachmentReferenceId.swift */; };
+		667DEE6B2BC7603C00EFF32D /* DatedAttachmentReferenceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE6A2BC7603C00EFF32D /* DatedAttachmentReferenceId.swift */; };
 		667E90D028E799D1005FE603 /* ConnectionsEducationSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667E90CF28E799D1005FE603 /* ConnectionsEducationSheetViewController.swift */; };
 		667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */; };
 		667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */; };
@@ -3835,6 +3839,10 @@
 		667DEE5C2BC7171D00EFF32D /* DatedMediaGalleryRecordId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatedMediaGalleryRecordId.swift; sourceTree = "<group>"; };
 		667DEE5E2BC7175300EFF32D /* AllMediaCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMediaCategory.swift; sourceTree = "<group>"; };
 		667DEE602BC71C3300EFF32D /* TSAttachmentStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentStream.swift; sourceTree = "<group>"; };
+		667DEE622BC72F1700EFF32D /* DatedMediaGalleryItemId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatedMediaGalleryItemId.swift; sourceTree = "<group>"; };
+		667DEE642BC72F4000EFF32D /* MediaGalleryItemId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryItemId.swift; sourceTree = "<group>"; };
+		667DEE662BC7342900EFF32D /* AttachmentReferenceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentReferenceId.swift; sourceTree = "<group>"; };
+		667DEE6A2BC7603C00EFF32D /* DatedAttachmentReferenceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatedAttachmentReferenceId.swift; sourceTree = "<group>"; };
 		667E90CF28E799D1005FE603 /* ConnectionsEducationSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionsEducationSheetViewController.swift; sourceTree = "<group>"; };
 		667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYAnimatedImage+Duration.swift"; sourceTree = "<group>"; };
 		667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryBadgeCountManager.swift; sourceTree = "<group>"; };
@@ -7672,6 +7680,8 @@
 			children = (
 				667DEE572BC714C200EFF32D /* TSResource */,
 				667DEE5E2BC7175300EFF32D /* AllMediaCategory.swift */,
+				667DEE662BC7342900EFF32D /* AttachmentReferenceId.swift */,
+				667DEE6A2BC7603C00EFF32D /* DatedAttachmentReferenceId.swift */,
 			);
 			path = MediaGallery;
 			sourceTree = "<group>";
@@ -7679,7 +7689,9 @@
 		667DEE572BC714C200EFF32D /* TSResource */ = {
 			isa = PBXGroup;
 			children = (
+				667DEE622BC72F1700EFF32D /* DatedMediaGalleryItemId.swift */,
 				667DEE5C2BC7171D00EFF32D /* DatedMediaGalleryRecordId.swift */,
+				667DEE642BC72F4000EFF32D /* MediaGalleryItemId.swift */,
 				667DEE582BC7152E00EFF32D /* MediaGalleryRecord.swift */,
 				F9C5CA80289453B100548EEE /* MediaGalleryRecordFinder.swift */,
 				667DEE5A2BC715B300EFF32D /* MediaGalleryRecordManager.swift */,
@@ -13536,6 +13548,7 @@
 				66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */,
 				66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */,
 				66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */,
+				667DEE672BC7342900EFF32D /* AttachmentReferenceId.swift in Sources */,
 				66D7B9192B97A02F0005C98B /* AttachmentStore+QuotedMessage.swift in Sources */,
 				66E1ADA02B9155C200C56B7B /* AttachmentStore.swift in Sources */,
 				66583EFF2B9246C400821D05 /* AttachmentStoreImpl.swift in Sources */,
@@ -13718,6 +13731,8 @@
 				F9B652C328D8E3DF006914CA /* DatabaseRecovery.swift in Sources */,
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
+				667DEE6B2BC7603C00EFF32D /* DatedAttachmentReferenceId.swift in Sources */,
+				667DEE632BC72F1700EFF32D /* DatedMediaGalleryItemId.swift in Sources */,
 				667DEE5D2BC7171D00EFF32D /* DatedMediaGalleryRecordId.swift in Sources */,
 				6600F36C298DAA6200B1EDB7 /* DateProvider.swift in Sources */,
 				72345D1F2B9A1FCF000237B3 /* DateUtil.swift in Sources */,
@@ -13918,6 +13933,7 @@
 				66BED7E32B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift in Sources */,
 				66BED7E62B9B929600236BAD /* MediaBandwidthPreferenceStoreImpl.swift in Sources */,
 				66BED7EA2B9B99C800236BAD /* MediaBandwidthPreferenceStoreMock.swift in Sources */,
+				667DEE652BC72F4000EFF32D /* MediaGalleryItemId.swift in Sources */,
 				667DEE592BC7152E00EFF32D /* MediaGalleryRecord.swift in Sources */,
 				F9C5CD5D289453B300548EEE /* MediaGalleryRecordFinder.swift in Sources */,
 				667DEE5B2BC715B300EFF32D /* MediaGalleryRecordManager.swift in Sources */,

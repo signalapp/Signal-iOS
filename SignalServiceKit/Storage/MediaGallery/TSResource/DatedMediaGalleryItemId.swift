@@ -4,25 +4,24 @@
 //
 
 import Foundation
-import GRDB
 
-public struct DatedMediaGalleryRecordId: Codable, FetchableRecord {
-    public var rowid: Int64 // sqlite row id of the MediaGalleryRecord
+public struct DatedMediaGalleryItemId {
+    public var id: MediaGalleryItemId
     public var receivedAtTimestamp: UInt64 // timestamp in milliseconds
 
     public var date: Date {
         return Date(millisecondsSince1970: receivedAtTimestamp)
     }
 
-    public init(rowid: Int64, receivedAtTimestamp: UInt64) {
-        self.rowid = rowid
+    public init(id: MediaGalleryItemId, receivedAtTimestamp: UInt64) {
+        self.id = id
         self.receivedAtTimestamp = receivedAtTimestamp
     }
 }
 
-extension DatedMediaGalleryRecordId {
+extension DatedAttachmentReferenceId {
 
     var asItemId: DatedMediaGalleryItemId {
-        return .init(id: .legacy(mediaGalleryRecordId: rowid), receivedAtTimestamp: receivedAtTimestamp)
+        return .init(id: .v2(id), receivedAtTimestamp: receivedAtTimestamp)
     }
 }
