@@ -63,7 +63,7 @@ extension AttachmentStore {
 
     /// Fetch all references for the provided owner.
     /// Results are unordered.
-    func fetchReferences(
+    public func fetchReferences(
         owner: AttachmentReference.OwnerId,
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
@@ -75,7 +75,7 @@ extension AttachmentStore {
     /// Ordering is not guaranteed; selection of "first" is arbitrary,
     /// so in general this method is for when the owner type
     /// allows only one (or no) reference.
-    func fetchFirstReference(
+    public func fetchFirstReference(
         owner: AttachmentReference.OwnerId,
         tx: DBReadTransaction
     ) -> AttachmentReference? {
@@ -83,7 +83,7 @@ extension AttachmentStore {
     }
 
     /// Fetch an attachment by id.
-    func fetch(
+    public func fetch(
         id: Attachment.IDType,
         tx: DBReadTransaction
     ) -> Attachment? {
@@ -92,7 +92,7 @@ extension AttachmentStore {
 
     /// Convenience method to perform the two-step fetch
     /// owner -> AttachmentReference(s) -> Attachment(s).
-    func fetch(
+    public func fetch(
         owner: AttachmentReference.OwnerId,
         tx: DBReadTransaction
     ) -> [Attachment] {
@@ -106,7 +106,7 @@ extension AttachmentStore {
     /// Ordering is not guaranteed; selection of "first" is arbitrary,
     /// so in general this method is for when the owner type
     /// allows only one (or no) attachment.
-    func fetchFirst(
+    public func fetchFirst(
         owner: AttachmentReference.OwnerId,
         tx: DBReadTransaction
     ) -> Attachment? {
@@ -116,21 +116,21 @@ extension AttachmentStore {
         return fetch(for: ref, tx: tx)
     }
 
-    func fetch(
+    public func fetch(
         for reference: AttachmentReference,
         tx: DBReadTransaction
     ) -> Attachment? {
         return fetch(id: reference.attachmentRowId, tx: tx)
     }
 
-    func fetch(
+    public func fetch(
         for references: [AttachmentReference],
         tx: DBReadTransaction
     ) -> [Attachment] {
         return fetch(ids: references.map(\.attachmentRowId), tx: tx)
     }
 
-    func orderedBodyAttachments(
+    public func orderedBodyAttachments(
         for message: TSMessage,
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
@@ -152,6 +152,67 @@ extension AttachmentStore {
             .sorted(by: { $0.0 < $1.0 })
             .map(\.1)
     }
+
+    // MARK: - Referenced Attachments
+
+    public func fetchReferencedAttachments(
+        owners: [AttachmentReference.OwnerId],
+        tx: DBReadTransaction
+    ) -> [ReferencedAttachment] {
+        let references = self.fetchReferences(owners: owners, tx: tx)
+        let attachments = Dictionary(
+            grouping: self.fetch(ids: references.map(\.attachmentRowId), tx: tx),
+            by: \.id
+        )
+        return references.compactMap { reference -> ReferencedAttachment? in
+            guard let attachment = attachments[reference.attachmentRowId]?.first else {
+                owsFailDebug("Missing attachment!")
+                return nil
+            }
+            return ReferencedAttachment(reference: reference, attachment: attachment)
+        }
+    }
+
+    public func fetchReferencedAttachments(
+        for owner: AttachmentReference.OwnerId,
+        tx: DBReadTransaction
+    ) -> [ReferencedAttachment] {
+        return fetchReferencedAttachments(owners: [owner], tx: tx)
+    }
+
+    public func fetchFirstReferencedAttachment(
+        for owner: AttachmentReference.OwnerId,
+        tx: DBReadTransaction
+    ) -> ReferencedAttachment? {
+        guard let reference = self.fetchFirstReference(owner: owner, tx: tx) else {
+            return nil
+        }
+        guard let attachment = self.fetch(id: reference.attachmentRowId, tx: tx) else {
+            owsFailDebug("Missing attachment!")
+            return nil
+        }
+        return ReferencedAttachment(reference: reference, attachment: attachment)
+    }
+
+    public func orderedReferencedBodyAttachments(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) -> [ReferencedAttachment] {
+        let references = self.orderedBodyAttachments(for: message, tx: tx)
+        let attachments = Dictionary(
+            grouping: self.fetch(ids: references.map(\.attachmentRowId), tx: tx),
+            by: \.id
+        )
+        return references.compactMap { reference -> ReferencedAttachment? in
+            guard let attachment = attachments[reference.attachmentRowId]?.first else {
+                owsFailDebug("Missing attachment!")
+                return nil
+            }
+            return ReferencedAttachment(reference: reference, attachment: attachment)
+        }
+    }
+
+    // MARK: - Writes
 
     public func insert(
         _ attachment: ReferencedAttachment,
