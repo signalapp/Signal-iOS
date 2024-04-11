@@ -54,12 +54,12 @@ internal protocol MediaGallerySectionLoader {
     func enumerateTimestamps(before date: Date,
                              count: Int,
                              transaction: SDSAnyReadTransaction,
-                             block: (Date, Int64) -> Void) -> MediaGalleryRecordFinder.EnumerationCompletion
+                             block: (Date, Int64) -> Void) -> MediaGalleryResourceFinder.EnumerationCompletion
     /// Should call `block` once for every item (loaded or unloaded) after `date`, up to `count` times.
     func enumerateTimestamps(after date: Date,
                              count: Int,
                              transaction: SDSAnyReadTransaction,
-                             block: (Date, Int64) -> Void) -> MediaGalleryRecordFinder.EnumerationCompletion
+                             block: (Date, Int64) -> Void) -> MediaGalleryResourceFinder.EnumerationCompletion
 
     /// Should selects a range of items in `interval` and call `block` once for each.
     ///

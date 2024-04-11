@@ -270,7 +270,7 @@ class MediaGallery: Dependencies {
         }
     }
 
-    private var mediaGalleryFinder: MediaGalleryRecordFinder
+    private var mediaGalleryFinder: MediaGalleryResourceFinder
     private var sections: Sections!
     private let spoilerState: SpoilerRenderState
 
@@ -280,7 +280,7 @@ class MediaGallery: Dependencies {
 
     init(thread: TSThread, mediaCategory: AllMediaCategory, spoilerState: SpoilerRenderState) {
         mediaFilter = AllMediaFilter.defaultMediaType(for: mediaCategory)
-        let finder = MediaGalleryRecordFinder(thread: thread, filter: mediaFilter)
+        let finder = MediaGalleryResourceFinder(thread: thread, filter: mediaFilter)
         self.mediaGalleryFinder = finder
         self.spoilerState = spoilerState
         self.mediaCategory = mediaCategory
@@ -825,8 +825,10 @@ class MediaGallery: Dependencies {
     func setMediaFilter(_ mediaFilter: AllMediaFilter, loadUntil: GalleryDate, batchSize: Int, firstVisibleIndexPath: MediaGalleryIndexPath?) -> MediaGalleryIndexPath? {
         self.mediaFilter = mediaFilter
         return mutate { sections in
-            mediaGalleryFinder = MediaGalleryRecordFinder(thread: mediaGalleryFinder.thread,
-                                                          filter: mediaFilter)
+            mediaGalleryFinder = MediaGalleryResourceFinder(
+                thread: mediaGalleryFinder.thread,
+                filter: mediaFilter
+            )
             let newLoader = Loader(mediaGallery: self, finder: mediaGalleryFinder)
             return sections.replaceLoader(loader: newLoader,
                                           batchSize: batchSize,
@@ -909,11 +911,11 @@ extension MediaGallery: DatabaseChangeDelegate {
 
 extension MediaGallery {
     internal struct Loader: MediaGallerySectionLoader {
-        typealias EnumerationCompletion = MediaGalleryRecordFinder.EnumerationCompletion
+        typealias EnumerationCompletion = MediaGalleryResourceFinder.EnumerationCompletion
         typealias Item = MediaGalleryItem
 
         fileprivate weak var mediaGallery: MediaGallery?
-        fileprivate let finder: MediaGalleryRecordFinder
+        fileprivate let finder: MediaGalleryResourceFinder
 
         func rowIdsAndDatesOfItemsInSection(for date: GalleryDate,
                                             offset: Int,

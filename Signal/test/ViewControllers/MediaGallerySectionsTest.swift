@@ -97,7 +97,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
     }
 
     typealias Item = FakeItem
-    typealias EnumerationCompletion = MediaGalleryRecordFinder.EnumerationCompletion
+    typealias EnumerationCompletion = MediaGalleryResourceFinder.EnumerationCompletion
 
     var allItems: [Item]
     var itemsBySection: OrderedDictionary<GalleryDate, [Item]>

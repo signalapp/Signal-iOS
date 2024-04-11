@@ -864,7 +864,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         didSet { AssertIsOnMainThread() }
     }
 
-    private lazy var mediaGalleryFinder = MediaGalleryRecordFinder(
+    private lazy var mediaGalleryFinder = MediaGalleryResourceFinder(
         thread: thread,
         filter: .defaultMediaType(for: AllMediaCategory.defaultValue)
     )
