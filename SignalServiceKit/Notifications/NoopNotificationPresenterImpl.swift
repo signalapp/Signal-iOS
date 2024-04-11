@@ -3,8 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class NoopNotificationPresenterImpl: NSObject, NotificationPresenter {
+import SignalCoreKit
+
+public class NoopNotificationPresenterImpl: NotificationPresenter {
     public var expectErrors: Bool = false
+
+    public init() {}
 
     public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
                            thread: TSThread,

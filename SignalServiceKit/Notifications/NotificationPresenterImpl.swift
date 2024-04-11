@@ -181,22 +181,16 @@ let kAudioNotificationsThrottleInterval: TimeInterval = 5
 
 // MARK: -
 
-extension UserNotificationPresenter {
-    var hasReceivedSyncMessageRecently: Bool {
-        return DependenciesBridge.shared.deviceManager.hasReceivedSyncMessage(
-            inLastSeconds: 60
-        )
-    }
-}
-
-// MARK: -
-
-public class NotificationPresenterImpl: NSObject, NotificationPresenter {
+public class NotificationPresenterImpl: NotificationPresenter {
     private let presenter = UserNotificationPresenter(notifyQueue: NotificationPresenterImpl.notificationQueue)
 
-    public override init() {
-        super.init()
+    private var contactManager: any ContactManager { NSObject.contactsManager }
+    private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
+    private var identityManager: any OWSIdentityManager { DependenciesBridge.shared.identityManager }
+    private var preferences: Preferences { NSObject.preferences }
+    private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
+    public init() {
         SwiftSingletons.register(self)
     }
 
@@ -230,10 +224,10 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
             callerNameForGroupCall = nil
         case .nameNoPreview, .namePreview:
             (notificationTitle, callerNameForGroupCall) = databaseStorage.read { transaction in
-                let threadName = contactsManager.displayName(for: thread, transaction: transaction)
+                let threadName = contactManager.displayName(for: thread, transaction: transaction)
                 let callerNameForGroupCall: String?
                 if thread.isGroupThread {
-                    callerNameForGroupCall = contactsManager.displayName(for: caller, tx: transaction).resolvedValue()
+                    callerNameForGroupCall = contactManager.displayName(for: caller, tx: transaction).resolvedValue()
                 } else {
                     callerNameForGroupCall = nil
                 }
@@ -322,7 +316,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
+            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
             threadIdentifier = thread.uniqueId
         }
 
@@ -423,7 +417,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
+            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
@@ -461,7 +455,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
+            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
@@ -521,7 +515,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
                 return false
             }
 
-            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
+            let localAci = tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
 
             // Always notify for replies to group stories you sent
             if storyAuthorAci == localAci { return true }
@@ -543,7 +537,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
 
         guard thread.isGroupThread else { return false }
 
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
+        guard let localAddress = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("Missing local address")
             return false
         }
@@ -607,7 +601,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
 
         let messageText = rawMessageText.filterStringForDisplay()
 
-        let senderName = contactsManager.displayName(for: incomingMessage.authorAddress, tx: transaction).resolvedValue()
+        let senderName = contactManager.displayName(for: incomingMessage.authorAddress, tx: transaction).resolvedValue()
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -651,7 +645,6 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
         var didIdentityChange = false
-        let identityManager = DependenciesBridge.shared.identityManager
         for address in thread.recipientAddresses(with: transaction) {
             if identityManager.verificationState(for: address, tx: transaction.asV2Read) == .noLongerVerified {
                 didIdentityChange = true
@@ -732,7 +725,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
         // disturb the user for a non-message
         guard previewType == .namePreview else { return }
 
-        let senderName = contactsManager.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
+        let senderName = contactManager.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
 
         let notificationTitle: String
 
@@ -801,7 +794,6 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
         var didIdentityChange = false
-        let identityManager = DependenciesBridge.shared.identityManager
         for address in thread.recipientAddresses(with: transaction) {
             if identityManager.verificationState(for: address, tx: transaction.asV2Read) == .noLongerVerified {
                 didIdentityChange = true
@@ -856,7 +848,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
         case .noNameNoPreview:
             notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
+            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
@@ -917,7 +909,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
         case .noNameNoPreview:
             notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
+            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
         }
 
         let notificationBody = (
@@ -1026,7 +1018,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
             notificationTitle = nil
             threadIdentifier = nil
         case .namePreview, .nameNoPreview:
-            notificationTitle = contactsManager.displayName(for: thread, transaction: transaction)
+            notificationTitle = contactManager.displayName(for: thread, transaction: transaction)
             threadIdentifier = thread.uniqueId
         }
 
@@ -1060,7 +1052,7 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
             }
 
             if let infoMessage = tsInteraction as? TSInfoMessage {
-                guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
+                guard let localIdentifiers = tsAccountManager.localIdentifiers(
                     tx: transaction.asV2Read
                 ) else {
                     owsFailDebug("Missing local identifiers!")

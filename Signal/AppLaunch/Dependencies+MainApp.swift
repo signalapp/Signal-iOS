@@ -22,10 +22,12 @@ public extension NSObject {
         SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
     }
 
+    @nonobjc
     final var notificationPresenterImpl: NotificationPresenterImpl {
         return SSKEnvironment.shared.notificationPresenterRef as! NotificationPresenterImpl
     }
 
+    @nonobjc
     static var notificationPresenterImpl: NotificationPresenterImpl {
         return SSKEnvironment.shared.notificationPresenterRef as! NotificationPresenterImpl
     }

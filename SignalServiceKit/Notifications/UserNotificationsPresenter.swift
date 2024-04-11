@@ -188,6 +188,12 @@ class UserNotificationPresenter: Dependencies {
         Self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
     }
 
+    var hasReceivedSyncMessageRecently: Bool {
+        return DependenciesBridge.shared.deviceManager.hasReceivedSyncMessage(
+            inLastSeconds: 60
+        )
+    }
+
     // MARK: - Notify
 
     func notify(
