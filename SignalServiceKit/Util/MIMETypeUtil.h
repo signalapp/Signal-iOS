@@ -29,9 +29,6 @@ extern NSString *const kLottieStickerFileExtension;
 
 @interface MIMETypeUtil : NSObject
 
-+ (NSDictionary *)supportedVideoMIMETypesToExtensionTypes;
-+ (NSDictionary *)supportedImageMIMETypesToExtensionTypes;
-
 + (BOOL)isSupportedVideoMIMEType:(NSString *)contentType;
 + (BOOL)isSupportedAudioMIMEType:(NSString *)contentType;
 + (BOOL)isSupportedImageMIMEType:(NSString *)contentType;

@@ -14,11 +14,11 @@ public class VideoAttachmentDetection: NSObject {
     public static var shared: VideoAttachmentDetection = VideoAttachmentDetection()
 
     private static var videoMimeTypes: Set<String> = {
-        return Set(MIMETypeUtil.supportedVideoMIMETypesToExtensionTypes().keys.compactMap { $0 as? String })
+        return Set(MimeTypeUtil.supportedVideoMimeTypesToExtensionTypes.keys)
     }()
 
     private static var imageMimeTypes: Set<String> = {
-        return Set(MIMETypeUtil.supportedImageMIMETypesToExtensionTypes().keys.compactMap { $0 as? String })
+        return Set(MimeTypeUtil.supportedImageMimeTypesToExtensionTypes.keys)
     }()
 
     private var isVideoSQL: String {

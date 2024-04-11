@@ -42,72 +42,6 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
-+ (NSDictionary *)supportedVideoMIMETypesToExtensionTypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = @ {
-            @"video/3gpp" : @"3gp",
-            @"video/3gpp2" : @"3g2",
-            @"video/mp4" : @"mp4",
-            @"video/quicktime" : @"mov",
-            @"video/x-m4v" : @"m4v",
-            @"video/mpeg" : @"mpg",
-        };
-    });
-    return result;
-}
-
-+ (NSDictionary *)supportedAudioMIMETypesToExtensionTypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = @ {
-            @"audio/aac" : @"m4a",
-            @"audio/x-m4p" : @"m4p",
-            @"audio/x-m4b" : @"m4b",
-            @"audio/x-m4a" : @"m4a",
-            @"audio/wav" : @"wav",
-            @"audio/x-wav" : @"wav",
-            @"audio/x-mpeg" : @"mp3",
-            @"audio/mpeg" : @"mp3",
-            @"audio/mp4" : @"mp4",
-            @"audio/mp3" : @"mp3",
-            @"audio/mpeg3" : @"mp3",
-            @"audio/x-mp3" : @"mp3",
-            @"audio/x-mpeg3" : @"mp3",
-            @"audio/aiff" : @"aiff",
-            @"audio/x-aiff" : @"aiff",
-            @"audio/3gpp2" : @"3g2",
-            @"audio/3gpp" : @"3gp",
-        };
-    });
-    return result;
-}
-
-+ (NSDictionary *)supportedImageMIMETypesToExtensionTypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = @ {
-            OWSMimeTypeImageJpeg : @"jpeg",
-            @"image/pjpeg" : @"jpeg",
-            OWSMimeTypeImagePng : @"png",
-            @"image/tiff" : @"tif",
-            @"image/x-tiff" : @"tif",
-            @"image/bmp" : @"bmp",
-            @"image/x-windows-bmp" : @"bmp",
-            OWSMimeTypeImageHeic : @"heic",
-            OWSMimeTypeImageHeif : @"heif",
-            OWSMimeTypeImageWebp : @"webp",
-        };
-    });
-    return result;
-}
-
 + (NSDictionary *)supportedDefinitelyAnimatedMIMETypesToExtensionTypes
 {
     static NSDictionary *result = nil;
@@ -241,17 +175,17 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 + (BOOL)isSupportedVideoMIMEType:(NSString *)contentType
 {
-    return [[self supportedVideoMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
+    return [[MimeTypeUtil supportedVideoMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
 + (BOOL)isSupportedAudioMIMEType:(NSString *)contentType
 {
-    return [[self supportedAudioMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
+    return [[MimeTypeUtil supportedAudioMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
 + (BOOL)isSupportedImageMIMEType:(NSString *)contentType
 {
-    return [[self supportedImageMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
+    return [[MimeTypeUtil supportedImageMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
 + (BOOL)isSupportedBinaryDataMIMEType:(NSString *)contentType
@@ -282,17 +216,17 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 + (nullable NSString *)getSupportedExtensionFromVideoMIMEType:(NSString *)supportedMIMEType
 {
-    return [[self supportedVideoMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
+    return [[MimeTypeUtil supportedVideoMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
 + (nullable NSString *)getSupportedExtensionFromAudioMIMEType:(NSString *)supportedMIMEType
 {
-    return [[self supportedAudioMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
+    return [[MimeTypeUtil supportedAudioMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
 + (nullable NSString *)getSupportedExtensionFromImageMIMEType:(NSString *)supportedMIMEType
 {
-    return [[self supportedImageMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
+    return [[MimeTypeUtil supportedImageMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
 + (nullable NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType
@@ -554,7 +488,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(
-        &onceToken, ^{ result = [self utiTypesForMIMETypes:[self supportedVideoMIMETypesToExtensionTypes].allKeys]; });
+        &onceToken, ^{ result = [self utiTypesForMIMETypes:[MimeTypeUtil supportedVideoMimeTypesToExtensionTypes].allKeys]; });
     return result;
 }
 
@@ -563,7 +497,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(
-        &onceToken, ^{ result = [self utiTypesForMIMETypes:[self supportedAudioMIMETypesToExtensionTypes].allKeys]; });
+        &onceToken, ^{ result = [self utiTypesForMIMETypes:[MimeTypeUtil supportedAudioMimeTypesToExtensionTypes].allKeys]; });
     return result;
 }
 
@@ -572,7 +506,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(
-        &onceToken, ^{ result = [self utiTypesForMIMETypes:[self supportedImageMIMETypesToExtensionTypes].allKeys]; });
+        &onceToken, ^{ result = [self utiTypesForMIMETypes:[MimeTypeUtil supportedImageMimeTypesToExtensionTypes].allKeys]; });
     return result;
 }
 
@@ -582,7 +516,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSMutableArray<NSString *> *imageMIMETypes =
-            [[self supportedImageMIMETypesToExtensionTypes].allKeys mutableCopy];
+            [[MimeTypeUtil supportedImageMimeTypesToExtensionTypes].allKeys mutableCopy];
         [imageMIMETypes removeObjectsInArray:@[
             OWSMimeTypeImageWebp,
             OWSMimeTypeImageHeic,

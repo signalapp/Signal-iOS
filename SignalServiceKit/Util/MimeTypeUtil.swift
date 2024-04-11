@@ -31,11 +31,57 @@ public enum MimeType: String {
     case unknownMimetype = "unknown/mimetype"
 }
 
-public enum MimeTypeUtil {
+@objc
+public class MimeTypeUtil: NSObject {
+    override private init() {}
+
     public static let oversizeTextAttachmentUti = "org.whispersystems.oversize-text-attachment"
     public static let oversizeTextAttachmentFileExtension = "txt"
     public static let unknownTestAttachmentUti = "org.whispersystems.unknown"
     public static let syncMessageFileExtension = "bin"
     // TODO: Remove this; it's unused.
     public static let lottieStickerFileExtension = "lottiesticker"
+
+    @objc
+    public static let supportedVideoMimeTypesToExtensionTypes: [String: String] = [
+        "video/3gpp": "3gp",
+        "video/3gpp2": "3g2",
+        "video/mp4": "mp4",
+        "video/quicktime": "mov",
+        "video/x-m4v": "m4v",
+        "video/mpeg": "mpg",
+    ]
+    @objc
+    public static let supportedAudioMimeTypesToExtensionTypes: [String: String] = [
+        "audio/aac": "m4a",
+        "audio/x-m4p": "m4p",
+        "audio/x-m4b": "m4b",
+        "audio/x-m4a": "m4a",
+        "audio/wav": "wav",
+        "audio/x-wav": "wav",
+        "audio/x-mpeg": "mp3",
+        "audio/mpeg": "mp3",
+        "audio/mp4": "mp4",
+        "audio/mp3": "mp3",
+        "audio/mpeg3": "mp3",
+        "audio/x-mp3": "mp3",
+        "audio/x-mpeg3": "mp3",
+        "audio/aiff": "aiff",
+        "audio/x-aiff": "aiff",
+        "audio/3gpp2": "3g2",
+        "audio/3gpp": "3gp",
+    ]
+    @objc
+    public static let supportedImageMimeTypesToExtensionTypes: [String: String] = [
+        MimeType.imageJpeg.rawValue: "jpeg",
+        "image/pjpeg": "jpeg",
+        MimeType.imagePng.rawValue: "png",
+        MimeType.imageTiff.rawValue: "tif",
+        MimeType.imageXTiff.rawValue: "tif",
+        MimeType.imageBmp.rawValue: "bmp",
+        MimeType.imageXWindowsBmp.rawValue: "bmp",
+        MimeType.imageHeic.rawValue: "heic",
+        MimeType.imageHeif.rawValue: "heif",
+        MimeType.imageWebp.rawValue: "webp",
+    ]
 }
