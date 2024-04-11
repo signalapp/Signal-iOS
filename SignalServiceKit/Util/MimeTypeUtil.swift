@@ -35,6 +35,7 @@ public enum MimeType: String {
 public class MimeTypeUtil: NSObject {
     override private init() {}
 
+    // MARK: - Constants
     public static let oversizeTextAttachmentUti = "org.whispersystems.oversize-text-attachment"
     public static let oversizeTextAttachmentFileExtension = "txt"
     public static let unknownTestAttachmentUti = "org.whispersystems.unknown"
@@ -42,6 +43,7 @@ public class MimeTypeUtil: NSObject {
     // TODO: Remove this; it's unused.
     public static let lottieStickerFileExtension = "lottiesticker"
 
+    // MARK: - Mime Types to Extension Dictionaries
     @objc
     public static let supportedVideoMimeTypesToExtensionTypes: [String: String] = [
         "video/3gpp": "3gp",
