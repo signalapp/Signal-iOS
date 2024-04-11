@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import UserNotifications
 import Intents
+import SignalCoreKit
+import UserNotifications
 
 public class UserNotificationConfig {
 
@@ -19,55 +20,71 @@ public class UserNotificationConfig {
     }
 
     class func notificationCategory(_ category: AppNotificationCategory) -> UNNotificationCategory {
-        return UNNotificationCategory(identifier: category.identifier,
-                                      actions: notificationActions(for: category),
-                                      intentIdentifiers: [],
-                                      options: [])
+        return UNNotificationCategory(
+            identifier: category.identifier,
+            actions: notificationActions(for: category),
+            intentIdentifiers: [],
+            options: []
+        )
     }
 
     class func notificationAction(_ action: AppNotificationAction) -> UNNotificationAction? {
         switch action {
         case .answerCall:
-            return notificationActionWithIdentifier(action.identifier,
-                                                    title: CallStrings.answerCallButtonTitle,
-                                                    options: [.foreground],
-                                                    systemImage: "phone")
+            return notificationActionWithIdentifier(
+                action.identifier,
+                title: CallStrings.answerCallButtonTitle,
+                options: [.foreground],
+                systemImage: "phone"
+            )
         case .callBack:
-            return notificationActionWithIdentifier(action.identifier,
-                                                    title: CallStrings.callBackButtonTitle,
-                                                    options: [.foreground],
-                                                    systemImage: "phone")
+            return notificationActionWithIdentifier(
+                action.identifier,
+                title: CallStrings.callBackButtonTitle,
+                options: [.foreground],
+                systemImage: "phone"
+            )
         case .declineCall:
-            return notificationActionWithIdentifier(action.identifier,
-                                                    title: CallStrings.declineCallButtonTitle,
-                                                    options: [],
-                                                    systemImage: "phone.down")
+            return notificationActionWithIdentifier(
+                action.identifier,
+                title: CallStrings.declineCallButtonTitle,
+                options: [],
+                systemImage: "phone.down"
+            )
         case .markAsRead:
-            return notificationActionWithIdentifier(action.identifier,
-                                                    title: MessageStrings.markAsReadNotificationAction,
-                                                    options: [],
-                                                    systemImage: "message")
+            return notificationActionWithIdentifier(
+                action.identifier,
+                title: MessageStrings.markAsReadNotificationAction,
+                options: [],
+                systemImage: "message"
+            )
         case .reply:
-            return textInputNotificationActionWithIdentifier(action.identifier,
-                                                             title: MessageStrings.replyNotificationAction,
-                                                             options: [],
-                                                             textInputButtonTitle: MessageStrings.sendButton,
-                                                             textInputPlaceholder: "",
-                                                             systemImage: "arrowshape.turn.up.left")
+            return textInputNotificationActionWithIdentifier(
+                action.identifier,
+                title: MessageStrings.replyNotificationAction,
+                options: [],
+                textInputButtonTitle: MessageStrings.sendButton,
+                textInputPlaceholder: "",
+                systemImage: "arrowshape.turn.up.left"
+            )
         case .showThread:
-            return notificationActionWithIdentifier(action.identifier,
-                                                    title: CallStrings.showThreadButtonTitle,
-                                                    options: [],
-                                                    systemImage: "bubble.left.and.bubble.right")
+            return notificationActionWithIdentifier(
+                action.identifier,
+                title: CallStrings.showThreadButtonTitle,
+                options: [],
+                systemImage: "bubble.left.and.bubble.right"
+            )
         case .showMyStories:
             // Currently, .showMyStories is only used as a default action.
             owsFailDebug("Show my stories not supported as a UNNotificationAction")
             return nil
         case .reactWithThumbsUp:
-            return notificationActionWithIdentifier(action.identifier,
-                                                    title: MessageStrings.reactWithThumbsUpNotificationAction,
-                                                    options: [],
-                                                    systemImage: "hand.thumbsup")
+            return notificationActionWithIdentifier(
+                action.identifier,
+                title: MessageStrings.reactWithThumbsUpNotificationAction,
+                options: [],
+                systemImage: "hand.thumbsup"
+            )
         case .showCallLobby:
             // Currently, .showCallLobby is only used as a default action.
             owsFailDebug("Show call lobby not supported as a UNNotificationAction")
@@ -91,17 +108,18 @@ public class UserNotificationConfig {
         _ identifier: String,
         title: String,
         options: UNNotificationActionOptions,
-        systemImage: String?) -> UNNotificationAction {
+        systemImage: String?
+    ) -> UNNotificationAction {
         if #available(iOS 15, *), let systemImage = systemImage {
             let actionIcon = UNNotificationActionIcon(systemImageName: systemImage)
-            return UNNotificationAction(identifier: identifier,
-                                        title: title,
-                                        options: options,
-                                        icon: actionIcon)
+            return UNNotificationAction(
+                identifier: identifier,
+                title: title,
+                options: options,
+                icon: actionIcon
+            )
         } else {
-            return UNNotificationAction(identifier: identifier,
-                                        title: title,
-                                        options: options)
+            return UNNotificationAction(identifier: identifier, title: title, options: options)
         }
     }
 
@@ -111,21 +129,26 @@ public class UserNotificationConfig {
         options: UNNotificationActionOptions,
         textInputButtonTitle: String,
         textInputPlaceholder: String,
-        systemImage: String?) -> UNNotificationAction {
+        systemImage: String?
+    ) -> UNNotificationAction {
         if #available(iOS 15, *), let systemImage = systemImage {
             let actionIcon = UNNotificationActionIcon(systemImageName: systemImage)
-            return UNTextInputNotificationAction(identifier: identifier,
-                                                 title: title,
-                                                 options: options,
-                                                 icon: actionIcon,
-                                                 textInputButtonTitle: textInputButtonTitle,
-                                                 textInputPlaceholder: textInputPlaceholder)
+            return UNTextInputNotificationAction(
+                identifier: identifier,
+                title: title,
+                options: options,
+                icon: actionIcon,
+                textInputButtonTitle: textInputButtonTitle,
+                textInputPlaceholder: textInputPlaceholder
+            )
         } else {
-            return UNTextInputNotificationAction(identifier: identifier,
-                                                 title: title,
-                                                 options: options,
-                                                 textInputButtonTitle: textInputButtonTitle,
-                                                 textInputPlaceholder: textInputPlaceholder)
+            return UNTextInputNotificationAction(
+                identifier: identifier,
+                title: title,
+                options: options,
+                textInputButtonTitle: textInputButtonTitle,
+                textInputPlaceholder: textInputPlaceholder
+            )
         }
     }
 
@@ -211,11 +234,13 @@ class UserNotificationPresenter: Dependencies {
         }
 
         let trigger: UNNotificationTrigger?
-        let checkForCancel = (category == .incomingMessageWithActions_CanReply ||
-                                category == .incomingMessageWithActions_CannotReply ||
-                                category == .incomingMessageWithoutActions ||
-                                category == .incomingReactionWithActions_CanReply ||
-                                category == .incomingReactionWithActions_CannotReply)
+        let checkForCancel = (
+            category == .incomingMessageWithActions_CanReply
+            || category == .incomingMessageWithActions_CannotReply
+            || category == .incomingMessageWithoutActions
+            || category == .incomingReactionWithActions_CanReply
+            || category == .incomingReactionWithActions_CannotReply
+        )
         if checkForCancel && hasReceivedSyncMessageRecently {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)

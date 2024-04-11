@@ -5,6 +5,7 @@
 
 import Foundation
 import Intents
+import SignalCoreKit
 
 /// There are two primary components in our system notification integration:
 ///
@@ -267,15 +268,17 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
         }
 
         performNotificationActionAsync { completion in
-            self.presenter.notify(category: .incomingCall,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                threadIdentifier: threadIdentifier,
-                                userInfo: userInfo,
-                                interaction: interaction,
-                                sound: nil,
-                                replacingIdentifier: call.localId.uuidString,
-                                completion: completion)
+            self.presenter.notify(
+                category: .incomingCall,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: threadIdentifier,
+                userInfo: userInfo,
+                interaction: interaction,
+                sound: nil,
+                replacingIdentifier: call.localId.uuidString,
+                completion: completion
+            )
         }
     }
 
@@ -392,20 +395,24 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
 
         performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.presenter.notify(category: category,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                threadIdentifier: threadIdentifier,
-                                userInfo: userInfo,
-                                interaction: interaction,
-                                sound: sound,
-                                replacingIdentifier: call.localId.uuidString,
-                                completion: completion)
+            self.presenter.notify(
+                category: category,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: threadIdentifier,
+                userInfo: userInfo,
+                interaction: interaction,
+                sound: sound,
+                replacingIdentifier: call.localId.uuidString,
+                completion: completion
+            )
         }
     }
 
-    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: CallNotificationInfo,
-                                                                   caller: SignalServiceAddress) {
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(
+        call: CallNotificationInfo,
+        caller: SignalServiceAddress
+    ) {
 
         let thread = call.thread
 
@@ -426,20 +433,24 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
 
         performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.presenter.notify(category: .missedCallFromNoLongerVerifiedIdentity,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                threadIdentifier: threadIdentifier,
-                                userInfo: userInfo,
-                                interaction: nil,
-                                sound: sound,
-                                replacingIdentifier: call.localId.uuidString,
-                                completion: completion)
+            self.presenter.notify(
+                category: .missedCallFromNoLongerVerifiedIdentity,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: threadIdentifier,
+                userInfo: userInfo,
+                interaction: nil,
+                sound: sound,
+                replacingIdentifier: call.localId.uuidString,
+                completion: completion
+            )
         }
     }
 
-    public func presentMissedCallBecauseOfNewIdentity(call: CallNotificationInfo,
-                                                      caller: SignalServiceAddress) {
+    public func presentMissedCallBecauseOfNewIdentity(
+        call: CallNotificationInfo,
+        caller: SignalServiceAddress
+    ) {
 
         let thread = call.thread
 
@@ -461,15 +472,17 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
             : .missedCallWithoutActions)
         performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.presenter.notify(category: category,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                threadIdentifier: threadIdentifier,
-                                userInfo: userInfo,
-                                interaction: nil,
-                                sound: sound,
-                                replacingIdentifier: call.localId.uuidString,
-                                completion: completion)
+            self.presenter.notify(
+                category: category,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: threadIdentifier,
+                userInfo: userInfo,
+                interaction: nil,
+                sound: sound,
+                replacingIdentifier: call.localId.uuidString,
+                completion: completion
+            )
         }
     }
 
@@ -654,9 +667,11 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
         } else if incomingMessage.isGroupStoryReply {
             category = .incomingGroupStoryReply
         } else {
-            category = (thread.canSendChatMessagesToThread()
-                            ? .incomingMessageWithActions_CanReply
-                            : .incomingMessageWithActions_CannotReply)
+            category = (
+                thread.canSendChatMessagesToThread()
+                ? .incomingMessageWithActions_CanReply
+                : .incomingMessageWithActions_CannotReply
+            )
         }
         var userInfo: [AnyHashable: Any] = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
@@ -800,9 +815,11 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
         } else {
-            category = (thread.canSendChatMessagesToThread()
-                            ? .incomingReactionWithActions_CanReply
-                            : .incomingReactionWithActions_CannotReply)
+            category = (
+                thread.canSendChatMessagesToThread()
+                ? .incomingReactionWithActions_CanReply
+                : .incomingReactionWithActions_CannotReply
+            )
         }
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
@@ -850,14 +867,16 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
 
         performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.presenter.notify(category: .infoOrErrorMessage,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                threadIdentifier: nil, // show ungrouped
-                                userInfo: userInfo,
-                                interaction: nil,
-                                sound: sound,
-                                completion: completion)
+            self.presenter.notify(
+                category: .infoOrErrorMessage,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: nil, // show ungrouped
+                userInfo: userInfo,
+                interaction: nil,
+                sound: sound,
+                completion: completion
+            )
         }
     }
 
@@ -866,10 +885,14 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
         owsFailDebug("Fatal error occurred: \(errorString).")
         guard DebugFlags.testPopulationErrorAlerts else { return }
 
-        let title = OWSLocalizedString("ERROR_NOTIFICATION_TITLE",
-                                      comment: "Format string for an error alert notification title.")
-        let messageFormat = OWSLocalizedString("ERROR_NOTIFICATION_MESSAGE_FORMAT",
-                                              comment: "Format string for an error alert notification message. Embeds {{ error string }}")
+        let title = OWSLocalizedString(
+            "ERROR_NOTIFICATION_TITLE",
+            comment: "Format string for an error alert notification title."
+        )
+        let messageFormat = OWSLocalizedString(
+            "ERROR_NOTIFICATION_MESSAGE_FORMAT",
+            comment: "Format string for an error alert notification message. Embeds {{ error string }}"
+        )
         let message = String(format: messageFormat, errorString)
 
         performNotificationActionAsync { completion in
@@ -883,7 +906,8 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
                 ],
                 interaction: nil,
                 sound: self.requestGlobalSound(),
-                completion: completion)
+                completion: completion
+            )
         }
     }
 
@@ -896,9 +920,11 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
             notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
         }
 
-        let notificationBody = (presentAtJoin
-                                ? NotificationStrings.groupCallSafetyNumberChangeAtJoinBody
-                                : NotificationStrings.groupCallSafetyNumberChangeBody)
+        let notificationBody = (
+            presentAtJoin
+            ? NotificationStrings.groupCallSafetyNumberChangeAtJoinBody
+            : NotificationStrings.groupCallSafetyNumberChangeBody
+        )
         let threadId = thread.uniqueId
         let userInfo: [String: Any] = [
             AppNotificationUserInfoKey.threadId: threadId,
@@ -907,20 +933,24 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
 
         performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.presenter.notify(category: .infoOrErrorMessage,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                threadIdentifier: nil, // show ungrouped
-                                userInfo: userInfo,
-                                interaction: nil,
-                                sound: sound,
-                                completion: completion)
+            self.presenter.notify(
+                category: .infoOrErrorMessage,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: nil, // show ungrouped
+                userInfo: userInfo,
+                interaction: nil,
+                sound: sound,
+                completion: completion
+            )
         }
     }
 
-    public func notifyUser(forErrorMessage errorMessage: TSErrorMessage,
-                           thread: TSThread,
-                           transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(
+        forErrorMessage errorMessage: TSErrorMessage,
+        thread: TSThread,
+        transaction: SDSAnyWriteTransaction
+    ) {
         guard (errorMessage is OWSRecoverableDecryptionPlaceholder) == false else { return }
 
         switch errorMessage.errorType {
@@ -1057,35 +1087,43 @@ public class NotificationPresenterImpl: NSObject, NotificationPresenter {
                         groupUpdateAuthor = persistableGroupUpdateItemsWrapper
                             .asSingleUpdateItem?.senderForNotification
                     }
-                    if let groupUpdateAuthor,
-                       let intent = thread.generateSendMessageIntent(context: .senderAddress(groupUpdateAuthor), transaction: transaction) {
+                    if
+                        let groupUpdateAuthor,
+                        let intent = thread.generateSendMessageIntent(context: .senderAddress(groupUpdateAuthor), transaction: transaction)
+                    {
                         wrapIntent(intent)
                     }
                 case .userJoinedSignal:
-                    if let thread = thread as? TSContactThread,
-                       let intent = thread.generateSendMessageIntent(context: .senderAddress(thread.contactAddress), transaction: transaction) {
+                    if
+                        let thread = thread as? TSContactThread,
+                        let intent = thread.generateSendMessageIntent(context: .senderAddress(thread.contactAddress), transaction: transaction)
+                    {
                         wrapIntent(intent)
                     }
                 default:
                     break
                 }
-            } else if let callMessage = tsInteraction as? OWSGroupCallMessage,
-                      let callCreator = callMessage.creatorAddress,
-                      let intent = thread.generateSendMessageIntent(context: .senderAddress(callCreator), transaction: transaction) {
+            } else if
+                let callMessage = tsInteraction as? OWSGroupCallMessage,
+                let callCreator = callMessage.creatorAddress,
+                let intent = thread.generateSendMessageIntent(context: .senderAddress(callCreator), transaction: transaction)
+            {
                 wrapIntent(intent)
             }
         }
 
         performNotificationActionInAsyncCompletion(transaction: transaction) { completion in
             let sound = wantsSound ? self.requestSound(thread: thread) : nil
-            self.presenter.notify(category: .infoOrErrorMessage,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                threadIdentifier: threadIdentifier,
-                                userInfo: userInfo,
-                                interaction: interaction,
-                                sound: sound,
-                                completion: completion)
+            self.presenter.notify(
+                category: .infoOrErrorMessage,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: threadIdentifier,
+                userInfo: userInfo,
+                interaction: interaction,
+                sound: sound,
+                completion: completion
+            )
         }
     }
 
