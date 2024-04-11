@@ -618,10 +618,12 @@ class MediaGallery: Dependencies {
                 return nil
             }
 
-            guard let rowid = mediaGalleryFinder.rowid(of: focusedItem.attachmentStream,
-                                                       in: focusedItem.galleryDate.interval,
-                                                       excluding: deletedAttachmentIds,
-                                                       transaction: transaction.unwrapGrdbRead) else {
+            guard let rowid = mediaGalleryFinder.galleryItemId(
+                of: focusedItem.attachmentStream,
+                in: focusedItem.galleryDate.interval,
+                excluding: deletedAttachmentIds,
+                tx: transaction.asV2Read
+            ) else {
                 // The item may have just been deleted.
                 Logger.warn("showing detail for item not in the database")
                 return nil
@@ -630,10 +632,14 @@ class MediaGallery: Dependencies {
             return mutate { sections in
                 if sections.isEmpty {
                     // Set up the current section only.
-                    return sections.loadInitialSection(for: focusedItem.galleryDate,
-                                                       replacement: (item: focusedItem,
-                                                                     rowid: rowid),
-                                                       transaction: transaction)
+                    return sections.loadInitialSection(
+                        for: focusedItem.galleryDate,
+                        replacement: (
+                            item: focusedItem,
+                            rowid: rowid
+                        ),
+                        transaction: transaction
+                    )
                 } else {
                     return sections.getOrReplaceItem(focusedItem, rowid: rowid)
                 }
@@ -757,7 +763,7 @@ class MediaGallery: Dependencies {
                         if message.hasBodyAttachments(transaction: tx).negated {
                             return true
                         }
-                        let upToDateCount = try self.mediaGalleryFinder.countAllAttachments(of: message, transaction: tx.unwrapGrdbRead)
+                        let upToDateCount = try self.mediaGalleryFinder.countAllAttachments(of: message, tx: tx.asV2Read)
                         if upToDateCount == 0 {
                             return true
                         }
@@ -924,39 +930,49 @@ extension MediaGallery {
             guard let mediaGallery else {
                 return []
             }
-            return finder.rowIdsAndDates(in: date.interval,
-                                         excluding: mediaGallery.deletedAttachmentIds,
-                                         offset: offset,
-                                         ascending: ascending,
-                                         transaction: transaction.unwrapGrdbRead)
+            return finder.galleryItemIdsAndDates(
+                in: date.interval,
+                excluding: mediaGallery.deletedAttachmentIds,
+                offset: offset,
+                ascending: ascending,
+                tx: transaction.asV2Read
+            )
         }
 
-        func enumerateTimestamps(before date: Date,
-                                 count: Int,
-                                 transaction: SDSAnyReadTransaction,
-                                 block: (Date, Int64) -> Void) -> EnumerationCompletion {
+        func enumerateTimestamps(
+            before date: Date,
+            count: Int,
+            transaction: SDSAnyReadTransaction,
+            block: (DatedMediaGalleryRecordId) -> Void
+        ) -> EnumerationCompletion {
             guard let mediaGallery else {
                 return .reachedEnd
             }
-            return finder.enumerateTimestamps(before: date,
-                                              excluding: mediaGallery.deletedAttachmentIds,
-                                              count: count,
-                                              transaction: transaction.unwrapGrdbRead,
-                                              block: block)
+            return finder.enumerateTimestamps(
+                before: date,
+                excluding: mediaGallery.deletedAttachmentIds,
+                count: count,
+                tx: transaction.asV2Read,
+                block: block
+            )
         }
 
-        func enumerateTimestamps(after date: Date,
-                                 count: Int,
-                                 transaction: SDSAnyReadTransaction,
-                                 block: (Date, Int64) -> Void) -> EnumerationCompletion {
+        func enumerateTimestamps(
+            after date: Date,
+            count: Int,
+            transaction: SDSAnyReadTransaction,
+            block: (DatedMediaGalleryRecordId) -> Void
+        ) -> EnumerationCompletion {
             guard let mediaGallery else {
                 return .reachedEnd
             }
-            return finder.enumerateTimestamps(after: date,
-                                              excluding: mediaGallery.deletedAttachmentIds,
-                                              count: count,
-                                              transaction: transaction.unwrapGrdbRead,
-                                              block: block)
+            return finder.enumerateTimestamps(
+                after: date,
+                excluding: mediaGallery.deletedAttachmentIds,
+                count: count,
+                tx: transaction.asV2Read,
+                block: block
+            )
         }
 
         func enumerateItems(in interval: DateInterval,
@@ -970,7 +986,7 @@ extension MediaGallery {
                 in: interval,
                 excluding: mediaGallery.deletedAttachmentIds,
                 range: NSRange(range),
-                transaction: transaction.unwrapGrdbRead
+                tx: transaction.asV2Read
             ) { offset, attachment in
                 block(offset, attachment.uniqueId) {
                     guard let item: MediaGalleryItem = mediaGallery.buildGalleryItem(

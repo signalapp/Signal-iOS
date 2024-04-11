@@ -241,18 +241,22 @@ extension MediaGalleryRecordFinder {
         }
     }
 
-    private func enumerateTimestamps(in interval: DateInterval,
-                                     excluding deletedAttachmentIds: Set<String>,
-                                     order: Order,
-                                     count: Int,
-                                     transaction: GRDBReadTransaction,
-                                     block: (Date, Int64) -> Void) -> EnumerationCompletion {
-        let sql = Self.itemsQuery(result: "media_gallery_items.rowid, \(interactionColumn: .receivedAtTimestamp)",
-                                  in: interval,
-                                  excluding: deletedAttachmentIds,
-                                  order: order,
-                                  limit: count,
-                                  filter: filter)
+    private func enumerateTimestamps(
+        in interval: DateInterval,
+        excluding deletedAttachmentIds: Set<String>,
+        order: Order,
+        count: Int,
+        transaction: GRDBReadTransaction,
+        block: (DatedMediaGalleryRecordId) -> Void
+    ) -> EnumerationCompletion {
+        let sql = Self.itemsQuery(
+            result: "media_gallery_items.rowid, \(interactionColumn: .receivedAtTimestamp)",
+            in: interval,
+            excluding: deletedAttachmentIds,
+            order: order,
+            limit: count,
+            filter: filter
+        )
 
         struct RowIDAndTimestamp: FetchableRecord {
             var rowid: Int64
@@ -268,7 +272,7 @@ extension MediaGalleryRecordFinder {
             let cursor = try RowIDAndTimestamp.fetchCursor(transaction.database, sql: sql, arguments: [threadId])
             while let next = try cursor.next() {
                 actualCount += 1
-                block(Date(millisecondsSince1970: next.timestamp), next.rowid)
+                block(.init(rowid: next.rowid, receivedAtTimestamp: next.timestamp))
             }
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
@@ -283,32 +287,40 @@ extension MediaGalleryRecordFinder {
         return .finished
     }
 
-    public func enumerateTimestamps(before date: Date,
-                                    excluding deletedAttachmentIds: Set<String>,
-                                    count: Int,
-                                    transaction: GRDBReadTransaction,
-                                    block: (Date, Int64) -> Void) -> EnumerationCompletion {
+    public func enumerateTimestamps(
+        before date: Date,
+        excluding deletedAttachmentIds: Set<String>,
+        count: Int,
+        transaction: GRDBReadTransaction,
+        block: (DatedMediaGalleryRecordId) -> Void
+    ) -> EnumerationCompletion {
         let interval = DateInterval(start: Date(timeIntervalSince1970: 0), end: date)
-        return enumerateTimestamps(in: interval,
-                                   excluding: deletedAttachmentIds,
-                                   order: .descending,
-                                   count: count,
-                                   transaction: transaction,
-                                   block: block)
+        return enumerateTimestamps(
+            in: interval,
+            excluding: deletedAttachmentIds,
+            order: .descending,
+            count: count,
+            transaction: transaction,
+            block: block
+        )
     }
 
-    public func enumerateTimestamps(after date: Date,
-                                    excluding deletedAttachmentIds: Set<String>,
-                                    count: Int,
-                                    transaction: GRDBReadTransaction,
-                                    block: (Date, Int64) -> Void) -> EnumerationCompletion {
+    public func enumerateTimestamps(
+        after date: Date,
+        excluding deletedAttachmentIds: Set<String>,
+        count: Int,
+        transaction: GRDBReadTransaction,
+        block: (DatedMediaGalleryRecordId) -> Void
+    ) -> EnumerationCompletion {
         let interval = DateInterval(start: date, end: .distantFutureForMillisecondTimestamp)
-        return enumerateTimestamps(in: interval,
-                                   excluding: deletedAttachmentIds,
-                                   order: .ascending,
-                                   count: count,
-                                   transaction: transaction,
-                                   block: block)
+        return enumerateTimestamps(
+            in: interval,
+            excluding: deletedAttachmentIds,
+            order: .ascending,
+            count: count,
+            transaction: transaction,
+            block: block
+        )
     }
 
     // Disregards filter.

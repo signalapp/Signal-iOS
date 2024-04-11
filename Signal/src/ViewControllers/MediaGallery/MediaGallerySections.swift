@@ -45,31 +45,40 @@ internal protocol MediaGallerySectionLoader {
     /// Should return the row IDs of items in the section represented by `date`.
     ///
     /// In practice this should be the items within the date's `interval`.
-    func rowIdsAndDatesOfItemsInSection(for date: GalleryDate,
-                                        offset: Int,
-                                        ascending: Bool,
-                                        transaction: SDSAnyReadTransaction) -> [DatedMediaGalleryRecordId]
+    func rowIdsAndDatesOfItemsInSection(
+        for date: GalleryDate,
+        offset: Int,
+        ascending: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> [DatedMediaGalleryRecordId]
 
     /// Should call `block` once for every item (loaded or unloaded) before `date`, up to `count` times.
-    func enumerateTimestamps(before date: Date,
-                             count: Int,
-                             transaction: SDSAnyReadTransaction,
-                             block: (Date, Int64) -> Void) -> MediaGalleryResourceFinder.EnumerationCompletion
+    func enumerateTimestamps(
+        before date: Date,
+        count: Int,
+        transaction: SDSAnyReadTransaction,
+        block: (DatedMediaGalleryRecordId) -> Void
+    ) -> MediaGalleryResourceFinder.EnumerationCompletion
+
     /// Should call `block` once for every item (loaded or unloaded) after `date`, up to `count` times.
-    func enumerateTimestamps(after date: Date,
-                             count: Int,
-                             transaction: SDSAnyReadTransaction,
-                             block: (Date, Int64) -> Void) -> MediaGalleryResourceFinder.EnumerationCompletion
+    func enumerateTimestamps(
+        after date: Date,
+        count: Int,
+        transaction: SDSAnyReadTransaction,
+        block: (DatedMediaGalleryRecordId) -> Void
+    ) -> MediaGalleryResourceFinder.EnumerationCompletion
 
     /// Should selects a range of items in `interval` and call `block` once for each.
     ///
     /// For example, if `interval` represents May 2022 and there are seven photos received during this interval,
     /// a `range` of `2..<5` should call `block` with the offsets 2, 3, and 4, in that order. `uniqueId` will be used
     /// to determine whether the item needs to be built fresh or whether an existing object can be used.
-    func enumerateItems(in interval: DateInterval,
-                        range: Range<Int>,
-                        transaction: SDSAnyReadTransaction,
-                        block: (_ offset: Int, _ uniqueId: String, _ buildItem: () -> Item) -> Void)
+    func enumerateItems(
+        in interval: DateInterval,
+        range: Range<Int>,
+        transaction: SDSAnyReadTransaction,
+        block: (_ offset: Int, _ uniqueId: String, _ buildItem: () -> Item) -> Void
+    )
 }
 
 /// The underlying model for MediaGallery, itself the backing store for media views (page-based or tile-based)
@@ -115,11 +124,13 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             let earliestDate = itemsBySection.orderedKeys.first?.interval.start ?? .distantFutureForMillisecondTimestamp
 
             var newEarliestDate: GalleryDate?
-            let result = loader.enumerateTimestamps(before: earliestDate,
-                                                    count: batchSize,
-                                                    transaction: transaction) { timestamp, rowid in
-                let galleryDate = GalleryDate(date: timestamp)
-                let newSlot = MediaGallerySlot(rowid: rowid, receivedAt: timestamp)
+            let result = loader.enumerateTimestamps(
+                before: earliestDate,
+                count: batchSize,
+                transaction: transaction
+            ) { datedId in
+                let galleryDate = GalleryDate(date: datedId.date)
+                let newSlot = MediaGallerySlot(rowid: datedId.rowid, receivedAt: datedId.date)
                 newSlotsByDate[galleryDate, default: []].append(newSlot)
                 owsAssertDebug(newEarliestDate == nil || galleryDate <= newEarliestDate!,
                                "expects timestamps to be fetched in descending order")
@@ -173,12 +184,15 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             let latestDate = itemsBySection.orderedKeys.last?.interval.end ?? Date(millisecondsSince1970: 0)
 
             var newLatestDate: GalleryDate?
-            let result = loader.enumerateTimestamps(after: latestDate,
-                                                    count: batchSize,
-                                                    transaction: transaction) { timestamp, rowid in
-                let galleryDate = GalleryDate(date: timestamp)
-                newSlotsByDate[galleryDate, default: []].append(MediaGallerySlot(rowid: rowid,
-                                                                                 receivedAt: timestamp))
+            let result = loader.enumerateTimestamps(
+                after: latestDate,
+                count: batchSize,
+                transaction: transaction
+            ) { datedId in
+                let galleryDate = GalleryDate(date: datedId.date)
+                newSlotsByDate[galleryDate, default: []].append(
+                    MediaGallerySlot(rowid: datedId.rowid, receivedAt: datedId.date)
+                )
                 owsAssertDebug(newLatestDate == nil || newLatestDate! <= galleryDate,
                                "expects timestamps to be fetched in ascending order")
                 newLatestDate = galleryDate

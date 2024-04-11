@@ -25,54 +25,57 @@ public struct MediaGalleryResourceFinder {
 
     // MARK: -
 
-    public func rowIds(
+    public func galleryItemIds(
         in givenInterval: DateInterval? = nil,
         excluding deletedAttachmentIds: Set<String>,
         offset: Int,
         ascending: Bool,
-        transaction: GRDBReadTransaction
+        tx: DBReadTransaction
     ) -> [Int64] {
         return recordFinder.rowIds(
             in: givenInterval,
             excluding: deletedAttachmentIds,
             offset: offset,
             ascending: ascending,
-            transaction: transaction
+            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
         )
     }
 
-    public func rowIdsAndDates(
+    public func galleryItemIdsAndDates(
         in givenInterval: DateInterval? = nil,
         excluding deletedAttachmentIds: Set<String>,
         offset: Int,
         ascending: Bool,
-        transaction: GRDBReadTransaction
+        tx: DBReadTransaction
     ) -> [DatedMediaGalleryRecordId] {
         return recordFinder.rowIdsAndDates(
             in: givenInterval,
             excluding: deletedAttachmentIds,
             offset: offset,
             ascending: ascending,
-            transaction: transaction
+            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
         )
     }
 
-    public func recentMediaAttachments(limit: Int, transaction: GRDBReadTransaction) -> [TSAttachment] {
-        return recordFinder.recentMediaAttachments(limit: limit, transaction: transaction)
+    public func recentMediaAttachments(limit: Int, tx: DBReadTransaction) -> [TSAttachment] {
+        return recordFinder.recentMediaAttachments(
+            limit: limit,
+            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+        )
     }
 
     public func enumerateMediaAttachments(
         in dateInterval: DateInterval,
         excluding deletedAttachmentIds: Set<String>,
         range: NSRange,
-        transaction: GRDBReadTransaction,
+        tx: DBReadTransaction,
         block: (Int, TSAttachment) -> Void
     ) {
         recordFinder.enumerateMediaAttachments(
             in: dateInterval,
             excluding: deletedAttachmentIds,
             range: range,
-            transaction: transaction,
+            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead,
             block: block
         )
     }
@@ -83,14 +86,14 @@ public struct MediaGalleryResourceFinder {
         before date: Date,
         excluding deletedAttachmentIds: Set<String>,
         count: Int,
-        transaction: GRDBReadTransaction,
-        block: (Date, Int64) -> Void
+        tx: DBReadTransaction,
+        block: (DatedMediaGalleryRecordId) -> Void
     ) -> EnumerationCompletion {
         return recordFinder.enumerateTimestamps(
             before: date,
             excluding: deletedAttachmentIds,
             count: count,
-            transaction: transaction,
+            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead,
             block: block
         )
     }
@@ -99,38 +102,41 @@ public struct MediaGalleryResourceFinder {
         after date: Date,
         excluding deletedAttachmentIds: Set<String>,
         count: Int,
-        transaction: GRDBReadTransaction,
-        block: (Date, Int64) -> Void
+        tx: DBReadTransaction,
+        block: (DatedMediaGalleryRecordId) -> Void
     ) -> EnumerationCompletion {
         return recordFinder.enumerateTimestamps(
             after: date,
             excluding: deletedAttachmentIds,
             count: count,
-            transaction: transaction,
+            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead,
             block: block
         )
     }
 
     // Disregards filter.
-    public func rowid(
+    public func galleryItemId(
         of attachment: TSAttachmentStream,
         in interval: DateInterval,
         excluding deletedAttachmentIds: Set<String>,
-        transaction: GRDBReadTransaction
+        tx: DBReadTransaction
     ) -> Int64? {
         return recordFinder.rowid(
             of: attachment,
             in: interval,
             excluding: deletedAttachmentIds,
-            transaction: transaction
+            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
         )
     }
 
     /// Returns the number of attachments attached to `interaction`, whether or not they are media attachments. Disregards allowedMediaType.
     public func countAllAttachments(
         of interaction: TSInteraction,
-        transaction: GRDBReadTransaction
+        tx: DBReadTransaction
     ) throws -> UInt {
-        return try recordFinder.countAllAttachments(of: interaction, transaction: transaction)
+        return try recordFinder.countAllAttachments(
+            of: interaction,
+            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+        )
     }
 }

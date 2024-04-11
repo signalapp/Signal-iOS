@@ -871,7 +871,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     func updateRecentAttachments() {
         let recentAttachments = databaseStorage.read { transaction in
-            mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, transaction: transaction.unwrapGrdbRead)
+            mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: transaction.asV2Read)
         }
         recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
             guard let attachmentStream = attachment as? TSAttachmentStream else {
