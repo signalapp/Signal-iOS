@@ -103,7 +103,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         } else {
             let attachments = tsAttachmentStore.attachments(
                 withAttachmentIds: message.attachmentIds,
-                ignoringContentType: OWSMimeTypeOversizeTextMessage,
+                ignoringContentType: MimeType.textXSignalPlain.rawValue,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
             // If we fail to fetch any attachments, we don't know if theyre media or
@@ -125,7 +125,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             guard
                 let attachment = tsAttachmentStore.attachments(
                     withAttachmentIds: message.attachmentIds,
-                    matchingContentType: OWSMimeTypeOversizeTextMessage,
+                    matchingContentType: MimeType.textXSignalPlain.rawValue,
                     tx: SDSDB.shimOnlyBridge(tx)
                 ).first
             else {

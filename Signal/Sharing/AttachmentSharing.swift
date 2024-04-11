@@ -150,7 +150,7 @@ extension TSAttachmentStream: UIActivityItemSource {
         _ activityViewController: UIActivityViewController,
         itemForActivityType activityType: UIActivity.ActivityType?
     ) -> Any? {
-        if contentType == OWSMimeTypeImageWebp {
+        if contentType == MimeType.imageWebp.rawValue {
             return originalImage
         }
         if getAnimatedMimeType() == .animated {

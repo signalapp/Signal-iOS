@@ -98,7 +98,7 @@ public class EditManagerImpl: EditManager {
 
         let oversizeText = newDataMessage.attachments
             .first(where: {
-                $0.contentType == OWSMimeTypeOversizeTextMessage
+                $0.contentType == MimeType.textXSignalPlain.rawValue
             })
             .map {
                 MessageEdits.OversizeTextSource.proto($0)

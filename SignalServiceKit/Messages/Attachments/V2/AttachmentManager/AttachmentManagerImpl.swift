@@ -112,7 +112,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             switch owner {
             case .messageBodyAttachment(let bodyOwnerBuilder):
                 // Convert text mime type attachments in the first spot to oversize text.
-                if mimeType(input) == OWSMimeTypeOversizeTextMessage {
+                if mimeType(input) == MimeType.textXSignalPlain.rawValue {
                     ownerForInput = .messageOversizeText(messageRowId: bodyOwnerBuilder.messageRowId)
                     indexOffset = -1
                 }
@@ -158,7 +158,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             {
                 mimeType = inferredMimeType
             } else {
-                mimeType = OWSMimeTypeApplicationOctetStream
+                mimeType = MimeType.applicationOctetStream.rawValue
             }
         }
 

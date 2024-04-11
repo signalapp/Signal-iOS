@@ -28,20 +28,15 @@ NSString *const OWSMimeTypeImageBmp2 = @"image/x-windows-bmp";
 NSString *const OWSMimeTypeImageWebp = @"image/webp";
 NSString *const OWSMimeTypeImageHeic = @"image/heic";
 NSString *const OWSMimeTypeImageHeif = @"image/heif";
-NSString *const OWSMimeTypePdf = @"application/pdf";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
-NSString *const OWSMimeTypeProtobuf = @"application/x-protobuf";
-NSString *const OWSMimeTypeJson = @"application/json";
 // TODO: We're still finalizing the MIME type.
 NSString *const OWSMimeTypeLottieSticker = @"text/x-signal-sticker-lottie";
 NSString *const OWSMimeTypeImageApng1 = @"image/apng";
 NSString *const OWSMimeTypeImageApng2 = @"image/vnd.mozilla.apng";
 
-NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
 NSString *const kOversizeTextAttachmentFileExtension = @"txt";
-NSString *const kUnknownTestAttachmentUTI = @"org.whispersystems.unknown";
 NSString *const kSyncMessageFileExtension = @"bin";
 NSString *const kLottieStickerFileExtension = @"lottiesticker";
 

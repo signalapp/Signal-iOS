@@ -147,7 +147,7 @@ public extension StorageService {
 
         // The censorship circumvention reflectors require a Content-Type
         // even if the body is empty.
-        request.addHeader("Content-Type", value: OWSMimeTypeProtobuf)
+        request.addHeader("Content-Type", value: MimeType.applicationXProtobuf.rawValue)
 
         try self.addAuthorizationHeader(
             to: request,

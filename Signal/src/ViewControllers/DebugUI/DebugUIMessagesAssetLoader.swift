@@ -33,15 +33,15 @@ class DebugUIMessagesAssetLoader {
 
     static let jpegInstance: DebugUIMessagesAssetLoader = .fakeAssetLoaderWithUrl(
         "https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG",
-        mimeType: OWSMimeTypeImageJpeg
+        mimeType: MimeType.imageJpeg.rawValue
     )
     static let gifInstance: DebugUIMessagesAssetLoader = .fakeAssetLoaderWithUrl(
         "https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif",
-        mimeType: OWSMimeTypeImageGif
+        mimeType: MimeType.imageGif.rawValue
     )
     static let largeGifInstance: DebugUIMessagesAssetLoader = .fakeAssetLoaderWithUrl(
         "https://i.giphy.com/media/LTw0F3GAdaao8/source.gif",
-        mimeType: OWSMimeTypeImageGif
+        mimeType: MimeType.imageGif.rawValue
     )
     static let mp3Instance: DebugUIMessagesAssetLoader = .fakeAssetLoaderWithUrl(
         "https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3",
@@ -93,11 +93,11 @@ class DebugUIMessagesAssetLoader {
     }
     static let mediumFilesizePngInstance: DebugUIMessagesAssetLoader = .fakeNoisePngAssetLoaderWithImageSize(1000)
 
-    static let tinyPdfInstance: DebugUIMessagesAssetLoader = .fakeRandomAssetLoaderWithDataLength(256, mimeType: "application/pdf")!
-    static let largePdfInstance: DebugUIMessagesAssetLoader = .fakeRandomAssetLoaderWithDataLength(4 * 1024 * 1024, mimeType: "application/pdf")!
+    static let tinyPdfInstance: DebugUIMessagesAssetLoader = .fakeRandomAssetLoaderWithDataLength(256, mimeType: MimeType.applicationPdf.rawValue)!
+    static let largePdfInstance: DebugUIMessagesAssetLoader = .fakeRandomAssetLoaderWithDataLength(4 * 1024 * 1024, mimeType: MimeType.applicationPdf.rawValue)!
 
-    static let missingPngInstance: DebugUIMessagesAssetLoader = .fakeMissingAssetLoaderWithMimeType(OWSMimeTypeImagePng)!
-    static let missingPdfInstance: DebugUIMessagesAssetLoader = .fakeMissingAssetLoaderWithMimeType("application/pdf")!
+    static let missingPngInstance: DebugUIMessagesAssetLoader = .fakeMissingAssetLoaderWithMimeType(MimeType.imagePng.rawValue)!
+    static let missingPdfInstance: DebugUIMessagesAssetLoader = .fakeMissingAssetLoaderWithMimeType(MimeType.applicationPdf.rawValue)!
     static let oversizeTextInstance: DebugUIMessagesAssetLoader = .fakeOversizeTextAssetLoader(text: nil)
     static func oversizeTextInstance(text: String) -> DebugUIMessagesAssetLoader {
         return .fakeOversizeTextAssetLoader(text: text)
@@ -206,7 +206,7 @@ class DebugUIMessagesAssetLoader {
         owsAssertDebug(imageSize.isNonEmpty)
         owsAssertDebug(!label.isEmpty)
 
-        let assetLoader = DebugUIMessagesAssetLoader(filename: "image.png", mimeType: OWSMimeTypeImagePng)
+        let assetLoader = DebugUIMessagesAssetLoader(filename: "image.png", mimeType: MimeType.imagePng.rawValue)
         assetLoader.prepare = { [weak assetLoader] completion in
             assetLoader?.ensurePngAssetLoaded(
                 imageSize: imageSize,
@@ -260,7 +260,7 @@ class DebugUIMessagesAssetLoader {
     private static func fakeNoisePngAssetLoaderWithImageSize(_ imageSize: UInt) -> DebugUIMessagesAssetLoader {
         owsAssertDebug(imageSize > 0)
 
-        let assetLoader = DebugUIMessagesAssetLoader(filename: "image.png", mimeType: OWSMimeTypeImagePng)
+        let assetLoader = DebugUIMessagesAssetLoader(filename: "image.png", mimeType: MimeType.imagePng.rawValue)
         assetLoader.prepare = { [weak assetLoader] completion in
             assetLoader?.ensureNoisePngAssetLoaded(imageSize: imageSize, completion: completion)
         }
@@ -479,7 +479,7 @@ lorem, in rhoncus nisi.\n\n
     }
 
     private static func fakeOversizeTextAssetLoader(text: String?) -> DebugUIMessagesAssetLoader {
-        let assetLoader = DebugUIMessagesAssetLoader(filename: "attachment.txt", mimeType: OWSMimeTypeOversizeTextMessage)
+        let assetLoader = DebugUIMessagesAssetLoader(filename: "attachment.txt", mimeType: MimeType.textXSignalPlain.rawValue)
         assetLoader.prepare = { [weak assetLoader] completion in
             assetLoader?.ensureOversizeTextAssetLoaded(text: text, completion: completion)
         }

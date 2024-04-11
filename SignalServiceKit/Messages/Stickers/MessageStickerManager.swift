@@ -90,9 +90,9 @@ public class MessageStickerManagerImpl: MessageStickerManager {
 
         do {
             let proto: SSKProtoAttachmentPointer
-            if dataProto.contentType == OWSMimeTypeApplicationOctetStream {
+            if dataProto.contentType == MimeType.applicationOctetStream.rawValue {
                 let builder = dataProto.asBuilder()
-                builder.setContentType(OWSMimeTypeImageWebp)
+                builder.setContentType(MimeType.imageWebp.rawValue)
                 proto = builder.buildInfallibly()
             } else {
                 proto = dataProto
@@ -139,7 +139,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             } else if let dataMimeType = dataProto.contentType, !dataMimeType.isEmpty {
                 mimeType = dataMimeType
             } else {
-                mimeType = OWSMimeTypeImageWebp
+                mimeType = MimeType.imageWebp.rawValue
             }
 
             let attachmentDataSource = TSResourceDataSource.from(

@@ -13,7 +13,7 @@ class TSAttachmentDownloadManagerTest: SSKBaseTestSwift {
         func makeRandomAttachment(tx: SDSAnyWriteTransaction) -> TSAttachment {
             let attachmentData = Randomness.generateRandomBytes(1024)
             let attachment = TSAttachmentStream(
-                contentType: OWSMimeTypeImageGif,
+                contentType: MimeType.imageGif.rawValue,
                 byteCount: UInt32(attachmentData.count),
                 sourceFilename: "some.gif",
                 caption: nil,

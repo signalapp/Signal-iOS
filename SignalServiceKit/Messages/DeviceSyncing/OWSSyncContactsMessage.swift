@@ -35,7 +35,7 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
         let attachmentBuilder = SSKProtoAttachmentPointer.builder()
 
         // contact proto has a fixed type
-        attachmentBuilder.setContentType(OWSMimeTypeApplicationOctetStream)
+        attachmentBuilder.setContentType(MimeType.applicationOctetStream.rawValue)
 
         attachmentBuilder.setCdnNumber(uploadedAttachment.cdnNumber)
         attachmentBuilder.setCdnKey(uploadedAttachment.cdnKey)

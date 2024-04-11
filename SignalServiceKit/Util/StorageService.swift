@@ -501,7 +501,7 @@ public struct StorageService: Dependencies {
                 if method == .get { assert(body == nil) }
 
                 let httpHeaders = OWSHttpHeaders()
-                httpHeaders.addHeader("Content-Type", value: OWSMimeTypeProtobuf, overwriteOnConflict: true)
+                httpHeaders.addHeader("Content-Type", value: MimeType.applicationXProtobuf.rawValue, overwriteOnConflict: true)
                 try httpHeaders.addAuthHeader(username: username, password: password)
 
                 Logger.info("Storage request started: \(method) \(endpoint)")

@@ -116,7 +116,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let urlSession = self.signalService.urlSessionForCdn(cdnNumber: downloadState.metadata.cdnNumber)
             let urlPath = try Self.urlPath(for: downloadState)
             let headers: [String: String] = [
-                "Content-Type": OWSMimeTypeApplicationOctetStream
+                "Content-Type": MimeType.applicationOctetStream.rawValue
             ]
 
             let progress = { (task: URLSessionTask, progress: Progress) in

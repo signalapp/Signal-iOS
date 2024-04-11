@@ -373,7 +373,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                     if let responseData = responseData,
                        let httpUrlResponse = task.response as? HTTPURLResponse,
                        let contentType = httpUrlResponse.allHeaderFields["Content-Type"] as? String,
-                       contentType == OWSMimeTypeJson,
+                       contentType == MimeType.applicationJson.rawValue,
                        let jsonString = String(data: responseData, encoding: .utf8) {
                         Logger.verbose("Response JSON: \(jsonString)")
                     }

@@ -201,7 +201,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
             }
             try tsAttachmentManager.createBodyAttachmentStreams(
                 consuming: [TSAttachmentDataSource(
-                    mimeType: OWSMimeTypeOversizeTextMessage,
+                    mimeType: MimeType.textXSignalPlain.rawValue,
                     caption: nil,
                     renderingFlag: .default,
                     sourceFilename: nil,
@@ -220,7 +220,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
 
         let bodyMediaAttachmentsPriorToEdit = tsAttachmentStore.attachments(
             withAttachmentIds: bodyAttachmentIdsPriorToEdit,
-            ignoringContentType: OWSMimeTypeOversizeTextMessage,
+            ignoringContentType: MimeType.textXSignalPlain.rawValue,
             tx: SDSDB.shimOnlyBridge(tx)
         )
 

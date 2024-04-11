@@ -104,7 +104,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     DebugUIMessages.sendOversizeTextMessageInThread(thread)
                 }),
                 OWSTableItem(title: "Send unknown mimetype", actionBlock: {
-                    DebugUIMessages.sendRandomAttachmentInThread(thread, uti: kUnknownTestAttachmentUTI)
+                    DebugUIMessages.sendRandomAttachmentInThread(thread, uti: MimeTypeUtil.unknownTestAttachmentUti)
                 }),
                 OWSTableItem(title: "Send pdf", actionBlock: {
                     DebugUIMessages.sendRandomAttachmentInThread(thread, uti: kUTTypePDF as String)
@@ -2560,7 +2560,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
                     let avatarDataSource = TSResourceDataSource.from(
                         data: avatarData,
-                        mimeType: OWSMimeTypeImageJpeg,
+                        mimeType: MimeType.imageJpeg.rawValue,
                         caption: nil,
                         renderingFlag: .default,
                         sourceFilename: nil

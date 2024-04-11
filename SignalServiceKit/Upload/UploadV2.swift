@@ -68,14 +68,14 @@ extension Upload.CDN0 {
         //
         // For consistency, all fields are ordered here in a known working order.
         var textParts = uploadForm.asOrderedDictionary
-        textParts.append(key: "Content-Type", value: OWSMimeTypeApplicationOctetStream)
+        textParts.append(key: "Content-Type", value: MimeType.applicationOctetStream.rawValue)
 
         _ = try await cdn0UrlSession.multiPartUploadTaskPromise(
             request: request,
             fileUrl: dataFileUrl,
             name: "file",
             fileName: "file",
-            mimeType: OWSMimeTypeApplicationOctetStream,
+            mimeType: MimeType.applicationOctetStream.rawValue,
             textParts: textParts
         ).awaitable()
 

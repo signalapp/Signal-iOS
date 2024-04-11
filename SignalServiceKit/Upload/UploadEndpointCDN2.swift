@@ -50,7 +50,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         // Remove host header.
         headers = headers.filter { $0.key.lowercased() != "host" }
         headers["Content-Length"] = "0"
-        headers["Content-Type"] = OWSMimeTypeApplicationOctetStream
+        headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
 
         do {
             let response = try await urlSession.dataTaskPromise(

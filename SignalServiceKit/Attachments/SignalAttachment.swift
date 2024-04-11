@@ -419,13 +419,13 @@ public class SignalAttachment: NSObject {
             }
         }
         if isOversizeText {
-            return OWSMimeTypeOversizeTextMessage
+            return MimeType.textXSignalPlain.rawValue
         }
-        if dataUTI == kUnknownTestAttachmentUTI {
-            return OWSMimeTypeUnknownForTests
+        if dataUTI == MimeTypeUtil.unknownTestAttachmentUti {
+            return MimeType.unknownMimetype.rawValue
         }
         guard let mimeType = UTTypeCopyPreferredTagWithClass(dataUTI as CFString, kUTTagClassMIMEType) else {
-            return OWSMimeTypeApplicationOctetStream
+            return MimeType.applicationOctetStream.rawValue
         }
         return mimeType.takeRetainedValue() as String
     }
@@ -461,9 +461,9 @@ public class SignalAttachment: NSObject {
             }
         }
         if isOversizeText {
-            return kOversizeTextAttachmentFileExtension
+            return MimeTypeUtil.oversizeTextAttachmentFileExtension
         }
-        if dataUTI == kUnknownTestAttachmentUTI {
+        if dataUTI == MimeTypeUtil.unknownTestAttachmentUti {
             return "unknown"
         }
         guard let fileExtension = MIMETypeUtil.fileExtension(forUTIType: dataUTI) else {
@@ -544,7 +544,7 @@ public class SignalAttachment: NSObject {
     }
 
     public var isOversizeText: Bool {
-        return dataUTI == kOversizeTextAttachmentUTI
+        return dataUTI == MimeTypeUtil.oversizeTextAttachmentUti
     }
 
     public var isText: Bool {
@@ -911,11 +911,11 @@ public class SignalAttachment: NSObject {
             if dataSource.hasStickerLikeProperties {
                 dataFileExtension = "png"
                 dataUTI = kUTTypePNG
-                dataMIMEType = OWSMimeTypeImagePng
+                dataMIMEType = MimeType.imagePng.rawValue
             } else {
                 dataFileExtension = "jpg"
                 dataUTI = kUTTypeJPEG
-                dataMIMEType = OWSMimeTypeImageJpeg
+                dataMIMEType = MimeType.imageJpeg.rawValue
                 imageProperties[kCGImageDestinationLossyCompressionQuality] = compressionQuality(for: pixelSize)
             }
 
@@ -1288,7 +1288,7 @@ public class SignalAttachment: NSObject {
     private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
         let dataSource = DataSourceValue.dataSource(withOversizeText: text)
         return newAttachment(dataSource: dataSource,
-                             dataUTI: kOversizeTextAttachmentUTI,
+                             dataUTI: MimeTypeUtil.oversizeTextAttachmentUti,
                              validUTISet: nil,
                              maxFileSize: kMaxFileSizeGeneric)
     }

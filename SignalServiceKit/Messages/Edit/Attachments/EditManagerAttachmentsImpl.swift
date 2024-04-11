@@ -253,7 +253,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         case .dataSource(let dataSource):
             try attachmentManager.createAttachmentStream(
                 consuming: AttachmentDataSource(
-                    mimeType: OWSMimeTypeOversizeTextMessage,
+                    mimeType: MimeType.textXSignalPlain.rawValue,
                     caption: nil,
                     renderingFlag: .default,
                     sourceFilename: nil,

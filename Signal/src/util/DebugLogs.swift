@@ -255,7 +255,7 @@ class DebugLogs: NSObject {
         // Phase 3. Upload the log files.
         DebugLogUploader.uploadFile(
             fileUrl: URL(fileURLWithPath: zipFilePath),
-            mimeType: OWSMimeTypeApplicationZip
+            mimeType: MimeType.applicationZip.rawValue
         ).done(on: DispatchQueue.global()) { url in
             OWSFileSystem.deleteFile(zipFilePath)
             wrappedSuccess(url)

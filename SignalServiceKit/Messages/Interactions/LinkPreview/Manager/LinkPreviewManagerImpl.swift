@@ -445,7 +445,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
                     owsFailDebug("Couldn't derive still image for Webp.")
                     return nil
                 }
-                return PreviewThumbnail(imageData: stillData, mimetype: OWSMimeTypeImagePng)
+                return PreviewThumbnail(imageData: stillData, mimetype: MimeType.imagePng.rawValue)
             default:
                 guard let mimeType = imageMetadata.mimeType else {
                     owsFailDebug("Unknown mimetype for thumbnail.")
@@ -475,13 +475,13 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
                         owsFailDebug("Could not write resized image to PNG.")
                         return nil
                     }
-                    return PreviewThumbnail(imageData: dstData, mimetype: OWSMimeTypeImagePng)
+                    return PreviewThumbnail(imageData: dstData, mimetype: MimeType.imagePng.rawValue)
                 } else {
                     guard let dstData = dstImage.jpegData(compressionQuality: 0.8) else {
                         owsFailDebug("Could not write resized image to JPEG.")
                         return nil
                     }
-                    return PreviewThumbnail(imageData: dstData, mimetype: OWSMimeTypeImageJpeg)
+                    return PreviewThumbnail(imageData: dstData, mimetype: MimeType.imageJpeg.rawValue)
                 }
             }
         }
@@ -506,7 +506,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
             }.map(on: Self.workQueue) { (coverUrl: URL) in
                 return try Data(contentsOf: coverUrl)
             }.then(on: Self.workQueue) { (coverData) -> Promise<PreviewThumbnail?> in
-                Self.previewThumbnail(srcImageData: coverData, srcMimeType: OWSMimeTypeImageWebp)
+                Self.previewThumbnail(srcImageData: coverData, srcMimeType: MimeType.imageWebp.rawValue)
             }.map(on: Self.workQueue) { (previewThumbnail: PreviewThumbnail?) -> OWSLinkPreviewDraft in
                 guard let previewThumbnail = previewThumbnail else {
                     return OWSLinkPreviewDraft(url: url,

@@ -17,18 +17,13 @@ extern NSString *const OWSMimeTypeImageBmp2;
 extern NSString *const OWSMimeTypeImageWebp;
 extern NSString *const OWSMimeTypeImageHeic;
 extern NSString *const OWSMimeTypeImageHeif;
-extern NSString *const OWSMimeTypePdf;
 extern NSString *const OWSMimeTypeOversizeTextMessage;
-extern NSString *const OWSMimeTypeProtobuf;
-extern NSString *const OWSMimeTypeJson;
 extern NSString *const OWSMimeTypeLottieSticker;
 extern NSString *const OWSMimeTypeImageApng1;
 extern NSString *const OWSMimeTypeImageApng2;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
-extern NSString *const kOversizeTextAttachmentUTI;
 extern NSString *const kOversizeTextAttachmentFileExtension;
-extern NSString *const kUnknownTestAttachmentUTI;
 extern NSString *const kSyncMessageFileExtension;
 extern NSString *const kLottieStickerFileExtension;
 

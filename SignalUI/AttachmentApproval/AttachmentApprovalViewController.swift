@@ -686,7 +686,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }.map(on: DispatchQueue.global()) { (dstImage: UIImage) -> SignalAttachment in
             var dataUTI = kUTTypeImage as String
             guard let dstData: Data = {
-                let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(OWSMimeTypeImageJpeg) == .orderedSame
+                let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
                 if isLossy {
                     dataUTI = kUTTypeJPEG as String
                     return dstImage.jpegData(compressionQuality: 0.9)

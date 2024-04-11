@@ -465,7 +465,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     attachment: stream,
                     thumbnailImage: resizedThumbnailImage
                 ))
-            } else if attachment?.mimeType == OWSMimeTypeOversizeTextMessage {
+            } else if attachment?.mimeType == MimeType.textXSignalPlain.rawValue {
                 // If the attachment is "oversize text", try the quote as a reply to text, not as
                 // a reply to an attachment.
                 if let oversizeTextData = try? attachment?.asResourceStream()?.decryptedRawDataSync(),

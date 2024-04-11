@@ -203,7 +203,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             guard let mimeType = self.mimeType else {
                 return nil
             }
-            guard mimeType != OWSMimeTypeOversizeTextMessage else {
+            guard mimeType != MimeType.textXSignalPlain.rawValue else {
                 return nil
             }
             return mimeType
@@ -406,7 +406,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 return OWSLocalizedString("QUOTED_REPLY_TYPE_VIDEO",
                                          comment: "Indicates this message is a quoted reply to a video file.")
             } else if MIMETypeUtil.isDefinitelyAnimated(mimeType) {
-                if mimeType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
+                if mimeType.caseInsensitiveCompare(MimeType.imageGif.rawValue) == .orderedSame {
                     return OWSLocalizedString("QUOTED_REPLY_TYPE_GIF",
                                              comment: "Indicates this message is a quoted reply to animated GIF file.")
                 } else {

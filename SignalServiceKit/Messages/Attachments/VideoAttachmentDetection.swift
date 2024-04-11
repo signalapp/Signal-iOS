@@ -63,7 +63,7 @@ public class VideoAttachmentDetection: NSObject {
     }
 
     private var attachmentIsGIFSQL: String {
-        return "\(attachmentColumn: .contentType) = \"\(OWSMimeTypeImageGif)\""
+        return "\(attachmentColumn: .contentType) = \"\(MimeType.imageGif.rawValue)\""
     }
 
     public var attachmentStreamIsGIFOrLoopingVideoSQL: String {

@@ -373,7 +373,7 @@ class StoryManagerTest: SSKBaseTestSwift {
         let builder = SSKProtoAttachmentPointer.builder()
         builder.setCdnID(1)
         builder.setKey(Randomness.generateRandomBytes(32))
-        builder.setContentType(OWSMimeTypeImageJpeg)
+        builder.setContentType(MimeType.imageJpeg.rawValue)
         return builder.buildInfallibly()
     }
 

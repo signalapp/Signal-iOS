@@ -136,7 +136,7 @@ public class ContactShareManagerImpl: ContactShareManager {
             guard let imageData = avatarImage.jpegData(compressionQuality: 0.9) else {
                 throw OWSAssertionError("Failed to get JPEG")
             }
-            let mimeType = OWSMimeTypeImageJpeg
+            let mimeType = MimeType.imageJpeg.rawValue
             avatarDataSource = .from(
                 data: imageData,
                 mimeType: mimeType,

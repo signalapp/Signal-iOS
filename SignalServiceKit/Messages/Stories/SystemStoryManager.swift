@@ -722,7 +722,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 + Constants.imageExtension
         }
         static let imageExtension = ".jpg"
-        static let imageMimeType = OWSMimeTypeImageJpeg
+        static let imageMimeType = MimeType.imageJpeg.rawValue
         static let imageWidth = 1125
         static let imageHeight = 1998
 

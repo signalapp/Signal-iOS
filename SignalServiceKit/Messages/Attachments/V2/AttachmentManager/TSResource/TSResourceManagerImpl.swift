@@ -83,7 +83,7 @@ public class TSResourceManagerImpl: TSResourceManager {
     ) throws {
         let wrappedDataSource = TSResourceDataSource.from(
             dataSource: dataSource,
-            mimeType: OWSMimeTypeOversizeTextMessage,
+            mimeType: MimeType.textXSignalPlain.rawValue,
             caption: nil,
             renderingFlag: .default
         )

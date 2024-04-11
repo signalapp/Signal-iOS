@@ -60,7 +60,7 @@ class HTTPUtils: Dependencies {
            !httpBody.isEmpty {
             let contentType = request.allHTTPHeaderFields?[header: "Content-Type"]
             switch contentType {
-            case OWSMimeTypeJson:
+            case MimeType.applicationJson.rawValue:
                 guard let jsonBody = String(data: httpBody, encoding: .utf8) else {
                     Logger.debug("data attached to request as json was not utf8 encoded")
                     return
@@ -70,7 +70,7 @@ class HTTPUtils: Dependencies {
                 owsAssertDebug(!jsonBody.contains("'"))
                 curlComponents.append("--data-ascii")
                 curlComponents.append("'\(jsonBody)'")
-            case OWSMimeTypeProtobuf, "application/x-www-form-urlencoded", "application/vnd.signal-messenger.mrm":
+            case MimeType.applicationXProtobuf.rawValue, "application/x-www-form-urlencoded", "application/vnd.signal-messenger.mrm":
                 let filename = "\(UUID().uuidString).tmp"
                 var echoBytes = ""
                 for byte in httpBody {

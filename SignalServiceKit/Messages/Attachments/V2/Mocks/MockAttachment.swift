@@ -100,7 +100,7 @@ public class MockAttachment: Attachment {
             contentHash: streamInfo?.contentHash,
             encryptedByteCount: streamInfo?.encryptedByteCount,
             unenecryptedByteCount: streamInfo?.unenecryptedByteCount,
-            mimeType: mimeType ?? OWSMimeTypeApplicationOctetStream,
+            mimeType: mimeType ?? MimeType.applicationOctetStream.rawValue,
             contentType: streamInfo?.contentType,
             encryptionKey: streamInfo?.encryptionKey,
             encryptedFileSha256Digest: streamInfo?.encryptedFileSha256Digest,

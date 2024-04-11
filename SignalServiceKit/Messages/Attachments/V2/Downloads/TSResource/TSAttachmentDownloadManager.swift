@@ -1100,7 +1100,7 @@ public extension TSAttachmentDownloadManager {
             let urlSession = Self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
             let urlPath = try Self.urlPath(for: downloadState)
             let headers: [String: String] = [
-                "Content-Type": OWSMimeTypeApplicationOctetStream
+                "Content-Type": MimeType.applicationOctetStream.rawValue
             ]
 
             let progress = { (task: URLSessionTask, progress: Progress) in

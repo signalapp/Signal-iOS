@@ -49,7 +49,7 @@ open class CDNDownloadOperation: OWSOperation {
 
         let hasCheckedContentLength = AtomicBool(false, lock: .sharedGlobal)
         firstly(on: DispatchQueue.global()) { () -> Promise<OWSUrlDownloadResponse> in
-            let headers = ["Content-Type": OWSMimeTypeApplicationOctetStream]
+            let headers = ["Content-Type": MimeType.applicationOctetStream.rawValue]
             let urlSession = self.cdn0urlSession
             return urlSession.downloadTaskPromise(urlPath,
                                                   method: .get,

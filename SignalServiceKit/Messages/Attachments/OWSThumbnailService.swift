@@ -151,7 +151,7 @@ public class OWSThumbnailService: NSObject {
         // image attachments, determine the MIME type by examining
         // the actual attachment data.
         var contentType = attachment.contentType
-        let mightBeWebp = attachment.contentType == OWSMimeTypeImageWebp
+        let mightBeWebp = attachment.contentType == MimeType.imageWebp.rawValue
         if mightBeWebp,
            let filePath = attachment.originalFilePath {
             let imageMetadata = NSData.imageMetadata(withPath: filePath, mimeType: nil)
@@ -160,7 +160,7 @@ public class OWSThumbnailService: NSObject {
                 contentType = mimeType
             }
         }
-        let isWebp = contentType == OWSMimeTypeImageWebp
+        let isWebp = contentType == MimeType.imageWebp.rawValue
 
         let thumbnailPath = attachment.path(forThumbnailDimensionPoints: thumbnailRequest.thumbnailDimensionPoints)
         if FileManager.default.fileExists(atPath: thumbnailPath) {
@@ -214,13 +214,13 @@ public class OWSThumbnailService: NSObject {
 
     @objc
     public class func thumbnailFileExtension(forContentType contentType: String) -> String {
-        let isWebp = contentType == OWSMimeTypeImageWebp
+        let isWebp = contentType == MimeType.imageWebp.rawValue
         return isWebp ? "png" : "jpg"
     }
 
     @objc
     public class func thumbnailMimetype(forContentType contentType: String) -> String {
-        let isWebp = contentType == OWSMimeTypeImageWebp
-        return isWebp ? OWSMimeTypeImagePng : OWSMimeTypeImageJpeg
+        let isWebp = contentType == MimeType.imageWebp.rawValue
+        return isWebp ? MimeType.imagePng.rawValue : MimeType.imageJpeg.rawValue
     }
 }

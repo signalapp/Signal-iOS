@@ -43,7 +43,7 @@ final class ContactOutputStream {
         let avatarJpegData = signalAccount?.buildContactAvatarJpegData()
         if let avatarJpegData {
             let avatarBuilder = SSKProtoContactDetailsAvatar.builder()
-            avatarBuilder.setContentType(OWSMimeTypeImageJpeg)
+            avatarBuilder.setContentType(MimeType.imageJpeg.rawValue)
             avatarBuilder.setLength(UInt32(avatarJpegData.count))
             contactBuilder.setAvatar(avatarBuilder.buildInfallibly())
         }

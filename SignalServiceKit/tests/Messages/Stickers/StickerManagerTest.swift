@@ -53,7 +53,7 @@ class StickerManagerTest: SSKBaseTestSwift {
 
         let success = StickerManager.installSticker(stickerInfo: stickerInfo,
                                                     stickerUrl: temporaryFile,
-                                                    contentType: OWSMimeTypeImageWebp,
+                                                    contentType: MimeType.imageWebp.rawValue,
                                                     emojiString: "🌼🇨🇦")
         XCTAssertTrue(success)
 
@@ -101,7 +101,7 @@ class StickerManagerTest: SSKBaseTestSwift {
 
         let success = StickerManager.installSticker(stickerInfo: stickerInfo,
                                                     stickerUrl: temporaryFile,
-                                                    contentType: OWSMimeTypeImageWebp,
+                                                    contentType: MimeType.imageWebp.rawValue,
                                                     emojiString: "🌼🇨🇦")
         XCTAssertTrue(success)
 
