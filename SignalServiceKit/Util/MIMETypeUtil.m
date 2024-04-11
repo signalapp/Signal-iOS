@@ -42,93 +42,6 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
-+ (NSDictionary *)supportedVideoExtensionTypesToMIMETypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = @ {
-            @"3gp" : @"video/3gpp",
-            @"3gpp" : @"video/3gpp",
-            @"3gp2" : @"video/3gpp2",
-            @"3gpp2" : @"video/3gpp2",
-            @"mp4" : @"video/mp4",
-            @"mov" : @"video/quicktime",
-            @"mqv" : @"video/quicktime",
-            @"m4v" : @"video/x-m4v",
-            @"mpg" : @"video/mpeg",
-            @"mpeg" : @"video/mpeg",
-        };
-    });
-    return result;
-}
-
-+ (NSDictionary *)supportedAudioExtensionTypesToMIMETypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = @ {
-            @"3gp" : @"audio/3gpp",
-            @"3gpp" : @"@audio/3gpp",
-            @"3g2" : @"audio/3gpp2",
-            @"3gp2" : @"audio/3gpp2",
-            @"aiff" : @"audio/aiff",
-            @"aif" : @"audio/aiff",
-            @"aifc" : @"audio/aiff",
-            @"cdda" : @"audio/aiff",
-            @"mp3" : @"audio/mp3",
-            @"swa" : @"audio/mp3",
-            @"mp4" : @"audio/mp4",
-            @"wav" : @"audio/wav",
-            @"bwf" : @"audio/wav",
-            @"m4a" : @"audio/x-m4a",
-            @"m4b" : @"audio/x-m4b",
-            @"m4p" : @"audio/x-m4p"
-        };
-    });
-    return result;
-}
-
-+ (NSDictionary *)supportedImageExtensionTypesToMIMETypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = @ {
-            @"png" : OWSMimeTypeImagePng,
-            @"x-png" : OWSMimeTypeImagePng,
-            @"jfif" : @"image/jpeg",
-            @"jfif-tbnl" : @"image/jpeg",
-            @"jpe" : @"image/jpeg",
-            @"jpeg" : @"image/jpeg",
-            @"jpg" : @"image/jpeg",
-            @"tif" : @"image/tiff",
-            @"tiff" : @"image/tiff",
-            @"webp" : OWSMimeTypeImageWebp,
-            @"heic" : OWSMimeTypeImageHeic,
-            @"heif" : OWSMimeTypeImageHeif,
-        };
-    });
-    return result;
-}
-
-+ (NSDictionary *)supportedAnimatedExtensionTypesToMIMETypes
-{
-    static NSDictionary *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSMutableDictionary<NSString *, NSString *> *value = [@ {
-            @"gif" : OWSMimeTypeImageGif,
-        } mutableCopy];
-        if (SSKFeatureFlags.supportAnimatedStickers_Lottie) {
-            value[kLottieStickerFileExtension] = OWSMimeTypeLottieSticker;
-        }
-        result = [value copy];
-    });
-    return result;
-}
-
 + (BOOL)isSupportedVideoMIMEType:(NSString *)contentType
 {
     return [[MimeTypeUtil supportedVideoMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
@@ -151,23 +64,22 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 + (BOOL)isSupportedVideoFile:(NSString *)filePath
 {
-    return [[self supportedVideoExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
+    return [[MimeTypeUtil supportedVideoExtensionTypesToMimeTypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
 + (BOOL)isSupportedAudioFile:(NSString *)filePath
 {
-    return [[self supportedAudioExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
+    return [[MimeTypeUtil supportedAudioExtensionTypesToMimeTypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
 + (BOOL)isSupportedImageFile:(NSString *)filePath
 {
-    return [[self supportedImageExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
+    return [[MimeTypeUtil supportedImageExtensionTypesToMimeTypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
 + (BOOL)isSupportedAnimatedFile:(NSString *)filePath
 {
-    return
-        [[self supportedAnimatedExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
+    return [[MimeTypeUtil supportedAnimatedExtensionTypesToMimeTypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
 + (nullable NSString *)getSupportedExtensionFromVideoMIMEType:(NSString *)supportedMIMEType

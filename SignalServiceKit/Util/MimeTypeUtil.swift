@@ -1172,4 +1172,61 @@ public class MimeTypeUtil: NSObject {
         "xgl/drawing": "xgz",
         "xgl/movie": "xmz",
     ]
+
+    // MARK: - Extension to Mime Type Dictionaries
+    @objc
+    public static let supportedVideoExtensionTypesToMimeTypes: [String: String] = [
+        "3gp": "video/3gpp",
+        "3gpp": "video/3gpp",
+        "3gp2": "video/3gpp2",
+        "3gpp2": "video/3gpp2",
+        "mp4": "video/mp4",
+        "mov": "video/quicktime",
+        "mqv": "video/quicktime",
+        "m4v": "video/x-m4v",
+        "mpg": "video/mpeg",
+        "mpeg": "video/mpeg",
+    ]
+    @objc
+    public static let supportedAudioExtensionTypesToMimeTypes: [String: String] = [
+        "3gp": "audio/3gpp",
+        "3gpp": "@audio/3gpp",
+        "3g2": "audio/3gpp2",
+        "3gp2": "audio/3gpp2",
+        "aiff": "audio/aiff",
+        "aif": "audio/aiff",
+        "aifc": "audio/aiff",
+        "cdda": "audio/aiff",
+        "mp3": "audio/mp3",
+        "swa": "audio/mp3",
+        "mp4": "audio/mp4",
+        "wav": "audio/wav",
+        "bwf": "audio/wav",
+        "m4a": "audio/x-m4a",
+        "m4b": "audio/x-m4b",
+        "m4p": "audio/x-m4p",
+    ]
+    @objc
+    public static let supportedImageExtensionTypesToMimeTypes: [String: String] = [
+        "png": MimeType.imagePng.rawValue,
+        "x-png": MimeType.imagePng.rawValue,
+        "jfif": MimeType.imageJpeg.rawValue,
+        "jfif-tbnl": MimeType.imageJpeg.rawValue,
+        "jpe": MimeType.imageJpeg.rawValue,
+        "jpeg": MimeType.imageJpeg.rawValue,
+        "jpg": MimeType.imageJpeg.rawValue,
+        "tif": MimeType.imageTiff.rawValue,
+        "tiff": MimeType.imageTiff.rawValue,
+        "webp": MimeType.imageWebp.rawValue,
+        "heic": MimeType.imageHeic.rawValue,
+        "heif": MimeType.imageHeif.rawValue,
+    ]
+    @objc
+    public static let supportedAnimatedExtensionTypesToMimeTypes: [String: String] = {
+        var result = ["gif": MimeType.imageGif.rawValue]
+        if FeatureFlags.supportAnimatedStickers_Lottie {
+            result[lottieStickerFileExtension] = MimeType.textXSignalStickerLottie.rawValue
+        }
+        return result
+    }()
 }
