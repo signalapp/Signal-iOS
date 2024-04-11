@@ -1,4 +1,3 @@
-APP_IDENTIFIER=org.whispersystems.signal
 SCHEME=Signal
 
 .PHONY: dependencies
@@ -20,5 +19,5 @@ test: dependencies
 	bundle exec fastlane scan --scheme ${SCHEME}
 
 .PHONY: release
-release: dependencies
-	SCHEME=${SCHEME} APP_IDENTIFIER=${APP_IDENTIFIER} bundle exec fastlane release nightly:${NIGHTLY}
+release:
+	@echo This command has been deprecated by Xcode Cloud.
