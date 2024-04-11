@@ -45,7 +45,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
             )
         }
 
-        (notificationsManager as! NoopNotificationsManager).expectErrors = true
+        (notificationPresenter as! NoopNotificationPresenterImpl).expectErrors = true
         (udManager as! OWSUDManagerImpl).trustRoot = sealedSenderTrustRoot.publicKey
     }
 

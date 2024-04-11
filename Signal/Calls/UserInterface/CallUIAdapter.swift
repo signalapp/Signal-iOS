@@ -10,7 +10,7 @@ import WebRTC
 import UIKit
 
 protocol CallUIAdaptee: AnyObject {
-    var notificationPresenter: NotificationPresenter { get }
+    var notificationPresenterImpl: NotificationPresenterImpl { get }
     var callService: CallService { get }
     var hasManualRinger: Bool { get }
 
@@ -61,9 +61,11 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         let sentAtTimestamp = Date(millisecondsSince1970: call.individualCall.sentAtTimestamp)
-        notificationPresenter.presentMissedCall(call,
-                                                caller: call.individualCall.remoteAddress,
-                                                sentAt: sentAtTimestamp)
+        notificationPresenterImpl.presentMissedCall(
+            call,
+            caller: call.individualCall.remoteAddress,
+            sentAt: sentAtTimestamp
+        )
     }
 
     internal func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {

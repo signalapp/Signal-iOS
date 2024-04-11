@@ -8,7 +8,7 @@ import Intents
 
 /// There are two primary components in our system notification integration:
 ///
-///     1. The `NotificationPresenter` shows system notifications to the user.
+///     1. The `NotificationPresenterImpl` shows system notifications to the user.
 ///     2. The `NotificationActionHandler` handles the users interactions with these
 ///        notifications.
 ///
@@ -190,8 +190,8 @@ extension UserNotificationPresenter {
 
 // MARK: -
 
-public class NotificationPresenter: NSObject, NotificationsProtocol {
-    private let presenter = UserNotificationPresenter(notifyQueue: NotificationPresenter.notificationQueue)
+public class NotificationPresenterImpl: NSObject, NotificationPresenter {
+    private let presenter = UserNotificationPresenter(notifyQueue: NotificationPresenterImpl.notificationQueue)
 
     public override init() {
         super.init()

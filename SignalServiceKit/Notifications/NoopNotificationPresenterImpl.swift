@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@objc
-public class NoopNotificationsManager: NSObject, NotificationsProtocol {
+public class NoopNotificationPresenterImpl: NSObject, NotificationPresenter {
     public var expectErrors: Bool = false
 
     public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,

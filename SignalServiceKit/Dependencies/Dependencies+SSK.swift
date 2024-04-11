@@ -110,16 +110,6 @@ public extension NSObject {
         SSKEnvironment.shared.networkManagerRef
     }
 
-    @nonobjc
-    final var notificationsManager: NotificationsProtocol {
-        SSKEnvironment.shared.notificationsManagerRef
-    }
-
-    @nonobjc
-    static var notificationsManager: NotificationsProtocol {
-        SSKEnvironment.shared.notificationsManagerRef
-    }
-
     final var ows2FAManager: OWS2FAManager {
         .shared
     }
@@ -313,13 +303,13 @@ public extension NSObject {
     }
 
     @nonobjc
-    final var notificationPresenter: NotificationsProtocol {
-        SSKEnvironment.shared.notificationsManager
+    final var notificationPresenter: any NotificationPresenter {
+        SSKEnvironment.shared.notificationPresenterRef
     }
 
     @nonobjc
-    static var notificationPresenter: NotificationsProtocol {
-        SSKEnvironment.shared.notificationsManager
+    static var notificationPresenter: any NotificationPresenter {
+        SSKEnvironment.shared.notificationPresenterRef
     }
 
     final var paymentsHelper: PaymentsHelper {
@@ -512,16 +502,6 @@ public extension Dependencies {
         SSKEnvironment.shared.networkManagerRef
     }
 
-    // This singleton is configured after the environments are created.
-    var notificationsManager: NotificationsProtocol {
-        SSKEnvironment.shared.notificationsManagerRef
-    }
-
-    // This singleton is configured after the environments are created.
-    static var notificationsManager: NotificationsProtocol {
-        SSKEnvironment.shared.notificationsManagerRef
-    }
-
     var ows2FAManager: OWS2FAManager {
         .shared
     }
@@ -706,12 +686,12 @@ public extension Dependencies {
         .shared
     }
 
-    var notificationPresenter: NotificationsProtocol {
-        SSKEnvironment.shared.notificationsManager
+    var notificationPresenter: any NotificationPresenter {
+        SSKEnvironment.shared.notificationPresenterRef
     }
 
-    static var notificationPresenter: NotificationsProtocol {
-        SSKEnvironment.shared.notificationsManager
+    static var notificationPresenter: any NotificationPresenter {
+        SSKEnvironment.shared.notificationPresenterRef
     }
 
     var paymentsHelper: PaymentsHelper {

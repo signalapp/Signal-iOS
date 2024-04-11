@@ -176,7 +176,7 @@ public class NotificationActionHandler: Dependencies {
                 }
             }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
-                self.notificationPresenter.notifyForFailedSend(inThread: thread)
+                self.notificationPresenterImpl.notifyForFailedSend(inThread: thread)
                 throw error
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.markMessageAsRead(notificationMessage: notificationMessage)
@@ -278,7 +278,7 @@ public class NotificationActionHandler: Dependencies {
                 }
             }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
-                self.notificationPresenter.notifyForFailedSend(inThread: thread)
+                self.notificationPresenterImpl.notifyForFailedSend(inThread: thread)
                 throw error
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.markMessageAsRead(notificationMessage: notificationMessage)

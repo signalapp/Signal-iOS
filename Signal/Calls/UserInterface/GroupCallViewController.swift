@@ -868,8 +868,10 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             // we'll still treat them as having been there "since join", but that's okay.
             // It's not worth trying to track this more precisely.
             let atLeastOneUnresolvedPresentAtJoin = unresolvedAddresses.contains { membersAtJoin?.contains($0) ?? false }
-            Self.notificationPresenter.notifyForGroupCallSafetyNumberChange(inThread: call.thread,
-                                                                            presentAtJoin: atLeastOneUnresolvedPresentAtJoin)
+            Self.notificationPresenterImpl.notifyForGroupCallSafetyNumberChange(
+                inThread: call.thread,
+                presentAtJoin: atLeastOneUnresolvedPresentAtJoin
+            )
         }
     }
 

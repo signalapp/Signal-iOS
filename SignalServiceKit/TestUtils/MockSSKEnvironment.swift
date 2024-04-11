@@ -24,7 +24,7 @@ public class MockSSKEnvironment: NSObject {
             mobileCoinHelper: MobileCoinHelperMock(),
             callMessageHandler: NoopCallMessageHandler(),
             lightweightGroupCallManagerBuilder: LightweightGroupCallManager.init(groupCallPeekClient:),
-            notificationPresenter: NoopNotificationsManager(),
+            notificationPresenter: NoopNotificationPresenterImpl(),
             testDependencies: AppSetup.TestDependencies(
                 accountServiceClient: FakeAccountServiceClient(),
                 contactManager: FakeContactsManager(),

@@ -194,7 +194,7 @@ class NotificationService: UNNotificationServiceExtension {
                 ]).asVoid()
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 // Finally, wait for any notifications to finish posting
-                return NotificationPresenter.pendingNotificationsPromise()
+                return NotificationPresenterImpl.pendingNotificationsPromise()
             }
         }.ensure(on: DispatchQueue.global()) { [weak self] in
             logger.info("Message fetching & processing completed.")

@@ -1141,7 +1141,7 @@ public final class MessageReceiver: Dependencies {
         }
 
         DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, tx: tx.asV2Write)
-        notificationsManager.notifyUser(forIncomingMessage: message, thread: thread, transaction: tx)
+        notificationPresenter.notifyUser(forIncomingMessage: message, thread: thread, transaction: tx)
 
         if CurrentAppContext().isMainApp {
             DispatchQueue.main.async {

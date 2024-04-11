@@ -76,7 +76,7 @@ public class SSKEnvironment: NSObject {
     public let systemStoryManagerRef: SystemStoryManagerProtocol
     public let remoteMegaphoneFetcherRef: RemoteMegaphoneFetcher
     public let contactDiscoveryManagerRef: ContactDiscoveryManager
-    public let notificationsManagerRef: NotificationsProtocol
+    public let notificationPresenterRef: any NotificationPresenter
     public let messageSendLogRef: MessageSendLog
     public let messageSenderJobQueueRef: MessageSenderJobQueue
     public let localUserLeaveGroupJobQueueRef: LocalUserLeaveGroupJobQueue
@@ -142,7 +142,7 @@ public class SSKEnvironment: NSObject {
         systemStoryManager: SystemStoryManagerProtocol,
         remoteMegaphoneFetcher: RemoteMegaphoneFetcher,
         contactDiscoveryManager: ContactDiscoveryManager,
-        notificationsManager: NotificationsProtocol,
+        notificationPresenter: any NotificationPresenter,
         messageSendLog: MessageSendLog,
         messageSenderJobQueue: MessageSenderJobQueue,
         localUserLeaveGroupJobQueue: LocalUserLeaveGroupJobQueue,
@@ -203,7 +203,7 @@ public class SSKEnvironment: NSObject {
         self.systemStoryManagerRef = systemStoryManager
         self.remoteMegaphoneFetcherRef = remoteMegaphoneFetcher
         self.contactDiscoveryManagerRef = contactDiscoveryManager
-        self.notificationsManagerRef = notificationsManager
+        self.notificationPresenterRef = notificationPresenter
         self.messageSendLogRef = messageSendLog
         self.messageSenderJobQueueRef = messageSenderJobQueue
         self.localUserLeaveGroupJobQueueRef = localUserLeaveGroupJobQueue

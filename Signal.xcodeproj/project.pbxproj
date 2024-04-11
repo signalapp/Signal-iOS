@@ -834,7 +834,7 @@
 		6646573B2AC388C70099DE1C /* RegistrationStateChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573A2AC388C70099DE1C /* RegistrationStateChangeManager.swift */; };
 		6646573D2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573C2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift */; };
 		6646573F2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */; };
-		664657412AC4FB720099DE1C /* NotificationsProtocolSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */; };
+		664657412AC4FB720099DE1C /* NotificationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657402AC4FB720099DE1C /* NotificationPresenter.swift */; };
 		664657452ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657442ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift */; };
 		664657472ACB66630099DE1C /* TSAccountManagerObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */; };
 		664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */; };
@@ -1155,7 +1155,7 @@
 		7254655D2BA0294100EABFD2 /* ContactOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE682AF37A9900668F9F /* ContactOutputStream.swift */; };
 		7254655E2BA032A900EABFD2 /* StorageServiceContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */; };
 		725465602BA033E200EABFD2 /* UserNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0923CEBF4400B0E74B /* UserNotificationsPresenter.swift */; };
-		725465612BA033E200EABFD2 /* AppNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0A23CEBF4400B0E74B /* AppNotifications.swift */; };
+		725465612BA033E200EABFD2 /* NotificationPresenterImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0A23CEBF4400B0E74B /* NotificationPresenterImpl.swift */; };
 		725465622BA0348600EABFD2 /* GroupCallPeekClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */; };
 		725465632BA0348600EABFD2 /* LightweightGroupCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */; };
 		725465642BA0369D00EABFD2 /* AppSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46A29DB9F17007FEADA /* AppSetup.swift */; };
@@ -2653,7 +2653,7 @@
 		F9C5CE5F289453B400548EEE /* OWSFakeProfileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB8F289453B200548EEE /* OWSFakeProfileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB90289453B200548EEE /* FakeContactsManager.swift */; };
 		F9C5CE61289453B400548EEE /* FakeAccountServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */; };
-		F9C5CE62289453B400548EEE /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */; };
+		F9C5CE62289453B400548EEE /* NoopNotificationPresenterImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB92289453B200548EEE /* NoopNotificationPresenterImpl.swift */; };
 		F9C5CE65289453B400548EEE /* TestAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB95289453B200548EEE /* TestAppContext.m */; };
 		F9C5CE66289453B400548EEE /* MockKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB96289453B200548EEE /* MockKeychainStorage.swift */; };
 		F9C5CE67289453B400548EEE /* TSConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB97289453B200548EEE /* TSConstants.swift */; };
@@ -3782,7 +3782,7 @@
 		6646573A2AC388C70099DE1C /* RegistrationStateChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStateChangeManager.swift; sourceTree = "<group>"; };
 		6646573C2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStateChangeManagerImpl.swift; sourceTree = "<group>"; };
 		6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRegistrationStateChangeManager.swift; sourceTree = "<group>"; };
-		664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsProtocolSwift.swift; sourceTree = "<group>"; };
+		664657402AC4FB720099DE1C /* NotificationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPresenter.swift; sourceTree = "<group>"; };
 		664657442ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAccountManagerImpl+Shims.swift"; sourceTree = "<group>"; };
 		664657462ACB66630099DE1C /* TSAccountManagerObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerObjcBridge.swift; sourceTree = "<group>"; };
 		664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedOutgoingMessage.swift; sourceTree = "<group>"; };
@@ -4367,7 +4367,7 @@
 		88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestView.swift; sourceTree = "<group>"; };
 		88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsInteraction.swift; sourceTree = "<group>"; };
 		88D23D0923CEBF4400B0E74B /* UserNotificationsPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserNotificationsPresenter.swift; sourceTree = "<group>"; };
-		88D23D0A23CEBF4400B0E74B /* AppNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppNotifications.swift; sourceTree = "<group>"; };
+		88D23D0A23CEBF4400B0E74B /* NotificationPresenterImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationPresenterImpl.swift; sourceTree = "<group>"; };
 		88D23D0D23CEBF6000B0E74B /* IndividualCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCall.swift; sourceTree = "<group>"; };
 		88D23D1123CEBFB200B0E74B /* NotificationActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationActionHandler.swift; sourceTree = "<group>"; };
 		88D23D1423CEC0C700B0E74B /* IndividualCallService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallService.swift; sourceTree = "<group>"; };
@@ -5637,7 +5637,7 @@
 		F9C5CB8F289453B200548EEE /* OWSFakeProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFakeProfileManager.h; sourceTree = "<group>"; };
 		F9C5CB90289453B200548EEE /* FakeContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeContactsManager.swift; sourceTree = "<group>"; };
 		F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeAccountServiceClient.swift; sourceTree = "<group>"; };
-		F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
+		F9C5CB92289453B200548EEE /* NoopNotificationPresenterImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationPresenterImpl.swift; sourceTree = "<group>"; };
 		F9C5CB95289453B200548EEE /* TestAppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestAppContext.m; sourceTree = "<group>"; };
 		F9C5CB96289453B200548EEE /* MockKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockKeychainStorage.swift; sourceTree = "<group>"; };
 		F9C5CB97289453B200548EEE /* TSConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSConstants.swift; sourceTree = "<group>"; };
@@ -8815,7 +8815,9 @@
 		88D23D0823CEBF4400B0E74B /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
-				88D23D0A23CEBF4400B0E74B /* AppNotifications.swift */,
+				F9C5CB92289453B200548EEE /* NoopNotificationPresenterImpl.swift */,
+				664657402AC4FB720099DE1C /* NotificationPresenter.swift */,
+				88D23D0A23CEBF4400B0E74B /* NotificationPresenterImpl.swift */,
 				88D23D0923CEBF4400B0E74B /* UserNotificationsPresenter.swift */,
 			);
 			path = Notifications;
@@ -10784,7 +10786,6 @@
 			children = (
 				506A99D32B86B39F00E3C753 /* ContactManager.swift */,
 				F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */,
-				664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */,
 				503BD2882B44D666009624FC /* ProfileManager.swift */,
 				F9C5CA02289453B100548EEE /* ProfileManagerProtocol.h */,
 				F9C5CA05289453B100548EEE /* ProtoUtils.h */,
@@ -11286,7 +11287,6 @@
 				F9C5CB96289453B200548EEE /* MockKeychainStorage.swift */,
 				F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */,
 				F9C5CB86289453B200548EEE /* MockSubscriptionManager.swift */,
-				F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */,
 				F9C5CB88289453B200548EEE /* NoopPendingReadReceiptRecorder.swift */,
 				F9C5CB8F289453B200548EEE /* OWSFakeProfileManager.h */,
 				F9C5CB83289453B200548EEE /* OWSFakeProfileManager.m */,
@@ -13526,7 +13526,6 @@
 				720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */,
 				F9C5CE13289453B400548EEE /* AppContext.m in Sources */,
 				F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */,
-				725465612BA033E200EABFD2 /* AppNotifications.swift in Sources */,
 				F9C5CE52289453B400548EEE /* AppReadiness.swift in Sources */,
 				725465642BA0369D00EABFD2 /* AppSetup.swift in Sources */,
 				F972180628DE37A200113D9F /* AppVersion.swift in Sources */,
@@ -14039,9 +14038,10 @@
 				B93296652BB5CF3200B8BD39 /* NicknameRecord.swift in Sources */,
 				B93296672BB5CF7500B8BD39 /* NicknameRecordStore.swift in Sources */,
 				72C9058A2B9A293300E586B8 /* NoopCallMessageHandler.swift in Sources */,
-				F9C5CE62289453B400548EEE /* NoopNotificationsManager.swift in Sources */,
+				F9C5CE62289453B400548EEE /* NoopNotificationPresenterImpl.swift in Sources */,
 				F9C5CE58289453B400548EEE /* NoopPendingReadReceiptRecorder.swift in Sources */,
-				664657412AC4FB720099DE1C /* NotificationsProtocolSwift.swift in Sources */,
+				664657412AC4FB720099DE1C /* NotificationPresenter.swift in Sources */,
+				725465612BA033E200EABFD2 /* NotificationPresenterImpl.swift in Sources */,
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
 				F9C5CE4F289453B400548EEE /* NSData+Image.m in Sources */,
 				F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */,

@@ -5,7 +5,7 @@
 
 import Foundation
 
-public protocol NotificationsProtocol {
+public protocol NotificationPresenter {
     func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction)
 
     func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction)

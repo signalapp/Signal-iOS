@@ -60,7 +60,7 @@ public class IndividualCall: CustomDebugStringConvertible {
     private var callRecordStore: any CallRecordStore { DependenciesBridge.shared.callRecordStore }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var individualCallRecordManager: any IndividualCallRecordManager { DependenciesBridge.shared.individualCallRecordManager }
-    private var notificationPresenter: NotificationPresenter { NSObject.notificationPresenter }
+    private var notificationPresenter: NotificationPresenterImpl { NSObject.notificationPresenterImpl }
 
     // Mark -
 

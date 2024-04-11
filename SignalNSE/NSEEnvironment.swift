@@ -141,7 +141,7 @@ class NSEEnvironment: Dependencies {
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NSECallMessageHandler(),
             lightweightGroupCallManagerBuilder: LightweightGroupCallManager.init(groupCallPeekClient:),
-            notificationPresenter: NotificationPresenter()
+            notificationPresenter: NotificationPresenterImpl()
         )
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in

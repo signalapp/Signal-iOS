@@ -287,7 +287,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         //   being terminated by PKPush for not starting a call.
         let completionSignal = DispatchSemaphore(value: 0)
         firstly { () -> Promise<Void> in
-            let notificationPromise = notificationPresenter.postGenericIncomingMessageNotification()
+            let notificationPromise = notificationPresenterImpl.postGenericIncomingMessageNotification()
             let pushTokensPromise = Promise.wrapAsync { try await SyncPushTokensJob(mode: .forceUpload).run() }
             return Promise.when(resolved: [ notificationPromise, pushTokensPromise ]).asVoid()
         }.ensure(on: DispatchQueue.global()) {
@@ -329,7 +329,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     public func registerUserNotificationSettings() -> Guarantee<Void> {
         Logger.info("registering user notification settings")
 
-        return notificationPresenter.registerNotificationSettings()
+        return notificationPresenterImpl.registerNotificationSettings()
     }
 
     /**

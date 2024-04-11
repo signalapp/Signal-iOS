@@ -37,7 +37,7 @@ open class LightweightGroupCallManager {
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var groupCallRecordManager: GroupCallRecordManager { DependenciesBridge.shared.groupCallRecordManager }
     private var interactionStore: InteractionStore { DependenciesBridge.shared.interactionStore }
-    private var notificationPresenter: any NotificationsProtocol { NSObject.notificationPresenter }
+    private var notificationPresenter: any NotificationPresenter { NSObject.notificationPresenter }
     private var schedulers: Schedulers { DependenciesBridge.shared.schedulers }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 

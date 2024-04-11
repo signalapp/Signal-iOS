@@ -330,7 +330,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             lightweightGroupCallManagerBuilder: {
                 return CallService(appContext: launchContext.appContext, groupCallPeekClient: $0)
             },
-            notificationPresenter: AppEnvironment.sharedNotificationPresenter
+            notificationPresenter: NotificationPresenterImpl()
         )
         setupNSEInteroperation()
         SUIEnvironment.shared.setup()
@@ -1000,7 +1000,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             // We need to respect the in-app notification sound preference. This method, which is called
             // for modern UNUserNotification users, could be a place to do that, but since we'd still
             // need to handle this behavior for legacy UINotification users anyway, we "allow" all
-            // notification options here, and rely on the shared logic in NotificationPresenter to
+            // notification options here, and rely on the shared logic in NotificationPresenterImpl to
             // honor notification sound preferences for both modern and legacy users.
             let options: UNNotificationPresentationOptions = [.alert, .badge, .sound]
             completionHandler(options)
@@ -1046,7 +1046,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
             if !tsRegistrationState.isRegistered {
                 // Unregistered user should have no unread messages. e.g. if you delete your account.
-                AppEnvironment.shared.notificationPresenter.clearAllNotifications()
+                NSObject.notificationPresenter.clearAllNotifications()
             }
         }
 
@@ -1199,7 +1199,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             let oldBadgeValue = UIApplication.shared.applicationIconBadgeNumber
-            AppEnvironment.shared.notificationPresenter.clearAllNotifications()
+            NSObject.notificationPresenter.clearAllNotifications()
             UIApplication.shared.applicationIconBadgeNumber = oldBadgeValue
         }
     }

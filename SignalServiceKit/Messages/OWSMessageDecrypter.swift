@@ -284,8 +284,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         if let errorMessage = errorMessage {
             errorMessage.anyInsert(transaction: transaction)
-            notificationsManager.notifyUser(forErrorMessage: errorMessage, thread: contactThread, transaction: transaction)
-            notificationsManager.notifyTestPopulation(ofErrorMessage: "Failed decryption of envelope: \(validatedEnvelope.timestamp)")
+            notificationPresenter.notifyUser(forErrorMessage: errorMessage, thread: contactThread, transaction: transaction)
+            notificationPresenter.notifyTestPopulation(ofErrorMessage: "Failed decryption of envelope: \(validatedEnvelope.timestamp)")
         }
 
         return wrappedError
@@ -760,7 +760,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                         transaction: tx
                     )
                     errorMessage.anyInsert(transaction: tx)
-                    self.notificationsManager.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
+                    self.notificationPresenter.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
                 }
             }
         }

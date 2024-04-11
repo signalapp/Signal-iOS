@@ -67,7 +67,7 @@ class GroupCallRecordRingingCleanupManager {
             interactionStore: DependenciesBridge.shared.interactionStore,
             groupCallPeekClient: SSKEnvironment.shared.lightweightGroupCallManagerRef.groupCallPeekClient,
             notificationPresenter: Wrappers.NotificationPresenter(
-                notificationsPresenter: SSKEnvironment.shared.notificationsManagerRef
+                notificationPresenter: SSKEnvironment.shared.notificationPresenterRef
             ),
             threadStore: DependenciesBridge.shared.threadStore
         )
@@ -189,10 +189,10 @@ protocol GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
 }
 
 class GroupCallRecordRingingCleanupManager_NotificationPresenter_Wrapper: GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
-    private let notificationsPresenter: NotificationsProtocol
+    private let notificationPresenter: any NotificationPresenter
 
-    init(notificationsPresenter: NotificationsProtocol) {
-        self.notificationsPresenter = notificationsPresenter
+    init(notificationPresenter: any NotificationPresenter) {
+        self.notificationPresenter = notificationPresenter
     }
 
     func notifyUserGroupCallStarted(
@@ -200,7 +200,7 @@ class GroupCallRecordRingingCleanupManager_NotificationPresenter_Wrapper: GroupC
         groupThread: TSGroupThread,
         tx: DBWriteTransaction
     ) {
-        notificationsPresenter.notifyUser(
+        notificationPresenter.notifyUser(
             forPreviewableInteraction: groupCallInteraction,
             thread: groupThread,
             wantsSound: true,

@@ -30,7 +30,7 @@ final class IndividualCallService {
     private var contactManager: any ContactManager { NSObject.contactsManager }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var networkManager: NetworkManager { NSObject.networkManager }
-    private var notificationPresenter: NotificationPresenter { NSObject.notificationPresenter }
+    private var notificationPresenter: NotificationPresenterImpl { NSObject.notificationPresenterImpl }
     private var preferences: Preferences { NSObject.preferences }
     private var profileManager: any ProfileManager { NSObject.profileManager }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }

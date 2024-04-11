@@ -550,9 +550,9 @@ protocol _IncomingCallEventSyncMessageManagerImpl_MarkAsRead {
 }
 
 final class _IncomingCallEventSyncMessageManagerImpl_MarkAsReadImpl: _IncomingCallEventSyncMessageManagerImpl_MarkAsRead {
-    private let notificationPresenter: NotificationsProtocol
+    private let notificationPresenter: any NotificationPresenter
 
-    init(notificationPresenter: NotificationsProtocol) {
+    init(notificationPresenter: any NotificationPresenter) {
         self.notificationPresenter = notificationPresenter
     }
 

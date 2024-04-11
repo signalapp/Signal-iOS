@@ -85,7 +85,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NoopCallMessageHandler(),
             lightweightGroupCallManagerBuilder: LightweightGroupCallManager.init(groupCallPeekClient:),
-            notificationPresenter: NoopNotificationsManager()
+            notificationPresenter: NoopNotificationPresenterImpl()
         )
 
         // Configure the rest of the globals before preparing the database.

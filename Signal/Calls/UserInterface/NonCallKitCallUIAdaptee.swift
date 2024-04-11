@@ -97,7 +97,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             if UIApplication.shared.applicationState == .active {
                 Logger.debug("skipping notification since app is already active.")
             } else {
-                self.notificationPresenter.presentIncomingCall(call, caller: caller)
+                self.notificationPresenterImpl.presentIncomingCall(call, caller: caller)
             }
         }
     }

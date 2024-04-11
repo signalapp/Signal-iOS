@@ -22,12 +22,12 @@ public extension NSObject {
         SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
     }
 
-    final var notificationPresenter: NotificationPresenter {
-        AppEnvironment.shared.notificationPresenterRef
+    final var notificationPresenterImpl: NotificationPresenterImpl {
+        return SSKEnvironment.shared.notificationPresenterRef as! NotificationPresenterImpl
     }
 
-    static var notificationPresenter: NotificationPresenter {
-        AppEnvironment.shared.notificationPresenterRef
+    static var notificationPresenterImpl: NotificationPresenterImpl {
+        return SSKEnvironment.shared.notificationPresenterRef as! NotificationPresenterImpl
     }
 
     final var pushRegistrationManager: PushRegistrationManager {
@@ -85,12 +85,12 @@ public extension Dependencies {
         SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
     }
 
-    var notificationPresenter: NotificationPresenter {
-        AppEnvironment.shared.notificationPresenterRef
+    var notificationPresenterImpl: NotificationPresenterImpl {
+        return SSKEnvironment.shared.notificationPresenterRef as! NotificationPresenterImpl
     }
 
-    static var notificationPresenter: NotificationPresenter {
-        AppEnvironment.shared.notificationPresenterRef
+    static var notificationPresenterImpl: NotificationPresenterImpl {
+        return SSKEnvironment.shared.notificationPresenterRef as! NotificationPresenterImpl
     }
 
     var pushRegistrationManager: PushRegistrationManager {

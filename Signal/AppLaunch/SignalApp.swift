@@ -260,7 +260,7 @@ extension SignalApp {
             databaseStorage.resetAllStorage()
             OWSUserProfile.resetProfileStorage()
             preferences.removeAllValues()
-            AppEnvironment.shared.notificationPresenter.clearAllNotifications()
+            NSObject.notificationPresenter.clearAllNotifications()
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appSharedDataDirectoryPath())
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appDocumentDirectoryPath())
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.cachesDirectoryPath())

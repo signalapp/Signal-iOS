@@ -34,16 +34,16 @@ public protocol GroupUpdateInfoMessageInserter {
 class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
     private let dateProvider: DateProvider
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
-    private let notificationsManager: NotificationsProtocol
+    private let notificationPresenter: any NotificationPresenter
 
     init(
         dateProvider: @escaping DateProvider,
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
-        notificationsManager: NotificationsProtocol
+        notificationPresenter: any NotificationPresenter
     ) {
         self.dateProvider = dateProvider
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
-        self.notificationsManager = notificationsManager
+        self.notificationPresenter = notificationPresenter
     }
 
     public func insertGroupUpdateInfoMessageForNewGroup(
@@ -225,7 +225,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             )
         } else if !wasLocalUserInGroup && isLocalUserInGroup {
             // Notify when the local user is added or invited to a group.
-            notificationsManager.notifyUser(
+            notificationPresenter.notifyUser(
                 forTSMessage: infoMessage,
                 thread: groupThread,
                 wantsSound: true,

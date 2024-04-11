@@ -41,7 +41,7 @@ public class AppSetup {
         mobileCoinHelper: MobileCoinHelper,
         callMessageHandler: CallMessageHandler,
         lightweightGroupCallManagerBuilder: (GroupCallPeekClient) -> LightweightGroupCallManager,
-        notificationPresenter: NotificationsProtocol,
+        notificationPresenter: any NotificationPresenter,
         testDependencies: TestDependencies? = nil
     ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()
@@ -240,7 +240,7 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             messageSenderJobQueue: messageSenderJobQueue,
             networkManager: networkManager,
-            notificationsManager: notificationPresenter,
+            notificationPresenter: notificationPresenter,
             pniProtocolStore: pniProtocolStore,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
@@ -306,7 +306,7 @@ public class AppSetup {
         let groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(
             dateProvider: dateProvider,
             groupUpdateItemBuilder: groupUpdateItemBuilder,
-            notificationsManager: notificationPresenter
+            notificationPresenter: notificationPresenter
         )
 
         let svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
@@ -951,7 +951,7 @@ public class AppSetup {
             systemStoryManager: systemStoryManager,
             remoteMegaphoneFetcher: remoteMegaphoneFetcher,
             contactDiscoveryManager: contactDiscoveryManager,
-            notificationsManager: notificationPresenter,
+            notificationPresenter: notificationPresenter,
             messageSendLog: messageSendLog,
             messageSenderJobQueue: messageSenderJobQueue,
             localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,

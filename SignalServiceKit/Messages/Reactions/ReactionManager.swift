@@ -180,7 +180,7 @@ public class ReactionManager: NSObject {
                 // If this is a reaction to a message we sent, notify the user.
                 let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
                 if let reaction, let message = message as? TSOutgoingMessage, reactor != localAci {
-                    self.notificationsManager.notifyUser(
+                    self.notificationPresenter.notifyUser(
                         forReaction: reaction,
                         onOutgoingMessage: message,
                         thread: thread,
@@ -233,7 +233,7 @@ public class ReactionManager: NSObject {
             message.anyInsert(transaction: transaction)
 
             if let incomingMessage = message as? TSIncomingMessage {
-                notificationsManager.notifyUser(forIncomingMessage: incomingMessage, thread: thread, transaction: transaction)
+                notificationPresenter.notifyUser(forIncomingMessage: incomingMessage, thread: thread, transaction: transaction)
             } else if let outgoingMessage = message as? TSOutgoingMessage {
                 outgoingMessage.updateRecipientsFromNonLocalDevice(
                     sentTranscript?.recipientStates ?? [:],

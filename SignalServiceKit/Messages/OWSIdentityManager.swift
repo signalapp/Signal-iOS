@@ -197,7 +197,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let db: DB
     private let messageSenderJobQueue: MessageSenderJobQueue
     private let networkManager: NetworkManager
-    private let notificationsManager: NotificationsProtocol
+    private let notificationPresenter: any NotificationPresenter
     private let ownIdentityKeyValueStore: KeyValueStore
     private let pniProtocolStore: SignalProtocolStore
     private let queuedVerificationStateSyncMessagesKeyValueStore: KeyValueStore
@@ -214,7 +214,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         keyValueStoreFactory: KeyValueStoreFactory,
         messageSenderJobQueue: MessageSenderJobQueue,
         networkManager: NetworkManager,
-        notificationsManager: NotificationsProtocol,
+        notificationPresenter: any NotificationPresenter,
         pniProtocolStore: SignalProtocolStore,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
@@ -226,7 +226,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         self.db = db
         self.messageSenderJobQueue = messageSenderJobQueue
         self.networkManager = networkManager
-        self.notificationsManager = notificationsManager
+        self.notificationPresenter = notificationPresenter
         self.ownIdentityKeyValueStore = keyValueStoreFactory.keyValueStore(
             collection: "TSStorageManagerIdentityKeyStoreCollection"
         )
@@ -412,7 +412,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
         }
 
-        notificationsManager.notifyUser(forErrorMessage: contactThreadMessage, thread: contactThread, transaction: SDSDB.shimOnlyBridge(tx))
+        notificationPresenter.notifyUser(forErrorMessage: contactThreadMessage, thread: contactThread, transaction: SDSDB.shimOnlyBridge(tx))
         fireIdentityStateChangeNotification(after: tx)
     }
 
