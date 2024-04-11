@@ -43,7 +43,7 @@ public class MimeTypeUtil: NSObject {
     // TODO: Remove this; it's unused.
     public static let lottieStickerFileExtension = "lottiesticker"
 
-    // MARK: - Utility Methods
+    // MARK: - Supported Mime Types
     @objc
     public static func isSupportedVideoMimeType(_ contentType: String) -> Bool {
         supportedVideoMimeTypesToExtensionTypes[contentType] != nil
@@ -75,6 +75,7 @@ public class MimeTypeUtil: NSObject {
         || isSupportedMaybeAnimatedMimeType(contentType)
     }
 
+    // MARK: - Supported File Extensions
     @objc
     public static func isSupportedVideoFile(_ filePath: String) -> Bool {
         supportedVideoExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
@@ -92,6 +93,7 @@ public class MimeTypeUtil: NSObject {
         supportedAnimatedExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
     }
 
+    // MARK: - Mime Type to Extension Conversion
     @objc
     public static func getSupportedExtensionFromVideoMimeType(_ supportedMimeType: String) -> String? {
         supportedVideoMimeTypesToExtensionTypes[supportedMimeType]
