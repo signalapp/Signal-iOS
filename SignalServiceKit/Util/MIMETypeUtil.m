@@ -42,31 +42,6 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
-+ (nullable NSString *)getSupportedExtensionFromVideoMIMEType:(NSString *)supportedMIMEType
-{
-    return [[MimeTypeUtil supportedVideoMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
-}
-
-+ (nullable NSString *)getSupportedExtensionFromAudioMIMEType:(NSString *)supportedMIMEType
-{
-    return [[MimeTypeUtil supportedAudioMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
-}
-
-+ (nullable NSString *)getSupportedExtensionFromImageMIMEType:(NSString *)supportedMIMEType
-{
-    return [[MimeTypeUtil supportedImageMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
-}
-
-+ (nullable NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType
-{
-    return [[MimeTypeUtil supportedMaybeAnimatedMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
-}
-
-+ (nullable NSString *)getSupportedExtensionFromBinaryDataMIMEType:(NSString *)supportedMIMEType
-{
-    return [[MimeTypeUtil supportedBinaryDataMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];
-}
-
 #pragma mark - Full attachment utilities
 
 + (BOOL)isDefinitelyAnimated:(NSString *)contentType
@@ -213,35 +188,35 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 + (NSString *)filePathForImage:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
 {
     return [self filePathForData:uniqueId
-               withFileExtension:[self getSupportedExtensionFromImageMIMEType:contentType]
+               withFileExtension:[MimeTypeUtil getSupportedExtensionFromImageMimeType:contentType]
                         inFolder:folder];
 }
 
 + (NSString *)filePathForVideo:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
 {
     return [self filePathForData:uniqueId
-               withFileExtension:[self getSupportedExtensionFromVideoMIMEType:contentType]
+               withFileExtension:[MimeTypeUtil getSupportedExtensionFromVideoMimeType:contentType]
                         inFolder:folder];
 }
 
 + (NSString *)filePathForAudio:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
 {
     return [self filePathForData:uniqueId
-               withFileExtension:[self getSupportedExtensionFromAudioMIMEType:contentType]
+               withFileExtension:[MimeTypeUtil getSupportedExtensionFromAudioMimeType:contentType]
                         inFolder:folder];
 }
 
 + (NSString *)filePathForAnimated:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
 {
     return [self filePathForData:uniqueId
-               withFileExtension:[self getSupportedExtensionFromAnimatedMIMEType:contentType]
+               withFileExtension:[MimeTypeUtil getSupportedExtensionFromAnimatedMimeType:contentType]
                         inFolder:folder];
 }
 
 + (NSString *)filePathForBinaryData:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
 {
     return [self filePathForData:uniqueId
-               withFileExtension:[self getSupportedExtensionFromBinaryDataMIMEType:contentType]
+               withFileExtension:[MimeTypeUtil getSupportedExtensionFromBinaryDataMimeType:contentType]
                         inFolder:folder];
 }
 
