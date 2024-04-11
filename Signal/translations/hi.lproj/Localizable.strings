@@ -1106,7 +1106,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ ब्लॉक किया गया है";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ आपके सिस्टम संपर्कों में है";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your phone contacts";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "%1$@ के साथ कोई सीधा संदेश नहीं";
@@ -1152,6 +1152,9 @@
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "संस्था";
+
+/* Title for a view showing the note that has been set for a profile. */
+"CONTACT_NOTE_TITLE" = "Note";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "अपनी चैट में संपर्क के नामों और फ़ोटोस को देखने के लिए:";
@@ -1370,7 +1373,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "वर्तमान संपर्को में जोङें";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "सिस्टम संपर्कों में जोङें";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to Phone Contacts";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "चुनें कि समूह का नाम, फ़ोटो, विवरण और गायब होने वाले संदेशों के समय को कौन संपादित कर सकता है।";
@@ -1407,9 +1410,6 @@
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "आउटगोइंग वीडियो कॉल";
-
-/* Label for the 'edit' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT" = "बदलें";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "समूह जानकारी संपादित करें";
@@ -1787,7 +1787,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "डिलीट करें";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "इस व्यक्ति को आपके सिस्टम संपर्कों से डिलीट कर दिया जाएगा। ढूँढ़ते समय आपको यह व्यक्ति नहीं दिखेगा। यदि वे भविष्य में आपको संदेश भेजते हैं तो आपको एक संदेश अनुरोध प्राप्त होगा।";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your phone contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "संपर्क हटाएं और उन्हें अपनी सूची से डिलीट करें?";
@@ -1797,6 +1797,9 @@
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ को आपके संपर्कों से हटा और डिलीट कर दिया गया है।";
+
+/* Label indicating a user who deleted their account. */
+"DELETED_USER" = "Deleted Account";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "आपको इस डिवाइस पर Signal से लॉग आउट कर दिया गया है।";
@@ -2909,7 +2912,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "यह ग्रुप आपने बनाया है।";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ ने ग्रुप बनाया।";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "ग्रुप बन गया है।";
@@ -3785,10 +3788,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "लिंक पूर्वावलोकन";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "सिस्टम संपर्कों को प्रबंधित करना अब iPad पर उपलब्ध नहीं है। अपने सिस्टम संपर्कों में Signal कनेक्शन जोड़ने के लिए अपने फोन पर Signal खोलें।";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on iPad. To add Signal connections to your phone contacts open Signal on your phone.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "सिस्टम संपर्कों को प्रबंधित करना अब iPad पर सपोर्टेड नहीं है। यह डिवाइस आपके फोन पर Signal से आपकी संपर्क सूची में किसी भी बदलाव को सिंक करना जारी रखेगी।";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "अधिक जानें";
@@ -4459,8 +4462,14 @@
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "उपनाम";
 
+/* The message for a prompt confirming that the user wants to delete the nickname and note. */
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "This will permanently delete this nickname and note.";
+
+/* The title for a prompt confirming that the user wants to delete the nickname and note. */
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Delete Nickname?";
+
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "उपनाम और नोट्स Signal की एंड-टू-एंड एनक्रिप्टेड स्टोरेज सेवा का उपयोग करके संग्रहीत किए जाते हैं। वे केवल आपको दिखाई देते हैं।";
+"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames & notes are stored with Signal and end-to-end encrypted. They are only visible to you.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "उपनाम";
@@ -6224,10 +6233,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "ऐप आइकन";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "यदि उपलब्ध हो तो सिस्टम संपर्कों फ़ोटो प्रदर्शित करें।";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "सिस्टम संपर्क फ़ोटो का उपयोग करें";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "विषय";
@@ -7463,7 +7472,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "संदेश अनुरोध स्वीकार करके";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "अपने सिस्टम संपर्कों में उन्हें रखकर";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your phone contacts";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "आपके कनेक्शन तब तक आपका नाम और फ़ोटो, तथा \"मेरी स्टोरी\" पर आपके द्वारा भेजी जानेवाली विषयवस्तु को देख सकते हैं जब तक कि आपने उसे उनसे छिपा न रखा हो।";

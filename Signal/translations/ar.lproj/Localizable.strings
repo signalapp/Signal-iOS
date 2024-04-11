@@ -1106,7 +1106,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "تم حَظر %1$@";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ موجود في جهات اتصال نظامك";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your phone contacts";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "لا توجد رسائل مباشرة مع %1$@";
@@ -1152,6 +1152,9 @@
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "المُنظمة";
+
+/* Title for a view showing the note that has been set for a profile. */
+"CONTACT_NOTE_TITLE" = "Note";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "لِرُؤية اَسماء وَصُور جِهات الاِتِّصال في دردشتك:";
@@ -1370,7 +1373,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "إضافة إلى جهة اتصال موجودة";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "أضف إلى جهات اتصال النظام";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to Phone Contacts";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "عليك باختيار الأعضاء الذين يمكنهم تحرير اسم وصورة المجموعة ووصفها وكذا مهلة اختفاء الرسائل.";
@@ -1407,9 +1410,6 @@
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "مكالمة فيديو صادرة";
-
-/* Label for the 'edit' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT" = "تحرير";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "تعديل معلومات المجموعة";
@@ -1787,7 +1787,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "حذف";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "سيُحذف هذا الشخص من جهات اتصال نظامك. لن يظهر لك هذا الشخص عند البحث. سَتتلقّى طلب رسالة إذا راسلوك في المُستقبل.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your phone contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "حذف جهة الاتصال وإزالتها من اللائحة؟";
@@ -1797,6 +1797,9 @@
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "حُذف %1$@ من جهات اتصالك وأُزيل.";
+
+/* Label indicating a user who deleted their account. */
+"DELETED_USER" = "Deleted Account";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "لقد تم تسجيل خروجك من تطبيق سيجنال على هذا الجهاز.";
@@ -2909,7 +2912,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "أنت قد أنشأتَ المجموعة.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ created the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "أُنشئَت المجموعة من طرف %1$@.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "لقد أُنشأَت المجموعة.";
@@ -3785,10 +3788,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "مُعاينة الرابط";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "لم تعد إدارة جهات اتصال النظام متاحة على iPad. لإضافة جهات اتصال سيجنال إلى جهات اتصال نظامك، افتح تطبيق سيجنال على هاتفك.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on iPad. To add Signal connections to your phone contacts open Signal on your phone.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "لم تعد إدارة جهات اتصال النظام مدعومة على iPad. سَيستمر هذا الجهاز في مزامنة أي تغييرات طرأت على قائمة جهات اتصالك من سيجنال على هاتفك.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "معرفة المزيد";
@@ -4459,8 +4462,14 @@
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "اسم مستعار";
 
+/* The message for a prompt confirming that the user wants to delete the nickname and note. */
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "This will permanently delete this nickname and note.";
+
+/* The title for a prompt confirming that the user wants to delete the nickname and note. */
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Delete Nickname?";
+
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "يتم تخزين الأسماء المستعارة والملاحظات باستخدام خدمة التخزين المشفرة من طرف لطرف. تكون الأسماء المستعارة والملاحظات مرئية لك فقط.";
+"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames & notes are stored with Signal and end-to-end encrypted. They are only visible to you.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "اسم العائلة";
@@ -6224,10 +6233,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "أيقونة التطبيق";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "عَرضُ صُوَرِ جِهَاتِ اِتِّصَالِ النِّظام إن كَانَت مُتَاحَة.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "اِستَخدِامِ صُوَرِ جِهَاتِ اِتِّصَالِ النِّظام";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "السِّمَة";
@@ -7463,7 +7472,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "قبول طلب التراسل معهم";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "وجودهم في جهات اتصال نظامك";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your phone contacts";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "يمكن لِجهات اتصالكَ رؤية اسمك وصورتك، كما يمكنهم الاطلاع على منشوراتك في \"قصتي\" إلا إذا أخفيتها عنهم.";
