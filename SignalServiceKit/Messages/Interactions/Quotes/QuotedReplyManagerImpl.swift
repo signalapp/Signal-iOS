@@ -446,7 +446,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             let attachment = attachmentStore.fetch(attachmentRef.resourceId, tx: tx)
             if
                 let stream = attachment?.asResourceStream(),
-                MIMETypeUtil.canMakeThumbnail(stream.mimeType),
+                MimeTypeUtil.isSupportedVisualMediaMimeType(stream.mimeType),
                 let thumbnailImage = stream.thumbnailImageSync(quality: .small)
             {
 
@@ -502,7 +502,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 } else {
                     return createTextDraftReplyOrNil()
                 }
-            } else if let attachment, MIMETypeUtil.canMakeThumbnail(attachment.mimeType) {
+            } else if let attachment, MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType) {
                 return createDraftReply(content: .attachment(
                     originalMessageBody(),
                     attachmentRef: attachmentRef,

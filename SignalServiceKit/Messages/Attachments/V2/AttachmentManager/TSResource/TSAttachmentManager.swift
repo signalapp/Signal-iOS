@@ -330,7 +330,7 @@ public class TSAttachmentManager {
     ) -> OWSAttachmentInfo? {
         if
             let stream = originalAttachment as? TSAttachmentStream,
-            MIMETypeUtil.canMakeThumbnail(stream.mimeType)
+            MimeTypeUtil.isSupportedVisualMediaMimeType(stream.mimeType)
         {
             // We found an attachment stream on the original message! Use it as our quoted attachment
             if let thumbnail = stream.cloneAsThumbnail() {
@@ -346,7 +346,7 @@ public class TSAttachmentManager {
 
         } else if
             let pointer = originalAttachment as? TSAttachmentPointer,
-            MIMETypeUtil.canMakeThumbnail(pointer.mimeType)
+            MimeTypeUtil.isSupportedVisualMediaMimeType(pointer.mimeType)
         {
             // No attachment stream, but we have a pointer. It's likely this media hasn't finished downloading yet.
             return OWSAttachmentInfo(

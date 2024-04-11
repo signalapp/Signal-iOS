@@ -237,7 +237,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             originalAttachmentReference: originalReference,
             originalAttachment: originalAttachment,
             info: {
-                guard MIMETypeUtil.canMakeThumbnail(originalAttachment.mimeType) else {
+                guard MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType) else {
                     // Can't make a thumbnail, just return a stub.
                     return OWSAttachmentInfo(
                         stubWithMimeType: originalAttachment.mimeType,

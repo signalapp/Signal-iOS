@@ -44,29 +44,6 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 #pragma mark - Full attachment utilities
 
-+ (BOOL)isVisualMedia:(NSString *)contentType
-{
-    if ([MimeTypeUtil isSupportedImageMimeType:contentType]) {
-        return YES;
-    }
-
-    if ([MimeTypeUtil isSupportedVideoMimeType:contentType]) {
-        return YES;
-    }
-
-    if ([MimeTypeUtil isSupportedMaybeAnimatedMimeType:contentType]) {
-        return YES;
-    }
-
-    return NO;
-}
-
-+ (BOOL)canMakeThumbnail:(NSString *)mimeType
-{
-    return (
-        [MimeTypeUtil isSupportedVideoMimeType:mimeType] || [MimeTypeUtil isSupportedImageMimeType:mimeType] || [MimeTypeUtil isSupportedMaybeAnimatedMimeType:mimeType]);
-}
-
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
                                   ofMIMEType:(NSString *)contentType
                               sourceFilename:(nullable NSString *)sourceFilename

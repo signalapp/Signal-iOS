@@ -16,7 +16,7 @@ public final class MediaGalleryRecordManager: NSObject {
             throw OWSAssertionError("unexpected arguments: \(args)")
         }
 
-        return MIMETypeUtil.isVisualMedia(contentType)
+        return MimeTypeUtil.isSupportedVisualMediaMimeType(contentType)
     }
 
     private class func removeAnyGalleryRecord(attachmentStream: TSAttachmentStream, transaction: GRDBWriteTransaction) throws -> MediaGalleryRecord? {

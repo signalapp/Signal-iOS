@@ -68,6 +68,12 @@ public class MimeTypeUtil: NSObject {
     public static func isSupportedBinaryDataMimeType(_ contentType: String) -> Bool {
         supportedBinaryDataMimeTypesToExtensionTypes[contentType] != nil
     }
+    @objc
+    public static func isSupportedVisualMediaMimeType(_ contentType: String) -> Bool {
+        isSupportedImageMimeType(contentType)
+        || isSupportedVideoMimeType(contentType)
+        || isSupportedMaybeAnimatedMimeType(contentType)
+    }
 
     @objc
     public static func isSupportedVideoFile(_ filePath: String) -> Bool {

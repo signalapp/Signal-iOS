@@ -486,7 +486,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (BOOL)isVisualMediaMimeType
 {
-    return [MIMETypeUtil isVisualMedia:self.contentType];
+    return [MimeTypeUtil isSupportedVisualMediaMimeType:self.contentType];
 }
 
 - (BOOL)isOversizeTextMimeType

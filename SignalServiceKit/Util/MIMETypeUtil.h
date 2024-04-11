@@ -29,10 +29,6 @@ extern NSString *const kLottieStickerFileExtension;
 
 @interface MIMETypeUtil : NSObject
 
-+ (BOOL)isVisualMedia:(NSString *)contentType;
-
-+ (BOOL)canMakeThumbnail:(NSString *)mimeType;
-
 // filename is optional and should not be trusted.
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
                                   ofMIMEType:(NSString *)contentType

@@ -248,7 +248,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
     }
 
     NSString *_Nullable blurHash;
-    if (contentType.length > 0 && [MIMETypeUtil isVisualMedia:contentType] && attachmentProto.hasBlurHash) {
+    if (contentType.length > 0 && [MimeTypeUtil isSupportedVisualMediaMimeType:contentType] && attachmentProto.hasBlurHash) {
         blurHash = attachmentProto.blurHash;
         if (![BlurHash isValidBlurHash:blurHash]) {
             blurHash = nil;
