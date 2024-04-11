@@ -39,9 +39,6 @@ extern NSString *const kSyncMessageFileExtension;
 + (NSSet<NSString *> *)supportedOutputImageUTITypes;
 + (NSSet<NSString *> *)supportedAnimatedImageUTITypes;
 
-+ (nullable NSString *)fileExtensionForUTIType:(NSString *)utiType;
-+ (nullable NSString *)fileExtensionForMIMEType:(NSString *)mimeType;
-
 @end
 
 NS_ASSUME_NONNULL_END

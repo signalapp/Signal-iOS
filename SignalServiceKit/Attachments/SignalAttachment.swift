@@ -466,7 +466,7 @@ public class SignalAttachment: NSObject {
         if dataUTI == MimeTypeUtil.unknownTestAttachmentUti {
             return "unknown"
         }
-        guard let fileExtension = MIMETypeUtil.fileExtension(forUTIType: dataUTI) else {
+        guard let fileExtension = MimeTypeUtil.fileExtensionForUtiType(dataUTI) else {
             return nil
         }
         return fileExtension

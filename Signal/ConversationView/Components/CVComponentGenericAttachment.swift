@@ -113,7 +113,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     private var topLabelConfig: CVLabelConfig {
         var text: String = attachment.sourceFilename?.ows_stripped() ?? ""
         if text.isEmpty,
-           let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: attachment.contentType) {
+           let fileExtension = MimeTypeUtil.fileExtensionForMimeType(attachment.contentType) {
             text = (fileExtension as NSString).localizedUppercase
         }
         if text.isEmpty {
@@ -180,7 +180,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
         var fileExtension: String = (filename as NSString).pathExtension
         if fileExtension.isEmpty {
-            fileExtension = MIMETypeUtil.fileExtension(forMIMEType: attachment.contentType) ?? ""
+            fileExtension = MimeTypeUtil.fileExtensionForMimeType(attachment.contentType) ?? ""
         }
         let text = (fileExtension as NSString).localizedUppercase
 

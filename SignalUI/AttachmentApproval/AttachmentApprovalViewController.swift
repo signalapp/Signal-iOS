@@ -706,7 +706,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // Rewrite the filename's extension to reflect the output file format.
             var filename: String? = attachmentApprovalItem.attachment.sourceFilename
             if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
-                if let fileExtension: String = MIMETypeUtil.fileExtension(forUTIType: dataUTI) {
+                if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(dataUTI) {
                     filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
                 }
             }

@@ -387,7 +387,7 @@ class DebugUIMessagesAssetLoader {
         owsAssertDebug(dataLength > 0)
         owsAssertDebug(!mimeType.isEmpty)
 
-        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: mimeType) else {
+        guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
             owsFailDebug("Invalid mime type: \(mimeType)")
             return nil
         }
@@ -406,7 +406,7 @@ class DebugUIMessagesAssetLoader {
             return
         }
 
-        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: mimeType) else {
+        guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
             completion(.failure(DebugUIError.invalidMimeType))
             return
         }
@@ -427,7 +427,7 @@ class DebugUIMessagesAssetLoader {
     // MARK: -
 
     private static func fakeMissingAssetLoaderWithMimeType(_ mimeType: String) -> DebugUIMessagesAssetLoader? {
-        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: mimeType) else {
+        guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
             owsFailDebug("Invalid mime type: \(mimeType)")
             return nil
         }
@@ -445,7 +445,7 @@ class DebugUIMessagesAssetLoader {
             return
         }
 
-        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: mimeType) else {
+        guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
             completion(.failure(DebugUIError.invalidMimeType))
             return
         }

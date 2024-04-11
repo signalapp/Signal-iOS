@@ -378,7 +378,7 @@ public class TSAttachmentManager {
         albumMessageId: String? = nil,
         tx: SDSAnyWriteTransaction
     ) throws -> TSAttachmentStream {
-        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: dataSource.mimeType) else {
+        guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(dataSource.mimeType) else {
             throw OWSAssertionError("Invalid mime type!")
         }
 

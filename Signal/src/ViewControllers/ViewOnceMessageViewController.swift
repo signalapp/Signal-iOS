@@ -158,7 +158,7 @@ class ViewOnceMessageViewController: OWSViewController {
                 owsFailDebug("Missing attachment file.")
                 return
             }
-            guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: contentType) else {
+            guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(contentType) else {
                 owsFailDebug("Couldn't determine file extension.")
                 return
             }

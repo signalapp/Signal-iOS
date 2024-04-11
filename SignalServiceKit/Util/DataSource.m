@@ -71,13 +71,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType
 {
-    NSString *fileExtension = [MIMETypeUtil fileExtensionForUTIType:utiType];
+    NSString *fileExtension = [MimeTypeUtil fileExtensionForUtiType:utiType];
     return [[self alloc] initWithData:data fileExtension:fileExtension];
 }
 
 + (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data mimeType:(NSString *)mimeType
 {
-    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:mimeType];
+    NSString *fileExtension = [MimeTypeUtil fileExtensionForMimeType:mimeType];
     if (fileExtension) {
         return [[self alloc] initWithData:data fileExtension:fileExtension];
     } else {

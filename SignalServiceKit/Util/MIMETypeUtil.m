@@ -78,7 +78,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
         // If the filename has not file extension, deduce one
         // from the MIME type.
         if (fileExtension.length < 1) {
-            fileExtension = [self fileExtensionForMIMEType:contentType];
+            fileExtension = [MimeTypeUtil fileExtensionForMimeType:contentType];
             if (fileExtension.length < 1) {
                 fileExtension = kDefaultFileExtension;
             }
@@ -120,7 +120,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
         return [self filePathForData:uniqueId withFileExtension:@"unknown" inFolder:folder];
     }
 
-    NSString *fileExtension = [self fileExtensionForMIMEType:contentType];
+    NSString *fileExtension = [MimeTypeUtil fileExtensionForMimeType:contentType];
     if (fileExtension) {
         return [self filePathForData:uniqueId withFileExtension:fileExtension inFolder:folder];
     }
@@ -170,29 +170,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
                      inFolder:(NSString *)folder
 {
     return [folder stringByAppendingPathComponent:[uniqueId stringByAppendingPathExtension:fileExtension]];
-}
-
-+ (nullable NSString *)fileExtensionForUTIType:(NSString *)utiType
-{
-    // Special-case the "aac" filetype we use for voice messages (for legacy reasons)
-    // to use a .m4a file extension, not .aac, since AVAudioPlayer can't handle .aac
-    // properly. Doesn't affect file contents.
-    if ([utiType isEqualToString:@"public.aac-audio"]) {
-        return @"m4a";
-    }
-    CFStringRef fileExtension
-        = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)utiType, kUTTagClassFilenameExtension);
-    return (__bridge_transfer NSString *)fileExtension;
-}
-
-+ (nullable NSString *)fileExtensionForMIMETypeViaUTIType:(NSString *)mimeType
-{
-    NSString *utiType = [MimeTypeUtil utiTypeForMimeType:mimeType];
-    if (!utiType) {
-        return nil;
-    }
-    NSString *fileExtension = [self fileExtensionForUTIType:utiType];
-    return fileExtension;
 }
 
 + (NSSet<NSString *> *)utiTypesForMIMETypes:(NSArray *)mimeTypes
@@ -260,30 +237,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
     dispatch_once(&onceToken,
         ^{ result = [self utiTypesForMIMETypes:[MimeTypeUtil supportedMaybeAnimatedMimeTypesToExtensionTypes].allKeys]; });
     return result;
-}
-
-+ (nullable NSString *)fileExtensionForMIMETypeViaLookup:(NSString *)mimeType
-{
-    return [[MimeTypeUtil genericMimeTypesToExtensionTypes] objectForKey:mimeType];
-}
-
-+ (nullable NSString *)fileExtensionForMIMEType:(NSString *)mimeType
-{
-    if (mimeType == OWSMimeTypeOversizeTextMessage) {
-        return kOversizeTextAttachmentFileExtension;
-    }
-    // Try to deduce the file extension by using a lookup table.
-    //
-    // This should be more accurate than deducing the file extension by
-    // converting to a UTI type.  For example, .m4a files will have a
-    // UTI type of kUTTypeMPEG4Audio which incorrectly yields the file
-    // extension .mp4 instead of .m4a.
-    NSString *_Nullable fileExtension = [self fileExtensionForMIMETypeViaLookup:mimeType];
-    if (!fileExtension) {
-        // Try to deduce the file extension by converting to a UTI type.
-        fileExtension = [self fileExtensionForMIMETypeViaUTIType:mimeType];
-    }
-    return fileExtension;
 }
 
 @end

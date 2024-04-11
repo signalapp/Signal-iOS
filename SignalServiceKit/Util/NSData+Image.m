@@ -115,7 +115,7 @@ typedef struct {
 
 - (nullable NSString *)fileExtension
 {
-    return [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
+    return [MimeTypeUtil fileExtensionForMimeType:self.mimeType];
 }
 
 @end

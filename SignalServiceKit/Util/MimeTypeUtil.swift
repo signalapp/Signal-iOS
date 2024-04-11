@@ -131,6 +131,38 @@ public class MimeTypeUtil: NSObject {
         owsAssertDebug(!fileExtension.isEmpty)
         return genericExtensionTypesToMimeTypes[fileExtension]
     }
+    @objc
+    public static func fileExtensionForUtiType(_ utiType: String) -> String? {
+        // Special-case the "aac" filetype we use for voice messages (for legacy reasons)
+        // to use a .m4a file extension, not .aac, since AVAudioPlayer can't handle .aac
+        // properly. Doesn't affect file contents.
+        if utiType == "public.aac-audio" {
+            return "m4a"
+        } else {
+            return UTTypeCopyPreferredTagWithClass(utiType as CFString, kUTTagClassFilenameExtension)?.takeRetainedValue() as String?
+        }
+    }
+    @objc
+    public static func fileExtensionForMimeType(_ mimeType: String) -> String? {
+        if mimeType == MimeType.textXSignalPlain.rawValue {
+            return oversizeTextAttachmentFileExtension
+        }
+
+        // Try to deduce the file extension by using a lookup table.
+        //
+        // This should be more accurate than deducing the file extension by
+        // converting to a UTI type.  For example, .m4a files will have a
+        // UTI type of kUTTypeMPEG4Audio which incorrectly yields the file
+        // extension .mp4 instead of .m4a.
+        return genericMimeTypesToExtensionTypes[mimeType] ?? fileExtensionForMimeTypeViaUtiType(mimeType)
+    }
+    private static func fileExtensionForMimeTypeViaUtiType(_ mimeType: String) -> String? {
+        let utiType = utiTypeForMimeType(mimeType)
+        guard let utiType = utiTypeForMimeType(mimeType) else {
+            return nil;
+        }
+        return fileExtensionForUtiType(utiType)
+    }
 
     // MARK: - Mime Types to Extension Dictionaries
     @objc
