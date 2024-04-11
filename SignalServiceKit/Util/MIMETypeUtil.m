@@ -172,28 +172,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
     return [folder stringByAppendingPathComponent:[uniqueId stringByAppendingPathExtension:fileExtension]];
 }
 
-+ (nullable NSString *)utiTypeForMIMEType:(NSString *)mimeType
-{
-    NSString *utiType = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(
-        kUTTagClassMIMEType, (__bridge CFStringRef)mimeType, NULL);
-
-    if (!utiType) {
-        if ([mimeType isEqualToString:@"audio/amr"]) {
-            utiType = @"org.3gpp.adaptive-multi-rate-audio";
-        } else if ([mimeType isEqualToString:@"audio/mp3"] || [mimeType isEqualToString:@"audio/x-mpeg"] ||
-            [mimeType isEqualToString:@"audio/mpeg"] || [mimeType isEqualToString:@"audio/mpeg3"] ||
-            [mimeType isEqualToString:@"audio/x-mp3"] || [mimeType isEqualToString:@"audio/x-mpeg3"]) {
-            utiType = (NSString *)kUTTypeMP3;
-        } else if ([mimeType isEqualToString:@"audio/aac"] || [mimeType isEqualToString:@"audio/x-m4a"]) {
-            utiType = (NSString *)kUTTypeMPEG4Audio;
-        } else if ([mimeType isEqualToString:@"audio/aiff"] || [mimeType isEqualToString:@"audio/x-aiff"]) {
-            utiType = (NSString *)kUTTypeAudioInterchangeFileFormat;
-        }
-    }
-
-    return utiType;
-}
-
 + (nullable NSString *)fileExtensionForUTIType:(NSString *)utiType
 {
     // Special-case the "aac" filetype we use for voice messages (for legacy reasons)
@@ -209,7 +187,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
 
 + (nullable NSString *)fileExtensionForMIMETypeViaUTIType:(NSString *)mimeType
 {
-    NSString *utiType = [self utiTypeForMIMEType:mimeType];
+    NSString *utiType = [MimeTypeUtil utiTypeForMimeType:mimeType];
     if (!utiType) {
         return nil;
     }
@@ -221,7 +199,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
 {
     NSMutableSet<NSString *> *result = [NSMutableSet new];
     for (NSString *mimeType in mimeTypes) {
-        NSString *_Nullable utiType = [self utiTypeForMIMEType:mimeType];
+        NSString *_Nullable utiType = [MimeTypeUtil utiTypeForMimeType:mimeType];
         if (!utiType) {
             OWSFailDebug(@"unknown utiType for mimetype: %@", mimeType);
             continue;
@@ -313,15 +291,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
         fileExtension = [self fileExtensionForMIMETypeViaUTIType:mimeType];
     }
     return fileExtension;
-}
-
-+ (nullable NSString *)utiTypeForFileExtension:(NSString *)fileExtension
-{
-    OWSAssertDebug(fileExtension.length > 0);
-
-    NSString *_Nullable utiType = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(
-        kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
-    return utiType;
 }
 
 @end

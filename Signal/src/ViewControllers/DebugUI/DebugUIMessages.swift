@@ -2762,7 +2762,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         hasCaption: Bool,
         completion: (Result<Void, Error>) -> Void
     ) {
-        guard let utiType = MIMETypeUtil.utiType(forFileExtension: fileUrl.pathExtension) else {
+        guard let utiType = MimeTypeUtil.utiTypeForFileExtension(fileUrl.pathExtension) else {
             completion(.failure(DebugUIError.unknownFileExtension))
             return
         }
@@ -2913,7 +2913,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
             guard
                 let dataSource = try? DataSourcePath.dataSource(withFilePath: tempFilePath, shouldDeleteOnDeallocation: false),
-                let uti = MIMETypeUtil.utiType(forMIMEType: fakeAssetLoader.mimeType)
+                let uti = MimeTypeUtil.utiTypeForMimeType(fakeAssetLoader.mimeType)
             else {
                 return nil
             }

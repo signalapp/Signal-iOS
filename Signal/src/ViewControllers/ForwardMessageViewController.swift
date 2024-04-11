@@ -574,7 +574,7 @@ extension TSAttachmentStream {
         guard let sourceUrl = originalMediaURL else {
             throw OWSAssertionError("Missing originalMediaURL.")
         }
-        guard let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) else {
+        guard let dataUTI = MimeTypeUtil.utiTypeForMimeType(contentType) else {
             throw OWSAssertionError("Missing dataUTI.")
         }
         return CloneAsSignalAttachmentRequest(uniqueId: self.uniqueId,

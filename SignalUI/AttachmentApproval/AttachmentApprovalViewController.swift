@@ -735,7 +735,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             guard let fileExtension = filePath.fileExtension else {
                 throw OWSAssertionError("Missing fileExtension.")
             }
-            guard let dataUTI = MIMETypeUtil.utiType(forFileExtension: fileExtension) else {
+            guard let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileExtension) else {
                 throw OWSAssertionError("Missing dataUTI.")
             }
             let dataSource = try DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true)

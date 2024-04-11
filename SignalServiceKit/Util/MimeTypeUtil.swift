@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CoreServices
 import Foundation
 
 public enum MimeType: String {
@@ -113,6 +114,17 @@ public class MimeTypeUtil: NSObject {
     @objc
     public static func getSupportedExtensionFromBinaryDataMimeType(_ supportedMimeType: String) -> String? {
         supportedBinaryDataMimeTypesToExtensionTypes[supportedMimeType]
+    }
+
+    // MARK: - Conversion Functions for UTI Type / MIME Type / File Extension
+    @objc
+    public static func utiTypeForMimeType(_ mimeType: String) -> String? {
+        UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType as CFString, nil)?.takeRetainedValue() as String?
+    }
+    @objc
+    public static func utiTypeForFileExtension(_ fileExtension: String) -> String? {
+        owsAssertDebug(!fileExtension.isEmpty)
+        return UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)?.takeRetainedValue() as String?
     }
 
     // MARK: - Mime Types to Extension Dictionaries

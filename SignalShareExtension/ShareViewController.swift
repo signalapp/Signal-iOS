@@ -710,7 +710,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             throw ShareViewControllerError.nonFileUrl
         }
         dataSource.sourceFilename = url.lastPathComponent
-        let utiType = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) ?? defaultTypeIdentifier
+        let utiType = MimeTypeUtil.utiTypeForFileExtension(url.pathExtension) ?? defaultTypeIdentifier
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: utiType)
         return try attachment.cloneAttachment()
     }
