@@ -31,9 +31,6 @@ extern NSString *const kLottieStickerFileExtension;
 
 + (BOOL)isDefinitelyAnimated:(NSString *)contentType;
 + (BOOL)isMaybeAnimated:(NSString *)contentType;
-+ (BOOL)isImage:(NSString *)contentType;
-+ (BOOL)isVideo:(NSString *)contentType;
-+ (BOOL)isAudio:(NSString *)contentType;
 + (BOOL)isVisualMedia:(NSString *)contentType;
 
 + (BOOL)canMakeThumbnail:(NSString *)mimeType;

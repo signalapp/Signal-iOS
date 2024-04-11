@@ -329,7 +329,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     BOOL isLoopingVideo = [self isLoopingVideoInContainingMessage:message transaction:transaction];
     if ([MIMETypeUtil isMaybeAnimated:self.contentType] || isLoopingVideo) {
         BOOL isGIF = ([self.contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
-        isLoopingVideo = isLoopingVideo && ([MIMETypeUtil isVideo:self.contentType]);
+        isLoopingVideo = isLoopingVideo && ([MimeTypeUtil isSupportedVideoMimeType:self.contentType]);
 
         if (isGIF || isLoopingVideo) {
             attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_GIF",
@@ -338,13 +338,13 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
             attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_PHOTO",
                 @"Short text label for a photo attachment, used for thread preview and on the lock screen");
         }
-    } else if ([MIMETypeUtil isImage:self.contentType]) {
+    } else if ([MimeTypeUtil isSupportedImageMimeType:self.contentType]) {
         attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_PHOTO",
             @"Short text label for a photo attachment, used for thread preview and on the lock screen");
-    } else if ([MIMETypeUtil isVideo:self.contentType]) {
+    } else if ([MimeTypeUtil isSupportedVideoMimeType:self.contentType]) {
         attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VIDEO",
             @"Short text label for a video attachment, used for thread preview and on the lock screen");
-    } else if ([MIMETypeUtil isAudio:self.contentType]) {
+    } else if ([MimeTypeUtil isSupportedAudioMimeType:self.contentType]) {
         if ([self isVoiceMessageInContainingMessage:message transaction:transaction]) {
             attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
@@ -363,7 +363,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (NSString *)emojiForContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
-    if ([MIMETypeUtil isAudio:self.contentType]) {
+    if ([MimeTypeUtil isSupportedAudioMimeType:self.contentType]) {
         if ([self isVoiceMessageInContainingMessage:message transaction:transaction]) {
             return @"🎤";
         }
@@ -372,11 +372,11 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     if ([MIMETypeUtil isDefinitelyAnimated:self.contentType] ||
         [self isLoopingVideoInContainingMessage:message transaction:transaction]) {
         return @"🎡";
-    } else if ([MIMETypeUtil isImage:self.contentType]) {
+    } else if ([MimeTypeUtil isSupportedImageMimeType:self.contentType]) {
         return @"📷";
-    } else if ([MIMETypeUtil isVideo:self.contentType]) {
+    } else if ([MimeTypeUtil isSupportedVideoMimeType:self.contentType]) {
         return @"🎥";
-    } else if ([MIMETypeUtil isAudio:self.contentType]) {
+    } else if ([MimeTypeUtil isSupportedAudioMimeType:self.contentType]) {
         return @"🎧";
     } else {
         return @"📎";
@@ -385,11 +385,11 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 + (NSString *)emojiForMimeType:(NSString *)contentType
 {
-    if ([MIMETypeUtil isImage:contentType]) {
+    if ([MimeTypeUtil isSupportedImageMimeType:contentType]) {
         return @"📷";
-    } else if ([MIMETypeUtil isVideo:contentType]) {
+    } else if ([MimeTypeUtil isSupportedVideoMimeType:contentType]) {
         return @"🎥";
-    } else if ([MIMETypeUtil isAudio:contentType]) {
+    } else if ([MimeTypeUtil isSupportedAudioMimeType:contentType]) {
         return @"🎧";
     } else if ([MIMETypeUtil isMaybeAnimated:contentType]) {
         return @"🎡";
@@ -411,7 +411,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (BOOL)isImageMimeType
 {
-    return [MIMETypeUtil isImage:self.contentType];
+    return [MimeTypeUtil isSupportedImageMimeType:self.contentType];
 }
 
 - (BOOL)isWebpImageMimeType
@@ -426,7 +426,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (BOOL)isAudioMimeType
 {
-    return [MIMETypeUtil isAudio:self.contentType];
+    return [MimeTypeUtil isSupportedAudioMimeType:self.contentType];
 }
 
 - (TSAnimatedMimeType)getAnimatedMimeType
@@ -453,7 +453,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     if (self.attachmentType == TSAttachmentTypeVoiceMessage) {
         return YES;
     }
-    if ([MIMETypeUtil isAudio:self.contentType]) {
+    if ([MimeTypeUtil isSupportedAudioMimeType:self.contentType]) {
         return !self.sourceFilename || self.sourceFilename.length == 0;
     }
     return NO;

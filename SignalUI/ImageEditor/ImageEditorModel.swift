@@ -71,7 +71,7 @@ class ImageEditorModel: NSObject {
             Logger.error("Couldn't determine MIME type for file.")
             throw ImageEditorError.invalidInput
         }
-        guard MIMETypeUtil.isImage(mimeType),
+        guard MimeTypeUtil.isSupportedImageMimeType(mimeType),
               !MIMETypeUtil.isDefinitelyAnimated(mimeType) else {
             Logger.error("Invalid MIME type: \(mimeType).")
             throw ImageEditorError.invalidInput

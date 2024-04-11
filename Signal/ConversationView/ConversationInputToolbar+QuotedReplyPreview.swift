@@ -452,7 +452,7 @@ private class QuotedMessageSnippetView: UIView {
             let contentImageView = buildImageView(image: thumbnailImage)
             contentImageView.clipsToBounds = true
 
-            if MIMETypeUtil.isVideo(attachment.mimeType) {
+            if MimeTypeUtil.isSupportedVideoMimeType(attachment.mimeType) {
                 let playIconImageView = buildImageView(image: UIImage(imageLiteralResourceName: "play-fill"))
                 playIconImageView.tintColor = .white
                 contentImageView.addSubview(playIconImageView)
@@ -515,7 +515,7 @@ private class QuotedMessageSnippetView: UIView {
             return nil
         }
 
-        if MIMETypeUtil.isAudio(mimeType) {
+        if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_AUDIO",
                 comment: "Indicates this message is a quoted reply to an audio file."
@@ -532,17 +532,17 @@ private class QuotedMessageSnippetView: UIView {
                     comment: "Indicates this message is a quoted reply to an image file."
                 )
             }
-        } else if isLoopingVideo && MIMETypeUtil.isVideo(mimeType) {
+        } else if isLoopingVideo && MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_GIF",
                 comment: "Indicates this message is a quoted reply to animated GIF file."
             )
-        } else if MIMETypeUtil.isVideo(mimeType) {
+        } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_VIDEO",
                 comment: "Indicates this message is a quoted reply to a video file."
             )
-        } else if MIMETypeUtil.isImage(mimeType) {
+        } else if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_PHOTO",
                 comment: "Indicates this message is a quoted reply to a photo file."

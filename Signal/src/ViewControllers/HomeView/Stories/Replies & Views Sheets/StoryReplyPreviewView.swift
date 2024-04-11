@@ -117,7 +117,7 @@ class StoryReplyPreviewView: UIView {
     }
 
     func description(forMimeType mimeType: String?) -> String {
-        if let mimeType = mimeType, MIMETypeUtil.isVideo(mimeType) {
+        if let mimeType = mimeType, MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
             return OWSLocalizedString(
                 "QUOTED_REPLY_TYPE_VIDEO",
                 comment: "Indicates this message is a quoted reply to a video file.")
@@ -131,7 +131,7 @@ class StoryReplyPreviewView: UIView {
                     "QUOTED_REPLY_TYPE_IMAGE",
                     comment: "Indicates this message is a quoted reply to an image file.")
             }
-        } else if let mimeType = mimeType, MIMETypeUtil.isImage(mimeType) {
+        } else if let mimeType = mimeType, MimeTypeUtil.isSupportedImageMimeType(mimeType) {
             return OWSLocalizedString(
                 "QUOTED_REPLY_TYPE_PHOTO",
                 comment: "Indicates this message is a quoted reply to a photo file.")

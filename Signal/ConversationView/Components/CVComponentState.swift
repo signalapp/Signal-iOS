@@ -1326,7 +1326,7 @@ fileprivate extension CVComponentState.Builder {
                     return nil
                 }
 
-                guard MIMETypeUtil.isImage(linkPreviewAttachment.mimeType) else {
+                guard MimeTypeUtil.isSupportedImageMimeType(linkPreviewAttachment.mimeType) else {
                     owsFailDebug("Link preview attachment isn't an image.")
                     return nil
                 }

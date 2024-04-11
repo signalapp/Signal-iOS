@@ -221,7 +221,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             guard let mimeType = self.mimeType else {
                 return false
             }
-            return MIMETypeUtil.isAudio(mimeType)
+            return MimeTypeUtil.isSupportedAudioMimeType(mimeType)
         }
 
         var isVideoAttachment: Bool {
@@ -236,7 +236,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             guard let mimeType = self.mimeType else {
                 return false
             }
-            return MIMETypeUtil.isVideo(mimeType)
+            return MimeTypeUtil.isSupportedVideoMimeType(mimeType)
         }
 
         var highlightColor: UIColor {
@@ -399,10 +399,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 return nil
             }
 
-            if MIMETypeUtil.isAudio(mimeType) {
+            if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
                 return OWSLocalizedString("QUOTED_REPLY_TYPE_AUDIO",
                                          comment: "Indicates this message is a quoted reply to an audio file.")
-            } else if MIMETypeUtil.isVideo(mimeType) {
+            } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
                 return OWSLocalizedString("QUOTED_REPLY_TYPE_VIDEO",
                                          comment: "Indicates this message is a quoted reply to a video file.")
             } else if MIMETypeUtil.isDefinitelyAnimated(mimeType) {
@@ -413,7 +413,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     return OWSLocalizedString("QUOTED_REPLY_TYPE_IMAGE",
                                              comment: "Indicates this message is a quoted reply to an image file.")
                 }
-            } else if MIMETypeUtil.isImage(mimeType) {
+            } else if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
                 return OWSLocalizedString("QUOTED_REPLY_TYPE_PHOTO",
                                          comment: "Indicates this message is a quoted reply to a photo file.")
             }

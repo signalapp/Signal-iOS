@@ -54,33 +54,13 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return [[MimeTypeUtil supportedMaybeAnimatedMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
-+ (BOOL)isBinaryData:(NSString *)contentType
-{
-    return [MimeTypeUtil isSupportedBinaryDataMimeType:contentType];
-}
-
-+ (BOOL)isImage:(NSString *)contentType
-{
-    return [MimeTypeUtil isSupportedImageMimeType:contentType];
-}
-
-+ (BOOL)isVideo:(NSString *)contentType
-{
-    return [MimeTypeUtil isSupportedVideoMimeType:contentType];
-}
-
-+ (BOOL)isAudio:(NSString *)contentType
-{
-    return [MimeTypeUtil isSupportedAudioMimeType:contentType];
-}
-
 + (BOOL)isVisualMedia:(NSString *)contentType
 {
-    if ([self isImage:contentType]) {
+    if ([MimeTypeUtil isSupportedImageMimeType:contentType]) {
         return YES;
     }
 
-    if ([self isVideo:contentType]) {
+    if ([MimeTypeUtil isSupportedVideoMimeType:contentType]) {
         return YES;
     }
 
@@ -94,7 +74,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 + (BOOL)canMakeThumbnail:(NSString *)mimeType
 {
     return (
-        [MIMETypeUtil isVideo:mimeType] || [MIMETypeUtil isImage:mimeType] || [MIMETypeUtil isMaybeAnimated:mimeType]);
+        [MimeTypeUtil isSupportedVideoMimeType:mimeType] || [MimeTypeUtil isSupportedImageMimeType:mimeType] || [MIMETypeUtil isMaybeAnimated:mimeType]);
 }
 
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
@@ -153,15 +133,15 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
         }
     }
 
-    if ([self isVideo:contentType]) {
+    if ([MimeTypeUtil isSupportedVideoMimeType:contentType]) {
         return [MIMETypeUtil filePathForVideo:uniqueId ofMIMEType:contentType inFolder:folder];
-    } else if ([self isAudio:contentType]) {
+    } else if ([MimeTypeUtil isSupportedAudioMimeType:contentType]) {
         return [MIMETypeUtil filePathForAudio:uniqueId ofMIMEType:contentType inFolder:folder];
-    } else if ([self isImage:contentType]) {
+    } else if ([MimeTypeUtil isSupportedImageMimeType:contentType]) {
         return [MIMETypeUtil filePathForImage:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([self isMaybeAnimated:contentType]) {
         return [MIMETypeUtil filePathForAnimated:uniqueId ofMIMEType:contentType inFolder:folder];
-    } else if ([self isBinaryData:contentType]) {
+    } else if ([MimeTypeUtil isSupportedBinaryDataMimeType:contentType]) {
         return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
         // We need to use a ".txt" file extension since this file extension is used
