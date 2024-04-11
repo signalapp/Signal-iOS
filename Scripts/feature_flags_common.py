@@ -36,15 +36,6 @@ extension FeatureBuild {
     )
 
 
-def extract(value):
-    return value.split("\n")[11][40:]
-
-
-def get_feature_flag():
-    with open(FILE_PATH, "r") as file:
-        return extract(file.read())
-
-
 def set_feature_flags(new_flags_level):
     output = capture(["git", "status", "--porcelain"]).rstrip()
     if len(output) > 0:
@@ -53,7 +44,6 @@ def set_feature_flags(new_flags_level):
         exit(1)
 
     new_value = generate(new_flags_level)
-    assert extract(new_value) == str(new_flags_level)
     with open(FILE_PATH, "r") as file:
         old_value = file.read()
 
