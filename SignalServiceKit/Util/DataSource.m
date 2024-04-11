@@ -391,7 +391,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(!self.isConsumed);
     if (self.mimeType != nil) {
-        if (![MIMETypeUtil isSupportedVideoMIMEType:self.mimeType]) {
+        if (![MimeTypeUtil isSupportedVideoMimeType:self.mimeType]) {
             return NO;
         }
     } else if (![MIMETypeUtil isSupportedVideoFile:self.dataUrl.path]) {

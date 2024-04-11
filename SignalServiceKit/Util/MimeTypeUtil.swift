@@ -43,6 +43,24 @@ public class MimeTypeUtil: NSObject {
     // TODO: Remove this; it's unused.
     public static let lottieStickerFileExtension = "lottiesticker"
 
+    // MARK: - Utility Methods
+    @objc
+    public static func isSupportedVideoMimeType(_ contentType: String) -> Bool {
+        supportedVideoMimeTypesToExtensionTypes[contentType] != nil
+    }
+    @objc
+    public static func isSupportedAudioMimeType(_ contentType: String) -> Bool {
+        supportedAudioMimeTypesToExtensionTypes[contentType] != nil
+    }
+    @objc
+    public static func isSupportedImageMimeType(_ contentType: String) -> Bool {
+        supportedImageMimeTypesToExtensionTypes[contentType] != nil
+    }
+    @objc
+    public static func isSupportedBinaryDataMimeType(_ contentType: String) -> Bool {
+        supportedBinaryDataMimeTypesToExtensionTypes[contentType] != nil
+    }
+
     // MARK: - Mime Types to Extension Dictionaries
     @objc
     public static let supportedVideoMimeTypesToExtensionTypes: [String: String] = [

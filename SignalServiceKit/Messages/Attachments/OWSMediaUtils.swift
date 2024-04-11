@@ -166,7 +166,7 @@ public class OWSMediaUtils: NSObject {
             Logger.error("Media file has unknown content type.")
             return false
         }
-        guard MIMETypeUtil.isSupportedVideoMIMEType(contentType) else {
+        guard MimeTypeUtil.isSupportedVideoMimeType(contentType) else {
             Logger.error("Media file has invalid content type.")
             return false
         }

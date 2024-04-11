@@ -42,26 +42,6 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
-+ (BOOL)isSupportedVideoMIMEType:(NSString *)contentType
-{
-    return [[MimeTypeUtil supportedVideoMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
-}
-
-+ (BOOL)isSupportedAudioMIMEType:(NSString *)contentType
-{
-    return [[MimeTypeUtil supportedAudioMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
-}
-
-+ (BOOL)isSupportedImageMIMEType:(NSString *)contentType
-{
-    return [[MimeTypeUtil supportedImageMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
-}
-
-+ (BOOL)isSupportedBinaryDataMIMEType:(NSString *)contentType
-{
-    return [[MimeTypeUtil supportedBinaryDataMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
-}
-
 + (BOOL)isSupportedVideoFile:(NSString *)filePath
 {
     return [[MimeTypeUtil supportedVideoExtensionTypesToMimeTypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
@@ -121,22 +101,22 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 + (BOOL)isBinaryData:(NSString *)contentType
 {
-    return [MIMETypeUtil isSupportedBinaryDataMIMEType:contentType];
+    return [MimeTypeUtil isSupportedBinaryDataMimeType:contentType];
 }
 
 + (BOOL)isImage:(NSString *)contentType
 {
-    return [MIMETypeUtil isSupportedImageMIMEType:contentType];
+    return [MimeTypeUtil isSupportedImageMimeType:contentType];
 }
 
 + (BOOL)isVideo:(NSString *)contentType
 {
-    return [MIMETypeUtil isSupportedVideoMIMEType:contentType];
+    return [MimeTypeUtil isSupportedVideoMimeType:contentType];
 }
 
 + (BOOL)isAudio:(NSString *)contentType
 {
-    return [MIMETypeUtil isSupportedAudioMIMEType:contentType];
+    return [MimeTypeUtil isSupportedAudioMimeType:contentType];
 }
 
 + (BOOL)isVisualMedia:(NSString *)contentType
