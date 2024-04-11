@@ -41,7 +41,7 @@ public class AppSetup {
         mobileCoinHelper: MobileCoinHelper,
         callMessageHandler: CallMessageHandler,
         lightweightGroupCallManagerBuilder: (GroupCallPeekClient) -> LightweightGroupCallManager,
-        notificationPresenter: NotificationsProtocolSwift,
+        notificationPresenter: NotificationsProtocol,
         testDependencies: TestDependencies? = nil
     ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()

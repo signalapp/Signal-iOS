@@ -231,7 +231,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     [OWSReceiptManager.shared messageWasRead:self thread:thread circumstance:circumstance transaction:transaction];
 
     if (shouldClearNotifications) {
-        [SSKEnvironment.shared.notificationPresenter cancelNotificationsForMessageIds:@[ self.uniqueId ]];
+        [NotificationPresenterObjC cancelNotificationsForMessageId:self.uniqueId];
     }
 }
 

@@ -4,7 +4,7 @@
 //
 
 @objc
-public class NoopNotificationsManager: NSObject, NotificationsProtocolSwift {
+public class NoopNotificationsManager: NSObject, NotificationsProtocol {
     public var expectErrors: Bool = false
 
     public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,

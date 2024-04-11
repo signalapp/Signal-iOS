@@ -190,7 +190,7 @@ extension UserNotificationPresenter {
 
 // MARK: -
 
-public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
+public class NotificationPresenter: NSObject, NotificationsProtocol {
     private let presenter = UserNotificationPresenter(notifyQueue: NotificationPresenter.notificationQueue)
 
     public override init() {

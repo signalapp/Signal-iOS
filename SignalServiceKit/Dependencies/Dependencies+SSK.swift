@@ -110,10 +110,12 @@ public extension NSObject {
         SSKEnvironment.shared.networkManagerRef
     }
 
+    @nonobjc
     final var notificationsManager: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManagerRef
     }
 
+    @nonobjc
     static var notificationsManager: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManagerRef
     }
@@ -310,10 +312,12 @@ public extension NSObject {
         .shared
     }
 
+    @nonobjc
     final var notificationPresenter: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManager
     }
 
+    @nonobjc
     static var notificationPresenter: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManager
     }

@@ -14,7 +14,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let authCredentialStore: AuthCredentialStore
     private let groupsV2: GroupsV2
     private let identityManager: OWSIdentityManager
-    private let notificationPresenter: NotificationsProtocolSwift
+    private let notificationPresenter: NotificationsProtocol
     private let paymentsEvents: Shims.PaymentsEvents
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
@@ -32,7 +32,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         authCredentialStore: AuthCredentialStore,
         groupsV2: GroupsV2,
         identityManager: OWSIdentityManager,
-        notificationPresenter: NotificationsProtocolSwift,
+        notificationPresenter: NotificationsProtocol,
         paymentsEvents: Shims.PaymentsEvents,
         recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
