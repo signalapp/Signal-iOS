@@ -1259,6 +1259,22 @@ extension SubscriptionManagerImpl {
 }
 
 extension SubscriptionManagerImpl: SubscriptionManager {
+    public func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data? {
+        Self.getSubscriberID(transaction: transaction)
+    }
+
+    public func setSubscriberID(_ subscriberID: Data?, transaction: SDSAnyWriteTransaction) {
+        Self.setSubscriberID(subscriberID, transaction: transaction)
+    }
+
+    public func getSubscriberCurrencyCode(transaction: SDSAnyReadTransaction) -> String? {
+        Self.getSubscriberCurrencyCode(transaction: transaction)
+    }
+
+    public func setSubscriberCurrencyCode(_ currencyCode: Currency.Code?, transaction: SDSAnyWriteTransaction) {
+        Self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
+    }
+
     public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
         let currentBadges = profileManagerImpl.localUserProfile().badges
 

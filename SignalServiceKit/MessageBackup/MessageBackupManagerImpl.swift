@@ -11,6 +11,7 @@ public class BackupError: Error {}
 
 public class MessageBackupManagerImpl: MessageBackupManager {
 
+    private let accountDataArchiver: MessageBackupAccountDataArchiver
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
     private let dateProvider: DateProvider
@@ -20,6 +21,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let streamProvider: MessageBackupProtoStreamProvider
 
     public init(
+        accountDataArchiver: MessageBackupAccountDataArchiver,
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
         dateProvider: @escaping DateProvider,
@@ -28,6 +30,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         recipientArchiver: MessageBackupRecipientArchiver,
         streamProvider: MessageBackupProtoStreamProvider
     ) {
+        self.accountDataArchiver = accountDataArchiver
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
         self.dateProvider = dateProvider
@@ -82,6 +85,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         try writeHeader(stream: stream, tx: tx)
+
+        let accountDataResult = accountDataArchiver.archiveAccountData(stream: stream, tx: tx)
+        switch accountDataResult {
+        case .success:
+            break
+        case .failure(let error):
+            MessageBackup.log([error])
+            throw OWSAssertionError("Failed to archive account data")
+        }
 
         let localRecipientResult = localRecipientArchiver.archiveLocalRecipient(
             stream: stream
@@ -284,10 +296,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     try processRestoreFrameErrors(errors: errors)
                 }
             case .account(let backupProtoAccountData):
-                // TODO: Not yet implemented.
-                try processRestoreFrameErrors(errors: [
-                    .unimplemented(MessageBackup.AccountDataId.localUser)
-                ])
+                let accountDataResult = accountDataArchiver.restore(backupProtoAccountData, tx: tx)
+                switch accountDataResult {
+                case .success:
+                    continue
+                case .partialRestore(let errors):
+                    try processRestoreFrameErrors(errors: errors)
+                case .failure(let errors):
+                    try processRestoreFrameErrors(errors: errors)
+                }
             case .call(let backupProtoCall):
                 // TODO: Not yet implemented.
                 try processRestoreFrameErrors(errors: [

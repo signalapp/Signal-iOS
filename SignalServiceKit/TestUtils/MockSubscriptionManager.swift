@@ -7,6 +7,20 @@ import Foundation
 
 @objc
 public class MockSubscriptionManager: NSObject, SubscriptionManager {
+    public func setSubscriberCurrencyCode(_ currencyCode: Currency.Code?, transaction: SDSAnyWriteTransaction) {
+    }
+
+    public func setSubscriberID(_ subscriberID: Data?, transaction: SDSAnyWriteTransaction) {
+    }
+
+    public func getSubscriberCurrencyCode(transaction: SDSAnyReadTransaction) -> String? {
+        return nil
+    }
+
+    public func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data? {
+        return nil
+    }
+
     public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
     }
 

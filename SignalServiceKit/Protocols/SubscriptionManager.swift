@@ -16,4 +16,10 @@ public protocol SubscriptionManager {
     var displayBadgesOnProfile: Bool { get }
     func displayBadgesOnProfile(transaction: SDSAnyReadTransaction) -> Bool
     func setDisplayBadgesOnProfile(_ displayBadgesOnProfile: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction)
+
+    func getSubscriberCurrencyCode(transaction: SDSAnyReadTransaction) -> String?
+    func setSubscriberCurrencyCode(_ currencyCode: Currency.Code?, transaction: SDSAnyWriteTransaction)
+
+    func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data?
+    func setSubscriberID(_ subscriberID: Data?, transaction: SDSAnyWriteTransaction)
 }

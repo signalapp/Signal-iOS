@@ -57,6 +57,12 @@ extension MessageBackup {
 
         /// A group update message with no updates actually inside it, which is invalid.
         case emptyGroupUpdate
+
+        /// The profile for the local user is missing
+        case missingLocalProfile
+
+        /// The profileKey for the local user is missing
+        case missingLocalProfileKey
     }
 
     /// Error archiving an entire category of frames; not attributable to one single frame.
@@ -164,6 +170,11 @@ extension MessageBackup {
         /// An unrecognized BackupProtoGroupChangeChatUpdate.
         case unrecognizedGroupUpdate
 
+        /// An  profile key for the local user that could not be parsed into a valid aes256 key
+        case invalidLocalProfileKey
+        /// An  profile key for the local user that could not be parsed into a valid aes256 key
+        case invalidUsernameLink
+
         /// A frame was entirely missing its enclosed item.
         case frameMissingItem
     }
@@ -209,6 +220,10 @@ extension MessageBackup.ArchiveFrameErrorType {
             return "Found OWSReaction with missing/invalid author"
         case .emptyGroupUpdate:
             return "Found group update TSInfoMessage with no updates"
+        case .missingLocalProfile:
+            return "Missing required local profile"
+        case .missingLocalProfileKey:
+            return "Missing required local profile key"
         }
     }
 }
@@ -275,6 +290,10 @@ extension MessageBackup.RestoreFrameErrorType {
                 return "Unrecognized group update type"
             case .frameMissingItem:
                 return "Backup frame missing enclosed item"
+            case .invalidLocalProfileKey:
+                return "Invalid profile key for local user"
+            case .invalidUsernameLink:
+                return "Username link data present, but invalid"
             }
         case .referencedChatThreadNotFound(let threadUniqueId):
             return "Referenced thread with id not found: \(threadUniqueId.value)"
@@ -414,7 +433,9 @@ extension MessageBackup {
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
                     .invalidReactionAddress,
-                    .emptyGroupUpdate:
+                    .emptyGroupUpdate,
+                    .missingLocalProfile,
+                    .missingLocalProfileKey:
                 // Log each of these as we see them.
                 return nil
             }
@@ -522,6 +543,24 @@ extension MessageBackup {
             line: UInt = #line
         ) -> Self {
             return .init(id, .emptyGroupUpdate, file, function, line)
+        }
+
+        public static func missingLocalProfile(
+            _ id: AppIdType,
+            file: StaticString = #file,
+            function: StaticString = #function,
+            line: UInt = #line
+        ) -> Self {
+            return .init(id, .missingLocalProfile, file, function, line)
+        }
+
+        public static func missingLocalProfileKey(
+            _ id: AppIdType,
+            file: StaticString = #file,
+            function: StaticString = #function,
+            line: UInt = #line
+        ) -> Self {
+            return .init(id, .missingLocalProfileKey, file, function, line)
         }
     }
 
@@ -660,7 +699,9 @@ extension MessageBackup {
                         .emptyGroupUpdates,
                         .sequenceOfRequestsAndCancelsWithLocalAci,
                         .unrecognizedGroupUpdate,
-                        .frameMissingItem:
+                        .frameMissingItem,
+                        .invalidLocalProfileKey,
+                        .invalidUsernameLink:
                     // Collapse these by the id of the containing frame.
                     return idLogString
                 }

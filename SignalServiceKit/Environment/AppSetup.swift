@@ -653,9 +653,29 @@ public class AppSetup {
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
         )
 
+        let preferences = Preferences()
         let storyStore = StoryStoreImpl()
+        let subscriptionManager = testDependencies?.subscriptionManager ?? SubscriptionManagerImpl()
+        let systemStoryManager = testDependencies?.systemStoryManager ?? SystemStoryManager()
+        let typingIndicators = TypingIndicatorsImpl()
 
         let messageBackupManager = MessageBackupManagerImpl(
+            accountDataArchiver: MessageBackupAccountDataArchiverImpl(
+                disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
+                localUsernameManager: localUsernameManager,
+                phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
+                preferences: MessageBackup.AccountData.Wrappers.Preferences(preferences: preferences),
+                receiptManager: MessageBackup.AccountData.Wrappers.ReceiptManager(receiptManager: receiptManager),
+                reactionManager: MessageBackup.AccountData.Wrappers.ReactionManager(),
+                sskPreferences: MessageBackup.AccountData.Wrappers.SSKPreferences(),
+                subscriptionManager: MessageBackup.AccountData.Wrappers.SubscriptionManager(subscriptionManager: subscriptionManager),
+                storyManager: MessageBackup.AccountData.Wrappers.StoryManager(),
+                systemStoryManager: MessageBackup.AccountData.Wrappers.SystemStoryManager(systemStoryManager: systemStoryManager),
+                typingIndicators: MessageBackup.AccountData.Wrappers.TypingIndicators(typingIndicators: typingIndicators),
+                udManager: MessageBackup.AccountData.Wrappers.UDManager(udManager: udManager),
+                usernameEducationManager: usernameEducationManager,
+                userProfile: MessageBackup.AccountData.Wrappers.UserProfile()
+            ),
             chatArchiver: MessageBackupChatArchiverImpl(
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
                 pinnedThreadManager: pinnedThreadManager,
@@ -820,7 +840,6 @@ public class AppSetup {
         )
         DependenciesBridge.setShared(dependenciesBridge)
 
-        let preferences = Preferences()
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
         let avatarBuilder = AvatarBuilder()
         let smJobQueues = SignalMessagingJobQueues(
@@ -844,7 +863,6 @@ public class AppSetup {
             kvStoreFactory: keyValueStoreFactory,
             recipientDatabaseTable: recipientDatabaseTable
         )
-        let typingIndicators = TypingIndicatorsImpl()
         let stickerManager = StickerManager()
         let sskPreferences = SSKPreferences()
         let groupV2Updates = testDependencies?.groupV2Updates ?? GroupV2UpdatesImpl()
@@ -858,8 +876,6 @@ public class AppSetup {
         let spamChallengeResolver = SpamChallengeResolver()
         let phoneNumberUtil = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
         let legacyChangePhoneNumber = LegacyChangePhoneNumber()
-        let subscriptionManager = testDependencies?.subscriptionManager ?? SubscriptionManagerImpl()
-        let systemStoryManager = testDependencies?.systemStoryManager ?? SystemStoryManager()
         let remoteMegaphoneFetcher = RemoteMegaphoneFetcher()
         let contactDiscoveryManager = ContactDiscoveryManagerImpl(
             db: db,

@@ -102,6 +102,7 @@ extension UserProfileWriter {
         case .avatarDownload: fallthrough
         case .debugging: fallthrough
         case .linking: fallthrough
+        case .messageBackupRestore: fallthrough
         case .metadataUpdate: fallthrough
         case .storageService: fallthrough
         case .syncMessage: fallthrough
@@ -1018,6 +1019,7 @@ extension OWSUserProfile {
             switch userProfileWriter {
             case .debugging: fallthrough
             case .localUser: fallthrough
+            case .messageBackupRestore: fallthrough
             case .registration: fallthrough
             case .storageService: fallthrough
             case .tests:
