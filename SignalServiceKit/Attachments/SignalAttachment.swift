@@ -526,10 +526,10 @@ public class SignalAttachment: NSObject {
 
     public var isAnimatedImage: Bool {
         let mimeType = mimeType
-        if MIMETypeUtil.isDefinitelyAnimated(mimeType) {
+        if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
             return true
         }
-        if MIMETypeUtil.isMaybeAnimated(mimeType) {
+        if MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType) {
             return dataSource.imageMetadata.isAnimated
         }
         return false

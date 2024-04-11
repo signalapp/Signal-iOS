@@ -49,7 +49,7 @@ public class VideoAttachmentDetection: NSObject {
 
     @objc
     public func attachmentIsDefinitelyAnimatedMimeType(_ attachment: TSAttachment) -> Bool {
-        return MIMETypeUtil.isDefinitelyAnimated(attachment.contentType)
+        return MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(attachment.contentType)
     }
 
     @objc
@@ -73,7 +73,7 @@ public class VideoAttachmentDetection: NSObject {
 
 fileprivate extension TSAttachmentStream {
     var hasNonGIFAnimatedImageContent: Bool {
-        guard MIMETypeUtil.isMaybeAnimated(contentType) else {
+        guard MimeTypeUtil.isSupportedMaybeAnimatedMimeType(contentType) else {
             return false
         }
         guard let filePath = originalFilePath else {

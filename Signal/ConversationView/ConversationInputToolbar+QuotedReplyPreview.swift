@@ -520,7 +520,7 @@ private class QuotedMessageSnippetView: UIView {
                 "QUOTED_REPLY_TYPE_AUDIO",
                 comment: "Indicates this message is a quoted reply to an audio file."
             )
-        } else if MIMETypeUtil.isDefinitelyAnimated(mimeType) {
+        } else if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
             if mimeType.caseInsensitiveCompare(MimeType.imageGif.rawValue) == .orderedSame {
                 return NSLocalizedString(
                     "QUOTED_REPLY_TYPE_GIF",

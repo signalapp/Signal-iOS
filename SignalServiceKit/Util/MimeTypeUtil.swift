@@ -57,6 +57,14 @@ public class MimeTypeUtil: NSObject {
         supportedImageMimeTypesToExtensionTypes[contentType] != nil
     }
     @objc
+    public static func isSupportedDefinitelyAnimatedMimeType(_ contentType: String) -> Bool {
+        supportedDefinitelyAnimatedMimeTypesToExtensionTypes[contentType] != nil
+    }
+    @objc
+    public static func isSupportedMaybeAnimatedMimeType(_ contentType: String) -> Bool {
+        supportedMaybeAnimatedMimeTypesToExtensionTypes[contentType] != nil
+    }
+    @objc
     public static func isSupportedBinaryDataMimeType(_ contentType: String) -> Bool {
         supportedBinaryDataMimeTypesToExtensionTypes[contentType] != nil
     }

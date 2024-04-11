@@ -555,7 +555,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
 
 - (BOOL)shouldBeRenderedByYY
 {
-    if ([MIMETypeUtil isDefinitelyAnimated:self.contentType]) {
+    if ([MimeTypeUtil isSupportedDefinitelyAnimatedMimeType:self.contentType]) {
         return YES;
     }
     return self.isAnimatedContent;

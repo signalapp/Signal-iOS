@@ -44,16 +44,6 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 #pragma mark - Full attachment utilities
 
-+ (BOOL)isDefinitelyAnimated:(NSString *)contentType
-{
-    return [[MimeTypeUtil supportedDefinitelyAnimatedMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
-}
-
-+ (BOOL)isMaybeAnimated:(NSString *)contentType
-{
-    return [[MimeTypeUtil supportedMaybeAnimatedMimeTypesToExtensionTypes] objectForKey:contentType] != nil;
-}
-
 + (BOOL)isVisualMedia:(NSString *)contentType
 {
     if ([MimeTypeUtil isSupportedImageMimeType:contentType]) {
@@ -64,7 +54,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
         return YES;
     }
 
-    if ([self isMaybeAnimated:contentType]) {
+    if ([MimeTypeUtil isSupportedMaybeAnimatedMimeType:contentType]) {
         return YES;
     }
 
@@ -74,7 +64,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 + (BOOL)canMakeThumbnail:(NSString *)mimeType
 {
     return (
-        [MimeTypeUtil isSupportedVideoMimeType:mimeType] || [MimeTypeUtil isSupportedImageMimeType:mimeType] || [MIMETypeUtil isMaybeAnimated:mimeType]);
+        [MimeTypeUtil isSupportedVideoMimeType:mimeType] || [MimeTypeUtil isSupportedImageMimeType:mimeType] || [MimeTypeUtil isSupportedMaybeAnimatedMimeType:mimeType]);
 }
 
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
@@ -139,7 +129,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
         return [MIMETypeUtil filePathForAudio:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([MimeTypeUtil isSupportedImageMimeType:contentType]) {
         return [MIMETypeUtil filePathForImage:uniqueId ofMIMEType:contentType inFolder:folder];
-    } else if ([self isMaybeAnimated:contentType]) {
+    } else if ([MimeTypeUtil isSupportedMaybeAnimatedMimeType:contentType]) {
         return [MIMETypeUtil filePathForAnimated:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([MimeTypeUtil isSupportedBinaryDataMimeType:contentType]) {
         return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];

@@ -327,7 +327,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     NSString *attachmentString;
 
     BOOL isLoopingVideo = [self isLoopingVideoInContainingMessage:message transaction:transaction];
-    if ([MIMETypeUtil isMaybeAnimated:self.contentType] || isLoopingVideo) {
+    if ([MimeTypeUtil isSupportedMaybeAnimatedMimeType:self.contentType] || isLoopingVideo) {
         BOOL isGIF = ([self.contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
         isLoopingVideo = isLoopingVideo && ([MimeTypeUtil isSupportedVideoMimeType:self.contentType]);
 
@@ -369,7 +369,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
         }
     }
 
-    if ([MIMETypeUtil isDefinitelyAnimated:self.contentType] ||
+    if ([MimeTypeUtil isSupportedDefinitelyAnimatedMimeType:self.contentType] ||
         [self isLoopingVideoInContainingMessage:message transaction:transaction]) {
         return @"🎡";
     } else if ([MimeTypeUtil isSupportedImageMimeType:self.contentType]) {
@@ -391,7 +391,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
         return @"🎥";
     } else if ([MimeTypeUtil isSupportedAudioMimeType:contentType]) {
         return @"🎧";
-    } else if ([MIMETypeUtil isMaybeAnimated:contentType]) {
+    } else if ([MimeTypeUtil isSupportedMaybeAnimatedMimeType:contentType]) {
         return @"🎡";
     } else {
         return @"📎";
@@ -431,9 +431,9 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (TSAnimatedMimeType)getAnimatedMimeType
 {
-    if ([MIMETypeUtil isDefinitelyAnimated:self.contentType]) {
+    if ([MimeTypeUtil isSupportedDefinitelyAnimatedMimeType:self.contentType]) {
         return TSAnimatedMimeTypeAnimated;
-    } else if ([MIMETypeUtil isMaybeAnimated:self.contentType]) {
+    } else if ([MimeTypeUtil isSupportedMaybeAnimatedMimeType:self.contentType]) {
         return TSAnimatedMimeTypeMaybeAnimated;
     } else {
         return TSAnimatedMimeTypeNotAnimated;

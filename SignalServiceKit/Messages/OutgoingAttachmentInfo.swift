@@ -33,7 +33,7 @@ public final class OutgoingAttachmentInfo {
                 return .voiceMessage
             } else if isBorderless {
                 return .borderless
-            } else if isLoopingVideo || MIMETypeUtil.isDefinitelyAnimated(contentType) {
+            } else if isLoopingVideo || MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(contentType) {
                 return .shouldLoop
             } else {
                 return .default

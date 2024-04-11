@@ -405,7 +405,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
                 return OWSLocalizedString("QUOTED_REPLY_TYPE_VIDEO",
                                          comment: "Indicates this message is a quoted reply to a video file.")
-            } else if MIMETypeUtil.isDefinitelyAnimated(mimeType) {
+            } else if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
                 if mimeType.caseInsensitiveCompare(MimeType.imageGif.rawValue) == .orderedSame {
                     return OWSLocalizedString("QUOTED_REPLY_TYPE_GIF",
                                              comment: "Indicates this message is a quoted reply to animated GIF file.")
