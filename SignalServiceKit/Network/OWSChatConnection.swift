@@ -1459,9 +1459,10 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnection {
         Task {
             do {
                 owsAssertDebug(type == .unidentified)
-                try await chatService.connectUnauthenticated()
+                let debugInfo = try await chatService.connectUnauthenticated()
+                Logger.verbose("\(logPrefix): libsignal shadowing socket connected: \(debugInfo.connectionInfo)")
             } catch {
-                Logger.error("\(logPrefix): failed to connect libsignal ")
+                Logger.error("\(logPrefix): failed to connect libsignal: \(error)")
             }
         }
     }
@@ -1497,13 +1498,13 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnection {
             if let self, self.shouldSendShadowRequest() {
                 let shouldNotify = self.shadowingFrequency == 1.0
                 Task {
-                    await self.sendShadowRequest(notifyOnFailure: shouldNotify)
+                    await self.sendShadowRequest(originalRequestId: requestInfo.requestId, notifyOnFailure: shouldNotify)
                 }
             }
         }, failure: failure)
     }
 
-    private func sendShadowRequest(notifyOnFailure: Bool) async {
+    private func sendShadowRequest(originalRequestId: UInt64, notifyOnFailure: Bool) async {
         let updateStatsAsync = { (modify: @escaping (inout Stats) -> Void) in
             // We care that stats are updated atomically, but not urgently.
             self.db.asyncWrite { [weak self] transaction in
@@ -1537,7 +1538,9 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnection {
             let (healthCheckResult, debugInfo) = try await chatService.unauthenticatedSendAndDebug(.init(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 2))
             let succeeded = (200...299).contains(healthCheckResult.status)
             if !succeeded {
-                Logger.warn("\(logPrefix): keepalive via libsignal responded with status [\(healthCheckResult.status)]")
+                Logger.warn("\(logPrefix): [\(originalRequestId)] keepalive via libsignal responded with status [\(healthCheckResult.status)] (\(debugInfo.connectionInfo))")
+            } else {
+                Logger.verbose("\(logPrefix): [\(originalRequestId)] keepalive via libsignal responded with status [\(healthCheckResult.status)] (\(debugInfo.connectionInfo))")
             }
 
             updateStatsAsync { [previousUnexpectedReconnectsForThisInstance] stats in
@@ -1559,7 +1562,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnection {
                 }
             }
         } catch {
-            Logger.warn("\(logPrefix): failed to send keepalive via libsignal: \(error)")
+            Logger.warn("\(logPrefix): [\(originalRequestId)] failed to send keepalive via libsignal: \(error)")
             updateStatsAsync {
                 switch error {
                 case SignalError.chatServiceInactive(_):
