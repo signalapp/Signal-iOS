@@ -29,4 +29,18 @@ public struct TSResourcePointer {
         self.cdnNumber = cdnNumber
         self.cdnKey = cdnKey
     }
+
+    public var resourceId: TSResourceId { resource.resourceId }
+
+    public func downloadState(tx: DBReadTransaction) -> TSAttachmentPointerState? {
+        return resource.transitTierDownloadState(tx: tx)
+    }
+}
+
+extension TSResourcePointer {
+
+    // TODO: this is just to help with bridging while all TSResources are actually TSAttachments,
+    // and we are migrating code to TSResource that hands an instance to unmigrated code.
+    // Remove once all references to TSAttachment are replaced with TSResource.
+    public var bridgePointer: TSAttachmentPointer { self.resource as! TSAttachmentPointer }
 }
