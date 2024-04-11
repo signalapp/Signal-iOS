@@ -262,13 +262,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
     return result;
 }
 
-+ (nullable NSString *)mimeTypeForFileExtension:(NSString *)fileExtension
-{
-    OWSAssertDebug(fileExtension.length > 0);
-
-    return [MimeTypeUtil genericExtensionTypesToMimeTypes][fileExtension];
-}
-
 + (nullable NSString *)fileExtensionForMIMETypeViaLookup:(NSString *)mimeType
 {
     return [[MimeTypeUtil genericMimeTypesToExtensionTypes] objectForKey:mimeType];

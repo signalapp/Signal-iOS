@@ -668,7 +668,7 @@ typedef struct {
     if (filePath.length > 0) {
         NSString *fileExtension = [filePath pathExtension].lowercaseString;
         if (fileExtension.length > 0) {
-            NSString *_Nullable mimeTypeForFileExtension = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
+            NSString *_Nullable mimeTypeForFileExtension = [MimeTypeUtil mimeTypeForFileExtension:fileExtension];
             if (mimeTypeForFileExtension.length > 0 &&
                 [mimeType caseInsensitiveCompare:mimeTypeForFileExtension] != NSOrderedSame) {
                 OWSLogInfo(

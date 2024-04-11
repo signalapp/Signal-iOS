@@ -162,7 +162,7 @@ public class OWSMediaUtils: NSObject {
             return false
         }
         let fileExtension = URL(fileURLWithPath: path).pathExtension
-        guard let contentType = MIMETypeUtil.mimeType(forFileExtension: fileExtension) else {
+        guard let contentType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension) else {
             Logger.error("Media file has unknown content type.")
             return false
         }

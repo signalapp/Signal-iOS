@@ -409,7 +409,7 @@ public class SignalAttachment: NSObject {
         if let filename = sourceFilename {
             let fileExtension = (filename as NSString).pathExtension
             if !fileExtension.isEmpty {
-                if let mimeType = MIMETypeUtil.mimeType(forFileExtension: fileExtension) {
+                if let mimeType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension) {
                     // UTI types are an imperfect means of representing file type;
                     // file extensions are also imperfect but far more reliable and
                     // comprehensive so we always prefer to try to deduce MIME type

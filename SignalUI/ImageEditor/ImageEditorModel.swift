@@ -67,7 +67,7 @@ class ImageEditorModel: NSObject {
 
         let srcFileName = (srcImagePath as NSString).lastPathComponent
         let srcFileExtension = (srcFileName as NSString).pathExtension
-        guard let mimeType = MIMETypeUtil.mimeType(forFileExtension: srcFileExtension) else {
+        guard let mimeType = MimeTypeUtil.mimeTypeForFileExtension(srcFileExtension) else {
             Logger.error("Couldn't determine MIME type for file.")
             throw ImageEditorError.invalidInput
         }

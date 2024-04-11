@@ -204,7 +204,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
         OWSLogWarn(@"Invalid attachment content type.");
         NSString *_Nullable fileExtension = [fileName pathExtension].lowercaseString;
         if (fileExtension.length > 0) {
-            contentType = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
+            contentType = [MimeTypeUtil mimeTypeForFileExtension:fileExtension];
         }
         if (contentType.length < 1) {
             contentType = OWSMimeTypeApplicationOctetStream;

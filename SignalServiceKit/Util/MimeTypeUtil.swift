@@ -126,6 +126,11 @@ public class MimeTypeUtil: NSObject {
         owsAssertDebug(!fileExtension.isEmpty)
         return UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)?.takeRetainedValue() as String?
     }
+    @objc
+    public static func mimeTypeForFileExtension(_ fileExtension: String) -> String? {
+        owsAssertDebug(!fileExtension.isEmpty)
+        return genericExtensionTypesToMimeTypes[fileExtension]
+    }
 
     // MARK: - Mime Types to Extension Dictionaries
     @objc

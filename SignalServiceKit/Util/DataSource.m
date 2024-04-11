@@ -208,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    return [MIMETypeUtil mimeTypeForFileExtension:self.fileExtension];
+    return [MimeTypeUtil mimeTypeForFileExtension:self.fileExtension];
 }
 
 - (BOOL)hasStickerLikeProperties
@@ -465,7 +465,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(!self.isConsumed);
     NSString *_Nullable fileExtension = self.fileUrl.pathExtension;
-    return (fileExtension ? [MIMETypeUtil mimeTypeForFileExtension:fileExtension] : nil);
+    return (fileExtension ? [MimeTypeUtil mimeTypeForFileExtension:fileExtension] : nil);
 }
 
 @end

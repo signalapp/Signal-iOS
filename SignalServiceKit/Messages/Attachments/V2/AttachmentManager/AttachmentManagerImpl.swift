@@ -154,7 +154,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             if
                 let sourceFilename = proto.fileName,
                 let fileExtension = sourceFilename.fileExtension?.lowercased().nilIfEmpty,
-                let inferredMimeType = MIMETypeUtil.mimeType(forFileExtension: fileExtension)?.nilIfEmpty
+                let inferredMimeType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension)?.nilIfEmpty
             {
                 mimeType = inferredMimeType
             } else {

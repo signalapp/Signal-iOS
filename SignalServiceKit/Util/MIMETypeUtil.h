@@ -41,7 +41,6 @@ extern NSString *const kSyncMessageFileExtension;
 
 + (nullable NSString *)fileExtensionForUTIType:(NSString *)utiType;
 + (nullable NSString *)fileExtensionForMIMEType:(NSString *)mimeType;
-+ (nullable NSString *)mimeTypeForFileExtension:(NSString *)fileExtension;
 
 @end
 
