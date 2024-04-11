@@ -155,5 +155,9 @@ class SyncPushTokensJob: NSObject {
 
 private func redact(_ string: String?) -> String {
     guard let string = string else { return "nil" }
-    return OWSIsDebugBuild() ? string : "[ REDACTED \(string.prefix(2))...\(string.suffix(2)) ]"
+#if DEBUG
+    return string
+#else
+    return "\(string.prefix(2))…\(string.suffix(2))"
+#endif
 }

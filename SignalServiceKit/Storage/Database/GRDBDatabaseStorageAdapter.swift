@@ -906,7 +906,7 @@ public struct GRDBKeyFetcher {
     /// - Note: Will fatally assert if not running in a debug or test build.
     /// - Returns: The key data, if available.
     public func debugOnly_keyData() -> Data? {
-        owsAssert(OWSIsTestableBuild() || DebugFlags.internalSettings)
+        owsAssert(DebugFlags.internalSettings)
         return try? fetchData()
     }
 }

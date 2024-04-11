@@ -782,13 +782,13 @@ class MediaGallery: Dependencies {
             }
         }
 
-        var deletedIndexPaths: [MediaGalleryIndexPath]
+        let deletedIndexPaths: [MediaGalleryIndexPath]
         if let indexPaths = givenIndexPaths {
-            if OWSIsDebugBuild() {
-                for (item, path) in zip(items, indexPaths) {
-                    owsAssertDebug(item == sections.loadedItem(at: path), "paths not in sync with items")
-                }
+#if DEBUG
+            for (item, path) in zip(items, indexPaths) {
+                owsAssertDebug(item == sections.loadedItem(at: path), "paths not in sync with items")
             }
+#endif
             deletedIndexPaths = indexPaths
         } else {
             deletedIndexPaths = items.compactMap { sections.indexPath(for: $0) }

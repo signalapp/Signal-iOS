@@ -298,9 +298,7 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
     }
 
     static func debugOnly_savePlaintextDbKey() {
-        // This should be caught above. Fatal assert just in case.
-        owsAssert(OWSIsTestableBuild() && Platform.isSimulator)
-
+#if TESTABLE_BUILD && targetEnvironment(simulator)
         // Note: These static strings go hand-in-hand with Scripts/sqlclient.py
         let payload = [ "key": NSObject.databaseStorage.keyFetcher.debugOnly_keyData()?.hexadecimalString ]
         let payloadData = try! JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted)
@@ -308,6 +306,10 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
         let groupDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)
         let destURL = groupDir.appendingPathComponent("dbPayload.txt")
         try! payloadData.write(to: destURL, options: .atomic)
+#else
+        // This should be caught above. Fatal assert just in case.
+        owsFail("Can't savePlaintextDbKey")
+#endif
     }
 
     private static func removeAllPrekeys() {

@@ -311,7 +311,7 @@ extension SignalApp {
 extension SignalApp {
 
     public static func showExportDatabaseUI(from parentVC: UIViewController, completion: @escaping () -> Void = {}) {
-        guard OWSIsTestableBuild() || DebugFlags.internalSettings else {
+        guard DebugFlags.internalSettings else {
             // This should NEVER be exposed outside of internal settings.
             // We do not want to expose users to phishing scams. This should only be used for debugging purposes.
             Logger.warn("cannot export database in a public build")

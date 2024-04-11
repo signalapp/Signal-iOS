@@ -7,24 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static inline BOOL OWSIsDebugBuild(void)
-{
-#ifdef DEBUG
-    return YES;
-#else
-    return NO;
-#endif
-}
-
-static inline BOOL OWSIsTestableBuild(void)
-{
-#ifdef TESTABLE_BUILD
-    return YES;
-#else
-    return NO;
-#endif
-}
-
 // These are fired whenever the corresponding "main app" or "app extension"
 // notification is fired.
 //
