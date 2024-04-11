@@ -42,26 +42,6 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
-+ (BOOL)isSupportedVideoFile:(NSString *)filePath
-{
-    return [[MimeTypeUtil supportedVideoExtensionTypesToMimeTypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
-}
-
-+ (BOOL)isSupportedAudioFile:(NSString *)filePath
-{
-    return [[MimeTypeUtil supportedAudioExtensionTypesToMimeTypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
-}
-
-+ (BOOL)isSupportedImageFile:(NSString *)filePath
-{
-    return [[MimeTypeUtil supportedImageExtensionTypesToMimeTypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
-}
-
-+ (BOOL)isSupportedAnimatedFile:(NSString *)filePath
-{
-    return [[MimeTypeUtil supportedAnimatedExtensionTypesToMimeTypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
-}
-
 + (nullable NSString *)getSupportedExtensionFromVideoMIMEType:(NSString *)supportedMIMEType
 {
     return [[MimeTypeUtil supportedVideoMimeTypesToExtensionTypes] objectForKey:supportedMIMEType];

@@ -61,6 +61,23 @@ public class MimeTypeUtil: NSObject {
         supportedBinaryDataMimeTypesToExtensionTypes[contentType] != nil
     }
 
+    @objc
+    public static func isSupportedVideoFile(_ filePath: String) -> Bool {
+        supportedVideoExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
+    }
+    @objc
+    public static func isSupportedAudioFile(_ filePath: String) -> Bool {
+        supportedAudioExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
+    }
+    @objc
+    public static func isSupportedImageFile(_ filePath: String) -> Bool {
+        supportedImageExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
+    }
+    @objc
+    public static func isSupportedAnimatedFile(_ filePath: String) -> Bool {
+        supportedAnimatedExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
+    }
+
     // MARK: - Mime Types to Extension Dictionaries
     @objc
     public static let supportedVideoMimeTypesToExtensionTypes: [String: String] = [

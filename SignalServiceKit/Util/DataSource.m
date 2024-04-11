@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isValidVideo
 {
     OWSAssertDebug(!self.isConsumed);
-    if (![MIMETypeUtil isSupportedVideoFile:self.dataUrl.path]) {
+    if (![MimeTypeUtil isSupportedVideoFile:self.dataUrl.path]) {
         return NO;
     }
     OWSFailDebug(@"Are we calling this anywhere? It seems quite inefficient.");
@@ -394,7 +394,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (![MimeTypeUtil isSupportedVideoMimeType:self.mimeType]) {
             return NO;
         }
-    } else if (![MIMETypeUtil isSupportedVideoFile:self.dataUrl.path]) {
+    } else if (![MimeTypeUtil isSupportedVideoFile:self.dataUrl.path]) {
         return NO;
     }
     return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
