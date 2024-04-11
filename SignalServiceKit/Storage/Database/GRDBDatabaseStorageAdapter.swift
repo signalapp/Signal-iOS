@@ -844,7 +844,7 @@ private struct GRDBStorage {
             }
             #endif
 
-            MediaGalleryManager.setup(database: db)
+            MediaGalleryRecordManager.setup(database: db)
         }
         configuration.defaultTransactionKind = .immediate
         configuration.allowsUnsafeTransactions = true

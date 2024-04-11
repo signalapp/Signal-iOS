@@ -104,11 +104,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(attachmentsAddedOrRemoved(notification:)),
-                                               name: MediaGalleryManager.newAttachmentsAvailableNotification,
+                                               name: MediaGalleryRecordManager.newAttachmentsAvailableNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(attachmentsAddedOrRemoved(notification:)),
-                                               name: MediaGalleryManager.didRemoveAttachmentsNotification,
+                                               name: MediaGalleryRecordManager.didRemoveAttachmentsNotification,
                                                object: nil)
     }
 
@@ -864,7 +864,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         didSet { AssertIsOnMainThread() }
     }
 
-    private lazy var mediaGalleryFinder = MediaGalleryFinder(thread: thread, allowedMediaType: .graphicMedia)
+    private lazy var mediaGalleryFinder = MediaGalleryRecordFinder(
+        thread: thread,
+        filter: .defaultMediaType(for: AllMediaCategory.defaultValue)
+    )
 
     func updateRecentAttachments() {
         let recentAttachments = databaseStorage.read { transaction in
@@ -974,7 +977,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     private func attachmentsAddedOrRemoved(notification: Notification) {
         AssertIsOnMainThread()
 
-        let attachments = notification.object as! [MediaGalleryManager.ChangedAttachmentInfo]
+        let attachments = notification.object as! [MediaGalleryRecordManager.ChangedAttachmentInfo]
         guard attachments.contains(where: { $0.threadGrdbId == thread.sqliteRowId }) else {
             return
         }

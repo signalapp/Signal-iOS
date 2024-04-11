@@ -458,10 +458,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     [self _anyDidRemoveWithTx:transaction];
 
-    if ([self hasBodyAttachmentsWithTransaction:transaction]) {
-        [MediaGalleryManager recordTimestampForRemovedMessage:self transaction:transaction];
-    }
-
     [self removeAllAttachmentsWithTx:transaction];
 
     [self removeAllReactionsWithTransaction:transaction];

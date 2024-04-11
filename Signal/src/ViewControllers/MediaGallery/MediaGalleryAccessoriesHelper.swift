@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-fileprivate extension AllMediaFileType {
+fileprivate extension AllMediaCategory {
     var titleString: String {
         switch self {
         case .photoVideo:
@@ -31,8 +31,8 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     func didEndSelectMode()
     func deleteSelectedItems()
     func shareSelectedItems(_ sender: Any)
-    var fileType: AllMediaFileType { get }
-    func set(fileType: AllMediaFileType, isGridLayout: Bool)
+    var mediaCategory: AllMediaCategory { get }
+    func set(mediaCategory: AllMediaCategory, isGridLayout: Bool)
 }
 
 public class MediaGalleryAccessoriesHelper {
@@ -59,7 +59,7 @@ public class MediaGalleryAccessoriesHelper {
         }
     }
 
-    private var lastUsedLayoutMap = [AllMediaFileType: Layout]()
+    private var lastUsedLayoutMap = [AllMediaCategory: Layout]()
     private var _layout = Layout.grid
     private var layout: Layout {
         get {
@@ -73,17 +73,17 @@ public class MediaGalleryAccessoriesHelper {
 
             switch layout {
             case .list:
-                viewController.set(fileType: viewController.fileType, isGridLayout: false)
+                viewController.set(mediaCategory: viewController.mediaCategory, isGridLayout: false)
             case .grid:
-                viewController.set(fileType: viewController.fileType, isGridLayout: true)
+                viewController.set(mediaCategory: viewController.mediaCategory, isGridLayout: true)
             }
         }
     }
 
     private lazy var headerView: UISegmentedControl = {
         let items = [
-            AllMediaFileType.photoVideo,
-            AllMediaFileType.audio
+            AllMediaCategory.photoVideo,
+            AllMediaCategory.audio
         ].map { $0.titleString }
         let segmentedControl = UISegmentedControl(items: items)
         segmentedControl.selectedSegmentTintColor = .init(dynamicProvider: { _ in
@@ -109,7 +109,7 @@ public class MediaGalleryAccessoriesHelper {
 
         headerView.sizeToFit()
         var frame = headerView.frame
-        frame.size.width += CGFloat(AllMediaFileType.allCases.count) * 20.0
+        frame.size.width += CGFloat(AllMediaCategory.allCases.count) * 20.0
         headerView.frame = frame
         viewController.navigationItem.titleView = headerView
 
@@ -410,11 +410,11 @@ public class MediaGalleryAccessoriesHelper {
     }
 
     private var isGridViewAllowed: Bool {
-        return fileType.supportsGridView
+        return mediaCategory.supportsGridView
     }
 
     private var currentFileTypeSupportsFiltering: Bool {
-        switch AllMediaFileType(rawValue: headerView.selectedSegmentIndex) {
+        switch AllMediaCategory(rawValue: headerView.selectedSegmentIndex) {
         case .audio:
             return false
         case .photoVideo:
@@ -608,31 +608,31 @@ public class MediaGalleryAccessoriesHelper {
         selectionInfoButton.customView?.sizeToFit()
     }
 
-    private var fileType: AllMediaFileType {
-        return AllMediaFileType(rawValue: headerView.selectedSegmentIndex) ?? .photoVideo
+    private var mediaCategory: AllMediaCategory {
+        return AllMediaCategory(rawValue: headerView.selectedSegmentIndex) ?? .defaultValue
     }
 
     @objc
     private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
-        if let fileType = AllMediaFileType(rawValue: sender.selectedSegmentIndex) {
-            if let previousFileType = viewController?.fileType {
-                lastUsedLayoutMap[previousFileType] = layout
+        if let mediaCategory = AllMediaCategory(rawValue: sender.selectedSegmentIndex) {
+            if let previousMediaCategory = viewController?.mediaCategory {
+                lastUsedLayoutMap[previousMediaCategory] = layout
             }
-            if fileType.supportsGridView {
+            if mediaCategory.supportsGridView {
                 // Return to the previous mode
-                _layout = lastUsedLayoutMap[fileType, default: .grid]
+                _layout = lastUsedLayoutMap[mediaCategory, default: .grid]
             } else if layout == .grid {
                 // This file type requires a switch to list mode
                 _layout = .list
             }
             updateBottomToolbarControls()
-            viewController?.set(fileType: fileType, isGridLayout: layout == .grid)
+            viewController?.set(mediaCategory: mediaCategory, isGridLayout: layout == .grid)
         }
     }
 }
 
-extension AllMediaFileType {
-    static var defaultValue = AllMediaFileType.photoVideo
+extension AllMediaCategory {
+    static var defaultValue = AllMediaCategory.photoVideo
 
     var supportsGridView: Bool {
         switch self {

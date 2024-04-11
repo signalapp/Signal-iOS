@@ -429,7 +429,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
-    [MediaGalleryManager didInsertAttachmentStream:self transaction:transaction];
+    [self anyDidInsertSwiftWithTx:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -437,7 +437,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
     [super anyDidRemoveWithTransaction:transaction];
 
     [self removeFile];
-    [MediaGalleryManager didRemoveAttachmentStream:self transaction:transaction];
+    [self anyDidRemoveSwiftWithTx:transaction];
 }
 
 - (BOOL)isValidVisualMedia

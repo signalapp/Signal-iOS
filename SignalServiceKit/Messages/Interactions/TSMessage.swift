@@ -713,6 +713,10 @@ public extension TSMessage {
     @objc
     internal func _anyDidRemove(tx: SDSAnyWriteTransaction) {
         FullTextSearchIndexer.delete(self, tx: tx)
+
+        if !self.attachmentIds.isEmpty {
+            MediaGalleryRecordManager.recordTimestamp(forRemovedMessage: self, transaction: tx)
+        }
     }
 }
 

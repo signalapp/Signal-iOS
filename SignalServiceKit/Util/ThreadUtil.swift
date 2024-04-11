@@ -257,7 +257,7 @@ extension ThreadUtil {
 
             // Deleting attachments above should be enough to remove any gallery items, but
             // we redunantly clean up *all* gallery items to be safe.
-            MediaGalleryManager.didRemoveAllContent(transaction: transaction)
+            MediaGalleryRecordManager.didRemoveAllContent(transaction: transaction)
         }
 
         TSAttachmentStream.deleteAttachmentsFromDisk()

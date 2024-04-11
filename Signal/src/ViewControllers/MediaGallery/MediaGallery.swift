@@ -254,11 +254,10 @@ class MediaGallery: Dependencies {
     typealias Sections = MediaGallerySections<Loader, MediaGalleryUpdateUserData>
     typealias Update = Sections.Update
     typealias Journal = [JournalingOrderedDictionaryChange<Sections.ItemChange>]
-    typealias MediaType = MediaGalleryFinder.MediaType
 
     // Used for filtering.
-    private(set) var allowedMediaType: MediaType
-    private let fileType: AllMediaFileType
+    private(set) var mediaFilter: AllMediaFilter
+    private let mediaCategory: AllMediaCategory
 
     private var deletedAttachmentIds: Set<String> = Set() {
         didSet {
@@ -271,7 +270,7 @@ class MediaGallery: Dependencies {
         }
     }
 
-    private var mediaGalleryFinder: MediaGalleryFinder
+    private var mediaGalleryFinder: MediaGalleryRecordFinder
     private var sections: Sections!
     private let spoilerState: SpoilerRenderState
 
@@ -279,20 +278,20 @@ class MediaGallery: Dependencies {
         Logger.debug("")
     }
 
-    init(thread: TSThread, fileType: AllMediaFileType, spoilerState: SpoilerRenderState) {
-        allowedMediaType = MediaType.defaultMediaType(for: fileType)
-        let finder = MediaGalleryFinder(thread: thread, allowedMediaType: allowedMediaType)
+    init(thread: TSThread, mediaCategory: AllMediaCategory, spoilerState: SpoilerRenderState) {
+        mediaFilter = AllMediaFilter.defaultMediaType(for: mediaCategory)
+        let finder = MediaGalleryRecordFinder(thread: thread, filter: mediaFilter)
         self.mediaGalleryFinder = finder
         self.spoilerState = spoilerState
-        self.fileType = fileType
+        self.mediaCategory = mediaCategory
         self.sections = MediaGallerySections(loader: Loader(mediaGallery: self, finder: finder))
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(Self.newAttachmentsAvailable(_:)),
-                                               name: MediaGalleryManager.newAttachmentsAvailableNotification,
+                                               name: MediaGalleryRecordManager.newAttachmentsAvailableNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(Self.didRemoveAttachments(_:)),
-                                               name: MediaGalleryManager.didRemoveAttachmentsNotification,
+                                               name: MediaGalleryRecordManager.didRemoveAttachmentsNotification,
                                                object: nil)
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -380,7 +379,7 @@ class MediaGallery: Dependencies {
         // In some cases this may result in deleting sections entirely; we do this as a follow-up step so that
         // delegates don't get confused.
         AssertIsOnMainThread()
-        let incomingDeletedAttachments = notification.object as! [MediaGalleryManager.ChangedAttachmentInfo]
+        let incomingDeletedAttachments = notification.object as! [MediaGalleryRecordManager.ChangedAttachmentInfo]
 
         var sectionsNeedingUpdate = Set<GalleryDate>()
         for incomingDeletedAttachment in incomingDeletedAttachments {
@@ -411,7 +410,7 @@ class MediaGallery: Dependencies {
     @objc
     private func newAttachmentsAvailable(_ notification: Notification) {
         AssertIsOnMainThread()
-        let incomingNewAttachments = notification.object as! [MediaGalleryManager.ChangedAttachmentInfo]
+        let incomingNewAttachments = notification.object as! [MediaGalleryRecordManager.ChangedAttachmentInfo]
         let relevantAttachments = incomingNewAttachments.filter { $0.threadGrdbId == mediaGalleryFinder.threadId }
 
         guard !relevantAttachments.isEmpty else {
@@ -823,11 +822,11 @@ class MediaGallery: Dependencies {
     ///   - allowedMediaType: If `nil`, do not filter results. Otherwise, show only media of this type.
     ///   - loadUntil: Load sections from the latest until this date, inclusive.
     ///   - batchSize: Number of items to load at once.
-    func setAllowedMediaType(_ allowedMediaType: MediaType, loadUntil: GalleryDate, batchSize: Int, firstVisibleIndexPath: MediaGalleryIndexPath?) -> MediaGalleryIndexPath? {
-        self.allowedMediaType = allowedMediaType
+    func setMediaFilter(_ mediaFilter: AllMediaFilter, loadUntil: GalleryDate, batchSize: Int, firstVisibleIndexPath: MediaGalleryIndexPath?) -> MediaGalleryIndexPath? {
+        self.mediaFilter = mediaFilter
         return mutate { sections in
-            mediaGalleryFinder = MediaGalleryFinder(thread: mediaGalleryFinder.thread,
-                                                    allowedMediaType: allowedMediaType)
+            mediaGalleryFinder = MediaGalleryRecordFinder(thread: mediaGalleryFinder.thread,
+                                                          filter: mediaFilter)
             let newLoader = Loader(mediaGallery: self, finder: mediaGalleryFinder)
             return sections.replaceLoader(loader: newLoader,
                                           batchSize: batchSize,
@@ -910,16 +909,16 @@ extension MediaGallery: DatabaseChangeDelegate {
 
 extension MediaGallery {
     internal struct Loader: MediaGallerySectionLoader {
-        typealias EnumerationCompletion = MediaGalleryFinder.EnumerationCompletion
+        typealias EnumerationCompletion = MediaGalleryRecordFinder.EnumerationCompletion
         typealias Item = MediaGalleryItem
 
         fileprivate weak var mediaGallery: MediaGallery?
-        fileprivate let finder: MediaGalleryFinder
+        fileprivate let finder: MediaGalleryRecordFinder
 
         func rowIdsAndDatesOfItemsInSection(for date: GalleryDate,
                                             offset: Int,
                                             ascending: Bool,
-                                            transaction: SDSAnyReadTransaction) -> [RowIdAndDate] {
+                                            transaction: SDSAnyReadTransaction) -> [DatedMediaGalleryRecordId] {
             guard let mediaGallery else {
                 return []
             }

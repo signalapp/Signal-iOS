@@ -78,22 +78,26 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
 
 /// Takes the place of the database for MediaGallerySection tests.
 private final class FakeGalleryStore: MediaGallerySectionLoader {
-    func rowIdsAndDatesOfItemsInSection(for date: GalleryDate,
-                                        offset: Int,
-                                        ascending: Bool,
-                                        transaction: SignalServiceKit.SDSAnyReadTransaction) -> [SignalServiceKit.RowIdAndDate] {
+    func rowIdsAndDatesOfItemsInSection(
+        for date: GalleryDate,
+        offset: Int,
+        ascending: Bool,
+        transaction: SignalServiceKit.SDSAnyReadTransaction
+    ) -> [DatedMediaGalleryRecordId] {
         guard let items = itemsBySection[date] else {
             return []
         }
         let sortedItems = ascending ? items : items.reversed()
         return sortedItems[offset...].map {
-            RowIdAndDate(rowid: $0.rowid,
-                         receivedAtTimestamp: $0.timestamp.ows_millisecondsSince1970)
+            DatedMediaGalleryRecordId(
+                rowid: $0.rowid,
+                receivedAtTimestamp: $0.timestamp.ows_millisecondsSince1970
+            )
         }
     }
 
     typealias Item = FakeItem
-    typealias EnumerationCompletion = MediaGalleryFinder.EnumerationCompletion
+    typealias EnumerationCompletion = MediaGalleryRecordFinder.EnumerationCompletion
 
     var allItems: [Item]
     var itemsBySection: OrderedDictionary<GalleryDate, [Item]>
