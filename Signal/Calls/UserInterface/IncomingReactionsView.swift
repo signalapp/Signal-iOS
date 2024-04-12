@@ -49,9 +49,9 @@ class IncomingReactionsView: UIView {
 
         var reactionViewsToAdd = [ReactionView]()
         for rxn in changes.reactionsToAdd {
-            let view = ReactionView(reaction: rxn)
-            reactionViewsToAdd.append(view)
-            self.addSubview(view)
+            if let view = reactionViewReusePool?.retrieve(for: rxn) {
+                reactionViewsToAdd.append(view)
+            }
         }
         self.setReactionFrames(
             reactionViewsToLayout: reactionViewsToAdd,
@@ -92,7 +92,9 @@ class IncomingReactionsView: UIView {
                 viewToRemove.alpha = 0
             }
         }, completion: { [weak self] _ in
-            reactionViewsToRemove.forEach { $0.removeFromSuperview() }
+            reactionViewsToRemove.forEach {
+                self?.reactionViewReusePool?.relinquish(reactionView: $0)
+            }
             self?.reactionViews = finalReactionViewsDisplayed
 
             let addedUuids = changes.reactionsToAdd.map { $0.uuid }
@@ -121,6 +123,7 @@ class IncomingReactionsView: UIView {
         return sumReactionViewHeights + sumSpacingHeights
     }
 
+    private var reactionViewReusePool: ReactionViewReusePool?
     private var reactionViews = [ReactionView]()
 
     /// Sets reaction frames.
@@ -162,6 +165,38 @@ class IncomingReactionsView: UIView {
             let fourth = finalViewsDisplayed[safe: 0]
         {
             fourth.alpha = Constants.alphaFourth
+        }
+    }
+
+    private class ReactionViewReusePool {
+        var pool = [ReactionView]()
+        weak var superview: UIView?
+
+        init(superview: UIView) {
+            self.superview = superview
+        }
+
+        func retrieve(for reaction: Reaction) -> ReactionView {
+            let retrievedView: ReactionView
+            if let view = pool.popLast() {
+                view.reaction = reaction
+                retrievedView = view
+            } else {
+                retrievedView = ReactionView(reaction: reaction)
+            }
+            if retrievedView.superview == nil {
+                self.superview?.addSubview(retrievedView)
+            }
+            retrievedView.alpha = 1
+            retrievedView.isHidden = false
+            return retrievedView
+        }
+
+        func relinquish(reactionView: ReactionView) {
+            reactionView.reaction = nil
+            reactionView.alpha = 0
+            reactionView.isHidden = true
+            pool.append(reactionView)
         }
     }
 
@@ -213,13 +248,22 @@ class IncomingReactionsView: UIView {
             return view
         }()
 
-        fileprivate var reaction: Reaction?
+        fileprivate var reaction: Reaction? {
+            didSet {
+                guard let reaction else { return }
+                applyModel(reaction: reaction)
+            }
+        }
+
+        private func applyModel(reaction: Reaction) {
+            self.emojiLabel.text = reaction.emoji
+            self.nameLabel.text = reaction.name
+        }
 
         convenience init(reaction: Reaction) {
             self.init(frame: .zero)
             self.reaction = reaction
-            self.emojiLabel.text = reaction.emoji
-            self.nameLabel.text = reaction.name
+            applyModel(reaction: reaction)
         }
 
         override init(frame: CGRect) {
@@ -245,6 +289,7 @@ class IncomingReactionsView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.reactionViewReusePool = ReactionViewReusePool(superview: self)
     }
 
     required init(coder: NSCoder) {
