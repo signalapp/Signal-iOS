@@ -22,9 +22,6 @@ extern NSString *const OWSMimeTypeImageApng1;
 extern NSString *const OWSMimeTypeImageApng2;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
-extern NSString *const kOversizeTextAttachmentFileExtension;
-extern NSString *const kSyncMessageFileExtension;
-
 @interface MIMETypeUtil : NSObject
 
 // filename is optional and should not be trusted.

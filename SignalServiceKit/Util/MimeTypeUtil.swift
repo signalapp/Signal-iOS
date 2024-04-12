@@ -38,8 +38,10 @@ public class MimeTypeUtil: NSObject {
 
     // MARK: - Constants
     public static let oversizeTextAttachmentUti = "org.whispersystems.oversize-text-attachment"
+    @objc
     public static let oversizeTextAttachmentFileExtension = "txt"
     public static let unknownTestAttachmentUti = "org.whispersystems.unknown"
+    @objc
     public static let syncMessageFileExtension = "bin"
     // TODO: Remove this; it's unused.
     public static let lottieStickerFileExtension = "lottiesticker"

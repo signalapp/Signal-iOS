@@ -35,9 +35,6 @@ NSString *const OWSMimeTypeLottieSticker = @"text/x-signal-sticker-lottie";
 NSString *const OWSMimeTypeImageApng1 = @"image/apng";
 NSString *const OWSMimeTypeImageApng2 = @"image/vnd.mozilla.apng";
 
-NSString *const kOversizeTextAttachmentFileExtension = @"txt";
-NSString *const kSyncMessageFileExtension = @"bin";
-
 @implementation MIMETypeUtil
 
 #pragma mark - Full attachment utilities
@@ -113,7 +110,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
         // by UIActivityViewController to determine which kinds of sharing are
         // appropriate for this text.
         // be used outside the app.
-        return [self filePathForData:uniqueId withFileExtension:kOversizeTextAttachmentFileExtension inFolder:folder];
+        return [self filePathForData:uniqueId withFileExtension:[MimeTypeUtil oversizeTextAttachmentFileExtension] inFolder:folder];
     } else if ([contentType isEqualToString:OWSMimeTypeUnknownForTests]) {
         // This file extension is arbitrary - it should never be exposed to the user or
         // be used outside the app.
