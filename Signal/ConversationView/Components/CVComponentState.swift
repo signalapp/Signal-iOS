@@ -79,7 +79,7 @@ public class CVComponentState: Equatable, Dependencies {
             attachment.asResourceStream()?.bridgeStream
         }
         var attachmentPointer: TSAttachmentPointer? {
-            attachment.asTransitTierPointer()?.bridgePointer
+            attachment.asTransitTierPointer()?.bridgePointerAndNotStream
         }
     }
     let genericAttachment: GenericAttachment?
@@ -888,7 +888,7 @@ fileprivate extension CVComponentState.Builder {
                 var mediaAlbumHasFailedAttachment = false
                 var mediaAlbumHasPendingAttachment = false
                 for attachment in bodyAttachments {
-                    guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointer else {
+                    guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream else {
                         continue
                     }
                     switch attachmentPointer.state {
@@ -1189,7 +1189,7 @@ fileprivate extension CVComponentState.Builder {
 
             guard let attachmentStream = attachment.asResourceStream()?.bridgeStream else {
                 var mediaSize: CGSize = .zero
-                if let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointer,
+                if let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream,
                    attachmentPointer.mediaSize.isNonEmpty {
                     mediaSize = attachmentPointer.mediaSize
                 } else {

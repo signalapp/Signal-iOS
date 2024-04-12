@@ -32,7 +32,7 @@ public class AudioAttachment {
             }
             state = .attachmentStream(attachmentStream: attachmentStream, isVoiceMessage: isVoiceMessage, audioDurationSeconds: audioDurationSeconds)
             isDownloading = false
-        } else if let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointer {
+        } else if let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream {
             state = .attachmentPointer(attachmentPointer: attachmentPointer, isVoiceMessage: isVoiceMessage)
 
             switch attachmentPointer.state {

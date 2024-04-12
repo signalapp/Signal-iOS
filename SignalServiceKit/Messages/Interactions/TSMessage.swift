@@ -112,7 +112,7 @@ public extension TSMessage {
     private static func onlyAttachmentPointers(attachments: [TSAttachment],
                                                withStateIn states: Set<TSAttachmentPointerState>) -> [TSAttachmentPointer] {
         return attachments.compactMap { attachment -> TSAttachmentPointer? in
-            guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointer else {
+            guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream else {
                 return nil
             }
             guard states.contains(attachmentPointer.state) else {

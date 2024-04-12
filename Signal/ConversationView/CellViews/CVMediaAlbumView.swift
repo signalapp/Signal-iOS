@@ -571,14 +571,14 @@ public struct CVMediaAlbumItem: Equatable {
 
     public let isBroken: Bool
     public var isFailedDownload: Bool {
-        guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointer else {
+        guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream else {
             return false
         }
         return attachmentPointer.state == .failed
     }
 
     public var isPendingMessageRequest: Bool {
-        guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointer else {
+        guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream else {
             return false
         }
         return attachmentPointer.state == .pendingMessageRequest

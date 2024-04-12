@@ -36,7 +36,7 @@ class StoryThumbnailView: UIView {
 
         switch attachment {
         case .file(let attachment):
-            if let pointer = attachment.asTransitTierPointer()?.bridgePointer {
+            if let pointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream {
                 let pointerView = UIView()
 
                 if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
