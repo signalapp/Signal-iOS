@@ -839,9 +839,7 @@ private class PendingEnvelopes {
 
     func removeProcessedEnvelopes(_ processedEnvelopesCount: Int) {
         unfairLock.withLock {
-            let oldCount = pendingEnvelopes.count
             pendingEnvelopes.removeFirst(processedEnvelopesCount)
-            let newCount = pendingEnvelopes.count
         }
     }
 
@@ -852,8 +850,6 @@ private class PendingEnvelopes {
 
     func enqueue(_ receivedEnvelope: ReceivedEnvelope) -> EnqueueResult {
         unfairLock.withLock {
-            let oldCount = pendingEnvelopes.count
-
             for pendingEnvelope in pendingEnvelopes {
                 if pendingEnvelope.isDuplicateOf(receivedEnvelope) {
                     return .duplicate
