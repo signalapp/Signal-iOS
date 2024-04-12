@@ -1615,7 +1615,6 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
-		D90D4CCF2BB633570097C573 /* Backup.proto in Sources */ = {isa = PBXBuildFile; fileRef = D90D4C822BB633560097C573 /* Backup.proto */; };
 		D90D4D272BBB42E10097C573 /* BackupProtoGroupInviteLinkDisabledUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CE92BBB42D90097C573 /* BackupProtoGroupInviteLinkDisabledUpdate.swift */; };
 		D90D4D282BBB42E10097C573 /* BackupProtoGroupMembershipAccessLevelChangeUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CEA2BBB42D90097C573 /* BackupProtoGroupMembershipAccessLevelChangeUpdate.swift */; };
 		D90D4D292BBB42E10097C573 /* BackupProtoGroupChangeChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CEB2BBB42D90097C573 /* BackupProtoGroupChangeChatUpdate.swift */; };
@@ -13566,7 +13565,6 @@
 				7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */,
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,
-				D90D4CCF2BB633570097C573 /* Backup.proto in Sources */,
 				D90D4D3F2BBB42E10097C573 /* BackupProtoAccountData.swift in Sources */,
 				D90D4D312BBB42E10097C573 /* BackupProtoBackupInfo.swift in Sources */,
 				D90D4D3D2BBB42E10097C573 /* BackupProtoBodyRange.swift in Sources */,
