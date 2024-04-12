@@ -33,12 +33,6 @@ extern NSString *const kSyncMessageFileExtension;
                               sourceFilename:(nullable NSString *)sourceFilename
                                     inFolder:(NSString *)folder;
 
-+ (NSSet<NSString *> *)supportedVideoUTITypes;
-+ (NSSet<NSString *> *)supportedAudioUTITypes;
-+ (NSSet<NSString *> *)supportedInputImageUTITypes;
-+ (NSSet<NSString *> *)supportedOutputImageUTITypes;
-+ (NSSet<NSString *> *)supportedAnimatedImageUTITypes;
-
 @end
 
 NS_ASSUME_NONNULL_END

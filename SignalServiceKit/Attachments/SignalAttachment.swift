@@ -481,7 +481,7 @@ public class SignalAttachment: NSObject {
          // HEIC is valid input, but not valid output. Non-iOS11 clients do not support it.
         let heicSet: Set<String> = Set(["public.heic", "public.heif"])
 
-        return MIMETypeUtil.supportedInputImageUTITypes()
+        return MimeTypeUtil.supportedInputImageUtiTypes
             .union(animatedImageUTISet)
             .union(heicSet)
     }
@@ -489,7 +489,7 @@ public class SignalAttachment: NSObject {
     // Returns the set of UTIs that correspond to valid _output_ image formats
     // for Signal attachments.
     private class var outputImageUTISet: Set<String> {
-        return MIMETypeUtil.supportedOutputImageUTITypes().union(animatedImageUTISet)
+        MimeTypeUtil.supportedOutputImageUtiTypes.union(animatedImageUTISet)
     }
 
     private class var outputVideoUTISet: Set<String> {
@@ -499,19 +499,19 @@ public class SignalAttachment: NSObject {
     // Returns the set of UTIs that correspond to valid animated image formats
     // for Signal attachments.
     private class var animatedImageUTISet: Set<String> {
-        return MIMETypeUtil.supportedAnimatedImageUTITypes()
+        MimeTypeUtil.supportedAnimatedImageUtiTypes
     }
 
     // Returns the set of UTIs that correspond to valid video formats
     // for Signal attachments.
     private class var videoUTISet: Set<String> {
-        return MIMETypeUtil.supportedVideoUTITypes()
+        MimeTypeUtil.supportedVideoUtiTypes
     }
 
     // Returns the set of UTIs that correspond to valid audio formats
     // for Signal attachments.
     private class var audioUTISet: Set<String> {
-        return MIMETypeUtil.supportedAudioUTITypes()
+        MimeTypeUtil.supportedAudioUtiTypes
     }
 
     // Returns the set of UTIs that correspond to valid image, video and audio formats

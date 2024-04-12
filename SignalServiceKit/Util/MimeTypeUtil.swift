@@ -94,6 +94,29 @@ public class MimeTypeUtil: NSObject {
         supportedAnimatedExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
     }
 
+    // MARK: - Supported Uti Types
+    @objc
+    public static let supportedVideoUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedVideoMimeTypesToExtensionTypes.keys))
+    public static let supportedAudioUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedAudioMimeTypesToExtensionTypes.keys))
+    public static let supportedInputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedImageMimeTypesToExtensionTypes.keys))
+    public static let supportedOutputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedImageMimeTypesToExtensionTypes.keys,
+                                                                                           excluding: [MimeType.imageWebp.rawValue, MimeType.imageHeic.rawValue, MimeType.imageHeif.rawValue]))
+    public static let supportedAnimatedImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(utiTypesForMimeTypes(supportedMaybeAnimatedMimeTypesToExtensionTypes.keys)))
+    private static func utiTypesForMimeTypes<S: Sequence<String>>(_ mimeTypes: S, excluding excludedMimeTypes: Set<String>? = nil) -> Set<String> {
+        var result = Set<String>()
+        for mimeType in mimeTypes {
+            if excludedMimeTypes?.contains(mimeType) ?? false {
+                continue
+            }
+            guard let utiType = utiTypeForMimeType(mimeType) else {
+                owsFailDebug("unknown utiType for mimetype: \(mimeType)")
+                continue
+            }
+            result.insert(utiType)
+        }
+        return result
+    }
+
     // MARK: - Mime Type to Extension Conversion
     @objc
     public static func getSupportedExtensionFromVideoMimeType(_ supportedMimeType: String) -> String? {
