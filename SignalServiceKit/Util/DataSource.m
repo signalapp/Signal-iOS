@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSData *data = [text.filterStringForDisplay dataUsingEncoding:NSUTF8StringEncoding];
-    return [[self alloc] initWithData:data fileExtension:[MimeTypeUtil oversizeTextAttachmentFileExtension]];
+    return [[self alloc] initWithData:data fileExtension:MimeTypeUtil.oversizeTextAttachmentFileExtension];
 }
 
 + (id<DataSource>)emptyDataSource
@@ -328,7 +328,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (_Nullable id<DataSource>)dataSourceWritingSyncMessageData:(NSData *)data error:(NSError **)error
 {
-    return [self dataSourceWritingTempFileData:data fileExtension:[MimeTypeUtil syncMessageFileExtension] error:error];
+    return [self dataSourceWritingTempFileData:data fileExtension:MimeTypeUtil.syncMessageFileExtension error:error];
 }
 
 #pragma mark - DataSource

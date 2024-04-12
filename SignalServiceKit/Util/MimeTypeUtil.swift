@@ -75,9 +75,6 @@ public class MimeTypeUtil: NSObject {
     public static let mimeTypeOversizeTextMessage = MimeType.textXSignalPlain.rawValue
     @objc
     @available(swift, obsoleted: 1)
-    public static let mimeTypeUnknownForTests = MimeType.unknownMimetype.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
     public static let mimeTypeLottieSticker = MimeType.textXSignalStickerLottie.rawValue
     @objc
     @available(swift, obsoleted: 1)
@@ -117,7 +114,6 @@ public class MimeTypeUtil: NSObject {
     public static func isSupportedMaybeAnimatedMimeType(_ contentType: String) -> Bool {
         supportedMaybeAnimatedMimeTypesToExtensionTypes[contentType] != nil
     }
-    @objc
     public static func isSupportedBinaryDataMimeType(_ contentType: String) -> Bool {
         supportedBinaryDataMimeTypesToExtensionTypes[contentType] != nil
     }
@@ -131,23 +127,10 @@ public class MimeTypeUtil: NSObject {
     // MARK: - Supported File Extensions
     @objc
     public static func isSupportedVideoFile(_ filePath: String) -> Bool {
-        supportedVideoExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
-    }
-    @objc
-    public static func isSupportedAudioFile(_ filePath: String) -> Bool {
-        supportedAudioExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
-    }
-    @objc
-    public static func isSupportedImageFile(_ filePath: String) -> Bool {
-        supportedImageExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
-    }
-    @objc
-    public static func isSupportedAnimatedFile(_ filePath: String) -> Bool {
-        supportedAnimatedExtensionTypesToMimeTypes[(filePath as NSString).pathExtension.lowercased()] != nil
+        supportedVideoFileExtensions.contains((filePath as NSString).pathExtension.lowercased())
     }
 
     // MARK: - Supported Uti Types
-    @objc
     public static let supportedVideoUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedVideoMimeTypesToExtensionTypes.keys))
     public static let supportedAudioUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedAudioMimeTypesToExtensionTypes.keys))
     public static let supportedInputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedImageMimeTypesToExtensionTypes.keys))
@@ -170,33 +153,26 @@ public class MimeTypeUtil: NSObject {
     }
 
     // MARK: - Mime Type to Extension Conversion
-    @objc
-    public static func getSupportedExtensionFromVideoMimeType(_ supportedMimeType: String) -> String? {
+    fileprivate static func getSupportedExtensionFromVideoMimeType(_ supportedMimeType: String) -> String? {
         supportedVideoMimeTypesToExtensionTypes[supportedMimeType]
     }
-    @objc
-    public static func getSupportedExtensionFromAudioMimeType(_ supportedMimeType: String) -> String? {
+    fileprivate static func getSupportedExtensionFromAudioMimeType(_ supportedMimeType: String) -> String? {
         supportedAudioMimeTypesToExtensionTypes[supportedMimeType]
     }
-    @objc
-    public static func getSupportedExtensionFromImageMimeType(_ supportedMimeType: String) -> String? {
+    fileprivate static func getSupportedExtensionFromImageMimeType(_ supportedMimeType: String) -> String? {
         supportedImageMimeTypesToExtensionTypes[supportedMimeType]
     }
-    @objc
-    public static func getSupportedExtensionFromAnimatedMimeType(_ supportedMimeType: String) -> String? {
+    fileprivate static func getSupportedExtensionFromAnimatedMimeType(_ supportedMimeType: String) -> String? {
         supportedMaybeAnimatedMimeTypesToExtensionTypes[supportedMimeType]
     }
-    @objc
-    public static func getSupportedExtensionFromBinaryDataMimeType(_ supportedMimeType: String) -> String? {
+    fileprivate static func getSupportedExtensionFromBinaryDataMimeType(_ supportedMimeType: String) -> String? {
         supportedBinaryDataMimeTypesToExtensionTypes[supportedMimeType]
     }
 
     // MARK: - Conversion Functions for UTI Type / MIME Type / File Extension
-    @objc
     public static func utiTypeForMimeType(_ mimeType: String) -> String? {
         UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType as CFString, nil)?.takeRetainedValue() as String?
     }
-    @objc
     public static func utiTypeForFileExtension(_ fileExtension: String) -> String? {
         owsAssertDebug(!fileExtension.isEmpty)
         return UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)?.takeRetainedValue() as String?
@@ -239,7 +215,6 @@ public class MimeTypeUtil: NSObject {
     }
 
     // MARK: - Mime Types to Extension Dictionaries
-    @objc
     public static let supportedVideoMimeTypesToExtensionTypes: [String: String] = [
         "video/3gpp": "3gp",
         "video/3gpp2": "3g2",
@@ -248,7 +223,6 @@ public class MimeTypeUtil: NSObject {
         "video/x-m4v": "m4v",
         "video/mpeg": "mpg",
     ]
-    @objc
     public static let supportedAudioMimeTypesToExtensionTypes: [String: String] = [
         "audio/aac": "m4a",
         "audio/x-m4p": "m4p",
@@ -268,7 +242,6 @@ public class MimeTypeUtil: NSObject {
         "audio/3gpp2": "3g2",
         "audio/3gpp": "3gp",
     ]
-    @objc
     public static let supportedImageMimeTypesToExtensionTypes: [String: String] = [
         MimeType.imageJpeg.rawValue: "jpeg",
         "image/pjpeg": "jpeg",
@@ -281,7 +254,6 @@ public class MimeTypeUtil: NSObject {
         MimeType.imageHeif.rawValue: "heif",
         MimeType.imageWebp.rawValue: "webp",
     ]
-    @objc
     public static let supportedDefinitelyAnimatedMimeTypesToExtensionTypes: [String: String] = {
         var result = [
             MimeType.imageGif.rawValue: "gif",
@@ -293,18 +265,15 @@ public class MimeTypeUtil: NSObject {
         }
         return result
     }()
-    @objc
     public static let supportedMaybeAnimatedMimeTypesToExtensionTypes: [String: String] = {
         var result = supportedDefinitelyAnimatedMimeTypesToExtensionTypes;
         result[MimeType.imageWebp.rawValue] = "webp"
         result[MimeType.imagePng.rawValue] = "png"
         return result
     }()
-    @objc
     public static let supportedBinaryDataMimeTypesToExtensionTypes: [String: String] = [
         MimeType.applicationOctetStream.rawValue: "dat",
     ]
-    @objc
     public static let genericMimeTypesToExtensionTypes: [String: String] = [
         MimeType.imageApng.rawValue: "png",
         MimeType.imageVndMozillaApng.rawValue: "png",
@@ -1369,62 +1338,18 @@ public class MimeTypeUtil: NSObject {
     ]
 
     // MARK: - Extension to Mime Type Dictionaries
-    @objc
-    public static let supportedVideoExtensionTypesToMimeTypes: [String: String] = [
-        "3gp": "video/3gpp",
-        "3gpp": "video/3gpp",
-        "3gp2": "video/3gpp2",
-        "3gpp2": "video/3gpp2",
-        "mp4": "video/mp4",
-        "mov": "video/quicktime",
-        "mqv": "video/quicktime",
-        "m4v": "video/x-m4v",
-        "mpg": "video/mpeg",
-        "mpeg": "video/mpeg",
+    public static let supportedVideoFileExtensions: Set<String> = [
+        "3gp",
+        "3gpp",
+        "3gp2",
+        "3gpp2",
+        "mp4",
+        "mov",
+        "mqv",
+        "m4v",
+        "mpg",
+        "mpeg",
     ]
-    @objc
-    public static let supportedAudioExtensionTypesToMimeTypes: [String: String] = [
-        "3gp": "audio/3gpp",
-        "3gpp": "@audio/3gpp",
-        "3g2": "audio/3gpp2",
-        "3gp2": "audio/3gpp2",
-        "aiff": "audio/aiff",
-        "aif": "audio/aiff",
-        "aifc": "audio/aiff",
-        "cdda": "audio/aiff",
-        "mp3": "audio/mp3",
-        "swa": "audio/mp3",
-        "mp4": "audio/mp4",
-        "wav": "audio/wav",
-        "bwf": "audio/wav",
-        "m4a": "audio/x-m4a",
-        "m4b": "audio/x-m4b",
-        "m4p": "audio/x-m4p",
-    ]
-    @objc
-    public static let supportedImageExtensionTypesToMimeTypes: [String: String] = [
-        "png": MimeType.imagePng.rawValue,
-        "x-png": MimeType.imagePng.rawValue,
-        "jfif": MimeType.imageJpeg.rawValue,
-        "jfif-tbnl": MimeType.imageJpeg.rawValue,
-        "jpe": MimeType.imageJpeg.rawValue,
-        "jpeg": MimeType.imageJpeg.rawValue,
-        "jpg": MimeType.imageJpeg.rawValue,
-        "tif": MimeType.imageTiff.rawValue,
-        "tiff": MimeType.imageTiff.rawValue,
-        "webp": MimeType.imageWebp.rawValue,
-        "heic": MimeType.imageHeic.rawValue,
-        "heif": MimeType.imageHeif.rawValue,
-    ]
-    @objc
-    public static let supportedAnimatedExtensionTypesToMimeTypes: [String: String] = {
-        var result = ["gif": MimeType.imageGif.rawValue]
-        if FeatureFlags.supportAnimatedStickers_Lottie {
-            result[lottieStickerFileExtension] = MimeType.textXSignalStickerLottie.rawValue
-        }
-        return result
-    }()
-    @objc
     public static let genericExtensionTypesToMimeTypes: [String: String] = [
         // Custom MIME types.
         lottieStickerFileExtension : MimeType.textXSignalStickerLottie.rawValue,
