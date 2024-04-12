@@ -137,9 +137,7 @@ public class SignalAttachment: NSObject {
 
     public var error: SignalAttachmentError? {
         didSet {
-            AssertIsOnMainThread()
-
-            assert(oldValue == nil)
+            owsAssertDebug(oldValue == nil)
         }
     }
 

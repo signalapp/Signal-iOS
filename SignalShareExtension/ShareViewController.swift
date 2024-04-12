@@ -11,8 +11,7 @@ import SignalUI
 
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {
 
-    enum ShareViewControllerError: Error, Equatable {
-        case assertionError(description: String)
+    enum ShareViewControllerError: Error {
         case unsupportedMedia
         case notRegistered
         case obsoleteShare
@@ -23,6 +22,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         case noConformingInputItem
         case nilAttachments
         case noAttachments
+        case cannotLoadUIImageObject
+        case loadUIImageObjectFailed
+        case uiImageMissingOrCorruptImageData
         case cannotLoadURLObject
         case loadURLObjectFailed
         case cannotLoadStringObject
@@ -678,7 +680,30 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     nonisolated private func buildAttachment(for typedItemProvider: TypedItemProvider) async throws -> SignalAttachment {
         let itemProvider = typedItemProvider.itemProvider
         switch typedItemProvider.itemType {
-        case .movie, .image, .pdf, .data:
+        case .image:
+            // sharing a screenshot likes to chuck a UIImage at the share extension, but for some reason
+            // at least on the simulator, canLoadObject(ofClass: UIImage.self) returns false, so we have
+            // a fallback order here:
+            //   1) try to load a UIImage directly in case that's what was sent over
+            //   2) try attaching the image from a file so we don't have to load the image into RAM in the common case
+            //   3) try to NSKeyedUnarchive NSData directly into a UIImage
+            do {
+                let image: UIImage = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadUIImageObject, failedLoadError: .loadUIImageObjectFailed)
+                return try Self.createAttachment(withImage: image)
+            } catch ShareViewControllerError.cannotLoadUIImageObject {
+                do {
+                    return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
+                } catch SignalAttachmentError.couldNotParseImage {
+                    Logger.warn("failed to parse image directly from file; trying data fallback and deserialize into UIImage")
+                    let imageData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
+                    guard let image: UIImage = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIImage.self, from: imageData) else {
+                        Logger.warn("fallback to deserialize into UIImage didn't work so rethrow attachment error")
+                        throw SignalAttachmentError.couldNotParseImage
+                    }
+                    return try Self.createAttachment(withImage: image)
+                }
+            }
+        case .movie, .pdf, .data:
             return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
         case .fileUrl:
             let url: URL = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
@@ -686,21 +711,27 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return try await self.compressVideo(attachment: attachment)
         case .webUrl:
             let url: URL = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
-            return Self.createAttachment(withText: url.absoluteString)
+            return try Self.createAttachment(withText: url.absoluteString)
         case .contact:
             let contactData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: kUTTypeContact as String)
             let dataSource = DataSourceValue.dataSource(with: contactData, utiType: kUTTypeContact as String)
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeContact as String)
             attachment.isConvertibleToContactShare = true
+            if let attachmentError = attachment.error {
+                throw attachmentError
+            }
             return attachment
         case .text:
             let text: String = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadStringObject, failedLoadError: .loadStringObjectFailed)
-            return Self.createAttachment(withText: text)
+            return try Self.createAttachment(withText: text)
         case .pkPass:
             let typeIdentifier = "com.apple.pkpass"
             let pkPass = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typeIdentifier)
             let dataSource = DataSourceValue.dataSource(with: pkPass, fileExtension: "pkpass")
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typeIdentifier)
+            if let attachmentError = attachment.error {
+                throw attachmentError
+            }
             return attachment
         }
     }
@@ -712,13 +743,16 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         dataSource.sourceFilename = url.lastPathComponent
         let utiType = MimeTypeUtil.utiTypeForFileExtension(url.pathExtension) ?? defaultTypeIdentifier
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: utiType)
+        if let attachmentError = attachment.error {
+            throw attachmentError
+        }
         return try attachment.cloneAttachment()
     }
 
     nonisolated private func compressVideo(attachment: SignalAttachment) async throws -> SignalAttachment {
         if attachment.isVideoThatNeedsCompression() {
             // TODO: Move waiting for this export to the end of the share flow rather than up front
-            return try await SignalAttachment.compressVideoAsMp4(dataSource: attachment.dataSource, dataUTI: attachment.dataUTI, sessionCallback: { exportSession in
+            let compressedAttachment = try await SignalAttachment.compressVideoAsMp4(dataSource: attachment.dataSource, dataUTI: attachment.dataUTI, sessionCallback: { exportSession in
                 Task { @MainActor in
                     let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
 
@@ -728,6 +762,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     self.loadViewController.progress = progressPoller.progress
                 }
             })
+            if let attachmentError = compressedAttachment.error {
+                throw attachmentError
+            }
+            return compressedAttachment
         } else {
             return attachment
         }
@@ -749,6 +787,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     continuation.resume(throwing: ShareViewControllerError.loadInPlaceFileRepresentationFailed)
                 }
             })
+        }
+
+        if let attachmentError = attachment.error {
+            throw attachmentError
         }
 
         return try await self.compressVideo(attachment: attachment)
@@ -788,13 +830,48 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
     }
 
-    nonisolated private static func createAttachment(withText text: String) -> SignalAttachment {
+    nonisolated private static func loadObject<T>(fromItemProvider itemProvider: NSItemProvider,
+                                                  cannotLoadError: ShareViewControllerError,
+                                                  failedLoadError: ShareViewControllerError) async throws -> T
+    where T: NSItemProviderReading {
+        guard itemProvider.canLoadObject(ofClass: T.self) else {
+            throw cannotLoadError
+        }
+        return try await withCheckedThrowingContinuation { continuation in
+            _ = itemProvider.loadObject(ofClass: T.self) { object, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else if let typedObject = object as? T {
+                    continuation.resume(returning: typedObject)
+                } else {
+                    continuation.resume(throwing: failedLoadError)
+                }
+            }
+        }
+    }
+
+    nonisolated private static func createAttachment(withText text: String) throws -> SignalAttachment {
         let dataSource = DataSourceValue.dataSource(withOversizeText: text)
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeText as String)
+        if let attachmentError = attachment.error {
+            throw attachmentError
+        }
         attachment.isConvertibleToTextMessage = true
         return attachment
     }
 
+    nonisolated private static func createAttachment(withImage image: UIImage) throws -> SignalAttachment {
+        guard let imagePng = image.pngData() else {
+            throw ShareViewControllerError.uiImageMissingOrCorruptImageData
+        }
+        let typeIdentifier = kUTTypePNG as String
+        let dataSource = DataSourceValue.dataSource(with: imagePng, utiType: typeIdentifier)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typeIdentifier)
+        if let attachmentError = attachment.error {
+            throw attachmentError
+        }
+        return attachment
+    }
 }
 
 extension ShareViewController: UIAdaptivePresentationControllerDelegate {
