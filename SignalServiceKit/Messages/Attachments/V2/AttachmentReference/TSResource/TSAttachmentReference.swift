@@ -60,4 +60,19 @@ public class TSAttachmentReference: TSResourceReference {
             return .default
         }
     }
+
+    public func hasSameOwner(as other: TSResourceReference) -> Bool {
+        guard let other = other as? TSAttachmentReference else {
+            return false
+        }
+        return uniqueId == other.uniqueId
+    }
+
+    public func fetchOwningMessage(tx: SDSAnyReadTransaction) -> TSMessage? {
+        return attachment?.fetchAlbumMessage(transaction: tx)
+    }
+
+    public func indexInOwningMessage(_ message: TSMessage) -> UInt32? {
+        return message.attachmentIds.firstIndex(of: uniqueId).map(UInt32.init(_:))
+    }
 }

@@ -30,6 +30,14 @@ public protocol TSResourceReference {
     // this protocol; they have wildly different meanings in v1 and v2
     // and are safe to use in entirely different circumstances.
     // To check these values, fetch the full resource.
+
+    func hasSameOwner(as other: TSResourceReference) -> Bool
+
+    // MARK: Message owner getters
+
+    func fetchOwningMessage(tx: SDSAnyReadTransaction) -> TSMessage?
+
+    func indexInOwningMessage(_ message: TSMessage) -> UInt32?
 }
 
 // MARK: - Convenience fetchers

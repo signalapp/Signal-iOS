@@ -365,7 +365,7 @@ extension AttachmentReference.Owner {
 
 extension AttachmentReference.Owner {
 
-    internal var id: AttachmentReference.OwnerId {
+    public var id: AttachmentReference.OwnerId {
         switch self {
         case .message(.bodyAttachment(let metadata)):
             return .messageBodyAttachment(messageRowId: metadata._ownerRowId)

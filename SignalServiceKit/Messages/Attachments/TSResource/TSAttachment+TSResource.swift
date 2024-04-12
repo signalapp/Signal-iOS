@@ -44,6 +44,10 @@ extension TSAttachment: TSResource {
         return (self as? TSAttachmentPointer)?.digest
     }
 
+    public var isUploadedToTransitTier: Bool {
+        (self as? TSAttachmentStream)?.isUploaded ?? false
+    }
+
     public var mimeType: String {
         return contentType
     }

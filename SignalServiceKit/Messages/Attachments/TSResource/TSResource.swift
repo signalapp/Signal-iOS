@@ -33,6 +33,8 @@ public protocol TSResource {
     // f.k.a. contentType
     var mimeType: String { get }
 
+    var isUploadedToTransitTier: Bool { get }
+
     // MARK: - Converters
 
     var concreteType: ConcreteTSResource { get }

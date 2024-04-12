@@ -84,7 +84,9 @@ public class AttachmentStream {
     }
 
     // This size is large enough to render full screen.
-    private static func thumbnailDimensionPoints(forThumbnailQuality thumbnailQuality: TSAttachmentThumbnailQuality) -> CGFloat {
+    public static func thumbnailDimensionPoints(
+        forThumbnailQuality thumbnailQuality: AttachmentThumbnailQuality
+    ) -> CGFloat {
         switch thumbnailQuality {
         case .small:
             return thumbnailDimensionPointsSmall

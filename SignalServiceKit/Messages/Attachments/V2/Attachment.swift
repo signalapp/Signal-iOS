@@ -203,6 +203,10 @@ public class Attachment {
         self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
     }
 
+    public var isUploadedToTransitTier: Bool {
+        return transitTierInfo != nil
+    }
+
     func asStream() -> AttachmentStream? {
         return AttachmentStream(attachment: self)
     }

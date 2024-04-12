@@ -33,6 +33,31 @@ extension AttachmentReference: TSResourceReference {
             return nil
         }
     }
+
+    public func hasSameOwner(as other: TSResourceReference) -> Bool {
+        guard let other = other as? AttachmentReference else {
+            return false
+        }
+        return self.owner.id == other.owner.id
+    }
+
+    public func fetchOwningMessage(tx: SDSAnyReadTransaction) -> TSMessage? {
+        switch owner {
+        case .message(let messageSource):
+            return InteractionFinder.fetch(rowId: messageSource.messageRowId, transaction: tx) as? TSMessage
+        case .storyMessage, .thread:
+            return nil
+        }
+    }
+
+    public func indexInOwningMessage(_ message: TSMessage) -> UInt32? {
+        switch owner {
+        case .message(.bodyAttachment(let metadata)):
+            return metadata.index
+        default:
+            return nil
+        }
+    }
 }
 
 extension AttachmentReference.RenderingFlag {

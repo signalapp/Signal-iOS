@@ -101,6 +101,8 @@ extension AttachmentStream: TSResource {
 
     public var encryptedResourceSha256Digest: Data? { encryptedFileSha256Digest }
 
+    public var isUploadedToTransitTier: Bool { attachment.isUploadedToTransitTier }
+
     public var mimeType: String { attachment.mimeType }
 
     public var concreteType: ConcreteTSResource { attachment.concreteType }
