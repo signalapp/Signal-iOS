@@ -36,6 +36,56 @@ public enum MimeType: String {
 public class MimeTypeUtil: NSObject {
     override private init() {}
 
+    // MARK: - Objective-C Exposed MimeType Raw Values
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeApplicationOctetStream = MimeType.applicationOctetStream.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImagePng = MimeType.imagePng.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageJpeg = MimeType.imageJpeg.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageGif = MimeType.imageGif.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageTiff1 = MimeType.imageTiff.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageTiff2 = MimeType.imageXTiff.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageBmp1 = MimeType.imageBmp.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageBmp2 = MimeType.imageXWindowsBmp.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageWebp = MimeType.imageWebp.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageHeic = MimeType.imageHeic.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageHeif = MimeType.imageHeif.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeOversizeTextMessage = MimeType.textXSignalPlain.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeUnknownForTests = MimeType.unknownMimetype.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeLottieSticker = MimeType.textXSignalStickerLottie.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageApng1 = MimeType.imageApng.rawValue
+    @objc
+    @available(swift, obsoleted: 1)
+    public static let mimeTypeImageApng2 = MimeType.imageVndMozillaApng.rawValue
+
     // MARK: - Constants
     public static let oversizeTextAttachmentUti = "org.whispersystems.oversize-text-attachment"
     @objc

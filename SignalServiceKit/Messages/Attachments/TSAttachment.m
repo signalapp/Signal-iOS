@@ -57,7 +57,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     if (contentType.length < 1) {
         OWSLogWarn(@"incoming attachment has invalid content type");
 
-        contentType = OWSMimeTypeApplicationOctetStream;
+        contentType = MimeTypeUtil.mimeTypeApplicationOctetStream;
     }
     OWSAssertDebug(contentType.length > 0);
 
@@ -97,7 +97,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     if (contentType.length < 1) {
         OWSLogWarn(@"incoming attachment has invalid content type");
 
-        contentType = OWSMimeTypeApplicationOctetStream;
+        contentType = MimeTypeUtil.mimeTypeApplicationOctetStream;
     }
     OWSAssertDebug(contentType.length > 0);
 
@@ -131,7 +131,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     if (contentType.length < 1) {
         OWSLogWarn(@"outgoing attachment has invalid content type");
 
-        contentType = OWSMimeTypeApplicationOctetStream;
+        contentType = MimeTypeUtil.mimeTypeApplicationOctetStream;
     }
     OWSAssertDebug(contentType.length > 0);
 
@@ -186,7 +186,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     if (contentType.length < 1) {
         OWSLogWarn(@"incoming attachment has invalid content type");
 
-        contentType = OWSMimeTypeApplicationOctetStream;
+        contentType = MimeTypeUtil.mimeTypeApplicationOctetStream;
     }
     _contentType = contentType;
     _caption = pointer.caption;
@@ -220,7 +220,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     if (_contentType.length < 1) {
         OWSLogWarn(@"legacy attachment has invalid content type");
 
-        _contentType = OWSMimeTypeApplicationOctetStream;
+        _contentType = MimeTypeUtil.mimeTypeApplicationOctetStream;
     }
 
     return self;
@@ -286,7 +286,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     if (_contentType.length < 1) {
         OWSLogWarn(@"legacy attachment has invalid content type");
 
-        _contentType = OWSMimeTypeApplicationOctetStream;
+        _contentType = MimeTypeUtil.mimeTypeApplicationOctetStream;
     }
 }
 
@@ -328,7 +328,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
     BOOL isLoopingVideo = [self isLoopingVideoInContainingMessage:message transaction:transaction];
     if ([MimeTypeUtil isSupportedMaybeAnimatedMimeType:self.contentType] || isLoopingVideo) {
-        BOOL isGIF = ([self.contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
+        BOOL isGIF = ([self.contentType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageGif] == NSOrderedSame);
         isLoopingVideo = isLoopingVideo && ([MimeTypeUtil isSupportedVideoMimeType:self.contentType]);
 
         if (isGIF || isLoopingVideo) {
@@ -416,7 +416,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (BOOL)isWebpImageMimeType
 {
-    return [self.contentType isEqualToString:OWSMimeTypeImageWebp];
+    return [self.contentType isEqualToString:MimeTypeUtil.mimeTypeImageWebp];
 }
 
 - (BOOL)isVideoMimeType
@@ -491,7 +491,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (BOOL)isOversizeTextMimeType
 {
-    return [self.contentType isEqualToString:OWSMimeTypeOversizeTextMessage];
+    return [self.contentType isEqualToString:MimeTypeUtil.mimeTypeOversizeTextMessage];
 }
 
 - (nullable NSString *)sourceFilename
@@ -543,7 +543,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (void)setDefaultContentType:(NSString *)contentType
 {
-    if ([self.contentType isEqualToString:OWSMimeTypeApplicationOctetStream]) {
+    if ([self.contentType isEqualToString:MimeTypeUtil.mimeTypeApplicationOctetStream]) {
         _contentType = contentType;
     }
 }

@@ -17,24 +17,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
-NSString *const OWSMimeTypeImagePng = @"image/png";
-NSString *const OWSMimeTypeImageJpeg = @"image/jpeg";
-NSString *const OWSMimeTypeImageGif = @"image/gif";
-NSString *const OWSMimeTypeImageTiff1 = @"image/tiff";
-NSString *const OWSMimeTypeImageTiff2 = @"image/x-tiff";
-NSString *const OWSMimeTypeImageBmp1 = @"image/bmp";
-NSString *const OWSMimeTypeImageBmp2 = @"image/x-windows-bmp";
-NSString *const OWSMimeTypeImageWebp = @"image/webp";
-NSString *const OWSMimeTypeImageHeic = @"image/heic";
-NSString *const OWSMimeTypeImageHeif = @"image/heif";
-NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
-NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
-// TODO: We're still finalizing the MIME type.
-NSString *const OWSMimeTypeLottieSticker = @"text/x-signal-sticker-lottie";
-NSString *const OWSMimeTypeImageApng1 = @"image/apng";
-NSString *const OWSMimeTypeImageApng2 = @"image/vnd.mozilla.apng";
-
 @implementation MIMETypeUtil
 
 #pragma mark - Full attachment utilities
@@ -105,13 +87,13 @@ NSString *const OWSMimeTypeImageApng2 = @"image/vnd.mozilla.apng";
         return [MIMETypeUtil filePathForAnimated:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([MimeTypeUtil isSupportedBinaryDataMimeType:contentType]) {
         return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];
-    } else if ([contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
+    } else if ([contentType isEqualToString:MimeTypeUtil.mimeTypeOversizeTextMessage]) {
         // We need to use a ".txt" file extension since this file extension is used
         // by UIActivityViewController to determine which kinds of sharing are
         // appropriate for this text.
         // be used outside the app.
         return [self filePathForData:uniqueId withFileExtension:[MimeTypeUtil oversizeTextAttachmentFileExtension] inFolder:folder];
-    } else if ([contentType isEqualToString:OWSMimeTypeUnknownForTests]) {
+    } else if ([contentType isEqualToString:MimeTypeUtil.mimeTypeUnknownForTests]) {
         // This file extension is arbitrary - it should never be exposed to the user or
         // be used outside the app.
         return [self filePathForData:uniqueId withFileExtension:@"unknown" inFolder:folder];

@@ -207,7 +207,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
             contentType = [MimeTypeUtil mimeTypeForFileExtension:fileExtension];
         }
         if (contentType.length < 1) {
-            contentType = OWSMimeTypeApplicationOctetStream;
+            contentType = MimeTypeUtil.mimeTypeApplicationOctetStream;
         }
     }
 

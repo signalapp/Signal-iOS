@@ -44,17 +44,17 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 {
     switch (value) {
         case ImageFormat_Png:
-            return OWSMimeTypeImagePng;
+            return MimeTypeUtil.mimeTypeImagePng;
         case ImageFormat_Gif:
-            return OWSMimeTypeImageGif;
+            return MimeTypeUtil.mimeTypeImageGif;
         case ImageFormat_Tiff:
-            return OWSMimeTypeImageTiff1;
+            return MimeTypeUtil.mimeTypeImageTiff1;
         case ImageFormat_Jpeg:
-            return OWSMimeTypeImageJpeg;
+            return MimeTypeUtil.mimeTypeImageJpeg;
         case ImageFormat_Bmp:
-            return OWSMimeTypeImageBmp1;
+            return MimeTypeUtil.mimeTypeImageBmp1;
         case ImageFormat_Webp:
-            return OWSMimeTypeImageWebp;
+            return MimeTypeUtil.mimeTypeImageWebp;
         default:
             OWSCFailDebug(@"Unknown ImageFormat.");
             return nil;
@@ -188,26 +188,26 @@ typedef struct {
         case ImageFormat_Unknown:
             return nil;
         case ImageFormat_Png:
-            return OWSMimeTypeImagePng;
+            return MimeTypeUtil.mimeTypeImagePng;
         case ImageFormat_Gif:
-            return OWSMimeTypeImageGif;
+            return MimeTypeUtil.mimeTypeImageGif;
         case ImageFormat_Tiff:
-            return OWSMimeTypeImageTiff1;
+            return MimeTypeUtil.mimeTypeImageTiff1;
         case ImageFormat_Jpeg:
-            return OWSMimeTypeImageJpeg;
+            return MimeTypeUtil.mimeTypeImageJpeg;
         case ImageFormat_Bmp:
-            return OWSMimeTypeImageBmp1;
+            return MimeTypeUtil.mimeTypeImageBmp1;
         case ImageFormat_Webp:
-            return OWSMimeTypeImageWebp;
+            return MimeTypeUtil.mimeTypeImageWebp;
         case ImageFormat_Heic:
-            return OWSMimeTypeImageHeic;
+            return MimeTypeUtil.mimeTypeImageHeic;
         case ImageFormat_Heif:
-            return OWSMimeTypeImageHeif;
+            return MimeTypeUtil.mimeTypeImageHeif;
         case ImageFormat_LottieSticker:
             if (!SSKFeatureFlags.supportAnimatedStickers_Lottie) {
                 return false;
             }
-            return OWSMimeTypeLottieSticker;
+            return MimeTypeUtil.mimeTypeLottieSticker;
     }
 }
 
@@ -246,30 +246,30 @@ typedef struct {
         case ImageFormat_Unknown:
             return NO;
         case ImageFormat_Png:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImagePng] == NSOrderedSame ||
-                [mimeType caseInsensitiveCompare:OWSMimeTypeImageApng1] == NSOrderedSame ||
-                [mimeType caseInsensitiveCompare:OWSMimeTypeImageApng2] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImagePng] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageApng1] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageApng2] == NSOrderedSame);
         case ImageFormat_Gif:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageGif] == NSOrderedSame);
         case ImageFormat_Tiff:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageTiff1] == NSOrderedSame ||
-                [mimeType caseInsensitiveCompare:OWSMimeTypeImageTiff2] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageTiff1] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageTiff2] == NSOrderedSame);
         case ImageFormat_Jpeg:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageJpeg] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageJpeg] == NSOrderedSame);
         case ImageFormat_Bmp:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageBmp1] == NSOrderedSame ||
-                [mimeType caseInsensitiveCompare:OWSMimeTypeImageBmp2] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageBmp1] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageBmp2] == NSOrderedSame);
         case ImageFormat_Webp:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageWebp] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageWebp] == NSOrderedSame);
         case ImageFormat_Heic:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageHeic] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageHeic] == NSOrderedSame);
         case ImageFormat_Heif:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageHeif] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageHeif] == NSOrderedSame);
         case ImageFormat_LottieSticker:
             if (!SSKFeatureFlags.supportAnimatedStickers_Lottie) {
                 return false;
             }
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeLottieSticker] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeLottieSticker] == NSOrderedSame);
     }
 }
 
@@ -646,7 +646,7 @@ typedef struct {
                                 mimeType:(nullable NSString *)declaredMimeType
                           ignoreFileSize:(BOOL)ignoreFileSize
 {
-    BOOL canBeLottieSticker = (declaredMimeType != nil && [OWSMimeTypeLottieSticker isEqualToString:declaredMimeType]);
+    BOOL canBeLottieSticker = (declaredMimeType != nil && [MimeTypeUtil.mimeTypeLottieSticker isEqualToString:declaredMimeType]);
     ImageFormat imageFormat = [self ows_guessImageFormatWithCanBeLottieSticker:canBeLottieSticker];
 
     if (![self ows_hasValidImageFormat:imageFormat]) {
