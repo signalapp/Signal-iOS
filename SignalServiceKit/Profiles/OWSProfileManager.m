@@ -921,20 +921,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 #pragma mark - Other User's Profiles
 
-- (void)setProfileKeyData:(NSData *)profileKeyData
-               forAddress:(SignalServiceAddress *)address
-        userProfileWriter:(UserProfileWriter)userProfileWriter
-            authedAccount:(AuthedAccount *)authedAccount
-              transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self setProfileKeyDataAndFetchProfile:profileKeyData
-                                forAddress:address
-                       onlyFillInIfMissing:NO
-                         userProfileWriter:userProfileWriter
-                             authedAccount:authedAccount
-                               transaction:transaction];
-}
-
 - (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys
                   authoritativeProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)authoritativeProfileKeys
                          userProfileWriter:(UserProfileWriter)userProfileWriter

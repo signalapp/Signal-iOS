@@ -68,8 +68,9 @@ public protocol _MessageBackup_ProfileManagerShim {
         familyName: String?,
         profileKey: Data?,
         address: SignalServiceAddress,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
-    )
+    ) -> Bool
 }
 
 public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManagerShim {
@@ -113,26 +114,29 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         familyName: String?,
         profileKey: Data?,
         address: SignalServiceAddress,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
-    ) {
+    ) -> Bool {
         profileManager.setProfile(
             for: address,
             givenName: .setTo(givenName),
             familyName: .setTo(familyName),
             avatarUrlPath: .noChange,
-            userProfileWriter: .storageService /* TODO */,
-            localIdentifiers: .forUnitTests /* TODO */,
+            userProfileWriter: .messageBackupRestore,
+            localIdentifiers: localIdentifiers,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
         if let profileKey {
-            profileManager.setProfileKeyData(
+            return profileManager.setProfileKeyData(
                 profileKey,
                 for: address,
-                userProfileWriter: .storageService, /* TODO */
-                authedAccount: .implicit(),
+                onlyFillInIfMissing: false,
+                userProfileWriter: .messageBackupRestore,
+                localIdentifiers: localIdentifiers,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         }
+        return false
     }
 }
 

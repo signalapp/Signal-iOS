@@ -494,9 +494,10 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         // If our local profile key record differs from what's on the service, use the service's value.
         if let profileKey = record.profileKey, localProfileKey?.keyData != profileKey {
-            profileManager.setProfileKeyData(
+            profileManager.setProfileKeyDataAndFetchProfile(
                 profileKey,
-                for: anyAddress,
+                forAddress: anyAddress,
+                onlyFillInIfMissing: false,
                 userProfileWriter: .storageService,
                 authedAccount: authedAccount,
                 transaction: SDSDB.shimOnlyBridge(tx)
@@ -1303,9 +1304,10 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         // can ever change the profile key other than the primary device.
         let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !isPrimaryDevice
         if allowsRemoteProfileKeyChanges, let profileKey = record.profileKey, localProfileKey?.keyData != profileKey {
-            profileManager.setProfileKeyData(
+            profileManager.setProfileKeyDataAndFetchProfile(
                 profileKey,
-                for: localAddress,
+                forAddress: localAddress,
+                onlyFillInIfMissing: false,
                 userProfileWriter: .storageService,
                 authedAccount: authedAccount,
                 transaction: transaction

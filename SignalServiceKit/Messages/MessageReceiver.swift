@@ -761,9 +761,10 @@ public final class MessageReceiver: Dependencies {
         if aci == localAci, tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice != false {
             return
         }
-        profileManager.setProfileKeyData(
+        profileManager.setProfileKeyDataAndFetchProfile(
             profileKey,
-            for: SignalServiceAddress(aci),
+            forAddress: SignalServiceAddress(aci),
+            onlyFillInIfMissing: false,
             userProfileWriter: .localUser,
             authedAccount: .implicit(),
             transaction: tx

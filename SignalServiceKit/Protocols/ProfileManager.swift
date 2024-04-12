@@ -99,4 +99,22 @@ public protocol ProfileManager: ProfileManagerProtocol {
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     )
+
+    func setProfileKeyDataAndFetchProfile(
+        _ profileKeyData: Data,
+        forAddress address: SignalServiceAddress,
+        onlyFillInIfMissing: Bool,
+        userProfileWriter: UserProfileWriter,
+        authedAccount: AuthedAccount,
+        transaction tx: SDSAnyWriteTransaction
+    )
+
+    func setProfileKeyData(
+        _ profileKeyData: Data,
+        for address: SignalServiceAddress,
+        onlyFillInIfMissing: Bool,
+        userProfileWriter: UserProfileWriter,
+        localIdentifiers: LocalIdentifiers,
+        transaction tx: SDSAnyWriteTransaction
+    ) -> Bool
 }

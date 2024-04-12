@@ -86,9 +86,10 @@ public class StoryManager: NSObject {
         }
 
         if let profileKey = storyMessage.profileKey {
-            profileManager.setProfileKeyData(
+            profileManager.setProfileKeyDataAndFetchProfile(
                 profileKey,
-                for: SignalServiceAddress(author),
+                forAddress: SignalServiceAddress(author),
+                onlyFillInIfMissing: false,
                 userProfileWriter: .localUser,
                 authedAccount: .implicit(),
                 transaction: transaction

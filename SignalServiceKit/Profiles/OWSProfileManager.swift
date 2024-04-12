@@ -642,7 +642,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         }
     }
 
-    private func setProfileKeyData(
+    public func setProfileKeyData(
         _ profileKeyData: Data,
         for address: SignalServiceAddress,
         onlyFillInIfMissing: Bool,

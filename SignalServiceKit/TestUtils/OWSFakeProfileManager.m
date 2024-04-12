@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFakeProfileManager ()
 
-@property (nonatomic, readonly) NSMutableDictionary<SignalServiceAddress *, OWSAES256Key *> *profileKeys;
 @property (nonatomic, readonly) NSMutableSet<SignalServiceAddress *> *recipientWhitelist;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *threadWhitelist;
 @property (nonatomic, readonly) OWSAES256Key *localProfileKey;
@@ -64,17 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     return nil;
-}
-
-- (void)setProfileKeyData:(NSData *)profileKey
-               forAddress:(SignalServiceAddress *)address
-        userProfileWriter:(UserProfileWriter)userProfileWriter
-            authedAccount:(nonnull AuthedAccount *)authedAccount
-              transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKey];
-    OWSAssert(key);
-    self.profileKeys[address] = key;
 }
 
 - (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys

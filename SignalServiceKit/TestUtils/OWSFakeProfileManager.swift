@@ -9,6 +9,7 @@ import SignalCoreKit
 #if TESTABLE_BUILD
 
 extension OWSFakeProfileManager: ProfileManager {
+
     public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         return Promise(error: OWSGenericError("Not supported."))
     }
@@ -57,6 +58,19 @@ extension OWSFakeProfileManager: ProfileManager {
     }
 
     public func setProfile(for address: SignalServiceAddress, givenName: OptionalChange<String?>, familyName: OptionalChange<String?>, avatarUrlPath: OptionalChange<String?>, userProfileWriter: UserProfileWriter, localIdentifiers: LocalIdentifiers, transaction: SDSAnyWriteTransaction) {
+    }
+
+    public func setProfileKeyDataAndFetchProfile(_ profileKeyData: Data, forAddress address: SignalServiceAddress, onlyFillInIfMissing: Bool, userProfileWriter: UserProfileWriter, authedAccount: AuthedAccount, transaction tx: SDSAnyWriteTransaction) {
+        let key = OWSAES256Key(data: profileKeyData)
+        owsAssert(key != nil)
+        self.profileKeys[address] = key
+    }
+
+    public func setProfileKeyData(_ profileKeyData: Data, for address: SignalServiceAddress, onlyFillInIfMissing: Bool, userProfileWriter: UserProfileWriter, localIdentifiers: LocalIdentifiers, transaction tx: SDSAnyWriteTransaction) -> Bool {
+        let key = OWSAES256Key(data: profileKeyData)
+        owsAssert(key != nil)
+        self.profileKeys[address] = key
+        return false
     }
 }
 
