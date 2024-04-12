@@ -232,7 +232,6 @@ public class MimeTypeUtil: NSObject {
         return genericMimeTypesToExtensionTypes[mimeType] ?? fileExtensionForMimeTypeViaUtiType(mimeType)
     }
     private static func fileExtensionForMimeTypeViaUtiType(_ mimeType: String) -> String? {
-        let utiType = utiTypeForMimeType(mimeType)
         guard let utiType = utiTypeForMimeType(mimeType) else {
             return nil;
         }
