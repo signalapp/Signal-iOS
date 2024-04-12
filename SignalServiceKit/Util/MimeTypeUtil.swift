@@ -2415,3 +2415,97 @@ public class MimeTypeUtil: NSObject {
         "zmm": "application/vnd.handheld-entertainment+xml",
     ]
 }
+
+// MARK: - TSAttachmentStream Extension Migrated from MIMETypeUtil.h/m
+// TODO: Move this to TSAttachmentStream once it is converted to Swift
+extension TSAttachmentStream {
+    @objc
+    static func filePath(forAttachment uniqueId: String, mimeType: String, sourceFilename: String?, folder: String) -> String? {
+        let defaultFileExtension = "bin"
+        if let sourceFilename, !sourceFilename.isEmpty {
+            var normalizedFilename = sourceFilename.trimmingCharacters(in: .whitespaces)
+
+            // Ensure that the filename is a valid filesystem name, replacing invalid characters with an underscore.
+            let invalidCharacterSets: [CharacterSet] = [.whitespacesAndNewlines, .illegalCharacters, .controlCharacters, .init(charactersIn: "<>|\\:()&;?*/~")]
+            for invalidCharacterSet in invalidCharacterSets {
+                normalizedFilename = normalizedFilename.components(separatedBy: invalidCharacterSet).joined(separator: "_")
+            }
+
+            // Remove leading periods to prevent hidden files, "." and ".." special file names.
+            let dotPrefixLength = normalizedFilename.prefix { $0 == "." }.count
+            normalizedFilename.removeFirst(dotPrefixLength)
+
+            var fileExtension = (normalizedFilename as NSString).pathExtension.trimmingCharacters(in: .whitespaces)
+            let filenameWithoutExtension = ((normalizedFilename as NSString).lastPathComponent as NSString).deletingPathExtension.trimmingCharacters(in: .whitespaces)
+
+            // If the filename has not file extension, deduce one from the MIME type.
+            if fileExtension.isEmpty {
+                fileExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType)?.nilIfEmpty ?? defaultFileExtension
+            }
+            fileExtension = fileExtension.lowercased()
+
+            if !filenameWithoutExtension.isEmpty {
+                // Store the file in a subdirectory whose name is the uniqueId of this attachment,
+                // to avoid collisions between multiple attachments with the same name.
+                let attachmentFolderPath = folder.appendingPathComponent(uniqueId)
+                if !OWSFileSystem.ensureDirectoryExists(attachmentFolderPath) {
+                    return nil
+                }
+                return attachmentFolderPath.appendingPathComponent("\(filenameWithoutExtension).\(fileExtension)")
+            }
+        }
+
+        if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+            return filePath(forVideo: uniqueId, mimeType: mimeType, folder: folder)
+        } else if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
+            return filePath(forAudio: uniqueId, mimeType: mimeType, folder: folder)
+        } else if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
+            return filePath(forImage: uniqueId, mimeType: mimeType, folder: folder)
+        } else if MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType) {
+            return filePath(forAnimated: uniqueId, mimeType: mimeType, folder: folder)
+        } else if MimeTypeUtil.isSupportedBinaryDataMimeType(mimeType) {
+            return filePath(forBinaryData: uniqueId, mimeType: mimeType, folder: folder)
+        } else if MimeType.textXSignalPlain.rawValue == mimeType {
+            // We need to use a ".txt" file extension since this file extension is used
+            // by UIActivityViewController to determine which kinds of sharing are
+            // appropriate for this text.
+            // be used outside the app.
+            return filePath(forData: uniqueId, fileExtension: MimeTypeUtil.oversizeTextAttachmentFileExtension, folder: folder)
+        } else if MimeType.unknownMimetype.rawValue == mimeType {
+            // This file extension is arbitrary - it should never be exposed to the user or
+            // be used outside the app.
+            return filePath(forData: uniqueId, fileExtension: "unknown", folder: folder)
+        }
+
+        if let fileExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) {
+            return filePath(forData: uniqueId, fileExtension: fileExtension, folder: folder)
+        }
+
+        Logger.error("Got asked for path of file with mime type \(mimeType) which is unsupported")
+
+        // Use a fallback file extension.
+        return filePath(forData: uniqueId, fileExtension: defaultFileExtension, folder: folder)
+    }
+
+    private static func filePath(forImage uniqueId: String, mimeType: String, folder: String) -> String? {
+        filePath(forData: uniqueId, fileExtension: MimeTypeUtil.getSupportedExtensionFromImageMimeType(mimeType), folder: folder)
+    }
+    private static func filePath(forVideo uniqueId: String, mimeType: String, folder: String) -> String? {
+        filePath(forData: uniqueId, fileExtension: MimeTypeUtil.getSupportedExtensionFromVideoMimeType(mimeType), folder: folder)
+    }
+    private static func filePath(forAudio uniqueId: String, mimeType: String, folder: String) -> String? {
+        filePath(forData: uniqueId, fileExtension: MimeTypeUtil.getSupportedExtensionFromAudioMimeType(mimeType), folder: folder)
+    }
+    private static func filePath(forAnimated uniqueId: String, mimeType: String, folder: String) -> String? {
+        filePath(forData: uniqueId, fileExtension: MimeTypeUtil.getSupportedExtensionFromAnimatedMimeType(mimeType), folder: folder)
+    }
+    private static func filePath(forBinaryData uniqueId: String, mimeType: String, folder: String) -> String? {
+        filePath(forData: uniqueId, fileExtension: MimeTypeUtil.getSupportedExtensionFromBinaryDataMimeType(mimeType), folder: folder)
+    }
+    private static func filePath(forData uniqueId: String, fileExtension: String?, folder: String) -> String? {
+        guard let fileExtension else {
+            return nil
+        }
+        return folder.appendingPathComponent(uniqueId.appendingFileExtension(fileExtension))
+    }
+}

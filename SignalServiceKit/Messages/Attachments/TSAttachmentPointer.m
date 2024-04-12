@@ -4,7 +4,6 @@
 //
 
 #import "TSAttachmentPointer.h"
-#import "MIMETypeUtil.h"
 #import "TSAttachmentStream.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

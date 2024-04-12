@@ -4,7 +4,6 @@
 //
 
 #import "TSAttachment.h"
-#import "MIMETypeUtil.h"
 #import "TSAttachmentPointer.h"
 #import "TSMessage.h"
 #import <SignalCoreKit/NSString+OWS.h>

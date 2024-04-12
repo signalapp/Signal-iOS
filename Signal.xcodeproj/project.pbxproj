@@ -2576,7 +2576,6 @@
 		F9C5CDFB289453B400548EEE /* WeakTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB29289453B200548EEE /* WeakTimer.swift */; };
 		F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB2A289453B200548EEE /* Collection+OWS.swift */; };
 		F9C5CDFD289453B400548EEE /* Dependencies+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB2B289453B200548EEE /* Dependencies+SSK.swift */; };
-		F9C5CDFE289453B400548EEE /* MIMETypeUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB2C289453B200548EEE /* MIMETypeUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB2D289453B200548EEE /* Data+SSK.swift */; };
 		F9C5CE00289453B400548EEE /* NSData+Image.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB2E289453B200548EEE /* NSData+Image.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE01289453B400548EEE /* OWSError.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB2F289453B200548EEE /* OWSError.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2618,7 +2617,6 @@
 		F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */; };
 		F9C5CE2E289453B400548EEE /* DataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB5C289453B200548EEE /* DataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */; };
-		F9C5CE30289453B400548EEE /* MIMETypeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5E289453B200548EEE /* MIMETypeUtil.m */; };
 		F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB61289453B200548EEE /* LocalDevice.swift */; };
 		F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB62289453B200548EEE /* AudioWaveform.swift */; };
 		F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */; };
@@ -5561,7 +5559,6 @@
 		F9C5CB29289453B200548EEE /* WeakTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakTimer.swift; sourceTree = "<group>"; };
 		F9C5CB2A289453B200548EEE /* Collection+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collection+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB2B289453B200548EEE /* Dependencies+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+SSK.swift"; sourceTree = "<group>"; };
-		F9C5CB2C289453B200548EEE /* MIMETypeUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIMETypeUtil.h; sourceTree = "<group>"; };
 		F9C5CB2D289453B200548EEE /* Data+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB2E289453B200548EEE /* NSData+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Image.h"; sourceTree = "<group>"; };
 		F9C5CB2F289453B200548EEE /* OWSError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSError.h; sourceTree = "<group>"; };
@@ -5603,7 +5600,6 @@
 		F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeFinder.swift; sourceTree = "<group>"; };
 		F9C5CB5C289453B200548EEE /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
-		F9C5CB5E289453B200548EEE /* MIMETypeUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIMETypeUtil.m; sourceTree = "<group>"; };
 		F9C5CB61289453B200548EEE /* LocalDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDevice.swift; sourceTree = "<group>"; };
 		F9C5CB62289453B200548EEE /* AudioWaveform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioWaveform.swift; sourceTree = "<group>"; };
 		F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DarwinNotificationName.swift; sourceTree = "<group>"; };
@@ -11189,8 +11185,6 @@
 				F9C5CB11289453B200548EEE /* MailtoLink.swift */,
 				F9C5CB36289453B200548EEE /* Math+OWS.swift */,
 				66BB4D582AD8BF6200A84219 /* MergingDict.swift */,
-				F9C5CB2C289453B200548EEE /* MIMETypeUtil.h */,
-				F9C5CB5E289453B200548EEE /* MIMETypeUtil.m */,
 				721BC7EB2BC8253600648981 /* MimeTypeUtil.swift */,
 				F9C5CB57289453B200548EEE /* ModelReadCache.swift */,
 				D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */,
@@ -11405,7 +11399,6 @@
 				F9C5CD3D289453B300548EEE /* LegacySendingChain.h in Headers */,
 				F9C5CD41289453B300548EEE /* LegacySessionRecord.h in Headers */,
 				F9C5CD45289453B300548EEE /* LegacySessionState.h in Headers */,
-				F9C5CDFE289453B400548EEE /* MIMETypeUtil.h in Headers */,
 				F9C5CE00289453B400548EEE /* NSData+Image.h in Headers */,
 				F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */,
 				F9C5CE15289453B400548EEE /* NSTimer+OWS.h in Headers */,
@@ -13999,7 +13992,6 @@
 				F9C5CC64289453B300548EEE /* MessageSendLog.swift in Sources */,
 				F9C5CC19289453B300548EEE /* MessageSticker.swift in Sources */,
 				66E793E52BC0D8A600929E5E /* MessageStickerManager.swift in Sources */,
-				F9C5CE30289453B400548EEE /* MIMETypeUtil.m in Sources */,
 				721BC7EC2BC8253600648981 /* MimeTypeUtil.swift in Sources */,
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,
 				72345D202B9A2035000237B3 /* MobileCoinHelperMinimal.swift in Sources */,

@@ -4,7 +4,6 @@
 //
 
 #import "DataSource.h"
-#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"

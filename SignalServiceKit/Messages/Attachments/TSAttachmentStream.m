@@ -4,7 +4,6 @@
 //
 
 #import "TSAttachmentStream.h"
-#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
@@ -226,10 +225,10 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
     }
 
     NSString *attachmentsFolder = [[self class] attachmentsFolder];
-    NSString *filePath = [MIMETypeUtil filePathForAttachment:self.uniqueId
-                                                  ofMIMEType:self.contentType
+    NSString *filePath = [[self class] filePathForAttachment:self.uniqueId
+                                                    mimeType:self.contentType
                                               sourceFilename:self.sourceFilename
-                                                    inFolder:attachmentsFolder];
+                                                      folder:attachmentsFolder];
     if (!filePath) {
         OWSFailDebug(@"Could not generate path for attachment.");
         return;
