@@ -266,7 +266,7 @@ public class MimeTypeUtil: NSObject {
         return result
     }()
     public static let supportedMaybeAnimatedMimeTypesToExtensionTypes: [String: String] = {
-        var result = supportedDefinitelyAnimatedMimeTypesToExtensionTypes;
+        var result = supportedDefinitelyAnimatedMimeTypesToExtensionTypes
         result[MimeType.imageWebp.rawValue] = "webp"
         result[MimeType.imagePng.rawValue] = "png"
         return result
@@ -1352,7 +1352,7 @@ public class MimeTypeUtil: NSObject {
     ]
     public static let genericExtensionTypesToMimeTypes: [String: String] = [
         // Custom MIME types.
-        lottieStickerFileExtension : MimeType.textXSignalStickerLottie.rawValue,
+        lottieStickerFileExtension: MimeType.textXSignalStickerLottie.rawValue,
         // Common MIME types.
         "123": "application/vnd.lotus-1-2-3",
         "3dml": "text/vnd.in3d.3dml",
@@ -2334,7 +2334,7 @@ public class MimeTypeUtil: NSObject {
         "z7": "application/x-zmachine",
         "z8": "application/x-zmachine",
         "zaz": "application/vnd.zzazz.deck+xml",
-        "zip" : MimeType.applicationZip.rawValue,
+        "zip": MimeType.applicationZip.rawValue,
         "zir": "application/vnd.zul",
         "zirz": "application/vnd.zul",
         "zmm": "application/vnd.handheld-entertainment+xml",
