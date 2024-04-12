@@ -245,30 +245,37 @@ typedef struct {
         case ImageFormat_Unknown:
             return NO;
         case ImageFormat_Png:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImagePng] == NSOrderedSame ||
-                [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageApng1] == NSOrderedSame ||
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImagePng] == NSOrderedSame
+                || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageApng1] == NSOrderedSame ||
                 [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageApng2] == NSOrderedSame);
         case ImageFormat_Gif:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageGif] == NSOrderedSame);
+            return (
+                mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageGif] == NSOrderedSame);
         case ImageFormat_Tiff:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageTiff1] == NSOrderedSame ||
+            return (mimeType == nil ||
+                [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageTiff1] == NSOrderedSame ||
                 [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageTiff2] == NSOrderedSame);
         case ImageFormat_Jpeg:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageJpeg] == NSOrderedSame);
+            return (
+                mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageJpeg] == NSOrderedSame);
         case ImageFormat_Bmp:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageBmp1] == NSOrderedSame ||
-                [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageBmp2] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageBmp1] == NSOrderedSame
+                || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageBmp2] == NSOrderedSame);
         case ImageFormat_Webp:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageWebp] == NSOrderedSame);
+            return (
+                mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageWebp] == NSOrderedSame);
         case ImageFormat_Heic:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageHeic] == NSOrderedSame);
+            return (
+                mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageHeic] == NSOrderedSame);
         case ImageFormat_Heif:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageHeif] == NSOrderedSame);
+            return (
+                mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageHeif] == NSOrderedSame);
         case ImageFormat_LottieSticker:
             if (!SSKFeatureFlags.supportAnimatedStickers_Lottie) {
                 return false;
             }
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeLottieSticker] == NSOrderedSame);
+            return (mimeType == nil ||
+                [mimeType caseInsensitiveCompare:MimeTypeUtil.mimeTypeLottieSticker] == NSOrderedSame);
     }
 }
 
@@ -645,7 +652,8 @@ typedef struct {
                                 mimeType:(nullable NSString *)declaredMimeType
                           ignoreFileSize:(BOOL)ignoreFileSize
 {
-    BOOL canBeLottieSticker = (declaredMimeType != nil && [MimeTypeUtil.mimeTypeLottieSticker isEqualToString:declaredMimeType]);
+    BOOL canBeLottieSticker
+        = (declaredMimeType != nil && [MimeTypeUtil.mimeTypeLottieSticker isEqualToString:declaredMimeType]);
     ImageFormat imageFormat = [self ows_guessImageFormatWithCanBeLottieSticker:canBeLottieSticker];
 
     if (![self ows_hasValidImageFormat:imageFormat]) {
