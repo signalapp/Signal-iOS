@@ -258,6 +258,7 @@ public class GRDBSchemaMigrator: NSObject {
         case expandSignalAccountContactFields
         case addNicknamesToSearchableName
         case addAttachmentMetadataColumnsToIncomingContactSyncJobRecord
+        case removeRedundantPhoneNumbers3
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2608,12 +2609,7 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.removeRedundantPhoneNumbers2) { tx in
             removeMigration("removeRedundantPhoneNumbers", db: tx.database)
             try removeLocalProfileSignalRecipient(in: tx.database)
-            try removeRedundantPhoneNumbers(
-                in: tx.database,
-                tableName: "model_OWSUserProfile",
-                serviceIdColumn: "recipientUUID",
-                phoneNumberColumn: "recipientPhoneNumber"
-            )
+            // The OWSUserProfile migration was obsoleted by removeRedundantPhoneNumbers3.
             try removeRedundantPhoneNumbers(
                 in: tx.database,
                 tableName: "model_TSThread",
@@ -2792,6 +2788,17 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "ICSJR_plaintextLength", .integer)
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeRedundantPhoneNumbers3) { tx in
+            try removeLocalProfileSignalRecipient(in: tx.database)
+            try removeRedundantPhoneNumbers(
+                in: tx.database,
+                tableName: "model_OWSUserProfile",
+                serviceIdColumn: "recipientUUID",
+                phoneNumberColumn: "recipientPhoneNumber"
+            )
             return .success(())
         }
 

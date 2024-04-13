@@ -210,7 +210,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertNil(newMessage.authorPhoneNumber)
 
             XCTAssertEqual(newProfile.uniqueId, oldPhoneNumberProfile.uniqueId)
-            XCTAssertEqual(newProfile.phoneNumber, newPhoneNumber.stringValue)
+            XCTAssertNil(newProfile.phoneNumber)
             XCTAssertEqual(newProfile.serviceIdString, aci.serviceIdUppercaseString)
             XCTAssertNil(OWSUserProfile.anyFetch(uniqueId: newPhoneNumberProfile.uniqueId, transaction: transaction))
 

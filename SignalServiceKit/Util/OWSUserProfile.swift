@@ -840,13 +840,14 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         newAddress: SignalServiceAddress,
         tx: SDSAnyWriteTransaction
     ) {
+        let normalizedAddress = NormalizedDatabaseRecordAddress(address: newAddress)
         var didUpdate = false
-        let newServiceIdString = newAddress.serviceIdUppercaseString
+        let newServiceIdString = normalizedAddress?.serviceId?.serviceIdUppercaseString
         if userProfile.serviceIdString != newServiceIdString {
             userProfile.serviceIdString = newServiceIdString
             didUpdate = true
         }
-        let newPhoneNumber = newAddress.phoneNumber
+        let newPhoneNumber = normalizedAddress?.phoneNumber
         if userProfile.phoneNumber != newPhoneNumber {
             userProfile.phoneNumber = newPhoneNumber
             didUpdate = true
