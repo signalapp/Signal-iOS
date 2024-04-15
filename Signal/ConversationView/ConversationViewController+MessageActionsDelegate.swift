@@ -70,14 +70,18 @@ extension ConversationViewController: MessageActionsDelegate {
             inputToolbar?.editTarget = message
 
             inputToolbar?.editThumbnail = nil
-            if let imageStream = itemViewModel.bodyMediaAttachmentStreams.first(where: \.isValidImage) {
-                imageStream.thumbnailImageSmall { [weak inputToolbar = self.inputToolbar] image in
-                    // If editing already ended, don't set it
+            let imageStream = itemViewModel.bodyMediaAttachmentStreams.first(where: {
+                $0.computeContentType().isImage
+            })
+            if let imageStream {
+                Task {
+                    guard let image = await imageStream.thumbnailImage(quality: .small) else {
+                        owsFailDebug("Could not load thumnail.")
+                        return
+                    }
                     guard let inputToolbar,
                           inputToolbar.shouldShowEditUI else { return }
                     inputToolbar.editThumbnail = image
-                } failure: {
-                    owsFailDebug("Could not load thumnail.")
                 }
             }
 

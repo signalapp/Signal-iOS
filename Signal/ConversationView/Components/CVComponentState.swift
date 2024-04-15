@@ -73,13 +73,20 @@ public class CVComponentState: Equatable, Dependencies {
     let bodyMedia: BodyMedia?
 
     struct GenericAttachment: Equatable {
-        let attachment: TSAttachment
+        let attachment: ReferencedTSResource
+        let transitTierDownloadState: TSAttachmentPointerState?
 
-        var attachmentStream: TSAttachmentStream? {
-            attachment.asResourceStream()?.bridgeStream
+        var attachmentStream: TSResourceStream? {
+            attachment.attachment.asResourceStream()
         }
-        var attachmentPointer: TSAttachmentPointer? {
-            attachment.asTransitTierPointer()?.bridgePointerAndNotStream
+
+        var attachmentPointer: TSResourcePointer? {
+            attachment.attachment.asTransitTierPointer()
+        }
+
+        static func == (lhs: CVComponentState.GenericAttachment, rhs: CVComponentState.GenericAttachment) -> Bool {
+            return lhs.attachment.attachment.resourceId == rhs.attachment.attachment.resourceId
+                && lhs.transitTierDownloadState == rhs.transitTierDownloadState
         }
     }
     let genericAttachment: GenericAttachment?
@@ -117,10 +124,15 @@ public class CVComponentState: Equatable, Dependencies {
     let quotedReply: QuotedReply?
 
     enum Sticker: Equatable {
-        case available(stickerMetadata: StickerMetadata,
-                       attachmentStream: TSAttachmentStream)
-        case downloading(attachmentPointer: TSAttachmentPointer)
-        case failedOrPending(attachmentPointer: TSAttachmentPointer)
+        case available(
+            stickerMetadata: StickerMetadata,
+            attachmentStream: TSResourceStream
+        )
+        case downloading(attachmentPointer: TSResourcePointer)
+        case failedOrPending(
+            attachmentPointer: TSResourcePointer,
+            transitTierDownloadState: TSAttachmentPointerState?
+        )
 
         public var stickerMetadata: StickerMetadata? {
             switch self {
@@ -130,7 +142,7 @@ public class CVComponentState: Equatable, Dependencies {
                 return nil
             }
         }
-        public var attachmentStream: TSAttachmentStream? {
+        public var attachmentStream: TSResourceStream? {
             switch self {
             case .available(_, let attachmentStream):
                 return attachmentStream
@@ -140,14 +152,38 @@ public class CVComponentState: Equatable, Dependencies {
                 return nil
             }
         }
-        public var attachmentPointer: TSAttachmentPointer? {
+        public var attachmentPointer: TSResourcePointer? {
             switch self {
             case .available:
                 return nil
             case .downloading(let attachmentPointer):
                 return attachmentPointer
-            case .failedOrPending(let attachmentPointer):
+            case .failedOrPending(let attachmentPointer, _):
                 return attachmentPointer
+            }
+        }
+        public var transitTierDownloadState: TSAttachmentPointerState? {
+            switch self {
+            case .available:
+                return nil
+            case .downloading:
+                return .downloading
+            case .failedOrPending(_, let transitTierDownloadState):
+                return transitTierDownloadState
+            }
+        }
+
+        static func == (lhs: CVComponentState.Sticker, rhs: CVComponentState.Sticker) -> Bool {
+            switch (lhs, rhs) {
+            case let (.available(lhsData, lhsStream), .available(rhsData, rhsStream)):
+                return lhsData == rhsData && lhsStream.resourceId == rhsStream.resourceId
+            case let (.downloading(lhsPointer), .downloading(rhsPointer)):
+                return lhsPointer.resourceId == rhsPointer.resourceId
+            case let (.failedOrPending(lhsPointer, lhsState), .failedOrPending(rhsPointer, rhsState)):
+                return lhsPointer.resourceId == rhsPointer.resourceId
+                    && lhsState == rhsState
+            case (.available, _), (.downloading, _), (.failedOrPending, _):
+                return false
             }
         }
     }
@@ -669,7 +705,7 @@ public class CVComponentState: Equatable, Dependencies {
            let bodyMedia = bodyMedia,
            bodyMedia.items.count == 1,
            let firstItem = bodyMedia.items.first,
-           firstItem.attachmentType == .borderless
+           firstItem.renderingFlag == .borderless
         {
             return true
         }
@@ -881,20 +917,22 @@ fileprivate extension CVComponentState.Builder {
         }
 
         do {
-            // TODO: Rename this method to TSMessage.bodyAttachments(...)?
-            let bodyAttachments = message.mediaAttachments(transaction: transaction)
+            let bodyAttachments = DependenciesBridge.shared.tsResourceStore.referencedBodyMediaAttachments(
+                for: message,
+                tx: transaction.asV2Read
+            )
             let mediaAlbumItems = buildMediaAlbumItems(for: bodyAttachments, message: message)
             if mediaAlbumItems.count > 0 {
                 var mediaAlbumHasFailedAttachment = false
                 var mediaAlbumHasPendingAttachment = false
                 for attachment in bodyAttachments {
-                    guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream else {
+                    guard let attachmentPointer = attachment.attachment.asTransitTierPointer() else {
                         continue
                     }
-                    switch attachmentPointer.state {
+                    switch attachment.attachment.transitTierDownloadState(tx: transaction.asV2Read) {
                     case .downloading, .enqueued:
                         continue
-                    case .failed:
+                    case .failed, .none:
                         mediaAlbumHasFailedAttachment = true
                     case .pendingMessageRequest:
                         mediaAlbumHasPendingAttachment = true
@@ -977,36 +1015,40 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Invalid content.")
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
-            let mediaAttachments: [TSAttachment] = message.mediaAttachments(transaction: transaction)
+            let mediaAttachments: [ReferencedTSResource] = DependenciesBridge.shared.tsResourceStore
+                .referencedBodyMediaAttachments(
+                    for: message,
+                    tx: transaction.asV2Read
+                )
             // We currently only support single attachments for view-once messages.
             guard let mediaAttachment = mediaAttachments.first else {
                 owsFailDebug("Missing attachment.")
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
-            let attachmentType = mediaAttachment.attachmentType(forContainingMessage: message, transaction: transaction)
-            if let attachmentPointer = mediaAttachment as? TSAttachmentPointer {
-                switch attachmentPointer.state {
+            let renderingFlag = mediaAttachment.reference.renderingFlag
+            if let attachmentPointer = mediaAttachment.attachment.asTransitTierPointer() {
+                switch attachmentPointer.downloadState(tx: transaction.asV2Read) {
                 case .enqueued, .downloading:
                     return buildViewOnce(viewOnceState: .incomingDownloading(
                         attachmentPointer: attachmentPointer,
-                        attachmentType: attachmentType
+                        renderingFlag: renderingFlag
                     ))
-                case .failed:
+                case .failed, .none:
                     return buildViewOnce(viewOnceState: .incomingFailed)
                 case .pendingMessageRequest, .pendingManualDownload:
                     return buildViewOnce(viewOnceState: .incomingPending)
                 }
-            } else if let attachmentStream = mediaAttachment as? TSAttachmentStream {
-                if attachmentStream.isValidVisualMedia
+            } else if let attachmentStream = mediaAttachment.attachment.asResourceStream() {
+                if attachmentStream.bridgeStream.isValidVisualMedia
                     && (
-                        attachmentStream.isImageMimeType
-                        || attachmentStream.getAnimatedMimeType() != .notAnimated
-                        || attachmentStream.isVideoMimeType
+                        attachmentStream.bridgeStream.isImageMimeType
+                        || attachmentStream.bridgeStream.getAnimatedMimeType() != .notAnimated
+                        || attachmentStream.bridgeStream.isVideoMimeType
                     )
                 {
                     return buildViewOnce(viewOnceState: .incomingAvailable(
                         attachmentStream: attachmentStream,
-                        attachmentType: attachmentType
+                        renderingFlag: renderingFlag
                     ))
                 }
             }
@@ -1077,18 +1119,18 @@ fileprivate extension CVComponentState.Builder {
             let attachment = DependenciesBridge.shared.tsResourceStore.stickerAttachment(
                 for: message,
                 tx: transaction.asV2Read
-            )?.fetch(tx: transaction)?.bridge
+            )?.fetch(tx: transaction)
         else {
             throw OWSAssertionError("Missing sticker attachment.")
         }
-        if let attachmentStream = attachment as? TSAttachmentStream {
-            let mediaSize = attachmentStream.imageSizePoints
-            guard attachmentStream.isValidImage,
+        if let attachmentStream = attachment.asResourceStream() {
+            let mediaSize = attachmentStream.bridgeStream.imageSizePoints
+            guard attachmentStream.bridgeStream.isValidImage,
                   mediaSize.isNonEmpty else {
                 throw OWSAssertionError("Invalid sticker.")
             }
-            let stickerType = StickerManager.stickerType(forContentType: attachmentStream.contentType)
-            guard let stickerDataUrl = attachmentStream.originalMediaURL else {
+            let stickerType = StickerManager.stickerType(forContentType: attachmentStream.mimeType)
+            guard let stickerDataUrl = attachmentStream.bridgeStream.originalMediaURL else {
                 throw OWSAssertionError("Invalid sticker.")
             }
             let stickerMetadata = StickerMetadata(stickerInfo: messageSticker.info,
@@ -1098,12 +1140,16 @@ fileprivate extension CVComponentState.Builder {
             self.sticker = .available(stickerMetadata: stickerMetadata,
                                       attachmentStream: attachmentStream)
             return build()
-        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            switch attachmentPointer.state {
+        } else if let attachmentPointer = attachment.asTransitTierPointer() {
+            let downloadState = attachmentPointer.downloadState(tx: transaction.asV2Read)
+            switch downloadState {
             case .enqueued, .downloading:
                 self.sticker = .downloading(attachmentPointer: attachmentPointer)
-            case .failed, .pendingManualDownload, .pendingMessageRequest:
-                self.sticker = .failedOrPending(attachmentPointer: attachmentPointer)
+            case .failed, .pendingManualDownload, .pendingMessageRequest, .none:
+                self.sticker = .failedOrPending(
+                    attachmentPointer: attachmentPointer,
+                    transitTierDownloadState: downloadState
+                )
             }
             return build()
         } else {
@@ -1164,102 +1210,120 @@ fileprivate extension CVComponentState.Builder {
 
     // MARK: -
 
-    func buildMediaAlbumItems(for mediaAttachments: [TSAttachment],
+    func buildMediaAlbumItems(for mediaAttachments: [ReferencedTSResource],
                               message: TSMessage) -> [CVMediaAlbumItem] {
 
         var mediaAlbumItems = [CVMediaAlbumItem]()
         for attachment in mediaAttachments {
-            guard attachment.isVisualMediaMimeType else {
+            guard MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.attachment.mimeType) else {
                 // Well behaving clients should not send a mix of visual media (like JPG) and non-visual media (like PDF's)
                 // Since we're not coped to handle a mix of media, return @[]
                 owsAssertDebug(mediaAlbumItems.count == 0)
                 return []
             }
 
-            // TODO: this should pull all the message->attachment edge metadata in one method.
-            let caption = attachment.caption(forContainingMessage: message, transaction: transaction)
-            let attachmentType = attachment.attachmentType(forContainingMessage: message, transaction: transaction)
+            let attachmentTransitTierDownloadState =
+                attachment.attachment.transitTierDownloadState(tx: transaction.asV2Read)
+
+            let caption = attachment.attachment.bridge.caption
             let hasCaption = caption.map {
                 return CVComponentState.displayableCaption(
                     text: $0,
-                    attachmentId: attachment.uniqueId,
                     transaction: transaction
                 ).fullTextValue.isEmpty.negated
             } ?? false
 
-            guard let attachmentStream = attachment.asResourceStream()?.bridgeStream else {
+            guard let attachmentStream = attachment.attachment.asResourceStream() else {
                 var mediaSize: CGSize = .zero
-                if let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream,
+                if let attachmentPointer = attachment.attachment.asTransitTierPointer()?.bridgePointerAndNotStream,
                    attachmentPointer.mediaSize.isNonEmpty {
                     mediaSize = attachmentPointer.mediaSize
                 } else {
                     owsFailDebug("Invalid attachment.")
                 }
-                mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
-                                                        attachmentStream: nil,
-                                                        attachmentType: attachmentType,
-                                                        hasCaption: hasCaption,
-                                                        mediaSize: mediaSize,
-                                                        isBroken: false))
+                mediaAlbumItems.append(CVMediaAlbumItem(
+                    attachment: attachment,
+                    attachmentTransitTierDownloadState: attachmentTransitTierDownloadState,
+                    attachmentStream: nil,
+                    hasCaption: hasCaption,
+                    mediaSize: mediaSize,
+                    isBroken: false
+                ))
                 continue
             }
 
-            guard attachmentStream.isValidVisualMediaIgnoringSize(true) else {
+            guard attachmentStream.bridgeStream.isValidVisualMediaIgnoringSize(true) else {
                 Logger.warn("Filtering invalid media.")
-                mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
-                                                        attachmentStream: nil,
-                                                        attachmentType: attachmentType,
-                                                        hasCaption: hasCaption,
-                                                        mediaSize: .zero,
-                                                        isBroken: true))
+                mediaAlbumItems.append(CVMediaAlbumItem(
+                    attachment: attachment,
+                    attachmentTransitTierDownloadState: attachmentTransitTierDownloadState,
+                    attachmentStream: nil,
+                    hasCaption: hasCaption,
+                    mediaSize: .zero,
+                    isBroken: true
+                ))
                 continue
             }
-            let mediaSize = attachmentStream.imageSizePixels
+            let mediaSize = attachmentStream.bridgeStream.imageSizePixels
             if !mediaSize.isNonEmpty {
                 Logger.warn("Filtering media with invalid size.")
-                mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
-                                                        attachmentStream: nil,
-                                                        attachmentType: attachmentType,
-                                                        hasCaption: hasCaption,
-                                                        mediaSize: .zero,
-                                                        isBroken: true))
+                mediaAlbumItems.append(CVMediaAlbumItem(
+                    attachment: attachment,
+                    attachmentTransitTierDownloadState: attachmentTransitTierDownloadState,
+                    attachmentStream: nil,
+                    hasCaption: hasCaption,
+                    mediaSize: .zero,
+                    isBroken: true
+                ))
                 continue
             }
 
-            mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
-                                                    attachmentStream: attachmentStream,
-                                                    attachmentType: attachmentType,
-                                                    hasCaption: hasCaption,
-                                                    mediaSize: mediaSize,
-                                                    isBroken: false))
+            mediaAlbumItems.append(CVMediaAlbumItem(
+                attachment: attachment,
+                attachmentTransitTierDownloadState: attachmentTransitTierDownloadState,
+                attachmentStream: attachmentStream,
+                hasCaption: hasCaption,
+                mediaSize: mediaSize,
+                isBroken: false
+            ))
         }
         return mediaAlbumItems
     }
 
-    mutating func buildNonMediaAttachment(bodyAttachment: TSAttachment?) throws {
+    mutating func buildNonMediaAttachment(bodyAttachment: ReferencedTSResource?) throws {
 
         guard let attachment = bodyAttachment else {
             throw OWSAssertionError("Missing attachment.")
         }
 
         let isVoiceMessage: Bool
-        if let message = interaction as? TSMessage {
-            isVoiceMessage = attachment.isVoiceMessage(inContainingMessage: message, transaction: transaction)
+        if interaction is TSMessage {
+            isVoiceMessage = bodyAttachment?.reference.renderingFlag == .voiceMessage
         } else {
             isVoiceMessage = false
         }
 
-        if attachment.isAudioMimeType, let audioAttachment = AudioAttachment(
-            attachment: attachment,
-            owningMessage: interaction as? TSMessage,
-            metadata: nil,
-            isVoiceMessage: isVoiceMessage
-        ) {
+        let transitTierDownloadState = attachment.attachment.transitTierDownloadState(tx: transaction.asV2Read)
+        if
+            MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType),
+            let audioAttachment = AudioAttachment(
+                attachment: attachment.attachment,
+                owningMessage: interaction as? TSMessage,
+                metadata: nil,
+                isVoiceMessage: isVoiceMessage,
+                sourceFilename: attachment.reference.sourceFilename,
+                receivedAtDate: interaction.receivedAtDate,
+                transitTierDownloadState: transitTierDownloadState
+            )
+        {
             self.audioAttachment = audioAttachment
             return
         }
 
-        self.genericAttachment = GenericAttachment(attachment: attachment)
+        self.genericAttachment = GenericAttachment(
+            attachment: attachment,
+            transitTierDownloadState: transitTierDownloadState
+        )
     }
 
     mutating func buildPaymentAttachment(
@@ -1421,9 +1485,10 @@ fileprivate extension CVComponentState {
         )
     }
 
-    static func displayableCaption(text: String,
-                                   attachmentId: String,
-                                   transaction: SDSAnyReadTransaction) -> DisplayableText {
+    static func displayableCaption(
+        text: String,
+        transaction: SDSAnyReadTransaction
+    ) -> DisplayableText {
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: .empty),
             transaction: transaction

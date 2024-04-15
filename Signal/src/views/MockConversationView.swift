@@ -325,9 +325,11 @@ extension MockConversationView: CVComponentDelegate {
 
     // MARK: - Messages
 
-    func didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
-                         attachmentStream: TSAttachmentStream,
-                         imageView: UIView) {}
+    func didTapBodyMedia(
+        itemViewModel: CVItemViewModelImpl,
+        attachmentStream: TSResourceStream,
+        imageView: UIView
+    ) {}
 
     func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction { .default }
 

@@ -8,12 +8,18 @@ import SignalServiceKit
 
 public class CVMediaCache: NSObject {
 
-    private let stillMediaCache = LRUCache<String, AnyObject>(maxSize: 16,
+    public enum CacheKey: Hashable, Equatable {
+        case blurHash(String)
+        case attachment(TSResourceId)
+        case attachmentThumbnail(TSResourceId, quality: AttachmentThumbnailQuality)
+    }
+
+    private let stillMediaCache = LRUCache<CacheKey, AnyObject>(maxSize: 16,
                                                               shouldEvacuateInBackground: true)
-    private let animatedMediaCache = LRUCache<String, AnyObject>(maxSize: 8,
+    private let animatedMediaCache = LRUCache<CacheKey, AnyObject>(maxSize: 8,
                                                                  shouldEvacuateInBackground: true)
 
-    private typealias MediaViewCache = LRUCache<String, ThreadSafeCacheHandle<ReusableMediaView>>
+    private typealias MediaViewCache = LRUCache<CacheKey, ThreadSafeCacheHandle<ReusableMediaView>>
     private let stillMediaViewCache = MediaViewCache(maxSize: 12, shouldEvacuateInBackground: true)
     private let animatedMediaViewCache = MediaViewCache(maxSize: 6, shouldEvacuateInBackground: true)
 
@@ -27,22 +33,22 @@ public class CVMediaCache: NSObject {
         super.init()
     }
 
-    public func getMedia(_ key: String, isAnimated: Bool) -> AnyObject? {
+    public func getMedia(_ key: CacheKey, isAnimated: Bool) -> AnyObject? {
         let cache = isAnimated ? animatedMediaCache : stillMediaCache
         return cache.get(key: key)
     }
 
-    public func setMedia(_ value: AnyObject, forKey key: String, isAnimated: Bool) {
+    public func setMedia(_ value: AnyObject, forKey key: CacheKey, isAnimated: Bool) {
         let cache = isAnimated ? animatedMediaCache : stillMediaCache
         cache.set(key: key, value: value)
     }
 
-    public func getMediaView(_ key: String, isAnimated: Bool) -> ReusableMediaView? {
+    public func getMediaView(_ key: CacheKey, isAnimated: Bool) -> ReusableMediaView? {
         let cache = isAnimated ? animatedMediaViewCache : stillMediaViewCache
         return cache.get(key: key)?.value
     }
 
-    public func setMediaView(_ value: ReusableMediaView, forKey key: String, isAnimated: Bool) {
+    public func setMediaView(_ value: ReusableMediaView, forKey key: CacheKey, isAnimated: Bool) {
         let cache = isAnimated ? animatedMediaViewCache : stillMediaViewCache
         cache.set(key: key, value: ThreadSafeCacheHandle(value))
     }

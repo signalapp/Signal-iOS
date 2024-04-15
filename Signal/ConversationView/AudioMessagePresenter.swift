@@ -132,13 +132,12 @@ class AudioMessagePresenter: AudioPresenter {
 
     func topLabelConfig(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle?) -> CVLabelConfig? {
 
-        let attachment = audioAttachment.attachment
         guard !audioAttachment.isVoiceMessage else {
             return nil
         }
 
         let text: String
-        if let fileName = attachment.sourceFilename?.stripped, !fileName.isEmpty {
+        if let fileName = audioAttachment.sourceFilename?.stripped, !fileName.isEmpty {
             text = fileName
         } else {
             text = OWSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
@@ -151,8 +150,8 @@ class AudioMessagePresenter: AudioPresenter {
         )
     }
 
-    func audioWaveform(attachmentStream: TSAttachmentStream?) -> AudioWaveform? {
-        return attachmentStream?.audioWaveform()
+    func audioWaveform(attachmentStream: TSResourceStream?) -> AudioWaveform? {
+        return attachmentStream?.bridgeStream.audioWaveform()
     }
 }
 

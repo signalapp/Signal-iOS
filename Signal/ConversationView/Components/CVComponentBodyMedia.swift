@@ -26,10 +26,14 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             // This potentially reads the image data on disk.
             // We will eventually have better guarantees about this
             // state being cached and not requiring a disk read.
-            if let stream = item.attachmentStream, stream.isAnimatedContent {
-                return false
-            }
-            if !item.attachment.isImageMimeType {
+            switch item.attachmentStream?.computeContentType() {
+            case .image, .animatedImage:
+                continue
+            case .none:
+                if !MimeTypeUtil.isSupportedImageMimeType(item.attachment.attachment.mimeType) {
+                    return false
+                }
+            case .video, .audio, .file:
                 return false
             }
         }
@@ -200,21 +204,34 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             }
 
             if mediaAlbumHasPendingAttachment {
-                let attachmentPointerItems = items.filter { $0.attachment is TSAttachmentPointer }
-                let pendingManualDownloadAttachments = attachmentPointerItems.filter { $0.attachment.isPendingManualDownload }
-                let totalSize = pendingManualDownloadAttachments.map { $0.attachment.byteCount}.reduce(0, +)
+                let pendingManualDownloadAttachments = items
+                    .lazy
+                    .compactMap { (item: CVMediaAlbumItem) -> ReferencedTSResource? in
+                        guard
+                            item.attachment.attachment.asResourceStream() == nil,
+                            item.attachment.attachment.asTransitTierPointer() != nil
+                        else {
+                            return nil
+                        }
+                        guard item.attachmentTransitTierDownloadState == .pendingManualDownload else {
+                            return nil
+                        }
+                        return item.attachment
+                    }
+                let totalSize = pendingManualDownloadAttachments.map { $0.attachment.unenecryptedResourceByteCount ?? 0}.reduce(0, +)
 
                 if totalSize > 0 {
                     var downloadSizeText = [OWSFormat.localizedFileSizeString(from: Int64(totalSize))]
                     if pendingManualDownloadAttachments.count == 1,
                        let firstAttachmentPointer = pendingManualDownloadAttachments.first {
-                        if firstAttachmentPointer.attachment.getAnimatedMimeType() == .animated
-                            || firstAttachmentPointer.attachment.isLoopingVideo(firstAttachmentPointer.attachmentType)
+                        let mimeType = firstAttachmentPointer.attachment.mimeType
+                        if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType)
+                            || firstAttachmentPointer.reference.renderingFlag == .shouldLoop
                         {
                             // Do nothing.
-                        } else if firstAttachmentPointer.attachment.isImageMimeType {
+                        } else if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
                             downloadSizeText.append(CommonStrings.attachmentTypePhoto)
-                        } else if firstAttachmentPointer.attachment.isVideoMimeType {
+                        } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
                             downloadSizeText.append(CommonStrings.attachmentTypeVideo)
                         }
                     }
@@ -343,34 +360,39 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             return true
         }
 
-        let attachment = mediaView.attachment
-        if let attachmentPointer = attachment as? TSAttachmentPointer {
-            switch attachmentPointer.state {
-            case .failed, .pendingMessageRequest, .pendingManualDownload:
+        let attachment = mediaView.attachment.attachment
+        if let attachmentPointer = attachment.asTransitTierPointer() {
+            switch mediaView.attachmentTransitTierDownloadState {
+            case .failed, .pendingMessageRequest, .pendingManualDownload, .none:
                 componentDelegate.didTapFailedOrPendingDownloads(message)
                 return true
             case .enqueued, .downloading:
                 Logger.warn("Media attachment not yet downloaded.")
                 self.databaseStorage.write { tx in
-                    DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(for: attachmentPointer.resourceId, tx: tx.asV2Write)
+                    DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(
+                        for: attachmentPointer.resourceId,
+                        tx: tx.asV2Write
+                    )
                 }
                 return true
             }
         }
 
-        guard let attachmentStream = attachment as? TSAttachmentStream else {
+        guard let attachmentStream = attachment.asResourceStream() else {
             owsFailDebug("unexpected attachment.")
             return false
         }
 
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        if let item = items.first(where: { $0.attachment.uniqueId == attachment.uniqueId }), item.isBroken {
+        if let item = items.first(where: { $0.attachment.attachment.resourceId == attachment.resourceId }), item.isBroken {
             componentDelegate.didTapBrokenVideo()
             return true
         }
-        componentDelegate.didTapBodyMedia(itemViewModel: itemViewModel,
-                                          attachmentStream: attachmentStream,
-                                          imageView: mediaView)
+        componentDelegate.didTapBodyMedia(
+            itemViewModel: itemViewModel,
+            attachmentStream: attachmentStream,
+            imageView: mediaView
+        )
         return true
     }
 
@@ -381,7 +403,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             return nil
         }
         let albumView = componentView.albumView
-        guard let albumItemView = (albumView.itemViews.first { $0.attachment == attachment }) else {
+        guard let albumItemView = (albumView.itemViews.first { $0.attachment.attachment.bridge == attachment }) else {
             assert(albumView.moreItemsView != nil)
             return albumView.moreItemsView
         }

@@ -305,11 +305,11 @@ class AudioAllMediaPresenter: AudioPresenter {
         return CVLabelConfig.unstyledText(text, font: Constants.bottomLineFont, textColor: .label)
     }
 
-    static func hasAttachmentLabel(attachment: TSAttachment, isVoiceMessage: Bool) -> Bool {
+    static func hasAttachmentLabel(attachment: TSResource, isVoiceMessage: Bool) -> Bool {
         return !isVoiceMessage
     }
 
-    func hasAttachmentLabel(attachment: TSAttachment, isVoiceMessage: Bool) -> Bool {
+    func hasAttachmentLabel(attachment: TSResource, isVoiceMessage: Bool) -> Bool {
         return Self.hasAttachmentLabel(attachment: attachment, isVoiceMessage: isVoiceMessage)
     }
 
@@ -321,7 +321,7 @@ class AudioAllMediaPresenter: AudioPresenter {
         }
 
         let text: String
-        if let fileName = attachment.sourceFilename?.stripped, !fileName.isEmpty {
+        if let fileName = audioAttachment.sourceFilename?.stripped, !fileName.isEmpty {
             text = fileName
         } else {
             text = NSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
@@ -334,8 +334,8 @@ class AudioAllMediaPresenter: AudioPresenter {
         )
     }
 
-    func audioWaveform(attachmentStream: TSAttachmentStream?) -> AudioWaveform? {
-        return attachmentStream?.highPriorityAudioWaveform()
+    func audioWaveform(attachmentStream: TSResourceStream?) -> AudioWaveform? {
+        return attachmentStream?.bridgeStream.highPriorityAudioWaveform()
     }
 }
 

@@ -31,7 +31,7 @@ private enum LoadState {
 public protocol MediaViewAdapter {
     var mediaView: UIView { get }
     var isLoaded: Bool { get }
-    var cacheKey: String { get }
+    var cacheKey: CVMediaCache.CacheKey { get }
     var shouldBeRenderedByYY: Bool { get }
 
     func applyMedia(_ media: AnyObject)
@@ -222,10 +222,10 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: String {
+    var cacheKey: CVMediaCache.CacheKey {
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.
-        blurHash
+        .blurHash(blurHash)
     }
 
     func loadMedia() -> Promise<AnyObject> {
@@ -255,20 +255,20 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
 // MARK: - MediaViewAdapterLoopingVideo
 
 class MediaViewAdapterLoopingVideo: MediaViewAdapterSwift {
-    let attachmentStream: TSAttachmentStream
+    let attachmentStream: TSResourceStream
     let videoView = LoopingVideoView()
 
-    init(attachmentStream: TSAttachmentStream) {
+    init(attachmentStream: TSResourceStream) {
         self.attachmentStream = attachmentStream
     }
 
     let shouldBeRenderedByYY = false
     var mediaView: UIView { videoView }
     var isLoaded: Bool { videoView.video != nil }
-    var cacheKey: String { attachmentStream.uniqueId }
+    var cacheKey: CVMediaCache.CacheKey { .attachment(attachmentStream.resourceId) }
 
     func loadMedia() -> Promise<AnyObject> {
-        guard let path = attachmentStream.originalFilePath,
+        guard let path = attachmentStream.bridgeStream.originalFilePath,
               let video = LoopingVideo(url: URL(fileURLWithPath: path)) else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
@@ -297,10 +297,10 @@ class MediaViewAdapterLoopingVideo: MediaViewAdapterSwift {
 class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = true
-    let attachmentStream: TSAttachmentStream
+    let attachmentStream: TSResourceStream
     let imageView = CVAnimatedImageView()
 
-    init(attachmentStream: TSAttachmentStream) {
+    init(attachmentStream: TSResourceStream) {
         self.attachmentStream = attachmentStream
     }
 
@@ -312,15 +312,15 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: String {
-        attachmentStream.uniqueId
+    var cacheKey: CVMediaCache.CacheKey {
+        .attachment(attachmentStream.resourceId)
     }
 
     func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.isValidImage else {
+        guard attachmentStream.computeContentType().isImage else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
-        guard let filePath = attachmentStream.originalFilePath else {
+        guard let filePath = attachmentStream.bridgeStream.originalFilePath else {
             return Promise(error: OWSAssertionError("Attachment stream missing original file path."))
         }
         guard let animatedImage = YYImage(contentsOfFile: filePath) else {
@@ -351,12 +351,14 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 class MediaViewAdapterStill: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = false
-    let attachmentStream: TSAttachmentStream
+    let attachmentStream: TSResourceStream
     let imageView = CVImageView()
-    let thumbnailQuality: TSAttachmentThumbnailQuality
+    let thumbnailQuality: AttachmentThumbnailQuality
 
-    init(attachmentStream: TSAttachmentStream,
-         thumbnailQuality: TSAttachmentThumbnailQuality) {
+    init(
+        attachmentStream: TSResourceStream,
+        thumbnailQuality: AttachmentThumbnailQuality
+    ) {
         self.attachmentStream = attachmentStream
         self.thumbnailQuality = thumbnailQuality
     }
@@ -369,23 +371,21 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: String {
-        attachmentStream.uniqueId + NSStringForAttachmentThumbnailQuality(thumbnailQuality)
+    var cacheKey: CVMediaCache.CacheKey {
+        .attachmentThumbnail(attachmentStream.resourceId, quality: thumbnailQuality)
     }
 
     func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.isValidImage else {
+        guard attachmentStream.computeContentType().isImage else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
-        let (promise, future) = Promise<AnyObject>.pending()
-        attachmentStream.thumbnailImage(quality: thumbnailQuality,
-                                        success: { (image) in
-                                            future.resolve(image)
-                                        },
-                                        failure: {
-                                            future.reject(OWSAssertionError("Could not load thumbnail"))
-                                        })
-        return promise
+        return Promise.wrapAsync {
+            let image = await self.attachmentStream.thumbnailImage(quality: self.thumbnailQuality)
+            guard let image else {
+                throw OWSAssertionError("Could not load thumbnail")
+            }
+            return image
+        }
     }
 
     func applyMedia(_ media: AnyObject) {
@@ -410,12 +410,14 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
 class MediaViewAdapterVideo: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = false
-    let attachmentStream: TSAttachmentStream
+    let attachmentStream: TSResourceStream
     let imageView = CVImageView()
-    let thumbnailQuality: TSAttachmentThumbnailQuality
+    let thumbnailQuality: AttachmentThumbnailQuality
 
-    init(attachmentStream: TSAttachmentStream,
-         thumbnailQuality: TSAttachmentThumbnailQuality) {
+    init(
+        attachmentStream: TSResourceStream,
+        thumbnailQuality: AttachmentThumbnailQuality
+    ) {
         self.attachmentStream = attachmentStream
         self.thumbnailQuality = thumbnailQuality
     }
@@ -428,23 +430,21 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: String {
-        attachmentStream.uniqueId + NSStringForAttachmentThumbnailQuality(thumbnailQuality)
+    var cacheKey: CVMediaCache.CacheKey {
+        .attachmentThumbnail(attachmentStream.resourceId, quality: thumbnailQuality)
     }
 
     func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.isValidVideo else {
+        guard attachmentStream.computeContentType().isVideo else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
-        let (promise, future) = Promise<AnyObject>.pending()
-        attachmentStream.thumbnailImage(quality: thumbnailQuality,
-                                        success: { (image) in
-                                            future.resolve(image)
-                                        },
-                                        failure: {
-                                            future.reject(OWSAssertionError("Could not load thumbnail"))
-                                        })
-        return promise
+        return Promise.wrapAsync {
+            let image = await self.attachmentStream.thumbnailImage(quality: self.thumbnailQuality)
+            guard let image else {
+                throw OWSAssertionError("Could not load thumbnail")
+            }
+            return image
+        }
     }
 
     func applyMedia(_ media: AnyObject) {
@@ -469,11 +469,11 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
 public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY: Bool
-    let attachmentStream: TSAttachmentStream
+    let attachmentStream: TSResourceStream
     let imageView: UIImageView
 
-    public init(attachmentStream: TSAttachmentStream) {
-        self.shouldBeRenderedByYY = attachmentStream.isAnimatedContent
+    public init(attachmentStream: TSResourceStream) {
+        self.shouldBeRenderedByYY = attachmentStream.computeContentType().isAnimatedImage
         self.attachmentStream = attachmentStream
 
         if shouldBeRenderedByYY {
@@ -493,15 +493,15 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    public var cacheKey: String {
-        attachmentStream.uniqueId
+    public var cacheKey: CVMediaCache.CacheKey {
+        .attachment(attachmentStream.resourceId)
     }
 
     public func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.isValidImage else {
+        guard attachmentStream.computeContentType().isAnimatedImage else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
-        guard let filePath = attachmentStream.originalFilePath else {
+        guard let filePath = attachmentStream.bridgeStream.originalFilePath else {
             return Promise(error: OWSAssertionError("Attachment stream missing original file path."))
         }
         if shouldBeRenderedByYY {

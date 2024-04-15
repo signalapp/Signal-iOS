@@ -228,7 +228,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: TSAttachmentStream,
+        attachmentStream: TSResourceStream,
         imageView: UIView
     ) {
         AssertIsOnMainThread()
@@ -236,7 +236,7 @@ extension ConversationViewController: CVComponentDelegate {
         dismissKeyBoard()
 
         guard let pageVC = MediaPageViewController(
-            initialMediaAttachment: attachmentStream,
+            initialMediaAttachment: attachmentStream.bridgeStream,
             thread: self.thread,
             spoilerState: self.viewState.spoilerState
         ) else {

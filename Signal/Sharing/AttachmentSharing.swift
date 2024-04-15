@@ -12,6 +12,8 @@ public class AttachmentSharing {
 
     // MARK: -
 
+    // For reasons unknown, xcode 14, but not xcode 15, fails to compile this method
+    // if it uses TSResourceStream instead of TSAttachmentStream.
     public static func showShareUI(
         for attachmentStream: TSAttachmentStream,
         sender: Any? = nil,
@@ -20,6 +22,8 @@ public class AttachmentSharing {
         showShareUIForActivityItems([attachmentStream], sender: sender, completion: completion)
     }
 
+    // For reasons unknown, xcode 14, but not xcode 15, fails to compile this method
+    // if it uses TSResourceStream instead of TSAttachmentStream.
     public static func showShareUI(
         for attachmentStreams: [TSAttachmentStream],
         sender: Any? = nil,

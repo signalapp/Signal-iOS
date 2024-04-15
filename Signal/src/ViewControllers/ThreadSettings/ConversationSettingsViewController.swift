@@ -1072,7 +1072,7 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
             mediaView = imageView
             mediaViewShape = .rectangle(imageView.layer.cornerRadius)
         case .image:
-            guard let avatarView = avatarView as? ConversationAvatarView else { return nil }
+            guard let avatarView = avatarView else { return nil }
             mediaView = avatarView
             if case .circular = avatarView.configuration.shape {
                 mediaViewShape = .circle

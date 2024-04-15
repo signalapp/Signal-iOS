@@ -11,14 +11,14 @@ import SignalUI
 public class CVAttachmentProgressView: ManualLayoutView {
 
     public enum Direction {
-        case upload(attachmentStream: TSAttachmentStream)
-        case download(attachmentPointer: TSAttachmentPointer)
+        case upload(attachmentStream: TSResourceStream)
+        case download(attachmentPointer: TSResourcePointer, transitTierDownloadState: TSAttachmentPointerState?)
 
         var attachmentId: TSResourceId {
             switch self {
             case .upload(let attachmentStream):
                 return attachmentStream.resourceId
-            case .download(let attachmentPointer):
+            case .download(let attachmentPointer, _):
                 return attachmentPointer.resourceId
             }
         }
@@ -32,10 +32,12 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     private var attachmentId: TSResourceId { direction.attachmentId }
 
-    public init(direction: Direction,
-                diameter: CGFloat = 44,
-                isDarkThemeEnabled: Bool,
-                mediaCache: CVMediaCache) {
+    public init(
+        direction: Direction,
+        diameter: CGFloat = 44,
+        isDarkThemeEnabled: Bool,
+        mediaCache: CVMediaCache
+    ) {
         self.direction = direction
         self.diameter = diameter
         self.isDarkThemeEnabled = isDarkThemeEnabled
@@ -268,9 +270,9 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 object: nil
             )
 
-        case .download(let attachmentPointer):
-            switch attachmentPointer.state {
-            case .failed:
+        case .download(_, let transitTierDownloadState):
+            switch transitTierDownloadState {
+            case .none, .failed:
                 stateView.state = .downloadFailed
             case .pendingMessageRequest, .pendingManualDownload:
                 stateView.state = .tapToDownload
@@ -346,7 +348,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
         switch direction {
         case .upload(let attachmentStream):
-            guard !attachmentStream.isUploaded else {
+            guard !attachmentStream.isUploadedToTransitTier else {
                 stateView.state = .uploadProgress(progress: 1)
                 return
             }
@@ -374,10 +376,10 @@ public class CVAttachmentProgressView: ManualLayoutView {
         }
     }
 
-    private func updateUploadProgress(attachmentStream: TSAttachmentStream) {
+    private func updateUploadProgress(attachmentStream: TSResourceStream) {
         AssertIsOnMainThread()
 
-        if attachmentStream.isUploaded {
+        if attachmentStream.isUploadedToTransitTier {
             stateView.state = .uploadProgress(progress: 1)
         } else {
             stateView.state = .uploadUnknownProgress
@@ -386,20 +388,23 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     public enum ProgressType {
         case none
-        case uploading(attachmentStream: TSAttachmentStream)
-        case pendingDownload(attachmentPointer: TSAttachmentPointer)
-        case downloading(attachmentPointer: TSAttachmentPointer)
+        case uploading(attachmentStream: TSResourceStream)
+        case pendingDownload(attachmentPointer: TSResourcePointer)
+        case downloading(attachmentPointer: TSResourcePointer)
         case unknown
     }
 
-    public static func progressType(forAttachment attachment: TSAttachment,
-                                    interaction: TSInteraction) -> ProgressType {
+    public static func progressType(
+        forAttachment attachment: TSResource,
+        transitTierDownloadState: TSAttachmentPointerState?,
+        interaction: TSInteraction
+    ) -> ProgressType {
 
-        if let attachmentStream = attachment as? TSAttachmentStream {
+        if let attachmentStream = attachment.asResourceStream() {
             if let outgoingMessage = interaction as? TSOutgoingMessage {
                 let hasSendFailed = outgoingMessage.messageState == .failed
                 let wasNotCreatedLocally = outgoingMessage.wasNotCreatedLocally
-                guard !attachmentStream.isUploaded,
+                guard !attachmentStream.isUploadedToTransitTier,
                         !wasNotCreatedLocally,
                         !hasSendFailed else {
                     return .none
@@ -411,11 +416,11 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 owsFailDebug("Unexpected interaction: \(type(of: interaction))")
                 return .unknown
             }
-        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            switch attachmentPointer.state {
+        } else if let attachmentPointer = attachment.asTransitTierPointer() {
+            switch transitTierDownloadState {
             case .pendingMessageRequest, .pendingManualDownload:
                 return .pendingDownload(attachmentPointer: attachmentPointer)
-            case .failed, .enqueued, .downloading:
+            case .failed, .enqueued, .downloading, .none:
                 return .downloading(attachmentPointer: attachmentPointer)
             }
 

@@ -332,8 +332,9 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: TSAttachmentStream,
-        imageView: UIView) {}
+        attachmentStream: TSResourceStream,
+        imageView: UIView
+    ) {}
 
     func didTapGenericAttachment(
         _ attachment: CVComponentGenericAttachment

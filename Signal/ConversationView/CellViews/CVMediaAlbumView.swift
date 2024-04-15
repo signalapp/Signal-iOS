@@ -46,17 +46,22 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
         let viewSizePoints = imageArrangement.worstCaseMediaRenderSizePoints(conversationStyle: conversationStyle)
         self.itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map { item in
-            let thumbnailQuality = Self.thumbnailQuality(mediaSizePoints: item.mediaSize,
-                                                         viewSizePoints: viewSizePoints)
-            return CVMediaView(mediaCache: mediaCache,
-                               attachment: item.attachment,
-                               interaction: interaction,
-                               maxMessageWidth: maxMessageWidth,
-                               isBorderless: isBorderless,
-                               isLoopingVideo: item.attachment.isLoopingVideo(item.attachmentType),
-                               isBroken: item.isBroken,
-                               thumbnailQuality: thumbnailQuality,
-                               conversationStyle: conversationStyle)
+            let thumbnailQuality = Self.thumbnailQuality(
+                mediaSizePoints: item.mediaSize,
+                viewSizePoints: viewSizePoints
+            )
+            return CVMediaView(
+                mediaCache: mediaCache,
+                attachment: item.attachment,
+                attachmentTransitTierDownloadState: item.attachmentTransitTierDownloadState,
+                interaction: interaction,
+                maxMessageWidth: maxMessageWidth,
+                isBorderless: isBorderless,
+                isLoopingVideo: item.renderingFlag == .shouldLoop,
+                isBroken: item.isBroken,
+                thumbnailQuality: thumbnailQuality,
+                conversationStyle: conversationStyle
+            )
         }
 
         self.isBorderless = isBorderless
@@ -506,8 +511,10 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         return moreItemsView == mediaView
     }
 
-    private static func thumbnailQuality(mediaSizePoints: CGSize,
-                                         viewSizePoints: CGSize) -> TSAttachmentThumbnailQuality {
+    private static func thumbnailQuality(
+        mediaSizePoints: CGSize,
+        viewSizePoints: CGSize
+    ) -> AttachmentThumbnailQuality {
         guard mediaSizePoints.isNonEmpty,
               viewSizePoints.isNonEmpty else {
             owsFailDebug("Invalid sizes. mediaSizePoints: \(mediaSizePoints), viewSizePoints: \(viewSizePoints).")
@@ -522,9 +529,9 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                                     ? renderSizeByWidth
                                     : renderSizeByHeight)
         let renderDimensionPoints = renderSizePoints.largerAxis
-        let quality: TSAttachmentThumbnailQuality = {
+        let quality: AttachmentThumbnailQuality = {
             // Find the smallest quality of acceptable size.
-            let qualities: [TSAttachmentThumbnailQuality] = [
+            let qualities: [AttachmentThumbnailQuality] = [
                 .small,
                 .medium,
                 .mediumLarge
@@ -541,7 +548,9 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 // image pixels per screen pixels that we will accept."
                 let targetQuality: CGFloat = 0.8
                 let sizeTolerance: CGFloat = 1 / targetQuality
-                let thumbnailDimensionPoints = TSAttachmentStream.thumbnailDimensionPoints(forThumbnailQuality: quality)
+                let thumbnailDimensionPoints = AttachmentStream.thumbnailDimensionPoints(
+                    forThumbnailQuality: quality
+                )
                 if renderDimensionPoints <= CGFloat(thumbnailDimensionPoints) * sizeTolerance {
                     return quality
                 }
@@ -555,12 +564,15 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 // MARK: -
 
 public struct CVMediaAlbumItem: Equatable {
-    public let attachment: TSAttachment
+    public let attachment: ReferencedTSResource
+    public let attachmentTransitTierDownloadState: TSAttachmentPointerState?
 
     // This property will only be set if the attachment is downloaded and valid.
-    public let attachmentStream: TSAttachmentStream?
+    public let attachmentStream: TSResourceStream?
 
-    public let attachmentType: TSAttachmentType
+    public var renderingFlag: AttachmentReference.RenderingFlag {
+        attachment.reference.renderingFlag
+    }
 
     public let hasCaption: Bool
 
@@ -571,16 +583,25 @@ public struct CVMediaAlbumItem: Equatable {
 
     public let isBroken: Bool
     public var isFailedDownload: Bool {
-        guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream else {
+        guard attachment.attachment.asTransitTierPointer() != nil else {
             return false
         }
-        return attachmentPointer.state == .failed
+        return attachmentTransitTierDownloadState == .failed
     }
 
     public var isPendingMessageRequest: Bool {
-        guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream else {
+        guard attachment.attachment.asTransitTierPointer() != nil else {
             return false
         }
-        return attachmentPointer.state == .pendingMessageRequest
+        return attachmentTransitTierDownloadState == .pendingMessageRequest
+    }
+
+    public static func == (lhs: CVMediaAlbumItem, rhs: CVMediaAlbumItem) -> Bool {
+        return lhs.attachment.attachment.resourceId == rhs.attachment.attachment.resourceId
+            && lhs.attachmentTransitTierDownloadState == rhs.attachmentTransitTierDownloadState
+            && lhs.renderingFlag == rhs.renderingFlag
+            && lhs.hasCaption == rhs.hasCaption
+            && lhs.mediaSize == rhs.mediaSize
+            && lhs.isBroken == rhs.isBroken
     }
 }

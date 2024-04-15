@@ -13,9 +13,9 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     public var componentKey: CVComponentKey { .genericAttachment }
 
     private let genericAttachment: CVComponentState.GenericAttachment
-    private var attachment: TSAttachment { genericAttachment.attachment }
-    private var attachmentStream: TSAttachmentStream? { genericAttachment.attachmentStream }
-    private var attachmentPointer: TSAttachmentPointer? { genericAttachment.attachmentPointer }
+    private var attachment: ReferencedTSResource { genericAttachment.attachment }
+    private var attachmentStream: TSResourceStream? { genericAttachment.attachmentStream }
+    private var attachmentPointer: TSResourcePointer? { genericAttachment.attachmentPointer }
 
     init(itemModel: CVItemModel, genericAttachment: CVComponentState.GenericAttachment) {
         self.genericAttachment = genericAttachment
@@ -111,9 +111,9 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     private var topLabelConfig: CVLabelConfig {
-        var text: String = attachment.sourceFilename?.ows_stripped() ?? ""
+        var text: String = attachment.reference.sourceFilename?.ows_stripped() ?? ""
         if text.isEmpty,
-           let fileExtension = MimeTypeUtil.fileExtensionForMimeType(attachment.contentType) {
+           let fileExtension = MimeTypeUtil.fileExtensionForMimeType(attachment.attachment.mimeType) {
             text = (fileExtension as NSString).localizedUppercase
         }
         if text.isEmpty {
@@ -134,17 +134,17 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         // the layout using a whitespace string.
         var text = " "
 
-        if let attachmentPointer = self.attachmentPointer {
+        if let attachmentPointer = self.genericAttachment.attachmentPointer {
             var textComponents = [String]()
 
-            if attachmentPointer.byteCount > 0 {
-                textComponents.append(OWSFormat.localizedFileSizeString(from: Int64(attachmentPointer.byteCount)))
+            if let byteCount = attachmentPointer.resource.unenecryptedResourceByteCount, byteCount > 0 {
+                textComponents.append(OWSFormat.localizedFileSizeString(from: Int64(byteCount)))
             }
 
-            switch attachmentPointer.state {
+            switch genericAttachment.transitTierDownloadState {
             case .enqueued, .downloading:
                 break
-            case .failed, .pendingMessageRequest, .pendingManualDownload:
+            case .failed, .pendingMessageRequest, .pendingManualDownload, .none:
                 textComponents.append(OWSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons."))
             }
 
@@ -152,7 +152,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 text = textComponents.joined(separator: " • ")
             }
         } else if let attachmentStream = attachmentStream {
-            if let originalFilePath = attachmentStream.originalFilePath,
+            if let originalFilePath = attachmentStream.bridgeStream.originalFilePath,
                let nsFileSize = OWSFileSystem.fileSize(ofPath: originalFilePath) {
                 let fileSize = nsFileSize.int64Value
                 if fileSize > 0 {
@@ -172,15 +172,15 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     private var fileTypeLabelConfig: CVLabelConfig {
-        var filename: String = attachment.sourceFilename ?? ""
+        var filename: String = attachment.reference.sourceFilename ?? ""
         if filename.isEmpty,
            let attachmentStream = attachmentStream,
-           let originalFilePath = attachmentStream.originalFilePath {
+           let originalFilePath = attachmentStream.bridgeStream.originalFilePath {
             filename = (originalFilePath as NSString).lastPathComponent
         }
         var fileExtension: String = (filename as NSString).pathExtension
         if fileExtension.isEmpty {
-            fileExtension = MimeTypeUtil.fileExtensionForMimeType(attachment.contentType) ?? ""
+            fileExtension = MimeTypeUtil.fileExtensionForMimeType(attachment.attachment.mimeType) ?? ""
         }
         let text = (fileExtension as NSString).localizedUppercase
 
@@ -195,17 +195,27 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     private func tryToBuildProgressView() -> UIView? {
 
         let direction: CVAttachmentProgressView.Direction
-        switch CVAttachmentProgressView.progressType(forAttachment: attachment,
-                                                     interaction: interaction) {
+        let transitTierDownloadState = genericAttachment.transitTierDownloadState
+        switch CVAttachmentProgressView.progressType(
+            forAttachment: attachment.attachment,
+            transitTierDownloadState: transitTierDownloadState,
+            interaction: interaction
+        ) {
         case .none:
             return nil
         case .uploading:
             // We currently only show progress for downloads here.
             return nil
         case .pendingDownload(let attachmentPointer):
-            direction = .download(attachmentPointer: attachmentPointer)
+            direction = .download(
+                attachmentPointer: attachmentPointer,
+                transitTierDownloadState: transitTierDownloadState
+            )
         case .downloading(let attachmentPointer):
-            direction = .download(attachmentPointer: attachmentPointer)
+            direction = .download(
+                attachmentPointer: attachmentPointer,
+                transitTierDownloadState: transitTierDownloadState
+            )
         case .unknown:
             owsFailDebug("Unknown progress type.")
             return nil
@@ -218,8 +228,11 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     private var hasProgressView: Bool {
-        switch CVAttachmentProgressView.progressType(forAttachment: attachment,
-                                                     interaction: interaction) {
+        switch CVAttachmentProgressView.progressType(
+            forAttachment: attachment.attachment,
+            transitTierDownloadState: genericAttachment.transitTierDownloadState,
+            interaction: interaction
+        ) {
         case .none,
              .uploading:
             // We currently only show progress for downloads here.
@@ -289,8 +302,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             case .default:
                 showShareUI(from: componentView.rootView)
             }
-        } else if let attachmentPointer = attachmentPointer {
-            switch attachmentPointer.state {
+        } else if let attachmentPointer = genericAttachment.attachmentPointer {
+            switch genericAttachment.transitTierDownloadState {
             case .failed, .pendingMessageRequest, .pendingManualDownload:
                 guard let message = renderItem.interaction as? TSMessage else {
                     owsFailDebug("Invalid interaction.")
@@ -311,7 +324,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     public var canQuickLook: Bool {
         guard #available(iOS 14.8, *) else { return false }
-        guard let url = attachmentStream?.originalMediaURL else {
+        guard let url = attachmentStream?.bridgeStream.originalMediaURL else {
             return false
         }
         return QLPreviewController.canPreview(url as NSURL)
@@ -319,10 +332,10 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     /// Returns the `PKPass` represented by this attachment, if any.
     public func representedPKPass() -> PKPass? {
-        guard attachmentStream?.contentType == "application/vnd.apple.pkpass" else {
+        guard attachmentStream?.mimeType == "application/vnd.apple.pkpass" else {
             return nil
         }
-        guard let data = try? attachmentStream?.readDataFromFile() else {
+        guard let data = try? attachmentStream?.bridgeStream.readDataFromFile() else {
             return nil
         }
         return try? PKPass(data: data)
@@ -334,7 +347,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             return
         }
         // TODO: Ensure share UI is shown from correct location.
-        AttachmentSharing.showShareUI(for: attachmentStream, sender: view)
+        AttachmentSharing.showShareUI(for: attachmentStream.bridgeStream, sender: view)
     }
 
     // MARK: -
@@ -378,7 +391,7 @@ extension CVComponentGenericAttachment: QLPreviewControllerDataSource {
 
     public func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
         owsAssertDebug(index == 0)
-        return (attachmentStream?.originalMediaURL as QLPreviewItem?) ?? UnavailableItem()
+        return (attachmentStream?.bridgeStream.originalMediaURL as QLPreviewItem?) ?? UnavailableItem()
     }
 
     private class UnavailableItem: NSObject, QLPreviewItem {

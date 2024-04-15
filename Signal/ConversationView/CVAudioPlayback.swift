@@ -8,9 +8,9 @@ import SignalServiceKit
 import SignalUI
 
 protocol CVAudioPlayerListener {
-    func audioPlayerStateDidChange(attachmentId: String)
-    func audioPlayerDidFinish(attachmentId: String)
-    func audioPlayerDidMarkViewed(attachmentId: String)
+    func audioPlayerStateDidChange(attachmentId: TSResourceId)
+    func audioPlayerDidFinish(attachmentId: TSResourceId)
+    func audioPlayerDidMarkViewed(attachmentId: TSResourceId)
 }
 
 // MARK: -
@@ -43,7 +43,7 @@ public class CVAudioPlayer: NSObject {
         }
     }
 
-    private var autoplayAttachmentId: String?
+    private var autoplayAttachmentId: TSResourceId?
 
     // Views need to update to reflect playback progress, state changes.
     private var listeners = WeakArray<CVAudioPlayerListener>()
@@ -61,7 +61,7 @@ public class CVAudioPlayer: NSObject {
     //
     // Playback progress should be continuous even if the corresponding
     // cells are reloaded or scrolled offscreen and unloaded.
-    public typealias AttachmentId = String
+    public typealias AttachmentId = TSResourceId
     private var progressCache = LRUCache<AttachmentId, TimeInterval>(maxSize: 512)
 
     // Playback rate cached by thread id, _not_ attachment ID. Playback rate is preserved
@@ -76,7 +76,7 @@ public class CVAudioPlayer: NSObject {
     // called when the current attachment finishes playing.
     var shouldAutoplayNextAudioAttachment: (() -> Bool)?
 
-    public func audioPlaybackState(forAttachmentId attachmentId: String) -> AudioPlaybackState {
+    public func audioPlaybackState(forAttachmentId attachmentId: TSResourceId) -> AudioPlaybackState {
         AssertIsOnMainThread()
 
         guard let audioPlayback = audioPlayback else {
@@ -91,7 +91,7 @@ public class CVAudioPlayer: NSObject {
     private func ensurePlayback(for attachment: AudioAttachment, forAutoplay: Bool = false) -> CVAudioPlayback? {
         AssertIsOnMainThread()
 
-        guard let attachmentId = attachment.attachmentStream?.uniqueId else {
+        guard let attachmentId = attachment.attachmentStream?.resourceId else {
             return nil
         }
 
@@ -190,8 +190,8 @@ public class CVAudioPlayer: NSObject {
         // Play a tone indicating the next track is starting.
         playStandardSound(.beginNextTrack) { [weak self] in
             // Make sure the user didn't start another attachment while the tone was playing.
-            guard self?.autoplayAttachmentId == attachmentStream.uniqueId else { return }
-            guard self?.audioPlayback?.attachmentId == attachmentStream.uniqueId else { return }
+            guard self?.autoplayAttachmentId == attachmentStream.resourceId else { return }
+            guard self?.audioPlayback?.attachmentId == attachmentStream.resourceId else { return }
             guard audioPlayback.audioPlaybackState != .playing else { return }
 
             if audioAttachment.markOwningMessageAsViewed() {
@@ -205,20 +205,22 @@ public class CVAudioPlayer: NSObject {
         }
     }
 
-    public func setPlaybackProgress(progress: TimeInterval,
-                                    forAttachmentStream attachmentStream: TSAttachmentStream) {
+    public func setPlaybackProgress(
+        progress: TimeInterval,
+        forAttachmentStream attachmentStream: TSResourceStream
+    ) {
         AssertIsOnMainThread()
 
-        progressCache[attachmentStream.uniqueId] = progress
-        if let audioPlayback = audioPlayback, audioPlayback.attachmentId == attachmentStream.uniqueId {
+        progressCache[attachmentStream.resourceId] = progress
+        if let audioPlayback = audioPlayback, audioPlayback.attachmentId == attachmentStream.resourceId {
             audioPlayback.setProgress(progress)
         }
     }
 
-    public func playbackProgress(forAttachmentStream attachmentStream: TSAttachmentStream) -> TimeInterval {
+    public func playbackProgress(forAttachmentStream attachmentStream: TSResourceStream) -> TimeInterval {
         AssertIsOnMainThread()
 
-        let attachmentId = attachmentStream.uniqueId
+        let attachmentId = attachmentStream.resourceId
         return progressCache[attachmentId] ?? 0
     }
 
@@ -311,7 +313,7 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
     fileprivate weak var delegate: CVAudioPlaybackDelegate?
 
     fileprivate let uniqueThreadId: String?
-    fileprivate let attachmentId: String
+    fileprivate let attachmentId: TSResourceId
 
     private let audioPlayer: AudioPlayer
 
@@ -380,9 +382,9 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
             owsFailDebug("missing audio attachment stream \(attachment)")
             return nil
         }
-        self.attachmentId = attachmentStream.uniqueId
+        self.attachmentId = attachmentStream.resourceId
 
-        guard let mediaURL = attachmentStream.originalMediaURL else {
+        guard let mediaURL = attachmentStream.bridgeStream.originalMediaURL else {
             owsFailDebug("mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
             return nil
         }

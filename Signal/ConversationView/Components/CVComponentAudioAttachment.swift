@@ -12,8 +12,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     private let audioAttachment: AudioAttachment
     private let nextAudioAttachment: AudioAttachment?
-    private var attachment: TSAttachment { audioAttachment.attachment }
-    private var attachmentStream: TSAttachmentStream? { audioAttachment.attachmentStream }
+    private var attachment: TSResource { audioAttachment.attachment }
+    private var attachmentStream: TSResourceStream? { audioAttachment.attachmentStream }
     private let footerOverlay: CVComponent?
 
     init(itemModel: CVItemModel, audioAttachment: AudioAttachment, nextAudioAttachment: AudioAttachment?, footerOverlay: CVComponent?) {
@@ -65,7 +65,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             }
         }
 
-        owsAssertDebug(attachment.isAudioMimeType)
+        owsAssertDebug(MimeTypeUtil.isSupportedAudioMimeType(attachment.mimeType))
         let presentation = AudioMessagePresenter(
             isIncoming: isIncoming,
             audioAttachment: audioAttachment,
@@ -145,7 +145,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         }
 
         if messageWasDeleted,
-           cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId) == .playing {
+           cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.resourceId) == .playing {
             cvAudioPlayer.stopAll()
         }
     }
@@ -310,14 +310,14 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 // MARK: - CVAudioPlayerListener
 
 extension CVComponentAudioAttachment: CVAudioPlayerListener {
-    func audioPlayerStateDidChange(attachmentId: String) {}
+    func audioPlayerStateDidChange(attachmentId: TSResourceId) {}
 
-    func audioPlayerDidFinish(attachmentId: String) {
-        guard attachmentId == audioAttachment.attachment.uniqueId else { return }
+    func audioPlayerDidFinish(attachmentId: TSResourceId) {
+        guard attachmentId == audioAttachment.attachment.resourceId else { return }
         cvAudioPlayer.autoplayNextAudioAttachmentIfNeeded(nextAudioAttachment)
     }
 
-    func audioPlayerDidMarkViewed(attachmentId: String) {}
+    func audioPlayerDidMarkViewed(attachmentId: TSResourceId) {}
 }
 
 // MARK: - DatabaseChangeDelegate
@@ -345,11 +345,10 @@ extension CVComponentAudioAttachment: DatabaseChangeDelegate {
 extension CVComponentAudioAttachment: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         if audioAttachment.isVoiceMessage {
-            if let attachmentStream = attachmentStream,
-               attachmentStream.audioDurationSeconds() > 0 {
+            if audioAttachment.durationSeconds > 0 {
                 let format = OWSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO_%d", tableName: "PluralAware",
                                                comment: "Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}.")
-                return String.localizedStringWithFormat(format, Int(attachmentStream.audioDurationSeconds()))
+                return String.localizedStringWithFormat(format, Int(audioAttachment.durationSeconds))
             } else {
                 return OWSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO",
                                          comment: "Accessibility label for a voice memo.")

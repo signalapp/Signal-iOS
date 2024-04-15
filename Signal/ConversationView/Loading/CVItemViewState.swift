@@ -474,15 +474,22 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             itemViewState.shouldHideFooter = false
         }
 
-        if let nextMessage = nextItem?.interaction as? TSMessage,
-           let attachment = nextMessage.mediaAttachments(transaction: transaction).first,
-           attachment.isAudioMimeType {
+        if
+            let nextMessage = nextItem?.interaction as? TSMessage,
+            let attachmentRef = DependenciesBridge.shared.tsResourceStore
+                .bodyMediaAttachments(for: nextMessage, tx: transaction.asV2Read).first,
+            let attachment = attachmentRef.fetch(tx: transaction),
+            MimeTypeUtil.isSupportedAudioMimeType(attachment.mimeType)
+        {
 
             itemViewState.nextAudioAttachment = AudioAttachment(
                 attachment: attachment,
                 owningMessage: nextMessage,
                 metadata: nil,
-                isVoiceMessage: attachment.isVoiceMessage(inContainingMessage: nextMessage, transaction: transaction)
+                isVoiceMessage: attachmentRef.renderingFlag == .voiceMessage,
+                sourceFilename: attachmentRef.sourceFilename,
+                receivedAtDate: nextMessage.receivedAtDate,
+                transitTierDownloadState: attachment.transitTierDownloadState(tx: transaction.asV2Read)
             )
         }
     }

@@ -9,14 +9,47 @@ import SignalUI
 enum ViewOnceState: Equatable {
     case unknown
     case incomingExpired
-    case incomingDownloading(attachmentPointer: TSAttachmentPointer, attachmentType: TSAttachmentType)
+    case incomingDownloading(attachmentPointer: TSResourcePointer, renderingFlag: AttachmentReference.RenderingFlag)
     case incomingFailed
     case incomingPending
-    case incomingAvailable(attachmentStream: TSAttachmentStream, attachmentType: TSAttachmentType)
+    case incomingAvailable(attachmentStream: TSResourceStream, renderingFlag: AttachmentReference.RenderingFlag)
     case incomingInvalidContent
     case outgoingSending
     case outgoingFailed
     case outgoingSentExpired
+
+    static func == (lhs: ViewOnceState, rhs: ViewOnceState) -> Bool {
+        switch (lhs, rhs) {
+        case
+            (.unknown, .unknown),
+            (.incomingExpired, .incomingExpired),
+            (.incomingFailed, .incomingFailed),
+            (.incomingPending, .incomingPending),
+            (.incomingInvalidContent, .incomingInvalidContent),
+            (.outgoingSending, .outgoingSending),
+            (.outgoingFailed, .outgoingFailed),
+            (.outgoingSentExpired, .outgoingSentExpired):
+            return true
+        case let (.incomingDownloading(lhsPointer, lhsFlag), .incomingDownloading(rhsPointer, rhsFlag)):
+            return lhsPointer.resourceId == rhsPointer.resourceId
+                && lhsFlag == rhsFlag
+        case let (.incomingAvailable(lhsStream, lhsFlag), .incomingAvailable(rhsStream, rhsFlag)):
+            return lhsStream.resourceId == rhsStream.resourceId
+                && lhsFlag == rhsFlag
+        case
+            (.unknown, _),
+            (.incomingExpired, _),
+            (.incomingFailed, _),
+            (.incomingPending, _),
+            (.incomingInvalidContent, _),
+            (.outgoingSending, _),
+            (.outgoingFailed, _),
+            (.outgoingSentExpired, _),
+            (.incomingDownloading, _),
+            (.incomingAvailable, _):
+            return false
+        }
+    }
 }
 
 // MARK: -
@@ -45,7 +78,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
             return false
         }
     }
-    private var attachmentStream: TSAttachmentStream? {
+    private var attachmentStream: TSResourceStream? {
         if case .incomingAvailable(let attachmentStream, _) = viewOnceState {
             return attachmentStream
         }
@@ -91,10 +124,15 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
 
         switch viewOnceState {
         case .incomingDownloading(let attachmentPointer, _):
-            let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                        diameter: iconSize,
-                                                        isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
-                                                        mediaCache: mediaCache)
+            let progressView = CVAttachmentProgressView(
+                direction: .download(
+                    attachmentPointer: attachmentPointer,
+                    transitTierDownloadState: .downloading
+                ),
+                diameter: iconSize,
+                isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
+                mediaCache: mediaCache
+            )
             subviews.append(progressView)
         default:
             if shouldShowIcon, let iconName = self.iconName {
@@ -356,14 +394,14 @@ fileprivate extension CVComponentViewOnce {
 
     private var viewOnceMessageType: ViewOnceMessageType {
         switch viewOnceState {
-        case let .incomingAvailable(attachmentStream, attachmentType):
-            if attachmentStream.isVideoMimeType {
+        case let .incomingAvailable(attachmentStream, renderingFlag):
+            if attachmentStream.bridgeStream.isVideoMimeType {
                 return .video
             } else {
                 owsAssertDebug(
-                    attachmentStream.isImageMimeType
-                    || attachmentStream.getAnimatedMimeType() != .notAnimated
-                    || attachmentStream.isLoopingVideo(attachmentType)
+                    attachmentStream.bridgeStream.isImageMimeType
+                    || attachmentStream.bridgeStream.getAnimatedMimeType() != .notAnimated
+                    || attachmentStream.bridgeStream.isLoopingVideo(renderingFlag.tsAttachmentType)
                 )
                 return .photo
             }

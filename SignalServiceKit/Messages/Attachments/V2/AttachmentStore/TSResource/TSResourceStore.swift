@@ -129,7 +129,7 @@ extension TSResourceStore {
         for message: TSMessage,
         tx: DBReadTransaction
     ) -> [ReferencedTSResource] {
-        let references = self.bodyAttachments(for: message, tx: tx)
+        let references = self.bodyMediaAttachments(for: message, tx: tx)
         let attachments = Dictionary(
             grouping: self.fetch(references.map(\.resourceId), tx: tx),
             by: \.resourceId

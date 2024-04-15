@@ -33,7 +33,7 @@ public class CVComponentStateWrapper: NSObject, CVItemViewModel {
         return componentState.stickerMetadata
     }
 
-    public var stickerAttachment: TSAttachmentStream? {
+    public var stickerAttachment: TSResourceStream? {
         AssertIsOnMainThread()
 
         return componentState.stickerAttachment
@@ -121,19 +121,19 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         return (interaction as? TSMessage)?.wasRemotelyDeleted == true
     }
 
-    public var audioAttachmentStream: TSAttachmentStream? {
+    public var audioAttachmentStream: TSResourceStream? {
         AssertIsOnMainThread()
 
         return componentState.audioAttachmentStream
     }
 
-    public var genericAttachmentStream: TSAttachmentStream? {
+    public var genericAttachmentStream: TSResourceStream? {
         AssertIsOnMainThread()
 
         return componentState.genericAttachmentStream
     }
 
-    public var bodyMediaAttachmentStreams: [TSAttachmentStream] {
+    public var bodyMediaAttachmentStreams: [TSResourceStream] {
         AssertIsOnMainThread()
 
         return componentState.bodyMediaAttachmentStreams
@@ -156,7 +156,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         guard let bodyMedia = componentState.bodyMedia else {
             return false
         }
-        return !bodyMedia.items.compactMap { $0.attachment.asTransitTierPointer()?.bridgePointerAndNotStream }.isEmpty
+        return bodyMedia.items.contains(where: { $0.attachment.attachment.asResourceStream() == nil })
     }
 }
 
@@ -199,23 +199,27 @@ extension CVItemViewModelImpl {
         }
 
         if let attachment = self.audioAttachmentStream {
-            return [attachment]
+            return [attachment.bridgeStream]
         } else if let attachment = self.genericAttachmentStream {
-            return [attachment]
+            return [attachment.bridgeStream]
         } else {
-            return self.bodyMediaAttachmentStreams.filter { attachment in
-                guard attachment.isValidVisualMedia else {
+            return self.bodyMediaAttachmentStreams.lazy.filter { attachment in
+                switch attachment.computeContentType() {
+                case .audio, .file:
+                    return false
+                case .image, .animatedImage:
+                    return true
+                case .video:
+                    if
+                        let filePath = attachment.bridgeStream.originalFilePath,
+                        UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(filePath)
+                    {
+                        return true
+                    }
                     return false
                 }
-                if attachment.isImageMimeType || attachment.getAnimatedMimeType() == .animated {
-                    return true
-                }
-                if attachment.isVideoMimeType,
-                   let filePath = attachment.originalFilePath,
-                   UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(filePath) {
-                    return true
-                }
-                return false
+            }.map { attachment in
+                return attachment.bridgeStream
             }
         }
     }
@@ -266,15 +270,15 @@ public extension CVComponentState {
         bodyText?.displayableText
     }
 
-    var audioAttachmentStream: TSAttachmentStream? {
+    var audioAttachmentStream: TSResourceStream? {
         audioAttachment?.attachmentStream
     }
 
-    var genericAttachmentStream: TSAttachmentStream? {
+    var genericAttachmentStream: TSResourceStream? {
         genericAttachment?.attachmentStream
     }
 
-    var bodyMediaAttachmentStreams: [TSAttachmentStream] {
+    var bodyMediaAttachmentStreams: [TSResourceStream] {
         guard let bodyMedia = self.bodyMedia else {
             return []
         }
@@ -292,7 +296,7 @@ public extension CVComponentState {
         sticker?.stickerMetadata
     }
 
-    var stickerAttachment: TSAttachmentStream? {
+    var stickerAttachment: TSResourceStream? {
         sticker?.attachmentStream
     }
 

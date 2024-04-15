@@ -889,7 +889,10 @@ class StoryItemMediaView: UIView {
                 blurHashImageView.autoPinEdgesToSuperviewEdges()
             }
 
-            let view = buildDownloadStateView(for: pointer.attachment)
+            let view = buildDownloadStateView(
+                for: pointer.attachment,
+                transitTierDownloadState: pointer.transitTierDownloadState
+            )
             container.addSubview(view)
             view.autoPinEdgesToSuperviewEdges()
 
@@ -966,8 +969,11 @@ class StoryItemMediaView: UIView {
         return imageView
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer) -> UIView? {
-        guard let blurHash = pointer.blurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
+    private func buildBlurHashImageViewIfAvailable(pointer: TSResourcePointer) -> UIView? {
+        guard
+            let blurHash = pointer.resource.resourceBlurHash,
+            let blurHashImage = BlurHash.image(for: blurHash)
+        else {
             return nil
         }
         let imageView = UIImageView()
@@ -993,9 +999,15 @@ class StoryItemMediaView: UIView {
     }
 
     private static let mediaCache = CVMediaCache()
-    private func buildDownloadStateView(for pointer: TSAttachmentPointer) -> UIView {
+    private func buildDownloadStateView(
+        for pointer: TSResourcePointer,
+        transitTierDownloadState: TSAttachmentPointerState?
+    ) -> UIView {
         let progressView = CVAttachmentProgressView(
-            direction: .download(attachmentPointer: pointer),
+            direction: .download(
+                attachmentPointer: pointer,
+                transitTierDownloadState: transitTierDownloadState
+            ),
             diameter: 56,
             isDarkThemeEnabled: true,
             mediaCache: Self.mediaCache
@@ -1021,9 +1033,17 @@ class StoryItem: NSObject {
     let numberOfReplies: UInt64
     enum Attachment: Equatable {
         struct Pointer: Equatable {
-            let attachment: TSAttachmentPointer
+            let attachment: TSResourcePointer
+            let transitTierDownloadState: TSAttachmentPointerState?
             let caption: String?
             let captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]
+
+            static func == (lhs: StoryItem.Attachment.Pointer, rhs: StoryItem.Attachment.Pointer) -> Bool {
+                return lhs.attachment.resourceId == rhs.attachment.resourceId
+                    && lhs.transitTierDownloadState == rhs.transitTierDownloadState
+                    && lhs.caption == rhs.caption
+                    && lhs.captionStyles == rhs.captionStyles
+            }
         }
 
         struct Stream: Equatable {
@@ -1068,11 +1088,13 @@ extension StoryItem {
 
     @discardableResult
     func startAttachmentDownloadIfNecessary(priority: AttachmentDownloadPriority = .default) -> Promise<Void>? {
-        guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.attachment.state) else {
-            return nil
-        }
-
         return databaseStorage.write { tx in
+            guard
+                case .pointer(let pointer) = attachment,
+                ![.enqueued, .downloading].contains(pointer.attachment.downloadState(tx: tx.asV2Read))
+            else {
+                return nil
+            }
             return DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
                 message,
                 priority: priority,

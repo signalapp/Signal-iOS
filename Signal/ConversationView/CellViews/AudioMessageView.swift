@@ -15,8 +15,8 @@ class AudioMessageView: ManualStackView {
         static let innerLayoutMargins = UIEdgeInsets(hMargin: 0, vMargin: 4)
     }
     // MARK: - State
-    private var attachment: TSAttachment { presentation.audioAttachment.attachment }
-    private var attachmentStream: TSAttachmentStream? { presentation.audioAttachment.attachmentStream }
+    private var attachment: TSResource { presentation.audioAttachment.attachment }
+    private var attachmentStream: TSResourceStream? { presentation.audioAttachment.attachmentStream }
     private var durationSeconds: TimeInterval { presentation.audioAttachment.durationSeconds }
 
     private var isIncoming: Bool {
@@ -26,7 +26,7 @@ class AudioMessageView: ManualStackView {
     private let mediaCache: CVMediaCache
 
     private var audioPlaybackState: AudioPlaybackState {
-        cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId)
+        cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.resourceId)
     }
 
     private var elapsedSeconds: TimeInterval {
@@ -142,7 +142,10 @@ class AudioMessageView: ManualStackView {
             leftView = playPauseContainer
         } else if let attachmentPointer = presentation.audioAttachment.attachmentPointer {
             leftView = CVAttachmentProgressView(
-                direction: .download(attachmentPointer: attachmentPointer),
+                direction: .download(
+                    attachmentPointer: attachmentPointer,
+                    transitTierDownloadState: presentation.audioAttachment.transitTierDownloadState
+                ),
                 diameter: Constants.animationSize,
                 isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                 mediaCache: mediaCache
@@ -291,7 +294,7 @@ class AudioMessageView: ManualStackView {
 
     func isPointInScrubbableRegion(_ point: CGPoint) -> Bool {
         // If we have a waveform but aren't done sampling it, don't allow scrubbing yet.
-        if let waveform = attachmentStream?.audioWaveform(), !waveform.isSamplingComplete {
+        if let waveform = attachmentStream?.bridgeStream.audioWaveform(), !waveform.isSamplingComplete {
             return false
         }
 
@@ -464,7 +467,7 @@ class AudioMessageView: ManualStackView {
             guard let attachmentStream = attachmentStream else {
                 return false
             }
-            return cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.uniqueId) == .playing
+            return cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.resourceId) == .playing
         }()
         presentation.playbackRateView.setVisibility(isPlaying, animated: animated)
     }
@@ -473,26 +476,26 @@ class AudioMessageView: ManualStackView {
 // MARK: - CVAudioPlayerListener
 
 extension AudioMessageView: CVAudioPlayerListener {
-    func audioPlayerStateDidChange(attachmentId: String) {
+    func audioPlayerStateDidChange(attachmentId: TSResourceId) {
         AssertIsOnMainThread()
 
-        guard attachmentId == attachment.uniqueId else { return }
+        guard attachmentId == attachment.resourceId else { return }
 
         updateContents(animated: true)
     }
 
-    func audioPlayerDidFinish(attachmentId: String) {
+    func audioPlayerDidFinish(attachmentId: TSResourceId) {
         AssertIsOnMainThread()
 
-        guard attachmentId == attachment.uniqueId else { return }
+        guard attachmentId == attachment.resourceId else { return }
 
         updateContents(animated: true)
     }
 
-    func audioPlayerDidMarkViewed(attachmentId: String) {
+    func audioPlayerDidMarkViewed(attachmentId: TSResourceId) {
         AssertIsOnMainThread()
 
-        guard !isViewed, attachmentId == attachment.uniqueId else { return }
+        guard !isViewed, attachmentId == attachment.resourceId else { return }
 
         setViewed(true, animated: true)
     }
@@ -502,7 +505,7 @@ extension AudioAttachment {
     var sizeString: String {
         switch state {
         case .attachmentStream(attachmentStream: let stream, _, audioDurationSeconds: _):
-            return ByteCountFormatter().string(for: stream.byteCount) ?? ""
+            return ByteCountFormatter().string(for: stream.unenecryptedResourceByteCount) ?? ""
         case .attachmentPointer:
             owsFailDebug("Shouldn't get here - undownloaded media not implemented")
             return ""
@@ -510,10 +513,10 @@ extension AudioAttachment {
     }
     var dateString: String {
         switch state {
-        case .attachmentStream(attachmentStream: let stream, _, audioDurationSeconds: _):
+        case .attachmentStream(_, _, _):
             let dateFormatter = DateFormatter()
             dateFormatter.setLocalizedDateFormatFromTemplate("Mdyy")
-            return dateFormatter.string(from: stream.creationTimestamp)
+            return dateFormatter.string(from: receivedAtDate)
         case .attachmentPointer:
             owsFailDebug("Shouldn't get here - undownloaded media not implemented")
             return ""

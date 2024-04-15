@@ -791,7 +791,7 @@ public struct ForwardMessageItem {
                 builder.contactShare = oldContactShare.copyForRendering()
             }
 
-            var attachmentStreams = [TSAttachmentStream]()
+            var attachmentStreams = [TSResourceStream]()
             attachmentStreams.append(contentsOf: componentState.bodyMediaAttachmentStreams)
             if let attachmentStream = componentState.audioAttachmentStream {
                 attachmentStreams.append(attachmentStream)
@@ -802,7 +802,7 @@ public struct ForwardMessageItem {
 
             if !attachmentStreams.isEmpty, let message = interaction as? TSMessage {
                 builder.attachments = try attachmentStreams.map { attachmentStream in
-                    try attachmentStream.cloneAsSignalAttachment(sourceMessage: message, transaction: transaction)
+                    try attachmentStream.bridgeStream.cloneAsSignalAttachment(sourceMessage: message, transaction: transaction)
                 }
             }
 
@@ -810,7 +810,7 @@ public struct ForwardMessageItem {
                 builder.stickerMetadata = stickerMetadata
 
                 if let stickerAttachment = componentState.stickerAttachment {
-                    builder.stickerAttachment = stickerAttachment
+                    builder.stickerAttachment = stickerAttachment.bridgeStream
                 }
             }
         }

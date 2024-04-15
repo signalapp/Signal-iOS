@@ -1063,7 +1063,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: TSAttachmentStream,
+        attachmentStream: TSResourceStream,
         imageView: UIView
     ) {
         guard let thread = thread else {
@@ -1071,7 +1071,7 @@ extension MessageDetailViewController: CVComponentDelegate {
             return
         }
         guard let mediaPageVC = MediaPageViewController(
-            initialMediaAttachment: attachmentStream,
+            initialMediaAttachment: attachmentStream.bridgeStream,
             thread: thread,
             spoilerState: self.spoilerState,
             showingSingleMessage: true

@@ -22,7 +22,11 @@ class AudioCell: MediaTileListModeCell {
                 attachment: audioItem.attachmentStream,
                 owningMessage: audioItem.message,
                 metadata: audioItem.metadata,
-                isVoiceMessage: audioItem.isVoiceMessage
+                isVoiceMessage: audioItem.isVoiceMessage,
+                sourceFilename: audioItem.attachmentStream.sourceFilename,
+                receivedAtDate: audioItem.attachmentStream.creationTimestamp,
+                // Its a stream, its already downloaded
+                transitTierDownloadState: nil
             )
         }
     }
@@ -63,7 +67,11 @@ class AudioCell: MediaTileListModeCell {
             attachment: audioItem.attachmentStream,
             owningMessage: audioItem.message,
             metadata: audioItem.metadata,
-            isVoiceMessage: audioItem.isVoiceMessage
+            isVoiceMessage: audioItem.isVoiceMessage,
+            sourceFilename: audioItem.attachmentStream.sourceFilename,
+            receivedAtDate: audioItem.attachmentStream.creationTimestamp,
+            // Its a stream, its already downloaded
+            transitTierDownloadState: nil
         ) else {
             return defaultCellHeight
         }

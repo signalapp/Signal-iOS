@@ -9,10 +9,41 @@ import SignalServiceKit
 // Represents a _playable_ audio attachment.
 public class AudioAttachment {
     public enum State: Equatable {
-        case attachmentStream(attachmentStream: TSAttachmentStream, isVoiceMessage: Bool, audioDurationSeconds: TimeInterval)
-        case attachmentPointer(attachmentPointer: TSAttachmentPointer, isVoiceMessage: Bool)
+        case attachmentStream(
+            attachmentStream: TSResourceStream,
+            isVoiceMessage: Bool,
+            audioDurationSeconds: TimeInterval
+        )
+        case attachmentPointer(
+            attachmentPointer: TSResourcePointer,
+            isVoiceMessage: Bool,
+            transitTierDownloadState: TSAttachmentPointerState?
+        )
+
+        public static func == (lhs: AudioAttachment.State, rhs: AudioAttachment.State) -> Bool {
+            switch (lhs, rhs) {
+            case let (
+                .attachmentStream(lhsStream, lhsIsVoiceMessage, lhsDuration),
+                .attachmentStream(rhsStream, rhsIsVoiceMessage, rhsDuration)
+            ):
+                return lhsStream.resourceId == rhsStream.resourceId
+                    && lhsIsVoiceMessage == rhsIsVoiceMessage
+                    && lhsDuration == rhsDuration
+            case let (
+                .attachmentPointer(lhsStream, lhsIsVoiceMessage, lhsState),
+                .attachmentPointer(rhsStream, rhsIsVoiceMessage, rhsState)
+            ):
+                return lhsStream.resourceId == rhsStream.resourceId
+                    && lhsIsVoiceMessage == rhsIsVoiceMessage
+                    && lhsState == rhsState
+            case (.attachmentStream, _), (.attachmentPointer, _):
+                return false
+            }
+        }
     }
     public let state: State
+    public let sourceFilename: String?
+    public let receivedAtDate: Date
     public let owningMessage: TSMessage?
 
     // Set at time of init. Value doesn't change even after download completes
@@ -20,23 +51,40 @@ public class AudioAttachment {
     public let isDownloading: Bool
 
     public init?(
-        attachment: TSAttachment,
+        attachment: TSResource,
         owningMessage: TSMessage?,
         metadata: MediaMetadata?,
-        isVoiceMessage: Bool
+        isVoiceMessage: Bool,
+        sourceFilename: String?,
+        receivedAtDate: Date,
+        transitTierDownloadState: TSAttachmentPointerState?
     ) {
-        if let attachmentStream = attachment.asResourceStream()?.bridgeStream {
-            let audioDurationSeconds = attachmentStream.audioDurationSeconds()
-            guard audioDurationSeconds > 0 else {
+        if let attachmentStream = attachment.asResourceStream() {
+            let audioDurationSeconds: TimeInterval
+            switch attachmentStream.computeContentType() {
+            case .audio(let duration):
+                guard let duration, duration > 0 else {
+                    fallthrough
+                }
+                audioDurationSeconds = duration
+            default:
                 return nil
             }
-            state = .attachmentStream(attachmentStream: attachmentStream, isVoiceMessage: isVoiceMessage, audioDurationSeconds: audioDurationSeconds)
+            state = .attachmentStream(
+                attachmentStream: attachmentStream,
+                isVoiceMessage: isVoiceMessage,
+                audioDurationSeconds: audioDurationSeconds
+            )
             isDownloading = false
-        } else if let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream {
-            state = .attachmentPointer(attachmentPointer: attachmentPointer, isVoiceMessage: isVoiceMessage)
+        } else if let attachmentPointer = attachment.asTransitTierPointer() {
+            state = .attachmentPointer(
+                attachmentPointer: attachmentPointer,
+                isVoiceMessage: isVoiceMessage,
+                transitTierDownloadState: transitTierDownloadState
+            )
 
-            switch attachmentPointer.state {
-            case .failed, .pendingMessageRequest, .pendingManualDownload:
+            switch transitTierDownloadState {
+            case .none, .failed, .pendingMessageRequest, .pendingManualDownload:
                 isDownloading = false
             case .enqueued, .downloading:
                 isDownloading = true
@@ -45,7 +93,8 @@ public class AudioAttachment {
             owsFailDebug("Invalid attachment.")
             return nil
         }
-
+        self.sourceFilename = sourceFilename
+        self.receivedAtDate = receivedAtDate
         self.owningMessage = owningMessage
     }
 }
@@ -53,16 +102,16 @@ public class AudioAttachment {
 extension AudioAttachment: Dependencies {
     var isDownloaded: Bool { attachmentStream != nil }
 
-    public var attachment: TSAttachment {
+    public var attachment: TSResource {
         switch state {
         case .attachmentStream(let attachmentStream, _, _):
             return attachmentStream
-        case .attachmentPointer(let attachmentPointer, _):
-            return attachmentPointer
+        case .attachmentPointer(let attachmentPointer, _, _):
+            return attachmentPointer.resource
         }
     }
 
-    public var attachmentStream: TSAttachmentStream? {
+    public var attachmentStream: TSResourceStream? {
         switch state {
         case .attachmentStream(let attachmentStream, _, _):
             return attachmentStream
@@ -71,12 +120,21 @@ extension AudioAttachment: Dependencies {
         }
     }
 
-    public var attachmentPointer: TSAttachmentPointer? {
+    public var attachmentPointer: TSResourcePointer? {
         switch state {
         case .attachmentStream:
             return nil
-        case .attachmentPointer(let attachmentPointer, _):
+        case .attachmentPointer(let attachmentPointer, _, _):
             return attachmentPointer
+        }
+    }
+
+    public var transitTierDownloadState: TSAttachmentPointerState? {
+        switch state {
+        case .attachmentStream:
+            return nil
+        case .attachmentPointer(_, _, let state):
+            return state
         }
     }
 
@@ -93,7 +151,7 @@ extension AudioAttachment: Dependencies {
         switch state {
         case .attachmentStream(_, let isVoiceMessage, _):
             return isVoiceMessage
-        case .attachmentPointer(_, let isVoiceMessage):
+        case .attachmentPointer(_, let isVoiceMessage, _):
             return isVoiceMessage
         }
     }

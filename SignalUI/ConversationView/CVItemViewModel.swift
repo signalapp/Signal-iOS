@@ -11,7 +11,7 @@ public protocol CVItemViewModel: AnyObject {
     var linkPreview: OWSLinkPreview? { get }
     var linkPreviewAttachment: TSAttachment? { get }
     var stickerInfo: StickerInfo? { get }
-    var stickerAttachment: TSAttachmentStream? { get }
+    var stickerAttachment: TSResourceStream? { get }
     var stickerMetadata: StickerMetadata? { get }
     var isGiftBadge: Bool { get }
     var hasRenderableContent: Bool { get }

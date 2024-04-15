@@ -14,10 +14,10 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     private var stickerMetadata: StickerMetadata? {
         sticker.stickerMetadata
     }
-    private var attachmentStream: TSAttachmentStream? {
+    private var attachmentStream: TSResourceStream? {
         sticker.attachmentStream
     }
-    private var attachmentPointer: TSAttachmentPointer? {
+    private var attachmentPointer: TSResourcePointer? {
         sticker.attachmentPointer
     }
     private var stickerInfo: StickerInfo? {
@@ -48,8 +48,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         let stackView = componentView.stackView
 
         if let attachmentStream = self.attachmentStream {
-            let cacheKey = attachmentStream.uniqueId
-            let isAnimated = attachmentStream.isAnimatedContent
+            let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.resourceId)
+            let isAnimated = attachmentStream.bridgeStream.isAnimatedContent
             let reusableMediaView: ReusableMediaView
             if let cachedView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
                 reusableMediaView = cachedView
@@ -69,8 +69,11 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                                 measurementKey: Self.measurementKey_stackView,
                                 subviews: [ mediaView ])
 
-            switch CVAttachmentProgressView.progressType(forAttachment: attachmentStream,
-                                                         interaction: interaction) {
+            switch CVAttachmentProgressView.progressType(
+                forAttachment: attachmentStream,
+                transitTierDownloadState: sticker.transitTierDownloadState,
+                interaction: interaction
+            ) {
             case .none:
                 break
             case .uploading:
@@ -97,9 +100,14 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                                 measurementKey: Self.measurementKey_stackView,
                                 subviews: [ placeholderView ])
 
-            let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                        isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
-                                                        mediaCache: mediaCache)
+            let progressView = CVAttachmentProgressView(
+                direction: .download(
+                    attachmentPointer: attachmentPointer,
+                    transitTierDownloadState: sticker.transitTierDownloadState
+                ),
+                isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
+                mediaCache: mediaCache
+            )
             stackView.addSubview(progressView)
             stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
         } else {
