@@ -24,7 +24,7 @@ protocol CallMemberComposableView: UIView {
     func clearConfiguration()
 }
 
-class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_IndividualRemoteBridge, CallMemberView_IndividualLocalBridge {
+class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_IndividualRemoteBridge {
     private let callMemberCameraOffView: CallMemberCameraOffView
     private let callMemberWaitingAndErrorView: CallMemberWaitingAndErrorView
     private let callMemberChromeOverlayView: CallMemberChromeOverlayView
@@ -643,16 +643,6 @@ protocol CallMemberView_IndividualRemoteBridge: UIView {
     var isScreenShare: Bool { get set }
     var isFullScreen: Bool { get set }
     var remoteVideoView: RemoteVideoView? { get }
-    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool, apply: (UIView) -> Void)
-    func configure(
-        call: SignalCall,
-        isFullScreen: Bool,
-        remoteGroupMemberDeviceState: RemoteDeviceState?
-    )
-}
-
-protocol CallMemberView_IndividualLocalBridge: UIView {
-    var associatedCallMemberVideoView: CallMemberVideoView? { get }
     func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool, apply: (UIView) -> Void)
     func configure(
         call: SignalCall,

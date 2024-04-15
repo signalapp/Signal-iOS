@@ -72,7 +72,6 @@ public class FeatureFlags: NSObject {
 
     public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = false
     public static let useCallMemberComposableViewsForRemoteUserInIndividualCalls = false
-    public static let useCallMemberComposableViewsForLocalUser = build.includes(.production)
 
     public static let useLibSignalNetForCdsi = build.includes(.internal)
 

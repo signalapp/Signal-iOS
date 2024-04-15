@@ -345,7 +345,7 @@ private class CallControlsViewModel {
         case .group(let call):
             isLocalMemberViewFullScreen = call.localDeviceState.joinState != .joined || call.remoteDeviceStates.isEmpty
         }
-        return call.isOutgoingVideoMuted || (FeatureFlags.useCallMemberComposableViewsForLocalUser && !isLocalMemberViewFullScreen)
+        return call.isOutgoingVideoMuted || !isLocalMemberViewFullScreen
     }
 
     var joinButtonIsHidden: Bool {

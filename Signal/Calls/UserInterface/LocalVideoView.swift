@@ -8,7 +8,7 @@ import SignalRingRTC
 import SignalServiceKit
 import WebRTC
 
-class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
+class LocalVideoView: UIView {
     private let localVideoCapturePreview = RTCCameraPreviewView()
 
     var captureSession: AVCaptureSession? {
@@ -79,14 +79,6 @@ class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
             break
         }
     }
-
-    // MARK: - CallMemberView_IndividualLocalBridge
-
-    var associatedCallMemberVideoView: CallMemberVideoView? { return nil }
-    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = false, apply: (UIView) -> Void) {
-        apply(self)
-    }
-    func configure(call: SignalCall, isFullScreen: Bool, remoteGroupMemberDeviceState: RemoteDeviceState? = nil) {}
 }
 
 extension RTCCameraPreviewView {

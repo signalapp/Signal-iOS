@@ -143,7 +143,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     private var remoteMemberView: CallMemberView_IndividualRemoteBridge
     private weak var remoteVideoTrack: RTCVideoTrack?
 
-    private var localVideoView: CallMemberView_IndividualLocalBridge
+    private var localVideoView: CallMemberView
 
     // MARK: - Gestures
 
@@ -171,20 +171,12 @@ class IndividualCallViewController: OWSViewController, CallObserver {
             remoteMemberView = RemoteVideoView()
         }
 
-        if FeatureFlags.useCallMemberComposableViewsForLocalUser {
-            let type = CallMemberView.MemberType.local
-            localVideoView = CallMemberView(type: type)
-        } else {
-            let localVideoView = LocalVideoView()
-            localVideoView.captureSession = call.videoCaptureController.captureSession
-            self.localVideoView = localVideoView
-        }
+        let type = CallMemberView.MemberType.local
+        localVideoView = CallMemberView(type: type)
 
         super.init()
 
-        if let callMemberView = self.localVideoView as? CallMemberView {
-            callMemberView.animatableLocalMemberViewDelegate = self
-        }
+        self.localVideoView.animatableLocalMemberViewDelegate = self
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateOrientationForPhone),
@@ -391,8 +383,6 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         contactAvatarContainerView.addSubview(contactAvatarView)
         if let videoView = localVideoView.associatedCallMemberVideoView {
             view.insertSubview(contactAvatarContainerView, belowSubview: videoView)
-        } else {
-            view.insertSubview(contactAvatarContainerView, belowSubview: localVideoView)
         }
 
         backButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "leaveCallViewButton")

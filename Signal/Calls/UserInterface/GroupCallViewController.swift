@@ -24,15 +24,13 @@ class GroupCallViewController: UIViewController {
     )
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
-    private var incomingCallControlsConstraint: NSLayoutConstraint?
-    private lazy var noVideoIndicatorView: UIStackView = createNoVideoIndicatorView()
     private lazy var callHeader = CallHeader(call: call, delegate: self)
     private lazy var notificationView = GroupCallNotificationView(call: call)
 
     private lazy var videoGrid = GroupCallVideoGrid(call: call)
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
 
-    private let localMemberView: CallMemberView_GroupBridge
+    private let localMemberView: CallMemberView
     private let speakerView: CallMemberView_GroupBridge
 
     private var didUserEverSwipeToSpeakerView = true
@@ -104,28 +102,14 @@ class GroupCallViewController: UIViewController {
             speakerView = GroupCallRemoteMemberView(context: .speaker)
         }
 
-        if FeatureFlags.useCallMemberComposableViewsForLocalUser {
-            let type = CallMemberView.MemberType.local
-            localMemberView = CallMemberView(type: type)
-        } else {
-            localMemberView = GroupCallLocalMemberView()
-        }
+        let type = CallMemberView.MemberType.local
+        localMemberView = CallMemberView(type: type)
 
         self.call = call
 
         super.init(nibName: nil, bundle: nil)
 
-        if let callMemberView = self.localMemberView as? CallMemberView {
-            callMemberView.animatableLocalMemberViewDelegate = self
-        }
-
-        if let callMemberView = self.localMemberView as? CallMemberView {
-            callMemberView.animatableLocalMemberViewDelegate = self
-        }
-
-        if let callMemberView = self.localMemberView as? CallMemberView {
-            callMemberView.animatableLocalMemberViewDelegate = self
-        }
+        self.localMemberView.animatableLocalMemberViewDelegate = self
 
         call.addObserverAndSyncState(observer: self)
 
@@ -232,29 +216,16 @@ class GroupCallViewController: UIViewController {
         callHeader.autoPinWidthToSuperview()
         callHeader.autoPinEdge(toSuperviewEdge: .top)
 
-        view.addSubview(noVideoIndicatorView)
-        noVideoIndicatorView.autoHCenterInSuperview()
-        // Be flexible on the vertical centering on a cramped screen.
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            noVideoIndicatorView.autoVCenterInSuperview()
-        }
-        noVideoIndicatorView.autoPinEdge(.top, to: .bottom, of: callHeader, withOffset: 8, relation: .greaterThanOrEqual)
-
         view.addSubview(notificationView)
         notificationView.autoPinEdgesToSuperviewEdges()
 
         view.addSubview(callControls)
         callControls.autoPinWidthToSuperview()
         callControls.autoPinEdge(toSuperviewEdge: .bottom)
-        callControls.autoPinEdge(.top, to: .bottom, of: noVideoIndicatorView, withOffset: 8, relation: .greaterThanOrEqual)
 
         view.addSubview(incomingCallControls)
         incomingCallControls.autoPinWidthToSuperview()
         incomingCallControls.autoPinEdge(toSuperviewEdge: .bottom)
-        // Save this constraint for manual activation/deactivation,
-        // so we don't push the noVideoIndicatorView out of center if we aren't showing the incoming controls.
-        incomingCallControlsConstraint = incomingCallControls.autoPinEdge(
-            .top, to: .bottom, of: noVideoIndicatorView, withOffset: 8, relation: .greaterThanOrEqual)
 
         view.addSubview(videoOverflow)
         videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
@@ -288,39 +259,6 @@ class GroupCallViewController: UIViewController {
         view.addGestureRecognizer(tapGesture)
 
         updateCallUI()
-    }
-
-    private func createNoVideoIndicatorView() -> UIStackView {
-        let icon = UIImageView()
-        icon.contentMode = .scaleAspectFit
-        icon.setTemplateImageName("video-slash-fill-28", tintColor: .ows_white)
-
-        let label = UILabel()
-        label.font = .dynamicTypeCaption1
-        label.text = OWSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
-                                       comment: "Indicates to the user that their camera is currently off.")
-        label.textAlignment = .center
-        label.textColor = Theme.darkThemePrimaryColor
-
-        let container = UIStackView(arrangedSubviews: [icon, label])
-        if UIDevice.current.isIPhone5OrShorter {
-            // Use a horizontal layout to save on vertical space.
-            // Allow the icon to shrink below its natural size of 28pt...
-            icon.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-            container.axis = .horizontal
-            container.spacing = 4
-            // ...by always matching the label's height.
-            container.alignment = .fill
-        } else {
-            // Use a simple vertical layout.
-            icon.autoSetDimensions(to: CGSize(square: 28))
-            container.axis = .vertical
-            container.spacing = 10
-            container.alignment = .center
-            label.autoPinWidthToSuperview()
-        }
-
-        return container
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -594,14 +532,10 @@ class GroupCallViewController: UIViewController {
         let localDevice = groupCall.localDeviceState
 
         let isFullScreen = localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
-        if let localMemberView = localMemberView as? CallMemberView {
-            localMemberView.configure(
-                call: call,
-                isFullScreen: isFullScreen
-            )
-        } else if let localMemberView = localMemberView as? GroupCallLocalMemberView {
-            localMemberView.configure(call: call, isFullScreen: isFullScreen)
-        }
+        localMemberView.configure(
+            call: call,
+            isFullScreen: isFullScreen
+        )
 
         localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
             // In the context of `isCallInPip`, the "pip" refers to when the entire call is in a pip
@@ -626,16 +560,9 @@ class GroupCallViewController: UIViewController {
 
         guard !isCallMinimized else { return }
 
-        // TODO: When ``CallMemberCameraOffView`` is used in Production,
-        // `noVideoIndicatorView` in this class will no longer be needed.
-        let showNoVideoIndicator = !FeatureFlags.useCallMemberComposableViewsForLocalUser && groupCall.remoteDeviceStates.isEmpty && groupCall.isOutgoingVideoMuted
-        // Hide the subviews of this view to collapse the stack.
-        noVideoIndicatorView.subviews.forEach { $0.isHidden = !showNoVideoIndicator }
-
         if call.groupCallRingState.isIncomingRing {
             callControls.isHidden = true
             incomingCallControls.isHidden = false
-            incomingCallControlsConstraint?.isActive = true
             // These views aren't visible at this point, but we need them to be configured anyway.
             updateMemberViewFrames(size: size, controlsAreHidden: true)
             updateScrollViewFrames(size: size, controlsAreHidden: true)
@@ -647,7 +574,6 @@ class GroupCallViewController: UIViewController {
             // To make sure all views transition properly, pretend we were showing the regular controls all along.
             callControls.isHidden = false
             incomingCallControls.isHidden = true
-            incomingCallControlsConstraint?.isActive = false
         }
 
         let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !groupCall.remoteDeviceStates.isEmpty

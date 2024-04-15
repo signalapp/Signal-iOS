@@ -37,7 +37,6 @@ class FlipCameraTooltipManager {
         tailDirection: TooltipView.TailDirection,
         isVideoMuted: Bool
     ) {
-        guard FeatureFlags.useCallMemberComposableViewsForLocalUser else { return }
         guard !isTooltipRead() else {
             // Tooltip already seen once. Don't show again.
             return
