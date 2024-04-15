@@ -9,6 +9,7 @@ import Foundation
 public struct MediaGalleryResourceFinder {
 
     private var recordFinder: MediaGalleryRecordFinder
+    private var attachmentFinder: MediaGalleryAttachmentFinder
 
     public var thread: TSThread { recordFinder.thread }
     public var threadId: Int64 { recordFinder.threadId }
@@ -16,11 +17,15 @@ public struct MediaGalleryResourceFinder {
     /// Media will be restricted to this type. Otherwise there is no filtering.
     public var filter: AllMediaFilter {
         get { recordFinder.filter }
-        set { recordFinder.filter = newValue }
+        set {
+            recordFinder.filter = newValue
+            attachmentFinder.filter = newValue
+        }
     }
 
     public init(thread: TSThread, filter: AllMediaFilter) {
         self.recordFinder = MediaGalleryRecordFinder(thread: thread, filter: filter)
+        self.attachmentFinder = MediaGalleryAttachmentFinder(thread: thread, filter: filter)
     }
 
     // MARK: -
@@ -32,13 +37,23 @@ public struct MediaGalleryResourceFinder {
         ascending: Bool,
         tx: DBReadTransaction
     ) -> [MediaGalleryItemId] {
-        return recordFinder.rowIds(
-            in: givenInterval,
-            excluding: bridgeDeletedAttachmentIds(deletedAttachmentIds),
-            offset: offset,
-            ascending: ascending,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
-        ).map { .legacy(mediaGalleryRecordId: $0) }
+        if shouldUseV2Finder(tx: tx) {
+            return attachmentFinder.galleryItemIds(
+                in: givenInterval,
+                excluding: bridgeV2AttachmentIds(deletedAttachmentIds),
+                offset: offset,
+                ascending: ascending,
+                tx: tx
+            ).map { .v2($0) }
+        } else {
+            return recordFinder.rowIds(
+                in: givenInterval,
+                excluding: deletedAttachmentIds,
+                offset: offset,
+                ascending: ascending,
+                transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+            ).map { .legacy(mediaGalleryRecordId: $0) }
+        }
     }
 
     public func galleryItemIdsAndDates(
@@ -48,20 +63,37 @@ public struct MediaGalleryResourceFinder {
         ascending: Bool,
         tx: DBReadTransaction
     ) -> [DatedMediaGalleryItemId] {
-        return recordFinder.rowIdsAndDates(
-            in: givenInterval,
-            excluding: bridgeDeletedAttachmentIds(deletedAttachmentIds),
-            offset: offset,
-            ascending: ascending,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
-        ).map(\.asItemId)
+        if shouldUseV2Finder(tx: tx) {
+            return attachmentFinder.galleryItemIdsAndDates(
+                in: givenInterval,
+                excluding: bridgeV2AttachmentIds(deletedAttachmentIds),
+                offset: offset,
+                ascending: ascending,
+                tx: tx
+            ).map(\.asItemId)
+        } else {
+            return recordFinder.rowIdsAndDates(
+                in: givenInterval,
+                excluding: deletedAttachmentIds,
+                offset: offset,
+                ascending: ascending,
+                transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+            ).map(\.asItemId)
+        }
     }
 
     public func recentMediaAttachments(limit: Int, tx: DBReadTransaction) -> [ReferencedTSResource] {
-        return recordFinder.recentMediaAttachments(
-            limit: limit,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
-        ).map(\.bridgeReferenced)
+        if shouldUseV2Finder(tx: tx) {
+            return attachmentFinder.recentMediaAttachments(
+                limit: limit,
+                tx: tx
+            ).map { $0.referencedTSResource }
+        } else {
+            return recordFinder.recentMediaAttachments(
+                limit: limit,
+                transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+            )
+        }
     }
 
     public func enumerateMediaAttachments(
@@ -71,18 +103,28 @@ public struct MediaGalleryResourceFinder {
         tx: DBReadTransaction,
         block: (Int, ReferencedTSResource) -> Void
     ) {
-        recordFinder.enumerateMediaAttachments(
-            in: dateInterval,
-            excluding: bridgeDeletedAttachmentIds(deletedAttachmentIds),
-            range: range,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead,
-            block: { index, attachment in
-                block(index, attachment.bridgeReferenced)
-            }
-        )
+        if shouldUseV2Finder(tx: tx) {
+            return attachmentFinder.enumerateMediaAttachments(
+                in: dateInterval,
+                excluding: bridgeV2AttachmentIds(deletedAttachmentIds),
+                range: range,
+                tx: tx,
+                block: { index, referencedAttachment in
+                    block(index, referencedAttachment.referencedTSResource)
+                }
+            )
+        } else {
+            return recordFinder.enumerateMediaAttachments(
+                in: dateInterval,
+                excluding: deletedAttachmentIds,
+                range: range,
+                transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead,
+                block: block
+            )
+        }
     }
 
-    public typealias EnumerationCompletion = MediaGalleryRecordFinder.EnumerationCompletion
+    public typealias EnumerationCompletion = MediaGalleryAttachmentFinder.EnumerationCompletion
 
     public func enumerateTimestamps(
         before date: Date,
@@ -91,15 +133,27 @@ public struct MediaGalleryResourceFinder {
         tx: DBReadTransaction,
         block: (DatedMediaGalleryItemId) -> Void
     ) -> EnumerationCompletion {
-        return recordFinder.enumerateTimestamps(
-            before: date,
-            excluding: bridgeDeletedAttachmentIds(deletedAttachmentIds),
-            count: count,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead,
-            block: { datedId in
-                block(datedId.asItemId)
-            }
-        )
+        if shouldUseV2Finder(tx: tx) {
+            return attachmentFinder.enumerateTimestamps(
+                before: date,
+                excluding: bridgeV2AttachmentIds(deletedAttachmentIds),
+                count: count,
+                tx: tx,
+                block: { datedId in
+                    block(datedId.asItemId)
+                }
+            )
+        } else {
+            return recordFinder.enumerateTimestamps(
+                before: date,
+                excluding: deletedAttachmentIds,
+                count: count,
+                transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead,
+                block: { datedId in
+                    block(datedId.asItemId)
+                }
+            )
+        }
     }
 
     public func enumerateTimestamps(
@@ -109,36 +163,56 @@ public struct MediaGalleryResourceFinder {
         tx: DBReadTransaction,
         block: (DatedMediaGalleryItemId) -> Void
     ) -> EnumerationCompletion {
-        return recordFinder.enumerateTimestamps(
-            after: date,
-            excluding: bridgeDeletedAttachmentIds(deletedAttachmentIds),
-            count: count,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead,
-            block: { datedId in
-                block(datedId.asItemId)
-            }
-        )
+        if shouldUseV2Finder(tx: tx) {
+            return attachmentFinder.enumerateTimestamps(
+                after: date,
+                excluding: bridgeV2AttachmentIds(deletedAttachmentIds),
+                count: count,
+                tx: tx,
+                block: { datedId in
+                    block(datedId.asItemId)
+                }
+            )
+        } else {
+            return recordFinder.enumerateTimestamps(
+                after: date,
+                excluding: deletedAttachmentIds,
+                count: count,
+                transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead,
+                block: { datedId in
+                    block(datedId.asItemId)
+                }
+            )
+        }
     }
 
     // Disregards filter.
     public func galleryItemId(
-        of attachment: TSResourceStream,
+        of attachment: ReferencedTSResourceStream,
         in interval: DateInterval,
         excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
         tx: DBReadTransaction
     ) -> MediaGalleryItemId? {
-        switch attachment.concreteStreamType {
-        case .legacy(let attachment):
+        if shouldUseV2Finder(tx: tx) {
+            switch (attachment.attachmentStream.concreteStreamType, attachment.reference.concreteType) {
+            case (.legacy, _), (_, .legacy):
+                fatalError("How do we have a TSAttachment after migrating?")
+            case let (.v2(attachmentStream), .v2(reference)):
+                return attachmentFinder.galleryItemId(
+                    of: .init(reference: reference, attachmentStream: attachmentStream),
+                    in: interval,
+                    excluding: bridgeV2AttachmentIds(deletedAttachmentIds),
+                    tx: tx
+                ).map { .v2($0) }
+            }
+        } else {
             return recordFinder.rowid(
                 of: attachment,
                 in: interval,
-                excluding: bridgeDeletedAttachmentIds(deletedAttachmentIds),
+                excluding: deletedAttachmentIds,
                 transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
             ).map { .legacy(mediaGalleryRecordId: $0) }
-        case .v2:
-            fatalError("Unimplemented!")
         }
-
     }
 
     /// Returns the number of attachments attached to `interaction`, whether or not they are media attachments. Disregards allowedMediaType.
@@ -146,26 +220,38 @@ public struct MediaGalleryResourceFinder {
         of interaction: TSInteraction,
         tx: DBReadTransaction
     ) throws -> UInt {
-        return try recordFinder.countAllAttachments(
-            of: interaction,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
-        )
+        if shouldUseV2Finder(tx: tx) {
+            return try attachmentFinder.countAllAttachments(
+                of: interaction,
+                tx: tx
+            )
+        } else {
+            return try recordFinder.countAllAttachments(
+                of: interaction,
+                transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+            )
+        }
     }
 
     // MARK: - Helpers
 
-    private func bridgeDeletedAttachmentIds(
-        _ deletedAttachmentIds: Set<MediaGalleryResourceId>
-    ) -> Set<String> {
-        var deletedLegacyAttachmentIds = Set<String>()
-        deletedAttachmentIds.forEach {
+    private func bridgeV2AttachmentIds(
+        _ attachmentIds: Set<MediaGalleryResourceId>
+    ) -> Set<AttachmentReferenceId> {
+        var finalIds = Set<AttachmentReferenceId>()
+        attachmentIds.forEach {
             switch $0 {
-            case .legacy(let uniqueId):
-                deletedLegacyAttachmentIds.insert(uniqueId)
-            case .v2:
-                fatalError("Unimplemented!")
+            case .legacy:
+                owsFailDebug("Mixing v1 and v2 attachments!")
+            case .v2(let id):
+                finalIds.insert(id)
             }
         }
-        return deletedLegacyAttachmentIds
+        return finalIds
+    }
+
+    private func shouldUseV2Finder(tx: DBReadTransaction) -> Bool {
+        return DependenciesBridge.shared.tsResourceManager
+            .didFinishTSAttachmentToAttachmentMigration(tx: tx)
     }
 }

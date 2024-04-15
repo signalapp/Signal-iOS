@@ -31,6 +31,19 @@ public struct TSMessageAttachmentReferenceType: OptionSet {
 
 public protocol TSResourceManager {
 
+    // MARK: - Migration
+
+    /// True after we have finished migrating _all_ TSAttachments to v2 Attachments.
+    ///
+    /// Once this is true, no TSAttachments exist on disk and never will exist again.
+    /// It is therefore safe to remove the TSAttachment table as well as attachment unique id
+    /// fields everywhere they are referenced from legacy owners.
+    ///
+    /// More relevantly, and the reason this is exposed at runtime, it means _at runtime_ it is
+    /// safe to start using the AttachmentReferences table instead of the MediaGalleryRecord
+    /// table to drive the media gallery.
+    func didFinishTSAttachmentToAttachmentMigration(tx: DBReadTransaction) -> Bool
+
     // MARK: - Creating Attachments from source
 
     // MARK: Body Attachments (special treatment)

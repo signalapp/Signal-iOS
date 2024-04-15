@@ -24,6 +24,13 @@ public class TSResourceManagerImpl: TSResourceManager {
         self.tsResourceStore = tsResourceStore
     }
 
+    // MARK: - Migration
+
+    public func didFinishTSAttachmentToAttachmentMigration(tx: DBReadTransaction) -> Bool {
+        // TODO: put this in a key value store once the migration is written.
+        return false
+    }
+
     // MARK: - Creating Attachments from source
 
     // MARK: Body Attachments (special treatment)

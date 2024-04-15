@@ -655,7 +655,7 @@ class MediaGallery: Dependencies {
             }
 
             guard let itemId = mediaGalleryFinder.galleryItemId(
-                of: focusedItem.attachmentStream.attachmentStream,
+                of: focusedItem.attachmentStream,
                 in: focusedItem.galleryDate.interval,
                 excluding: deletedAttachmentIds,
                 tx: transaction.asV2Read

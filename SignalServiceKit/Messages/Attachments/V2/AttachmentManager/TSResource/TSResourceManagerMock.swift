@@ -11,6 +11,10 @@ public class TSResourceManagerMock: TSResourceManager {
 
     public init() {}
 
+    public func didFinishTSAttachmentToAttachmentMigration(tx: DBReadTransaction) -> Bool {
+        return false
+    }
+
     public func createOversizeTextAttachmentPointer(
         from proto: SSKProtoAttachmentPointer,
         message: TSMessage,

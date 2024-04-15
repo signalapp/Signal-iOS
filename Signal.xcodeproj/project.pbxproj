@@ -805,6 +805,7 @@
 		6635B8A72BA25DDD005C80EA /* QuotedReplyManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A62BA25DDD005C80EA /* QuotedReplyManagerImpl.swift */; };
 		6635B8A92BA25E08005C80EA /* QuotedReplyManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */; };
 		663A189E2BC9C229005C1B41 /* MediaGalleryResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663A189D2BC9C229005C1B41 /* MediaGalleryResourceManager.swift */; };
+		663A18A02BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663A189F2BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift */; };
 		663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */; };
 		663BA3202A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
@@ -3752,6 +3753,7 @@
 		6635B8A62BA25DDD005C80EA /* QuotedReplyManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyManagerImpl.swift; sourceTree = "<group>"; };
 		6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyManagerMock.swift; sourceTree = "<group>"; };
 		663A189D2BC9C229005C1B41 /* MediaGalleryResourceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryResourceManager.swift; sourceTree = "<group>"; };
+		663A189F2BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryAttachmentFinder.swift; sourceTree = "<group>"; };
 		663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderState.swift; sourceTree = "<group>"; };
 		663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyDisplayConfigurations.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
@@ -7683,6 +7685,7 @@
 				667DEE5E2BC7175300EFF32D /* AllMediaCategory.swift */,
 				667DEE662BC7342900EFF32D /* AttachmentReferenceId.swift */,
 				667DEE6A2BC7603C00EFF32D /* DatedAttachmentReferenceId.swift */,
+				663A189F2BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift */,
 			);
 			path = MediaGallery;
 			sourceTree = "<group>";
@@ -13932,6 +13935,7 @@
 				66BED7E32B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift in Sources */,
 				66BED7E62B9B929600236BAD /* MediaBandwidthPreferenceStoreImpl.swift in Sources */,
 				66BED7EA2B9B99C800236BAD /* MediaBandwidthPreferenceStoreMock.swift in Sources */,
+				663A18A02BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift in Sources */,
 				667DEE652BC72F4000EFF32D /* MediaGalleryItemId.swift in Sources */,
 				667DEE592BC7152E00EFF32D /* MediaGalleryRecord.swift in Sources */,
 				F9C5CD5D289453B300548EEE /* MediaGalleryRecordFinder.swift in Sources */,
