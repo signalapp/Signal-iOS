@@ -21,6 +21,10 @@ public class AttachmentReference {
     /// We compute/validate this once, when we read from disk (or instantate an instance in memory).
     public let owner: Owner
 
+    /// For message owners, the local receivedAtTimestamp of the owning message.
+    /// For thread owners, the local timestamp when we created the ownership reference.
+    public let receivedAtTimestamp: UInt64
+
     /// Filename from the sender, used for rendering as a file attachment.
     /// NOT the same as the file name on disk.
     /// Comes from ``SSKProtoAttachmentPointer.fileName``.
@@ -41,6 +45,7 @@ public class AttachmentReference {
         attachmentRowId: Int64,
         ownerRowId: Int64,
         orderInOwner: UInt32?,
+        receivedAtTimestamp: UInt64,
         renderingFlag: RenderingFlag,
         threadRowId: UInt64?,
         caption: String?,

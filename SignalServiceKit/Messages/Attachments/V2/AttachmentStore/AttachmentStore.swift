@@ -44,6 +44,14 @@ public protocol AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
+    /// Update the received at timestamp on a reference.
+    /// Used for edits which update the received timestamp on an existing message.
+    func update(
+        _ reference: AttachmentReference,
+        withReceivedAtTimestamp: UInt64,
+        tx: DBWriteTransaction
+    )
+
     func removeOwner(
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,

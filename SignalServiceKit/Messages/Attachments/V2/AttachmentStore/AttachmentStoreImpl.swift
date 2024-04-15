@@ -42,6 +42,14 @@ public class AttachmentStoreImpl: AttachmentStore {
         fatalError("Unimplemented")
     }
 
+    public func update(
+        _ reference: AttachmentReference,
+        withReceivedAtTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        fatalError("Unimplemented")
+    }
+
     public func removeOwner(
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,

@@ -43,6 +43,14 @@ open class AttachmentStoreMock: AttachmentStore {
         // do nothing
     }
 
+    open func update(
+        _ reference: AttachmentReference,
+        withReceivedAtTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        // do nothings
+    }
+
     open func removeOwner(
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,

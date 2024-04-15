@@ -19,3 +19,10 @@ public struct DatedAttachmentReferenceId {
         self.receivedAtTimestamp = receivedAtTimestamp
     }
 }
+
+extension AttachmentReference {
+
+    var datedId: DatedAttachmentReferenceId {
+        return .init(id: self.referenceId, receivedAtTimestamp: self.receivedAtTimestamp)
+    }
+}

@@ -120,8 +120,16 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                 // The latest revision keeps the prior revision's quoted reply.
                 tsMessageStore.update(latestRevision, with: quotedReplyPriorToEdit, tx: tx)
             }
-            // No need to touch ownership edges, the latest revision message is already an owner
-            // because it maintained the original's row id.
+
+            if let attachmentReferencePriorToEdit {
+                // The latest revision message is already an owner because it maintained the original's row id.
+                // Just update the timestamp.
+                attachmentStore.update(
+                    attachmentReferencePriorToEdit,
+                    withReceivedAtTimestamp: latestRevision.receivedAtTimestamp,
+                    tx: tx
+                )
+            }
         case .change:
             // Drop the quoted reply on the latest revision.
             if let attachmentReferencePriorToEdit {
@@ -288,10 +296,16 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
         for attachmentReference in attachmentReferencesPriorToEdit {
             // Always assign the prior revision as a new owner of the existing attachment.
-            // The latest revision stays an owner; no change needed as its row id is already the owner.
             try attachmentStore.addOwner(
                 duplicating: attachmentReference,
                 withNewOwner: .messageBodyAttachment(messageRowId: priorRevisionRowId),
+                tx: tx
+            )
+
+            // The latest revision stays an owner; just update the timestamp.
+            attachmentStore.update(
+                attachmentReference,
+                withReceivedAtTimestamp: latestRevision.receivedAtTimestamp,
                 tx: tx
             )
         }
