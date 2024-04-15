@@ -30,7 +30,7 @@ import Foundation
 /// in v2-land exists on the AttachmentReferences table.
 public class TSAttachmentReference: TSResourceReference {
 
-    private let uniqueId: String
+    public let uniqueId: String
     public let attachment: TSAttachment?
 
     internal init(uniqueId: String, attachment: TSAttachment?) {

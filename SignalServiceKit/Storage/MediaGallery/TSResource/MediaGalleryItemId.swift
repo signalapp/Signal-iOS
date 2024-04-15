@@ -26,3 +26,15 @@ public enum MediaGalleryResourceId: Equatable, Hashable {
     case legacy(attachmentUniqueId: String)
     case v2(AttachmentReferenceId)
 }
+
+extension TSResourceReference {
+
+    public var mediaGalleryResourceId: MediaGalleryResourceId {
+        switch self.concreteType {
+        case .legacy(let tsAttachmentReference):
+            return .legacy(attachmentUniqueId: tsAttachmentReference.uniqueId)
+        case .v2(let attachmentReference):
+            return .v2(attachmentReference.referenceId)
+        }
+    }
+}

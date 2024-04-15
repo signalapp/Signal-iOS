@@ -17,3 +17,17 @@ public struct AttachmentReferenceId: Equatable, Hashable {
     /// In other owner cases this order value is nil.
     public let orderInOwner: UInt32?
 }
+
+extension AttachmentReference {
+
+    public var referenceId: AttachmentReferenceId {
+        let orderInOwner: UInt32?
+        switch owner {
+        case .message(.bodyAttachment(let metadata)):
+            orderInOwner = metadata.index
+        default:
+            orderInOwner = nil
+        }
+        return .init(ownerId: owner.id, orderInOwner: orderInOwner)
+    }
+}

@@ -34,7 +34,7 @@ struct MediaGalleryIndexPath: Comparable {
 
 /// The minimal requirements needed for items loaded and managed by MediaGallerySections.
 internal protocol MediaGallerySectionItem {
-    var attachmentId: TSResourceId { get }
+    var attachmentId: MediaGalleryResourceId { get }
     var galleryDate: GalleryDate { get }
 }
 
@@ -50,14 +50,14 @@ internal protocol MediaGallerySectionLoader {
         offset: Int,
         ascending: Bool,
         transaction: SDSAnyReadTransaction
-    ) -> [DatedMediaGalleryRecordId]
+    ) -> [DatedMediaGalleryItemId]
 
     /// Should call `block` once for every item (loaded or unloaded) before `date`, up to `count` times.
     func enumerateTimestamps(
         before date: Date,
         count: Int,
         transaction: SDSAnyReadTransaction,
-        block: (DatedMediaGalleryRecordId) -> Void
+        block: (DatedMediaGalleryItemId) -> Void
     ) -> MediaGalleryResourceFinder.EnumerationCompletion
 
     /// Should call `block` once for every item (loaded or unloaded) after `date`, up to `count` times.
@@ -65,7 +65,7 @@ internal protocol MediaGallerySectionLoader {
         after date: Date,
         count: Int,
         transaction: SDSAnyReadTransaction,
-        block: (DatedMediaGalleryRecordId) -> Void
+        block: (DatedMediaGalleryItemId) -> Void
     ) -> MediaGalleryResourceFinder.EnumerationCompletion
 
     /// Should selects a range of items in `interval` and call `block` once for each.
@@ -77,7 +77,7 @@ internal protocol MediaGallerySectionLoader {
         in interval: DateInterval,
         range: Range<Int>,
         transaction: SDSAnyReadTransaction,
-        block: (_ offset: Int, _ uniqueId: String, _ buildItem: () -> Item) -> Void
+        block: (_ offset: Int, _ attachmentId: MediaGalleryResourceId, _ buildItem: () -> Item) -> Void
     )
 }
 
@@ -92,8 +92,8 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     internal typealias Item = Loader.Item
 
     struct MediaGallerySlot {
-        /// row ID in the table `media_gallery_items`. This is a stable and unique identifier for an item.
-        var rowid: Int64
+        /// This is a stable and unique identifier for an item.
+        var itemId: MediaGalleryItemId
         /// This comes from `TSInteraction.receivedAtTimestamp`.
         var receivedAt: Date
         var item: Item?
@@ -130,7 +130,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                 transaction: transaction
             ) { datedId in
                 let galleryDate = GalleryDate(date: datedId.date)
-                let newSlot = MediaGallerySlot(rowid: datedId.rowid, receivedAt: datedId.date)
+                let newSlot = MediaGallerySlot(itemId: datedId.id, receivedAt: datedId.date)
                 newSlotsByDate[galleryDate, default: []].append(newSlot)
                 owsAssertDebug(newEarliestDate == nil || galleryDate <= newEarliestDate!,
                                "expects timestamps to be fetched in descending order")
@@ -143,12 +143,14 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                 // Make sure we have the full count for the earliest loaded section.
                 var temp = newSlotsByDate[newEarliestDate!]!
                 newSlotsByDate[newEarliestDate!] = []
-                let unloadedRowIdsAndDates = loader.rowIdsAndDatesOfItemsInSection(for: newEarliestDate!,
-                                                                                   offset: temp.count,
-                                                                                   ascending: false,
-                                                                                   transaction: transaction)
+                let unloadedRowIdsAndDates = loader.rowIdsAndDatesOfItemsInSection(
+                    for: newEarliestDate!,
+                    offset: temp.count,
+                    ascending: false,
+                    transaction: transaction
+                )
                 let slotsForUnloadedItems = unloadedRowIdsAndDates.lazy.map {
-                    MediaGallerySlot(rowid: $0.rowid, receivedAt: $0.date)
+                    MediaGallerySlot(itemId: $0.id, receivedAt: $0.date)
                 }
                 temp.append(contentsOf: slotsForUnloadedItems)
                 newSlotsByDate[newEarliestDate!] = temp
@@ -191,7 +193,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             ) { datedId in
                 let galleryDate = GalleryDate(date: datedId.date)
                 newSlotsByDate[galleryDate, default: []].append(
-                    MediaGallerySlot(rowid: datedId.rowid, receivedAt: datedId.date)
+                    MediaGallerySlot(itemId: datedId.id, receivedAt: datedId.date)
                 )
                 owsAssertDebug(newLatestDate == nil || newLatestDate! <= galleryDate,
                                "expects timestamps to be fetched in ascending order")
@@ -204,13 +206,14 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                 // Make sure we have the full count for the latest loaded section.
                 var temp = newSlotsByDate[newLatestDate!]!
                 newSlotsByDate[newLatestDate!] = []
-                let unloadedRowIds = loader.rowIdsAndDatesOfItemsInSection(for: newLatestDate!,
-                                                                           offset: temp.count,
-                                                                           ascending: true,
-                                                                           transaction: transaction)
+                let unloadedRowIds = loader.rowIdsAndDatesOfItemsInSection(
+                    for: newLatestDate!,
+                    offset: temp.count,
+                    ascending: true,
+                    transaction: transaction
+                )
                 let slotsForUnloadedItems = unloadedRowIds.map {
-                    MediaGallerySlot(rowid: $0.rowid,
-                                     receivedAt: $0.date)
+                    MediaGallerySlot(itemId: $0.id, receivedAt: $0.date)
                 }
                 temp.append(contentsOf: slotsForUnloadedItems)
                 newSlotsByDate[newLatestDate!] = temp
@@ -232,12 +235,14 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
         internal mutating func loadInitialSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) {
             owsAssert(itemsBySection.isEmpty, "already has sections, use loadEarlierSections or loadLaterSections")
-            let rowids = loader.rowIdsAndDatesOfItemsInSection(for: date,
-                                                               offset: 0,
-                                                               ascending: true,
-                                                               transaction: transaction)
+            let rowids = loader.rowIdsAndDatesOfItemsInSection(
+                for: date,
+                offset: 0,
+                ascending: true,
+                transaction: transaction
+            )
             let slots = rowids.map {
-                MediaGallerySlot(rowid: $0.rowid, receivedAt: $0.date)
+                MediaGallerySlot(itemId: $0.id, receivedAt: $0.date)
             }
             itemsBySection.append(key: date, value: slots)
         }
@@ -245,13 +250,17 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         /// Returns the number of items in the section after reloading (which may be 0).
         @discardableResult
         internal mutating func reloadSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
-            let rowids = loader.rowIdsAndDatesOfItemsInSection(for: date,
-                                                               offset: 0,
-                                                               ascending: true,
-                                                               transaction: transaction)
+            let rowids = loader.rowIdsAndDatesOfItemsInSection(
+                for: date,
+                offset: 0,
+                ascending: true,
+                transaction: transaction
+            )
             itemsBySection.replace(key: date) {
-                return (rowids.map { MediaGallerySlot(rowid: $0.rowid, receivedAt: $0.date) },
-                        [.reloadSection])
+                return (
+                    rowids.map { MediaGallerySlot(itemId: $0.id, receivedAt: $0.date) },
+                    [.reloadSection]
+                )
             }
             return rowids.count
         }
@@ -294,7 +303,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                 return
             }
 
-            let slots = rowids.map { MediaGallerySlot(rowid: $0.rowid, receivedAt: $0.date ) }
+            let slots = rowids.map { MediaGallerySlot(itemId: $0.id, receivedAt: $0.date ) }
             itemsBySection.append(key: oldestLoadedSection, value: slots)
 
             guard oldestLoadedSection != newestLoadedSection else {
@@ -330,9 +339,11 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         /// If that fails, try to find the first item with a date on or after itemDate.
         /// If that fails, return the last item.
         /// If the collection is empty, this returns nil.
-        internal func indexPathAtApproximateLocation(sectionDate: GalleryDate,
-                                                     itemDate: Date,
-                                                     rowid: Int64) -> MediaGalleryIndexPath? {
+        internal func indexPathAtApproximateLocation(
+            sectionDate: GalleryDate,
+            itemDate: Date,
+            itemId: MediaGalleryItemId
+        ) -> MediaGalleryIndexPath? {
             let si = itemsBySection.orderedKeys.firstIndex { key in
                 key >= sectionDate
             }
@@ -343,7 +354,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             let slots = itemsBySection[si].value
 
             // First try to find by rowid because that's more precise.
-            if let i = slots.firstIndex(where: { slot in slot.rowid == rowid }) {
+            if let i = slots.firstIndex(where: { slot in slot.itemId == itemId }) {
                 return MediaGalleryIndexPath(item: i, section: si)
             }
 
@@ -649,9 +660,11 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             let requestRange = requestStartPath.item ..< (requestStartPath.item + naiveRange.range.count)
 
             var offset = 0
-            loader.enumerateItems(in: interval,
-                                  range: requestRange,
-                                  transaction: transaction) { i, uniqueId, buildItem in
+            loader.enumerateItems(
+                in: interval,
+                range: requestRange,
+                transaction: transaction
+            ) { i, resourceId, buildItem in
                 owsAssertDebug(i >= offset, "does not support reverse traversal")
 
                 var (date, slots) = itemsBySection[currentSectionIndex]
@@ -671,7 +684,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                         numNewlyLoadedLaterSections += loadLaterSections(batchSize: naiveRange.range.count,
                                                                          transaction: transaction)
                         if currentSectionIndex >= itemsBySection.count {
-                            owsFailDebug("attachment #\(i) \(uniqueId) is beyond the last section")
+                            owsFailDebug("attachment #\(i) \(resourceId) is beyond the last section")
                             return
                         }
                     }
@@ -681,7 +694,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
                 var slot = slots[itemIndex]
                 if let loadedItem = slot.item {
-                    owsAssert(loadedItem.attachmentId.bridgeUniqueId == uniqueId)
+                    owsAssert(loadedItem.attachmentId == resourceId)
                     return
                 }
 
@@ -998,14 +1011,16 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     /// If `replacement` is specified then this acts as an atomic
     /// `loadInitialSection` followed by `getOrReplace`, provided the `rowid` is
     /// valid.
-    internal mutating func loadInitialSection(for date: GalleryDate,
-                                              replacement: (item: Item, rowid: Int64)? = nil,
-                                              userData: UpdateUserData? = nil,
-                                              transaction: SDSAnyReadTransaction) -> Item? {
+    internal mutating func loadInitialSection(
+        for date: GalleryDate,
+        replacement: (item: Item, itemId: MediaGalleryItemId)? = nil,
+        userData: UpdateUserData? = nil,
+        transaction: SDSAnyReadTransaction
+    ) -> Item? {
         return snapshotManager.mutate(userData: userData) { state in
             state.loadInitialSection(for: date, transaction: transaction)
-            if let (item, rowid) = replacement,
-                let offset = state.itemsBySection[date]?.firstIndex(where: { $0.rowid == rowid }) {
+            if let (item, itemId) = replacement,
+                let offset = state.itemsBySection[date]?.firstIndex(where: { $0.itemId == itemId }) {
                 return state.getOrReplaceItem(item, offsetInSection: offset)
             }
             return nil
@@ -1079,12 +1094,16 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
         let sectionDate = indexPath.map { sectionDates[$0.section] }
         let itemDate = indexPath.map { itemsBySection[$0.section].value[$0.item].receivedAt }
-        let rowid = indexPath.map { itemsBySection[$0.section].value[$0.item].rowid }
+        let itemId = indexPath.map { itemsBySection[$0.section].value[$0.item].itemId }
 
         return snapshotManager.mutate(userData: nil) { state, transaction -> MediaGalleryIndexPath? in
             state.replaceLoader(loader: loader, batchSize: batchSize, loadUntil: loadUntil, transaction: transaction)
-            if let sectionDate, let itemDate, let rowid {
-                return state.indexPathAtApproximateLocation(sectionDate: sectionDate, itemDate: itemDate, rowid: rowid)
+            if let sectionDate, let itemDate, let itemId {
+                return state.indexPathAtApproximateLocation(
+                    sectionDate: sectionDate,
+                    itemDate: itemDate,
+                    itemId: itemId
+                )
             }
             return nil
         }
@@ -1265,11 +1284,13 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
     }
 
-    internal mutating func getOrReplaceItem(_ newItem: Item,
-                                            rowid: Int64,
-                                            userData: UpdateUserData? = nil) -> Item? {
+    internal mutating func getOrReplaceItem(
+        _ newItem: Item,
+        itemId: MediaGalleryItemId,
+        userData: UpdateUserData? = nil
+    ) -> Item? {
         return snapshotManager.mutate(userData: userData) { state in
-            guard let i = state.itemsBySection[newItem.galleryDate]?.firstIndex(where: { $0.rowid == rowid}) else {
+            guard let i = state.itemsBySection[newItem.galleryDate]?.firstIndex(where: { $0.itemId == itemId}) else {
                 return nil
             }
             return state.getOrReplaceItem(newItem, offsetInSection: i)
@@ -1278,29 +1299,29 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
     private struct Location {
         var date: GalleryDate
-        var rowid: Int64
+        var itemId: MediaGalleryItemId
     }
 
     internal mutating func removeLoadedItems(atIndexPaths paths: [MediaGalleryIndexPath],
                                              userData: UpdateUserData? = nil) -> IndexSet {
         let locations = paths.map {
             let entry = state.itemsBySection[$0.section]
-            return Location(date: entry.key, rowid: entry.value[$0.item].rowid)
+            return Location(date: entry.key, itemId: entry.value[$0.item].itemId)
         }
         return snapshotManager.mutate(userData: userData) { state -> IndexSet in
             // [date: [rowid, …]]
-            let sectionIndexToRowIDs = Dictionary(grouping: locations) {
+            let sectionIndexToItemIDs = Dictionary(grouping: locations) {
                 $0.date
             }.mapValues {
-                Set($0.lazy.map { $0.rowid })
+                Set($0.lazy.map { $0.itemId })
             }
-            let paths = sectionIndexToRowIDs.flatMap { keyAndValue -> [MediaGalleryIndexPath] in
-                let (date, desiredRowIDs) = keyAndValue
+            let paths = sectionIndexToItemIDs.flatMap { keyAndValue -> [MediaGalleryIndexPath] in
+                let (date, desiredItemIDs) = keyAndValue
                 guard let sectionIndex = state.itemsBySection.orderedKeys.firstIndex(of: date) else {
                     return []
                 }
                 let slots = state.itemsBySection[sectionIndex].value
-                let itemIndexes = slots.indices.lazy.filter { desiredRowIDs.contains(slots[$0].rowid) }
+                let itemIndexes = slots.indices.lazy.filter { desiredItemIDs.contains(slots[$0].itemId) }
                 return itemIndexes.lazy.map { MediaGalleryIndexPath(item: $0, section: sectionIndex )}
             }
             return state.removeLoadedItems(atIndexPaths: Array(paths))

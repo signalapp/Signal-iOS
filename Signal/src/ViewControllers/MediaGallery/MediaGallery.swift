@@ -108,7 +108,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         }
     }
 
-    var attachmentId: TSResourceId { attachmentStream.attachmentStream.resourceId }
+    var attachmentId: MediaGalleryResourceId { attachmentStream.reference.mediaGalleryResourceId }
 
     typealias AsyncThumbnailBlock = (UIImage) -> Void
     func thumbnailImage(async: @escaping AsyncThumbnailBlock) -> UIImage? {
@@ -282,7 +282,7 @@ class MediaGallery: Dependencies {
     private(set) var mediaFilter: AllMediaFilter
     private let mediaCategory: AllMediaCategory
 
-    private var deletedAttachmentIds: Set<String> = Set() {
+    private var deletedAttachmentIds: Set<MediaGalleryResourceId> = Set() {
         didSet {
             AssertIsOnMainThread()
         }
@@ -410,7 +410,8 @@ class MediaGallery: Dependencies {
                 // This attachment is from a different thread.
                 continue
             }
-            guard deletedAttachmentIds.remove(incomingDeletedAttachment.uniqueId) == nil else {
+            // TODO: use wrapped types in the notification
+            guard deletedAttachmentIds.remove(.legacy(attachmentUniqueId: incomingDeletedAttachment.uniqueId)) == nil else {
                 // This attachment was removed through MediaGallery and we already adjusted accordingly.
                 continue
             }
@@ -650,8 +651,8 @@ class MediaGallery: Dependencies {
                 return nil
             }
 
-            guard let rowid = mediaGalleryFinder.galleryItemId(
-                of: focusedItem.attachmentStream.attachmentStream.bridgeStream,
+            guard let itemId = mediaGalleryFinder.galleryItemId(
+                of: focusedItem.attachmentStream.attachmentStream,
                 in: focusedItem.galleryDate.interval,
                 excluding: deletedAttachmentIds,
                 tx: transaction.asV2Read
@@ -668,12 +669,12 @@ class MediaGallery: Dependencies {
                         for: focusedItem.galleryDate,
                         replacement: (
                             item: focusedItem,
-                            rowid: rowid
+                            itemId: itemId
                         ),
                         transaction: transaction
                     )
                 } else {
-                    return sections.getOrReplaceItem(focusedItem, rowid: rowid)
+                    return sections.getOrReplaceItem(focusedItem, itemId: itemId)
                 }
             }
         }
@@ -778,7 +779,7 @@ class MediaGallery: Dependencies {
         delegates.forEach { $0.mediaGallery(self, willDelete: items, initiatedBy: initiatedBy) }
 
         deletedAttachmentIds.formUnion(items.lazy.map {
-            $0.attachmentStream.attachmentStream.resourceId.bridgeUniqueId
+            $0.attachmentStream.reference.mediaGalleryResourceId
         })
 
         self.databaseStorage.asyncWrite { tx in
@@ -957,10 +958,12 @@ extension MediaGallery {
         fileprivate weak var mediaGallery: MediaGallery?
         fileprivate let finder: MediaGalleryResourceFinder
 
-        func rowIdsAndDatesOfItemsInSection(for date: GalleryDate,
-                                            offset: Int,
-                                            ascending: Bool,
-                                            transaction: SDSAnyReadTransaction) -> [DatedMediaGalleryRecordId] {
+        func rowIdsAndDatesOfItemsInSection(
+            for date: GalleryDate,
+            offset: Int,
+            ascending: Bool,
+            transaction: SDSAnyReadTransaction
+        ) -> [DatedMediaGalleryItemId] {
             guard let mediaGallery else {
                 return []
             }
@@ -977,7 +980,7 @@ extension MediaGallery {
             before date: Date,
             count: Int,
             transaction: SDSAnyReadTransaction,
-            block: (DatedMediaGalleryRecordId) -> Void
+            block: (DatedMediaGalleryItemId) -> Void
         ) -> EnumerationCompletion {
             guard let mediaGallery else {
                 return .reachedEnd
@@ -995,7 +998,7 @@ extension MediaGallery {
             after date: Date,
             count: Int,
             transaction: SDSAnyReadTransaction,
-            block: (DatedMediaGalleryRecordId) -> Void
+            block: (DatedMediaGalleryItemId) -> Void
         ) -> EnumerationCompletion {
             guard let mediaGallery else {
                 return .reachedEnd
@@ -1009,10 +1012,12 @@ extension MediaGallery {
             )
         }
 
-        func enumerateItems(in interval: DateInterval,
-                            range: Range<Int>,
-                            transaction: SDSAnyReadTransaction,
-                            block: (_ offset: Int, _ uniqueId: String, _ buildItem: () -> MediaGalleryItem) -> Void) {
+        func enumerateItems(
+            in interval: DateInterval,
+            range: Range<Int>,
+            transaction: SDSAnyReadTransaction,
+            block: (_ offset: Int, _ attachmentId: MediaGalleryResourceId, _ buildItem: () -> MediaGalleryItem) -> Void
+        ) {
             guard let mediaGallery else {
                 return
             }
@@ -1022,9 +1027,9 @@ extension MediaGallery {
                 range: NSRange(range),
                 tx: transaction.asV2Read
             ) { offset, attachment in
-                block(offset, attachment.uniqueId) {
+                block(offset, attachment.reference.mediaGalleryResourceId) {
                     guard let item: MediaGalleryItem = mediaGallery.buildGalleryItem(
-                        attachment: attachment.bridgeReferenced,
+                        attachment: attachment,
                         spoilerState: mediaGallery.spoilerState,
                         transaction: transaction
                     ) else {
