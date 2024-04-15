@@ -26,14 +26,14 @@ class AudioWaveformProgressView: UIView {
 
     var thumbColor: UIColor = Theme.primaryTextColor {
         didSet {
-            thumbView.backgroundColor = thumbColor
+            thumbLayer.backgroundColor = thumbColor.cgColor
         }
     }
 
     var value: CGFloat = 0 {
         didSet {
             guard value != oldValue else { return }
-            redrawSamples()
+            updateUIProgress()
         }
     }
 
@@ -65,9 +65,10 @@ class AudioWaveformProgressView: UIView {
         }
     }
 
-    private let thumbView = UIView()
+    private let thumbLayer = CALayer()
     private let playedShapeLayer = CAShapeLayer()
     private let unplayedShapeLayer = CAShapeLayer()
+    private let playedShapeMask = CALayer()
     private let loadingAnimation: AnimationView
 
     init(mediaCache: CVMediaCache) {
@@ -75,13 +76,16 @@ class AudioWaveformProgressView: UIView {
 
         super.init(frame: .zero)
 
-        playedShapeLayer.fillColor = playedColor.cgColor
-        layer.addSublayer(playedShapeLayer)
-
         unplayedShapeLayer.fillColor = unplayedColor.cgColor
         layer.addSublayer(unplayedShapeLayer)
 
-        addSubview(thumbView)
+        playedShapeLayer.fillColor = playedColor.cgColor
+        layer.addSublayer(playedShapeLayer)
+
+        playedShapeMask.backgroundColor = UIColor.black.cgColor
+        playedShapeLayer.mask = playedShapeMask
+
+        layer.addSublayer(thumbLayer)
 
         loadingAnimation.contentMode = .scaleAspectFit
         loadingAnimation.loopMode = .loop
@@ -103,7 +107,7 @@ class AudioWaveformProgressView: UIView {
         func resetContents(showLoadingAnimation: Bool) {
             playedShapeLayer.path = nil
             unplayedShapeLayer.path = nil
-            thumbView.isHidden = true
+            thumbLayer.isHidden = true
             loadingAnimation.frame = bounds
 
             if showLoadingAnimation {
@@ -119,7 +123,7 @@ class AudioWaveformProgressView: UIView {
 
         loadingAnimation.stop()
         loadingAnimation.isHidden = true
-        thumbView.isHidden = false
+        thumbLayer.isHidden = false
 
         guard width > 0 else {
             return
@@ -128,9 +132,6 @@ class AudioWaveformProgressView: UIView {
         let sampleWidth: CGFloat = 2
         let minSampleSpacing: CGFloat = 2
         let minSampleHeight: CGFloat = 2
-
-        let playedBezierPath = UIBezierPath()
-        let unplayedBezierPath = UIBezierPath()
 
         // Calculate the number of lines we want to render based on the view width.
         let targetSamplesCount = Int((width + minSampleSpacing) / (sampleWidth + minSampleSpacing))
@@ -156,24 +157,23 @@ class AudioWaveformProgressView: UIView {
 
         playedShapeLayer.frame = bounds
         unplayedShapeLayer.frame = bounds
+        var playedShapeBounds = bounds
+        playedShapeBounds.width = 0
+        playedShapeMask.frame = playedShapeBounds
 
-        let progress = self.value
-        let thumbXPos = width * progress
-
-        thumbView.frame.size = CGSize(width: sampleWidth, height: height)
-        thumbView.layer.cornerRadius = sampleWidth / 2
-        thumbView.frame.origin.x = thumbXPos
+        let path = UIBezierPath()
 
         defer {
-            playedShapeLayer.path = playedBezierPath.cgPath
-            unplayedShapeLayer.path = unplayedBezierPath.cgPath
+            unplayedShapeLayer.path = path.cgPath
+            playedShapeLayer.path = path.cgPath
         }
 
-        let playedLines = Int(CGFloat(amplitudes.count) * progress)
+        thumbLayer.frame.size = CGSize(width: sampleWidth, height: height)
+        thumbLayer.cornerRadius = sampleWidth / 2
+
+        //      reset all changes in this file and check how playedShapeLayer draw itself
 
         for (x, sample) in amplitudes.enumerated() {
-            let path: UIBezierPath = ((x > playedLines) || (progress == 0)) ? unplayedBezierPath : playedBezierPath
-
             // The sample represents the magnitude of sound at this point
             // from 0 (silence) to 1 (loudest possible value). Calculate the
             // height of the sample view so that the loudest value is the
@@ -194,6 +194,16 @@ class AudioWaveformProgressView: UIView {
 
             path.append(UIBezierPath(roundedRect: sampleFrame, cornerRadius: sampleWidth / 2))
         }
+
+        updateUIProgress()
+    }
+
+    private func updateUIProgress() {
+        let progress = self.value
+        let thumbXPos = width * progress
+
+        thumbLayer.frame.x = thumbXPos
+        playedShapeMask.frame.width = thumbLayer.frame.maxX
     }
 }
 
