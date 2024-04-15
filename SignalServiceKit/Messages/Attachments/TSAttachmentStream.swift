@@ -9,11 +9,17 @@ extension TSAttachmentStream {
 
     @objc
     internal func anyDidInsertSwift(tx: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.mediaGalleryResourceManager.didInsert(attachmentStream: self, tx: tx.asV2Write)
+        DependenciesBridge.shared.mediaGalleryResourceManager.didInsert(
+            attachmentStream: self.bridgeReferencedStream,
+            tx: tx.asV2Write
+        )
     }
 
     @objc
     internal func anyDidRemoveSwift(tx: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.mediaGalleryResourceManager.didRemove(attachmentStream: self, tx: tx.asV2Write)
+        DependenciesBridge.shared.mediaGalleryResourceManager.didRemove(
+            attachmentStream: self.bridgeReferencedStream,
+            tx: tx.asV2Write
+        )
     }
 }

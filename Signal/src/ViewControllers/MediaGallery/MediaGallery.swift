@@ -414,8 +414,7 @@ class MediaGallery: Dependencies {
                 // This attachment is from a different thread.
                 continue
             }
-            // TODO: use wrapped types in the notification
-            guard deletedAttachmentIds.remove(.legacy(attachmentUniqueId: incomingDeletedAttachment.uniqueId)) == nil else {
+            guard deletedAttachmentIds.remove(incomingDeletedAttachment.attachmentId) == nil else {
                 // This attachment was removed through MediaGallery and we already adjusted accordingly.
                 continue
             }

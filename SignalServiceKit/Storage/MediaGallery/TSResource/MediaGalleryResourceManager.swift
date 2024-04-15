@@ -8,7 +8,7 @@ import GRDB
 
 public enum MediaGalleryResource {
     public struct ChangedResourceInfo {
-        public var uniqueId: String
+        public var attachmentId: MediaGalleryResourceId
         public var threadGrdbId: Int64
         public var timestamp: UInt64
     }
@@ -32,12 +32,12 @@ public enum MediaGalleryResource {
 public protocol MediaGalleryResourceManager {
 
     func didInsert(
-        attachmentStream: TSAttachmentStream,
+        attachmentStream: ReferencedTSResourceStream,
         tx: DBWriteTransaction
     )
 
     func didRemove(
-        attachmentStream: TSAttachmentStream,
+        attachmentStream: ReferencedTSResourceStream,
         tx: DBWriteTransaction
     )
 
@@ -52,14 +52,14 @@ public final class MediaGalleryResourceManagerImpl: MediaGalleryResourceManager 
     public init() {}
 
     public func didInsert(
-        attachmentStream: TSAttachmentStream,
+        attachmentStream: ReferencedTSResourceStream,
         tx: DBWriteTransaction
     ) {
         MediaGalleryRecordManager.didInsert(attachmentStream: attachmentStream, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func didRemove(
-        attachmentStream: TSAttachmentStream,
+        attachmentStream: ReferencedTSResourceStream,
         tx: DBWriteTransaction
     ) {
         MediaGalleryRecordManager.didRemove(attachmentStream: attachmentStream, transaction: SDSDB.shimOnlyBridge(tx))
@@ -80,12 +80,12 @@ public class MediaGalleryResourceManagerMock: MediaGalleryResourceManager {
     public init() {}
 
     open func didInsert(
-        attachmentStream: TSAttachmentStream,
+        attachmentStream: ReferencedTSResourceStream,
         tx: DBWriteTransaction
     ) {}
 
     open func didRemove(
-        attachmentStream: TSAttachmentStream,
+        attachmentStream: ReferencedTSResourceStream,
         tx: DBWriteTransaction
     ) {}
 

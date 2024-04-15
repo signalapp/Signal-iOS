@@ -19,47 +19,92 @@ public final class MediaGalleryRecordManager: NSObject {
         return MimeTypeUtil.isSupportedVisualMediaMimeType(contentType)
     }
 
-    private class func removeAnyGalleryRecord(attachmentStream: TSAttachmentStream, transaction: GRDBWriteTransaction) throws -> MediaGalleryRecord? {
+    private class func removeAnyGalleryRecord(
+        attachmentStream: ReferencedTSResourceStream,
+        transaction: GRDBWriteTransaction
+    ) throws -> MediaGalleryRecord? {
+        let legacyAttachmentRowId: Int64
+
+        switch attachmentStream.reference.concreteType {
+        case .legacy(let tsAttachmentRef):
+            guard
+                let tsAttachment = tsAttachmentRef.attachment,
+                let attachmentRowId = tsAttachment.sqliteRowId
+            else {
+                throw OWSAssertionError("attachmentRowId was unexpectedly nil")
+            }
+            legacyAttachmentRowId = attachmentRowId
+            guard tsAttachment.albumMessageId != nil else {
+                return nil
+            }
+        case .v2(let attachmentReference):
+            switch attachmentReference.owner {
+            case .message(.bodyAttachment):
+                break
+            default:
+                // we only index body attachments
+                return nil
+            }
+            // TODO: handle MediaGalleryRecords with v2 attachments
+            return nil
+        }
+
         let sql = """
             DELETE FROM \(MediaGalleryRecord.databaseTableName) WHERE attachmentId = ? RETURNING *
         """
-        guard let attachmentId = attachmentStream.grdbId else {
-            owsFailDebug("attachmentId was unexpectedly nil")
-            return nil
-        }
 
-        guard attachmentStream.albumMessageId != nil else {
-            return nil
-        }
-
-        return try MediaGalleryRecord.fetchOne(transaction.database, sql: sql, arguments: [attachmentId.int64Value])
+        return try MediaGalleryRecord.fetchOne(transaction.database, sql: sql, arguments: [legacyAttachmentRowId])
     }
 
     public class func insertForMigration(
         attachmentStream: TSAttachmentStream,
         transaction: GRDBWriteTransaction
     ) throws {
-        _ = try insertGalleryRecordPrivate(attachmentStream: attachmentStream, transaction: transaction)
+        try insertGalleryRecordPrivate(
+            attachmentStream: attachmentStream.bridgeReferencedStream,
+            transaction: transaction
+        )
     }
 
+    @discardableResult
     private class func insertGalleryRecordPrivate(
-        attachmentStream: TSAttachmentStream,
+        attachmentStream: ReferencedTSResourceStream,
         transaction: GRDBWriteTransaction
     ) throws -> MediaGalleryRecord? {
-        guard let attachmentRowId = attachmentStream.grdbId else {
-            throw OWSAssertionError("attachmentRowId was unexpectedly nil")
-        }
-
-        guard let messageUniqueId = attachmentStream.albumMessageId else {
+        guard let message = attachmentStream.reference.fetchOwningMessage(tx: transaction.asAnyRead) else {
             return nil
         }
 
-        guard let message = TSMessage.anyFetchMessage(uniqueId: messageUniqueId, transaction: transaction.asAnyRead) else {
-            owsFailDebug("message was unexpectedly nil")
+        let legacyAttachmentRowId: Int64
+        let originalAlbumIndex: Int
+
+        switch attachmentStream.reference.concreteType {
+        case .legacy(let tsAttachmentRef):
+            guard
+                let tsAttachment = tsAttachmentRef.attachment,
+                let attachmentRowId = tsAttachment.sqliteRowId
+            else {
+                throw OWSAssertionError("attachmentRowId was unexpectedly nil")
+            }
+            legacyAttachmentRowId = attachmentRowId
+            guard let index = message.attachmentIds.firstIndex(of: tsAttachmentRef.uniqueId) else {
+                owsFailDebug("originalAlbumIndex was unexpectedly nil")
+                return nil
+            }
+            originalAlbumIndex = index
+        case .v2(let attachmentReference):
+            switch attachmentReference.owner {
+            case .message(.bodyAttachment(let metadata)):
+                originalAlbumIndex = Int(metadata.index)
+            default:
+                // Only index body attachments
+                return nil
+            }
+            // TODO: handle MediaGalleryRecords with v2 attachments
             return nil
         }
 
-        guard let messageRowId = message.grdbId else {
+        guard let messageRowId = message.sqliteRowId else {
             owsFailDebug("message rowId was unexpectedly nil")
             return nil
         }
@@ -68,26 +113,17 @@ public final class MediaGalleryRecordManager: NSObject {
             owsFailDebug("thread was unexpectedly nil")
             return nil
         }
-        guard let threadId = thread.grdbId else {
+        guard let threadId = thread.sqliteRowId else {
             owsFailDebug("thread rowId was unexpectedly nil")
             return nil
         }
 
-        guard
-            let originalAlbumIndex = DependenciesBridge.shared.tsResourceStore.indexForBodyAttachmentId(
-                .legacy(uniqueId: attachmentStream.uniqueId),
-                on: message,
-                tx: transaction.asAnyRead.asV2Read
-            )
-        else {
-            owsFailDebug("originalAlbumIndex was unexpectedly nil")
-            return nil
-        }
-
-        let galleryRecord = MediaGalleryRecord(attachmentId: attachmentRowId.int64Value,
-                                               albumMessageId: messageRowId.int64Value,
-                                               threadId: threadId.int64Value,
-                                               originalAlbumOrder: originalAlbumIndex)
+        let galleryRecord = MediaGalleryRecord(
+            attachmentId: legacyAttachmentRowId,
+            albumMessageId: messageRowId,
+            threadId: threadId,
+            originalAlbumOrder: originalAlbumIndex
+        )
 
         try galleryRecord.insert(transaction.database)
 
@@ -100,7 +136,7 @@ public final class MediaGalleryRecordManager: NSObject {
     private static let recentlyInsertedAttachments = AtomicArray<ChangedAttachmentInfo>(lock: .sharedGlobal)
     private static let recentlyRemovedAttachments = AtomicArray<ChangedAttachmentInfo>(lock: .sharedGlobal)
 
-    public class func didInsert(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
+    public class func didInsert(attachmentStream: ReferencedTSResourceStream, transaction: SDSAnyWriteTransaction) {
         let insertedRecord: MediaGalleryRecord?
 
         switch transaction.writeTransaction {
@@ -119,9 +155,11 @@ public final class MediaGalleryRecordManager: NSObject {
         }
 
         do {
-            let attachment = try changedAttachmentInfo(for: insertedRecord,
-                                                       attachmentUniqueId: attachmentStream.uniqueId,
-                                                       transaction: transaction.unwrapGrdbRead)
+            let attachment = try changedAttachmentInfo(
+                for: insertedRecord,
+                attachmentId: attachmentStream.reference.mediaGalleryResourceId,
+                transaction: transaction.unwrapGrdbRead
+            )
             recentlyInsertedAttachments.append(attachment)
         } catch {
             owsFailDebug("error: \(error)")
@@ -141,9 +179,11 @@ public final class MediaGalleryRecordManager: NSObject {
         }
     }
 
-    private static func changedAttachmentInfo(for record: MediaGalleryRecord,
-                                              attachmentUniqueId: String,
-                                              transaction: GRDBReadTransaction) throws -> ChangedAttachmentInfo {
+    private static func changedAttachmentInfo(
+        for record: MediaGalleryRecord,
+        attachmentId: MediaGalleryResourceId,
+        transaction: GRDBReadTransaction
+    ) throws -> ChangedAttachmentInfo {
         let timestamp: UInt64
         if let maybeTimestamp = recentlyChangedMessageTimestampsByRowId[record.albumMessageId] {
             timestamp = maybeTimestamp
@@ -162,13 +202,15 @@ public final class MediaGalleryRecordManager: NSObject {
             recentlyChangedMessageTimestampsByRowId[record.albumMessageId] = timestamp
         }
 
-        return ChangedAttachmentInfo(uniqueId: attachmentUniqueId,
-                                     threadGrdbId: record.threadId,
-                                     timestamp: timestamp)
+        return ChangedAttachmentInfo(
+            attachmentId: attachmentId,
+            threadGrdbId: record.threadId,
+            timestamp: timestamp
+        )
 
     }
 
-    public class func didRemove(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
+    public class func didRemove(attachmentStream: ReferencedTSResourceStream, transaction: SDSAnyWriteTransaction) {
         let removedRecord: MediaGalleryRecord?
         switch transaction.writeTransaction {
         case .grdbWrite(let grdbWrite):
@@ -185,9 +227,11 @@ public final class MediaGalleryRecordManager: NSObject {
         }
 
         do {
-            let attachment = try changedAttachmentInfo(for: removedRecord,
-                                                       attachmentUniqueId: attachmentStream.uniqueId,
-                                                       transaction: transaction.unwrapGrdbRead)
+            let attachment = try changedAttachmentInfo(
+                for: removedRecord,
+                attachmentId: attachmentStream.reference.mediaGalleryResourceId,
+                transaction: transaction.unwrapGrdbRead
+            )
             recentlyRemovedAttachments.append(attachment)
         } catch {
             owsFailDebug("error: \(error)")
