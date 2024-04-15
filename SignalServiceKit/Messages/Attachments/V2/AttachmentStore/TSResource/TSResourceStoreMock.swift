@@ -62,14 +62,6 @@ public class TSResourceStoreMock: TSResourceStore {
         return nil
     }
 
-    public func indexForBodyAttachmentId(_ attachmentId: TSResourceId, on message: TSMessage, tx: DBReadTransaction) -> Int? {
-        guard let rowId = message.sqliteRowId else {
-            return nil
-        }
-        let refs = messageResourceReferences[rowId] ?? []
-        return refs.firstIndex(where: { $0.resourceId == attachmentId })
-    }
-
     public func quotedAttachmentReference(
         from info: OWSAttachmentInfo,
         parentMessage: TSMessage,

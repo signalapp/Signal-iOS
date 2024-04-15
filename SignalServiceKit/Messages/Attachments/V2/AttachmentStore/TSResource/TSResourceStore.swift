@@ -55,14 +55,6 @@ public protocol TSResourceStore {
         tx: DBReadTransaction
     ) -> TSResourceReference?
 
-    /// Body attachments are explicitly ordered on a message.
-    /// Given an attachment id, return its index in the ordering.
-    func indexForBodyAttachmentId(
-        _ attachmentId: TSResourceId,
-        on message: TSMessage,
-        tx: DBReadTransaction
-    ) -> Int?
-
     // MARK: - Quoted Messages
 
     func quotedAttachmentReference(

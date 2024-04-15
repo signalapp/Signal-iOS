@@ -184,42 +184,6 @@ public class TSResourceStoreImpl: TSResourceStore {
         }
     }
 
-    public func indexForBodyAttachmentId(
-        _ attachmentId: TSResourceId,
-        on message: TSMessage,
-        tx: DBReadTransaction
-    ) -> Int? {
-        switch attachmentId {
-        case .legacy(let uniqueId):
-            return message.attachmentIds.firstIndex(of: uniqueId)
-        case .v2(let rowId):
-            guard let messageRowId = message.sqliteRowId else {
-                owsFailDebug("Fetching attachments for an un-inserted message!")
-                return nil
-            }
-            // Do filtering in memory; there is a fixed max # of body attachments
-            // per message and these are just references.
-            return attachmentStore
-                .fetchReferences(
-                    owner: .messageBodyAttachment(messageRowId: messageRowId),
-                    tx: tx
-                )
-                .lazy
-                .filter { $0.attachmentRowId == rowId }
-                .compactMap {
-                    switch $0.owner {
-                    case .message(.bodyAttachment(let metadata)):
-                        let index: UInt32 = metadata.index
-                        // Safe UInt -> Int64 cast.
-                        return Int(index)
-                    default:
-                        return nil
-                    }
-                }
-                .first
-        }
-    }
-
     // MARK: - Quoted Messages
 
     public func quotedAttachmentReference(
