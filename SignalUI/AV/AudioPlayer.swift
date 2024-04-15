@@ -55,7 +55,7 @@ public class AudioPlayer: NSObject {
 
     private var audioPlayer: AVAudioPlayer?
 
-    private var audioPlayerPoller: Timer?
+    private var displayLink: CADisplayLink?
 
     private let audioActivity: AudioActivity
 
@@ -93,16 +93,14 @@ public class AudioPlayer: NSObject {
 
         audioPlayer?.play()
 
-        audioPlayerPoller?.invalidate()
-        let audioPlayerPoller = Timer.weakTimer(
-            withTimeInterval: 0.05,
-            target: self,
-            selector: #selector(audioPlayerUpdated(timer:)),
-            userInfo: nil,
-            repeats: true
-        )
-        RunLoop.main.add(audioPlayerPoller, forMode: .common)
-        self.audioPlayerPoller = audioPlayerPoller
+        displayLink = CADisplayLink(target: self, selector: #selector(audioPlayerUpdated))
+        if #available(iOSApplicationExtension 15.0, *) {
+            displayLink?.preferredFrameRateRange = .init(minimum: 8, maximum: 8)
+        } else {
+            displayLink?.preferredFramesPerSecond = 8
+        }
+
+        displayLink?.add(to: .main, forMode: .common)
 
         // Prevent device from sleeping while playing audio.
         DeviceSleepManager.shared.addBlock(blockObject: self)
@@ -120,7 +118,7 @@ public class AudioPlayer: NSObject {
 
         audioPlayer.pause()
 
-        audioPlayerPoller?.invalidate()
+        displayLink?.invalidate()
 
         delegate?.setAudioProgress(audioPlayer.currentTime, duration: audioPlayer.duration, playbackRate: playbackRate)
 
@@ -208,7 +206,7 @@ public class AudioPlayer: NSObject {
         delegate?.audioPlaybackState = .stopped
 
         audioPlayer?.pause()
-        audioPlayerPoller?.invalidate()
+        displayLink?.invalidate()
 
         delegate?.setAudioProgress(0, duration: 0, playbackRate: playbackRate)
 
@@ -327,10 +325,10 @@ public class AudioPlayer: NSObject {
     // MARK: Events
 
     @objc
-    private func audioPlayerUpdated(timer: Timer) {
+    private func audioPlayerUpdated() {
         AssertIsOnMainThread()
 
-        owsAssertDebug(audioPlayerPoller != nil)
+        owsAssertDebug(displayLink != nil)
         guard let audioPlayer else {
             owsFailDebug("audioPlayer == nil")
             return
