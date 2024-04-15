@@ -662,19 +662,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     nonisolated private func buildAttachments(for typedItemProviders: [TypedItemProvider]) async throws -> [SignalAttachment] {
-        try await withThrowingTaskGroup(of: SignalAttachment.self) { group in
-            for typedItemProvider in typedItemProviders {
-                _ = group.addTaskUnlessCancelled {
-                    try await self.buildAttachment(for: typedItemProvider)
-                }
-            }
 
-            var result: [SignalAttachment] = []
-            for try await attachment in group {
-                result.append(attachment)
-            }
-            return result
+        // FIXME: does not use a task group because SignalAttachment likes to load things into RAM and resize them; doing this in parallel can exhaust available RAM
+        var result: [SignalAttachment] = []
+        for typedItemProvider in typedItemProviders {
+            result.append(try await self.buildAttachment(for: typedItemProvider))
         }
+        return result
     }
 
     nonisolated private func buildAttachment(for typedItemProvider: TypedItemProvider) async throws -> SignalAttachment {
