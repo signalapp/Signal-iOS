@@ -49,7 +49,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         if let attachmentStream = self.attachmentStream {
             let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.resourceId)
-            let isAnimated = attachmentStream.bridgeStream.isAnimatedContent
+            let isAnimated = attachmentStream.computeContentType().isAnimatedImage
             let reusableMediaView: ReusableMediaView
             if let cachedView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
                 reusableMediaView = cachedView

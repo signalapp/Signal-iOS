@@ -227,10 +227,7 @@ extension ConversationSettingsViewController {
 
                 for (attachmentStream, imageView) in self.recentMedia.orderedValues {
                     let button = OWSButton { [weak self] in
-                        self?.showMediaPageView(for: .init(
-                            reference: attachmentStream.bridgeReferenced.reference,
-                            attachmentStream: attachmentStream
-                        ))
+                        self?.showMediaPageView(for: attachmentStream)
                     }
                     stackView.addArrangedSubview(button)
                     button.autoSetDimensions(to: CGSize(square: imageWidth))

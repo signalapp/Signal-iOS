@@ -144,7 +144,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         if componentState.bodyText == .oversizeTextDownloading {
             return true
         }
-        if componentState.audioAttachment?.attachment.asTransitTierPointer()?.bridgePointerAndNotStream != nil {
+        if componentState.audioAttachment?.attachment.asResourceStream() == nil {
             return true
         }
         if componentState.genericAttachment?.attachmentPointer != nil {

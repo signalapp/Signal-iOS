@@ -1325,8 +1325,9 @@ private class LinkPreviewImageView: CVImageView {
         return self
     }
 
-    fileprivate static let mediaCache = LRUCache<String, NSObject>(maxSize: 2,
-                                                                   shouldEvacuateInBackground: true)
+    fileprivate static let mediaCache = LRUCache<LinkPreviewImageCacheKey, NSObject>(
+        maxSize: 2, shouldEvacuateInBackground: true
+    )
 
     func configure(state: LinkPreviewState,
                    rounding roundingParam: LinkPreviewImageView.Rounding? = nil) -> UIImageView? {
@@ -1342,7 +1343,7 @@ private class LinkPreviewImageView: CVImageView {
         self.isHero = isHero
         let configurationId = Self.configurationIdCounter.increment()
         self.configurationId = configurationId
-        let thumbnailQuality: TSAttachmentThumbnailQuality = isHero ? .medium : .small
+        let thumbnailQuality: AttachmentThumbnailQuality = isHero ? .medium : .small
 
         if let cacheKey = state.imageCacheKey(thumbnailQuality: thumbnailQuality),
            let image = Self.mediaCache.get(key: cacheKey) as? UIImage {

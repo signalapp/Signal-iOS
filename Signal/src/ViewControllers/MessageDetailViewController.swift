@@ -40,15 +40,9 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private let cellView = CVCellView()
 
-    private var attachments: [TSAttachment]?
-    private var attachmentStreams: [TSAttachmentStream]? {
-        return attachments?.compactMap { $0.asResourceStream()?.bridgeStream }
-    }
-    var hasMediaAttachment: Bool {
-        guard let attachmentStreams = self.attachmentStreams, !attachmentStreams.isEmpty else {
-            return false
-        }
-        return true
+    private var bodyMediaAttachments: [ReferencedTSResource]?
+    private var bodyMediaAttachmentStreams: [ReferencedTSResourceStream]? {
+        return bodyMediaAttachments?.compactMap { $0.asReferencedStream }
     }
 
     private let byteCountFormatter: ByteCountFormatter = ByteCountFormatter()
@@ -295,8 +289,8 @@ class MessageDetailViewController: OWSTableViewController2 {
             self.expiryLabel = expiryLabel
         }
 
-        if hasMediaAttachment, attachments?.count == 1, let attachment = attachments?.first {
-            if let sourceFilename = attachment.sourceFilename {
+        if bodyMediaAttachments?.count == 1, let attachment = bodyMediaAttachments?.first {
+            if let sourceFilename = attachment.reference.sourceFilename {
                 messageStack.addArrangedSubview(Self.buildValueLabel(
                     name: OWSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
                                             comment: "Label for the original filename of any attachment in the 'message metadata' view."),
@@ -304,7 +298,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 ))
             }
 
-            if let formattedByteCount = byteCountFormatter.string(for: attachment.byteCount) {
+            if let formattedByteCount = byteCountFormatter.string(for: attachment.attachment.unenecryptedResourceByteCount ?? 0) {
                 messageStack.addArrangedSubview(Self.buildValueLabel(
                     name: OWSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
                                             comment: "Label for file size of attachments in the 'message metadata' view."),
@@ -315,11 +309,11 @@ class MessageDetailViewController: OWSTableViewController2 {
             }
 
             if DebugFlags.messageDetailsExtraInfo {
-                let contentType = attachment.contentType
+                let mimeType = attachment.attachment.mimeType
                 messageStack.addArrangedSubview(Self.buildValueLabel(
                     name: OWSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
                                             comment: "Label for the MIME type of attachments in the 'message metadata' view."),
-                    value: contentType
+                    value: mimeType
                 ))
             }
         }
@@ -718,8 +712,8 @@ extension MessageDetailViewController: MediaGalleryDelegate {
     }
 
     func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
-        if let firstAttachment = self.attachments?.first,
-           mediaGallery.ensureLoadedForDetailView(focusedAttachment: firstAttachment.bridgeReferenced) == nil {
+        if let firstAttachment = self.bodyMediaAttachments?.first,
+           mediaGallery.ensureLoadedForDetailView(focusedAttachment: firstAttachment) == nil {
             // Assume the item was deleted.
             self.dismiss(animated: true) {
                 self.navigationController?.popViewController(animated: true)
@@ -885,7 +879,8 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
                 return false
             }
             self.message = newMessage
-            self.attachments = newMessage.mediaAttachments(transaction: transaction)
+            self.bodyMediaAttachments = DependenciesBridge.shared.tsResourceStore
+                .referencedBodyMediaAttachments(for: newMessage, tx: transaction.asV2Read)
             guard let renderItem = buildRenderItem(
                 message: newMessage,
                 spoilerState: spoilerState,

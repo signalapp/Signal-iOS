@@ -604,7 +604,7 @@ open class TextAttachmentView: UIView {
                 if layout == .regular && (imageSize.width < 300 || imageSize.height < 300) {
                     layout = .compact
                 }
-                let thumbnailQuality: TSAttachmentThumbnailQuality = layout == .regular ? .mediumLarge : .small
+                let thumbnailQuality: AttachmentThumbnailQuality = layout == .regular ? .mediumLarge : .small
                 if let cacheKey = linkPreview.imageCacheKey(thumbnailQuality: thumbnailQuality),
                    let image = Self.mediaCache.get(key: cacheKey) as? UIImage {
                     thumbnailImageView.image = image
@@ -729,7 +729,7 @@ open class TextAttachmentView: UIView {
             return formatter
         }()
 
-        fileprivate static let mediaCache = LRUCache<String, NSObject>(maxSize: 32, shouldEvacuateInBackground: true)
+        fileprivate static let mediaCache = LRUCache<LinkPreviewImageCacheKey, NSObject>(maxSize: 32, shouldEvacuateInBackground: true)
     }
 }
 

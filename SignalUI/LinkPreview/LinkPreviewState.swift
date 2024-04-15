@@ -15,15 +15,23 @@ public enum LinkPreviewImageState: Int {
 
 // MARK: -
 
+public struct LinkPreviewImageCacheKey: Hashable, Equatable {
+    public let id: TSResourceId?
+    public let urlString: String?
+    public let thumbnailQuality: AttachmentThumbnailQuality
+}
+
 public protocol LinkPreviewState: AnyObject {
     var isLoaded: Bool { get }
     var urlString: String? { get }
     var displayDomain: String? { get }
     var title: String? { get }
     var imageState: LinkPreviewImageState { get }
-    func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
-                    completion: @escaping (UIImage) -> Void)
-    func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String?
+    func imageAsync(
+        thumbnailQuality: AttachmentThumbnailQuality,
+        completion: @escaping (UIImage) -> Void
+    )
+    func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey?
     var imagePixelSize: CGSize { get }
     var previewDescription: String? { get }
     var date: Date? { get }
@@ -70,12 +78,12 @@ public class LinkPreviewLoading: LinkPreviewState {
 
     public var imageState: LinkPreviewImageState { .none }
 
-    public func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
         owsFailDebug("Should not be called.")
     }
 
-    public func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String? {
+    public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey? {
         owsFailDebug("Should not be called.")
         return nil
     }
@@ -136,7 +144,7 @@ public class LinkPreviewDraft: LinkPreviewState {
 
     public var imageState: LinkPreviewImageState { linkPreviewDraft.imageData != nil ? .loaded : .none }
 
-    public func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
         guard let imageData = linkPreviewDraft.imageData else {
@@ -152,12 +160,12 @@ public class LinkPreviewDraft: LinkPreviewState {
         }
     }
 
-    public func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String? {
+    public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey? {
         guard let urlString = urlString else {
             owsFailDebug("Missing urlString.")
             return nil
         }
-        return "\(urlString).\(NSStringForAttachmentThumbnailQuality(thumbnailQuality))"
+        return .init(id: nil, urlString: urlString, thumbnailQuality: thumbnailQuality)
     }
 
     private let imagePixelSizeCache = AtomicOptional<CGSize>(nil, lock: .sharedGlobal)
@@ -205,13 +213,13 @@ public class LinkPreviewDraft: LinkPreviewState {
 public class LinkPreviewSent: LinkPreviewState {
 
     private let linkPreview: OWSLinkPreview
-    private let imageAttachment: TSAttachment?
+    private let imageAttachment: TSResource?
 
     public let conversationStyle: ConversationStyle?
 
     public init(
         linkPreview: OWSLinkPreview,
-        imageAttachment: TSAttachment?,
+        imageAttachment: TSResource?,
         conversationStyle: ConversationStyle?
     ) {
         self.linkPreview = linkPreview
@@ -243,34 +251,29 @@ public class LinkPreviewSent: LinkPreviewState {
         guard let imageAttachment = imageAttachment else {
             return .none
         }
-        guard let attachmentStream = imageAttachment.asResourceStream()?.bridgeStream else {
+        guard let attachmentStream = imageAttachment.asResourceStream() else {
             return .loading
         }
-        guard attachmentStream.isImageMimeType,
-            attachmentStream.isValidImage else {
+        switch attachmentStream.computeContentType() {
+        case .image, .animatedImage:
+            break
+        default:
             return .invalid
         }
         return .loaded
     }
 
-    public func imageAsync(thumbnailQuality: TSAttachmentThumbnailQuality,
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
-        guard let attachmentStream = imageAttachment?.asResourceStream()?.bridgeStream else {
+        guard let attachmentStream = imageAttachment?.asResourceStream() else {
             owsFailDebug("Could not load image.")
             return
         }
         DispatchQueue.global().async {
-            guard attachmentStream.isImageMimeType,
-                  attachmentStream.isValidImage else {
-                return
-            }
-            guard attachmentStream.isValidVisualMedia else {
-                owsFailDebug("Invalid image.")
-                return
-            }
-            if attachmentStream.isAnimatedContent {
-                guard let imageFilepath = attachmentStream.originalFilePath else {
+            switch attachmentStream.computeContentType() {
+            case .animatedImage:
+                guard let imageFilepath = attachmentStream.bridgeStream.originalFilePath else {
                     owsFailDebug("Attachment is missing file path.")
                     return
                 }
@@ -279,23 +282,26 @@ public class LinkPreviewSent: LinkPreviewState {
                     return
                 }
                 completion(image)
-            } else {
-                attachmentStream.thumbnailImage(quality: thumbnailQuality,
-                                                success: { image in
-                                                    completion(image)
-                                                },
-                                                failure: {
-                                                    owsFailDebug("Could not load thumnail.")
-                                                })
+            case .image:
+                Task {
+                    guard let image = await attachmentStream.thumbnailImage(quality: thumbnailQuality) else {
+                        owsFailDebug("Could not load thumnail.")
+                        return
+                    }
+                    completion(image)
+                }
+            default:
+                owsFailDebug("Invalid image.")
+                return
             }
         }
     }
 
-    public func imageCacheKey(thumbnailQuality: TSAttachmentThumbnailQuality) -> String? {
-        guard let attachmentStream = imageAttachment?.asResourceStream()?.bridgeStream else {
+    public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey? {
+        guard let attachmentStream = imageAttachment?.asResourceStream() else {
             return nil
         }
-        return "\(attachmentStream.uniqueId).\(NSStringForAttachmentThumbnailQuality(thumbnailQuality))"
+        return .init(id: attachmentStream.resourceId, urlString: nil, thumbnailQuality: thumbnailQuality)
     }
 
     private let imagePixelSizeCache = AtomicOptional<CGSize>(nil, lock: .sharedGlobal)
@@ -305,10 +311,20 @@ public class LinkPreviewSent: LinkPreviewState {
             return cachedValue
         }
         owsAssertDebug(imageState == .loaded)
-        guard let attachmentStream = imageAttachment?.asResourceStream()?.bridgeStream else {
+        guard let attachmentStream = imageAttachment?.asResourceStream() else {
             return CGSize.zero
         }
-        let result = attachmentStream.imageSizePixels
+
+        let result: CGSize = {
+            switch attachmentStream.computeContentType() {
+            case .image(let pixelSize):
+                return pixelSize ?? .zero
+            case .animatedImage(let pixelSize):
+                return pixelSize ?? .zero
+            case .audio, .video, .file:
+                return .zero
+            }
+        }()
         imagePixelSizeCache.set(result)
         return result
     }

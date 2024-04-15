@@ -864,7 +864,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     let maximumRecentMedia = 4
-    private(set) var recentMedia = OrderedDictionary<String, (attachment: TSAttachmentStream, imageView: UIImageView)>() {
+    private(set) var recentMedia = OrderedDictionary<
+        MediaGalleryResourceId,
+        (attachment: ReferencedTSResourceStream, imageView: UIImageView)
+    >() {
         didSet { AssertIsOnMainThread() }
     }
 
@@ -878,7 +881,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: transaction.asV2Read)
         }
         recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
-            guard let attachmentStream = attachment.asResourceStream()?.bridgeStream else {
+            guard let attachmentStream = attachment.asReferencedStream else {
                 return owsFailDebug("Unexpected type of attachment")
             }
 
@@ -887,9 +890,14 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             imageView.layer.cornerRadius = 4
             imageView.contentMode = .scaleAspectFill
 
-            attachmentStream.thumbnailImageSmall { imageView.image = $0 } failure: {}
+            Task {
+                imageView.image = await attachmentStream.attachmentStream.thumbnailImage(quality: .small)
+            }
 
-            result.append(key: attachmentStream.uniqueId, value: (attachmentStream, imageView))
+            result.append(
+                key: attachmentStream.reference.mediaGalleryResourceId,
+                value: (attachmentStream, imageView)
+            )
         })
         shouldRefreshAttachmentsOnReappear = false
     }
@@ -1072,7 +1080,7 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
         let mediaViewShape: MediaViewShape
         switch item {
         case .gallery(let galleryItem):
-            guard let imageView = recentMedia[galleryItem.attachmentStream.attachmentStream.resourceId.bridgeUniqueId]?.imageView else { return nil }
+            guard let imageView = recentMedia[galleryItem.attachmentStream.reference.mediaGalleryResourceId]?.imageView else { return nil }
             mediaView = imageView
             mediaViewShape = .rectangle(imageView.layer.cornerRadius)
         case .image:

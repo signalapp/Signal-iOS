@@ -57,11 +57,11 @@ public struct MediaGalleryResourceFinder {
         ).map(\.asItemId)
     }
 
-    public func recentMediaAttachments(limit: Int, tx: DBReadTransaction) -> [TSAttachment] {
+    public func recentMediaAttachments(limit: Int, tx: DBReadTransaction) -> [ReferencedTSResource] {
         return recordFinder.recentMediaAttachments(
             limit: limit,
             transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
-        )
+        ).map(\.bridgeReferenced)
     }
 
     public func enumerateMediaAttachments(

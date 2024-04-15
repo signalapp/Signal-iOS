@@ -102,33 +102,39 @@ class ViewOnceMessageViewController: OWSViewController {
                 ViewOnceMessages.markAsComplete(message: message, sendSyncMessages: true, transaction: transaction)
             }
 
-            guard let attachmentId = message.bodyAttachmentIds(transaction: transaction).first else {
+            guard
+                let attachmentRef = DependenciesBridge.shared.tsResourceStore.bodyMediaAttachments(
+                    for: message,
+                    tx: transaction.asV2Read
+                ).first,
+                let attachmentStream = attachmentRef.fetch(tx: transaction)?.asResourceStream()
+            else {
                 return
             }
-            guard let attachmentStream = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)?.asResourceStream()?.bridgeStream else {
+            guard attachmentStream.bridgeStream.isValidVisualMedia else {
                 return
             }
-            guard attachmentStream.isValidVisualMedia else {
-                return
-            }
-            let contentType = attachmentStream.contentType
-            if contentType.isEmpty {
-                owsFailDebug("Missing content type.")
+            let mimeType = attachmentStream.mimeType
+            if mimeType.isEmpty {
+                owsFailDebug("Missing mime type.")
                 return
             }
 
             let viewOnceType: Content.ContentType
-            if attachmentStream.isLoopingVideo(inContainingMessage: message, transaction: transaction) {
+            if attachmentRef.renderingFlag == .shouldLoop {
                 viewOnceType = .loopingVideo
-            } else if attachmentStream.isAnimatedContent {
-                viewOnceType = .animatedImage
-            } else if attachmentStream.isImageMimeType {
-                viewOnceType = .stillImage
-            } else if attachmentStream.isVideoMimeType {
-                viewOnceType = .video
             } else {
-                owsFailDebug("Unexpected content type.")
-                return
+                switch attachmentStream.computeContentType() {
+                case .animatedImage:
+                    viewOnceType = .animatedImage
+                case .image:
+                    viewOnceType = .stillImage
+                case .video:
+                    viewOnceType = .video
+                case .audio, .file:
+                    owsFailDebug("Unexpected content type.")
+                    return
+                }
             }
 
             // To ensure that we never show the content more than once,
@@ -150,7 +156,7 @@ class ViewOnceMessageViewController: OWSViewController {
             //   b) the file was moved and will be cleaned up on next
             //   launch like any other temp file if it hasn't been
             //   deleted already.
-            guard let originalFilePath = attachmentStream.originalFilePath else {
+            guard let originalFilePath = attachmentStream.bridgeStream.originalFilePath else {
                 owsFailDebug("Attachment missing file path.")
                 return
             }
@@ -158,7 +164,7 @@ class ViewOnceMessageViewController: OWSViewController {
                 owsFailDebug("Missing attachment file.")
                 return
             }
-            guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(contentType) else {
+            guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
                 owsFailDebug("Couldn't determine file extension.")
                 return
             }

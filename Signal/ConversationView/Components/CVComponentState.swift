@@ -1439,14 +1439,16 @@ public extension CVComponentState {
             transaction: transaction)
     }
 
-    static func displayableBodyText(oversizeTextAttachment attachmentStream: TSAttachmentStream,
-                                    ranges: MessageBodyRanges?,
-                                    interaction: TSInteraction,
-                                    transaction: SDSAnyReadTransaction) -> DisplayableText {
+    static func displayableBodyText(
+        oversizeTextAttachment attachmentStream: TSResourceStream,
+        ranges: MessageBodyRanges?,
+        interaction: TSInteraction,
+        transaction: SDSAnyReadTransaction
+    ) -> DisplayableText {
 
         let text = { () -> String in
             do {
-                guard let url = attachmentStream.originalMediaURL else {
+                guard let url = attachmentStream.bridgeStream.originalMediaURL else {
                     owsFailDebug("Missing originalMediaURL.")
                     return ""
                 }
