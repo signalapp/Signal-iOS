@@ -456,13 +456,13 @@ class GroupCallViewController: UIViewController {
                     )
                 }
             } else {
-                localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { view in
                     speakerPage.addSubview(view)
                     view.frame = CGRect(origin: .zero, size: size)
                 }
             }
         case .notJoined, .joining, .pending:
-            localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { view in
                 speakerPage.addSubview(view)
                 view.frame = CGRect(origin: .zero, size: size)
             }
