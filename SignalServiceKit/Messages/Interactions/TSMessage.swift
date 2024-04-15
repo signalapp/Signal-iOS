@@ -715,7 +715,7 @@ public extension TSMessage {
         FullTextSearchIndexer.delete(self, tx: tx)
 
         if !self.attachmentIds.isEmpty {
-            MediaGalleryResourceManager.didRemove(message: self, transaction: tx)
+            DependenciesBridge.shared.mediaGalleryResourceManager.didRemove(message: self, tx: tx.asV2Write)
         }
     }
 }

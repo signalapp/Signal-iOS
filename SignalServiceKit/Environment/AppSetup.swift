@@ -754,6 +754,7 @@ public class AppSetup {
             attachmentUploadManager: attachmentUploadManager,
             tsAttachmentUploadManager: tsAttachmentUploadManager
         )
+        let mediaGalleryResourceManager = MediaGalleryResourceManagerImpl()
 
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
@@ -797,6 +798,7 @@ public class AppSetup {
             localUsernameManager: localUsernameManager,
             masterKeySyncManager: masterKeySyncManager,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
+            mediaGalleryResourceManager: mediaGalleryResourceManager,
             messageBackupManager: messageBackupManager,
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,

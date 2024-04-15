@@ -105,13 +105,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(attachmentsAddedOrRemoved(notification:)),
-            name: MediaGalleryResourceManager.newAttachmentsAvailableNotification,
+            name: MediaGalleryResource.newAttachmentsAvailableNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(attachmentsAddedOrRemoved(notification:)),
-            name: MediaGalleryResourceManager.didRemoveAttachmentsNotification,
+            name: MediaGalleryResource.didRemoveAttachmentsNotification,
             object: nil
         )
     }
@@ -981,7 +981,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     private func attachmentsAddedOrRemoved(notification: Notification) {
         AssertIsOnMainThread()
 
-        let attachments = notification.object as! [MediaGalleryResourceManager.ChangedTSResourceInfo]
+        let attachments = notification.object as! [MediaGalleryResource.ChangedResourceInfo]
         guard attachments.contains(where: { $0.threadGrdbId == thread.sqliteRowId }) else {
             return
         }

@@ -94,7 +94,7 @@ public final class MediaGalleryRecordManager: NSObject {
         return galleryRecord
     }
 
-    typealias ChangedAttachmentInfo = MediaGalleryResourceManager.ChangedTSResourceInfo
+    typealias ChangedAttachmentInfo = MediaGalleryResource.ChangedResourceInfo
 
     private static let recentlyChangedMessageTimestampsByRowId = AtomicDictionary<Int64, UInt64>(lock: .sharedGlobal)
     private static let recentlyInsertedAttachments = AtomicArray<ChangedAttachmentInfo>(lock: .sharedGlobal)
@@ -134,7 +134,7 @@ public final class MediaGalleryRecordManager: NSObject {
             let recentlyInsertedAttachments = Self.recentlyInsertedAttachments.removeAll()
             if !recentlyInsertedAttachments.isEmpty {
                 NotificationCenter.default.postNotificationNameAsync(
-                    MediaGalleryResourceManager.newAttachmentsAvailableNotification,
+                    MediaGalleryResource.newAttachmentsAvailableNotification,
                     object: recentlyInsertedAttachments
                 )
             }
@@ -200,7 +200,7 @@ public final class MediaGalleryRecordManager: NSObject {
             let recentlyRemovedAttachments = Self.recentlyRemovedAttachments.removeAll()
             if !recentlyRemovedAttachments.isEmpty {
                 NotificationCenter.default.postNotificationNameAsync(
-                    MediaGalleryResourceManager.didRemoveAttachmentsNotification,
+                    MediaGalleryResource.didRemoveAttachmentsNotification,
                     object: recentlyRemovedAttachments
                 )
             }

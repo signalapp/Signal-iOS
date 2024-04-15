@@ -311,13 +311,13 @@ class MediaGallery: Dependencies {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(Self.newAttachmentsAvailable(_:)),
-            name: MediaGalleryResourceManager.newAttachmentsAvailableNotification,
+            name: MediaGalleryResource.newAttachmentsAvailableNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(Self.didRemoveAttachments(_:)),
-            name: MediaGalleryResourceManager.didRemoveAttachmentsNotification,
+            name: MediaGalleryResource.didRemoveAttachmentsNotification,
             object: nil
         )
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -406,7 +406,7 @@ class MediaGallery: Dependencies {
         // In some cases this may result in deleting sections entirely; we do this as a follow-up step so that
         // delegates don't get confused.
         AssertIsOnMainThread()
-        let incomingDeletedAttachments = notification.object as! [MediaGalleryResourceManager.ChangedTSResourceInfo]
+        let incomingDeletedAttachments = notification.object as! [MediaGalleryResource.ChangedResourceInfo]
 
         var sectionsNeedingUpdate = Set<GalleryDate>()
         for incomingDeletedAttachment in incomingDeletedAttachments {
@@ -438,7 +438,7 @@ class MediaGallery: Dependencies {
     @objc
     private func newAttachmentsAvailable(_ notification: Notification) {
         AssertIsOnMainThread()
-        let incomingNewAttachments = notification.object as! [MediaGalleryResourceManager.ChangedTSResourceInfo]
+        let incomingNewAttachments = notification.object as! [MediaGalleryResource.ChangedResourceInfo]
         let relevantAttachments = incomingNewAttachments.filter { $0.threadGrdbId == mediaGalleryFinder.threadId }
 
         guard !relevantAttachments.isEmpty else {
