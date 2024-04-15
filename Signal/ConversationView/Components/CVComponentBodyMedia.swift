@@ -390,20 +390,28 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
         componentDelegate.didTapBodyMedia(
             itemViewModel: itemViewModel,
-            attachmentStream: attachmentStream,
+            attachmentStream: .init(
+                reference: mediaView.attachment.reference,
+                attachmentStream: attachmentStream
+            ),
             imageView: mediaView
         )
         return true
     }
 
-    public func albumItemView(forAttachment attachment: TSAttachmentStream,
-                              componentView: CVComponentView) -> UIView? {
+    public func albumItemView(
+        forAttachment attachment: ReferencedTSResource,
+        componentView: CVComponentView
+    ) -> UIView? {
         guard let componentView = componentView as? CVComponentViewBodyMedia else {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
         let albumView = componentView.albumView
-        guard let albumItemView = (albumView.itemViews.first { $0.attachment.attachment.bridge == attachment }) else {
+        guard let albumItemView = (albumView.itemViews.first {
+            $0.attachment.attachment.resourceId == attachment.attachment.resourceId
+                && $0.attachment.reference.hasSameOwner(as: attachment.reference)
+        }) else {
             assert(albumView.moreItemsView != nil)
             return albumView.moreItemsView
         }

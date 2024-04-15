@@ -794,7 +794,8 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 interaction: galleryItem.message,
                 thread: thread,
                 attachmentStream: galleryItem.attachmentStream,
-                isVoiceMessage: galleryItem.attachmentType == .voiceMessage,
+                receivedAtDate: galleryItem.receivedAtDate,
+                isVoiceMessage: galleryItem.renderingFlag == .voiceMessage,
                 mediaCache: mediaCache,
                 metadata: galleryItem.mediaMetadata!
             ))
@@ -1517,7 +1518,9 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             return nil
         }
 
-        let totalSize = items.reduce(Int64(0), { result, item in result + Int64(item.attachmentStream.byteCount) })
+        let totalSize = items.reduce(Int64(0), { result, item in
+            result + Int64(item.attachmentStream.attachmentStream.unenecryptedResourceByteCount ?? 0)
+        })
         return (items.count, totalSize)
     }
 
@@ -1669,7 +1672,9 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             return
         }
 
-        let items: [TSAttachmentStream] = indexPaths.compactMap { return self.galleryItem(at: $0)?.attachmentStream }
+        let items: [TSAttachmentStream] = indexPaths.compactMap {
+            return self.galleryItem(at: $0)?.attachmentStream.attachmentStream.bridgeStream
+        }
         guard items.count == indexPaths.count else {
             owsFailDebug("trying to delete an item that never loaded")
             return

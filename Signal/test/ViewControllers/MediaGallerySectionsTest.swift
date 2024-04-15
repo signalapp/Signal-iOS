@@ -55,7 +55,7 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
         return _nextRowID
     }
     var rowid: Int64
-    var uniqueId: String
+    var attachmentId: TSResourceId
     var timestamp: Date
 
     var galleryDate: GalleryDate { GalleryDate(date: timestamp) }
@@ -65,13 +65,13 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
     /// The item's unique ID will be randomly generated.
     init(_ compressedDate: UInt32) {
         self.rowid = FakeItem.allocateRowID()
-        self.uniqueId = UUID().uuidString
+        self.attachmentId = .legacy(uniqueId: UUID().uuidString)
         self.timestamp = Date(compressedDate: compressedDate)
     }
 
     init(_ compressedDate: UInt32, uniqueId: String?, rowid: Int64) {
         self.rowid = rowid
-        self.uniqueId = uniqueId ?? UUID().uuidString
+        self.attachmentId = .legacy(uniqueId: uniqueId ?? UUID().uuidString)
         self.timestamp = Date(compressedDate: compressedDate)
     }
 }
@@ -174,7 +174,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
         let itemsInRange = itemsInInterval.dropFirst(range.startIndex).prefix(range.count)
         mostRecentRequest = itemsInRange.indices
         for (offset, item) in zip(range, itemsInRange) {
-            block(offset, item.uniqueId, { item })
+            block(offset, item.attachmentId.bridgeUniqueId, { item })
         }
     }
 }
@@ -205,7 +205,7 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
         let item2 = FakeItem(2021_04_28)
         XCTAssertEqual(Calendar.current.dateComponents([.year, .month, .day], from: item2.timestamp),
                        DateComponents(year: 2021, month: 4, day: 28))
-        XCTAssertNotEqual(item1.uniqueId, item2.uniqueId)
+        XCTAssertNotEqual(item1.attachmentId, item2.attachmentId)
     }
 
     func testNumberOfItemsInSection() {
@@ -428,28 +428,28 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
             var results: [String] = []
             let saveToResults = { (offset: Int, uniqueId: String, buildItem: () -> FakeItem) in
                 results.append(uniqueId)
-                XCTAssertEqual(uniqueId, buildItem().uniqueId)
+                XCTAssertEqual(uniqueId, buildItem().attachmentId.bridgeUniqueId)
             }
 
             store.enumerateItems(in: GalleryDate(2021_01_01).interval,
                                  range: 1..<3,
                                  transaction: transaction,
                                  block: saveToResults)
-            XCTAssertEqual(store.allItems[1..<3].map { $0.uniqueId }, results)
+            XCTAssertEqual(store.allItems[1..<3].map { $0.attachmentId.bridgeUniqueId }, results)
 
             results.removeAll()
             store.enumerateItems(in: GalleryDate(2021_09_01).interval,
                                  range: 2..<4,
                                  transaction: transaction,
                                  block: saveToResults)
-            XCTAssertEqual(store.allItems[7..<9].map { $0.uniqueId }, results)
+            XCTAssertEqual(store.allItems[7..<9].map { $0.attachmentId.bridgeUniqueId }, results)
 
             results.removeAll()
             store.enumerateItems(in: GalleryDate(2021_09_01).interval,
                                  range: 0..<20,
                                  transaction: transaction,
                                  block: saveToResults)
-            XCTAssertEqual(store.allItems[5...].map { $0.uniqueId }, results)
+            XCTAssertEqual(store.allItems[5...].map { $0.attachmentId.bridgeUniqueId }, results)
 
             results.removeAll()
             store.enumerateItems(in: GalleryDate(2021_10_01).interval,

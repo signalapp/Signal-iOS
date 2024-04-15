@@ -89,7 +89,7 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: TSResourceStream,
+        attachmentStream: ReferencedTSResourceStream,
         imageView: UIView
     )
 

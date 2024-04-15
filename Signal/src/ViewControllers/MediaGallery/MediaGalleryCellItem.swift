@@ -21,7 +21,7 @@ enum MediaGalleryCellItem {
     case photoVideo(MediaGalleryCellItemPhotoVideo)
     case audio(MediaGalleryCellItemAudio)
 
-    var attachmentStream: TSAttachmentStream? {
+    var attachmentStream: ReferencedTSResourceStream? {
         switch self {
         case .photoVideo(let item):
             return item.galleryItem.attachmentStream
@@ -37,7 +37,7 @@ extension MediaGalleryCellItem: Equatable {
         case let (.photoVideo(lvalue), .photoVideo(rvalue)):
             return lvalue === rvalue
         case let (.audio(lvalue), .audio(rvalue)):
-            return lvalue.attachmentStream == rvalue.attachmentStream
+            return lvalue.attachmentStream.reference.resourceId == rvalue.attachmentStream.reference.resourceId
         case (.photoVideo, _), (.audio, _):
             return false
         }
@@ -48,19 +48,22 @@ struct MediaGalleryCellItemAudio {
     var message: TSMessage
     var interaction: TSInteraction
     var thread: TSThread
-    var attachmentStream: TSAttachmentStream
+    var attachmentStream: ReferencedTSResourceStream
+    var receivedAtDate: Date
     var isVoiceMessage: Bool
     var mediaCache: CVMediaCache
     var metadata: MediaMetadata
 
     var size: UInt {
-        UInt(attachmentStream.byteCount)
-    }
-    var date: Date {
-        attachmentStream.creationTimestamp
+        UInt(attachmentStream.attachmentStream.unenecryptedResourceByteCount ?? 0)
     }
     var duration: TimeInterval {
-        attachmentStream.audioDurationSeconds()
+        switch attachmentStream.attachmentStream.computeContentType() {
+        case .audio(let duration):
+            return duration ?? 0
+        default:
+            return 0
+        }
     }
 
     enum AttachmentType {
@@ -106,7 +109,9 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
     private var videoDurationPromise: Promise<TimeInterval> {
         owsAssert(galleryItem.isVideo)
-        return VideoDurationHelper.shared.promisedDuration(attachment: galleryItem.attachmentStream)
+        return VideoDurationHelper.shared.promisedDuration(
+            attachment: galleryItem.attachmentStream.attachmentStream.bridgeStream
+        )
     }
     var mediaMetadata: MediaMetadata? {
         return galleryItem.mediaMetadata
@@ -115,14 +120,15 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
 extension MediaGalleryItem {
     var mediaMetadata: MediaMetadata? {
-        let filename = attachmentStream.originalFilePath.map {
+        let filename = attachmentStream.attachmentStream.bridgeStream.originalFilePath.map {
             ($0 as NSString).lastPathComponent as String
         }
         return MediaMetadata(
             sender: sender?.name ?? "",
             abbreviatedSender: sender?.abbreviatedName ?? "",
             filename: filename,
-            byteSize: Int(attachmentStream.byteCount),
-            creationDate: attachmentStream.creationTimestamp)
+            byteSize: Int(attachmentStream.attachmentStream.unenecryptedResourceByteCount ?? 0),
+            creationDate: receivedAtDate
+        )
     }
 }

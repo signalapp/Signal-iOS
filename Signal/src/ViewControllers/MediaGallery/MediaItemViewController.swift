@@ -33,7 +33,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         super.init()
 
-        image = attachmentStream.thumbnailImageLargeSync()
+        image = attachmentStream.thumbnailImageSync(quality: .large)
     }
 
     deinit {
@@ -206,15 +206,15 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         guard mediaView == nil else { return }
 
         let view: UIView
-        if attachmentStream.isLoopingVideo(galleryItem.attachmentType) {
-            if attachmentStream.isValidVideo, let loopingVideoPlayerView = buildLoopingVideoPlayerView() {
+        if attachmentStream.computeContentType().isVideo, galleryItem.renderingFlag == .shouldLoop {
+            if attachmentStream.computeContentType().isVideo, let loopingVideoPlayerView = buildLoopingVideoPlayerView() {
                 loopingVideoPlayerView.delegate = self
                 view = loopingVideoPlayerView
             } else {
                 view = buildPlaceholderView()
             }
-        } else if attachmentStream.isAnimatedContent {
-            if attachmentStream.isValidImage, let filePath = attachmentStream.originalFilePath {
+        } else if attachmentStream.computeContentType().isAnimatedImage {
+            if let filePath = attachmentStream.bridgeStream.originalFilePath {
                 let animatedGif = YYImage(contentsOfFile: filePath)
                 view = YYAnimatedImageView(image: animatedGif)
             } else {
@@ -224,7 +224,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
             // Still loading thumbnail.
             view = buildPlaceholderView()
         } else if isVideo {
-            if attachmentStream.isValidVideo, let videoPlayerView = buildVideoPlayerView() {
+            if attachmentStream.computeContentType().isVideo, let videoPlayerView = buildVideoPlayerView() {
                 videoPlayerView.delegate = self
                 videoPlayerView.videoPlayer?.delegate = self
 
@@ -247,7 +247,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     }
 
     private func buildLoopingVideoPlayerView() -> LoopingVideoView? {
-        guard let attachmentUrl = attachmentStream.originalMediaURL else {
+        guard let attachmentUrl = attachmentStream.bridgeStream.originalMediaURL else {
             owsFailBeta("Invalid URL")
             return nil
         }
@@ -261,7 +261,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     }
 
     private func buildVideoPlayerView() -> VideoPlayerView? {
-        guard let attachmentUrl = attachmentStream.originalMediaURL else {
+        guard let attachmentUrl = attachmentStream.bridgeStream.originalMediaURL else {
             owsFailBeta("Invalid URL")
             return nil
         }
@@ -331,7 +331,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     private var image: UIImage?
 
-    private var attachmentStream: TSAttachmentStream { galleryItem.attachmentStream }
+    private var attachmentStream: TSResourceStream { galleryItem.attachmentStream.attachmentStream }
 
     // MARK: - Video Playback
 
@@ -339,7 +339,9 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     private var hasAutoPlayedVideo = false
 
-    private var isVideo: Bool { attachmentStream.isVideoMimeType && !attachmentStream.isLoopingVideo(galleryItem.attachmentType) }
+    private var isVideo: Bool {
+        galleryItem.isVideo
+    }
 
     private func playVideo() {
         guard let videoPlayerView else {

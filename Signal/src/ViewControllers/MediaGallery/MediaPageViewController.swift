@@ -17,7 +17,7 @@ class MediaPageViewController: UIPageViewController {
     private let initialGalleryItem: MediaGalleryItem
 
     convenience init?(
-        initialMediaAttachment: TSAttachment,
+        initialMediaAttachment: ReferencedTSResource,
         thread: TSThread,
         spoilerState: SpoilerRenderState,
         showingSingleMessage: Bool = false
@@ -31,7 +31,7 @@ class MediaPageViewController: UIPageViewController {
     }
 
     init?(
-        initialMediaAttachment: TSAttachment,
+        initialMediaAttachment: ReferencedTSResource,
         mediaGallery: MediaGallery,
         spoilerState: SpoilerRenderState,
         showingSingleMessage: Bool = false
@@ -481,7 +481,7 @@ class MediaPageViewController: UIPageViewController {
 
     private func shareCurrentMedia(fromNavigationBar: Bool) {
         guard let currentViewController else { return }
-        let attachmentStream = currentViewController.galleryItem.attachmentStream
+        let attachmentStream = currentViewController.galleryItem.attachmentStream.attachmentStream.bridgeStream
         let sender = fromNavigationBar ? barButtonShareMedia : bottomMediaPanel
         AttachmentSharing.showShareUI(for: attachmentStream, sender: sender)
     }

@@ -15,7 +15,7 @@ enum Media {
     var image: UIImage? {
         switch self {
         case let .gallery(item):
-            return item.attachmentStream.originalImage
+            return item.attachmentStream.attachmentStream.bridgeStream.originalImage
         case let .image(image):
             return image
         }

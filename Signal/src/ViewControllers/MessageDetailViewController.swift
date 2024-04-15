@@ -719,7 +719,7 @@ extension MessageDetailViewController: MediaGalleryDelegate {
 
     func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
         if let firstAttachment = self.attachments?.first,
-           mediaGallery.ensureLoadedForDetailView(focusedAttachment: firstAttachment) == nil {
+           mediaGallery.ensureLoadedForDetailView(focusedAttachment: firstAttachment.bridgeReferenced) == nil {
             // Assume the item was deleted.
             self.dismiss(animated: true) {
                 self.navigationController?.popViewController(animated: true)
@@ -1063,7 +1063,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: TSResourceStream,
+        attachmentStream: ReferencedTSResourceStream,
         imageView: UIView
     ) {
         guard let thread = thread else {
@@ -1071,7 +1071,7 @@ extension MessageDetailViewController: CVComponentDelegate {
             return
         }
         guard let mediaPageVC = MediaPageViewController(
-            initialMediaAttachment: attachmentStream.bridgeStream,
+            initialMediaAttachment: attachmentStream,
             thread: thread,
             spoilerState: self.spoilerState,
             showingSingleMessage: true

@@ -142,13 +142,17 @@ class VideoPlaybackControlView: UIView {
 
     func updateWithMediaItem(_ mediaItem: MediaGalleryItem) {
         let durationThreshold: TimeInterval = 30
-        if let videoDuration = mediaItem.attachmentStream.videoDuration as? TimeInterval {
+        switch mediaItem.attachmentStream.attachmentStream.cachedContentType {
+        case .video(let videoDuration, _):
+            guard let videoDuration else { fallthrough }
             showRewindAndFastForward = videoDuration >= durationThreshold
-        } else {
+        default:
             showRewindAndFastForward = false
             self.mediaItem = mediaItem
 
-            VideoDurationHelper.shared.promisedDuration(attachment: mediaItem.attachmentStream).observe { [weak self] result in
+            VideoDurationHelper.shared.promisedDuration(
+                attachment: mediaItem.attachmentStream.attachmentStream.bridgeStream
+            ).observe { [weak self] result in
                 guard let self, self.mediaItem === mediaItem, case .success(let duration) = result else {
                     self?.mediaItem = nil
                     return

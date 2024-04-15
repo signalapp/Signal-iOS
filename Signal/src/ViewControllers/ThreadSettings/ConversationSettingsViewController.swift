@@ -845,7 +845,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         navigationController?.pushViewController(tileVC, animated: true)
     }
 
-    func showMediaPageView(for attachmentStream: TSAttachmentStream) {
+    func showMediaPageView(for attachmentStream: ReferencedTSResourceStream) {
         guard let vc = MediaPageViewController(
             initialMediaAttachment: attachmentStream,
             thread: thread,
@@ -1068,7 +1068,7 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
         let mediaViewShape: MediaViewShape
         switch item {
         case .gallery(let galleryItem):
-            guard let imageView = recentMedia[galleryItem.attachmentStream.uniqueId]?.imageView else { return nil }
+            guard let imageView = recentMedia[galleryItem.attachmentStream.attachmentStream.resourceId.bridgeUniqueId]?.imageView else { return nil }
             mediaView = imageView
             mediaViewShape = .rectangle(imageView.layer.cornerRadius)
         case .image:

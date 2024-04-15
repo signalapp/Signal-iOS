@@ -1782,8 +1782,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return CVComponentAndView(key: key, component: subcomponent, componentView: subcomponentView)
     }
 
-    public func albumItemView(forAttachment attachment: TSAttachmentStream,
-                              componentView: CVComponentView) -> UIView? {
+    public func albumItemView(
+        forAttachment attachment: ReferencedTSResource,
+        componentView: CVComponentView
+    ) -> UIView? {
         guard let componentView = componentView as? CVComponentViewMessage else {
             owsFailDebug("Unexpected componentView.")
             return nil
@@ -1798,8 +1800,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return nil
         }
         let bodyMediaComponentView = componentAndView.componentView
-        return bodyMediaComponent.albumItemView(forAttachment: attachment,
-                                                componentView: bodyMediaComponentView)
+        return bodyMediaComponent.albumItemView(
+            forAttachment: attachment,
+            componentView: bodyMediaComponentView
+        )
     }
 
     // MARK: -

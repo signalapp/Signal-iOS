@@ -19,12 +19,12 @@ class AudioCell: MediaTileListModeCell {
                 return
             }
             audioAttachment = AudioAttachment(
-                attachment: audioItem.attachmentStream,
+                attachment: audioItem.attachmentStream.attachmentStream,
                 owningMessage: audioItem.message,
                 metadata: audioItem.metadata,
                 isVoiceMessage: audioItem.isVoiceMessage,
-                sourceFilename: audioItem.attachmentStream.sourceFilename,
-                receivedAtDate: audioItem.attachmentStream.creationTimestamp,
+                sourceFilename: audioItem.attachmentStream.reference.sourceFilename,
+                receivedAtDate: audioItem.receivedAtDate,
                 // Its a stream, its already downloaded
                 transitTierDownloadState: nil
             )
@@ -49,7 +49,7 @@ class AudioCell: MediaTileListModeCell {
 
         let currentContentSizeCategory = UITraitCollection.current.preferredContentSizeCategory
         let displaysTopLabel = AudioAllMediaPresenter.hasAttachmentLabel(
-            attachment: audioItem.attachmentStream,
+            attachment: audioItem.attachmentStream.attachmentStream,
             isVoiceMessage: audioItem.isVoiceMessage
         )
 
@@ -64,12 +64,12 @@ class AudioCell: MediaTileListModeCell {
         }
 
         guard let audioAttachment = AudioAttachment(
-            attachment: audioItem.attachmentStream,
+            attachment: audioItem.attachmentStream.attachmentStream,
             owningMessage: audioItem.message,
             metadata: audioItem.metadata,
             isVoiceMessage: audioItem.isVoiceMessage,
-            sourceFilename: audioItem.attachmentStream.sourceFilename,
-            receivedAtDate: audioItem.attachmentStream.creationTimestamp,
+            sourceFilename: audioItem.attachmentStream.reference.sourceFilename,
+            receivedAtDate: audioItem.receivedAtDate,
             // Its a stream, its already downloaded
             transitTierDownloadState: nil
         ) else {
@@ -260,7 +260,8 @@ class AudioCell: MediaTileListModeCell {
             let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
             cvAudioPlayer.setPlaybackProgress(
                 progress: scrubbedTime,
-                forAttachmentStream: audioItem.attachmentStream)
+                forAttachmentStream: audioItem.attachmentStream.attachmentStream
+            )
         case .possible, .failed, .cancelled:
             audioMessageView.clearOverrideProgress(animated: false)
         @unknown default:
@@ -290,7 +291,7 @@ class AudioCell: MediaTileListModeCell {
         if let audioItem {
             accessibilityLabel = [
                 audioItem.localizedString,
-                MediaTileDateFormatter.formattedDateString(for: audioItem.date)
+                MediaTileDateFormatter.formattedDateString(for: audioItem.receivedAtDate)
             ]
                 .compactMap { $0 }
                 .joined(separator: ", ")

@@ -34,7 +34,7 @@ struct MediaGalleryIndexPath: Comparable {
 
 /// The minimal requirements needed for items loaded and managed by MediaGallerySections.
 internal protocol MediaGallerySectionItem {
-    var uniqueId: String { get }
+    var attachmentId: TSResourceId { get }
     var galleryDate: GalleryDate { get }
 }
 
@@ -681,7 +681,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
                 var slot = slots[itemIndex]
                 if let loadedItem = slot.item {
-                    owsAssert(loadedItem.uniqueId == uniqueId)
+                    owsAssert(loadedItem.attachmentId.bridgeUniqueId == uniqueId)
                     return
                 }
 
@@ -1162,7 +1162,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         // Note: we could use binary search because orderedKeys is sorted.
         guard let sectionIndex = state.itemsBySection.orderedKeys.lastIndex(of: item.galleryDate),
               let itemIndex = state.itemsBySection[sectionIndex].value.lastIndex(where: {
-                  $0.item?.uniqueId == item.uniqueId
+                  $0.item?.attachmentId == item.attachmentId
               }) else {
             return nil
         }
