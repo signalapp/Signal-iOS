@@ -58,6 +58,11 @@ class CallControls: UIView {
         button.selectedBackgroundColor = button.unselectedBackgroundColor
         return button
     }()
+    private lazy var moreButton = createButton(
+        iconName: "more",
+        accessibilityLabel: viewModel.moreButtonAccessibilityLabel,
+        action: #selector(CallControlsViewModel.didPressMore)
+    )
 
     private lazy var joinButtonActivityIndicator = UIActivityIndicatorView(style: .medium)
 
@@ -156,6 +161,7 @@ class CallControls: UIView {
         stackView.addArrangedSubview(flipCameraButton)
         stackView.addArrangedSubview(videoButton)
         stackView.addArrangedSubview(muteButton)
+        stackView.addArrangedSubview(moreButton)
         stackView.addArrangedSubview(ringButton)
         stackView.addArrangedSubview(hangUpButton)
 
@@ -167,6 +173,7 @@ class CallControls: UIView {
         audioSourceButton.isHidden = viewModel.audioSourceButtonIsHidden
         hangUpButton.isHidden = viewModel.hangUpButtonIsHidden
         muteButton.isHidden = viewModel.muteButtonIsHidden
+        moreButton.isHidden = viewModel.moreButtonIsHidden
         videoButton.isHidden = viewModel.videoButtonIsHidden
         flipCameraButton.isHidden = viewModel.flipCameraButtonIsHidden
         ringButton.isHidden = viewModel.ringButtonIsHidden
@@ -192,6 +199,7 @@ class CallControls: UIView {
         audioSourceButton.isSelected = viewModel.audioSourceButtonIsSelected
         ringButton.isSelected = viewModel.ringButtonIsSelected
         flipCameraButton.isSelected = viewModel.flipCameraButtonIsSelected
+        moreButton.isSelected = viewModel.moreButtonIsSelected
 
         if !viewModel.audioSourceButtonIsHidden {
             let config = viewModel.audioSourceButtonConfiguration
@@ -226,6 +234,7 @@ class CallControls: UIView {
         muteButton.accessibilityLabel = viewModel.muteButtonAccessibilityLabel
         videoButton.accessibilityLabel = viewModel.videoButtonAccessibilityLabel
         flipCameraButton.accessibilityLabel = viewModel.flipCameraButtonAccessibilityLabel
+        moreButton.accessibilityLabel = viewModel.moreButtonAccessibilityLabel
     }
 
     required init(coder: NSCoder) {
@@ -459,6 +468,18 @@ private class CallControlsViewModel {
         }
     }
 
+    var moreButtonIsHidden: Bool {
+        guard FeatureFlags.callReactionSendSupport else {
+            return true
+        }
+        switch call.mode {
+        case .individual(_):
+            return true
+        case .group(let call):
+            return call.localDeviceState.joinState != .joined
+        }
+    }
+
     var gradientViewIsHidden: Bool {
         return call.joinState != .joined
     }
@@ -484,6 +505,10 @@ private class CallControlsViewModel {
     }
 
     var flipCameraButtonIsSelected: Bool {
+        return false
+    }
+
+    var moreButtonIsSelected: Bool {
         return false
     }
 
@@ -617,6 +642,11 @@ extension CallControlsViewModel {
     func didPressJoin() {
         delegate?.didPressJoin()
     }
+
+    @objc
+    func didPressMore() {
+        // TODO: Display reaction picker and raise hand option.
+    }
 }
 
 // MARK: - Accessibility
@@ -677,6 +707,13 @@ extension CallControlsViewModel {
         return OWSLocalizedString(
             "CALL_VIEW_SWITCH_CAMERA_DIRECTION",
             comment: "Accessibility label to toggle front- vs. rear-facing camera"
+        )
+    }
+
+    public var moreButtonAccessibilityLabel: String {
+        return OWSLocalizedString(
+            "CALL_VIEW_MORE_LABEL",
+            comment: "Accessibility label for the More button in the Call Controls row."
         )
     }
 }

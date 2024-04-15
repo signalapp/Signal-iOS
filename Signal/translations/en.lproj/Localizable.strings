@@ -781,6 +781,9 @@
 /* Accessibility label for leaving a call */
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Leave call";
 
+/* Accessibility label for the More button in the Call Controls row. */
+"CALL_VIEW_MORE_LABEL" = "More";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Mute";
 
