@@ -361,7 +361,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         let attachment = mediaView.attachment.attachment
-        if let attachmentPointer = attachment.asTransitTierPointer() {
+        if attachment.asResourceStream() == nil, let attachmentPointer = attachment.asTransitTierPointer() {
             switch mediaView.attachmentTransitTierDownloadState {
             case .failed, .pendingMessageRequest, .pendingManualDownload, .none:
                 componentDelegate.didTapFailedOrPendingDownloads(message)
