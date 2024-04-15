@@ -14,20 +14,6 @@ COPYRIGHT_LINE_RE = re.compile(r"^// Copyright 2\d\d\d Signal Messenger, LLC\n$"
 SPDX_LINE = "// SPDX-License-Identifier: AGPL-3.0-only\n"
 
 
-def git_ls_files() -> Iterable[Path]:
-    file_path_strs = subprocess.check_output(
-        ["git", "ls-files"], text=True
-    ).splitlines()
-    for file_path_str in file_path_strs:
-        yield Path(file_path_str)
-
-
-def paths_to_process() -> Iterable[Path]:
-    for path in git_ls_files():
-        if path.suffix in EXTENSIONS_TO_CHECK:
-            yield path
-
-
 def read_first_lines(line_count: int, path: Path) -> list[str]:
     if line_count == 0:
         return ""
@@ -110,13 +96,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Check license headers across the project"
     )
+    parser.add_argument("path", nargs="*", help="A path to process")
     parser.add_argument(
         "--fix", action="store_true", help="Attempt to auto-add license headers"
     )
-    should_fix = parser.parse_args().fix
+    ns = parser.parse_args()
+    should_fix = ns.fix
 
     all_good = True
-    for path in paths_to_process():
+    for path in ns.path:
         if not has_valid_license_header(path):
             if should_fix:
                 add_license_header_to(path)
