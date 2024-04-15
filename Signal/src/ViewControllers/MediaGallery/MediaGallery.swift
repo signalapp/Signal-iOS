@@ -308,14 +308,18 @@ class MediaGallery: Dependencies {
         self.spoilerState = spoilerState
         self.mediaCategory = mediaCategory
         self.sections = MediaGallerySections(loader: Loader(mediaGallery: self, finder: finder))
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(Self.newAttachmentsAvailable(_:)),
-                                               name: MediaGalleryRecordManager.newAttachmentsAvailableNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(Self.didRemoveAttachments(_:)),
-                                               name: MediaGalleryRecordManager.didRemoveAttachmentsNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(Self.newAttachmentsAvailable(_:)),
+            name: MediaGalleryResourceManager.newAttachmentsAvailableNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(Self.didRemoveAttachments(_:)),
+            name: MediaGalleryResourceManager.didRemoveAttachmentsNotification,
+            object: nil
+        )
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
 
@@ -402,7 +406,7 @@ class MediaGallery: Dependencies {
         // In some cases this may result in deleting sections entirely; we do this as a follow-up step so that
         // delegates don't get confused.
         AssertIsOnMainThread()
-        let incomingDeletedAttachments = notification.object as! [MediaGalleryRecordManager.ChangedAttachmentInfo]
+        let incomingDeletedAttachments = notification.object as! [MediaGalleryResourceManager.ChangedTSResourceInfo]
 
         var sectionsNeedingUpdate = Set<GalleryDate>()
         for incomingDeletedAttachment in incomingDeletedAttachments {
@@ -434,7 +438,7 @@ class MediaGallery: Dependencies {
     @objc
     private func newAttachmentsAvailable(_ notification: Notification) {
         AssertIsOnMainThread()
-        let incomingNewAttachments = notification.object as! [MediaGalleryRecordManager.ChangedAttachmentInfo]
+        let incomingNewAttachments = notification.object as! [MediaGalleryResourceManager.ChangedTSResourceInfo]
         let relevantAttachments = incomingNewAttachments.filter { $0.threadGrdbId == mediaGalleryFinder.threadId }
 
         guard !relevantAttachments.isEmpty else {

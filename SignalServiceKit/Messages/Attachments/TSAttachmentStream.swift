@@ -9,11 +9,11 @@ extension TSAttachmentStream {
 
     @objc
     internal func anyDidInsertSwift(tx: SDSAnyWriteTransaction) {
-        MediaGalleryRecordManager.didInsert(attachmentStream: self, transaction: tx)
+        MediaGalleryResourceManager.didInsert(attachmentStream: self, transaction: tx)
     }
 
     @objc
     internal func anyDidRemoveSwift(tx: SDSAnyWriteTransaction) {
-        MediaGalleryRecordManager.didRemove(attachmentStream: self, transaction: tx)
+        MediaGalleryResourceManager.didRemove(attachmentStream: self, transaction: tx)
     }
 }

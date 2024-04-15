@@ -102,14 +102,18 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                                                selector: #selector(blocklistDidChange(notification:)),
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(attachmentsAddedOrRemoved(notification:)),
-                                               name: MediaGalleryRecordManager.newAttachmentsAvailableNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(attachmentsAddedOrRemoved(notification:)),
-                                               name: MediaGalleryRecordManager.didRemoveAttachmentsNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(attachmentsAddedOrRemoved(notification:)),
+            name: MediaGalleryResourceManager.newAttachmentsAvailableNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(attachmentsAddedOrRemoved(notification:)),
+            name: MediaGalleryResourceManager.didRemoveAttachmentsNotification,
+            object: nil
+        )
     }
 
     // MARK: - Accessors
@@ -977,7 +981,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     private func attachmentsAddedOrRemoved(notification: Notification) {
         AssertIsOnMainThread()
 
-        let attachments = notification.object as! [MediaGalleryRecordManager.ChangedAttachmentInfo]
+        let attachments = notification.object as! [MediaGalleryResourceManager.ChangedTSResourceInfo]
         guard attachments.contains(where: { $0.threadGrdbId == thread.sqliteRowId }) else {
             return
         }

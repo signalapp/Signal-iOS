@@ -3497,7 +3497,7 @@ public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throw
                 return
             }
 
-            try MediaGalleryRecordManager.insertGalleryRecord(attachmentStream: attachmentStream, transaction: transaction)
+            try MediaGalleryRecordManager.insertForMigration(attachmentStream: attachmentStream, transaction: transaction)
         }
     }
 }

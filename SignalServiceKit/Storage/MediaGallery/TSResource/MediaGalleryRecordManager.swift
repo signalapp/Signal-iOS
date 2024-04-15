@@ -7,11 +7,11 @@ import Foundation
 import GRDB
 
 public final class MediaGalleryRecordManager: NSObject {
-    public static func setup(database: GRDB.Database) {
+    public static func setupDatabaseFunction(database: GRDB.Database) {
         database.add(function: isVisualMediaContentTypeDatabaseFunction)
     }
 
-    public static let isVisualMediaContentTypeDatabaseFunction = DatabaseFunction("IsVisualMediaContentType") { (args: [DatabaseValue]) -> DatabaseValueConvertible? in
+    internal static let isVisualMediaContentTypeDatabaseFunction = DatabaseFunction("IsVisualMediaContentType") { (args: [DatabaseValue]) -> DatabaseValueConvertible? in
         guard let contentType = String.fromDatabaseValue(args[0]) else {
             throw OWSAssertionError("unexpected arguments: \(args)")
         }
@@ -35,8 +35,10 @@ public final class MediaGalleryRecordManager: NSObject {
         return try MediaGalleryRecord.fetchOne(transaction.database, sql: sql, arguments: [attachmentId.int64Value])
     }
 
-    public class func insertGalleryRecord(attachmentStream: TSAttachmentStream,
-                                          transaction: GRDBWriteTransaction) throws {
+    public class func insertForMigration(
+        attachmentStream: TSAttachmentStream,
+        transaction: GRDBWriteTransaction
+    ) throws {
         _ = try insertGalleryRecordPrivate(attachmentStream: attachmentStream, transaction: transaction)
     }
 
@@ -92,23 +94,7 @@ public final class MediaGalleryRecordManager: NSObject {
         return galleryRecord
     }
 
-    public class func removeAllGalleryRecords(transaction: GRDBWriteTransaction) throws {
-        try MediaGalleryRecord.deleteAll(transaction.database)
-    }
-
-    public struct ChangedAttachmentInfo {
-        public var uniqueId: String
-        public var threadGrdbId: Int64
-        public var timestamp: UInt64
-    }
-
-    /// A notification for when an attachment stream becomes available (incoming attachment downloaded, or outgoing
-    /// attachment loaded).
-    ///
-    /// The object of the notification is an array of ChangedAttachmentInfo values.
-    /// When registering an observer for this notification, set the observed object to `nil`, meaning no filter.
-    public static let newAttachmentsAvailableNotification =
-        Notification.Name(rawValue: "SSKMediaGalleryFinderNewAttachmentsAvailable")
+    typealias ChangedAttachmentInfo = MediaGalleryResourceManager.ChangedTSResourceInfo
 
     private static let recentlyChangedMessageTimestampsByRowId = AtomicDictionary<Int64, UInt64>(lock: .sharedGlobal)
     private static let recentlyInsertedAttachments = AtomicArray<ChangedAttachmentInfo>(lock: .sharedGlobal)
@@ -147,8 +133,10 @@ public final class MediaGalleryRecordManager: NSObject {
             Self.recentlyChangedMessageTimestampsByRowId.removeAllValues()
             let recentlyInsertedAttachments = Self.recentlyInsertedAttachments.removeAll()
             if !recentlyInsertedAttachments.isEmpty {
-                NotificationCenter.default.postNotificationNameAsync(Self.newAttachmentsAvailableNotification,
-                                                                     object: recentlyInsertedAttachments)
+                NotificationCenter.default.postNotificationNameAsync(
+                    MediaGalleryResourceManager.newAttachmentsAvailableNotification,
+                    object: recentlyInsertedAttachments
+                )
             }
         }
     }
@@ -179,13 +167,6 @@ public final class MediaGalleryRecordManager: NSObject {
                                      timestamp: timestamp)
 
     }
-
-    /// A notification for when a downloaded attachment is removed.
-    ///
-    /// The object of the notification is an array of ChangedAttachmentInfo values.
-    /// When registering an observer for this notification, set the observed object to `nil`, meaning no filter.
-    public static let didRemoveAttachmentsNotification =
-        Notification.Name(rawValue: "SSKMediaGalleryFinderDidRemoveAttachments")
 
     public class func didRemove(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
         let removedRecord: MediaGalleryRecord?
@@ -218,13 +199,15 @@ public final class MediaGalleryRecordManager: NSObject {
             Self.recentlyChangedMessageTimestampsByRowId.removeAllValues()
             let recentlyRemovedAttachments = Self.recentlyRemovedAttachments.removeAll()
             if !recentlyRemovedAttachments.isEmpty {
-                NotificationCenter.default.postNotificationNameAsync(Self.didRemoveAttachmentsNotification,
-                                                                     object: recentlyRemovedAttachments)
+                NotificationCenter.default.postNotificationNameAsync(
+                    MediaGalleryResourceManager.didRemoveAttachmentsNotification,
+                    object: recentlyRemovedAttachments
+                )
             }
         }
     }
 
-    public class func recordTimestamp(forRemovedMessage message: TSMessage, transaction: SDSAnyWriteTransaction) {
+    public class func didRemove(message: TSMessage, transaction: SDSAnyWriteTransaction) {
         guard let messageRowId = message.sqliteRowId else {
             return
         }
@@ -235,7 +218,7 @@ public final class MediaGalleryRecordManager: NSObject {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdbWrite):
             do {
-                try removeAllGalleryRecords(transaction: grdbWrite)
+                try MediaGalleryRecord.deleteAll(grdbWrite.database)
             } catch {
                 owsFailDebug("error: \(error)")
             }

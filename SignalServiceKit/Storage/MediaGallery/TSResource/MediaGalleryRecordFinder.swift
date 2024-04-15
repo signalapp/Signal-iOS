@@ -63,7 +63,8 @@ extension MediaGalleryRecordFinder {
             let contentTypeClause: String
             switch filter {
             case .gifs, .photos, .videos, .allPhotoVideoCategory:
-                contentTypeClause = "AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE"
+                let isVisualMediaFuncName = MediaGalleryRecordManager.isVisualMediaContentTypeDatabaseFunction.name
+                contentTypeClause = "AND \(isVisualMediaFuncName)(\(attachmentColumn: .contentType)) IS TRUE"
             case .voiceMessages, .audioFiles, .allAudioCategory:
                 contentTypeClause = "AND (\(attachmentColumn: .contentType) like 'audio/%')"
             case .none:
