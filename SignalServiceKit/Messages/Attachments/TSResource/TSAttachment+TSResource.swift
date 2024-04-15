@@ -179,6 +179,10 @@ extension TSAttachmentStream: TSResourceStream {
         return .file
     }
 
+    public func computeIsValidVisualMedia() -> Bool {
+        return self.isValidVisualMedia
+    }
+
     private func cachedMediaPixelSize() -> CGSize? {
         if
             let cachedImageWidth,

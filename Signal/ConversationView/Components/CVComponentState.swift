@@ -197,7 +197,7 @@ public class CVComponentState: Equatable, Dependencies {
     struct LinkPreview: Equatable {
         // TODO: convert OWSLinkPreview to Swift?
         let linkPreview: OWSLinkPreview
-        let linkPreviewAttachment: TSAttachment?
+        let linkPreviewAttachment: TSResource?
         let state: LinkPreviewState
 
         // MARK: - Equatable
@@ -1039,11 +1039,11 @@ fileprivate extension CVComponentState.Builder {
                     return buildViewOnce(viewOnceState: .incomingPending)
                 }
             } else if let attachmentStream = mediaAttachment.attachment.asResourceStream() {
-                if attachmentStream.bridgeStream.isValidVisualMedia
+                if attachmentStream.computeIsValidVisualMedia()
                     && (
-                        attachmentStream.bridgeStream.isImageMimeType
-                        || attachmentStream.bridgeStream.getAnimatedMimeType() != .notAnimated
-                        || attachmentStream.bridgeStream.isVideoMimeType
+                        MimeTypeUtil.isSupportedImageMimeType(attachmentStream.mimeType)
+                        || MimeTypeUtil.isSupportedMaybeAnimatedMimeType(attachmentStream.mimeType)
+                        || MimeTypeUtil.isSupportedVideoMimeType(attachmentStream.mimeType)
                     )
                 {
                     return buildViewOnce(viewOnceState: .incomingAvailable(
@@ -1124,9 +1124,12 @@ fileprivate extension CVComponentState.Builder {
             throw OWSAssertionError("Missing sticker attachment.")
         }
         if let attachmentStream = attachment.asResourceStream() {
-            let mediaSize = attachmentStream.bridgeStream.imageSizePoints
-            guard attachmentStream.bridgeStream.isValidImage,
-                  mediaSize.isNonEmpty else {
+            switch attachmentStream.computeContentType() {
+            case .image(let pixelSize), .animatedImage(let pixelSize):
+                guard pixelSize?.isNonEmpty == true else {
+                    fallthrough
+                }
+            default:
                 throw OWSAssertionError("Invalid sticker.")
             }
             let stickerType = StickerManager.stickerType(forContentType: attachmentStream.mimeType)
@@ -1252,7 +1255,7 @@ fileprivate extension CVComponentState.Builder {
                 continue
             }
 
-            guard attachmentStream.bridgeStream.isValidVisualMediaIgnoringSize(true) else {
+            guard attachmentStream.computeIsValidVisualMedia() else {
                 Logger.warn("Filtering invalid media.")
                 mediaAlbumItems.append(CVMediaAlbumItem(
                     attachment: attachment,
@@ -1264,8 +1267,15 @@ fileprivate extension CVComponentState.Builder {
                 ))
                 continue
             }
-            let mediaSize = attachmentStream.bridgeStream.imageSizePixels
-            if !mediaSize.isNonEmpty {
+            let mediaSizePixels: CGSize
+            switch attachmentStream.computeContentType() {
+            case let .image(pixelSize), let .video(_, pixelSize), let .animatedImage(pixelSize):
+                guard let pixelSize, pixelSize.isNonEmpty else {
+                    Logger.warn("Filtering media with invalid size.")
+                    fallthrough
+                }
+                mediaSizePixels = pixelSize
+            case .audio, .file:
                 Logger.warn("Filtering media with invalid size.")
                 mediaAlbumItems.append(CVMediaAlbumItem(
                     attachment: attachment,
@@ -1283,7 +1293,7 @@ fileprivate extension CVComponentState.Builder {
                 attachmentTransitTierDownloadState: attachmentTransitTierDownloadState,
                 attachmentStream: attachmentStream,
                 hasCaption: hasCaption,
-                mediaSize: mediaSize,
+                mediaSize: mediaSizePixels,
                 isBroken: false
             ))
         }
@@ -1405,10 +1415,10 @@ fileprivate extension CVComponentState.Builder {
             }()
 
             let state = LinkPreviewSent(linkPreview: linkPreview,
-                                        imageAttachment: linkPreviewAttachment?.bridge,
+                                        imageAttachment: linkPreviewAttachment,
                                         conversationStyle: conversationStyle)
             self.linkPreview = LinkPreview(linkPreview: linkPreview,
-                                           linkPreviewAttachment: linkPreviewAttachment?.bridge,
+                                           linkPreviewAttachment: linkPreviewAttachment,
                                            state: state)
         }
     }

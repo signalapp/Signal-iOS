@@ -54,6 +54,15 @@ extension Attachment.ContentTypeRaw {
         }
     }
 
+    public var isVisualMedia: Bool {
+        switch self {
+        case .image, .video, .animatedImage:
+            return true
+        default:
+            return false
+        }
+    }
+
     public var isAudio: Bool {
         switch self {
         case .audio:
@@ -84,5 +93,6 @@ extension Attachment.ContentType {
     public var isImage: Bool { raw.isImage }
     public var isVideo: Bool { raw.isVideo }
     public var isAnimatedImage: Bool { raw.isAnimatedImage }
+    public var isVisualMedia: Bool { raw.isVisualMedia }
     public var isAudio: Bool { raw.isAudio }
 }

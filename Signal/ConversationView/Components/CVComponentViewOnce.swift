@@ -394,14 +394,14 @@ fileprivate extension CVComponentViewOnce {
 
     private var viewOnceMessageType: ViewOnceMessageType {
         switch viewOnceState {
-        case let .incomingAvailable(attachmentStream, renderingFlag):
-            if attachmentStream.bridgeStream.isVideoMimeType {
+        case let .incomingAvailable(attachmentStream, _):
+            let mimeType = attachmentStream.mimeType
+            if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
                 return .video
             } else {
                 owsAssertDebug(
-                    attachmentStream.bridgeStream.isImageMimeType
-                    || attachmentStream.bridgeStream.getAnimatedMimeType() != .notAnimated
-                    || attachmentStream.bridgeStream.isLoopingVideo(renderingFlag.tsAttachmentType)
+                    MimeTypeUtil.isSupportedImageMimeType(mimeType)
+                    || MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType)
                 )
                 return .photo
             }

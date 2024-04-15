@@ -37,6 +37,8 @@ public protocol TSResourceStream: TSResource {
     /// V2 attachments will always have a cached value.
     func computeContentType() -> TSResourceContentType
 
+    func computeIsValidVisualMedia() -> Bool
+
     // MARK: - Thumbnail Generation
 
     func thumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage?

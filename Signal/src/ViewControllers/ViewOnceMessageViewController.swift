@@ -111,7 +111,7 @@ class ViewOnceMessageViewController: OWSViewController {
             else {
                 return
             }
-            guard attachmentStream.bridgeStream.isValidVisualMedia else {
+            guard attachmentStream.computeIsValidVisualMedia() else {
                 return
             }
             let mimeType = attachmentStream.mimeType

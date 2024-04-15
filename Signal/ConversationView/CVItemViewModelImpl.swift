@@ -51,7 +51,7 @@ public class CVComponentStateWrapper: NSObject, CVItemViewModel {
         return componentState.linkPreviewModel
     }
 
-    public var linkPreviewAttachment: TSAttachment? {
+    public var linkPreviewAttachment: TSResource? {
         AssertIsOnMainThread()
 
         return componentState.linkPreview?.linkPreviewAttachment

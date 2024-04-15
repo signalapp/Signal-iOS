@@ -80,6 +80,10 @@ extension AttachmentStream: TSResourceStream {
     public func computeContentType() -> TSResourceContentType {
         return contentType.resourceType
     }
+
+    public func computeIsValidVisualMedia() -> Bool {
+        return contentType.isVisualMedia
+    }
 }
 
 extension AttachmentStream: TSResource {
