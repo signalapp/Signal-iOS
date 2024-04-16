@@ -37,7 +37,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "error_logs"),
                 actionBlock: { [weak self] in
                     Logger.flush()
-                    let vc = LogPickerViewController(logDirUrl: DebugLogger.shared().errorLogsDir)
+                    let vc = LogPickerViewController(logDirUrl: DebugLogger.errorLogsDir)
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))

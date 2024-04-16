@@ -270,7 +270,7 @@ extension SignalApp {
             AppDelegate.updateApplicationShortcutItems(isRegistered: false)
         }
 
-        DebugLogger.shared().wipeLogsAlways(appContext: CurrentAppContext() as! MainAppContext)
+        DebugLogger.shared.wipeLogsAlways(appContext: CurrentAppContext() as! MainAppContext)
     }
 
     static func showTransferCompleteAndExit() {

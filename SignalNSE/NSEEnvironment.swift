@@ -106,7 +106,7 @@ class NSEEnvironment: Dependencies {
     func setUp(logger: NSELogger) throws {
         AssertIsOnMainThread()
 
-        let debugLogger = DebugLogger.shared()
+        let debugLogger = DebugLogger.shared
 
         // Do this every time in case the setting is changed.
         debugLogger.setUpFileLoggingIfNeeded(appContext: appContext, canLaunchInBackground: true)

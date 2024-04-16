@@ -34,7 +34,7 @@ extension DebugLogger {
 
         // Only the main app can wipe logs because only the main app can access its
         // own logs. (The main app can wipe logs for the other extensions.)
-        for dirPath in Self.allLogsDirPaths() {
+        for dirPath in Self.allLogsDirPaths {
             do {
                 try FileManager.default.removeItem(atPath: dirPath)
             } catch {

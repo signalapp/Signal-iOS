@@ -169,7 +169,7 @@ class DebugLogs: NSObject {
         let zipDirPath = zipDirUrl.path
         OWSFileSystem.ensureDirectoryExists(zipDirPath)
 
-        let logFilePaths = DebugLogger.shared().allLogFilePaths()
+        let logFilePaths = DebugLogger.shared.allLogFilePaths
         if logFilePaths.isEmpty {
             return .failure(NoLogsError())
         }

@@ -3,9 +3,136 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AudioToolbox
 import CocoaLumberjack
 
-extension DebugLogger {
+private final class DebugLogFileManager: DDLogFileManagerDefault {
+    private static func deleteLogFiles(inDirectory logsDirPath: String, olderThanDate cutoffDate: Date) {
+        let logsDirectory = URL(fileURLWithPath: logsDirPath)
+        let fileManager = FileManager.default
+        guard let logFiles = try? fileManager.contentsOfDirectory(at: logsDirectory, includingPropertiesForKeys: [kCFURLContentModificationDateKey as URLResourceKey], options: .skipsHiddenFiles) else {
+            return
+        }
+        for logFile in logFiles {
+            guard logFile.pathExtension == "log" else {
+                // This file is not a log file; don't touch it.
+                continue
+            }
+            var lastModified: Date?
+            do {
+                var lastModifiedAnyObject: AnyObject?
+                try (logFile as NSURL).getResourceValue(&lastModifiedAnyObject, forKey: .contentModificationDateKey)
+                if let mtime = lastModifiedAnyObject as? NSDate {
+                    lastModified = mtime as Date
+                }
+            } catch {
+                // Couldn't get the modification date.
+                continue
+            }
+            guard let lastModified else {
+                // retrieving last modification date didn't throw but didn't return NSDate type
+                continue
+            }
+            if lastModified.isAfter(cutoffDate) {
+                // Still within the window.
+                continue
+            }
+            // Attempt to remove the item, but don't stress if it fails.
+            try? fileManager.removeItem(at: logFile)
+        }
+    }
+
+    override func didArchiveLogFile(atPath logFilePath: String, wasRolled: Bool) {
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
+
+        // Use this opportunity to delete old log files from extensions as well.
+        // Compute an approximate "N days ago", ignoring calendars and dayling savings changes.
+        let cutoffDate = Date(timeIntervalSinceNow: -kDayInterval * Double(maximumNumberOfLogFiles))
+
+        for logsDirPath in DebugLogger.allLogsDirPaths {
+            guard logsDirPath != logsDirectory else {
+                // Managed directly by the base class.
+                continue
+            }
+            Self.deleteLogFiles(inDirectory: logsDirPath, olderThanDate: cutoffDate)
+        }
+    }
+}
+
+public final class ErrorLogger: DDFileLogger {
+    public static func playAlertSound() {
+        AudioServicesPlayAlertSound(SystemSoundID(1023))
+    }
+
+    public override func log(message logMessage: DDLogMessage) {
+        super.log(message: logMessage)
+        if Preferences.isAudibleErrorLoggingEnabled {
+            Self.playAlertSound()
+        }
+    }
+}
+
+public final class DebugLogger {
+
+    private init() {}
+    public static var shared = DebugLogger()
+
+    public static let mainAppDebugLogsDirPath = {
+        let dirPath = OWSFileSystem.cachesDirectoryPath().appendingPathComponent("Logs")
+        OWSFileSystem.ensureDirectoryExists(dirPath)
+        return dirPath
+    }()
+    public static let shareExtensionDebugLogsDirPath = {
+        let dirPath = OWSFileSystem.appSharedDataDirectoryPath().appendingPathComponent("ShareExtensionLogs")
+        OWSFileSystem.ensureDirectoryExists(dirPath)
+        return dirPath
+    }()
+    public static let nseDebugLogsDirPath = {
+        let dirPath = OWSFileSystem.appSharedDataDirectoryPath().appendingPathComponent("NSELogs")
+        OWSFileSystem.ensureDirectoryExists(dirPath)
+        return dirPath
+    }()
+    #if TESTABLE_BUILD
+    public static let testDebugLogsDirPath = TestAppContext.testDebugLogsDirPath
+    #endif
+    // We don't need to include testDebugLogsDirPath when we upload debug logs.
+    public static let allLogsDirPaths: [String] = [
+        DebugLogger.mainAppDebugLogsDirPath,
+        DebugLogger.shareExtensionDebugLogsDirPath,
+        DebugLogger.nseDebugLogsDirPath,
+    ]
+
+    public static let errorLogsDir = URL.init(fileURLWithPath: OWSFileSystem.cachesDirectoryPath().appendingPathComponent("ErrorLogs"))
+
+    public var fileLogger: DDFileLogger?
+    public var allLogFilePaths: Set<String> {
+        let fileManager = FileManager.default
+        var logPathSet = Set<String>()
+        for logDirPath in DebugLogger.allLogsDirPaths {
+            do {
+                for filename in try fileManager.contentsOfDirectory(atPath: logDirPath) {
+                    let logPath = logDirPath.appendingPathComponent(filename)
+                    logPathSet.insert(logPath)
+                }
+            } catch {
+                owsFailDebug("Failed to find log files: \(error)")
+            }
+        }
+        // To be extra conservative, also add all logs from log file manager.
+        // This should be redundant with the logic above.
+        if let fileLogger {
+            logPathSet.formUnion(fileLogger.logFileManager.unsortedLogFilePaths)
+        }
+        return logPathSet
+    }
+
+    private let errorLogger: DDLogger = ErrorLogger(logFileManager: DDLogFileManagerDefault(logsDirectory: errorLogsDir.path))
+    public func enableErrorReporting() {
+        DDLog.add(errorLogger, with: .error)
+    }
+
     // MARK: Enable/Disable
 
     public func setUpFileLoggingIfNeeded(appContext: AppContext, canLaunchInBackground: Bool) {

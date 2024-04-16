@@ -153,7 +153,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let mainAppContext = MainAppContext()
         SetCurrentAppContext(mainAppContext, false)
 
-        let debugLogger = DebugLogger.shared()
+        let debugLogger = DebugLogger.shared
         debugLogger.enableTTYLoggingIfNeeded()
 
         if mainAppContext.isRunningTests {
@@ -589,7 +589,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        DebugLogger.shared().postLaunchLogCleanup(appContext: appContext)
+        DebugLogger.shared.postLaunchLogCleanup(appContext: appContext)
         AppVersionImpl.shared.mainAppLaunchDidComplete()
 
         scheduleBgAppRefresh()

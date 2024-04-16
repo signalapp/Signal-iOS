@@ -12,5 +12,4 @@
 #import <SignalCoreKit/OWSLogs.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/DebugLogger.h>
 #import <SignalServiceKit/OWSMath.h>

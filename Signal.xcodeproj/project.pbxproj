@@ -1177,11 +1177,9 @@
 		7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E0271D96570084CBAE /* UIView+OWS.swift */; };
 		7255A4CC2B98E05200E95368 /* UIColor+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B5271B54BC00B05242 /* UIColor+OWS.swift */; };
 		7255A4CD2B98E0DF00E95368 /* UIDevice+FeatureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */; };
-		7255A4CF2B98E2A300E95368 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B4E1FD0A7A300BC14EF /* DebugLogger.m */; };
 		7255A4D02B98E2A400E95368 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE372A00894C00730C40 /* DebugLogger.swift */; };
 		7255A4D12B98E2B700E95368 /* LogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */; };
 		7255A4D22B98E2B700E95368 /* ScrubbingLogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962FF4829AD0C7C00AFA397 /* ScrubbingLogFormatter.swift */; };
-		7255A4D32B98E2C600E95368 /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4D1FD0A7A300BC14EF /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7255A4D42B98E36900E95368 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768F720C2A22CEAC002C4E7D /* Preferences.swift */; };
 		72C905892B9A28BF00E586B8 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7634F08C2A21963600BB93D5 /* Sounds.swift */; };
 		72C9058A2B9A293300E586B8 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
@@ -2982,8 +2980,6 @@
 		34429B3C273440420050D3EA /* DebugUIMisc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIMisc.swift; sourceTree = "<group>"; };
 		3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVColorOrGradientView.swift; sourceTree = "<group>"; };
 		34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Bridging-Header.h"; sourceTree = "<group>"; };
-		34480B4D1FD0A7A300BC14EF /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
-		34480B4E1FD0A7A300BC14EF /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		344A761024B366F4009D69A5 /* FlagsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlagsViewController.swift; sourceTree = "<group>"; };
 		344A761224B36C8C009D69A5 /* TestingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestingViewController.swift; sourceTree = "<group>"; };
 		344DAEDE248A7526000AD4FA /* DebugUIStress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIStress.swift; sourceTree = "<group>"; };
@@ -8328,8 +8324,6 @@
 		7255A4CE2B98E23800E95368 /* DebugLogs */ = {
 			isa = PBXGroup;
 			children = (
-				34480B4D1FD0A7A300BC14EF /* DebugLogger.h */,
-				34480B4E1FD0A7A300BC14EF /* DebugLogger.m */,
 				50A1CE372A00894C00730C40 /* DebugLogger.swift */,
 				5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */,
 				F962FF4829AD0C7C00AFA397 /* ScrubbingLogFormatter.swift */,
@@ -11415,7 +11409,6 @@
 				F9C5CCEC289453B300548EEE /* ContactsManagerProtocol.h in Headers */,
 				F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */,
 				F9C5CE2E289453B400548EEE /* DataSource.h in Headers */,
-				7255A4D32B98E2C600E95368 /* DebugLogger.h in Headers */,
 				F9C5CE3F289453B400548EEE /* FunctionalUtil.h in Headers */,
 				F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */,
 				F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */,
@@ -13766,7 +13759,6 @@
 				6673FF87297B694C00F96CFD /* DB.swift in Sources */,
 				6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
-				7255A4CF2B98E2A300E95368 /* DebugLogger.m in Sources */,
 				7255A4D02B98E2A400E95368 /* DebugLogger.swift in Sources */,
 				F94C912228FDEAF50065DF75 /* Decimal+IsInteger.swift in Sources */,
 				F94C912028FDEA2E0065DF75 /* Decimal+Rounded.swift in Sources */,

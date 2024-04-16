@@ -99,7 +99,7 @@ final class HelpViewController: OWSTableViewController2 {
 
     @objc
     private func didToggleEnableLogSwitch(sender: UISwitch) {
-        let debugLogger = DebugLogger.shared()
+        let debugLogger = DebugLogger.shared
         let mainAppContext = CurrentAppContext() as! MainAppContext
 
         Preferences.setIsLoggingEnabled(sender.isOn)
