@@ -96,7 +96,8 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
         let incomingMessage = BackupProtoChatItem.BackupProtoIncomingMessageDetails(
             dateReceived: message.receivedAtTimestamp,
             dateServerSent: message.serverDeliveryTimestamp,
-            read: message.wasRead
+            read: message.wasRead,
+            sealedSender: message.wasReceivedByUD
         )
 
         return .success(.incoming(incomingMessage))
@@ -175,7 +176,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             serverTimestamp: nil,
             serverDeliveryTimestamp: chatItem.dateSent,
             serverGuid: nil,
-            wasReceivedByUD: chatItem.sealedSender.negated,
+            wasReceivedByUD: incomingDetails.sealedSender,
             isViewOnceMessage: false,
             storyAuthorAci: nil,
             storyTimestamp: nil,

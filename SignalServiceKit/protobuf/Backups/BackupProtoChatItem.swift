@@ -18,7 +18,6 @@ public struct BackupProtoChatItem {
      */
     public var authorId: UInt64
     public var dateSent: UInt64
-    public var sealedSender: Bool
     /**
      * timestamp of when expiration timer started ticking down
      */
@@ -42,14 +41,12 @@ public struct BackupProtoChatItem {
         chatId: UInt64,
         authorId: UInt64,
         dateSent: UInt64,
-        sealedSender: Bool,
         sms: Bool,
         configure: (inout Self) -> Swift.Void = { _ in }
     ) {
         self.chatId = chatId
         self.authorId = authorId
         self.dateSent = dateSent
-        self.sealedSender = sealedSender
         self.sms = sms
         configure(&self)
     }
@@ -83,7 +80,6 @@ extension BackupProtoChatItem : Proto3Codable {
         var chatId: UInt64 = 0
         var authorId: UInt64 = 0
         var dateSent: UInt64 = 0
-        var sealedSender: Bool = false
         var expireStartDate: UInt64? = nil
         var expiresInMs: UInt64? = nil
         var revisions: [BackupProtoChatItem] = []
@@ -97,20 +93,18 @@ extension BackupProtoChatItem : Proto3Codable {
             case 1: chatId = try protoReader.decode(UInt64.self)
             case 2: authorId = try protoReader.decode(UInt64.self)
             case 3: dateSent = try protoReader.decode(UInt64.self)
-            case 4: sealedSender = try protoReader.decode(Bool.self)
-            case 5: expireStartDate = try protoReader.decode(UInt64.self)
-            case 6: expiresInMs = try protoReader.decode(UInt64.self)
-            case 7: try protoReader.decode(into: &revisions)
-            case 8: sms = try protoReader.decode(Bool.self)
-            case 9: directionalDetails = .incoming(try protoReader.decode(BackupProtoChatItem.BackupProtoIncomingMessageDetails.self))
-            case 10: directionalDetails = .outgoing(try protoReader.decode(BackupProtoChatItem.BackupProtoOutgoingMessageDetails.self))
-            case 11: directionalDetails = .directionless(try protoReader.decode(BackupProtoChatItem.BackupProtoDirectionlessMessageDetails.self))
-            case 13: item = .standardMessage(try protoReader.decode(BackupProtoStandardMessage.self))
-            case 14: item = .contactMessage(try protoReader.decode(BackupProtoContactMessage.self))
-            case 15: item = .voiceMessage(try protoReader.decode(BackupProtoVoiceMessage.self))
-            case 16: item = .stickerMessage(try protoReader.decode(BackupProtoStickerMessage.self))
-            case 17: item = .remoteDeletedMessage(try protoReader.decode(BackupProtoRemoteDeletedMessage.self))
-            case 18: item = .updateMessage(try protoReader.decode(BackupProtoChatUpdateMessage.self))
+            case 4: expireStartDate = try protoReader.decode(UInt64.self)
+            case 5: expiresInMs = try protoReader.decode(UInt64.self)
+            case 6: try protoReader.decode(into: &revisions)
+            case 7: sms = try protoReader.decode(Bool.self)
+            case 8: directionalDetails = .incoming(try protoReader.decode(BackupProtoChatItem.BackupProtoIncomingMessageDetails.self))
+            case 9: directionalDetails = .outgoing(try protoReader.decode(BackupProtoChatItem.BackupProtoOutgoingMessageDetails.self))
+            case 10: directionalDetails = .directionless(try protoReader.decode(BackupProtoChatItem.BackupProtoDirectionlessMessageDetails.self))
+            case 11: item = .standardMessage(try protoReader.decode(BackupProtoStandardMessage.self))
+            case 12: item = .contactMessage(try protoReader.decode(BackupProtoContactMessage.self))
+            case 13: item = .stickerMessage(try protoReader.decode(BackupProtoStickerMessage.self))
+            case 14: item = .remoteDeletedMessage(try protoReader.decode(BackupProtoRemoteDeletedMessage.self))
+            case 15: item = .updateMessage(try protoReader.decode(BackupProtoChatUpdateMessage.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -119,7 +113,6 @@ extension BackupProtoChatItem : Proto3Codable {
         self.chatId = chatId
         self.authorId = authorId
         self.dateSent = dateSent
-        self.sealedSender = sealedSender
         self._expireStartDate.wrappedValue = expireStartDate
         self._expiresInMs.wrappedValue = expiresInMs
         self.revisions = revisions
@@ -132,11 +125,10 @@ extension BackupProtoChatItem : Proto3Codable {
         try protoWriter.encode(tag: 1, value: self.chatId)
         try protoWriter.encode(tag: 2, value: self.authorId)
         try protoWriter.encode(tag: 3, value: self.dateSent)
-        try protoWriter.encode(tag: 4, value: self.sealedSender)
-        try protoWriter.encode(tag: 5, value: self.expireStartDate)
-        try protoWriter.encode(tag: 6, value: self.expiresInMs)
-        try protoWriter.encode(tag: 7, value: self.revisions)
-        try protoWriter.encode(tag: 8, value: self.sms)
+        try protoWriter.encode(tag: 4, value: self.expireStartDate)
+        try protoWriter.encode(tag: 5, value: self.expiresInMs)
+        try protoWriter.encode(tag: 6, value: self.revisions)
+        try protoWriter.encode(tag: 7, value: self.sms)
         if let directionalDetails = self.directionalDetails {
             try directionalDetails.encode(to: protoWriter)
         }
@@ -156,7 +148,6 @@ extension BackupProtoChatItem : Codable {
         self.chatId = try container.decode(stringEncoded: UInt64.self, forKey: "chatId")
         self.authorId = try container.decode(stringEncoded: UInt64.self, forKey: "authorId")
         self.dateSent = try container.decode(stringEncoded: UInt64.self, forKey: "dateSent")
-        self.sealedSender = try container.decode(Bool.self, forKey: "sealedSender")
         self._expireStartDate.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "expireStartDate")
         self._expiresInMs.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "expiresInMs")
         self.revisions = try container.decodeProtoArray(BackupProtoChatItem.self, forKey: "revisions")
@@ -174,8 +165,6 @@ extension BackupProtoChatItem : Codable {
             self.item = .standardMessage(standardMessage)
         } else if let contactMessage = try container.decodeIfPresent(BackupProtoContactMessage.self, forKey: "contactMessage") {
             self.item = .contactMessage(contactMessage)
-        } else if let voiceMessage = try container.decodeIfPresent(BackupProtoVoiceMessage.self, forKey: "voiceMessage") {
-            self.item = .voiceMessage(voiceMessage)
         } else if let stickerMessage = try container.decodeIfPresent(BackupProtoStickerMessage.self, forKey: "stickerMessage") {
             self.item = .stickerMessage(stickerMessage)
         } else if let remoteDeletedMessage = try container.decodeIfPresent(BackupProtoRemoteDeletedMessage.self, forKey: "remoteDeletedMessage") {
@@ -200,9 +189,6 @@ extension BackupProtoChatItem : Codable {
         if includeDefaults || self.dateSent != 0 {
             try container.encode(stringEncoded: self.dateSent, forKey: "dateSent")
         }
-        if includeDefaults || self.sealedSender != false {
-            try container.encode(self.sealedSender, forKey: "sealedSender")
-        }
         try container.encodeIfPresent(stringEncoded: self.expireStartDate, forKey: "expireStartDate")
         try container.encodeIfPresent(stringEncoded: self.expiresInMs, forKey: "expiresInMs")
         if includeDefaults || !self.revisions.isEmpty {
@@ -220,7 +206,6 @@ extension BackupProtoChatItem : Codable {
         switch self.item {
         case .standardMessage(let standardMessage): try container.encode(standardMessage, forKey: "standardMessage")
         case .contactMessage(let contactMessage): try container.encode(contactMessage, forKey: "contactMessage")
-        case .voiceMessage(let voiceMessage): try container.encode(voiceMessage, forKey: "voiceMessage")
         case .stickerMessage(let stickerMessage): try container.encode(stickerMessage, forKey: "stickerMessage")
         case .remoteDeletedMessage(let remoteDeletedMessage): try container.encode(remoteDeletedMessage, forKey: "remoteDeletedMessage")
         case .updateMessage(let updateMessage): try container.encode(updateMessage, forKey: "updateMessage")
@@ -244,9 +229,9 @@ extension BackupProtoChatItem {
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
-            case .incoming(let incoming): try protoWriter.encode(tag: 9, value: incoming)
-            case .outgoing(let outgoing): try protoWriter.encode(tag: 10, value: outgoing)
-            case .directionless(let directionless): try protoWriter.encode(tag: 11, value: directionless)
+            case .incoming(let incoming): try protoWriter.encode(tag: 8, value: incoming)
+            case .outgoing(let outgoing): try protoWriter.encode(tag: 9, value: outgoing)
+            case .directionless(let directionless): try protoWriter.encode(tag: 10, value: directionless)
             }
         }
 
@@ -256,19 +241,17 @@ extension BackupProtoChatItem {
 
         case standardMessage(BackupProtoStandardMessage)
         case contactMessage(BackupProtoContactMessage)
-        case voiceMessage(BackupProtoVoiceMessage)
         case stickerMessage(BackupProtoStickerMessage)
         case remoteDeletedMessage(BackupProtoRemoteDeletedMessage)
         case updateMessage(BackupProtoChatUpdateMessage)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
-            case .standardMessage(let standardMessage): try protoWriter.encode(tag: 13, value: standardMessage)
-            case .contactMessage(let contactMessage): try protoWriter.encode(tag: 14, value: contactMessage)
-            case .voiceMessage(let voiceMessage): try protoWriter.encode(tag: 15, value: voiceMessage)
-            case .stickerMessage(let stickerMessage): try protoWriter.encode(tag: 16, value: stickerMessage)
-            case .remoteDeletedMessage(let remoteDeletedMessage): try protoWriter.encode(tag: 17, value: remoteDeletedMessage)
-            case .updateMessage(let updateMessage): try protoWriter.encode(tag: 18, value: updateMessage)
+            case .standardMessage(let standardMessage): try protoWriter.encode(tag: 11, value: standardMessage)
+            case .contactMessage(let contactMessage): try protoWriter.encode(tag: 12, value: contactMessage)
+            case .stickerMessage(let stickerMessage): try protoWriter.encode(tag: 13, value: stickerMessage)
+            case .remoteDeletedMessage(let remoteDeletedMessage): try protoWriter.encode(tag: 14, value: remoteDeletedMessage)
+            case .updateMessage(let updateMessage): try protoWriter.encode(tag: 15, value: updateMessage)
             }
         }
 
@@ -279,16 +262,19 @@ extension BackupProtoChatItem {
         public var dateReceived: UInt64
         public var dateServerSent: UInt64
         public var read: Bool
+        public var sealedSender: Bool
         public var unknownFields: UnknownFields = .init()
 
         public init(
             dateReceived: UInt64,
             dateServerSent: UInt64,
-            read: Bool
+            read: Bool,
+            sealedSender: Bool
         ) {
             self.dateReceived = dateReceived
             self.dateServerSent = dateServerSent
             self.read = read
+            self.sealedSender = sealedSender
         }
 
     }
@@ -368,6 +354,7 @@ extension BackupProtoChatItem.BackupProtoIncomingMessageDetails : Proto3Codable 
         var dateReceived: UInt64 = 0
         var dateServerSent: UInt64 = 0
         var read: Bool = false
+        var sealedSender: Bool = false
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -375,6 +362,7 @@ extension BackupProtoChatItem.BackupProtoIncomingMessageDetails : Proto3Codable 
             case 1: dateReceived = try protoReader.decode(UInt64.self)
             case 2: dateServerSent = try protoReader.decode(UInt64.self)
             case 3: read = try protoReader.decode(Bool.self)
+            case 4: sealedSender = try protoReader.decode(Bool.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -383,12 +371,14 @@ extension BackupProtoChatItem.BackupProtoIncomingMessageDetails : Proto3Codable 
         self.dateReceived = dateReceived
         self.dateServerSent = dateServerSent
         self.read = read
+        self.sealedSender = sealedSender
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.dateReceived)
         try protoWriter.encode(tag: 2, value: self.dateServerSent)
         try protoWriter.encode(tag: 3, value: self.read)
+        try protoWriter.encode(tag: 4, value: self.sealedSender)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -402,6 +392,7 @@ extension BackupProtoChatItem.BackupProtoIncomingMessageDetails : Codable {
         self.dateReceived = try container.decode(stringEncoded: UInt64.self, forKey: "dateReceived")
         self.dateServerSent = try container.decode(stringEncoded: UInt64.self, forKey: "dateServerSent")
         self.read = try container.decode(Bool.self, forKey: "read")
+        self.sealedSender = try container.decode(Bool.self, forKey: "sealedSender")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -416,6 +407,9 @@ extension BackupProtoChatItem.BackupProtoIncomingMessageDetails : Codable {
         }
         if includeDefaults || self.read != false {
             try container.encode(self.read, forKey: "read")
+        }
+        if includeDefaults || self.sealedSender != false {
+            try container.encode(self.sealedSender, forKey: "sealedSender")
         }
     }
 

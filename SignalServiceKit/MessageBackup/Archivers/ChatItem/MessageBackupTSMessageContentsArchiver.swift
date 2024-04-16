@@ -251,7 +251,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 chatItemId,
                 OWSAssertionError("Chat update has no contents to restore!")
             )])
-        case .contactMessage, .voiceMessage, .stickerMessage, .remoteDeletedMessage:
+        case .contactMessage, .stickerMessage, .remoteDeletedMessage:
             // Other types not supported yet.
             return .messageFailure([.unimplemented(chatItemId)])
         }

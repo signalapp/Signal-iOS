@@ -203,6 +203,7 @@ message BackupProtoChatItem {
     uint64 dateReceived = 1;
     uint64 dateServerSent = 2;
     bool read = 3;
+    bool sealedSender = 4;
   }
 
   message BackupProtoOutgoingMessageDetails {
@@ -215,25 +216,23 @@ message BackupProtoChatItem {
   uint64 chatId = 1;   // conversation id
   uint64 authorId = 2; // recipient id
   uint64 dateSent = 3;
-  bool sealedSender = 4;
-  optional uint64 expireStartDate = 5; // timestamp of when expiration timer started ticking down
-  optional uint64 expiresInMs = 6; // how long timer of message is (ms)
-  repeated BackupProtoChatItem revisions = 7; // ordered from oldest to newest
-  bool sms = 8;
+  optional uint64 expireStartDate = 4; // timestamp of when expiration timer started ticking down
+  optional uint64 expiresInMs = 5; // how long timer of message is (ms)
+  repeated BackupProtoChatItem revisions = 6; // ordered from oldest to newest
+  bool sms = 7;
 
   oneof directionalDetails {
-    BackupProtoIncomingMessageDetails incoming = 9;
-    BackupProtoOutgoingMessageDetails outgoing = 10;
-    BackupProtoDirectionlessMessageDetails directionless = 11;
+    BackupProtoIncomingMessageDetails incoming = 8;
+    BackupProtoOutgoingMessageDetails outgoing = 9;
+    BackupProtoDirectionlessMessageDetails directionless = 10;
   }
 
   oneof item {
-    BackupProtoStandardMessage standardMessage = 13;
-    BackupProtoContactMessage contactMessage = 14;
-    BackupProtoVoiceMessage voiceMessage = 15;
-    BackupProtoStickerMessage stickerMessage = 16;
-    BackupProtoRemoteDeletedMessage remoteDeletedMessage = 17;
-    BackupProtoChatUpdateMessage updateMessage = 18;
+    BackupProtoStandardMessage standardMessage = 11;
+    BackupProtoContactMessage contactMessage = 12;
+    BackupProtoStickerMessage stickerMessage = 13;
+    BackupProtoRemoteDeletedMessage remoteDeletedMessage = 14;
+    BackupProtoChatUpdateMessage updateMessage = 15;
   }
 }
 

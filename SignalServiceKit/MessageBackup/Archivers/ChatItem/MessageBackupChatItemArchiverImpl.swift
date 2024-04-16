@@ -199,7 +199,6 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             chatId: chatId.value,
             authorId: details.author.value,
             dateSent: interaction.timestamp,
-            sealedSender: details.isSealedSender,
             sms: details.isSms
         )
 
