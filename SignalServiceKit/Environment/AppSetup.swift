@@ -762,6 +762,7 @@ public class AppSetup {
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
+            attachmentUploadManager: attachmentUploadManager,
             authorMergeHelper: authorMergeHelper,
             badgeCountFetcher: badgeCountFetcher,
             callRecordDeleteManager: callRecordDeleteManager,
