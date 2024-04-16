@@ -352,11 +352,7 @@ extension MessageSender {
             }
 
             return recipientsNeedingSKDM.compactMap { (serviceId) -> (OWSMessageSend, SealedSenderParameters?)? in
-                if let groupThread = thread as? TSGroupThread {
-                    Logger.info("Sending SKDM to \(serviceId) for group thread \(groupThread.groupId)")
-                } else {
-                    Logger.info("Sending SKDM to \(serviceId) for thread \(thread.uniqueId)")
-                }
+                Logger.info("Sending SKDM to \(serviceId) for thread \(thread.uniqueId)")
 
                 let contactThread = TSContactThread.getOrCreateThread(
                     withContactAddress: SignalServiceAddress(serviceId),

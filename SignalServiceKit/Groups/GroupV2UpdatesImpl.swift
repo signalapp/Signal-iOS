@@ -56,7 +56,7 @@ public class GroupV2UpdatesImpl: Dependencies {
             let groupId = groupInfoToRefresh.groupId
             let groupSecretParamsData = groupInfoToRefresh.groupSecretParamsData
             if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
-                Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which hasn't been refreshed in \(-lastRefreshDate.timeIntervalSinceNow) seconds.")
+                Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which hasn't been refreshed in \(-lastRefreshDate.timeIntervalSinceNow/kDayInterval) days.")
             } else {
                 Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which has never been refreshed.")
             }

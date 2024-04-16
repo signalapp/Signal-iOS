@@ -329,7 +329,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     func providerDidBegin(_ provider: CXProvider) {
         AssertIsOnMainThread()
-        Logger.info("")
         Self.providerReadyFlag.setIsReady()
     }
 

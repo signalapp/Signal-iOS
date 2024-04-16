@@ -892,12 +892,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         hasCurrentSubscription: Bool
     ) {
         guard let expiredBadgeID else {
-            Logger.info("[Donations] No expired badge ID, not showing sheet")
             return
         }
 
         guard shouldShowExpirySheet else {
-            Logger.info("[Donations] Not showing badge expiration sheet because the flag is off")
             return
         }
 

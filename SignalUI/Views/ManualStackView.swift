@@ -370,18 +370,12 @@ open class ManualStackView: ManualLayoutView {
             // It is expected in some cases, e.g. when animating an orientation
             // change when the new layout hasn't landed yet.
             let overflow = onAxisSizeTotal - onAxisMaxSize
-            if DebugFlags.internalLogging {
-                Logger.warn("\(name): overflow[\(name)]: \(overflow)")
-            }
 
             // TODO: We could weight re-distribution by compressionResistence.
             var overflowLayoutItems = layoutItems.filter {
                 $0.subviewInfo.canCompressOnAxis(isHorizontalLayout: isHorizontal)
             }
             if overflowLayoutItems.isEmpty {
-                if DebugFlags.internalLogging {
-                    Logger.warn("\(name): No overflowLayoutItems.")
-                }
                 overflowLayoutItems = layoutItems
             }
 
@@ -400,9 +394,6 @@ open class ManualStackView: ManualLayoutView {
 
         // Determine offAxisSize and offAxisLocation.
         for layoutItem in layoutItems {
-            if layoutItem.offAxisMeasuredSize > offAxisMaxSize {
-                Logger.verbose("\(name): Off-axis overflow: offAxisMeasuredSize: \(layoutItem.offAxisMeasuredSize) > offAxisMaxSize: \(offAxisMaxSize)")
-            }
             var offAxisSize: CGFloat = min(layoutItem.offAxisMeasuredSize, offAxisMaxSize)
             if offAxisAlignment == .fill,
                layoutItem.subviewInfo.canExpandOffAxis(isHorizontalLayout: isHorizontal) {
@@ -549,40 +540,17 @@ open class ManualStackView: ManualLayoutView {
         case .horizontal:
             size.width = subviewSizes.map { $0.width }.reduce(0, +)
             size.height = subviewSizes.map { $0.height }.reduce(0, max)
-
-            if verboseLogging {
-                Logger.verbose("size of subviews: \(size)")
-            }
-
             size.width += CGFloat(spacingCount) * config.spacing
-
-            if verboseLogging {
-                Logger.verbose("size of subviews and spacing: \(size)")
-            }
         case .vertical:
             size.width = subviewSizes.map { $0.width }.reduce(0, max)
             size.height = subviewSizes.map { $0.height }.reduce(0, +)
-
-            if verboseLogging {
-                Logger.verbose("size of subviews: \(size)")
-            }
-
             size.height += CGFloat(spacingCount) * config.spacing
-
-            if verboseLogging {
-                Logger.verbose("size of subviews and spacing: \(size)")
-            }
         @unknown default:
             owsFailDebug("Unknown axis: \(config.axis)")
         }
 
         size.width += config.layoutMargins.totalWidth
         size.height += config.layoutMargins.totalHeight
-
-        if verboseLogging {
-            Logger.verbose("size of subviews and spacing and layoutMargins: \(size)")
-        }
-
         size = size.ceil
 
         return Measurement(measuredSize: size, subviewInfos: subviewInfos)

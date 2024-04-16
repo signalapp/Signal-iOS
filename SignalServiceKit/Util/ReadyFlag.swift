@@ -180,6 +180,8 @@ public class ReadyFlag: NSObject {
             return
         }
 
+        Logger.info("\(self.name)")
+
         let willBecomeReadyTasks = ReadyTask.sort(tasksToPerform.willBecomeReadyTasks)
         let didBecomeReadySyncTasks = ReadyTask.sort(tasksToPerform.didBecomeReadySyncTasks)
         let didBecomeReadyAsyncTasks = ReadyTask.sort(tasksToPerform.didBecomeReadyAsyncTasks)

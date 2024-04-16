@@ -34,8 +34,6 @@ public class AppReadiness: NSObject {
         owsAssertDebug(!shared.readyFlag.isSet)
         owsAssertDebug(!shared.readyFlagUI.isSet)
 
-        Logger.info("")
-
         shared.readyFlag.setIsReady()
         shared.readyFlagUI.setIsReady()
     }
@@ -45,16 +43,12 @@ public class AppReadiness: NSObject {
         AssertIsOnMainThread()
         owsAssertDebug(!shared.readyFlag.isSet)
 
-        Logger.info("")
-
         shared.readyFlag.setIsReady()
     }
 
     @objc
     public static func setUIIsReady() {
         AssertIsOnMainThread()
-
-        Logger.info("")
 
         shared.readyFlagUI.setIsReady()
     }

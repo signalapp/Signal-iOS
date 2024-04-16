@@ -61,7 +61,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             guard lastAppVersion == currentAppVersion else {
                 return true
             }
-            Logger.info("Skipping; lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion: \(currentAppVersion).")
             return false
         }
         guard shouldUpdate else {

@@ -590,9 +590,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
         transaction: SDSAnyReadTransaction) {
 
         guard canNotify(for: incomingMessage, thread: thread, transaction: transaction) else {
-            if DebugFlags.internalLogging {
-                Logger.info("Not notifying.")
-            }
             return
         }
 

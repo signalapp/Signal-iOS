@@ -178,7 +178,7 @@ public final class MessageReceiver: Dependencies {
 
     func handleRequest(_ request: MessageReceiverRequest, context: DeliveryReceiptContext, tx: SDSAnyWriteTransaction) {
         let protoContent = request.protoContent
-        Logger.info("Received \(protoContent.contentDescription) from \(request.decryptedEnvelope.sourceAci)")
+        Logger.info("Received \(request.decryptedEnvelope.timestamp) w/\(protoContent.contentDescription) from \(request.decryptedEnvelope.sourceAci)")
 
         switch request.messageType {
         case .syncMessage(let syncMessage):

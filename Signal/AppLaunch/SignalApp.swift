@@ -69,7 +69,8 @@ extension SignalApp {
         owsAssert(AppReadiness.isAppReady)
 
         let startupDuration = CACurrentMediaTime() - launchStartedAt
-        Logger.info("Presenting app \(startupDuration) seconds after launch started.")
+        let formattedStartupDuration = String(format: "%.3f", startupDuration)
+        Logger.info("Presenting app \(formattedStartupDuration) seconds after launch started.")
 
         NotificationCenter.default.addObserver(
             self,
