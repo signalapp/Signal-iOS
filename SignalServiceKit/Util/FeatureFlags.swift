@@ -114,7 +114,7 @@ extension FeatureFlags {
         let featureFlagString: String?
         switch build {
         case .dev:
-            featureFlagString = LocalizationNotNeeded("Development")
+            featureFlagString = LocalizationNotNeeded("Dev")
         case .internal:
             featureFlagString = LocalizationNotNeeded("Internal")
         case .beta:
@@ -128,7 +128,7 @@ extension FeatureFlags {
             #if DEBUG
             LocalizationNotNeeded("Debug")
             #elseif TESTABLE_BUILD
-            LocalizationNotNeeded("Testable build")
+            LocalizationNotNeeded("Testable")
             #else
             // RELEASE can be inferred from the lack of configuration. This will only be hit if the outer #if is removed.
             nil
