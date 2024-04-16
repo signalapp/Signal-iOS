@@ -58,7 +58,7 @@ extension JobRecord {
         case replacementAdminAciString = "replacementAdminUuid"
         case waitForMessageProcessing
 
-        // MARK: BroadcastMediaMessageJobRecord
+        // MARK: TSAttachmentMultisendJobRecord
 
         case attachmentIdMap
         case unsavedMessagesToSend

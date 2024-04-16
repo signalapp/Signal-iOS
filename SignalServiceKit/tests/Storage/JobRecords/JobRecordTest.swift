@@ -16,7 +16,7 @@ class JobRecordTest: XCTestCase {
         forRecordType recordType: JobRecord.JobRecordType
     ) -> any (JobRecord & ValidatableModel).Type {
         switch recordType {
-        case .broadcastMediaMessage: return BroadcastMediaMessageJobRecord.self
+        case .tsAttachmentMultisend: return TSAttachmentMultisendJobRecord.self
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
         case .deprecated_incomingGroupSync: return IncomingGroupSyncJobRecord.self
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
@@ -125,10 +125,10 @@ extension ValidatableModel where Self: JobRecord {
 
 // MARK: - Job records
 
-extension BroadcastMediaMessageJobRecord: ValidatableModel {
-    static let constants: [(BroadcastMediaMessageJobRecord, base64JsonData: Data)] = [
+extension TSAttachmentMultisendJobRecord: ValidatableModel {
+    static let constants: [(TSAttachmentMultisendJobRecord, base64JsonData: Data)] = [
         (
-            BroadcastMediaMessageJobRecord(
+            TSAttachmentMultisendJobRecord(
                 attachmentIdMap: ["once": ["upon", "a"]],
                 // The encoded object below has a non-story message, which is invalid in the real app.
                 storyMessagesToSend: [],
@@ -139,7 +139,7 @@ extension BroadcastMediaMessageJobRecord: ValidatableModel {
             Data(base64Encoded: "eyJzdXBlciI6eyJmYWlsdXJlQ291bnQiOjMsImxhYmVsIjoiQnJvYWRjYXN0TWVkaWFNZXNzYWdlIiwic3RhdHVzIjoyLCJ1bmlxdWVJZCI6IkY1QjMzODBDLUI0REItNDVERS1CQjA3LUNDNkJDQUU5N0ZEQiIsInJlY29yZFR5cGUiOjU4fSwiYXR0YWNobWVudElkTWFwIjoiWW5Cc2FYTjBNRERVQVFJREJBVUdCd3BZSkhabGNuTnBiMjVaSkdGeVkyaHBkbVZ5VkNSMGIzQllKRzlpYW1WamRITVNBQUdHb0Y4UUQwNVRTMlY1WldSQmNtTm9hWFpsY3RFSUNWUnliMjkwZ0FHb0N3d1ZGaHNjSFNOVkpHNTFiR3pURFE0UEVCSVVWMDVUTG10bGVYTmFUbE11YjJKcVpXTjBjMVlrWTJ4aGMzT2hFWUFDb1JPQUE0QUhWRzl1WTJYU0RnOFhHcUlZR1lBRWdBV0FCbFIxY0c5dVVXSFNIaDhnSVZva1kyeGhjM051WVcxbFdDUmpiR0Z6YzJWelYwNVRRWEp5WVhtaUlDSllUbE5QWW1wbFkzVFNIaDhrSlZ4T1UwUnBZM1JwYjI1aGNubWlKaUpjVGxORWFXTjBhVzl1WVhKNUNCRWFKQ2t5TjBsTVVWTmNZbWx4ZklPRmg0bUxqWktYbXB5ZW9LV25yTGZBeU12VTJlYnBBQUFBQUFBQUFRRUFBQUFBQUFBQUp3QUFBQUFBQUFBQUFBQUFBQUFBQVBZPSIsInVuc2F2ZWRNZXNzYWdlc1RvU2VuZCI6IlluQnNhWE4wTUREVUFRSURCQVVHQndwWUpIWmxjbk5wYjI1WkpHRnlZMmhwZG1WeVZDUjBiM0JZSkc5aWFtVmpkSE1TQUFHR29GOFFEMDVUUzJWNVpXUkJjbU5vYVhabGN0RUlDVlJ5YjI5MGdBR3FDd3dTUmtkSVNVcExWMVVrYm5Wc2JOSU5EZzhSV2s1VExtOWlhbVZqZEhOV0pHTnNZWE56b1JDQUFvQUozeEFhRXhRVkZnNFhHQmthR3h3ZEhoOGdJU0lqSkNVbUp5Z3BLaXNzTFMwc01DMHNNeTBzTFN3c0xDd3RMU3d0TEN4QlFpd3RMVjhRRTNKbFkyVnBkbVZrUVhSVWFXMWxjM1JoYlhCZkVCSnBjMVpwWlhkUGJtTmxRMjl0Y0d4bGRHVmZFQnh6ZEc5eVpXUlRhRzkxYkdSVGRHRnlkRVY0Y0dseVpWUnBiV1Z5WHhBUFpYaHdhWEpsVTNSaGNuUmxaRUYwWHhBUmFYTldhV1YzVDI1alpVMWxjM05oWjJWZkVBOU5WRXhOYjJSbGJGWmxjbk5wYjI1ZWRXNXBjWFZsVkdoeVpXRmtTV1JmRUJWb1lYTk1aV2RoWTNsTlpYTnpZV2RsVTNSaGRHVldjMjl5ZEVsa1h4QVNhWE5HY205dFRHbHVhMlZrUkdWMmFXTmxYeEFjYjNWMFoyOXBibWROWlhOellXZGxVMk5vWlcxaFZtVnljMmx2Ymw4UUVHVjRjR2x5WlhOSmJsTmxZMjl1WkhOZkVCQm5jbTkxY0UxbGRHRk5aWE56WVdkbFh4QVNiR1ZuWVdONVRXVnpjMkZuWlZOMFlYUmxYeEFTYkdWbllXTjVWMkZ6UkdWc2FYWmxjbVZrWG1selZtOXBZMlZOWlhOellXZGxXV1Y0Y0dseVpYTkJkRjhRRVdselIzSnZkWEJUZEc5eWVWSmxjR3g1WFhOamFHVnRZVlpsY25OcGIyNVpaV1JwZEZOMFlYUmxXWFJwYldWemRHRnRjRmgxYm1seGRXVkpaRjhRRW5OMGIzSmxaRTFsYzNOaFoyVlRkR0YwWlY4UUVuZGhjMUpsYlc5MFpXeDVSR1ZzWlhSbFpGOFFFMmhoYzFONWJtTmxaRlJ5WVc1elkzSnBjSFNBQTRBRWdBU0FBNEFJZ0FTQUE0QUZnQVNBQTRBRWdBT0FBNEFEZ0FPQUJJQUVnQU9BQklBRGdBT0FCNEFHZ0FPQUJJQUVFQUFJVzJsdUlHRWdaMkZzWVhoNVZIUnBiV1VUQUFBQmpEYzAxV1hTVEUxT1Qxb2tZMnhoYzNOdVlXMWxXQ1JqYkdGemMyVnpYeEFSVkZOUGRYUm5iMmx1WjAxbGMzTmhaMlduVUZGU1UxUlZWbDhRRVZSVFQzVjBaMjlwYm1kTlpYTnpZV2RsV1ZSVFRXVnpjMkZuWlYxVVUwbHVkR1Z5WVdOMGFXOXVXVUpoYzJWTmIyUmxiRjhRRTFSVFdXRndSR0YwWVdKaGMyVlBZbXBsWTNSWVRWUk1UVzlrWld4WVRsTlBZbXBsWTNUU1RFMVlXVmRPVTBGeWNtRjVvbGhXQUFnQUVRQWFBQ1FBS1FBeUFEY0FTUUJNQUZFQVV3QmVBR1FBYVFCMEFIc0FmUUJcL0FJRUF1QURPQU9NQkFnRVVBU2dCT2dGSkFXRUJhQUY5QVp3QnJ3SENBZGNCN0FIN0FnVUNHUUluQWpFQ093SkVBbGtDYmdLRUFvWUNpQUtLQW93Q2pnS1FBcElDbEFLV0FwZ0NtZ0tjQXA0Q29BS2lBcVFDcGdLb0Fxb0NyQUt1QXJBQ3NnSzBBcllDdUFLNkFyc0N4d0xNQXRVQzJnTGxBdTREQWdNS0F4NERLQU0yQTBBRFZnTmZBMmdEYlFOMUFBQUFBQUFBQWdFQUFBQUFBQUFBV2dBQUFBQUFBQUFBQUFBQUFBQUFBM2c9In0=")!
         ),
         (
-            BroadcastMediaMessageJobRecord(
+            TSAttachmentMultisendJobRecord(
                 attachmentIdMap: ["once": ["upon", "a"]],
                 storyMessagesToSend: nil,
                 exclusiveProcessIdentifier: nil,
@@ -150,7 +150,7 @@ extension BroadcastMediaMessageJobRecord: ValidatableModel {
         )
     ]
 
-    func validate(against: BroadcastMediaMessageJobRecord) throws {
+    func validate(against: TSAttachmentMultisendJobRecord) throws {
         guard
             attachmentIdMap == against.attachmentIdMap,
             storyMessagesToSend?.count == against.storyMessagesToSend?.count,

@@ -74,7 +74,7 @@ final class ThreadMerger {
         }
         return shouldInsertEvent
         // TODO: [optional] Merge `lastVisibleInteractionStore` (we use `targetThread`s right now).
-        // TODO: [optional] Merge BroadcastMediaMessageJobRecord (they are canceled right now).
+        // TODO: [optional] Merge TSAttachmentMultisendJobRecord (they are canceled right now).
         // TODO: [optional] Merge MessageSenderJobRecord (they are canceled right now).
         // TODO: [optional] Merge SessionResetJobRecord (they are canceled right now).
         // TODO: [optional] Merge SendGiftBadgeJobRecord (they are canceled right now).

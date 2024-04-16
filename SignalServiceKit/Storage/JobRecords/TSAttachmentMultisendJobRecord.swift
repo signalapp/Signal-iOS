@@ -6,10 +6,10 @@
 import Foundation
 import GRDB
 
-public final class BroadcastMediaMessageJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    override class var jobRecordType: JobRecordType { .broadcastMediaMessage }
+public final class TSAttachmentMultisendJobRecord: JobRecord, FactoryInitializableFromRecordType {
+    override class var jobRecordType: JobRecordType { .tsAttachmentMultisend }
 
-    /// A map from the AttachmentStream's to upload to their corresponding list of visible copies in individual
+    /// A map from the TSAttachmentStream's to upload to their corresponding list of visible copies in individual
     /// conversations. e.g. if we're broadcast-sending a picture and a video to 3 recipients, the dictionary would look
     /// like:
     ///     [

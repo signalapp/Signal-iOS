@@ -24,7 +24,7 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
 
         // MARK: Values originally from SDSRecordType
 
-        case broadcastMediaMessage = 58
+        case tsAttachmentMultisend = 58
         case incomingContactSync = 61
         /// This job record type is deprecated, but left around in case any are
         /// currently-persisted and need to be cleaned up.
@@ -51,7 +51,7 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         }
 
         switch jobRecordType {
-        case .broadcastMediaMessage: return BroadcastMediaMessageJobRecord.self
+        case .tsAttachmentMultisend: return TSAttachmentMultisendJobRecord.self
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
         case .deprecated_incomingGroupSync: return IncomingGroupSyncJobRecord.self
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
@@ -69,7 +69,8 @@ extension JobRecord.JobRecordType {
     var jobRecordLabel: String {
         // These values are persisted and must not change, even if they're misspelled.
         switch self {
-        case .broadcastMediaMessage:
+        case .tsAttachmentMultisend:
+            // label is serialized and must remain unchanged.
             return "BroadcastMediaMessage"
         case .incomingContactSync:
             return "IncomingContactSync"

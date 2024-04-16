@@ -106,7 +106,7 @@ extension OWSOrphanDataCleaner {
 
         findAttachmentIds(
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: BroadcastMediaMessageJobRecord) in jobRecord.attachmentIdMap.keys }
+            jobRecordAttachmentIds: { (jobRecord: TSAttachmentMultisendJobRecord) in jobRecord.attachmentIdMap.keys }
         )
 
         if shouldAbort {

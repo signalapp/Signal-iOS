@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class BroadcastMediaMessageJobQueue {
+public class TSAttachmentMultisendJobQueue {
     private let jobQueueRunner: JobQueueRunner<
-        JobRecordFinderImpl<BroadcastMediaMessageJobRecord>,
-        BroadcastMediaMessageJobRunnerFactory
+        JobRecordFinderImpl<TSAttachmentMultisendJobRecord>,
+        TSAttachmentMultisendJobRunnerFactory
     >
 
     public init(db: DB, reachabilityManager: SSKReachabilityManager) {
@@ -14,7 +14,7 @@ public class BroadcastMediaMessageJobQueue {
             canExecuteJobsConcurrently: false,
             db: db,
             jobFinder: JobRecordFinderImpl(db: db),
-            jobRunnerFactory: BroadcastMediaMessageJobRunnerFactory()
+            jobRunnerFactory: TSAttachmentMultisendJobRunnerFactory()
         )
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
@@ -25,7 +25,7 @@ public class BroadcastMediaMessageJobQueue {
     }
 
     public func add(attachmentIdMap: [String: [String]], storyMessagesToSend: [OutgoingStoryMessage], transaction: SDSAnyWriteTransaction) {
-        let jobRecord = BroadcastMediaMessageJobRecord(
+        let jobRecord = TSAttachmentMultisendJobRecord(
             attachmentIdMap: attachmentIdMap,
             storyMessagesToSend: storyMessagesToSend
         )
@@ -34,16 +34,16 @@ public class BroadcastMediaMessageJobQueue {
     }
 }
 
-private class BroadcastMediaMessageJobRunnerFactory: JobRunnerFactory {
-    func buildRunner() -> BroadcastMediaMessageJobRunner { BroadcastMediaMessageJobRunner() }
+private class TSAttachmentMultisendJobRunnerFactory: JobRunnerFactory {
+    func buildRunner() -> TSAttachmentMultisendJobRunner { TSAttachmentMultisendJobRunner() }
 }
 
-private class BroadcastMediaMessageJobRunner: JobRunner, Dependencies {
+private class TSAttachmentMultisendJobRunner: JobRunner, Dependencies {
     private enum Constants {
         static let maxRetries: UInt = 4
     }
 
-    func runJobAttempt(_ jobRecord: BroadcastMediaMessageJobRecord) async -> JobAttemptResult {
+    func runJobAttempt(_ jobRecord: TSAttachmentMultisendJobRecord) async -> JobAttemptResult {
         return await .executeBlockWithDefaultErrorHandler(
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
@@ -54,8 +54,8 @@ private class BroadcastMediaMessageJobRunner: JobRunner, Dependencies {
 
     func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
 
-    private func _runJobAttempt(_ jobRecord: BroadcastMediaMessageJobRecord) async throws {
-        try await BroadcastMediaUploader.uploadAttachments(
+    private func _runJobAttempt(_ jobRecord: TSAttachmentMultisendJobRecord) async throws {
+        try await TSAttachmentMultisendUploader.uploadAttachments(
             attachmentIdMap: jobRecord.attachmentIdMap,
             sendMessages: { uploadedMessages, tx in
                 let preparedStoryMessages: [PreparedOutgoingMessage] = jobRecord.storyMessagesToSend?.map {
@@ -74,7 +74,7 @@ private class BroadcastMediaMessageJobRunner: JobRunner, Dependencies {
 
 // MARK: -
 
-public enum BroadcastMediaUploader: Dependencies {
+public enum TSAttachmentMultisendUploader: Dependencies {
     public static func uploadAttachments<T>(
         attachmentIdMap: [String: [String]],
         sendMessages: @escaping (_ messages: [PreparedOutgoingMessage], _ tx: SDSAnyWriteTransaction) -> T

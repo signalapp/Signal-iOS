@@ -379,7 +379,7 @@ public class TSAttachmentMultisend: Dependencies {
             // and propagate their upload state to each of the TSAttachment unique IDs in the values.
             // Each outgoing destination gets its own TSAttachment per attached media, but we upload only one,
             // and propagate its upload state to each of these independent clones.
-            smJobQueues.broadcastMediaMessageJobQueue.add(
+            smJobQueues.tsAttachmentMultisendJobQueue.add(
                 attachmentIdMap: preparedSend.attachmentIdMap,
                 storyMessagesToSend: preparedSend.storyMessagesToSend,
                 transaction: transaction
@@ -395,7 +395,7 @@ public class TSAttachmentMultisend: Dependencies {
         messagesReadyToSend(preparedSend.messages)
 
         return Promise.wrapAsync {
-            let messageSendPromises = try await BroadcastMediaUploader.uploadAttachments(
+            let messageSendPromises = try await TSAttachmentMultisendUploader.uploadAttachments(
                 attachmentIdMap: preparedSend.attachmentIdMap,
                 sendMessages: { uploadedMessages, tx in
                     let preparedStoryMessages = preparedSend.storyMessagesToSend.map {
