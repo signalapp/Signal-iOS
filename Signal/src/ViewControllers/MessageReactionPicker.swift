@@ -242,7 +242,11 @@ class MessageReactionPicker: UIStackView {
         } completion: { _ in }
     }
 
-    func playPresentationAnimation(duration: TimeInterval) {
+    func playPresentationAnimation(duration: TimeInterval, completion: (() -> Void)? = nil) {
+        CATransaction.begin()
+        if let completion {
+            CATransaction.setCompletionBlock(completion)
+        }
         if let backgroundView {
             backgroundView.alpha = 0
             UIView.animate(withDuration: duration) { backgroundView.alpha = 1 }
@@ -258,6 +262,7 @@ class MessageReactionPicker: UIStackView {
             })
             delay += 0.01
         }
+        CATransaction.commit()
     }
 
     func playDismissalAnimation(duration: TimeInterval, completion: @escaping () -> Void) {
