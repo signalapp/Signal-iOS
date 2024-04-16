@@ -105,6 +105,7 @@ def main() -> None:
 
     all_good = True
     for path in ns.path:
+        path = Path(path)
         if not has_valid_license_header(path):
             if should_fix:
                 add_license_header_to(path)
