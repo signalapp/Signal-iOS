@@ -16,7 +16,7 @@ public enum StorySharing: Dependencies {
 
         guard !storyConversations.isEmpty else { return Promise.value(()) }
 
-        return AttachmentMultisend.sendTextAttachment(
+        return TSAttachmentMultisend.sendTextAttachment(
             buildTextAttachment(with: messageBody, linkPreviewDraft: linkPreviewDraft),
             to: storyConversations
         ).asVoid()
@@ -33,7 +33,7 @@ public enum StorySharing: Dependencies {
 
         guard !storyConversations.isEmpty else { return Promise.value(()) }
 
-        return AttachmentMultisend.sendTextAttachmentFromShareExtension(
+        return TSAttachmentMultisend.sendTextAttachmentFromShareExtension(
             buildTextAttachment(with: messageBody, linkPreviewDraft: linkPreviewDraft),
             to: storyConversations,
             messagesReadyToSend: messagesReadyToSend
