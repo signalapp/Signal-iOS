@@ -347,14 +347,27 @@ private class CallControlsViewModel {
     }
 
     var flipCameraButtonIsHidden: Bool {
-        let isLocalMemberViewFullScreen: Bool
+        if call.isOutgoingVideoMuted {
+            return true
+        }
+
         switch call.mode {
         case .individual(let call):
-            isLocalMemberViewFullScreen = [.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.state)
+            return ![.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.state)
         case .group(let call):
-            isLocalMemberViewFullScreen = call.localDeviceState.joinState != .joined || call.remoteDeviceStates.isEmpty
+            // Because joined group calls include the `moreButton`, we're out of
+            // space for the `flipCameraButton`.
+            //
+            // Recall that the flip camera button is in the local pip once someone
+            // else has joined the call. That leaves the issue of where to locate
+            // the flip camera button when the user is fullscreen because they have
+            // joined and are the sole member in the call.
+            //
+            // TODO: Implement the future designs for this. In the meantime, Design
+            // wants us to omit the flip camera button from Call Controls when in
+            // joined fullscreen.
+            return call.localDeviceState.joinState == .joined
         }
-        return call.isOutgoingVideoMuted || !isLocalMemberViewFullScreen
     }
 
     var joinButtonIsHidden: Bool {
