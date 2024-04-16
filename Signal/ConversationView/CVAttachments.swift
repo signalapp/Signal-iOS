@@ -63,7 +63,8 @@ public class AudioAttachment {
             let audioDurationSeconds: TimeInterval
             switch attachmentStream.computeContentType() {
             case .audio(let duration):
-                guard let duration, duration > 0 else {
+                let duration = duration.compute()
+                guard duration > 0 else {
                     fallthrough
                 }
                 audioDurationSeconds = duration

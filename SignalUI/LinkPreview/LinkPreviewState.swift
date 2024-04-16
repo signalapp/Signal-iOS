@@ -318,9 +318,9 @@ public class LinkPreviewSent: LinkPreviewState {
         let result: CGSize = {
             switch attachmentStream.computeContentType() {
             case .image(let pixelSize):
-                return pixelSize ?? .zero
+                return pixelSize.compute()
             case .animatedImage(let pixelSize):
-                return pixelSize ?? .zero
+                return pixelSize.compute()
             case .audio, .video, .file:
                 return .zero
             }

@@ -129,15 +129,15 @@ extension TSAttachmentStream: TSResourceStream {
 
         if isAudioMimeType {
             // Historically we did not cache this value. Rely on the mime type.
-            return .audio(duration: audioDurationSeconds())
+            return .audio(duration: audioDurationMetadata())
         }
 
         let cachedValueTypes: [(NSNumber?, () -> TSResourceContentType)] = [
             (self.isValidVideoCached, {
-                .video(duration: self.videoDuration?.doubleValue, pixelSize: self.cachedMediaPixelSize())
+                .video(duration: self.videoDuration?.doubleValue, pixelSize: self.mediaPixelSizeMetadata())
             }),
-            (self.isAnimatedCached, { .animatedImage(pixelSize: self.cachedMediaPixelSize()) }),
-            (self.isValidImageCached, { .image(pixelSize: self.cachedMediaPixelSize()) })
+            (self.isAnimatedCached, { .animatedImage(pixelSize: self.mediaPixelSizeMetadata()) }),
+            (self.isValidImageCached, { .image(pixelSize: self.mediaPixelSizeMetadata()) })
         ]
 
         for (numberValue, typeFn) in cachedValueTypes {
@@ -164,13 +164,13 @@ extension TSAttachmentStream: TSResourceStream {
 
         // If the cache lookup fails, switch to the hard fetches.
         if isVideoMimeType && isValidVideo {
-            return .video(duration: self.videoDuration?.doubleValue, pixelSize: cachedMediaPixelSize())
+            return .video(duration: self.videoDuration?.doubleValue, pixelSize: mediaPixelSizeMetadata())
         } else if getAnimatedMimeType() == .animated && isAnimatedContent {
-            return .animatedImage(pixelSize: cachedMediaPixelSize())
+            return .animatedImage(pixelSize: mediaPixelSizeMetadata())
         } else if isImageMimeType && isValidImage {
-            return .image(pixelSize: cachedMediaPixelSize())
+            return .image(pixelSize: mediaPixelSizeMetadata())
         } else if getAnimatedMimeType() == .maybeAnimated && isAnimatedContent {
-            return .image(pixelSize: cachedMediaPixelSize())
+            return .image(pixelSize: mediaPixelSizeMetadata())
         }
         // We did not previously have utilities for determining
         // "valid" audio content. Rely on the cached value's
@@ -183,20 +183,40 @@ extension TSAttachmentStream: TSResourceStream {
         return self.isValidVisualMedia
     }
 
-    private func cachedMediaPixelSize() -> CGSize? {
-        if
-            let cachedImageWidth,
-            let cachedImageHeight,
-            cachedImageWidth.floatValue > 0,
-            cachedImageHeight.floatValue > 0
-        {
-            return .init(
-                width: CGFloat(cachedImageWidth.floatValue),
-                height: CGFloat(cachedImageHeight.floatValue)
-            )
-        } else {
-            return nil
-        }
+    private func mediaPixelSizeMetadata() -> TSResourceContentType.Metadata<CGSize> {
+        let attachment = self
+        return .init(
+            getCached: { [attachment] in
+                if
+                    let cachedImageWidth = attachment.cachedImageWidth,
+                    let cachedImageHeight = attachment.cachedImageHeight,
+                    cachedImageWidth.floatValue > 0,
+                    cachedImageHeight.floatValue > 0
+                {
+                    return .init(
+                        width: CGFloat(cachedImageWidth.floatValue),
+                        height: CGFloat(cachedImageHeight.floatValue)
+                    )
+                } else {
+                    return nil
+                }
+            },
+            compute: { [attachment] in
+                return attachment.imageSizePixels
+            }
+        )
+    }
+
+    private func audioDurationMetadata() -> TSResourceContentType.Metadata<TimeInterval> {
+        let attachment = self
+        return .init(
+            getCached: { [attachment] in
+                return attachment.cachedAudioDurationSeconds?.doubleValue
+            },
+            compute: { [attachment] in
+                return attachment.audioDurationSeconds()
+            }
+        )
     }
 
     // MARK: - Thumbnails

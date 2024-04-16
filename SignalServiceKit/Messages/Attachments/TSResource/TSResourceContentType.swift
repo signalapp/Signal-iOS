@@ -12,10 +12,19 @@ public enum TSResourceContentType {
     /// Some arbitrary file. Used when no other case applies.
     case file
 
-    case image(pixelSize: CGSize?)
-    case video(duration: TimeInterval?, pixelSize: CGSize?)
-    case animatedImage(pixelSize: CGSize?)
-    case audio(duration: TimeInterval?)
+    case image(pixelSize: Metadata<CGSize>)
+    /// We have never computed video duration on the fly for TSAttachments;
+    /// we either had it or we didn't. So its not wrapped in a Metadata like the others.
+    case video(duration: TimeInterval?, pixelSize: Metadata<CGSize>)
+    case animatedImage(pixelSize: Metadata<CGSize>)
+    case audio(duration: Metadata<TimeInterval>)
+
+    public struct Metadata<T> {
+        /// Get the cached value for the metadata, if available.
+        public let getCached: () -> T?
+        /// Compute the value for the metadata or use the cache if available.
+        public let compute: () -> T
+    }
 }
 
 extension TSResourceContentType {

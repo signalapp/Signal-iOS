@@ -1126,7 +1126,8 @@ fileprivate extension CVComponentState.Builder {
         if let attachmentStream = attachment.asResourceStream() {
             switch attachmentStream.computeContentType() {
             case .image(let pixelSize), .animatedImage(let pixelSize):
-                guard pixelSize?.isNonEmpty == true else {
+                let pixelSize = pixelSize.compute()
+                guard pixelSize.isNonEmpty else {
                     fallthrough
                 }
             default:
@@ -1270,7 +1271,8 @@ fileprivate extension CVComponentState.Builder {
             let mediaSizePixels: CGSize
             switch attachmentStream.computeContentType() {
             case let .image(pixelSize), let .video(_, pixelSize), let .animatedImage(pixelSize):
-                guard let pixelSize, pixelSize.isNonEmpty else {
+                let pixelSize = pixelSize.compute()
+                guard pixelSize.isNonEmpty else {
                     Logger.warn("Filtering media with invalid size.")
                     fallthrough
                 }

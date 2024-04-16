@@ -12,13 +12,13 @@ extension Attachment.ContentType {
         case .file:
             return .file
         case .image(let pixelSize):
-            return .image(pixelSize: pixelSize)
+            return .image(pixelSize: .init(getCached: { pixelSize }, compute: { pixelSize }))
         case .video(let duration, let pixelSize):
-            return .video(duration: duration, pixelSize: pixelSize)
+            return .video(duration: duration, pixelSize: .init(getCached: { pixelSize }, compute: { pixelSize }))
         case .animatedImage(let pixelSize):
-            return .animatedImage(pixelSize: pixelSize)
+            return .animatedImage(pixelSize: .init(getCached: { pixelSize }, compute: { pixelSize }))
         case .audio(let duration):
-            return .audio(duration: duration)
+            return .audio(duration: .init(getCached: { duration }, compute: { duration }))
         }
     }
 }

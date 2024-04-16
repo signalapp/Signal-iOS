@@ -100,7 +100,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         case .file, .audio, .video, nil:
             return .zero
         case .image(let pixelSize), .animatedImage(let pixelSize):
-            guard let pixelSize else { return .zero }
+            guard let pixelSize = pixelSize.getCached() else { return .zero }
             return CGSize(
                 width: pixelSize.width / UIScreen.main.scale,
                 height: pixelSize.height / UIScreen.main.scale

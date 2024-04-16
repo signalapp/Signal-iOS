@@ -60,7 +60,7 @@ struct MediaGalleryCellItemAudio {
     var duration: TimeInterval {
         switch attachmentStream.attachmentStream.computeContentType() {
         case .audio(let duration):
-            return duration ?? 0
+            return duration.compute()
         default:
             return 0
         }
