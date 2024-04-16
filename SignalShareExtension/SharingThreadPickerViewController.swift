@@ -281,7 +281,7 @@ extension SharingThreadPickerViewController {
             }
 
             return sendToConversations { conversations in
-                return TSAttachmentMultisend.sendApprovedMediaFromShareExtension(
+                return TSResourceMultisend.sendApprovedMediaFromShareExtension(
                     conversations: conversations,
                     approvalMessageBody: self.approvalMessageBody,
                     approvedAttachments: approvedAttachments,

@@ -393,7 +393,7 @@ extension ForwardMessageViewController {
                   !attachments.isEmpty {
             // TODO: What about link previews in this case?
             let conversations = selectedConversations
-            return TSAttachmentMultisend.sendApprovedMedia(
+            return TSResourceMultisend.sendApprovedMedia(
                 conversations: conversations,
                 approvalMessageBody: item.messageBody,
                 approvedAttachments: attachments
@@ -401,7 +401,7 @@ extension ForwardMessageViewController {
         } else if let textAttachment = item.textAttachment {
             // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading
             // if the original was sent recently (if not the image could be stale)
-            return TSAttachmentMultisend.sendTextAttachment(
+            return TSResourceMultisend.sendTextAttachment(
                 textAttachment.asUnsentAttachment(), to: selectedConversations
             ).asVoid()
         } else if let messageBody = item.messageBody {

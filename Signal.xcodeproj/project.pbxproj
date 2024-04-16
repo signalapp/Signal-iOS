@@ -793,6 +793,7 @@
 		662590CD2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */; };
 		662590CF2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CE2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift */; };
 		662590D12B5B525E001FDCDD /* MessageBackupErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590D02B5B525E001FDCDD /* MessageBackupErrors.swift */; };
+		66290FED2BCDE5ED0062605F /* TSResourceMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66290FEC2BCDE5ED0062605F /* TSResourceMultisend.swift */; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
 		662AC9292A4A4A0A009E2D5F /* SpoilerAnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */; };
@@ -3741,6 +3742,7 @@
 		662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateSwiftToProtoConverter.swift; sourceTree = "<group>"; };
 		662590CE2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupInteractionArchiverType.swift; sourceTree = "<group>"; };
 		662590D02B5B525E001FDCDD /* MessageBackupErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupErrors.swift; sourceTree = "<group>"; };
+		66290FEC2BCDE5ED0062605F /* TSResourceMultisend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceMultisend.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
 		662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationManager.swift; sourceTree = "<group>"; };
@@ -7459,6 +7461,7 @@
 				8803C2F328B02FDB00183D2B /* OutgoingStoryMessage+TSAttachmentMultisend.swift */,
 				3402A9EB271D98440084CBAE /* TSAttachmentMultisend.swift */,
 				8803C2F428B02FDB00183D2B /* TSOutgoingMessage+TSAttachmentMultisend.swift */,
+				66290FEC2BCDE5ED0062605F /* TSResourceMultisend.swift */,
 			);
 			path = TSResource;
 			sourceTree = "<group>";
@@ -12706,6 +12709,7 @@
 				3402A9EC271D98440084CBAE /* TSAttachmentMultisend.swift in Sources */,
 				50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */,
 				8803C2F628B02FDB00183D2B /* TSOutgoingMessage+TSAttachmentMultisend.swift in Sources */,
+				66290FED2BCDE5ED0062605F /* TSResourceMultisend.swift in Sources */,
 				F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */,
 				7685DFFF29EA1F6400542CBC /* UIFont+OWS.swift in Sources */,
 				76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */,
