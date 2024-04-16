@@ -678,20 +678,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // sharing a screenshot likes to chuck a UIImage at the share extension, but for some reason
             // at least on the simulator, canLoadObject(ofClass: UIImage.self) returns false, so we have
             // a fallback order here:
-            //   1) try to load a UIImage directly in case that's what was sent over
-            //   2) try attaching the image from a file so we don't have to load the image into RAM in the common case
+            //   1) try attaching the image from a file so we don't have to load the image into RAM in the common case
+            //   2) try to load a UIImage directly in the case that is what was sent over
             //   3) try to NSKeyedUnarchive NSData directly into a UIImage
             do {
-                let image: UIImage = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadUIImageObject, failedLoadError: .loadUIImageObjectFailed)
-                return try Self.createAttachment(withImage: image)
-            } catch ShareViewControllerError.cannotLoadUIImageObject {
+                return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
+            } catch SignalAttachmentError.couldNotParseImage {
+                Logger.warn("failed to parse image directly from file; checking for loading UIImage directly")
                 do {
-                    return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
-                } catch SignalAttachmentError.couldNotParseImage {
-                    Logger.warn("failed to parse image directly from file; trying data fallback and deserialize into UIImage")
+                    let image: UIImage = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadUIImageObject, failedLoadError: .loadUIImageObjectFailed)
+                    return try Self.createAttachment(withImage: image)
+                } catch ShareViewControllerError.cannotLoadUIImageObject {
+                    Logger.warn("failed to load UIImage directly; trying fallback to NSData and NSKeyedUnarchiver into UIImage")
                     let imageData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
                     guard let image: UIImage = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIImage.self, from: imageData) else {
-                        Logger.warn("fallback to deserialize into UIImage didn't work so rethrow attachment error")
+                        Logger.warn("final fallback failed so rethrow the original attachment error")
                         throw SignalAttachmentError.couldNotParseImage
                     }
                     return try Self.createAttachment(withImage: image)
