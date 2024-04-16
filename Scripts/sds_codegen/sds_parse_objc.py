@@ -811,7 +811,7 @@ if __name__ == "__main__":
     iphoneos_sdk_path = output.strip()
 
     header_include_paths = []
-    header_include_paths.extend(find_header_include_paths("SignalServiceKit/src"))
+    header_include_paths.extend(find_header_include_paths("SignalServiceKit"))
 
     # SDS code generation uses clang to parse the AST of Objective-C files.
     # We're parsing these files outside the context of an XCode workspace,
