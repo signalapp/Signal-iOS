@@ -54,10 +54,6 @@ struct CDSI_ClientRequest {
   /// containing a token_ack.
   var tokenAck: Bool = false
 
-  /// Request that, if the server allows, both ACI and PNI be returned even
-  /// if the aci_uak_pairs don't match.
-  var returnAcisWithoutUaks: Bool = false
-
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -115,7 +111,6 @@ extension CDSI_ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     4: .standard(proto: "discard_e164s"),
     6: .same(proto: "token"),
     7: .standard(proto: "token_ack"),
-    8: .standard(proto: "return_acis_without_uaks"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -130,7 +125,6 @@ extension CDSI_ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       case 4: try { try decoder.decodeSingularBytesField(value: &self.discardE164S) }()
       case 6: try { try decoder.decodeSingularBytesField(value: &self.token) }()
       case 7: try { try decoder.decodeSingularBoolField(value: &self.tokenAck) }()
-      case 8: try { try decoder.decodeSingularBoolField(value: &self.returnAcisWithoutUaks) }()
       default: break
       }
     }
@@ -155,9 +149,6 @@ extension CDSI_ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if self.tokenAck != false {
       try visitor.visitSingularBoolField(value: self.tokenAck, fieldNumber: 7)
     }
-    if self.returnAcisWithoutUaks != false {
-      try visitor.visitSingularBoolField(value: self.returnAcisWithoutUaks, fieldNumber: 8)
-    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -168,7 +159,6 @@ extension CDSI_ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if lhs.discardE164S != rhs.discardE164S {return false}
     if lhs.token != rhs.token {return false}
     if lhs.tokenAck != rhs.tokenAck {return false}
-    if lhs.returnAcisWithoutUaks != rhs.returnAcisWithoutUaks {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

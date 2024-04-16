@@ -29,9 +29,8 @@ message ClientRequest {
   // containing a token_ack.
   bool token_ack = 7;
 
-  // Request that, if the server allows, both ACI and PNI be returned even
-  // if the aci_uak_pairs don't match.
-  bool return_acis_without_uaks = 8;
+  // [deprecated] bool return_acis_without_uaks = 8
+  reserved 8;
 }
 
 message ClientResponse {
