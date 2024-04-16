@@ -10,34 +10,16 @@ public enum StorySharing: Dependencies {
         with messageBody: MessageBody,
         linkPreviewDraft: OWSLinkPreviewDraft?,
         to conversations: [ConversationItem]
-    ) -> Promise<Void> {
+    ) -> TSResourceMultisendResult? {
         let storyConversations = conversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
         owsAssertDebug(conversations.count == storyConversations.count)
 
-        guard !storyConversations.isEmpty else { return Promise.value(()) }
+        guard !storyConversations.isEmpty else { return nil }
 
         return TSResourceMultisend.sendTextAttachment(
             buildTextAttachment(with: messageBody, linkPreviewDraft: linkPreviewDraft),
             to: storyConversations
-        ).asVoid()
-    }
-
-    public static func sendTextStoryFromShareExtension(
-        with messageBody: MessageBody,
-        linkPreviewDraft: OWSLinkPreviewDraft?,
-        to conversations: [ConversationItem],
-        messagesReadyToSend: @escaping ([PreparedOutgoingMessage]) -> Void
-    ) -> Promise<Void> {
-        let storyConversations = conversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
-        owsAssertDebug(conversations.count == storyConversations.count)
-
-        guard !storyConversations.isEmpty else { return Promise.value(()) }
-
-        return TSResourceMultisend.sendTextAttachmentFromShareExtension(
-            buildTextAttachment(with: messageBody, linkPreviewDraft: linkPreviewDraft),
-            to: storyConversations,
-            messagesReadyToSend: messagesReadyToSend
-        ).asVoid()
+        )
     }
 
     private static func buildTextAttachment(

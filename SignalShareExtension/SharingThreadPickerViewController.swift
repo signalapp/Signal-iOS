@@ -236,16 +236,16 @@ extension SharingThreadPickerViewController {
             // Send the text message to any selected story recipients
             // as a text story with default styling.
             let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
-            let storySendPromise = StorySharing.sendTextStoryFromShareExtension(
+            let storySendResult = StorySharing.sendTextStory(
                 with: body,
                 linkPreviewDraft: linkPreviewDraft,
-                to: storyConversations,
-                messagesReadyToSend: { messages in
-                    self.outgoingMessages.append(contentsOf: messages)
-                }
+                to: storyConversations
             )
-
-            return Promise<Void>.when(fulfilled: [nonStorySendPromise, storySendPromise])
+            storySendResult?.preparedPromise.done(on: SyncScheduler(), { messages in
+                self.outgoingMessages.append(contentsOf: messages)
+            }).cauterize()
+            let storySentPromise = storySendResult?.sentPromise.asVoid() ?? .value(())
+            return Promise<Void>.when(fulfilled: [nonStorySendPromise, storySentPromise])
         } else if isContactShare {
             guard let contactShare = approvedContactShare else {
                 return Promise(error: OWSAssertionError("Missing contactShare."))
@@ -281,14 +281,15 @@ extension SharingThreadPickerViewController {
             }
 
             return sendToConversations { conversations in
-                return TSResourceMultisend.sendApprovedMediaFromShareExtension(
+                let sendResult = TSResourceMultisend.sendApprovedMedia(
                     conversations: conversations,
                     approvalMessageBody: self.approvalMessageBody,
-                    approvedAttachments: approvedAttachments,
-                    messagesReadyToSend: { messages in
-                        self.outgoingMessages.append(contentsOf: messages)
-                    }
+                    approvedAttachments: approvedAttachments
                 )
+                sendResult.preparedPromise.done(on: SyncScheduler(), { messages in
+                    self.outgoingMessages.append(contentsOf: messages)
+                }).cauterize()
+                return sendResult.sentPromise
             }
         }
     }

@@ -153,7 +153,7 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
                 TSResourceMultisend.sendTextAttachment(
                     textAttachment,
                     to: selectedStoryItems
-                )
+                ).enqueuedPromise
             }.done { _ in
                 self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
             }.catch { error in
@@ -175,7 +175,7 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
                 conversations: conversations,
                 approvalMessageBody: self.approvalMessageBody,
                 approvedAttachments: approvedAttachments
-            )
+            ).enqueuedPromise
         }.done { _ in
             self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
         }.catch { error in

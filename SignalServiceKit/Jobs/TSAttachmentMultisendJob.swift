@@ -3,18 +3,27 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public struct TSAttachmentMultisendResult {
+    /// Resolved when the attachments are uploaded and sending is enqueued.
+    public let enqueuedPromise: Promise<Void>
+    /// Resolved when the message is sent.
+    public let sentPromise: Promise<Void>
+}
+
 public class TSAttachmentMultisendJobQueue {
     private let jobQueueRunner: JobQueueRunner<
         JobRecordFinderImpl<TSAttachmentMultisendJobRecord>,
         TSAttachmentMultisendJobRunnerFactory
     >
+    private let jobRunnerFactory: TSAttachmentMultisendJobRunnerFactory
 
     public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+        self.jobRunnerFactory = TSAttachmentMultisendJobRunnerFactory()
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: false,
             db: db,
             jobFinder: JobRecordFinderImpl(db: db),
-            jobRunnerFactory: TSAttachmentMultisendJobRunnerFactory()
+            jobRunnerFactory: jobRunnerFactory
         )
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
@@ -24,27 +33,74 @@ public class TSAttachmentMultisendJobQueue {
         jobQueueRunner.start(shouldRestartExistingJobs: appContext.isMainApp)
     }
 
-    public func add(attachmentIdMap: [String: [String]], storyMessagesToSend: [OutgoingStoryMessage], transaction: SDSAnyWriteTransaction) {
+    @discardableResult
+    public func add(
+        attachmentIdMap: [String: [String]],
+        storyMessagesToSend: [OutgoingStoryMessage],
+        transaction: SDSAnyWriteTransaction
+    ) -> TSAttachmentMultisendResult {
         let jobRecord = TSAttachmentMultisendJobRecord(
             attachmentIdMap: attachmentIdMap,
             storyMessagesToSend: storyMessagesToSend
         )
         jobRecord.anyInsert(transaction: transaction)
-        transaction.addSyncCompletion { self.jobQueueRunner.addPersistedJob(jobRecord) }
+
+        let enqueuePromise = Promise<Void>.pending()
+        let sendPromise = Promise<Void>.pending()
+        let jobFutures = TSAttachmentMultisendFutures(
+            enqueuedFuture: enqueuePromise.1,
+            sentFuture: sendPromise.1
+        )
+
+        transaction.addSyncCompletion {
+            let runner = self.jobRunnerFactory.buildRunner(jobFutures)
+            self.jobQueueRunner.addPersistedJob(jobRecord, runner: runner)
+        }
+
+        return .init(
+            enqueuedPromise: enqueuePromise.0,
+            sentPromise: sendPromise.0
+        )
+    }
+}
+
+private class TSAttachmentMultisendFutures {
+    /// Resolved when the attachments are uploaded and sending is enqueued.
+    public let enqueuedFuture: Future<Void>
+    /// Resolved when the message is sent.
+    public let sentFuture: Future<Void>
+
+    init(enqueuedFuture: Future<Void>, sentFuture: Future<Void>) {
+        self.enqueuedFuture = enqueuedFuture
+        self.sentFuture = sentFuture
     }
 }
 
 private class TSAttachmentMultisendJobRunnerFactory: JobRunnerFactory {
-    func buildRunner() -> TSAttachmentMultisendJobRunner { TSAttachmentMultisendJobRunner() }
+
+    func buildRunner() -> TSAttachmentMultisendJobRunner {
+        TSAttachmentMultisendJobRunner(jobFutures: nil)
+    }
+
+    func buildRunner(_ jobFutures: TSAttachmentMultisendFutures?) -> TSAttachmentMultisendJobRunner {
+        TSAttachmentMultisendJobRunner(jobFutures: jobFutures)
+    }
 }
 
 private class TSAttachmentMultisendJobRunner: JobRunner, Dependencies {
+
+    private let jobFutures: TSAttachmentMultisendFutures?
+
+    init(jobFutures: TSAttachmentMultisendFutures?) {
+        self.jobFutures = jobFutures
+    }
+
     private enum Constants {
         static let maxRetries: UInt = 4
     }
 
     func runJobAttempt(_ jobRecord: TSAttachmentMultisendJobRecord) async -> JobAttemptResult {
-        return await .executeBlockWithDefaultErrorHandler(
+        return await JobAttemptResult.executeBlockWithDefaultErrorHandler(
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
             db: DependenciesBridge.shared.db,
@@ -52,7 +108,16 @@ private class TSAttachmentMultisendJobRunner: JobRunner, Dependencies {
         )
     }
 
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {
+        switch result.ranSuccessfullyOrError {
+        case .success:
+            // When this job finishes, the send is enqueued.
+            // Send future resolution is handled within the job.
+            jobFutures?.enqueuedFuture.resolve(())
+        case .failure(let error):
+            jobFutures?.enqueuedFuture.reject(error)
+        }
+    }
 
     private func _runJobAttempt(_ jobRecord: TSAttachmentMultisendJobRecord) async throws {
         try await TSAttachmentMultisendUploader.uploadAttachments(
@@ -64,7 +129,12 @@ private class TSAttachmentMultisendJobRunner: JobRunner, Dependencies {
                     )
                 } ?? []
                 for preparedMessage in uploadedMessages + preparedStoryMessages {
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
+                    let sendPromise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
+                        .promise,
+                        message: preparedMessage,
+                        transaction: tx
+                    )
+                    self.jobFutures?.sentFuture.resolve(on: SyncScheduler(), with: sendPromise)
                 }
                 jobRecord.anyRemove(transaction: tx)
             }

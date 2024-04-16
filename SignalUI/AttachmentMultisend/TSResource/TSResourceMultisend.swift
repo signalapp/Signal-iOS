@@ -6,6 +6,15 @@
 import Foundation
 import SignalServiceKit
 
+public struct TSResourceMultisendResult {
+    /// Resolved when the messages are prepared but before uploading/sending.
+    public let preparedPromise: Promise<[PreparedOutgoingMessage]>
+    /// Resolved when the attachments are uploaded and sending is enqueued.
+    public let enqueuedPromise: Promise<[TSThread]>
+    /// Resolved when the message is sent.
+    public let sentPromise: Promise<[TSThread]>
+}
+
 public class TSResourceMultisend {
 
     private init() {}
@@ -14,7 +23,7 @@ public class TSResourceMultisend {
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment]
-    ) -> Promise<[TSThread]> {
+    ) -> TSResourceMultisendResult {
         return TSAttachmentMultisend.sendApprovedMedia(
             conversations: conversations,
             approvalMessageBody: approvalMessageBody,
@@ -22,36 +31,10 @@ public class TSResourceMultisend {
         )
     }
 
-    public class func sendApprovedMediaFromShareExtension(
-        conversations: [ConversationItem],
-        approvalMessageBody: MessageBody?,
-        approvedAttachments: [SignalAttachment],
-        messagesReadyToSend: @escaping ([PreparedOutgoingMessage]) -> Void
-    ) -> Promise<[TSThread]> {
-        return TSAttachmentMultisend.sendApprovedMediaFromShareExtension(
-            conversations: conversations,
-            approvalMessageBody: approvalMessageBody,
-            approvedAttachments: approvedAttachments,
-            messagesReadyToSend: messagesReadyToSend
-        )
-    }
-
     public class func sendTextAttachment(
         _ textAttachment: UnsentTextAttachment,
         to conversations: [ConversationItem]
-    ) -> Promise<[TSThread]> {
+    ) -> TSResourceMultisendResult {
         return TSAttachmentMultisend.sendTextAttachment(textAttachment, to: conversations)
-    }
-
-    public class func sendTextAttachmentFromShareExtension(
-        _ textAttachment: UnsentTextAttachment,
-        to conversations: [ConversationItem],
-        messagesReadyToSend: @escaping ([PreparedOutgoingMessage]) -> Void
-    ) -> Promise<[TSThread]> {
-        return TSAttachmentMultisend.sendTextAttachmentFromShareExtension(
-            textAttachment,
-            to: conversations,
-            messagesReadyToSend: messagesReadyToSend
-        )
     }
 }

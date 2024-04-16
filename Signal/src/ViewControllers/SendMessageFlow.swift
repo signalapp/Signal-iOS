@@ -361,7 +361,7 @@ extension SendMessageFlow {
                 conversations: conversations,
                 approvalMessageBody: messageBody,
                 approvedAttachments: signalAttachments
-            )
+            ).enqueuedPromise
         }
     }
 

@@ -397,13 +397,13 @@ extension ForwardMessageViewController {
                 conversations: conversations,
                 approvalMessageBody: item.messageBody,
                 approvedAttachments: attachments
-            ).asVoid()
+            ).enqueuedPromise.asVoid()
         } else if let textAttachment = item.textAttachment {
             // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading
             // if the original was sent recently (if not the image could be stale)
             return TSResourceMultisend.sendTextAttachment(
                 textAttachment.asUnsentAttachment(), to: selectedConversations
-            ).asVoid()
+            ).enqueuedPromise.asVoid()
         } else if let messageBody = item.messageBody {
             let linkPreviewDraft = item.linkPreviewDraft
             let nonStorySendPromise = send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
@@ -417,9 +417,9 @@ extension ForwardMessageViewController {
             // Send the text message to any selected story recipients
             // as a text story with default styling.
             let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
-            let storySendPromise = StorySharing.sendTextStory(with: messageBody, linkPreviewDraft: linkPreviewDraft, to: storyConversations)
-
-            return Promise<Void>.when(fulfilled: [nonStorySendPromise, storySendPromise])
+            let storySendResult = StorySharing.sendTextStory(with: messageBody, linkPreviewDraft: linkPreviewDraft, to: storyConversations)
+            let storySendEnqueuedPromise = storySendResult?.enqueuedPromise.asVoid() ?? .value(())
+            return Promise<Void>.when(fulfilled: [nonStorySendPromise, storySendEnqueuedPromise])
         } else {
             return Promise(error: ForwardError.invalidInteraction)
         }
