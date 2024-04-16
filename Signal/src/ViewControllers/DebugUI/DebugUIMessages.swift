@@ -1663,7 +1663,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         }
         label += (") to (" + quotedMessageLabel)
         if let quotedMessageAssetLoader {
-            label += " " + quotedMessageAssetLoader.labelEmoji
+            label += " " + quotedMessageAssetLoader.mimeType
         }
         if !isQuotedMessageIncoming {
             label += actionLabelForHasCaption(

@@ -582,6 +582,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         if !preferences.hasGeneratedThumbnails {
             databaseStorage.asyncRead(
                 block: { transaction in
+                    // TODO: remove this one TSAttachment is killed.
                     TSAttachment.anyEnumerate(transaction: transaction, batched: true) { (_, _) in
                         // no-op. It's sufficient to initWithCoder: each object.
                     }

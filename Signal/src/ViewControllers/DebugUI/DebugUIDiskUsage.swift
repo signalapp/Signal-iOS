@@ -18,35 +18,11 @@ class DebugUIDiskUsage: DebugUIPage, Dependencies {
                          actionBlock: { OWSOrphanDataCleaner.auditAndCleanup(false) }),
             OWSTableItem(title: "Audit & Clean Up",
                          actionBlock: { OWSOrphanDataCleaner.auditAndCleanup(true) }),
-            OWSTableItem(title: "Save All Attachments",
-                         actionBlock: { DebugUIDiskUsage.saveAllAttachments() }),
             OWSTableItem(title: "Clear All Attachment Thumbnails",
                          actionBlock: { DebugUIDiskUsage.clearAllAttachmentThumbnails() }),
             OWSTableItem(title: "Delete Messages older than 3 Months",
                          actionBlock: { DebugUIDiskUsage.deleteOldMessages_3Months() })
         ])
-    }
-
-    // MARK: -
-
-    private static func saveAllAttachments() {
-        databaseStorage.write { transaction in
-            var attachmentStreams: [TSAttachmentStream] = []
-            TSAttachment.anyEnumerate(transaction: transaction) { attachment, _ in
-                guard let attachmentStream = attachment.asResourceStream()?.bridgeStream else { return }
-                attachmentStreams.append(attachmentStream)
-            }
-            Logger.info("Saving \(attachmentStreams.count) attachment streams.")
-
-            // Persist the new localRelativeFilePath property of TSAttachmentStream.
-            // For performance, we want to upgrade all existing attachment streams in
-            // a single transaction.
-            attachmentStreams.forEach { attachmentStream in
-                attachmentStream.anyUpdate(transaction: transaction) { _ in
-                    // Do nothing, rewriting is sufficient.
-                }
-            }
-        }
     }
 
     private static func clearAllAttachmentThumbnails() {

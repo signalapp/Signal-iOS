@@ -382,21 +382,6 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     }
 }
 
-+ (NSString *)emojiForMimeType:(NSString *)contentType
-{
-    if ([MimeTypeUtil isSupportedImageMimeType:contentType]) {
-        return @"📷";
-    } else if ([MimeTypeUtil isSupportedVideoMimeType:contentType]) {
-        return @"🎥";
-    } else if ([MimeTypeUtil isSupportedAudioMimeType:contentType]) {
-        return @"🎧";
-    } else if ([MimeTypeUtil isSupportedMaybeAnimatedMimeType:contentType]) {
-        return @"🎡";
-    } else {
-        return @"📎";
-    }
-}
-
 - (nullable NSString *)captionForContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
     return _caption;

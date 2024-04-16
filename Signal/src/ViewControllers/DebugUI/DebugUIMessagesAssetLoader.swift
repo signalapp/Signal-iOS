@@ -27,7 +27,6 @@ class DebugUIMessagesAssetLoader {
     private(set) var prepare: ((@escaping Completion) -> Void)?
 
     private(set) var filePath: String?
-    var labelEmoji: String { TSAttachment.emoji(forMimeType: mimeType) }
 
     // MARK: - Public
 

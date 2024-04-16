@@ -376,7 +376,6 @@ class EditManagerTests: SSKBaseTestSwift {
         let targetMessage: TSMessage?
         var editMessageCopy: TSMessage?
         var oldMessageCopy: TSMessage?
-        var attachment: TSAttachment?
 
         init(targetMessage: TSMessage?) {
             self.targetMessage = targetMessage
