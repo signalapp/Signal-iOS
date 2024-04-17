@@ -219,16 +219,4 @@ if __name__ == "__main__":
     if os.path.exists(swift_bridging_path):
         shutil.rmtree(swift_bridging_path)
 
-    # os.mkdir(swift_bridging_path)
-
-    pods_dir_path = os.path.abspath(os.path.join(src_dir_path, "Pods"))
-    for dirname in os.listdir(pods_dir_path):
-        if dirname.endswith("xcodeproj"):
-            continue
-        pod_dir_path = os.path.abspath(os.path.join(pods_dir_path, dirname))
-        if not os.path.isdir(pod_dir_path):
-            continue
-        process_dir(pods_dir_path, dirname, swift_bridging_path)
-
     process_dir(src_dir_path, "SignalServiceKit", swift_bridging_path)
-    process_dir(src_dir_path, "Signal", swift_bridging_path)
