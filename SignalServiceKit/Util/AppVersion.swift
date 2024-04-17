@@ -10,20 +10,25 @@ public protocol AppVersion {
     var hardwareInfoString: String { get }
     var iosVersionString: String { get }
 
-    /// The version of the app when it was first launched. If this is the first launch, this will
-    /// match `currentAppVersion`.
+    /// The version of the app when it was first launched. If this is the first
+    /// launch, this will match `currentAppVersion`.
     var firstAppVersion: String { get }
 
-    /// The version of the app the last time it was launched. `nil` if the app hasn't been launched.
+    /// The version of the app the last time it was launched. `nil` if the app
+    /// hasn't been launched.
     var lastAppVersion: String? { get }
 
-    /// Internally, we use a version format with 4 dotted values
-    /// to uniquely identify builds. The first three values are the
-    /// the release version, the fourth value is the last value from
-    /// the build version.
+    /// Internally, we use a version format with 4 dotted values to uniquely
+    /// identify builds. The first three values are the the release version, the
+    /// fourth value is the last value from the build version.
     ///
     /// For example, `3.4.5.6`.
     var currentAppVersion: String { get }
+
+    /// A user-visible "pretty" version number.
+    ///
+    /// Never sort or compare using this version number.
+    var prettyAppVersion: String { get }
 
     var lastCompletedLaunchAppVersion: String? { get }
     var lastCompletedLaunchMainAppVersion: String? { get }
@@ -85,22 +90,24 @@ public class AppVersionImpl: AppVersion {
 
     private let userDefaults: UserDefaults
 
-    /// The version of the app when it was first launched. If this is the first launch, this will
-    /// match `currentAppVersion`.
+    /// The version of the app when it was first launched. If this is the first
+    /// launch, this will match `currentAppVersion`.
     public var firstAppVersion: String {
         return userDefaults.string(forKey: firstVersionKey) ?? currentAppVersion
     }
 
-    /// The version of the app the last time it was launched. `nil` if the app hasn't been launched.
+    /// The version of the app the last time it was launched. `nil` if the app
+    /// hasn't been launched.
     public var lastAppVersion: String? { userDefaults.string(forKey: lastVersionKey) }
 
-    /// Internally, we use a version format with 4 dotted values
-    /// to uniquely identify builds. The first three values are the
-    /// the release version, the fourth value is the last value from
-    /// the build version.
+    /// Internally, we use a version format with 4 dotted values to uniquely
+    /// identify builds. The first three values are the the release version, the
+    /// fourth value is the last value from the build version.
     ///
     /// For example, `3.4.5.6`.
     public let currentAppVersion: String
+
+    public let prettyAppVersion: String
 
     public var lastCompletedLaunchAppVersion: String? {
         return userDefaults.string(forKey: lastCompletedLaunchVersionKey)
@@ -138,8 +145,13 @@ public class AppVersionImpl: AppVersion {
 
     private init(bundle: Bundle, userDefaults: UserDefaults) {
         let marketingVersion = bundle.string(forInfoDictionaryKey: "CFBundleShortVersionString")
+        var marketingVersionComponents = marketingVersion.components(separatedBy: ".")
+        while marketingVersionComponents.count < 3 {
+            marketingVersionComponents.append("0")
+        }
         let buildNumber = bundle.string(forInfoDictionaryKey: "CFBundleVersion")
-        self.currentAppVersion = "\(marketingVersion).\(buildNumber)"
+        self.currentAppVersion = "\(marketingVersionComponents.joined(separator: ".")).\(buildNumber)"
+        self.prettyAppVersion = "\(marketingVersion) (\(buildNumber))"
 
         if
             let rawBuildDetails = bundle.app.object(forInfoDictionaryKey: "BuildDetails"),
@@ -294,6 +306,8 @@ public class MockAppVerion: AppVersion {
     public var lastAppVersion: String? = "1.0"
 
     public var currentAppVersion: String = "1.0.0.0"
+
+    public var prettyAppVersion: String = "1.0 (0)"
 
     public var lastCompletedLaunchAppVersion: String?
 

@@ -80,8 +80,10 @@ final class HelpViewController: OWSTableViewController2 {
             "SETTINGS_COPYRIGHT",
             comment: "Footer for the 'about' help section"
         )
-        aboutSection.add(.copyableItem(label: OWSLocalizedString("SETTINGS_VERSION", comment: ""),
-                                       value: AppVersionImpl.shared.currentAppVersion))
+        aboutSection.add(.copyableItem(
+            label: OWSLocalizedString("SETTINGS_VERSION", comment: ""),
+            value: AppVersionImpl.shared.prettyAppVersion
+        ))
         aboutSection.add(.disclosureItem(
             withText: OWSLocalizedString("SETTINGS_LEGAL_TERMS_CELL", comment: ""),
             actionBlock: { [weak self] in

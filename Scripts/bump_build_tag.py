@@ -26,6 +26,9 @@ class Version:
         self.patch = patch
 
     def pretty(self):
+        return self.pretty2() if self.patch == 0 else self.pretty3()
+
+    def pretty3(self):
         return f"{self.major}.{self.minor}.{self.patch}"
 
     def pretty2(self):
