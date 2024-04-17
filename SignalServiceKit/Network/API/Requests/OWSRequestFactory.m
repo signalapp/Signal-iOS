@@ -276,7 +276,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     NSString *path = @"v1/certificate/delivery";
     if (uuidOnly) {
-        path = [path stringByAppendingString:@"&includeE164=false"];
+        path = [path stringByAppendingString:@"?includeE164=false"];
     }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
