@@ -42,10 +42,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     public func messageWasSent() {
         AssertIsOnMainThread()
 
-        if DebugFlags.internalLogging {
-            Logger.info("")
-        }
-
         self.lastMessageSentDate = Date()
 
         loadCoordinator.clearUnreadMessagesIndicator()

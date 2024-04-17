@@ -118,7 +118,6 @@ extension GroupCallPeekClient: HTTPDelegate {
      */
     public func sendRequest(requestId: UInt32, request: HTTPRequest) {
         AssertIsOnMainThread()
-        logger.info("sendRequest")
 
         let session = OWSURLSession(
             securityPolicy: OWSURLSession.signalServiceSecurityPolicy,

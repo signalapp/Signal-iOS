@@ -334,8 +334,6 @@ extension CLVTableDataSource: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AssertIsOnMainThread()
 
-        Logger.info("\(indexPath)")
-
         guard let viewController = self.viewController else {
             owsFailDebug("Missing viewController.")
             return

@@ -882,7 +882,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
         func mutate<T>(userData: UpdateUserData?, _ block: (inout State) -> (T)) -> T {
             dispatchPrecondition(condition: .onQueue(.main))
-            return Bench(title: "Sync mutation [\(depthReport)]", logInProduction: true) {
+            return Bench(title: "Sync mutation [\(depthReport)]", logIfLongerThan: 0.1, logInProduction: true) {
                 return self._mutate(userData: userData, block)
             }
         }

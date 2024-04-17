@@ -69,8 +69,6 @@ public class ReactionManager: NSObject {
             throw OWSAssertionError("Can't send reaction to thread.")
         }
 
-        Logger.info("Sending reaction, isRemoving: \(isRemoving)")
-
         guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
             throw OWSAssertionError("missing local address")
         }

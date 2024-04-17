@@ -104,8 +104,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private var viewMode = ViewMode.idle {
         didSet {
-            Logger.info("viewMode: \(viewMode)")
-
             updateContents()
         }
     }
@@ -155,8 +153,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func didBecomeActive() {
         AssertIsOnMainThread()
 
-        Logger.info("")
-
         // Prod cells to try to load when app becomes active.
         ensureCellState()
     }
@@ -164,8 +160,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     @objc
     private func reachabilityChanged() {
         AssertIsOnMainThread()
-
-        Logger.info("")
 
         // Prod cells to try to load when connectivity changes.
         ensureCellState()
@@ -429,7 +423,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         guard cell.isDisplayingPreview else {
             // we don't want to let the user blindly select a gray cell
-            Logger.debug("ignoring selection of cell with no preview")
             return nil
         }
 
@@ -637,7 +630,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             owsFailDebugUnlessNetworkFailure(error)
 
             guard let strongSelf = self else { return }
-            Logger.info("search failed.")
+            Logger.warn("search failed.")
             // TODO: Present this error to the user.
             strongSelf.viewMode = .error
         }

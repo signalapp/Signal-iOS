@@ -186,7 +186,6 @@ extension ChatListViewController {
         }
 
         if let threadId = changedThreadId {
-            Logger.info("[Scroll Perf Debug] Scheduling load for threadId \(threadId) because whitelist did change.")
             self.loadCoordinator.scheduleLoad(updatedThreadIds: Set([threadId]))
         }
     }
@@ -206,9 +205,6 @@ extension ChatListViewController {
         }
 
         if let changedThreadId = changedThreadId {
-            if DebugFlags.internalLogging {
-                Logger.info("[Scroll Perf Debug] Scheduling load for threadId \(changedThreadId) because other profile did change.")
-            }
             self.loadCoordinator.scheduleLoad(updatedThreadIds: Set([changedThreadId]))
         }
     }
@@ -244,9 +240,6 @@ extension ChatListViewController: DatabaseChangeDelegate {
         AssertIsOnMainThread()
 
         if databaseChanges.didUpdateModel(collection: TSPaymentModel.collection()) {
-            if DebugFlags.internalLogging {
-                Logger.info("[Scroll Perf Debug] TSPaymentModel did update")
-            }
             updateUnreadPaymentNotificationsCountWithSneakyTransaction()
         }
 

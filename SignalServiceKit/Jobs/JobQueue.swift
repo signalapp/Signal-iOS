@@ -223,7 +223,9 @@ public extension JobQueue {
                 return
             }
 
-            Logger.info("Pruning stale \(JobRecordType.jobRecordType.jobRecordLabel) job records: \(staleRecords.count).")
+            if !staleRecords.isEmpty {
+                Logger.info("Pruning stale \(JobRecordType.jobRecordType.jobRecordLabel) job records: \(staleRecords.count).")
+            }
 
             for jobRecord in staleRecords {
                 jobRecord.anyRemove(transaction: transaction)

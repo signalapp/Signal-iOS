@@ -220,10 +220,8 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
         }
 
         return firstly {
-            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] waitForFetchingAndProcessing") }
             return self.messageProcessor.waitForFetchingAndProcessing()
         }.map(on: DispatchQueue.global()) { () throws -> TSGroupThread in
-            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] getting group thread") }
             return try self.databaseStorage.read { transaction throws in
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                     throw GroupsV2Error.shouldDiscard
@@ -232,35 +230,27 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
             }
         }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread) throws -> Promise<(TSGroupThread, UInt32)> in
             // Get latest group state from service and verify that this update is still necessary.
-            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] about to return promise for getting snapshot") }
             return firstly { () throws -> Promise<GroupV2Snapshot> in
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
                 }
-                if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetch snapshot") }
                 return Promise.wrapAsync {
                     try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
                 }
             }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> (TSGroupThread, UInt32) in
                 guard groupV2Snapshot.groupMembership.isFullMember(localAci) else {
                     // We're not a full member, no need to update profile key.
-                    if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] redundant change A") }
                     throw GroupsV2Error.redundantChange
                 }
                 guard groupV2Snapshot.profileKeys[localAci] != profileKeyData else {
                     // Group state already has our current key.
-                    if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] redundant change B") }
                     throw GroupsV2Error.redundantChange
                 }
                 let checkedRevision = groupV2Snapshot.revision
                 return (groupThread, checkedRevision)
             }
         }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread, checkedRevision: UInt32) throws -> Promise<Void> in
-            if DebugFlags.internalLogging {
-                Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localAci: \(localAci), checkedRevision: \(checkedRevision)")
-            } else {
-                Logger.info("Updating profile key for group.")
-            }
+            Logger.info("Updating profile key for group.")
 
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 owsFailDebug("Invalid group model.")
@@ -268,7 +258,6 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
             }
 
             return firstly {
-                if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] ensure local profile has commitment if necessary") }
                 return Promise.wrapAsync {
                     try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
                 }
@@ -288,22 +277,18 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 // waitForFetchingAndProcessing above.
                 let groupId = groupModel.groupId
                 let groupSecretParamsData = groupModel.secretParamsData
-                if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] try to refresh v2 group up to curr revision immed") }
                 return Self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
                                                                                              groupSecretParamsData: groupSecretParamsData).asVoid()
             }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
-                if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] update profile key") }
                 return GroupManager.updateLocalProfileKey(
                     groupModel: groupModel
                 )
             }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
-                if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] check update really worked") }
                 // Confirm that the updated snapshot has the new profile key.
                 return firstly(on: DispatchQueue.global()) { () -> Promise<GroupV2Snapshot> in
                     guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                         throw OWSAssertionError("Invalid group model.")
                     }
-                    if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetch snapshot again") }
                     return Promise.wrapAsync {
                         try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
                     }

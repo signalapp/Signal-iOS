@@ -69,7 +69,7 @@ class MainAppContext: NSObject, AppContext {
         self.reportedApplicationState = .inactive
         self.appForegroundTime = Date()
 
-        BenchManager.bench(title: "Slow WillEnterForeground", logIfLongerThan: 0.01, logInProduction: true) {
+        BenchManager.bench(title: "Slow WillEnterForeground", logIfLongerThan: 0.2, logInProduction: true) {
             NotificationCenter.default.post(name: .OWSApplicationWillEnterForeground, object: nil)
         }
     }
@@ -80,7 +80,7 @@ class MainAppContext: NSObject, AppContext {
 
         self.reportedApplicationState = .background
 
-        BenchManager.bench(title: "Slow DidEnterBackground", logIfLongerThan: 0.01, logInProduction: true) {
+        BenchManager.bench(title: "Slow DidEnterBackground", logIfLongerThan: 0.1, logInProduction: true) {
             NotificationCenter.default.post(name: .OWSApplicationDidEnterBackground, object: nil)
         }
     }
@@ -91,7 +91,7 @@ class MainAppContext: NSObject, AppContext {
 
         self.reportedApplicationState = .inactive
 
-        BenchManager.bench(title: "Slow WillResignActive", logIfLongerThan: 0.01, logInProduction: true) {
+        BenchManager.bench(title: "Slow WillResignActive", logIfLongerThan: 0.1, logInProduction: true) {
             NotificationCenter.default.post(name: .OWSApplicationWillResignActive, object: nil)
         }
     }
@@ -102,7 +102,7 @@ class MainAppContext: NSObject, AppContext {
 
         self.reportedApplicationState = .active
 
-        BenchManager.bench(title: "Slow DidBecomeActive", logIfLongerThan: 0.01, logInProduction: true) {
+        BenchManager.bench(title: "Slow DidBecomeActive", logIfLongerThan: 0.1, logInProduction: true) {
             NotificationCenter.default.post(name: .OWSApplicationDidBecomeActive, object: nil)
         }
 

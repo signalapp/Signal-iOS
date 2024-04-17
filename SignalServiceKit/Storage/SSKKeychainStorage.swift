@@ -73,7 +73,7 @@ public class KeychainStorageImpl: KeychainStorage {
             kSecValueData as String: dataValue,
         ]
 
-        Logger.info("Inserting \(key)")
+        Logger.info("Inserting \(service)/\(key)")
 
         // Insert
         do {
@@ -89,7 +89,7 @@ public class KeychainStorageImpl: KeychainStorage {
             }
         }
 
-        Logger.info("Updating \(key)")
+        Logger.info("Updating \(service)/\(key)")
 
         // or Update; if it already exists
         do {
@@ -104,7 +104,7 @@ public class KeychainStorageImpl: KeychainStorage {
     }
 
     public func removeValue(service: String, key: String) throws {
-        Logger.info("Removing \(key)")
+        Logger.info("Removing \(service)/\(key)")
         let query = self.baseQuery(service: service, key: key)
         let status = SecItemDelete(query as CFDictionary)
         switch status {

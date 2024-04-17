@@ -39,7 +39,7 @@ extension OWSOrphanDataCleaner {
                 return true
             }
             guard lastCleaningVersion == currentAppVersion else {
-                Logger.info("Performing orphan data cleanup because we're on a different app version (\(currentAppVersion)")
+                Logger.info("Performing orphan data cleanup because we're on a different app version")
                 return true
             }
 

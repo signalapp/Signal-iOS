@@ -152,9 +152,6 @@ extension ConversationViewController: MessageActionsDelegate {
     public func populateReplyForMessage(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
-        if DebugFlags.internalLogging {
-            Logger.info("")
-        }
         guard let inputToolbar = inputToolbar else {
             owsFailDebug("Missing inputToolbar.")
             return

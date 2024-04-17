@@ -807,7 +807,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     @discardableResult
     public func refresh(account: AuthedAccount = .implicit()) -> Promise<RemoteConfig> {
         AssertIsOnMainThread()
-        Logger.info("Refreshing remote config.")
         lastAttempt = Date()
 
         let promise = firstly(on: DispatchQueue.global()) {
