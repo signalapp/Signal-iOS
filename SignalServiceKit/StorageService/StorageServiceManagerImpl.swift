@@ -809,7 +809,7 @@ class StorageServiceOperation: OWSOperation {
                 if case .manifestDecryptionFailed(let previousManifestVersion) = storageError {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
-                    if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
+                    if self.isPrimaryDevice {
                         Logger.warn("Manifest decryption failed, recreating manifest.")
                         return self.createNewManifest(version: previousManifestVersion + 1)
                     }
@@ -826,7 +826,7 @@ class StorageServiceOperation: OWSOperation {
                     }
                 } else if
                     case .manifestProtoDeserializationFailed(let previousManifestVersion) = storageError,
-                    DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
+                    self.isPrimaryDevice
                 {
                     // If decryption succeeded but proto deserialization failed, we somehow ended up with
                     // byte garbage in storage service. Our only recourse is to throw everything away and
@@ -1177,7 +1177,7 @@ class StorageServiceOperation: OWSOperation {
                 if case .itemDecryptionFailed = storageError {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
-                    if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
+                    if self.isPrimaryDevice {
                         Logger.warn("Item decryption failed, recreating manifest.")
                         return self.createNewManifest(version: manifest.version + 1)
                     }
@@ -1194,7 +1194,7 @@ class StorageServiceOperation: OWSOperation {
                     }
                 } else if
                     case .itemProtoDeserializationFailed = storageError,
-                    DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
+                    self.isPrimaryDevice
                 {
                     // If decryption succeeded but proto deserialization failed, we somehow ended up with
                     // byte garbage in storage service. Our only recourse is to throw everything away and
