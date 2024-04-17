@@ -98,7 +98,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
 
     lazy var nonCallKitAdaptee = NonCallKitCallUIAdaptee()
 
-    lazy var callKitAdaptee: CallKitCallUIAdaptee? = {
+    lazy var callKitAdaptee: CallKitCallUIAdaptee? = { () -> CallKitCallUIAdaptee? in
         if Platform.isSimulator {
             // CallKit doesn't seem entirely supported in simulator.
             // e.g. you can't receive calls in the call screen.
@@ -110,24 +110,27 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
             return nil
         } else {
             Logger.info("using callkit adaptee for iOS11+")
-            let showNames = preferences.notificationPreviewType != .noNameNoPreview
-            let useSystemCallLog = preferences.isSystemCallLogEnabled
+            let (showNames, useSystemCallLog) = databaseStorage.read { tx in
+                return (
+                    preferences.notificationPreviewType(tx: tx) != .noNameNoPreview,
+                    preferences.isSystemCallLogEnabled(tx: tx)
+                )
+            }
 
-            return CallKitCallUIAdaptee(showNamesOnCallScreen: showNames,
-                                        useSystemCallLog: useSystemCallLog)
+            return CallKitCallUIAdaptee(
+                showNamesOnCallScreen: showNames,
+                useSystemCallLog: useSystemCallLog
+            )
         }
     }()
 
     var defaultAdaptee: CallUIAdaptee { callKitAdaptee ?? nonCallKitAdaptee }
 
     func adaptee(for call: SignalCall) -> CallUIAdaptee {
-        guard call.isIndividualCall else {
-            return defaultAdaptee
+        if call.isIndividualCall, call.individualCall.callAdapterType == .nonCallKit {
+            return nonCallKitAdaptee
         }
-        switch call.individualCall.callAdapterType {
-        case .nonCallKit: return nonCallKitAdaptee
-        case .default: return defaultAdaptee
-        }
+        return defaultAdaptee
     }
 
     public override init() {

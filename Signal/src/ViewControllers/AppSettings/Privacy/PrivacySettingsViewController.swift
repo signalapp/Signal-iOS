@@ -211,7 +211,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                     "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
                     comment: "Short table cell label"
                 ),
-                isOn: { Self.preferences.isSystemCallLogEnabled },
+                isOn: { [unowned self] in
+                    return self.databaseStorage.read(block: self.preferences.isSystemCallLogEnabled(tx:))
+                },
                 target: self,
                 selector: #selector(didToggleEnableSystemCallLogSwitch)
             ))

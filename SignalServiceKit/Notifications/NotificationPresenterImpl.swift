@@ -194,11 +194,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
         SwiftSingletons.register(self)
     }
 
-    var previewType: NotificationType {
-        return preferences.notificationPreviewType
+    func previewType(tx: SDSAnyReadTransaction) -> NotificationType {
+        return preferences.notificationPreviewType(tx: tx)
     }
 
-    var shouldShowActions: Bool {
+    static func shouldShowActions(for previewType: NotificationType) -> Bool {
         return previewType == .namePreview
     }
 
@@ -210,30 +210,39 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     // MARK: - Calls
 
-    public func presentIncomingCall(_ call: CallNotificationInfo,
-                                    caller: SignalServiceAddress) {
-        let thread = call.thread
+    private struct CallPreview {
+        let notificationTitle: String
+        let threadIdentifier: String
+        let shouldShowActions: Bool
+    }
 
-        let notificationTitle: String?
-        let threadIdentifier: String?
-        let callerNameForGroupCall: String?
+    private func fetchCallPreview(thread: TSThread, tx: SDSAnyReadTransaction) -> CallPreview? {
+        let previewType = self.previewType(tx: tx)
         switch previewType {
         case .noNameNoPreview:
-            notificationTitle = nil
-            threadIdentifier = nil
-            callerNameForGroupCall = nil
+            return nil
         case .nameNoPreview, .namePreview:
-            (notificationTitle, callerNameForGroupCall) = databaseStorage.read { transaction in
-                let threadName = contactManager.displayName(for: thread, transaction: transaction)
-                let callerNameForGroupCall: String?
-                if thread.isGroupThread {
-                    callerNameForGroupCall = contactManager.displayName(for: caller, tx: transaction).resolvedValue()
-                } else {
-                    callerNameForGroupCall = nil
-                }
-                return (threadName, callerNameForGroupCall)
+            return CallPreview(
+                notificationTitle: contactManager.displayName(for: thread, transaction: tx),
+                threadIdentifier: thread.uniqueId,
+                shouldShowActions: Self.shouldShowActions(for: previewType)
+            )
+        }
+    }
+
+    public func presentIncomingCall(_ call: CallNotificationInfo, caller: SignalServiceAddress) {
+        let thread = call.thread
+
+        let callPreview: CallPreview?
+        let callerNameForGroupCall: String?
+        (callPreview, callerNameForGroupCall) = databaseStorage.read { tx in
+            guard let callPreview = self.fetchCallPreview(thread: thread, tx: tx) else {
+                return (nil, nil)
             }
-            threadIdentifier = thread.uniqueId
+            return (
+                callPreview,
+                thread.isGroupThread ? contactManager.displayName(for: caller, tx: tx).resolvedValue() :  nil
+            )
         }
 
         let notificationBody: String
@@ -254,8 +263,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         ]
 
         var interaction: INInteraction?
-        if previewType != .noNameNoPreview,
-           let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
+        if callPreview != nil, let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -264,9 +272,9 @@ public class NotificationPresenterImpl: NotificationPresenter {
         performNotificationActionAsync { completion in
             self.presenter.notify(
                 category: .incomingCall,
-                title: notificationTitle,
+                title: callPreview?.notificationTitle,
                 body: notificationBody,
-                threadIdentifier: threadIdentifier,
+                threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
                 interaction: interaction,
                 sound: nil,
@@ -304,20 +312,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    public func presentMissedCall(_ call: CallNotificationInfo,
-                                  caller: SignalServiceAddress,
-                                  sentAt timestamp: Date) {
+    public func presentMissedCall(
+        _ call: CallNotificationInfo,
+        caller: SignalServiceAddress,
+        sentAt timestamp: Date
+    ) {
         let thread = call.thread
-
-        let notificationTitle: String?
-        let threadIdentifier: String?
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-            threadIdentifier = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
-            threadIdentifier = thread.uniqueId
+        let callPreview = databaseStorage.read { tx in
+            return self.fetchCallPreview(thread: thread, tx: tx)
         }
 
         let timestampClassification = TimestampClassification(timestamp)
@@ -375,13 +377,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: caller)
 
-        let category: AppNotificationCategory = (shouldShowActions
+        let category: AppNotificationCategory = (
+            callPreview?.shouldShowActions == true
             ? .missedCallWithActions
-            : .missedCallWithoutActions)
+            : .missedCallWithoutActions
+        )
 
         var interaction: INInteraction?
-        if previewType != .noNameNoPreview,
-           let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
+        if callPreview != nil, let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -391,9 +394,9 @@ public class NotificationPresenterImpl: NotificationPresenter {
             let sound = self.requestSound(thread: thread)
             self.presenter.notify(
                 category: category,
-                title: notificationTitle,
+                title: callPreview?.notificationTitle,
                 body: notificationBody,
-                threadIdentifier: threadIdentifier,
+                threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
                 interaction: interaction,
                 sound: sound,
@@ -407,19 +410,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
         call: CallNotificationInfo,
         caller: SignalServiceAddress
     ) {
-
         let thread = call.thread
-
-        let notificationTitle: String?
-        let threadIdentifier: String?
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-            threadIdentifier = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
-            threadIdentifier = thread.uniqueId
+        let callPreview = databaseStorage.read { tx in
+            return self.fetchCallPreview(thread: thread, tx: tx)
         }
+
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId
@@ -429,9 +424,9 @@ public class NotificationPresenterImpl: NotificationPresenter {
             let sound = self.requestSound(thread: thread)
             self.presenter.notify(
                 category: .missedCallFromNoLongerVerifiedIdentity,
-                title: notificationTitle,
+                title: callPreview?.notificationTitle,
                 body: notificationBody,
-                threadIdentifier: threadIdentifier,
+                threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
                 interaction: nil,
                 sound: sound,
@@ -445,32 +440,26 @@ public class NotificationPresenterImpl: NotificationPresenter {
         call: CallNotificationInfo,
         caller: SignalServiceAddress
     ) {
-
         let thread = call.thread
-
-        let notificationTitle: String?
-        let threadIdentifier: String?
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-            threadIdentifier = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
-            threadIdentifier = thread.uniqueId
+        let callPreview = databaseStorage.read { tx in
+            return self.fetchCallPreview(thread: thread, tx: tx)
         }
+
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
         let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: caller)
 
-        let category: AppNotificationCategory = (shouldShowActions
+        let category: AppNotificationCategory = (
+            callPreview?.shouldShowActions == true
             ? .missedCallWithActions
-            : .missedCallWithoutActions)
+            : .missedCallWithoutActions
+        )
         performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
             self.presenter.notify(
                 category: category,
-                title: notificationTitle,
+                title: callPreview?.notificationTitle,
                 body: notificationBody,
-                threadIdentifier: threadIdentifier,
+                threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
                 interaction: nil,
                 sound: sound,
@@ -587,7 +576,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forIncomingMessage incomingMessage: TSIncomingMessage,
         editTarget: TSIncomingMessage?,
         thread: TSThread,
-        transaction: SDSAnyReadTransaction) {
+        transaction: SDSAnyReadTransaction
+    ) {
 
         guard canNotify(for: incomingMessage, thread: thread, transaction: transaction) else {
             return
@@ -599,6 +589,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let messageText = rawMessageText.filterStringForDisplay()
 
         let senderName = contactManager.displayName(for: incomingMessage.authorAddress, tx: transaction).resolvedValue()
+
+        let previewType = self.previewType(tx: transaction)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -652,7 +644,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let category: AppNotificationCategory
         if didIdentityChange {
             category = .incomingMessageFromNoLongerVerifiedIdentity
-        } else if !shouldShowActions {
+        } else if !Self.shouldShowActions(for: previewType) {
             category = .incomingMessageWithoutActions
         } else if incomingMessage.isGroupStoryReply {
             category = .incomingGroupStoryReply
@@ -711,16 +703,21 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    public func notifyUser(forReaction reaction: OWSReaction,
-                           onOutgoingMessage message: TSOutgoingMessage,
-                           thread: TSThread,
-                           transaction: SDSAnyReadTransaction) {
+    public func notifyUser(
+        forReaction reaction: OWSReaction,
+        onOutgoingMessage message: TSOutgoingMessage,
+        thread: TSThread,
+        transaction: SDSAnyReadTransaction
+    ) {
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
-        // Reaction notifications only get displayed if we can
-        // include the reaction details, otherwise we don't
-        // disturb the user for a non-message
-        guard previewType == .namePreview else { return }
+        // Reaction notifications only get displayed if we can include the reaction
+        // details, otherwise we don't disturb the user for a non-message
+        let previewType = self.previewType(tx: transaction)
+        guard previewType == .namePreview else {
+            return
+        }
+        owsAssert(Self.shouldShowActions(for: previewType))
 
         let senderName = contactManager.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
 
@@ -801,8 +798,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let category: AppNotificationCategory
         if didIdentityChange {
             category = .incomingMessageFromNoLongerVerifiedIdentity
-        } else if !shouldShowActions {
-            category = .incomingMessageWithoutActions
         } else {
             category = (
                 thread.canSendChatMessagesToThread()
@@ -817,8 +812,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         ]
 
         var interaction: INInteraction?
-        if previewType != .noNameNoPreview,
-           let intent = thread.generateSendMessageIntent(context: .senderAddress(reaction.reactor), transaction: transaction) {
+        if let intent = thread.generateSendMessageIntent(context: .senderAddress(reaction.reactor), transaction: transaction) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -840,12 +834,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func notifyForFailedSend(inThread thread: TSThread) {
-        let notificationTitle: String?
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
+        let notificationTitle: String? = databaseStorage.read { tx in
+            switch self.previewType(tx: tx) {
+            case .noNameNoPreview:
+                return nil
+            case .nameNoPreview, .namePreview:
+                return contactManager.displayName(for: thread, transaction: tx)
+            }
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
@@ -901,12 +896,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func notifyForGroupCallSafetyNumberChange(inThread thread: TSThread, presentAtJoin: Bool) {
-        let notificationTitle: String?
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = databaseStorage.read { tx in contactManager.displayName(for: thread, transaction: tx) }
+        let notificationTitle: String? = databaseStorage.read { tx in
+            switch previewType(tx: tx) {
+            case .noNameNoPreview:
+                return nil
+            case .nameNoPreview, .namePreview:
+                return contactManager.displayName(for: thread, transaction: tx)
+            }
         }
 
         let notificationBody = (
@@ -1008,9 +1004,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
     ) {
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
+        let previewType = self.previewType(tx: transaction)
+
         let notificationTitle: String?
         let threadIdentifier: String?
-        switch self.previewType {
+        switch previewType {
         case .noNameNoPreview:
             notificationTitle = nil
             threadIdentifier = nil

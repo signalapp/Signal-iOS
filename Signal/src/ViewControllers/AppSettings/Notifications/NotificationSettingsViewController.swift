@@ -62,7 +62,9 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         )
         notificationContentSection.add(.disclosureItem(
             withText: OWSLocalizedString("NOTIFICATIONS_SHOW", comment: ""),
-            detailText: preferences.notificationPreviewType.displayName,
+            detailText: Self.databaseStorage.read { tx in
+                return preferences.notificationPreviewType(tx: tx).displayName
+            },
             actionBlock: { [weak self] in
                 let vc = NotificationSettingsContentViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)

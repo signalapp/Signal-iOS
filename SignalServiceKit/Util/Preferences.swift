@@ -268,8 +268,8 @@ public class Preferences: NSObject {
 
     // MARK: Calls
 
-    public var isSystemCallLogEnabled: Bool {
-        bool(forKey: .systemCallLogEnabled, defaultValue: true)
+    public func isSystemCallLogEnabled(tx: SDSAnyReadTransaction) -> Bool {
+        return keyValueStore.getBool(Key.systemCallLogEnabled.rawValue, defaultValue: true, transaction: tx)
     }
 
     public func setIsSystemCallLogEnabled(_ value: Bool) {
@@ -333,8 +333,6 @@ public class Preferences: NSObject {
 
     // MARK: Notification Preferences
 
-    private var cachedNotificationPreviewType = Atomic<NotificationType?>(wrappedValue: nil)
-
     public var soundInForeground: Bool {
         bool(forKey: .playSoundInForeground, defaultValue: true)
     }
@@ -343,19 +341,16 @@ public class Preferences: NSObject {
         setBool(value, forKey: .playSoundInForeground)
     }
 
-    public var notificationPreviewType: NotificationType {
-        if let cachedValue = cachedNotificationPreviewType.wrappedValue {
-            return cachedValue
-        }
-        let previewTypeRawValue = uint(forKey: .notificationPreviewType, defaultValue: NotificationType.namePreview.rawValue)
-        let result = NotificationType(rawValue: previewTypeRawValue) ?? .namePreview
-        cachedNotificationPreviewType.wrappedValue = result
-        return result
+    public func notificationPreviewType(tx: SDSAnyReadTransaction) -> NotificationType {
+        let rawValue = keyValueStore.getUInt(
+            Key.notificationPreviewType.rawValue,
+            transaction: tx
+        )
+        return rawValue.flatMap(NotificationType.init(rawValue:)) ?? .namePreview
     }
 
     public func setNotificationPreviewType(_ value: NotificationType) {
         setUInt(value.rawValue, forKey: .notificationPreviewType)
-        cachedNotificationPreviewType.wrappedValue = value
     }
 
     // MARK: Push Tokens
