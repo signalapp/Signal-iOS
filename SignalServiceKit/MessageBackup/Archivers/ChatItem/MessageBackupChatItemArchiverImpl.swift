@@ -204,8 +204,12 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
 
         chatItem.item = details.chatItemType
         chatItem.directionalDetails = details.directionalDetails
-        chatItem.expireStartDate = details.expireStartDate
-        chatItem.expiresInMs = details.expiresInMs
+        if let expireStartDate = details.expireStartDate, expireStartDate > 0 {
+            chatItem.expireStartDate = expireStartDate
+        }
+        if let expiresInMs = details.expiresInMs, expiresInMs > 0 {
+            chatItem.expiresInMs = expiresInMs
+        }
         chatItem.revisions = details.revisions
 
         let error = Self.writeFrameToStream(
