@@ -349,7 +349,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             let certificate = try SenderCertificate(certificateData)
 
             guard isValidCertificate(certificate) else {
-                Logger.warn("Current sender certificate is not valid.")
+                Logger.info("Existing sender certificate isn't valid. Ignoring it and fetching a new one...")
                 return nil
             }
 
@@ -455,7 +455,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         guard sender.senderAci == localIdentifiers!.aci else {
-            Logger.warn("Sender certificate has incorrect ACI")
+            Logger.error("Sender certificate has incorrect ACI")
             return false
         }
 
@@ -465,11 +465,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let nowMs = NSDate.ows_millisecondTimeStamp()
         let anHourFromNowMs = nowMs + kHourInMs
 
-        if case .some(true) = try? certificate.validate(trustRoot: trustRoot, time: anHourFromNowMs) {
-            return true
+        guard case .some(true) = try? certificate.validate(trustRoot: trustRoot, time: anHourFromNowMs) else {
+            return false
         }
-        Logger.error("Invalid certificate")
-        return false
+
+        return true
     }
 
     public class func trustRoot() -> PublicKey {
