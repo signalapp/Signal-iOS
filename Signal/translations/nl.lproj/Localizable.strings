@@ -781,6 +781,9 @@
 /* Accessibility label for leaving a call */
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Oproep verlaten";
 
+/* Accessibility label for the More button in the Call Controls row. */
+"CALL_VIEW_MORE_LABEL" = "More";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Microfoon dempen";
 
@@ -1106,7 +1109,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ is geblokkeerd";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your phone contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ staat in je telefooncontacten";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Geen individuele chat met %1$@";
@@ -1154,7 +1157,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organisatie";
 
 /* Title for a view showing the note that has been set for a profile. */
-"CONTACT_NOTE_TITLE" = "Note";
+"CONTACT_NOTE_TITLE" = "Notitie";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Om de namen en profielfoto's van je contactpersonen weer te geven in jouw chats:";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Aan bestaand contactpersoon toevoegen";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to Phone Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Aan telefooncontacten toevoegen";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, -afbeelding, -omschrijving en de timer voor verdwijnende berichten kan bewerken.";
@@ -1787,7 +1790,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Verwijderen";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your phone contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon wordt verwijderd uit je telefooncontacten. Als je zoekt, zal deze persoon niet zichtbaar zijn. Je ontvangt een gespreksverzoek als deze persoon je in de toekomst een bericht stuurt.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Contact verwijderen en niet meer in je contactenlijst weergeven?";
@@ -1799,7 +1802,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ is verwijderd uit je contacten en van je apparaat.";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "Deleted Account";
+"DELETED_USER" = "Verwijderd account";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Je bent uitgelogd bij Signal op dit apparaat.";
@@ -3788,10 +3791,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Linkvoorbeeld";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on iPad. To add Signal connections to your phone contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Het beheren van telefooncontacten is niet meer beschikbaar voor iPads. Om Signal-contacten aan je telefooncontacten toe te voegen, open je Signal op je telefoon.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Het beheren van telefooncontacten wordt niet meer ondersteund op iPads. Dit apparaat blijft alle wijzigingen in je contactenlijst van Signal op je telefoon synchroniseren.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Meer informatie";
@@ -4463,13 +4466,13 @@
 "NICKNAME_BUTTON_TITLE" = "Bijnaam";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "This will permanently delete this nickname and note.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Hiermee worden deze bijnaam en notitie permanent verwijderd.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Delete Nickname?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Bijnaam verwijderen?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames & notes are stored with Signal and end-to-end encrypted. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "Bijnamen en notities worden opgeslagen door Signal en zijn end-to-end versleuteld. Ze zijn alleen voor jou zichtbaar.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Achternaam";
@@ -6233,10 +6236,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "App-pictogram";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Geef indien beschikbaar profielfoto's uit je telefooncontacten weer";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Profielfoto's uit telefooncontacten gebruiken";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Thema";
@@ -7472,7 +7475,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Een gespreksverzoek van ze te accepteren";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your phone contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Ze in je telefooncontacten te hebben staan";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Je Signal-contacten kunnen jouw profielnaam, -foto en -omschrijving zien en kunnen zien wat je deelt in ‘Mijn verhaal’ tenzij je dat voor hen verbergt.";

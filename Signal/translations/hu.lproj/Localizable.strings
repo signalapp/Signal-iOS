@@ -781,6 +781,9 @@
 /* Accessibility label for leaving a call */
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Kilépés a hívásból";
 
+/* Accessibility label for the More button in the Call Controls row. */
+"CALL_VIEW_MORE_LABEL" = "More";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Némítás";
 
@@ -1106,7 +1109,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ letiltva";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your phone contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ szerepel a telefonod névjegyei között";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Nincs közvetlen üzenet %1$@ felhasználóval";
@@ -1154,7 +1157,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Szervezet";
 
 /* Title for a view showing the note that has been set for a profile. */
-"CONTACT_NOTE_TITLE" = "Note";
+"CONTACT_NOTE_TITLE" = "Megjegyzés";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "A névjegyek nevének és fotójának megjelenítéséhez a csevegéseidben:";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Hozzáadás meglevő kontakthoz";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to Phone Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Hozzáadás a telefonos névjegyekhez";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Add meg, hogy ki szerkeszthesse a csoportnevet, az avatárt, a csoportleírást és az eltűnő üzenetek időzítőjét.";
@@ -1787,7 +1790,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Törlés";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your phone contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Ez a személy törlésre kerül a telefon névjegyei közül. Nem fogod látni ezt a személyt keresés közben. Ha a jövőben üzenetet küld neked, felkérést kapsz.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Törlöd a névjegyet és eltávolítod a listáról?";
@@ -1799,7 +1802,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ törölve a Névjegyek közül és eltávolítva.";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "Deleted Account";
+"DELETED_USER" = "Fiók törlése";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Kijelentkeztél a Signalból ezen a készüléken.";
@@ -3788,10 +3791,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link előnézet";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on iPad. To add Signal connections to your phone contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "A telefon névjegyeinek kezelése már nem érhető el iPaden. Ha Signal Névjegyeket szeretnél hozzáadni a telefon névjegyeihez, nyisd meg a Signalt a telefonodon.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Az iPad már nem támogatja a telefonos névjegyek kezelését. Ez az eszköz továbbra is szinkronizálja a telefonodon megtalálható Signal-névjegylistán végrehajtott módosításokat.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Tudj meg többet";
@@ -4463,13 +4466,13 @@
 "NICKNAME_BUTTON_TITLE" = "Becenév";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "This will permanently delete this nickname and note.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Ezzel véglegesen törli ezt a becenevet és jegyzetet.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Delete Nickname?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Becenév törlése?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames & notes are stored with Signal and end-to-end encrypted. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "A beceneveket és megjegyzéseket a rendszer Signal és végpontok közötti titkosítással tárolja. Ezek csak számodra láthatók.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Vezetéknév";
@@ -6233,10 +6236,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Alkalmazásikon";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "A telefonos névjegyek képeinek megjelenítése, ha elérhetők.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Telefonos névjegyek képeinek használata";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Téma";
@@ -7472,7 +7475,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Elfogadtál tőlük egy felkérést";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your phone contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Szerepelnek a telefonod névjegyei között";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "A Névjegyeid megtekinthetik a neved, a profilképed, valamint a „Történeteim” szekcióba posztoltakat, kivéve, ha kifejezetten elrejtetted azokat előlük.";

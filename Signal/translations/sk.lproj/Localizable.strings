@@ -781,6 +781,9 @@
 /* Accessibility label for leaving a call */
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Opustiť hovor";
 
+/* Accessibility label for the More button in the Call Controls row. */
+"CALL_VIEW_MORE_LABEL" = "More";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Stlmiť";
 
@@ -1106,7 +1109,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Používateľ %1$@ je blokovaný";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your phone contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ je vo vašich kontaktoch";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Žiadne priame správy s používateľom %1$@";
@@ -1154,7 +1157,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organizácia";
 
 /* Title for a view showing the note that has been set for a profile. */
-"CONTACT_NOTE_TITLE" = "Note";
+"CONTACT_NOTE_TITLE" = "Poznámka";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Pre zobrazenie mien a fotiek kontaktov vo vašich četoch:";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Pridať k existujúcemu kontaktu";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to Phone Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Pridať do kontaktov v telefóne";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Vyberte, kto môže upraviť názov skupiny, fotografiu, popis a časovač miznúcich správ.";
@@ -1787,7 +1790,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Vymazať";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your phone contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Táto osoba bude vymazaná z vašich kontaktov v telefóne. Túto osobu už neuvidíte pri vyhľadávaní. Ak vám v budúcnosti pošle správu, dostanete žiadosť o správu.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Vymazať kontakt a odstrániť ho zo zoznamu?";
@@ -1799,7 +1802,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "Používateľ %1$@ bol vymazaný z vašich kontaktov a odstránený.";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "Deleted Account";
+"DELETED_USER" = "Vymazaný účet";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Na tomto zariadení ste boli odhlásení zo služby Signal.";
@@ -3788,10 +3791,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Náhľad stránky";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on iPad. To add Signal connections to your phone contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Správa kontaktov v telefóne už nie je na iPade k dispozícii. Ak chcete do kontaktov v telefóne pridať Signal spojenia, otvorte aplikáciu Signal v telefóne.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Správa kontaktov v telefóne už nie je na iPade podporovaná. Toto zariadenie bude pokračovať v synchronizácii všetkých zmien vo vašom zozname kontaktov zo Signalu vo vašom telefóne.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Zistiť viac";
@@ -4463,13 +4466,13 @@
 "NICKNAME_BUTTON_TITLE" = "Prezývka";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "This will permanently delete this nickname and note.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Týmto natrvalo odstránite túto prezývku a poznámku.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Delete Nickname?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Vymazať prezývku?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames & notes are stored with Signal and end-to-end encrypted. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "Prezývky a poznámky sa ukladajú v aplikácii Signal a sú vybavené end-to-end šifrovaním. Vidíte ich len vy.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Priezvisko";
@@ -6233,10 +6236,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Ikona aplikácie";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Zobraziť fotografie kontaktov v telefóne, ak sú k dispozícii.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Použiť fotografie kontaktov v telefóne";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Motív";
@@ -7472,7 +7475,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Prijali ste žiadosť o správu";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your phone contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Pridali ste si ich do svojich kontaktov";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Vaše spojenia môžu vidieť vaše meno a fotografiu a tiež obsah, ktorý posielate do sekcie „Môj príbeh“, pokiaľ ho pred nimi neskryjete.";

@@ -781,6 +781,9 @@
 /* Accessibility label for leaving a call */
 "CALL_VIEW_LEAVE_CALL_LABEL" = "離開通話";
 
+/* Accessibility label for the More button in the Call Controls row. */
+"CALL_VIEW_MORE_LABEL" = "More";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "靜音";
 
@@ -1106,7 +1109,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ 已被封鎖";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your phone contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ 在你的手機通訊錄中";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "沒有與 %1$@ 的直接訊息";
@@ -1154,7 +1157,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "機構";
 
 /* Title for a view showing the note that has been set for a profile. */
-"CONTACT_NOTE_TITLE" = "Note";
+"CONTACT_NOTE_TITLE" = "備註";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "在聊天中查看聯絡人名字和相片：";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "新增至現有聯絡人";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to Phone Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "新增至電話通訊錄";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "選擇誰可以編輯群組名稱、照片、描述和限時訊息計時器。";
@@ -1787,7 +1790,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "刪除";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your phone contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "此人會從你的電話通訊錄中刪除。你不會在搜尋中看到此人。如他們日後向你傳送訊息，你會收到訊息請求。";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "要刪除聯絡人並從你的清單中移除嗎？";
@@ -1799,7 +1802,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "已從你的聊絡人中刪除 %1$@ 並從清單中移除。";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "Deleted Account";
+"DELETED_USER" = "刪除帳戶";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "你已在此裝置上登出 Signal。";
@@ -3788,10 +3791,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "連結預覽";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on iPad. To add Signal connections to your phone contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "無法再使用 iPad 管理電話通訊錄。如要將 Signal 人脈新增至電話通訊錄，請在你的手機上打開 Signal。";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad 不再支援管理電話通訊錄。此裝置將繼續從你手機上的 Signal 同步聯絡人清單的任何變更。";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "了解更多";
@@ -4463,13 +4466,13 @@
 "NICKNAME_BUTTON_TITLE" = "暱稱";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "This will permanently delete this nickname and note.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "這將會永久刪除此暱稱和備註。";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Delete Nickname?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "要刪除暱稱嗎？";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames & notes are stored with Signal and end-to-end encrypted. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "暱稱和備註均以 Signal 的端對端加密儲存。只有你可以看見它們。";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "姓氏";
@@ -6233,10 +6236,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "應用程式圖示";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "顯示電話通訊錄照片（如有）。";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "使用電話通訊錄照片";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "佈景主題";
@@ -7472,7 +7475,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "接受訊息請求";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your phone contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "你的手機通訊錄中有對方的聯絡資料";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "你的人脈可以看到你的名字和相片。除非你對他們隱藏限時動態，否則他們也可以看到你發送的「我的限時動態」。";

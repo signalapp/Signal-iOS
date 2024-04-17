@@ -200,7 +200,7 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "Stattdessen Signal öffnen";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Bitte sende ein Fehlerprotokoll an support@signal.org, damit wir dieses Problem beheben können.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Bitte sende ein Diagnoseprotokoll an support@signal.org, damit wir dieses Problem beheben können.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Signal konnte nicht geöffnet werden";
@@ -781,6 +781,9 @@
 /* Accessibility label for leaving a call */
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Anruf verlassen";
 
+/* Accessibility label for the More button in the Call Controls row. */
+"CALL_VIEW_MORE_LABEL" = "More";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Stummschalten";
 
@@ -1106,7 +1109,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ ist blockiert";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your phone contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ ist in deinen Telefonkontakten gespeichert";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Keine Einzelchats mit %1$@";
@@ -1154,7 +1157,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organisation";
 
 /* Title for a view showing the note that has been set for a profile. */
-"CONTACT_NOTE_TITLE" = "Note";
+"CONTACT_NOTE_TITLE" = "Notiz";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Um Kontaktnamen und -fotos in deinen Chats anzuzeigen:";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Zu bestehendem Kontakt hinzufügen";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to Phone Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Zu Telefonkontakten hinzufügen";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Wähle aus, wer Gruppenname, -foto, -beschreibung und die Ablaufzeit für »Verschwindende Nachrichten« bearbeiten kann.";
@@ -1658,7 +1661,7 @@
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Mehr Speicherplatz erforderlich";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Dein Nachrichtenverlauf konnte nicht wiederhergestellt werden. Du kannst Signal nach der Neuinstallation weiter verwenden. Sende uns ein Fehlerprotokoll, damit wir besser verstehen können, was schiefgelaufen ist.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Dein Nachrichtenverlauf konnte nicht wiederhergestellt werden. Du kannst Signal nach der Neuinstallation weiter verwenden. Sende uns ein Diagnoseprotokoll, damit wir besser verstehen können, was schiefgelaufen ist.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Signal zurücksetzen";
@@ -1787,7 +1790,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Löschen";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your phone contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Diese Person wird aus deinen Telefonkontakten gelöscht. Du wirst diese Person bei der Suche nicht mehr finden. Du erhältst eine Unterhaltungsanfrage, wenn sie dir in Zukunft eine Nachricht schickt.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Kontakt löschen und aus deiner Liste entfernen?";
@@ -1799,7 +1802,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ wurde aus den Kontakten gelöscht und entfernt.";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "Deleted Account";
+"DELETED_USER" = "Gelöschtes Konto";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Du wurdest auf diesem Gerät von Signal abgemeldet.";
@@ -2372,7 +2375,7 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Währung";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kannst den Zugriff in der App »Einstellungen« aktivieren.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kannst den Zugriff in der iOS-App »Einstellungen« aktivieren.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal benötigt Zugriff auf die Kontakte, um Kontaktinformationen bearbeiten zu können";
@@ -3788,10 +3791,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link-Vorschau";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on iPad. To add Signal connections to your phone contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Die Verwaltung von Telefonkontakten ist auf dem iPad nicht mehr verfügbar. Um Signal-Kontakte zu deinen Telefonkontakten hinzuzufügen, öffne Signal auf deinem Mobiltelefon.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Die Verwaltung von Telefonkontakten wird auf dem iPad nicht mehr unterstützt. Dieses Gerät wird weiterhin alle Änderungen an deiner Kontaktliste von Signal auf deinem Mobiltelefon synchronisieren.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Mehr erfahren";
@@ -4322,7 +4325,7 @@
 "MY_STORY_NAME" = "Meine Story";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Lege fest, wer diese Story sehen kann";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Festlegen wer diese Story sehen kann";
 
 /* Title for the my story settings sheet */
 "MY_STORY_SETTINGS_SHEET_TITLE" = "Meine Story-Datenschutz";
@@ -4463,13 +4466,13 @@
 "NICKNAME_BUTTON_TITLE" = "Spitzname";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "This will permanently delete this nickname and note.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Dies wird diesen Spitznamen und die Notiz unwiderruflich löschen.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Delete Nickname?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Spitznamen löschen?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames & notes are stored with Signal and end-to-end encrypted. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "Spitznamen und Notizen werden mit Signal gespeichert und sind Ende-zu-Ende-verschlüsselt. Sie sind nur für dich sichtbar.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Nachname";
@@ -5090,16 +5093,16 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fehler bei eingehender Nachricht";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Einmalig anzeigbare Medieninhalte";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Medien zur Einmalansicht";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Medieninhalte";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Einmalig anzeigbares Foto";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Foto zur Einmalansicht";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Einmalig anzeigbares Video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Video zur Einmalansicht";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Foto anzeigen";
@@ -5618,7 +5621,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Hat mit %1$@ auf dein Video reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf deine einmalig anzeigbaren Medieninhalte reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf deine Medien zur Einmalansicht";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf deine Sprachnachricht reagiert";
@@ -6233,10 +6236,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "App-Symbol";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Telefonkontakt-Fotos anzeigen, falls verfügbar.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Telefonkontakt-Fotos verwenden";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Design";
@@ -6326,7 +6329,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Anrufe";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Sprachnachrichten, einmalig anzeigbare Medien und Sticker (kleiner als 100 kB) werden immer automatisch heruntergeladen.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Sprachnachrichten, Medien zur Einmalansicht und Sticker (kleiner als 100 kB) werden immer automatisch heruntergeladen.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Autom. Herunterladen";
@@ -6338,7 +6341,7 @@
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Medienqualität für Versand";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Wähle die Qualität, mit der Fotos und Videos versendet werden.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Die Qualität wählen, mit der Fotos und Videos versendet werden.";
 
 /* Section header for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Gesendete Medieninhalte";
@@ -6428,7 +6431,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videos";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Sieh und teile, wann Nachrichten gelesen und eingetippt werden. Falls deaktiviert, wirst du von anderen keine Lesebestätigungen oder Tipp-Indikatoren sehen.";
+"SETTINGS_MESSAGING_FOOTER" = "Sehen und teilen, wann Nachrichten gelesen und eingetippt werden. Falls deaktiviert, wirst du von anderen keine Lesebestätigungen oder Tipp-Indikatoren sehen.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Einstellungen";
@@ -6947,7 +6950,7 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wer kann mich anhand der Telefonnummer finden";
 
 /* Description label for Phone Number Privacy */
-"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Lege fest, wer deine Telefonnummer sehen kann und wer dich auf Signal mit ihr kontaktieren kann.";
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Festlegen wer deine Telefonnummer sehen kann und wer dich auf Signal mit ihr kontaktieren kann.";
 
 /* The title for phone number privacy settings. */
 "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Telefonnummer";
@@ -7472,7 +7475,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Annehmen einer Unterhaltungsanfrage";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your phone contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "In deinen Telefonkontakten gespeichert";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Deine Verbindungen können deinen Namen und dein Foto sowie Beiträge unter »Meine Story« sehen, es sei denn, du verbirgst sie vor ihnen.";
@@ -7490,7 +7493,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Wer kann diese Story sehen?";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Lege fest, welche Signal-Kontakte deine Story sehen können. Du kannst dies jederzeit in den Datenschutzeinstellungen ändern.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Festlegen welche Signal-Kontakte deine Story sehen können. Du kannst dies jederzeit in den Datenschutzeinstellungen ändern.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "An Storys gesendete Videos werden auf %1$d-Sekunden-Clips gekürzt und als mehrere Storys verschickt.";
@@ -8054,7 +8057,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Hier antippen, um diese Nachricht nach dem Ansehen verschwinden zu lassen.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Ausgehende, einmalig anzeigbare Mediendateien werden nach dem Senden automatisch entfernt.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Ausgehende Medien zur Einmalansicht werden nach dem Senden automatisch entfernt.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Foto anzeigen";

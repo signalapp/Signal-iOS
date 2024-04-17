@@ -781,6 +781,9 @@
 /* Accessibility label for leaving a call */
 "CALL_VIEW_LEAVE_CALL_LABEL" = "কল ছেড়ে যান";
 
+/* Accessibility label for the More button in the Call Controls row. */
+"CALL_VIEW_MORE_LABEL" = "More";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "মিউট করুন";
 
@@ -1106,7 +1109,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@-কে ব্লক করা হয়েছে";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your phone contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@  আপনার ফোন কন্টাক্টে আছেন";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "%1$@-এর সাথে কোনো সরাসরি মেসেজ নেই";
@@ -1154,7 +1157,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "প্রতিষ্ঠান";
 
 /* Title for a view showing the note that has been set for a profile. */
-"CONTACT_NOTE_TITLE" = "Note";
+"CONTACT_NOTE_TITLE" = "নোট";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "আপনার চ্যাটে থাকা কন্টাক্টের নাম ও ছবি দেখতে:";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "বিদ্যমান পরিচিতি এর সাথে যুক্ত করুন";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to Phone Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "ফোন কন্টাক্টে যোগ করুন";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "কারা গ্রুপের নাম, ফটো, বিবরণ ও মেসেজ অদৃশ্য হওয়ার টাইমার সম্পাদনা করতে পারবেন তা বেছে নিন।";
@@ -1787,7 +1790,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "মুছে ফেলুন";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your phone contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "এই ব্যক্তি আপনার সিস্টেমের কন্টাক্ট থেকে মুছে যাবেন। সার্চ করার সময় আপনি এই ব্যক্তিকে দেখতে পাবেন না। ভবিষ্যতে তিনি আপনাকে কোনো মেসেজ পাঠালে আপনি মেসেজের একটি অনুরোধ পাবেন।";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "কন্টাক্ট মুছে ফেলতে এবং আপনার তালিকা থেকে সরাতে চান?";
@@ -1799,7 +1802,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@-কে আপনার কন্টাক্ট থেকে মুছে ফেলা হয়েছে এবং সরানো হয়েছে।";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "Deleted Account";
+"DELETED_USER" = "মুছে ফেলা অ্যাকাউন্ট";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "আপনি এই ডিভাইসে Signal থেকে লগ আউট হয়ে গিয়েছেন।";
@@ -3788,10 +3791,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "লিঙ্ক পূর্বরূপ";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on iPad. To add Signal connections to your phone contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad-এ আর সিস্টেমের কন্টাক্ট নিয়ন্ত্রণ করার সুবিধাটি নেই। আপনার ফোনের কন্টাক্টে Signal কানেকশন যোগ করতে আপনার ফোনে Signal খুলুন।";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad-এ আর সিস্টেমের কন্টাক্ট নিয়ন্ত্রণ সমর্থন করে না। এই ডিভাইসটি Signal থেকে আপনার কন্টাক্ট লিস্টের যেকোনো পরিবর্তন আপনার ফোনের সাথে সিঙ্ক করতে থাকবে।";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "আরো জানুন";
@@ -4463,13 +4466,13 @@
 "NICKNAME_BUTTON_TITLE" = "ডাকনাম";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "This will permanently delete this nickname and note.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "এটি স্থায়ীভাবে এই ডাকনাম ও নোট মুছে ফেলবে।";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Delete Nickname?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "ডাকনাম মুছে ফেলবেন?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames & notes are stored with Signal and end-to-end encrypted. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "ডাকনাম এবং নোট Signal-এ সংরক্ষণ করা হয় এবং সেগুলো এন্ড-টু-এন্ড এনক্রিপ্ট করা। এগুলো শুধুমাত্র আপনার কাছে দৃশ্যমান।";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "নামের শেষ অংশ";
@@ -6233,10 +6236,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "অ্যাপ আইকন";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "যদি থাকে তবে ফোনের কন্টাক্টের ছবি প্রদর্শন করুন।";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "ফোনের কন্টাক্টের ছবি ব্যবহার করুন";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "থীম";
@@ -7472,7 +7475,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "ম্যাসেজ অনুরোধ গ্রহণ করতে";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your phone contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "আপনার ফোন কন্টাক্টে তাদেরকে যুক্ত করুন";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "আপনার কানেকশনরা আপনার নাম ও ছবি দেখতে পারবেন এবং আপনি যদি লুকিয়ে না রাখেন তবে \"মাই স্টোরি\"-তে কী পাঠান তাও দেখতে পারবেন।";

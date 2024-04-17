@@ -1224,9 +1224,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Aufruf</string>
 			<key>other</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Aufruf</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

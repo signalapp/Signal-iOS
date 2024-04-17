@@ -781,6 +781,9 @@
 /* Accessibility label for leaving a call */
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Покинути дзвінок";
 
+/* Accessibility label for the More button in the Call Controls row. */
+"CALL_VIEW_MORE_LABEL" = "More";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Вимкнути мікрофон";
 
@@ -1004,7 +1007,7 @@
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Новий номер телефону повинен відрізнятися від старого. Будь ласка, введіть новий номер телефону для зміни.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Введений номер телефону не відповідає вашому обліковому запису.";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Ви ввели не той номер телефону, на який зареєстровано ваш акаунт.";
 
 /* Error indicating that the user's new phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Недійсний новий номер телефону. Будь ласка, введіть дійсний номер телефону для зміни.";
@@ -1106,7 +1109,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Користувача %1$@ заблоковано";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your phone contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ є в контактах вашого телефона";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Особистого чату з %1$@ немає";
@@ -1154,7 +1157,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Організація";
 
 /* Title for a view showing the note that has been set for a profile. */
-"CONTACT_NOTE_TITLE" = "Note";
+"CONTACT_NOTE_TITLE" = "Примітка";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Щоб бачити імена та фото контактів у своїх чатах:";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Додати до наявного контакту";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to Phone Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Додати до контактів телефона";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Оберіть, хто може редагувати ім'я групи, фото, опис та час видалення повідомлень.";
@@ -1742,10 +1745,10 @@
 "DECLINED_VIDEO_CALL" = "Ви відхилили відеодзвінок";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Видалити обліковий запис";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Видалити акаунт";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Це видалить ваш обліковий запис Signal та скине застосунок. Після завершення цього процесу застосунок буде закрито.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Ваш акаунт Signal буде видалено, а налаштування застосунку скинуто. Після завершення цього процесу застосунок закриється.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Ви дійсно хочете видалити акаунт?";
@@ -1754,10 +1757,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Код країни";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Не вдалось видалити обіковий запис. Упевнитесь, що Wi-Fi або стільникові дані увімкнено та спробуйте знов.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Не вдалося видалити акаунт. Перевірте, чи увімкнено Wi-Fi або стільникові дані та повторіть спробу.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Це видалить інформацію вашого облікового запису, ваш профіль та усі ваші повідомлення.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Буде видалено інформацію вашого акаунту, ваш профіль та всі повідомлення.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Видаляємо акаунт…";
@@ -1772,10 +1775,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Підтвердження вашого номеру Signal";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Видалити обліковий запис";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Видалити акаунт";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Введений номер телефону не відповідає номеру телефону вашого облікового запису.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Ви ввели не той номер телефону, на який зареєстровано ваш акаунт.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Видалити усі повідомлення у чаті?";
@@ -1787,7 +1790,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Видалити";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your phone contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Цю людину буде видалено з контактів вашого телефона. Ви не бачитимете її під час пошуку. Якщо в майбутньому вона вам напише, ви отримаєте запит на повідомлення.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Видалити контакт і вилучити його з вашого списку?";
@@ -1799,7 +1802,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "Користувача %1$@ було видалено зі списку контактів і вилучено.";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "Deleted Account";
+"DELETED_USER" = "Видалений акаунт";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Ви вийшли з Signal на цьому пристрої.";
@@ -1838,10 +1841,10 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Зупинити перенесення?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Якщо ви використовували Signal на прив'язаному iPad, ви можете безпечно перенести свій обліковий запис та повідомлення на цей пристрій.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Якщо ви використовували Signal на зв'язаному iPad, то можете безпечно перенести свій акаунт і повідомлення на цей пристрій.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Продовжити без перенесення облікового запису і повідомлень";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Продовжити без перенесення акаунту і повідомлень";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Додати цей iPad як новий прив'язаний пристрій без перенесення історії повідомлень";
@@ -1853,7 +1856,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Зареєструватися без перенесення";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення облікового запису та повідомлень";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення акаунту і повідомлень";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Перенести акаунт і історію повідомлень з вашого старого пристрою на iOS";
@@ -1886,7 +1889,7 @@
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Щоб налаштувати цей iPad як прив'язаний пристрій, ви повинні сканувати за допомогою свого старого iPad";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Щоб перенести свій обліковий запис, ви повинні сканувати за допомогою свого iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Щоб перенести акаунт, зіскануйте за допомогою свого iPhone";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Недостатньо вільного місця, щоб завершити перенесення";
@@ -1898,10 +1901,10 @@
 "DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "Збільшити";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Перенести ваш обліковий запис Signal на новий пристрій iOS. Переконайтеся, що ваш новий пристрій знаходитися недалеко і включений.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Ваш акаунт Signal буде перенесено на новий пристрій iOS. Запевніться, що новий пристрій поряд і ввімкнений.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Перенесення облікового запису";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "Перенесення акаунту";
 
 /* The explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Піднесіть свій старий пристрій, увімкніть Wi-Fi і Bluetooth та проскануйте цей QR-код старим пристроєм.";
@@ -3788,16 +3791,16 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Попередній перегляд посилань";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on iPad. To add Signal connections to your phone contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Ви більше не можете змінювати контакти телефона на iPad. Щоб додати до них контакти Signal, відкрийте Signal на телефоні.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Ви більше не можете змінювати контакти телефона на iPad. Список контактів на цьому пристрої і надалі синхронізується з контактами Signal на вашому телефоні.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Подробиці";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Прив’язані пристрої";
+"LINKED_DEVICES_TITLE" = "Зв’язані пристрої";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Дозволити сповіщення";
@@ -3812,7 +3815,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Не вдалося прив’язати пристрій";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Щоб перенести ваш обліковий запис Signal, потрібно увімкнути доступ до локальної мережі на обох пристроях.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Для перенесення акаунту Signal на обох пристроях необхідно ввімкнути доступ до локальної мережі.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Потрібна Допомога?";
@@ -4445,13 +4448,13 @@
 "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Нова";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Можуть побачити лише окремі особи";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Можуть бачити лише конкретні користувачі";
 
 /* Title for create custom story row on the 'new story sheet' */
 "NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Нова індивідуальна історія";
 
 /* Subtitle for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Поділитись у групі";
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Для користувачів уже створеної групи";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Нова групова історія";
@@ -4463,13 +4466,13 @@
 "NICKNAME_BUTTON_TITLE" = "Умовне ім'я";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "This will permanently delete this nickname and note.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Умовне ім'я і примітку буде видалено остаточно.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Delete Nickname?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Видалити умовне ім'я?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Nicknames & notes are stored with Signal and end-to-end encrypted. They are only visible to you.";
+"NICKNAME_EDITOR_DESCRIPTION" = "Умовні імена й примітки зберігаються в Signal і захищені наскрізним шифруванням. Їх бачите лише ви.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Прізвище";
@@ -4583,7 +4586,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Пропустити і Створити Новий PIN-код";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Якщо ви не можете згадати свій PIN-код, ви можете створити новий. Ви зможете зареєструватися та використовувати свій обліковий запис, але втратите деякі збережені настройки, наприклад інформацію вашого профілю.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Якщо ви забули свій PIN-код, то можете створити новий. Ви можете зареєструватись і використовувати свій акаунт, але ви втратите частину збережених налаштувань, як-от інформацію профілю.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Пропустити Введення PIN-коду?";
@@ -4592,13 +4595,13 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Зареєструвати iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Прив'язати iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Зв'язати iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Натискання «Зареєструвати iPad» дозволить вам створити абсолютно новий акаунт Signal або перенести на цей iPad наявний. Це відключить Signal на будь-якому іншому пристрої, де він зареєстрований на той же номер телефону.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Натискання «Прив'язати iPhone» дозволить вам прив'язати ваш телефон до наявного облікового запису. Прив'язка вашого телефону зазвичай не рекомендується та обмежить деяку функціональність, наприклад, дзвінки.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Натиснувши «Зв'язати iPhone», ви зможете зв'язати свій телефон з наявним акаунтом. Загалом ми не рекомендуємо зв'язувати телефон, оскільки це обмежить певні можливості, як-от дзвінки.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Зареєструвати цей iPad";
@@ -4637,7 +4640,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Хибний номер телефону. Будь ласка, введіть дійсний номер телефону щоб зареєструватись.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "У вас закінчилися спроби введення PIN-коду, але ви все одно можете отримати доступ до свого облікового запису Signal, створивши новий PIN-код. Для вашої конфіденційності та безпеки ваш обліковий запис буде відновлена без будь-якої збереженої інформації профілю або налаштувань.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Ви використали всі спроби введення PIN-коду, але все одно можете отримати доступ до свого акаунту Signal, якщо створите новий PIN-код. З міркувань конфіденційності та безпеки ваш акаунт буде відновлено без збереженої інформації профілю й налаштувань.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Дізнатися більше про PIN-коди";
@@ -6005,13 +6008,13 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Не вдалось отримати код прив'язки";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Щоб зв'язати цей пристрій з іншим обліковим записом, спочатку потрібно скинути параметри пристрою. Ви дійсно хочете видалити всю історію (повідомлення, вкладення, виклики тощо)? Ця дія є незворотною.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Щоб зв'язати цей пристрій з іншим акаунтом, спочатку потрібно скинути налаштування пристрою. Ви точно хочете видалити всю історію (повідомлення, вкладення, виклики тощо)? Видалення буде незворотне.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Видалити все";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Обліковий запис не збігається";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Акаунт не збігається";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Оновіть Signal на цьому пристрої, щоб прив'язати його до вашого телефону.";
@@ -6032,7 +6035,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Виберіть ім'я для цього пристрою";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Ви побачите це ім'я в розділі «Прив'язані Пристрої».";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Ви побачите цю назву у «Зв'язаних пристроях».";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Виберіть ім'я";
@@ -6041,19 +6044,19 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Завершити прив'язку";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Запустіть Signal на своєму телефоні, щоб прив'язати цей iPad до свого облікового запису";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Запустіть Signal на телефоні, щоб зв'язати цей iPad зі своїм акаунтом";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "На моєму телефоні немає Signal…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Перейдіть в App Store на своєму телефоні, встановіть Signal, пройдіть процес реєстрації і тоді ви зможете прив'язати свій iPad до того ж облікового запису.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Перейдіть в App Store на телефоні, встановіть Signal і пройдіть процес реєстрації. Після цього ви зможете зв'язати свій iPad з тим самим акаунтом.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Встановіть Signal на Ваш Телефон";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "У додатку Signal на вашому телефоні натисніть на фотографію свого облікового запису, потім на «Прив'язані пристрої» і «Прив'язати новий пристрій» та проскануйте цей код:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "У застосунку Signal на телефоні натисніть на фотографію свого профілю, щоб відкрити налаштування. Потім натисніть «Зв'язані пристрої» і «Зв'язати новий пристрій» і зіскануйте цей код:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Отримайте допомогу у прив'язці вашого iPad тут";
@@ -6062,7 +6065,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Проскануйте цей QR-код за допомогою вашого телефону";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Запустіть Signal на своєму старому iPad, щоб перенести свій обліковий запис";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Запустіть Signal на старому iPad, щоб перенести свій акаунт";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Безпечний сеанс скинуто.";
@@ -6167,7 +6170,7 @@
 "SET_WALLPAPER_TITLE" = "Задати шпалери";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Обліковий запис";
+"SETTINGS_ACCOUNT" = "Акаунт";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Дані вашого акаунту";
@@ -6233,10 +6236,10 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Значок застосунку";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "За наявності показувати фото з контактів телефона.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Використовувати фото з контактів телефона";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Тема";
@@ -6959,7 +6962,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Відключити Нагадування";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Переконайтеся, що ви запам'ятали або безпечно зберегли свій PIN-код, так як він не може бути відновлений. Якщо ви забудете свій PIN-код, ви можете втратити дані при повторній реєстрації свого облікового запису Signal.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "PIN-код необхідно запам’ятати або надійно зберегти, оскільки його неможливо відновити. Якщо ви забудете свій PIN-код, то можете втратити дані при повторній реєстрації свого акаунту Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Підтвердіть свій PIN-код Signal";
@@ -6968,7 +6971,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Нагадування PIN-коду";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-коди зберігають інформацію в Signal зашифрованою, тому тільки ви можете отримати до неї доступ. Ваш PIN-код не можна відновити. Ваш обліковий запис, налаштування та контакти відновляться, коли ви знову встановите Signal.";
+"SETTINGS_PINS_FOOTER" = "PIN-коди забезпечують шифрування інформації, що зберігається в Signal, щоб отримати до неї доступ могли тільки ви. Ваш PIN-код неможливо відновити. Ваш акаунт, налаштування та контакти відновляться, коли ви знову встановите Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Змінити PIN-код";
@@ -7004,7 +7007,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Увімкнути";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Якщо ви забудете свій PIN-код Signal, при повторній реєстрації в Signal, ви втратите доступ до свого облікового запису на 7 днів.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Якщо ви забудете свій PIN-код після повторної реєстрації в Signal, то втратите доступ до свого акаунту на 7 днів.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Включити Блокування Реєстрації?";
@@ -7304,7 +7307,7 @@
 "STORIES_SAVE_STORY_ACTION" = "Зберегти";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Оновлення історій автоматично зникають через 24 години. Оберіть глядачів вашої історії або створіть нові історії для конкретних глядачів або груп.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Оновлення історій автоматично зникають через 24 години. Оберіть глядачів своєї історії або створіть нові історії для конкретних глядачів і груп.";
 
 /* Header for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_HEADER" = "Історії";
@@ -7316,7 +7319,7 @@
 "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Вимкнути й видалити історії";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Якщо вимкнути історії, ви не зможете ні публікувати, ні переглядати історії.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Якщо історії вимкнути, ви не зможете їх ні публікувати, ні переглядати.";
 
 /* Button to turn off stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Вимкнути сторіз";
@@ -7472,7 +7475,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Схвалили запит на повідомлення";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your phone contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Вони є в контактах вашого телефона";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваші контакти можуть бачити ваше ім'я та фото, а також усе, що ви викладаєте в «Моїй історії», якщо ви її не приховали.";
@@ -7586,7 +7589,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Підтвердити скасування?";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не вдалося додати відзнаку до вашого облікового запису. Будь ласка, зверніться до служби підтримки.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не вдалося додати значок до вашого акаунту. Зверніться в службу підтримки.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Не вдалося додати відзнаку";
@@ -7754,7 +7757,7 @@
 "TRANSFER_COMPLETE_SHEET_BUTTON" = "Закрити Signal";
 
 /* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "Щоби почати використовувати свій акаунт на цьому пристрої, закрийте і знову відкрийте Signal.";
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "Щоб почати використовувати свій акаунт на цьому пристрої, закрийте і знову відкрийте Signal.";
 
 /* Title for bottom sheet shown when device transfer completes on the receiving device. */
 "TRANSFER_COMPLETE_SHEET_TITLE" = "Перенесення завершено";
