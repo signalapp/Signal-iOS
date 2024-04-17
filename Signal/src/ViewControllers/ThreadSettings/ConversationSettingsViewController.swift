@@ -79,7 +79,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         super.init()
 
-        callService.addObserver(observer: self, syncStateImmediately: false)
+        AppEnvironment.shared.callService.addObserver(observer: self, syncStateImmediately: false)
         databaseStorage.appendDatabaseChangeDelegate(self)
         contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self

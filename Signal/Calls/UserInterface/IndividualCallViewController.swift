@@ -41,6 +41,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         confirmationToastManager: callControlsConfirmationToastManager,
         delegate: self
     )
+    private var callService: CallService { AppEnvironment.shared.callService }
 
     /// When the local member view (which is displayed picture-in-picture) is
     /// tapped, it expands. If the frame is expanded, its enlarged frame is

@@ -23,7 +23,7 @@ protocol CallServiceObserver: AnyObject {
 ///
 /// Responsible for the 1:1 or group call this device is currently active in, if
 /// any, as well as any other updates to other calls that we learn about.
-public final class CallService: LightweightGroupCallManager {
+final class CallService {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
 
     public let callManager: CallManagerType
@@ -31,12 +31,13 @@ public final class CallService: LightweightGroupCallManager {
     private var audioSession: AudioSession { NSObject.audioSession }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var deviceSleepManager: DeviceSleepManager { DeviceSleepManager.shared }
+    private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
     private var reachabilityManager: SSKReachabilityManager { NSObject.reachabilityManager }
 
-    public var callUIAdapter: CallUIAdapter!
+    public var callUIAdapter: CallUIAdapter
 
-    let individualCallService = IndividualCallService()
-    let groupCallRemoteVideoManager = GroupCallRemoteVideoManager()
+    let individualCallService: IndividualCallService
+    let groupCallRemoteVideoManager: GroupCallRemoteVideoManager
 
     /// Needs to be lazily initialized, because it uses singletons that are not
     /// available when this class is initialized.
@@ -70,15 +71,15 @@ public final class CallService: LightweightGroupCallManager {
     /// Current call *must* be set on the main thread. It may be read off the
     /// main thread if the current call state must be consulted, but other call
     /// state may race (observer state, sleep state, etc.)
-    private let _currentCall = AtomicValue<SignalCall?>(nil, lock: .init())
+    private let mutableCurrentCall: AtomicValue<SignalCall?>
 
     /// Represents the call currently occuring on this device.
     public private(set) var currentCall: SignalCall? {
-        get { _currentCall.get() }
+        get { mutableCurrentCall.get() }
         set {
             AssertIsOnMainThread()
 
-            let oldValue = _currentCall.swap(newValue)
+            let oldValue = mutableCurrentCall.swap(newValue)
 
             oldValue?.removeObserver(self)
             newValue?.addObserverAndSyncState(observer: self)
@@ -160,15 +161,21 @@ public final class CallService: LightweightGroupCallManager {
 
     public init(
         appContext: any AppContext,
-        groupCallPeekClient: GroupCallPeekClient
+        groupCallPeekClient: GroupCallPeekClient,
+        mutableCurrentCall: AtomicValue<SignalCall?>
     ) {
         self.callManager = CallManager(
             httpClient: groupCallPeekClient.httpClient,
             fieldTrials: RingrtcFieldTrials.trials(with: appContext.appUserDefaults())
         )
-        super.init(groupCallPeekClient: groupCallPeekClient)
+        let callUIAdapter = CallUIAdapter()
+        self.callUIAdapter = callUIAdapter
+        self.individualCallService = IndividualCallService()
+        self.groupCallRemoteVideoManager = GroupCallRemoteVideoManager()
+        self.mutableCurrentCall = mutableCurrentCall
         self.callManager.delegate = self
         SwiftSingletons.register(self)
+        self.registerCallUIAdapter(callUIAdapter)
 
         NotificationCenter.default.addObserver(
             self,
@@ -230,7 +237,7 @@ public final class CallService: LightweightGroupCallManager {
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.
      */
-    public func createCallUIAdapter() {
+    public func rebuildCallUIAdapter() {
         AssertIsOnMainThread()
 
         if let call = currentCall {
@@ -238,7 +245,20 @@ public final class CallService: LightweightGroupCallManager {
             terminate(call: call)
         }
 
-        self.callUIAdapter = CallUIAdapter()
+        let callUIAdapter = CallUIAdapter()
+        self.callUIAdapter = callUIAdapter
+        self.registerCallUIAdapter(callUIAdapter)
+    }
+
+    private func registerCallUIAdapter(_ callUIAdapter: CallUIAdapter) {
+        AssertIsOnMainThread()
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            guard self.callUIAdapter === callUIAdapter else {
+                return
+            }
+            self.addObserverAndSyncState(observer: callUIAdapter)
+        }
     }
 
     // MARK: - Observers
@@ -529,7 +549,7 @@ public final class CallService: LightweightGroupCallManager {
             // Kick off a peek now that we've disconnected to get an updated participant state.
             if let thread = call.thread as? TSGroupThread {
                 Task {
-                    await self.peekGroupCallAndUpdateThread(
+                    await self.groupCallManager.peekGroupCallAndUpdateThread(
                         thread,
                         peekTrigger: .localEvent()
                     )
@@ -844,7 +864,7 @@ public final class CallService: LightweightGroupCallManager {
             let membershipInfo: [GroupMemberInfo]
             do {
                 membershipInfo = try self.databaseStorage.read { tx in
-                    try self.groupCallPeekClient.groupMemberInfo(
+                    try self.groupCallManager.groupCallPeekClient.groupMemberInfo(
                         groupThread: groupThread, tx: tx.asV2Read
                     )
                 }
@@ -878,43 +898,6 @@ public final class CallService: LightweightGroupCallManager {
                 transaction: readTx) else { return .wifiAndCellular }
 
         return NetworkInterfaceSet(rawValue: highDataPreference)
-    }
-
-    // MARK: -
-
-    override public func peekGroupCallAndUpdateThread(
-        _ thread: TSGroupThread,
-        peekTrigger: PeekTrigger
-    ) async {
-        // If the currentCall is for the provided thread, we don't need to perform an explicit
-        // peek. Connected calls will receive automatic updates from RingRTC
-        guard currentCall?.thread != thread else {
-            GroupCallPeekLogger.shared.info("Ignoring peek request for the current call")
-            return
-        }
-
-        await super.peekGroupCallAndUpdateThread(thread, peekTrigger: peekTrigger)
-    }
-
-    override public func postUserNotificationIfNecessary(
-        groupCallMessage: OWSGroupCallMessage,
-        joinedMemberAcis: [Aci],
-        creatorAci: Aci,
-        groupThread: TSGroupThread,
-        tx: SDSAnyWriteTransaction
-    ) {
-        AssertNotOnMainThread()
-
-        // The message can't be for the current call
-        guard self.currentCall?.thread != groupThread else { return }
-
-        super.postUserNotificationIfNecessary(
-            groupCallMessage: groupCallMessage,
-            joinedMemberAcis: joinedMemberAcis,
-            creatorAci: creatorAci,
-            groupThread: groupThread,
-            tx: tx
-        )
     }
 }
 
@@ -993,7 +976,7 @@ extension CallService: CallObserver {
         }
 
         databaseStorage.asyncWrite { tx in
-            self.updateGroupCallModelsForPeek(
+            self.groupCallManager.updateGroupCallModelsForPeek(
                 peekInfo: peekInfo,
                 groupThread: groupThread,
                 triggerEventTimestamp: Date.ows_millisecondTimestamp(),
@@ -1026,9 +1009,9 @@ extension CallService: CallObserver {
             return owsFailDebug("unexpectedly missing thread")
         }
 
-        Task { [groupCallPeekClient] in
+        Task { [groupCallManager] in
             do {
-                let proof = try await groupCallPeekClient.fetchGroupMembershipProof(groupThread: groupThread)
+                let proof = try await groupCallManager.groupCallPeekClient.fetchGroupMembershipProof(groupThread: groupThread)
                 await MainActor.run {
                     call.groupCall.updateMembershipProof(proof: proof)
                 }

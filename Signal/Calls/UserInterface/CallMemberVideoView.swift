@@ -102,6 +102,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         } else if nil != callViewWrapper {
             owsFailDebug("Can only call configureRemoteVideo for groups!")
         }
+        let callService = AppEnvironment.shared.callService!
         let remoteVideoView = callService.groupCallRemoteVideoManager.remoteVideoView(for: device, context: context)
         self.addSubview(remoteVideoView)
         self.callViewWrapper = .remoteInGroup(remoteVideoView)

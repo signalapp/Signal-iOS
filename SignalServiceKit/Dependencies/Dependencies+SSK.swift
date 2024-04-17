@@ -795,12 +795,12 @@ public extension Dependencies {
 
 public extension NSObject {
 
-    var lightweightGroupCallManager: LightweightGroupCallManager {
-        SSKEnvironment.shared.lightweightGroupCallManagerRef
+    var groupCallManager: GroupCallManager {
+        SSKEnvironment.shared.groupCallManagerRef
     }
 
-    static var lightweightGroupCallManager: LightweightGroupCallManager {
-        SSKEnvironment.shared.lightweightGroupCallManagerRef
+    static var groupCallManager: GroupCallManager {
+        SSKEnvironment.shared.groupCallManagerRef
     }
 
     final var smJobQueues: SignalMessagingJobQueues {

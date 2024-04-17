@@ -125,10 +125,14 @@ extension ConversationViewController {
                         videoCallButton.action = #selector(showGroupLobbyOrActiveCall)
                     }
 
-                    videoCallButton.isEnabled = (self.callService.currentCall == nil
-                                                    || self.isCurrentCallForThread)
-                    videoCallButton.accessibilityLabel = OWSLocalizedString("VIDEO_CALL_LABEL",
-                                                                           comment: "Accessibility label for placing a video call")
+                    videoCallButton.isEnabled = (
+                        AppEnvironment.shared.callService.currentCall == nil
+                        || self.isCurrentCallForThread
+                    )
+                    videoCallButton.accessibilityLabel = OWSLocalizedString(
+                        "VIDEO_CALL_LABEL",
+                        comment: "Accessibility label for placing a video call"
+                    )
                     self.groupCallBarButtonItem = videoCallButton
                     barButtons.append(videoCallButton)
                 } else {

@@ -11,6 +11,8 @@ import SignalServiceKit
  */
 class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
+    var callService: CallService { AppEnvironment.shared.callService }
+
     // Starting/Stopping incoming call ringing is our apps responsibility for the non CallKit interface.
     let hasManualRinger = true
 

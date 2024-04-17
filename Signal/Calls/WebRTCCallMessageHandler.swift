@@ -15,7 +15,8 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         SwiftSingletons.register(self)
     }
 
-    private var callService: CallService { NSObject.callService }
+    private var callService: CallService { AppEnvironment.shared.callService }
+    private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     // MARK: - Call Handlers
@@ -178,7 +179,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
             "Received group call update message for thread \(groupThread.uniqueId), eraId \(String(describing: updateMessage.eraID))"
         )
 
-        await callService.peekGroupCallAndUpdateThread(
+        await groupCallManager.peekGroupCallAndUpdateThread(
             groupThread,
             peekTrigger: .receivedGroupUpdateMessage(
                 eraId: updateMessage.eraID,

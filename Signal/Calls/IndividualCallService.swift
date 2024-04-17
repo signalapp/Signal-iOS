@@ -26,7 +26,7 @@ final class IndividualCallService {
     }
 
     private var audioSession: AudioSession { NSObject.audioSession }
-    private var callService: CallService { NSObject.callService }
+    private var callService: CallService { AppEnvironment.shared.callService }
     private var contactManager: any ContactManager { NSObject.contactsManager }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var networkManager: NetworkManager { NSObject.networkManager }

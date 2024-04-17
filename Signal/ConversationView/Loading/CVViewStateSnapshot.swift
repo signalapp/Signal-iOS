@@ -40,6 +40,8 @@ struct CVViewStateSnapshot: Dependencies {
 
     let currentCallThreadId: String?
 
+    private static var callService: CallService { AppEnvironment.shared.callService }
+
     static func snapshot(
         viewState: CVViewState,
         typingIndicatorsSender: SignalServiceAddress?,

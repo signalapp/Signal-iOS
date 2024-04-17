@@ -17,6 +17,7 @@ import SignalUI
 final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     private let callManager: CallKitCallManager
+    var callService: CallService { AppEnvironment.shared.callService }
     private let showNamesOnCallScreen: Bool
     private let provider: CXProvider
     private let audioActivity: AudioActivity
@@ -419,7 +420,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                 }
             } else {
                 owsAssertDebug(call.individualCall.state == .localRinging_ReadyToAnswer)
-                self.callService.individualCallService.handleAcceptCall(call)
+                callService.individualCallService.handleAcceptCall(call)
                 action.fulfill()
             }
         }

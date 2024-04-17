@@ -9,7 +9,8 @@ import WebRTC
 
 class GroupCallRemoteVideoManager {
     private var currentGroupCall: GroupCall? {
-        guard let call = NSObject.callService.currentCall, call.isGroupCall else { return nil }
+        let callService = AppEnvironment.shared.callService!
+        guard let call = callService.currentCall, call.isGroupCall else { return nil }
         return call.groupCall
     }
 

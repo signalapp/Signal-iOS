@@ -291,6 +291,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
     override func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext) {
         if videoView?.superview == self { videoView?.removeFromSuperview() }
+        let callService = AppEnvironment.shared.callService!
         let newVideoView = callService.groupCallRemoteVideoManager.remoteVideoView(for: device, context: context)
         insertSubview(newVideoView, belowSubview: muteIndicatorImage)
         newVideoView.frame = bounds

@@ -86,7 +86,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NoopCallMessageHandler(),
-            lightweightGroupCallManagerBuilder: LightweightGroupCallManager.init(groupCallPeekClient:),
+            currentCallThreadProvider: CurrentCallNoOpThreadProvider(),
             notificationPresenter: NoopNotificationPresenterImpl()
         )
 

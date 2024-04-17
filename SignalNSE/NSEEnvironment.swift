@@ -140,7 +140,7 @@ class NSEEnvironment: Dependencies {
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NSECallMessageHandler(),
-            lightweightGroupCallManagerBuilder: LightweightGroupCallManager.init(groupCallPeekClient:),
+            currentCallThreadProvider: CurrentCallNoOpThreadProvider(),
             notificationPresenter: NotificationPresenterImpl()
         )
 

@@ -6,15 +6,17 @@
 import LibSignalClient
 import SignalRingRTC
 
-/// Responsible for updating group call state when we learn it may have changed.
-///
-/// Lightweight in that it does not maintain or manage state for active calls,
-/// and can be used both in the main app and in extensions.
-///
-/// - Note
-/// This class is subclassed by ``CallService`` in the main app, to additionally
-/// manage calls this device is actively participating in.
-open class LightweightGroupCallManager {
+public protocol CurrentCallThreadProvider {
+    var currentCallThread: TSThread? { get }
+}
+
+public class CurrentCallNoOpThreadProvider: CurrentCallThreadProvider {
+    public init() {}
+    public var currentCallThread: TSThread? { nil }
+}
+
+/// Fetches & updates group call state.
+public class GroupCallManager {
     /// The triggers that may kick off a group call peek.
     public enum PeekTrigger {
         /// We received a group update message, and are peeking in response.
@@ -43,16 +45,28 @@ open class LightweightGroupCallManager {
 
     private let logger = GroupCallPeekLogger.shared
 
+    private let currentCallThreadProvider: any CurrentCallThreadProvider
     public let groupCallPeekClient: GroupCallPeekClient
 
-    public init(groupCallPeekClient: GroupCallPeekClient) {
+    public init(
+        currentCallThreadProvider: any CurrentCallThreadProvider,
+        groupCallPeekClient: GroupCallPeekClient
+    ) {
+        self.currentCallThreadProvider = currentCallThreadProvider
         self.groupCallPeekClient = groupCallPeekClient
     }
 
-    open func peekGroupCallAndUpdateThread(
+    public func peekGroupCallAndUpdateThread(
         _ thread: TSGroupThread,
         peekTrigger: PeekTrigger
     ) async {
+        // If the currentCall is for the provided thread, we don't need to perform an explicit
+        // peek. Connected calls will receive automatic updates from RingRTC
+        guard currentCallThreadProvider.currentCallThread != thread else {
+            GroupCallPeekLogger.shared.info("Ignoring peek request for the current call")
+            return
+        }
+
         guard thread.isLocalUserFullMember else {
             return
         }
@@ -356,9 +370,7 @@ open class LightweightGroupCallManager {
         return currentCallIdInteractions.first
     }
 
-    // Should be private, but that causes the linker to fail in Xcode 14.3.
-    // TODO: Switch this to private when adopting Xcode 15.
-    public func upsertPlaceholderGroupCallModelsIfNecessary(
+    private func upsertPlaceholderGroupCallModelsIfNecessary(
         eraId: String,
         triggerEventTimestamp: UInt64,
         groupThread: TSGroupThread
@@ -413,7 +425,7 @@ open class LightweightGroupCallManager {
         }
     }
 
-    open func postUserNotificationIfNecessary(
+    private func postUserNotificationIfNecessary(
         groupCallMessage: OWSGroupCallMessage,
         joinedMemberAcis: [Aci],
         creatorAci: Aci,
@@ -422,13 +434,20 @@ open class LightweightGroupCallManager {
     ) {
         AssertNotOnMainThread()
 
+        // The message can't be for the current call
+        guard currentCallThreadProvider.currentCallThread != groupThread else {
+            return
+        }
+
         // We must have at least one participant, and it can't have been created
         // by the local user.
         guard
             !joinedMemberAcis.isEmpty,
             let localAci = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci,
             creatorAci != localAci
-        else { return }
+        else {
+            return
+        }
 
         notificationPresenter.notifyUser(
             forPreviewableInteraction: groupCallMessage,

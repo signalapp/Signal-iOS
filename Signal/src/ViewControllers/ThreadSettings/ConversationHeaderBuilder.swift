@@ -226,6 +226,7 @@ struct ConversationHeaderBuilder: Dependencies {
         }
 
         if ConversationViewController.canCall(threadViewModel: delegate.threadViewModel) {
+            let callService = AppEnvironment.shared.callService!
             let isCurrentCallForThread = callService.currentCall?.thread.uniqueId == delegate.thread.uniqueId
             let hasCurrentCall = callService.currentCall != nil
 
@@ -581,6 +582,7 @@ extension ConversationHeaderDelegate {
             return
         }
 
+        let callService = AppEnvironment.shared.callService!
         if let currentCall = callService.currentCall {
             if currentCall.thread.uniqueId == thread.uniqueId {
                 WindowManager.shared.returnToCallView()

@@ -26,6 +26,8 @@ public class AppEnvironment: NSObject {
 
     public var pushRegistrationManagerRef: PushRegistrationManager
 
+    var callService: CallService!
+
     let deviceTransferServiceRef = DeviceTransferService()
 
     let avatarHistorManagerRef = AvatarHistoryManager()
@@ -48,8 +50,8 @@ public class AppEnvironment: NSObject {
         SwiftSingletons.register(self)
     }
 
-    func setup() {
-        callService.createCallUIAdapter()
+    func setUp(callService: CallService) {
+        self.callService = callService
 
         self.badgeManager = BadgeManager(
             databaseStorage: databaseStorage,

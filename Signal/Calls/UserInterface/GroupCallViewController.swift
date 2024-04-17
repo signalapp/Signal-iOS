@@ -23,6 +23,7 @@ class GroupCallViewController: UIViewController {
         delegate: self
     )
     private lazy var callControlsConfirmationToastContainerView = UIView()
+    private var callService: CallService { AppEnvironment.shared.callService }
     private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
     private lazy var callHeader = CallHeader(call: call, delegate: self)
     private lazy var notificationView = GroupCallNotificationView(call: call)
@@ -162,7 +163,8 @@ class GroupCallViewController: UIViewController {
                 return
             }
 
-            guard let groupCall = Self.callService.buildAndConnectGroupCallIfPossible(
+            let callService = AppEnvironment.shared.callService!
+            guard let groupCall = callService.buildAndConnectGroupCallIfPossible(
                 thread: thread, videoMuted: videoMuted
             ) else {
                 return owsFailDebug("Failed to build group call")

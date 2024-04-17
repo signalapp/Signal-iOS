@@ -9,6 +9,7 @@ import SignalServiceKit
 
 class GroupCallNotificationView: UIView {
     private let call: SignalCall
+    private var callService: CallService { AppEnvironment.shared.callService }
 
     private struct ActiveMember: Hashable {
         let demuxId: UInt32

@@ -9,7 +9,7 @@ import SignalUI
 public extension ConversationViewController {
 
     var isCurrentCallForThread: Bool {
-        thread.uniqueId == callService.currentCall?.thread.uniqueId
+        thread.uniqueId == AppEnvironment.shared.callService.currentCall?.thread.uniqueId
     }
 
     var isCallingSupported: Bool {
@@ -24,7 +24,7 @@ public extension ConversationViewController {
         .init(
             blockingManager: blockingManager,
             databaseStorage: databaseStorage,
-            callService: callService
+            callService: AppEnvironment.shared.callService
         )
     }
 
@@ -80,8 +80,8 @@ public extension ConversationViewController {
 
     func refreshCallState() {
         if let groupThread = thread as? TSGroupThread {
-            Task { [callService] in
-                await callService.peekGroupCallAndUpdateThread(
+            Task { [groupCallManager] in
+                await groupCallManager.peekGroupCallAndUpdateThread(
                     groupThread,
                     peekTrigger: .localEvent()
                 )

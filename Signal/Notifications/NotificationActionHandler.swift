@@ -8,6 +8,8 @@ import SignalUI
 
 public class NotificationActionHandler: Dependencies {
 
+    private static var callService: CallService { AppEnvironment.shared.callService }
+
     class func handleNotificationResponse( _ response: UNNotificationResponse, completionHandler: @escaping () -> Void) {
         AssertIsOnMainThread()
         firstly {

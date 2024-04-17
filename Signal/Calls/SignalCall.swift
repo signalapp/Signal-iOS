@@ -339,7 +339,8 @@ public class SignalCall: CallManagerCallReference {
         let videoCaptureController = VideoCaptureController()
         let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
 
-        guard let groupCall = NSObject.callService.callManager.createGroupCall(
+        let callService = AppEnvironment.shared.callService!
+        guard let groupCall = callService.callManager.createGroupCall(
             groupId: thread.groupModel.groupId,
             sfuUrl: sfuURL,
             hkdfExtraInfo: Data.init(),

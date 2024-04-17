@@ -96,6 +96,8 @@ extension CallUIAdaptee {
  */
 public class CallUIAdapter: NSObject, CallServiceObserver {
 
+    private var callService: CallService { AppEnvironment.shared.callService }
+
     lazy var nonCallKitAdaptee = NonCallKitCallUIAdaptee()
 
     lazy var callKitAdaptee: CallKitCallUIAdaptee? = { () -> CallKitCallUIAdaptee? in
@@ -139,9 +141,6 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         super.init()
 
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.callService.addObserverAndSyncState(observer: self)
-        }
     }
 
     public static var isCallkitDisabledForLocale: Bool {

@@ -46,7 +46,7 @@ extension ConversationViewController {
                                                selector: #selector(profileWhitelistDidChange),
                                                name: UserProfileNotifications.profileWhitelistDidChange,
                                                object: nil)
-        callService.addObserver(observer: self, syncStateImmediately: false)
+        AppEnvironment.shared.callService.addObserver(observer: self, syncStateImmediately: false)
     }
 
     @objc

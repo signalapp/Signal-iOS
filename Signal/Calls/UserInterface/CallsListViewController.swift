@@ -56,7 +56,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         callRecordMissedCallManager: DependenciesBridge.shared.callRecordMissedCallManager,
         callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
         callRecordStore: DependenciesBridge.shared.callRecordStore,
-        callService: NSObject.callService,
+        callService: AppEnvironment.shared.callService,
         contactsManager: NSObject.contactsManager,
         db: NSObject.databaseStorage,
         interactionStore: DependenciesBridge.shared.interactionStore,

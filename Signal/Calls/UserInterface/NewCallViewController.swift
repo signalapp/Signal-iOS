@@ -40,7 +40,7 @@ class NewCallViewController: RecipientPickerContainerViewController {
         .init(
             blockingManager: blockingManager,
             databaseStorage: databaseStorage,
-            callService: callService
+            callService: AppEnvironment.shared.callService
         )
     }
 

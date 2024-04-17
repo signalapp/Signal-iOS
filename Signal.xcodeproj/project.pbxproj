@@ -657,6 +657,7 @@
 		506ABE6E2A43B2FE008844D1 /* UserProfileMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506ABE6C2A43B2C0008844D1 /* UserProfileMergerTest.swift */; };
 		5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryE164CollectionTest.swift */; };
 		5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */; };
+		5077B5B42BBC687C00EF399E /* CurrentCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5077B5B32BBC687C00EF399E /* CurrentCall.swift */; };
 		5077B5B82BBC7FE600EF399E /* ContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5077B5B72BBC7FE600EF399E /* ContactTest.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
 		507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */; };
@@ -1161,7 +1162,7 @@
 		725465602BA033E200EABFD2 /* UserNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0923CEBF4400B0E74B /* UserNotificationsPresenter.swift */; };
 		725465612BA033E200EABFD2 /* NotificationPresenterImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0A23CEBF4400B0E74B /* NotificationPresenterImpl.swift */; };
 		725465622BA0348600EABFD2 /* GroupCallPeekClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */; };
-		725465632BA0348600EABFD2 /* LightweightGroupCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */; };
+		725465632BA0348600EABFD2 /* GroupCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32525F9427C74B1A0099E801 /* GroupCallManager.swift */; };
 		725465642BA0369D00EABFD2 /* AppSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46A29DB9F17007FEADA /* AppSetup.swift */; };
 		7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
@@ -2885,7 +2886,7 @@
 		2C1CB05FE7FDA3C1F0138D7F /* Pods-SignalServiceKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.debug.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		2E997798B7AF35DBBC0905DF /* Pods-SignalUI.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.testable release.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.testable release.xcconfig"; sourceTree = "<group>"; };
 		3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCollisionReviewCell.swift; sourceTree = "<group>"; };
-		32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightweightGroupCallManager.swift; sourceTree = "<group>"; };
+		32525F9427C74B1A0099E801 /* GroupCallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallManager.swift; sourceTree = "<group>"; };
 		326DF2602739F4D90017B789 /* FeaturedBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedBadgeViewController.swift; sourceTree = "<group>"; };
 		327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetStartedBannerViewController.swift; sourceTree = "<group>"; };
 		328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallSwipeToastView.swift; sourceTree = "<group>"; };
@@ -3602,6 +3603,7 @@
 		506ABE6A2A43AECA008844D1 /* UserProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileStore.swift; sourceTree = "<group>"; };
 		506ABE6C2A43B2C0008844D1 /* UserProfileMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileMergerTest.swift; sourceTree = "<group>"; };
 		5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdaterTest.swift; sourceTree = "<group>"; };
+		5077B5B32BBC687C00EF399E /* CurrentCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCall.swift; sourceTree = "<group>"; };
 		5077B5B72BBC7FE600EF399E /* ContactTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactTest.swift; sourceTree = "<group>"; };
 		507CD5E429660D5100E47DAC /* ServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceId.swift; sourceTree = "<group>"; };
 		507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSKeyedUnarchiver+SSK.swift"; sourceTree = "<group>"; };
@@ -8849,6 +8851,7 @@
 				D93108082B337A23006A034E /* CallRecordLoader.swift */,
 				88588D25252E59CE00405414 /* CallService.swift */,
 				B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */,
+				5077B5B32BBC687C00EF399E /* CurrentCall.swift */,
 				32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */,
 				D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */,
 				8814D9652564A33E00A472E3 /* GroupCallRemoteVideoManager.swift */,
@@ -10095,8 +10098,8 @@
 				D9AA379D2A86C9660088EFFB /* Group */,
 				D9AA379E2A86CA3F0088EFFB /* Individual */,
 				50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */,
+				32525F9427C74B1A0099E801 /* GroupCallManager.swift */,
 				D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */,
-				32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */,
 				6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */,
 				D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */,
 				F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */,
@@ -12953,6 +12956,7 @@
 				D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */,
+				5077B5B42BBC687C00EF399E /* CurrentCall.swift in Sources */,
 				34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */,
 				3415217525B0CB31009F177F /* CVAttachmentProgressView.swift in Sources */,
 				348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */,
@@ -13836,6 +13840,7 @@
 				F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */,
 				F9C5CE73289453B400548EEE /* GroupAccess.swift in Sources */,
 				D979CC592AD61641006AAC49 /* GroupCallInteractionFinder.swift in Sources */,
+				725465632BA0348600EABFD2 /* GroupCallManager.swift in Sources */,
 				725465622BA0348600EABFD2 /* GroupCallPeekClient.swift in Sources */,
 				D979CC5B2AD61699006AAC49 /* GroupCallRecordManager.swift in Sources */,
 				D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */,
@@ -13918,7 +13923,6 @@
 				F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */,
 				F9C5CD4C289453B300548EEE /* LegacySessionRecord.m in Sources */,
 				F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */,
-				725465632BA0348600EABFD2 /* LightweightGroupCallManager.swift in Sources */,
 				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
 				66076B4E2BC056980043D547 /* LinkPreviewAttachmentBuilder.swift in Sources */,
 				66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */,

@@ -321,20 +321,25 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let sleepBlockObject = NSObject()
         DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
 
+        let _currentCall = AtomicValue<SignalCall?>(nil, lock: .init())
+        let currentCall = CurrentCall(rawValue: _currentCall)
+
         let databaseContinuation = AppSetup().start(
             appContext: launchContext.appContext,
             databaseStorage: launchContext.databaseStorage,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
             callMessageHandler: WebRTCCallMessageHandler(),
-            lightweightGroupCallManagerBuilder: {
-                return CallService(appContext: launchContext.appContext, groupCallPeekClient: $0)
-            },
+            currentCallThreadProvider: currentCall,
             notificationPresenter: NotificationPresenterImpl()
         )
         setupNSEInteroperation()
         SUIEnvironment.shared.setup()
-        AppEnvironment.shared.setup()
+        AppEnvironment.shared.setUp(callService: CallService(
+            appContext: launchContext.appContext,
+            groupCallPeekClient: NSObject.groupCallManager.groupCallPeekClient,
+            mutableCurrentCall: _currentCall
+        ))
         let result = databaseContinuation.prepareDatabase()
         return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
     }
@@ -1279,16 +1284,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 // * It can be received if the user taps the "video" button for a contact in the
                 //   contacts app.  If so, the correct response is to try to initiate a new call
                 //   to that user - unless there already is another call in progress.
-                if let currentCall = self.callService.currentCall {
+                let callService = AppEnvironment.shared.callService!
+                if let currentCall = callService.currentCall {
                     if currentCall.isIndividualCall, thread.uniqueId == currentCall.thread.uniqueId {
                         Logger.info("Upgrading existing call to video")
-                        self.callService.individualCallService.handleCallKitStartVideo()
+                        callService.individualCallService.handleCallKitStartVideo()
                     } else {
                         Logger.warn("Ignoring user activity; on another call.")
                     }
                     return
                 }
-                self.callService.initiateCall(thread: thread, isVideo: true)
+                callService.initiateCall(thread: thread, isVideo: true)
             }
             return true
         case "INStartAudioCallIntent":
@@ -1311,11 +1317,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     Logger.warn("Ignoring user activity; unknown user.")
                     return
                 }
-                if self.callService.currentCall != nil {
+                let callService = AppEnvironment.shared.callService!
+                if callService.currentCall != nil {
                     Logger.warn("Ignoring user activity; on another call.")
                     return
                 }
-                self.callService.initiateCall(thread: thread, isVideo: false)
+                callService.initiateCall(thread: thread, isVideo: false)
             }
             return true
         case "INStartCallIntent":
@@ -1339,11 +1346,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     Logger.warn("Ignoring user activity; unknown user.")
                     return
                 }
-                if self.callService.currentCall != nil {
+                let callService = AppEnvironment.shared.callService!
+                if callService.currentCall != nil {
                     Logger.warn("Ignoring user activity; on another call.")
                     return
                 }
-                self.callService.initiateCall(thread: thread, isVideo: isVideo)
+                callService.initiateCall(thread: thread, isVideo: isVideo)
             }
             return true
         case NSUserActivityTypeBrowsingWeb:

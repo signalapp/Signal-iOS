@@ -40,7 +40,7 @@ public class AppSetup {
         paymentsEvents: PaymentsEvents,
         mobileCoinHelper: MobileCoinHelper,
         callMessageHandler: CallMessageHandler,
-        lightweightGroupCallManagerBuilder: (GroupCallPeekClient) -> LightweightGroupCallManager,
+        currentCallThreadProvider: any CurrentCallThreadProvider,
         notificationPresenter: any NotificationPresenter,
         testDependencies: TestDependencies? = nil
     ) -> AppSetup.DatabaseContinuation {
@@ -901,7 +901,10 @@ public class AppSetup {
         )
 
         let groupCallPeekClient = GroupCallPeekClient(db: db, groupsV2: groupsV2)
-        let lightweightGroupCallManager = lightweightGroupCallManagerBuilder(groupCallPeekClient)
+        let groupCallManager = GroupCallManager(
+            currentCallThreadProvider: currentCallThreadProvider,
+            groupCallPeekClient: groupCallPeekClient
+        )
 
         let sskEnvironment = SSKEnvironment(
             contactManager: contactManager,
@@ -963,7 +966,7 @@ public class AppSetup {
             proximityMonitoringManager: proximityMonitoringManager,
             avatarBuilder: avatarBuilder,
             smJobQueues: smJobQueues,
-            lightweightGroupCallManager: lightweightGroupCallManager
+            groupCallManager: groupCallManager
         )
         SSKEnvironment.setShared(sskEnvironment, isRunningTests: appContext.isRunningTests)
 

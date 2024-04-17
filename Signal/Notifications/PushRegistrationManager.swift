@@ -172,7 +172,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         if let callRelayPayload = callRelayPayload {
             Logger.info("Received VoIP push from the NSE: \(callRelayPayload)")
             owsAssertDebug(isWaitingForSignal.tryToSetFlag())
-            callService.earlyRingNextIncomingCall = true
+            AppEnvironment.shared.callService.earlyRingNextIncomingCall = true
         }
 
         let isUnexpectedPush = AtomicBool(false, lock: .sharedGlobal)

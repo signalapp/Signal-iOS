@@ -65,7 +65,7 @@ class GroupCallRecordRingingCleanupManager {
             callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
             db: DependenciesBridge.shared.db,
             interactionStore: DependenciesBridge.shared.interactionStore,
-            groupCallPeekClient: SSKEnvironment.shared.lightweightGroupCallManagerRef.groupCallPeekClient,
+            groupCallPeekClient: SSKEnvironment.shared.groupCallManagerRef.groupCallPeekClient,
             notificationPresenter: Wrappers.NotificationPresenter(
                 notificationPresenter: SSKEnvironment.shared.notificationPresenterRef
             ),

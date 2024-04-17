@@ -11,17 +11,6 @@ import SignalUI
 
 @objc
 public extension NSObject {
-
-    @nonobjc
-    final var callService: CallService {
-        SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
-    }
-
-    @nonobjc
-    static var callService: CallService {
-        SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
-    }
-
     @nonobjc
     final var notificationPresenterImpl: NotificationPresenterImpl {
         return SSKEnvironment.shared.notificationPresenterRef as! NotificationPresenterImpl
@@ -78,15 +67,6 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-
-    var callService: CallService {
-        SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
-    }
-
-    static var callService: CallService {
-        SSKEnvironment.shared.lightweightGroupCallManagerRef as! CallService
-    }
-
     var notificationPresenterImpl: NotificationPresenterImpl {
         return SSKEnvironment.shared.notificationPresenterRef as! NotificationPresenterImpl
     }

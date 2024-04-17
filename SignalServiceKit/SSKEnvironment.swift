@@ -85,7 +85,7 @@ public class SSKEnvironment: NSObject {
     public let proximityMonitoringManagerRef: OWSProximityMonitoringManager
     public let avatarBuilderRef: AvatarBuilder
     public let smJobQueuesRef: SignalMessagingJobQueues
-    public let lightweightGroupCallManagerRef: LightweightGroupCallManager
+    public let groupCallManagerRef: GroupCallManager
 
     private let appExpiryRef: AppExpiry
     private let aciSignalProtocolStoreRef: SignalProtocolStore
@@ -151,7 +151,7 @@ public class SSKEnvironment: NSObject {
         proximityMonitoringManager: OWSProximityMonitoringManager,
         avatarBuilder: AvatarBuilder,
         smJobQueues: SignalMessagingJobQueues,
-        lightweightGroupCallManager: LightweightGroupCallManager
+        groupCallManager: GroupCallManager
     ) {
         self.contactManagerRef = contactManager
         self.messageSenderRef = messageSender
@@ -212,7 +212,7 @@ public class SSKEnvironment: NSObject {
         self.proximityMonitoringManagerRef = proximityMonitoringManager
         self.avatarBuilderRef = avatarBuilder
         self.smJobQueuesRef = smJobQueues
-        self.lightweightGroupCallManagerRef = lightweightGroupCallManager
+        self.groupCallManagerRef = groupCallManager
     }
 
     public func signalProtocolStoreRef(for identity: OWSIdentity) -> SignalProtocolStore {
