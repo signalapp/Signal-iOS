@@ -172,6 +172,21 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         updateRecentAttachments()
         updateMutualGroupThreads()
         reloadThreadAndUpdateContent()
+
+        updateNavigationBar()
+    }
+
+    func updateNavigationBar() {
+        guard canEditConversationAttributes, isGroupThread else {
+            navigationItem.rightBarButtonItem = nil
+            return
+        }
+
+        navigationItem.rightBarButtonItem = .systemItem(.edit) { [weak self] in
+            guard let self else { return }
+            owsAssertDebug(self.canEditConversationAttributes)
+            self.showGroupAttributesView(editAction: .none)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -921,17 +936,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     func tappedConversationSearch() {
         conversationSettingsViewDelegate?.conversationSettingsDidRequestConversationSearch()
-    }
-
-    @objc
-    private func editButtonWasPressed(_ sender: Any) {
-        owsAssertDebug(canEditConversationAttributes)
-
-        if isGroupThread {
-            showGroupAttributesView(editAction: .none)
-        } else if let contactThread = thread as? TSContactThread {
-            presentCreateOrEditContactViewController(address: contactThread.contactAddress, editImmediately: true)
-        }
     }
 
     // MARK: - Notifications
