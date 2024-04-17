@@ -357,12 +357,9 @@ public class TSAttachmentMultisend: Dependencies {
                     storyMessagesToSend: preparedSend.storyMessagesToSend,
                     transaction: transaction
                 )
-                enqueuedFuture.resolve(
-                    on: SyncScheduler(),
-                    with: jobResult.enqueuedPromise.map(on: SyncScheduler(), {
-                        return preparedSend.threads
-                    })
-                )
+                transaction.addAsyncCompletionOffMain {
+                    enqueuedFuture.resolve(preparedSend.threads)
+                }
                 sentFuture.resolve(
                     on: SyncScheduler(),
                     with: jobResult.sentPromise.map(on: SyncScheduler(), {

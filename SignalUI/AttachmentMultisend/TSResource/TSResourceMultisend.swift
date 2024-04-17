@@ -9,7 +9,7 @@ import SignalServiceKit
 public struct TSResourceMultisendResult {
     /// Resolved when the messages are prepared but before uploading/sending.
     public let preparedPromise: Promise<[PreparedOutgoingMessage]>
-    /// Resolved when the attachments are uploaded and sending is enqueued.
+    /// Resolved when sending is durably enqueued but before uploading/sending.
     public let enqueuedPromise: Promise<[TSThread]>
     /// Resolved when the message is sent.
     public let sentPromise: Promise<[TSThread]>
