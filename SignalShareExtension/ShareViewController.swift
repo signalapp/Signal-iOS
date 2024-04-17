@@ -32,6 +32,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         case loadDataRepresentationFailed
         case loadInPlaceFileRepresentationFailed
         case nonFileUrl
+        case fileUrlWasBplist
     }
 
     private var hasInitialRootViewController = false
@@ -675,38 +676,28 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let itemProvider = typedItemProvider.itemProvider
         switch typedItemProvider.itemType {
         case .image:
-            // sharing a screenshot likes to chuck a UIImage at the share extension, but for some reason
-            // at least on the simulator, canLoadObject(ofClass: UIImage.self) returns false, so we have
-            // a fallback order here:
+            // some apps send a usable file to us and some throw a UIImage at us, the UIImage can come in either directly
+            // or as a bplist containing the NSKeyedArchiver output of a UIImage. the code below executes the following
+            // order of attempts to load the input in the right way:
             //   1) try attaching the image from a file so we don't have to load the image into RAM in the common case
             //   2) try to load a UIImage directly in the case that is what was sent over
             //   3) try to NSKeyedUnarchive NSData directly into a UIImage
             do {
                 return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
-            } catch SignalAttachmentError.couldNotParseImage {
+            } catch SignalAttachmentError.couldNotParseImage, ShareViewControllerError.fileUrlWasBplist {
                 Logger.warn("failed to parse image directly from file; checking for loading UIImage directly")
-                do {
-                    let image: UIImage = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadUIImageObject, failedLoadError: .loadUIImageObjectFailed)
-                    return try Self.createAttachment(withImage: image)
-                } catch ShareViewControllerError.cannotLoadUIImageObject {
-                    Logger.warn("failed to load UIImage directly; trying fallback to NSData and NSKeyedUnarchiver into UIImage")
-                    let imageData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
-                    guard let image: UIImage = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIImage.self, from: imageData) else {
-                        Logger.warn("final fallback failed so rethrow the original attachment error")
-                        throw SignalAttachmentError.couldNotParseImage
-                    }
-                    return try Self.createAttachment(withImage: image)
-                }
+                let image: UIImage = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadUIImageObject, failedLoadError: .loadUIImageObjectFailed)
+                return try Self.createAttachment(withImage: image)
             }
         case .movie, .pdf, .data:
             return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
         case .fileUrl:
-            let url: URL = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
-            let attachment = try Self.copyAttachment(fromUrl: url)
+            let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
+            let attachment = try Self.copyAttachment(fromUrl: url as URL)
             return try await self.compressVideo(attachment: attachment)
         case .webUrl:
-            let url: URL = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
-            return try Self.createAttachment(withText: url.absoluteString)
+            let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
+            return try Self.createAttachment(withText: (url as URL).absoluteString)
         case .contact:
             let contactData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: kUTTypeContact as String)
             let dataSource = DataSourceValue.dataSource(with: contactData, utiType: kUTTypeContact as String)
@@ -717,8 +708,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
             return attachment
         case .text:
-            let text: String = try await Self.loadObject(fromItemProvider: itemProvider, cannotLoadError: .cannotLoadStringObject, failedLoadError: .loadStringObjectFailed)
-            return try Self.createAttachment(withText: text)
+            let text: NSString = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadStringObject, failedLoadError: .loadStringObjectFailed)
+            return try Self.createAttachment(withText: text as String)
         case .pkPass:
             let typeIdentifier = "com.apple.pkpass"
             let pkPass = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typeIdentifier)
@@ -772,11 +763,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 if let error {
                     continuation.resume(throwing: error)
                 } else if let fileUrl {
-                    do {
-                        // NOTE: Compression here rather than creating an additional temp file would be nice but blocking this completion handler for video encoding is probably not a good way to go.
-                        continuation.resume(returning: try Self.copyAttachment(fromUrl: fileUrl, defaultTypeIdentifier: typeIdentifier))
-                    } catch {
-                        continuation.resume(throwing: error)
+                    if Self.isBplist(url: fileUrl) {
+                        continuation.resume(throwing: ShareViewControllerError.fileUrlWasBplist)
+                    } else {
+                        do {
+                            // NOTE: Compression here rather than creating an additional temp file would be nice but blocking this completion handler for video encoding is probably not a good way to go.
+                            continuation.resume(returning: try Self.copyAttachment(fromUrl: fileUrl, defaultTypeIdentifier: typeIdentifier))
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
                     }
                 } else {
                     continuation.resume(throwing: ShareViewControllerError.loadInPlaceFileRepresentationFailed)
@@ -805,42 +800,32 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
     }
 
-    nonisolated private static func loadObject<T>(fromItemProvider itemProvider: NSItemProvider,
-                                                  cannotLoadError: ShareViewControllerError,
-                                                  failedLoadError: ShareViewControllerError) async throws -> T
-    where T: _ObjectiveCBridgeable, T._ObjectiveCType: NSItemProviderReading {
-        guard itemProvider.canLoadObject(ofClass: T.self) else {
-            throw cannotLoadError
-        }
-        return try await withCheckedThrowingContinuation { continuation in
-            _ = itemProvider.loadObject(ofClass: T.self) { object, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else if let object {
-                    continuation.resume(returning: object)
-                } else {
-                    continuation.resume(throwing: failedLoadError)
+    nonisolated private static func loadObjectWithKeyedUnarchiverFallback<T>(fromItemProvider itemProvider: NSItemProvider,
+                                                                             forTypeIdentifier typeIdentifier: String,
+                                                                             cannotLoadError: ShareViewControllerError,
+                                                                             failedLoadError: ShareViewControllerError) async throws -> T
+    where T: NSItemProviderReading, T: NSCoding, T: NSObject {
+        do {
+            guard itemProvider.canLoadObject(ofClass: T.self) else {
+                throw cannotLoadError
+            }
+            return try await withCheckedThrowingContinuation { continuation in
+                _ = itemProvider.loadObject(ofClass: T.self) { object, error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else if let typedObject = object as? T {
+                        continuation.resume(returning: typedObject)
+                    } else {
+                        continuation.resume(throwing: failedLoadError)
+                    }
                 }
             }
-        }
-    }
-
-    nonisolated private static func loadObject<T>(fromItemProvider itemProvider: NSItemProvider,
-                                                  cannotLoadError: ShareViewControllerError,
-                                                  failedLoadError: ShareViewControllerError) async throws -> T
-    where T: NSItemProviderReading {
-        guard itemProvider.canLoadObject(ofClass: T.self) else {
-            throw cannotLoadError
-        }
-        return try await withCheckedThrowingContinuation { continuation in
-            _ = itemProvider.loadObject(ofClass: T.self) { object, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else if let typedObject = object as? T {
-                    continuation.resume(returning: typedObject)
-                } else {
-                    continuation.resume(throwing: failedLoadError)
-                }
+        } catch {
+            let data = try await loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typeIdentifier)
+            if let result = try? NSKeyedUnarchiver.unarchivedObject(ofClass: T.self, from: data) {
+                return result
+            } else {
+                throw error
             }
         }
     }
@@ -866,6 +851,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             throw attachmentError
         }
         return attachment
+    }
+
+    nonisolated private static func isBplist(url: URL) -> Bool {
+        if let handle = try? FileHandle(forReadingFrom: url) {
+            let data = handle.readData(ofLength: 6)
+            return data == "bplist".data(using: .utf8)
+        } else {
+            return false
+        }
     }
 }
 
