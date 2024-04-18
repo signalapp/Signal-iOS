@@ -175,10 +175,6 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         for groupThread: TSGroupThread,
         serverReceivedTimestamp: UInt64
     ) async {
-        GroupCallPeekLogger.shared.info(
-            "Received group call update message for thread \(groupThread.uniqueId), eraId \(String(describing: updateMessage.eraID))"
-        )
-
         await groupCallManager.peekGroupCallAndUpdateThread(
             groupThread,
             peekTrigger: .receivedGroupUpdateMessage(

@@ -18,7 +18,7 @@ public class CurrentCallNoOpThreadProvider: CurrentCallThreadProvider {
 /// Fetches & updates group call state.
 public class GroupCallManager {
     /// The triggers that may kick off a group call peek.
-    public enum PeekTrigger {
+    public enum PeekTrigger: CustomStringConvertible {
         /// We received a group update message, and are peeking in response.
         case receivedGroupUpdateMessage(eraId: String?, messageTimestamp: UInt64)
 
@@ -31,6 +31,16 @@ public class GroupCallManager {
                 return messageTimestamp
             case let .localEvent(timestamp):
                 return timestamp
+            }
+        }
+
+        public var description: String {
+            switch self {
+            case .receivedGroupUpdateMessage(let eraId, _):
+                let callId = eraId.map { CallId(eraId: $0) }
+                return "GroupCallUpdateMessage, callId: \(callId?.description ?? "(null)")"
+            case .localEvent(let timestamp):
+                return "LocalEvent"
             }
         }
     }
@@ -60,14 +70,18 @@ public class GroupCallManager {
         _ thread: TSGroupThread,
         peekTrigger: PeekTrigger
     ) async {
-        // If the currentCall is for the provided thread, we don't need to perform an explicit
-        // peek. Connected calls will receive automatic updates from RingRTC
+        logger.info("Peek requested for thread \(thread.uniqueId) with trigger: \(peekTrigger)")
+
+        // If the currentCall is for the provided thread, we don't need to
+        // perform an explicit peek. Connected calls will receive automatic
+        // updates from RingRTC.
         guard currentCallThreadProvider.currentCallThread != thread else {
-            GroupCallPeekLogger.shared.info("Ignoring peek request for the current call")
+            logger.info("Ignoring peek request for the current call.")
             return
         }
 
         guard thread.isLocalUserFullMember else {
+            logger.warn("Ignoring peek request for non-member thread!")
             return
         }
 
@@ -114,7 +128,7 @@ public class GroupCallManager {
             }()
 
             if shouldUpdateCallModels {
-                self.logger.info("Applying group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
+                self.logger.info("Applying group call PeekInfo for thread: \(thread.uniqueId), callId: \(info.callId?.description ?? "(null)")")
 
                 await self.databaseStorage.awaitableWrite { tx in
                     self.updateGroupCallModelsForPeek(
@@ -125,7 +139,7 @@ public class GroupCallManager {
                     )
                 }
             } else {
-                self.logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
+                self.logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId), stale callId: \(info.callId?.description ?? "(null)")")
             }
         } catch {
             if error.isNetworkFailureOrTimeout {
@@ -148,8 +162,7 @@ public class GroupCallManager {
         triggerEventTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
-        let currentEraId: String? = peekInfo.eraId
-        let currentCallId: UInt64? = currentEraId.map { callIdFromEra($0) }
+        let currentCallId: CallId? = peekInfo.callId
 
         // Clean up any unended group calls that don't match the currently
         // in-progress call.
@@ -160,7 +173,6 @@ public class GroupCallManager {
         )
 
         guard
-            let currentEraId,
             let currentCallId,
             let creatorAci = peekInfo.creator.map({ Aci(fromUUID: $0) }),
             let groupThreadRowId = groupThread.sqliteRowId
@@ -186,7 +198,7 @@ public class GroupCallManager {
             // "current" call ID. If so, we should reuse/update it and its
             // interaction.
             switch self.callRecordStore.fetch(
-                callId: currentCallId,
+                callId: currentCallId.rawValue,
                 threadRowId: groupThreadRowId,
                 tx: tx.asV2Write
             ) {
@@ -212,13 +224,13 @@ public class GroupCallManager {
         case .found(let interactionToUpdate):
             let wasOldMessageEmpty = interactionToUpdate.joinedMemberUuids?.count == 0 && !interactionToUpdate.hasEnded
 
-            logger.info("Updating group call interaction for thread \(groupThread.uniqueId), eraId \(currentEraId). Joined member count: \(joinedMemberAcis.count)")
+            logger.info("Updating group call interaction for thread \(groupThread.uniqueId), callId \(currentCallId). Joined member count: \(joinedMemberAcis.count)")
 
             self.interactionStore.updateGroupCallInteractionAcis(
                 groupCallInteraction: interactionToUpdate,
                 joinedMemberAcis: joinedMemberAcis,
                 creatorAci: creatorAci,
-                callId: currentCallId,
+                callId: currentCallId.rawValue,
                 groupThreadRowId: groupThreadRowId,
                 notificationScheduler: self.schedulers.main,
                 tx: tx.asV2Write
@@ -259,7 +271,7 @@ public class GroupCallManager {
     }
 
     private func createModelsForNewGroupCall(
-        callId: UInt64,
+        callId: CallId,
         joinedMemberAcis: [Aci],
         creatorAci: Aci?,
         triggerEventTimestamp: UInt64,
@@ -277,7 +289,7 @@ public class GroupCallManager {
 
         logger.info("Creating record for group call discovered via peek.")
         _ = groupCallRecordManager.createGroupCallRecordForPeek(
-            callId: callId,
+            callId: callId.rawValue,
             groupCallInteraction: newGroupCallInteraction,
             groupCallInteractionRowId: interactionRowId,
             groupThread: groupThread,
@@ -298,18 +310,18 @@ public class GroupCallManager {
     /// The interaction representing the in-progress call for the given group
     /// (matching the given call ID), if any.
     private func cleanUpUnendedCallMessagesAsNecessary(
-        currentCallId: UInt64?,
+        currentCallId: CallId?,
         groupThread: TSGroupThread,
         tx: SDSAnyWriteTransaction
     ) -> OWSGroupCallMessage? {
         enum CallIdProvider {
-            case legacyEraId(callId: UInt64)
+            case legacyEraId(eraId: String)
             case callRecord(callRecord: CallRecord)
 
-            var callId: UInt64 {
+            var callId: CallId {
                 switch self {
-                case .legacyEraId(let callId): return callId
-                case .callRecord(let callRecord): return callRecord.callId
+                case .legacyEraId(let eraId): return CallId(eraId: eraId)
+                case .callRecord(let callRecord): return CallId(callRecord.callId)
                 }
             }
         }
@@ -325,7 +337,7 @@ public class GroupCallManager {
                 if let legacyCallInteractionEraId = groupCallInteraction.eraId {
                     return (
                         groupCallInteraction,
-                        .legacyEraId(callId: callIdFromEra(legacyCallInteractionEraId))
+                        .legacyEraId(eraId: legacyCallInteractionEraId)
                     )
                 } else if
                     let callRowId = groupCallInteraction.sqliteRowId,
@@ -347,11 +359,22 @@ public class GroupCallManager {
         // Any call in our database that hasn't ended yet that doesn't match the
         // current call ID must have ended by definition. We do that update now.
         for (unendedCallInteraction, callIdProvider) in unendedCalls {
-            guard callIdProvider.callId != currentCallId else {
+            guard
+                callIdProvider.callId != currentCallId,
+                let groupThreadRowId = groupThread.sqliteRowId
+            else {
                 continue
             }
 
-            unendedCallInteraction.update(withHasEnded: true, transaction: tx)
+            logger.info("Marking unended group call interaction as ended for thread \(groupThread.uniqueId), callId \(callIdProvider.callId).")
+
+            interactionStore.markGroupCallInteractionAsEnded(
+                groupCallInteraction: unendedCallInteraction,
+                callId: callIdProvider.callId.rawValue,
+                groupThreadRowId: groupThreadRowId,
+                notificationScheduler: schedulers.main,
+                tx: tx.asV2Write
+            )
         }
 
         guard let currentCallId else {
@@ -385,7 +408,7 @@ public class GroupCallManager {
                 return
             }
 
-            let callId = callIdFromEra(eraId)
+            let callId = CallId(eraId: eraId)
 
             guard let groupThreadRowId = groupThread.sqliteRowId else {
                 owsFailDebug("Missing SQLite row ID for group thread!")
@@ -393,7 +416,7 @@ public class GroupCallManager {
             }
 
             switch self.callRecordStore.fetch(
-                callId: callId,
+                callId: callId.rawValue,
                 threadRowId: groupThreadRowId,
                 tx: tx.asV2Read
             ) {
@@ -455,5 +478,34 @@ public class GroupCallManager {
             wantsSound: true,
             transaction: tx
         )
+    }
+}
+
+// MARK: -
+
+/// A wrapper around UInt64 call IDs that pre-redacts them the same way the hex
+/// redaction rule would otherwise.
+private struct CallId: CustomStringConvertible, Equatable {
+    private static let unredactedLength: Int = 3
+
+    let rawValue: UInt64
+
+    init(_ rawValue: UInt64) {
+        self.rawValue = rawValue
+    }
+
+    init(eraId: String) {
+        self.rawValue = callIdFromEra(eraId)
+    }
+
+    var description: String {
+        let redactedCallId = "\(rawValue)".suffix(Self.unredactedLength)
+        return "…\(redactedCallId)"
+    }
+}
+
+private extension PeekInfo {
+    var callId: CallId? {
+        return eraId.map { CallId(eraId: $0) }
     }
 }

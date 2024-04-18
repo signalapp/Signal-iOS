@@ -338,7 +338,7 @@ class DebugUICallsTab: DebugUIPage {
             thread: groupThread,
             sentAtTimestamp: nowTimestamp
         )
-        callInteraction.update(withHasEnded: true, transaction: tx)
+        callInteraction.hasEnded = true
         callInteraction.anyInsert(transaction: tx)
 
         let callRecord = CallRecord(

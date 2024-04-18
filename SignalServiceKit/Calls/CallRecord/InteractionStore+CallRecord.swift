@@ -87,6 +87,40 @@ public extension InteractionStore {
             groupCallInteraction.joinedMemberUuids = joinedMemberAcis.map { $0.serviceIdUppercaseString }
         }
 
+        postUpdatedNotification(
+            callId: callId,
+            groupThreadRowId: groupThreadRowId,
+            notificationScheduler: notificationScheduler,
+            tx: tx
+        )
+    }
+
+    func markGroupCallInteractionAsEnded(
+        groupCallInteraction: OWSGroupCallMessage,
+        callId: UInt64,
+        groupThreadRowId: Int64,
+        notificationScheduler: Scheduler,
+        tx: DBWriteTransaction
+    ) {
+        updateInteraction(groupCallInteraction, tx: tx) { groupCallInteraction in
+            groupCallInteraction.hasEnded = true
+            groupCallInteraction.joinedMemberUuids = []
+        }
+
+        postUpdatedNotification(
+            callId: callId,
+            groupThreadRowId: groupThreadRowId,
+            notificationScheduler: notificationScheduler,
+            tx: tx
+        )
+    }
+
+    private func postUpdatedNotification(
+        callId: UInt64,
+        groupThreadRowId: Int64,
+        notificationScheduler: Scheduler,
+        tx: DBWriteTransaction
+    ) {
         tx.addAsyncCompletion(on: notificationScheduler) {
             NotificationCenter.default.post(GroupCallInteractionUpdatedNotification(
                 callId: callId,

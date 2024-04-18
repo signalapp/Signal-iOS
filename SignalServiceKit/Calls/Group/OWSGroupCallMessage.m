@@ -198,15 +198,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateGroupCallMessageWithTransaction:transaction
-                                             block:^(OWSGroupCallMessage *message) {
-                                                 message.hasEnded = hasEnded;
-                                                 message.joinedMemberUuids = @[];
-                                             }];
-}
-
 #pragma mark - Private
 
 - (NSString *)participantNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction

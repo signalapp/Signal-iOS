@@ -93,8 +93,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END
