@@ -2,7 +2,7 @@
 
 set -eux
 
-./send_build_notification.py started
+./send_build_notification.py started || :
 
 cd ..
 make dependencies

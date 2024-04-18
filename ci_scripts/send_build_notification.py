@@ -50,16 +50,16 @@ def main(ns):
     source = env["NOTIFY_SOURCE"]
     destination = env["NOTIFY_DESTINATION"]
 
-    branch = env["CI_BRANCH"]
     build_number = env["CI_BUILD_NUMBER"]
     build_url = env["CI_BUILD_URL"]
     prefix = EVENT_PREFIXES[ns.event]
+    ref = env["CI_GIT_REF"]
     trigger = env["CI_START_CONDITION"]
     version = get_marketing_version()
 
     message = (
-        f"{prefix} {workflow} for {version} ({build_number}) {ns.event} "
-        f"from {branch} (trigger: {trigger})\n\n{build_url}"
+        f"{prefix} Cloud build for {version} ({build_number}) {ns.event} "
+        f"from {ref} (trigger: {trigger})\n\n{build_url}"
     )
     args = ["curl", "--silent"]
     args.extend(["-H", "Content-Type: application/json"])

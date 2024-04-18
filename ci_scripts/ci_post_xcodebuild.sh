@@ -3,7 +3,7 @@
 set -eux
 
 if [ "${CI_XCODEBUILD_EXIT_CODE:-0}" = 0 ]; then
-    ./send_build_notification.py finished
+    ./send_build_notification.py finished || :
 else
-    ./send_build_notification.py failed
+    ./send_build_notification.py failed || :
 fi
