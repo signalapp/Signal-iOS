@@ -50,6 +50,8 @@ class ContactAboutSheet: StackSheetViewController {
 
     // MARK: Layout
 
+    private var nameLabel: ProfileDetailLabel?
+
     private lazy var avatarView: ConversationAvatarView = {
         let avatarView = ConversationAvatarView(
             sizeClass: .customDiameter(240),
@@ -148,7 +150,28 @@ class ContactAboutSheet: StackSheetViewController {
         stackView.addArrangedSubview(titleLabel)
         stackView.setCustomSpacing(12, after: titleLabel)
 
-        stackView.addArrangedSubview(ProfileDetailLabel.profile(displayName: self.displayName, secondaryName: self.secondaryName))
+        let nameLabel = ProfileDetailLabel.profile(
+            displayName: self.displayName,
+            secondaryName: self.secondaryName
+        ) { [weak self] in
+            guard
+                let self,
+                let secondaryName = self.secondaryName,
+                let nameLabel = self.nameLabel
+            else { return }
+            Tooltip(
+                message: String(
+                    format: OWSLocalizedString(
+                        "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE",
+                        comment: "Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}}"
+                    ),
+                    secondaryName
+                ),
+                shouldShowCloseButton: false
+            ).present(from: self, sourceView: nameLabel, arrowDirections: .down)
+        }
+        self.nameLabel = nameLabel
+        stackView.addArrangedSubview(nameLabel)
 
         if isVerified {
             stackView.addArrangedSubview(ProfileDetailLabel.verified())

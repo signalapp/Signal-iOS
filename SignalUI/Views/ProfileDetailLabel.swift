@@ -133,7 +133,8 @@ public extension ProfileDetailLabel {
     static func profile(
         displayName: String,
         secondaryName: String? = nil,
-        font: UIFont = .dynamicTypeBody
+        font: UIFont = .dynamicTypeBody,
+        tapAction: (() -> Void)? = nil
     ) -> ProfileDetailLabel {
         .init(
             attributedTitle: {
@@ -149,7 +150,8 @@ public extension ProfileDetailLabel {
                 }
             }().styled(with: .font(font)),
             icon: .profileName,
-            font: font
+            font: font,
+            tapAction: tapAction
         )
     }
 
