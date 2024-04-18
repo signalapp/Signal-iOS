@@ -65,7 +65,7 @@ PODS:
     - YYImage/Core
 
 DEPENDENCIES:
-  - blurhash (from `https://github.com/signalapp/blurhash`, branch `signal-master`)
+  - blurhash (from `./ThirdParty/blurhash.podspec`)
   - BonMot
   - CocoaLumberjack
   - GRDB.swift/SQLCipher
@@ -105,8 +105,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   blurhash:
-    :branch: signal-master
-    :git: https://github.com/signalapp/blurhash
+    :podspec: "./ThirdParty/blurhash.podspec"
   LibMobileCoin:
     :commit: 345c49113e5d92e152517f17b605c9b8aef06dca
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
@@ -178,7 +177,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/YYImage
 
 SPEC CHECKSUMS:
-  blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
+  blurhash: f588a9d659f4c742a325bbbbd438d1ef3c34af19
   BonMot: fb2b6a2209cb3149aca37b7131d49c051c04ae86
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
@@ -201,6 +200,6 @@ SPEC CHECKSUMS:
   Wire: f5fe13fcad476bfd248f23a45a2004167c0ebae2
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 4cbfb4f3b865ec42529f34ecb02eb2f7efdd38e0
+PODFILE CHECKSUM: e801eb7dd476e7fdd7e818cbfd3bc5ba5592b9d0
 
 COCOAPODS: 1.15.2

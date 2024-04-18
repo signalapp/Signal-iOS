@@ -8,6 +8,7 @@ use_frameworks!
 
 source 'https://cdn.cocoapods.org/'
 
+pod 'blurhash', podspec: './ThirdParty/blurhash.podspec'
 pod 'SwiftProtobuf', ">= 1.14.0"
 
 pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
@@ -16,9 +17,6 @@ pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspec
 ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = 'efa1ba4cef14c220714fbc657bd104b5c01df0b9e15a33836c112278150460d6'
 pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.44.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal-client', testspecs: ["Tests"]
-
-pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
-# pod 'blurhash', path: '../blurhash'
 
 ENV['RINGRTC_PREBUILD_CHECKSUM'] = '8d2875193ea2f08382adc4b48c2a5e6898d7077d2b19e037a377b0a32f489d7c'
 pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.39.3', inhibit_warnings: true
