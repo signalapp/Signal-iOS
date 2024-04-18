@@ -283,17 +283,18 @@ public class SignalCall: CallManagerCallReference {
         }
     }
 
-    init(groupCall: GroupCall, groupThread: TSGroupThread) {
-        mode = .group(groupCall)
-        audioActivity = AudioActivity(
+    init(groupCall: GroupCall, groupThread: TSGroupThread, videoCaptureController: VideoCaptureController) {
+        self.mode = .group(groupCall)
+        self.audioActivity = AudioActivity(
             audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
             behavior: .call
         )
-        thread = groupThread
-        ringRestrictions = []
+        self.thread = groupThread
+        self.ringRestrictions = []
+        self.videoCaptureController = videoCaptureController
 
         if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
-            ringRestrictions.insert(.groupTooLarge)
+            self.ringRestrictions.insert(.groupTooLarge)
         }
 
         // Track the callInProgress restriction regardless; we use that for purposes other than rings.
@@ -302,7 +303,7 @@ public class SignalCall: CallManagerCallReference {
         }
         if hasActiveCallMessage {
             // This info may be out of date, but the first peek will update it.
-            ringRestrictions.insert(.callInProgress)
+            self.ringRestrictions.insert(.callInProgress)
         }
 
         groupCall.delegate = self
@@ -319,41 +320,18 @@ public class SignalCall: CallManagerCallReference {
     }
 
     init(individualCall: IndividualCall) {
-        mode = .individual(individualCall)
-        audioActivity = AudioActivity(
+        self.mode = .individual(individualCall)
+        self.audioActivity = AudioActivity(
             audioDescription: "[SignalCall] with individual \(individualCall.remoteAddress)",
             behavior: .call
         )
-        thread = individualCall.thread
-        ringRestrictions = .notApplicable
+        self.thread = individualCall.thread
+        self.ringRestrictions = .notApplicable
         individualCall.delegate = self
     }
 
     deinit {
         owsAssertDebug(systemState != .reported, "call \(localId) was reported to system but never removed")
-    }
-
-    public class func groupCall(thread: TSGroupThread) -> SignalCall? {
-        owsAssertDebug(thread.groupModel.groupsVersion == .V2)
-
-        let videoCaptureController = VideoCaptureController()
-        let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
-
-        let callService = AppEnvironment.shared.callService!
-        guard let groupCall = callService.callManager.createGroupCall(
-            groupId: thread.groupModel.groupId,
-            sfuUrl: sfuURL,
-            hkdfExtraInfo: Data.init(),
-            audioLevelsIntervalMillis: nil,
-            videoCaptureController: videoCaptureController
-        ) else {
-            owsFailDebug("Failed to create group call")
-            return nil
-        }
-
-        let call = SignalCall(groupCall: groupCall, groupThread: thread)
-        call.videoCaptureController = videoCaptureController
-        return call
     }
 
     public class func outgoingIndividualCall(thread: TSContactThread) -> SignalCall {

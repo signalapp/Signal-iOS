@@ -616,7 +616,7 @@ final class CallService {
         AssertIsOnMainThread()
         guard !hasCallInProgress else { return nil }
 
-        guard let call = SignalCall.groupCall(thread: thread) else { return nil }
+        guard let call = buildGroupCall(for: thread) else { return nil }
         addCall(call)
 
         // By default, group calls should start out with speakerphone enabled.
@@ -633,6 +633,30 @@ final class CallService {
         }
 
         return call
+    }
+
+    private func buildGroupCall(for thread: TSGroupThread) -> SignalCall? {
+        owsAssertDebug(thread.groupModel.groupsVersion == .V2)
+
+        let videoCaptureController = VideoCaptureController()
+        let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+
+        guard let groupCall = callManager.createGroupCall(
+            groupId: thread.groupModel.groupId,
+            sfuUrl: sfuURL,
+            hkdfExtraInfo: Data.init(),
+            audioLevelsIntervalMillis: nil,
+            videoCaptureController: videoCaptureController
+        ) else {
+            owsFailDebug("Failed to create group call")
+            return nil
+        }
+
+        return SignalCall(
+            groupCall: groupCall,
+            groupThread: thread,
+            videoCaptureController: videoCaptureController
+        )
     }
 
     func joinGroupCallIfNecessary(_ call: SignalCall) {
