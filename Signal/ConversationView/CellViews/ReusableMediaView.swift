@@ -317,7 +317,7 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
     }
 
     func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.computeContentType().isImage else {
+        guard attachmentStream.computeContentType().isAnimatedImage else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         guard let filePath = attachmentStream.bridgeStream.originalFilePath else {

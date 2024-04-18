@@ -132,17 +132,32 @@ extension TSAttachmentStream: TSResourceStream {
             return .audio(duration: audioDurationMetadata())
         }
 
-        let cachedValueTypes: [(NSNumber?, () -> TSResourceContentType)] = [
-            (self.isValidVideoCached, {
-                .video(duration: self.videoDuration?.doubleValue, pixelSize: self.mediaPixelSizeMetadata())
-            }),
-            (self.isAnimatedCached, { .animatedImage(pixelSize: self.mediaPixelSizeMetadata()) }),
-            (self.isValidImageCached, { .image(pixelSize: self.mediaPixelSizeMetadata()) })
-        ]
+        if isValidVideoCached?.boolValue == true {
+            return .video(duration: self.videoDuration?.doubleValue, pixelSize: self.mediaPixelSizeMetadata())
+        }
 
-        for (numberValue, typeFn) in cachedValueTypes {
-            if numberValue?.boolValue == true {
-                return typeFn()
+        if isAnimatedCached?.boolValue == true {
+            return .animatedImage(pixelSize: self.mediaPixelSizeMetadata())
+        }
+
+        // It can be _both_ a valid image and animated, so
+        // if we cached isValidImage but haven't checked and cached
+        // if its animated, we don't want to return that its an image.
+        // It could be animated, we don't know.
+        if
+            let isValidImageCached,
+            isValidImageCached.boolValue
+        {
+            if !MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType) {
+                // Definitely not animated.
+                return .image(pixelSize: self.mediaPixelSizeMetadata())
+            } else if isAnimatedCached?.boolValue == false {
+                // We've checked and its not animated.
+                return .image(pixelSize: self.mediaPixelSizeMetadata())
+            } else {
+                // Otherwise we can't know if this is a still or
+                // animated image.
+                return nil
             }
         }
 
@@ -150,7 +165,11 @@ extension TSAttachmentStream: TSResourceStream {
         // But if they're all non-nil, we can return .file.
         // Otherwise we haven't checked (and cached) all the types
         // and we must return nil.
-        if cachedValueTypes.allSatisfy({ numberValue, _ in numberValue != nil }) {
+        if
+            isValidVideoCached != nil,
+            isValidImageCached != nil,
+            isAnimatedCached != nil
+        {
             return .file
         }
 
@@ -170,7 +189,7 @@ extension TSAttachmentStream: TSResourceStream {
         } else if isImageMimeType && isValidImage {
             return .image(pixelSize: mediaPixelSizeMetadata())
         } else if getAnimatedMimeType() == .maybeAnimated && isAnimatedContent {
-            return .image(pixelSize: mediaPixelSizeMetadata())
+            return .animatedImage(pixelSize: mediaPixelSizeMetadata())
         }
         // We did not previously have utilities for determining
         // "valid" audio content. Rely on the cached value's
