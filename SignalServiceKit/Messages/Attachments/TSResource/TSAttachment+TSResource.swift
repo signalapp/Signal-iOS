@@ -184,12 +184,10 @@ extension TSAttachmentStream: TSResourceStream {
         // If the cache lookup fails, switch to the hard fetches.
         if isVideoMimeType && isValidVideo {
             return .video(duration: self.videoDuration?.doubleValue, pixelSize: mediaPixelSizeMetadata())
-        } else if getAnimatedMimeType() == .animated && isAnimatedContent {
+        } else if getAnimatedMimeType() == .maybeAnimated && isAnimatedContent {
             return .animatedImage(pixelSize: mediaPixelSizeMetadata())
         } else if isImageMimeType && isValidImage {
             return .image(pixelSize: mediaPixelSizeMetadata())
-        } else if getAnimatedMimeType() == .maybeAnimated && isAnimatedContent {
-            return .animatedImage(pixelSize: mediaPixelSizeMetadata())
         }
         // We did not previously have utilities for determining
         // "valid" audio content. Rely on the cached value's
