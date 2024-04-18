@@ -234,7 +234,10 @@ public class ProfileFetcherJob: NSObject {
     ) async throws {
         await updateProfile(
             fetchedProfile: fetchedProfile,
-            avatarDownloadResult: try await downloadAvatarIfNeeded(fetchedProfile),
+            avatarDownloadResult: try await downloadAvatarIfNeeded(
+                fetchedProfile,
+                localIdentifiers: localIdentifiers
+            ),
             localIdentifiers: localIdentifiers
         )
     }
@@ -244,7 +247,14 @@ public class ProfileFetcherJob: NSObject {
         var localFileUrl: OptionalChange<URL?>
     }
 
-    private func downloadAvatarIfNeeded(_ fetchedProfile: FetchedProfile) async throws -> AvatarDownloadResult {
+    private func downloadAvatarIfNeeded(
+        _ fetchedProfile: FetchedProfile,
+        localIdentifiers: LocalIdentifiers
+    ) async throws -> AvatarDownloadResult {
+        if localIdentifiers.contains(serviceId: fetchedProfile.profile.serviceId) {
+            // Profile fetches NEVER touch the local user's avatar.
+            return AvatarDownloadResult(remoteRelativePath: .noChange, localFileUrl: .noChange)
+        }
         guard let profileKey = fetchedProfile.profileKey, fetchedProfile.decryptedProfile != nil else {
             // If we don't have a profile key for this user, or if the rest of their
             // encrypted profile wasn't valid, don't change their avatar because we
@@ -277,7 +287,7 @@ public class ProfileFetcherJob: NSObject {
             )
         } catch {
             Logger.warn("Error: \(error)")
-            if error.isNetworkFailureOrTimeout, profileAddress.isLocalAddress {
+            if error.isNetworkFailureOrTimeout, localIdentifiers.contains(serviceId: fetchedProfile.profile.serviceId) {
                 // Fetches and local profile updates can conflict. To avoid these conflicts
                 // we treat "partial" profile fetches (where we download the profile but
                 // not the associated avatar) as failures.

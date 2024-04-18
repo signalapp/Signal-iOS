@@ -1356,6 +1356,15 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 localIdentifiers: localIdentifiers,
                 transaction: transaction
             )
+            transaction.addSyncCompletion { [authedAccount, profileManager] in
+                Task {
+                    do {
+                        try await profileManager.downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: authedAccount)
+                    } catch {
+                        Logger.warn("Couldn't download local avatar: \(error)")
+                    }
+                }
+            }
         } else if localGivenName != nil && !record.hasGivenName || localFamilyName != nil && !record.hasFamilyName || localAvatarUrl != nil && !record.hasAvatarURL {
             needsUpdate = true
         }

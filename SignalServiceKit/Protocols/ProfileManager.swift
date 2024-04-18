@@ -42,6 +42,8 @@ public protocol ProfileManager: ProfileManagerProtocol {
     func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile>
     func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?]
 
+    func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws
+
     /// Downloads & decrypts the avatar at a particular URL.
     ///
     /// While this method de-dupes in-flight requests, it won't de-dupe requests
