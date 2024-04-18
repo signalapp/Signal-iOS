@@ -498,7 +498,10 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
     }
 
     public func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.computeContentType().isAnimatedImage else {
+        switch attachmentStream.computeContentType() {
+        case .image, .animatedImage:
+            break
+        case .video, .audio, .file:
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         guard let filePath = attachmentStream.bridgeStream.originalFilePath else {
