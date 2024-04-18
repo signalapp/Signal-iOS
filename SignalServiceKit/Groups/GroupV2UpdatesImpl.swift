@@ -1387,6 +1387,25 @@ public extension GroupsProtoGroupChangeActions {
                     source: .aci(firstPromotePniPendingMemberAci),
                     serviceId: firstPromotePniPendingMemberAci
                 )
+            } else if
+                self.addMembers.count == 1,
+                let addMemberAction = self.addMembers.first,
+                addMemberAction.joinFromInviteLink,
+                let firstPniMemberAddedByLinkUserId = addMemberAction.added?.userID,
+                let firstPniMemberAddedByLinkAci = try? groupV2Params.serviceId(for: firstPniMemberAddedByLinkUserId) as? Aci
+            {
+                /// While the service ID we received as the group update source
+                /// from the server was a PNI, we know (thanks to the change
+                /// action itself) the associated ACI. Since the ACI is how
+                /// we're going to address this user going forward, we'll
+                /// claim starting now that's who authored the change action.
+                /// Note that this particular situation is legacy behavior and should
+                /// eventually stop happening in the future.
+                owsFailDebug("Canary: Legacy change action received from PNI change author!")
+                return compareToLocal(
+                    source: .aci(firstPniMemberAddedByLinkAci),
+                    serviceId: firstPniMemberAddedByLinkAci
+                )
             } else {
                 owsFailDebug("Canary: unknown type of PNI-authored group update!")
                 return (.unknown, nil)
