@@ -18,6 +18,10 @@ extension OWSFakeProfileManager: ProfileManager {
         return addresses.map { fakeUserProfiles?[$0] }
     }
 
+    public func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws {
+        throw OWSGenericError("Not supported.")
+    }
+
     public func updateProfile(
         address: SignalServiceAddress,
         decryptedProfile: DecryptedProfile?,

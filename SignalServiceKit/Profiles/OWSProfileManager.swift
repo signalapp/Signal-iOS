@@ -1040,10 +1040,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             // This is case (2).
             if isRotatingProfileKey {
                 do {
-                    try await _downloadAndDecryptAvatarIfNeeded(
-                        internalAddress: OWSUserProfile.localProfileAddress,
-                        authedAccount: authedAccount
-                    )
+                    try await downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: authedAccount)
                 } catch where !error.isNetworkFailureOrTimeout {
                     // Ignore the error because it's not likely to go away if we retry. If we
                     // can't decrypt the existing avatar, then we don't really have any choice
@@ -1374,7 +1371,8 @@ extension OWSProfileManager {
         let profileKey: Data
     }
 
-    private func _downloadAndDecryptAvatarIfNeeded(internalAddress: SignalServiceAddress, authedAccount: AuthedAccount) async throws {
+    public func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws {
+        let internalAddress = OWSUserProfile.localProfileAddress
         let oldProfile = databaseStorage.read { tx in OWSUserProfile.getUserProfile(for: internalAddress, transaction: tx) }
         guard
             let oldProfile,
@@ -1412,7 +1410,7 @@ extension OWSProfileManager {
             }
         }
         if shouldRetry {
-            try await _downloadAndDecryptAvatarIfNeeded(internalAddress: internalAddress, authedAccount: authedAccount)
+            try await downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: authedAccount)
         }
     }
 

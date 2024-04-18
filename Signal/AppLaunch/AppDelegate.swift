@@ -567,7 +567,19 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         if tsRegistrationState.isRegistered {
-            _ = profileManager.fetchLocalUsersProfile(mainAppOnly: true, authedAccount: .implicit())
+            Task { [profileManager] in
+                do {
+                    _ = try await profileManager.fetchLocalUsersProfile(
+                        mainAppOnly: true,
+                        authedAccount: .implicit()
+                    ).awaitable()
+                    try await profileManager.downloadAndDecryptLocalUserAvatarIfNeeded(
+                        authedAccount: .implicit()
+                    )
+                } catch {
+                    Logger.warn("Couldn't fetch local user profile or avatar: \(error)")
+                }
+            }
         }
 
         DebugLogger.shared().postLaunchLogCleanup(appContext: appContext)
