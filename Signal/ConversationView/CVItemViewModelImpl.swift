@@ -144,13 +144,22 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         if componentState.bodyText == .oversizeTextDownloading {
             return true
         }
-        if componentState.audioAttachment?.attachment.asResourceStream() == nil {
+        if
+            let audioAttachment = componentState.audioAttachment?.attachment,
+            audioAttachment.asResourceStream() == nil
+        {
             return true
         }
-        if componentState.genericAttachment?.attachmentPointer != nil {
+        if
+            let genericAttachment = componentState.genericAttachment?.attachment.attachment,
+            genericAttachment.asResourceStream() == nil
+        {
             return true
         }
-        if componentState.sticker?.attachmentPointer != nil {
+        if
+            let sticker = componentState.sticker,
+            sticker.attachmentStream == nil
+        {
             return true
         }
         guard let bodyMedia = componentState.bodyMedia else {
