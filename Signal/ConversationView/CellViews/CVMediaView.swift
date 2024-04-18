@@ -69,20 +69,18 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             return configureForUndownloadedMedia()
         }
 
-        if isLoopingVideo {
+        switch attachmentStream.computeContentType() {
+        case .image:
+            configureForStillImage(attachmentStream: attachmentStream)
+        case .animatedImage:
+            configureForAnimatedImage(attachmentStream: attachmentStream)
+        case .video where isLoopingVideo:
             configureForLoopingVideo(attachmentStream: attachmentStream)
-        } else {
-            switch attachmentStream.computeContentType() {
-            case .image:
-                configureForStillImage(attachmentStream: attachmentStream)
-            case .animatedImage:
-                configureForAnimatedImage(attachmentStream: attachmentStream)
-            case .video:
-                configureForVideo(attachmentStream: attachmentStream)
-            case .audio, .file:
-                owsFailDebug("Attachment has unexpected type.")
-                configure(forError: .invalid)
-            }
+        case .video:
+            configureForVideo(attachmentStream: attachmentStream)
+        case .audio, .file:
+            owsFailDebug("Attachment has unexpected type.")
+            configure(forError: .invalid)
         }
     }
 
