@@ -4,25 +4,20 @@
 //
 
 import Foundation
+import SignalCoreKit
+import SignalServiceKit
 
 /// Handles fetching and parsing remote megaphones.
-@objc
-public class RemoteMegaphoneFetcher: NSObject, Dependencies {
-    private let isSyncInFlight = AtomicBool(false, lock: .sharedGlobal)
+public class RemoteMegaphoneFetcher {
+    private let databaseStorage: SDSDatabaseStorage
+    private let signalService: any OWSSignalServiceProtocol
 
-    override public init() {
-        super.init()
-
-        guard
-            CurrentAppContext().isMainApp,
-            !CurrentAppContext().isRunningTests
-        else {
-            return
-        }
-
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            self.syncRemoteMegaphonesIfNecessary()
-        }
+    public init(
+        databaseStorage: SDSDatabaseStorage,
+        signalService: any OWSSignalServiceProtocol
+    ) {
+        self.databaseStorage = databaseStorage
+        self.signalService = signalService
     }
 
     /// Fetch all remote megaphones currently on the service and persist them
@@ -32,12 +27,6 @@ public class RemoteMegaphoneFetcher: NSObject, Dependencies {
     public func syncRemoteMegaphonesIfNecessary() -> Promise<Void> {
         let shouldSync = databaseStorage.read { self.shouldSync(transaction: $0) }
         guard shouldSync else {
-            Logger.info("Skipping remote megaphone fetch - not necessary!")
-            return Promise.value(())
-        }
-
-        guard isSyncInFlight.tryToSetFlag() else {
-            Logger.info("Skipping remote megaphone fetch - sync is already in-flight!")
             return Promise.value(())
         }
 
@@ -54,8 +43,6 @@ public class RemoteMegaphoneFetcher: NSObject, Dependencies {
 
                 self.recordCompletedSync(transaction: transaction)
             }
-        }.ensure {
-            self.isSyncInFlight.set(false)
         }
     }
 }

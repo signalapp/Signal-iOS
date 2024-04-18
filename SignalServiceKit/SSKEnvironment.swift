@@ -74,7 +74,6 @@ public class SSKEnvironment: NSObject {
     public let legacyChangePhoneNumberRef: LegacyChangePhoneNumber
     public let subscriptionManagerRef: SubscriptionManager
     public let systemStoryManagerRef: SystemStoryManagerProtocol
-    public let remoteMegaphoneFetcherRef: RemoteMegaphoneFetcher
     public let contactDiscoveryManagerRef: ContactDiscoveryManager
     public let notificationPresenterRef: any NotificationPresenter
     public let messageSendLogRef: MessageSendLog
@@ -140,7 +139,6 @@ public class SSKEnvironment: NSObject {
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
         subscriptionManager: SubscriptionManager,
         systemStoryManager: SystemStoryManagerProtocol,
-        remoteMegaphoneFetcher: RemoteMegaphoneFetcher,
         contactDiscoveryManager: ContactDiscoveryManager,
         notificationPresenter: any NotificationPresenter,
         messageSendLog: MessageSendLog,
@@ -201,7 +199,6 @@ public class SSKEnvironment: NSObject {
         self.legacyChangePhoneNumberRef = legacyChangePhoneNumber
         self.subscriptionManagerRef = subscriptionManager
         self.systemStoryManagerRef = systemStoryManager
-        self.remoteMegaphoneFetcherRef = remoteMegaphoneFetcher
         self.contactDiscoveryManagerRef = contactDiscoveryManager
         self.notificationPresenterRef = notificationPresenter
         self.messageSendLogRef = messageSendLog

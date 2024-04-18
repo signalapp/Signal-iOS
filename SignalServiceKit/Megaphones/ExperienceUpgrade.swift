@@ -51,7 +51,7 @@ public class ExperienceUpgrade: SDSCodableModel, Decodable {
         self.manifest = manifest
     }
 
-    static func makeNew(withManifest manifest: ExperienceUpgradeManifest) -> ExperienceUpgrade {
+    public static func makeNew(withManifest manifest: ExperienceUpgradeManifest) -> ExperienceUpgrade {
         ExperienceUpgrade(manifest: manifest)
     }
 
@@ -167,7 +167,7 @@ extension ExperienceUpgrade {
     /// Updates a subset of properties on the existing manifest with the given
     /// re-fetched megaphone. Does nothing if the given megaphone does not
     /// match the existing.
-    func updateManifestRemoteMegaphone(withRefetchedMegaphone refetchedMegaphone: RemoteMegaphoneModel) {
+    public func updateManifestRemoteMegaphone(withRefetchedMegaphone refetchedMegaphone: RemoteMegaphoneModel) {
         guard case .remoteMegaphone(var megaphone) = manifest else {
             owsFailDebug("Attempting to update remote megaphone, but upgrade is not a remote megaphone: \(manifest)")
             return

@@ -535,6 +535,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            RemoteMegaphoneFetcher(
+                databaseStorage: NSObject.databaseStorage,
+                signalService: NSObject.signalService
+            ).syncRemoteMegaphonesIfNecessary()
+        }
+
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
 

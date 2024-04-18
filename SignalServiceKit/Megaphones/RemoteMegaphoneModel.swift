@@ -18,7 +18,7 @@ public struct RemoteMegaphoneModel: Codable {
         manifest.id
     }
 
-    init(manifest: Manifest, translation: Translation) {
+    public init(manifest: Manifest, translation: Translation) {
         self.manifest = manifest
         self.translation = translation
     }
@@ -80,10 +80,10 @@ extension RemoteMegaphoneModel {
     /// Represents metadata about this megaphone, such as when it should be
     /// presented and what actions it should support.
     public struct Manifest: Codable {
-        typealias EpochSeconds = UInt64
+        public typealias EpochSeconds = UInt64
 
         /// A unique ID for this manifest.
-        let id: String
+        public let id: String
 
         /// Priority of this megaphone relative to other remote megaphones.
         /// Higher numbers indicate greater priority.
@@ -131,7 +131,7 @@ extension RemoteMegaphoneModel {
         /// action.
         fileprivate(set) var secondaryActionData: ActionData?
 
-        init(
+        public init(
             id: String,
             priority: Int,
             minAppVersion: String,
@@ -233,7 +233,7 @@ extension RemoteMegaphoneModel {
 extension RemoteMegaphoneModel.Manifest {
     /// Identifies a known conditional check that must be satisfied in order
     /// for this megaphone to be shown.
-    enum ConditionalCheck: Codable {
+    public enum ConditionalCheck: Codable {
         case standardDonate
         case internalUser
         case unrecognized(conditionalId: String)
@@ -249,7 +249,7 @@ extension RemoteMegaphoneModel.Manifest {
             }
         }
 
-        init(fromConditionalId conditionalId: String) {
+        public init(fromConditionalId conditionalId: String) {
             switch conditionalId {
             case Self.standardDonate.conditionalId:
                 self = .standardDonate
@@ -266,14 +266,14 @@ extension RemoteMegaphoneModel.Manifest {
             case conditionalId
         }
 
-        init(from decoder: Decoder) throws {
+        public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
 
             let conditionalId = try container.decode(String.self, forKey: .conditionalId)
             self.init(fromConditionalId: conditionalId)
         }
 
-        func encode(to encoder: Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
             try container.encode(conditionalId, forKey: .conditionalId)
@@ -308,7 +308,7 @@ extension RemoteMegaphoneModel.Manifest {
             }
         }
 
-        init(fromActionId actionId: String) {
+        public init(fromActionId actionId: String) {
             self = {
                 switch actionId {
                 case Self.finish.actionId:
@@ -349,13 +349,13 @@ extension RemoteMegaphoneModel.Manifest {
 // MARK: - ActionData
 
 extension RemoteMegaphoneModel.Manifest {
-    enum ActionData: Codable {
+    public enum ActionData: Codable {
         case snoozeDurationDays(days: [UInt])
         case unrecognized(actionDataId: String)
 
         private static let snoozeDurationDaysId: String = "snoozeDurationDays"
 
-        static func parse(fromJson jsonObject: [String: Any]) throws -> Self? {
+        public static func parse(fromJson jsonObject: [String: Any]) throws -> Self? {
             let parser = ParamParser(dictionary: jsonObject)
 
             if let snoozeDurationDays: [UInt] = try parser.optional(key: snoozeDurationDaysId) {
@@ -372,7 +372,7 @@ extension RemoteMegaphoneModel.Manifest {
             case associatedData
         }
 
-        init(from decoder: Decoder) throws {
+        public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
 
             let actionDataId = try container.decode(String.self, forKey: .actionDataId)
@@ -388,7 +388,7 @@ extension RemoteMegaphoneModel.Manifest {
             }()
         }
 
-        func encode(to encoder: Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
             let (actionDataId, associatedData): (String, Encodable?) = {
@@ -417,7 +417,7 @@ extension RemoteMegaphoneModel {
         /// A unique ID for the megaphone this translation corresponds to.
         /// Should match the ID for this translation's manifest, and must be a
         /// permissible file name.
-        let id: String
+        public let id: String
 
         /// Localized title for this megaphone.
         public fileprivate(set) var title: String
@@ -426,7 +426,7 @@ extension RemoteMegaphoneModel {
         public fileprivate(set) var body: String
 
         /// Path to a remote image asset for this megaphone.
-        let imageRemoteUrlPath: String?
+        public let imageRemoteUrlPath: String?
 
         /// File URL to a locally-stored image asset for this megaphone.
         public private(set) var imageLocalUrl: URL?
@@ -457,7 +457,7 @@ extension RemoteMegaphoneModel {
             self.secondaryActionText = secondaryActionText
         }
 
-        mutating func setImageLocalUrl(_ url: URL) {
+        public mutating func setImageLocalUrl(_ url: URL) {
             imageLocalUrl = url
         }
 

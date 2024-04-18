@@ -879,7 +879,6 @@ public class AppSetup {
         let spamChallengeResolver = SpamChallengeResolver()
         let phoneNumberUtil = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
         let legacyChangePhoneNumber = LegacyChangePhoneNumber()
-        let remoteMegaphoneFetcher = RemoteMegaphoneFetcher()
         let contactDiscoveryManager = ContactDiscoveryManagerImpl(
             db: db,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -955,7 +954,6 @@ public class AppSetup {
             legacyChangePhoneNumber: legacyChangePhoneNumber,
             subscriptionManager: subscriptionManager,
             systemStoryManager: systemStoryManager,
-            remoteMegaphoneFetcher: remoteMegaphoneFetcher,
             contactDiscoveryManager: contactDiscoveryManager,
             notificationPresenter: notificationPresenter,
             messageSendLog: messageSendLog,
