@@ -172,7 +172,7 @@ public extension JobQueue {
         } catch JobError.permanentFailure(let description) {
             owsFailDebug("permanent failure: \(description)")
             nextJob.saveAsPermanentlyFailed(transaction: transaction)
-        } catch JobError.obsolete(let description) {
+        } catch JobError.obsolete {
             // TODO is this even worthwhile to have obsolete state? Should we just delete the task outright?
             nextJob.saveAsObsolete(transaction: transaction)
         } catch {

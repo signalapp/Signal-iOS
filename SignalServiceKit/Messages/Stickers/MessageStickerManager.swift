@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public protocol MessageStickerManager {
 
@@ -125,7 +126,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             owsFailDebug("Missing data for installed sticker.")
             return nil
         }
-        guard let fileSize = OWSFileSystem.fileSize(of: stickerDataUrl) else {
+        guard OWSFileSystem.fileSize(of: stickerDataUrl) != nil else {
             owsFailDebug("Could not determine file size for installed sticker.")
             return nil
         }

@@ -270,7 +270,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         }))
 
         let messageTextSection = OWSTableSection()
-        messageTextSection.add(self.textViewItem(self.messageTextView, minimumHeight: 102))
+        messageTextSection.add(self.textViewItem(messageTextView, minimumHeight: 102))
 
         var sections: [OWSTableSection] = [
             badgeSection,

@@ -587,7 +587,6 @@ private class MessageAckOperation: OWSOperation {
             return
         }
 
-        let envelopeInfo = self.envelopeInfo
         let inFlightAckId = self.inFlightAckId
         firstly(on: DispatchQueue.global()) {
             self.networkManager.makePromise(request: request)

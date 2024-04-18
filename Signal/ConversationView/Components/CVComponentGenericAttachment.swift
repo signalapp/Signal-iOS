@@ -302,7 +302,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             case .default:
                 showShareUI(from: componentView.rootView)
             }
-        } else if let attachmentPointer = genericAttachment.attachmentPointer {
+        } else if genericAttachment.attachmentPointer != nil {
             switch genericAttachment.transitTierDownloadState {
             case .failed, .pendingMessageRequest, .pendingManualDownload:
                 guard let message = renderItem.interaction as? TSMessage else {

@@ -392,7 +392,7 @@ public extension DatabaseRecovery {
 
             Logger.info("Replacing old database with the new one...")
 
-            let newDatabaseFileUrl = try FileManager.default.replaceItemAt(
+            _ = try FileManager.default.replaceItemAt(
                 oldDatabaseStorage.databaseFileUrl,
                 withItemAt: newDatabaseStorage.databaseFileUrl
             )

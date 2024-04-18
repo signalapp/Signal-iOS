@@ -213,7 +213,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         ImpactHapticFeedback.impactOccurred(style: .light)
 
-        let message = ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
+        ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
         messageWasSent()
     }
 

@@ -40,7 +40,7 @@ extension NSRangedValue {
     /// definition of equal.
     /// The array is assumed to contain no overlaps between "equal" elements; if there are
     /// the results of this method are undetermined.
-    static func overlaps<T>(
+    static func overlaps(
         of range: NSRangedValue<T>,
         in array: [NSRangedValue<T>],
         isEqual: (T, T) -> Bool

@@ -460,7 +460,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         }
 
         let newStyle = NSRangedValue<SingleStyle>(style, range: range)
-        let overlaps = NSRangedValue<Any>.overlaps(
+        let overlaps = NSRangedValue<SingleStyle>.overlaps(
             of: newStyle,
             in: self.body.flattenedStyles,
             isEqual: ==

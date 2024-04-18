@@ -321,14 +321,17 @@ extension PaymentsProcessor: PaymentProcessingOperationDelegate {
         processingQueue(forPaymentModel: paymentModel).addOperation(operation)
     }
 
-    func scheduleRetryProcessing(paymentModel: TSPaymentModel,
-                                 retryDelayInteral: TimeInterval,
-                                 nextRetryDelayInteral: TimeInterval) {
-        let paymentId = paymentModel.uniqueId
-        add(retryScheduler: RetryScheduler(paymentModel: paymentModel,
-                                           retryDelayInteral: retryDelayInteral,
-                                           nextRetryDelayInteral: nextRetryDelayInteral,
-                                           delegate: self))
+    func scheduleRetryProcessing(
+        paymentModel: TSPaymentModel,
+        retryDelayInteral: TimeInterval,
+        nextRetryDelayInteral: TimeInterval
+    ) {
+        add(retryScheduler: RetryScheduler(
+            paymentModel: paymentModel,
+            retryDelayInteral: retryDelayInteral,
+            nextRetryDelayInteral: nextRetryDelayInteral,
+            delegate: self
+        ))
     }
 
     func endProcessing(paymentModel: TSPaymentModel) {
@@ -607,8 +610,6 @@ private class PaymentProcessingOperation: OWSOperation {
             }
 
             owsAssertDebug(paymentModel.isValid)
-
-            let paymentId = paymentModel.uniqueId
 
             switch paymentModel.paymentState {
             case .outgoingUnsubmitted:

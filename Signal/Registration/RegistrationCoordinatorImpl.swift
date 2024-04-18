@@ -2973,7 +2973,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func restoreFromStorageService(
         accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
-        let authedDevice = accountIdentity.authedDevice
         return deps
             .storageServiceManager.restoreOrCreateManifestIfNecessary(
                 authedDevice: accountIdentity.authedDevice

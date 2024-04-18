@@ -19,7 +19,6 @@ extension ThreadSwipeHandler where Self: UIViewController {
             return nil
         }
 
-        let thread = threadViewModel.threadRecord
         let isThreadPinned = threadViewModel.isPinned
         let pinnedStateAction: UIContextualAction
         if isThreadPinned {

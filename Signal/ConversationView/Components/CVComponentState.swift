@@ -926,7 +926,7 @@ fileprivate extension CVComponentState.Builder {
                 var mediaAlbumHasFailedAttachment = false
                 var mediaAlbumHasPendingAttachment = false
                 for attachment in bodyAttachments {
-                    guard let attachmentPointer = attachment.attachment.asTransitTierPointer() else {
+                    guard attachment.attachment.asTransitTierPointer() != nil else {
                         continue
                     }
                     switch attachment.attachment.transitTierDownloadState(tx: transaction.asV2Read) {

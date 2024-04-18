@@ -371,8 +371,6 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             let processedUniqueIds = processedJobs.map { $0.uniqueId }
             self.finder.removeJobs(withUniqueIds: processedUniqueIds, transaction: transaction.unwrapGrdbWrite)
 
-            let jobCount: UInt = self.finder.jobCount(forGroupId: self.groupId, transaction: transaction.unwrapGrdbRead)
-
             transaction.addAsyncCompletionOffMain {
                 assert(backgroundTask != nil)
                 backgroundTask = nil
