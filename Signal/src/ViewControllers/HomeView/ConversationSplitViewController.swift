@@ -546,7 +546,11 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
         assert(secondaryViewController == detailNavController)
 
         // Move all the views from the detail nav controller onto the primary nav controller.
-        chatListNavController.viewControllers += detailNavController.viewControllers
+        let detailViewControllers = detailNavController.viewControllers
+        // Clear the detailNavController's view controllers first to avoid a UIKit
+        // crash that happens if you don't.
+        detailNavController.viewControllers = []
+        chatListNavController.viewControllers += detailViewControllers
 
         return true
     }
