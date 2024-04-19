@@ -1162,6 +1162,9 @@ extension OWSUserProfile {
 
         if isLocalUserProfile {
             profileManager.localProfileWasUpdated(self)
+        }
+
+        if isLocalUserProfile, case .setTo = changes.badges {
             subscriptionManager.reconcileBadgeStates(transaction: tx)
         }
 
