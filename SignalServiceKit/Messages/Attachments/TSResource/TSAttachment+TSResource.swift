@@ -184,7 +184,7 @@ extension TSAttachmentStream: TSResourceStream {
         // If the cache lookup fails, switch to the hard fetches.
         if isVideoMimeType && isValidVideo {
             return .video(duration: self.videoDuration?.doubleValue, pixelSize: mediaPixelSizeMetadata())
-        } else if getAnimatedMimeType() == .maybeAnimated && isAnimatedContent {
+        } else if getAnimatedMimeType() != .notAnimated && isAnimatedContent {
             return .animatedImage(pixelSize: mediaPixelSizeMetadata())
         } else if isImageMimeType && isValidImage {
             return .image(pixelSize: mediaPixelSizeMetadata())
