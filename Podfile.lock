@@ -44,10 +44,10 @@ PODS:
     - CocoaLumberjack (~> 3.7.4)
   - SignalCoreKit/Tests (1.0.0):
     - CocoaLumberjack (~> 3.7.4)
-  - SignalRingRTC (2.39.3):
+  - SignalRingRTC (2.40.0):
     - SignalCoreKit
-    - SignalRingRTC/WebRTC (= 2.39.3)
-  - SignalRingRTC/WebRTC (2.39.3):
+    - SignalRingRTC/WebRTC (= 2.40.0)
+  - SignalRingRTC/WebRTC (2.40.0):
     - SignalCoreKit
   - SQLCipher (4.5.6):
     - SQLCipher/standard (= 4.5.6)
@@ -83,7 +83,7 @@ DEPENDENCIES:
   - Reachability
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
-  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.39.3`)
+  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.40.0`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.5.6-f_barrierfsync`)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - SwiftProtobuf (>= 1.14.0)
@@ -131,7 +131,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.39.3
+    :tag: v2.40.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.5.6-f_barrierfsync
@@ -168,7 +168,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.39.3
+    :tag: v2.40.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.5.6-f_barrierfsync
@@ -193,13 +193,13 @@ SPEC CHECKSUMS:
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
   SignalCoreKit: 7658a72244fa81858df4618e92044b0db0dcf59e
-  SignalRingRTC: ce13dcbbb9efed7ad1965699d4092593463d7e46
+  SignalRingRTC: 87603b87b07887e71d7c615b2f6632a3a28d9e02
   SQLCipher: 838309284f29953a28ad2e81d87d55ea6b7c74fd
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   SwiftProtobuf: 407a385e97fd206c4fbe880cc84123989167e0d1
   Wire: f5fe13fcad476bfd248f23a45a2004167c0ebae2
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: e801eb7dd476e7fdd7e818cbfd3bc5ba5592b9d0
+PODFILE CHECKSUM: 4e552657cd601b93c8f4b9d11186d53bce9d8804
 
 COCOAPODS: 1.15.2

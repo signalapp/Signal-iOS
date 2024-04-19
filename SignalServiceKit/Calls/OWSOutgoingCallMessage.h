@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
 @class SSKProtoCallMessageAnswer;
 @class SSKProtoCallMessageBusy;
 @class SSKProtoCallMessageHangup;
@@ -46,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
                    transaction:(SDSAnyReadTransaction *)transaction;
 - (instancetype)initWithThread:(TSThread *)thread
                  opaqueMessage:(SSKProtoCallMessageOpaque *)opaqueMessage
+            overrideRecipients:(nullable NSArray<AciObjC *> *)overrideRecipients
                    transaction:(SDSAnyReadTransaction *)transaction;
 
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageOffer *offerMessage;

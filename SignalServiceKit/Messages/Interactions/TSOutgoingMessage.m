@@ -259,15 +259,23 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     // recipient list from current thread state.
     NSMutableSet<SignalServiceAddress *> *recipientAddresses = [NSMutableSet new];
     if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        // 1. Sync messages should only be sent to linked devices.
+        // Sync messages should only be sent to linked devices.
         SignalServiceAddress *localAddress = [TSAccountManagerObjcBridge localAciAddressWith:transaction];
         OWSAssertDebug(localAddress);
         [recipientAddresses addObject:localAddress];
     } else {
-        // 2. Most messages should only be sent to the current members of the group.
+        // Most messages should only be sent to the current members of the group.
         [recipientAddresses addObjectsFromArray:[thread recipientAddressesWithTransaction:transaction]];
-        // 3. V2 group updates should also be sent to pending members of the group
-        //    whose clients support Groups v2.
+        // Some messages (eg certain call messages) go to a subset of the group.
+        if (outgoingMessageBuilder.explicitRecipients != nil) {
+            NSMutableSet<SignalServiceAddress *> *explicitRecipientAddresses = [[NSMutableSet alloc] init];
+            for (AciObjC *recipientAci in outgoingMessageBuilder.explicitRecipients) {
+                [explicitRecipientAddresses
+                    addObject:[[SignalServiceAddress alloc] initWithServiceIdObjC:recipientAci]];
+            }
+            [recipientAddresses intersectSet:explicitRecipientAddresses];
+        }
+        // Group updates should also be sent to pending members of the group.
         if (outgoingMessageBuilder.additionalRecipients) {
             [recipientAddresses addObjectsFromArray:outgoingMessageBuilder.additionalRecipients];
         }

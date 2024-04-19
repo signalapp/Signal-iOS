@@ -23,6 +23,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     @objc
     public var additionalRecipients: [SignalServiceAddress]?
     @objc
+    public var explicitRecipients: [AciObjC]?
+    @objc
     public var skippedRecipients: Set<SignalServiceAddress>?
 
     public required init(
@@ -38,6 +40,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         isViewOnceMessage: Bool = false,
         changeActionsProtoData: Data? = nil,
         additionalRecipients: [SignalServiceAddress]? = nil,
+        explicitRecipients: [AciObjC]? = nil,
         skippedRecipients: Set<SignalServiceAddress>? = nil,
         storyAuthorAci: Aci? = nil,
         storyTimestamp: UInt64? = nil,
@@ -62,6 +65,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         self.groupMetaMessage = groupMetaMessage
         self.changeActionsProtoData = changeActionsProtoData
         self.additionalRecipients = additionalRecipients
+        self.explicitRecipients = explicitRecipients
         self.skippedRecipients = skippedRecipients
     }
 
@@ -91,6 +95,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                               isViewOnceMessage: Bool,
                               changeActionsProtoData: Data?,
                               additionalRecipients: [SignalServiceAddress]?,
+                              explicitRecipients: [AciObjC]?,
                               skippedRecipients: Set<SignalServiceAddress>?,
                               storyAuthorAci: AciObjC?,
                               storyTimestamp: NSNumber?,
@@ -107,6 +112,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                                         isViewOnceMessage: isViewOnceMessage,
                                         changeActionsProtoData: changeActionsProtoData,
                                         additionalRecipients: additionalRecipients,
+                                        explicitRecipients: explicitRecipients,
                                         skippedRecipients: skippedRecipients,
                                         storyAuthorAci: storyAuthorAci?.wrappedAciValue,
                                         storyTimestamp: storyTimestamp?.uint64Value,

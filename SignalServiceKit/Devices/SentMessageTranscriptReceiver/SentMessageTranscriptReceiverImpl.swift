@@ -162,6 +162,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             isViewOnceMessage: messageParams.isViewOnceMessage,
             changeActionsProtoData: nil,
             additionalRecipients: nil,
+            explicitRecipients: nil,
             skippedRecipients: nil,
             storyAuthorAci: messageParams.storyAuthorAci.map(AciObjC.init),
             storyTimestamp: messageParams.storyTimestamp.map { NSNumber(value: $0) },

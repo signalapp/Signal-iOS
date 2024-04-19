@@ -1116,7 +1116,7 @@ extension CallService: CallManagerDelegate {
     public typealias CallManagerDelegateCallType = SignalCall
 
     /**
-     * A call message should be sent to the given remote recipient.
+     * Send a generic call message to the given remote recipient.
      * Invoked on the main thread, asynchronously.
      * If there is any error, the UI can reset UI state and invoke the reset() API.
      */
@@ -1152,6 +1152,7 @@ extension CallService: CallManagerDelegate {
                 let callMessage = OWSOutgoingCallMessage(
                     thread: thread,
                     opaqueMessage: opaqueBuilder.buildInfallibly(),
+                    overrideRecipients: nil,
                     transaction: transaction
                 )
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -1180,7 +1181,10 @@ extension CallService: CallManagerDelegate {
     }
 
     /**
-     * A call message should be sent to all other members of the given group.
+     * Send a generic call message to a group. Send to all members of the group
+     * or, if overrideRecipients is not empty, send to the given subset of members
+     * using multi-recipient sealed sender. If the sealed sender request fails,
+     * clients should provide a fallback mechanism.
      * Invoked on the main thread, asynchronously.
      * If there is any error, the UI can reset UI state and invoke the reset() API.
      */
@@ -1188,7 +1192,8 @@ extension CallService: CallManagerDelegate {
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendCallMessageToGroup groupId: Data,
         message: Data,
-        urgency: CallMessageUrgency
+        urgency: CallMessageUrgency,
+        overrideRecipients: [UUID]
     ) {
         AssertIsOnMainThread()
         Logger.info("")
@@ -1204,9 +1209,13 @@ extension CallService: CallManagerDelegate {
             opaqueBuilder.setUrgency(urgency.protobufValue)
 
             return self.databaseStorage.write { transaction in
+                let overrideRecipients = overrideRecipients.map {
+                    return AciObjC(Aci(fromUUID: $0))
+                }
                 let callMessage = OWSOutgoingCallMessage(
                     thread: thread,
                     opaqueMessage: opaqueBuilder.buildInfallibly(),
+                    overrideRecipients: overrideRecipients.isEmpty ? nil : overrideRecipients,
                     transaction: transaction
                 )
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
