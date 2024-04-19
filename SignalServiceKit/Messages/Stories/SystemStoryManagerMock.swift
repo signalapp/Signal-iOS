@@ -119,6 +119,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
             replyCount: 0,
             attachmentBuilder: .withoutFinalizer(.foreignReferenceAttachment),
             mediaCaption: nil,
+            shouldLoop: false,
             transaction: transaction
         )
     }

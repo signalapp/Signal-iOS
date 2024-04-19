@@ -205,7 +205,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         } else {
 
             // Update attachment fields before inserting.
-            messageParams.quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
+            messageParams.quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info.quotedMessage, tx: tx) }
             messageParams.contactBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
             messageParams.linkPreviewBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
             messageParams.messageStickerBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
@@ -222,7 +222,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 )
 
                 try messageParams.quotedMessageBuilder?.finalize(
-                    owner: .quotedReplyAttachment(messageRowId: outgoingMessage.sqliteRowId!),
+                    owner: .quotedReplyAttachment(.init(
+                        messageRowId: outgoingMessage.sqliteRowId!,
+                        renderingFlag: messageParams.quotedMessageBuilder?.info.renderingFlag ?? .default
+                    )),
                     tx: tx
                 )
 

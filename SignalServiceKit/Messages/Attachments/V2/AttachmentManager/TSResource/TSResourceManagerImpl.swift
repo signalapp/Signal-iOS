@@ -45,9 +45,11 @@ public class TSResourceManagerImpl: TSResourceManager {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
             }
-            try attachmentManager.createAttachmentPointers(
-                from: [proto],
-                owner: .messageOversizeText(messageRowId: messageRowId),
+            try attachmentManager.createAttachmentPointer(
+                from: .init(
+                    proto: proto,
+                    owner: .messageOversizeText(messageRowId: messageRowId)
+                ),
                 tx: tx
             )
         } else {
@@ -70,8 +72,15 @@ public class TSResourceManagerImpl: TSResourceManager {
                 return
             }
             try attachmentManager.createAttachmentPointers(
-                from: protos,
-                owner: .messageBodyAttachment(.init(messageRowId: messageRowId)),
+                from: protos.map { proto in
+                    return .init(
+                        proto: proto,
+                        owner: .messageBodyAttachment(.init(
+                            messageRowId: messageRowId,
+                            renderingFlag: .fromProto(proto)
+                        ))
+                    )
+                },
                 tx: tx
             )
         } else {
@@ -101,14 +110,16 @@ public class TSResourceManagerImpl: TSResourceManager {
                 message: message,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
-        case .v2(let attachmentDataSource):
+        case .v2(let attachmentDataSource, _):
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
             }
-            try attachmentManager.createAttachmentStreams(
-                consuming: [attachmentDataSource],
-                owner: .messageOversizeText(messageRowId: messageRowId),
+            try attachmentManager.createAttachmentStream(
+                consuming: .init(
+                    dataSource: attachmentDataSource,
+                    owner: .messageOversizeText(messageRowId: messageRowId)
+                ),
                 tx: tx
             )
         }
@@ -120,13 +131,13 @@ public class TSResourceManagerImpl: TSResourceManager {
         tx: DBWriteTransaction
     ) throws {
         var legacyDataSources = [TSAttachmentDataSource]()
-        var v2DataSources = [AttachmentDataSource]()
+        var v2DataSources = [(AttachmentDataSource, AttachmentReference.RenderingFlag)]()
         for dataSource in dataSources {
             switch dataSource.concreteType {
             case .legacy(let tsAttachmentDataSource):
                 legacyDataSources.append(tsAttachmentDataSource)
-            case .v2(let attachmentDataSource):
-                v2DataSources.append(attachmentDataSource)
+            case .v2(let attachmentDataSource, let renderingFlag):
+                v2DataSources.append((attachmentDataSource, renderingFlag))
             }
         }
         if !v2DataSources.isEmpty {
@@ -135,8 +146,15 @@ public class TSResourceManagerImpl: TSResourceManager {
                 return
             }
             try attachmentManager.createAttachmentStreams(
-                consuming: v2DataSources,
-                owner: .messageBodyAttachment(.init(messageRowId: messageRowId)),
+                consuming: v2DataSources.map { dataSource in
+                    return .init(
+                        dataSource: dataSource.0,
+                        owner: .messageBodyAttachment(.init(
+                            messageRowId: messageRowId,
+                            renderingFlag: dataSource.1
+                        ))
+                    )
+                },
                 tx: tx
             )
         }
@@ -160,8 +178,7 @@ public class TSResourceManagerImpl: TSResourceManager {
                 info: .v2,
                 finalize: { [attachmentManager] owner, innerTx in
                     return try attachmentManager.createAttachmentPointer(
-                        from: proto,
-                        owner: owner,
+                        from: .init(proto: proto, owner: owner),
                         tx: innerTx
                     )
                 }
@@ -180,13 +197,12 @@ public class TSResourceManagerImpl: TSResourceManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         switch dataSource.concreteType {
-        case .v2(let attachmentDataSource):
+        case .v2(let attachmentDataSource, _):
             return OwnedAttachmentBuilder<TSResourceRetrievalInfo>(
                 info: .v2,
                 finalize: { [attachmentManager] owner, innerTx in
                     return try attachmentManager.createAttachmentStream(
-                        consuming: attachmentDataSource,
-                        owner: owner,
+                        consuming: .init(dataSource: attachmentDataSource, owner: owner),
                         tx: innerTx
                     )
                 }
@@ -406,7 +422,7 @@ public class TSResourceManagerImpl: TSResourceManager {
     public func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
+    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
         let originalAttachmentRef = tsResourceStore.attachmentToUseInQuote(
             originalMessage: originalMessage,
             tx: tx
@@ -431,13 +447,13 @@ public class TSResourceManagerImpl: TSResourceManager {
                 else {
                     return nil
                 }
-                return OwnedAttachmentBuilder<OWSAttachmentInfo>(
+                return OwnedAttachmentBuilder<QuotedAttachmentInfo>(
                     info: info,
                     finalize: { [attachmentStore] ownerId, tx in
                         let quotedReplyMessageId: Int64
                         switch ownerId {
-                        case .quotedReplyAttachment(let messageRowId):
-                            quotedReplyMessageId = messageRowId
+                        case .quotedReplyAttachment(let metadata):
+                            quotedReplyMessageId = metadata.messageRowId
                         default:
                             owsFailDebug("Invalid owner sent to quoted reply builder!")
                             return
@@ -469,13 +485,13 @@ public class TSResourceManagerImpl: TSResourceManager {
             else {
                 return nil
             }
-            return OwnedAttachmentBuilder<OWSAttachmentInfo>(
+            return OwnedAttachmentBuilder<QuotedAttachmentInfo>(
                 info: info,
                 finalize: { [attachmentManager, originalMessage] ownerId, tx in
                     let quotedReplyMessageId: Int64
                     switch ownerId {
-                    case .quotedReplyAttachment(let messageRowId):
-                        quotedReplyMessageId = messageRowId
+                    case .quotedReplyAttachment(let metadata):
+                        quotedReplyMessageId = metadata.messageRowId
                     default:
                         owsFailDebug("Invalid owner sent to quoted reply builder!")
                         return

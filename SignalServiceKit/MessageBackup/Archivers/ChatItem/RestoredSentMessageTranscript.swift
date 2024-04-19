@@ -46,7 +46,10 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
 
         // TODO: handle attachments in quotes
         let quotedMessageBuilder = contents.quotedMessage.map {
-            return OwnedAttachmentBuilder<TSQuotedMessage>.withoutFinalizer($0)
+            return OwnedAttachmentBuilder<QuotedMessageInfo>.withoutFinalizer(.init(
+                quotedMessage: $0,
+                renderingFlag: .default
+            ))
         }
 
         let messageParams = SentMessageTranscriptType.Message(

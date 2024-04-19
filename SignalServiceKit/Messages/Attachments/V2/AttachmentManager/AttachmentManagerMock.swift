@@ -10,16 +10,14 @@ import Foundation
 open class AttachmentManagerMock: AttachmentManager {
 
     open func createAttachmentPointers(
-        from protos: [SSKProtoAttachmentPointer],
-        owner: AttachmentReference.OwnerBuilder,
+        from protos: [OwnedAttachmentPointerProto],
         tx: DBWriteTransaction
     ) throws {
         // Do nothing
     }
 
     open func createAttachmentStreams(
-        consuming dataSources: [AttachmentDataSource],
-        owner: AttachmentReference.OwnerBuilder,
+        consuming dataSources: [OwnedAttachmentDataSource],
         tx: DBWriteTransaction
     ) throws {
         // Do nothing
@@ -28,7 +26,7 @@ open class AttachmentManagerMock: AttachmentManager {
     open func quotedReplyAttachmentInfo(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> OWSAttachmentInfo? {
+    ) -> QuotedAttachmentInfo? {
         return nil
     }
 

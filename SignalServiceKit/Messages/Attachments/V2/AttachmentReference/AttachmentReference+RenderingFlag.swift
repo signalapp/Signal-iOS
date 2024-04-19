@@ -39,6 +39,17 @@ extension AttachmentReference {
 
 extension AttachmentReference.RenderingFlag {
 
+    public static func fromProto(_ proto: SSKProtoAttachmentPointer) -> Self {
+        guard
+            proto.hasFlags,
+            let rawValue = Int32.init(exactly: proto.flags)
+        else {
+            return .default
+        }
+
+        return .fromProto(.init(rawValue: rawValue))
+    }
+
     public static func fromProto(_ proto: SSKProtoAttachmentPointerFlags?) -> Self {
         switch proto {
         case nil:

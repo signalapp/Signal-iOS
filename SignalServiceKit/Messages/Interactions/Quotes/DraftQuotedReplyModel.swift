@@ -82,6 +82,17 @@ public class DraftQuotedReplyModel {
                 return false
             }
         }
+
+        public var renderingFlag: AttachmentReference.RenderingFlag {
+            switch self {
+            case .attachment(_, let attachmentRef, _, _):
+                return attachmentRef.renderingFlag
+            case .edit(_, _, let content):
+                return content.renderingFlag
+            default:
+                return .default
+            }
+        }
     }
 
     public let content: Content

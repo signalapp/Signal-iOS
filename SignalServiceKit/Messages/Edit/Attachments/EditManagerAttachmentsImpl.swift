@@ -260,20 +260,23 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             break
         case .dataSource(let dataSource):
             try attachmentManager.createAttachmentStream(
-                consuming: AttachmentDataSource(
-                    mimeType: MimeType.textXSignalPlain.rawValue,
-                    caption: nil,
-                    renderingFlag: .default,
-                    sourceFilename: nil,
-                    dataSource: .dataSource(dataSource, shouldCopy: false)
+                consuming: .init(
+                    dataSource: AttachmentDataSource(
+                        mimeType: MimeType.textXSignalPlain.rawValue,
+                        contentHash: nil,
+                        sourceFilename: nil,
+                        dataSource: .dataSource(dataSource, shouldCopy: false)
+                    ),
+                    owner: .messageOversizeText(messageRowId: latestRevisionRowId)
                 ),
-                owner: .messageOversizeText(messageRowId: latestRevisionRowId),
                 tx: tx
             )
         case .proto(let protoPointer):
             try attachmentManager.createAttachmentPointer(
-                from: protoPointer,
-                owner: .messageOversizeText(messageRowId: latestRevisionRowId),
+                from: .init(
+                    proto: protoPointer,
+                    owner: .messageOversizeText(messageRowId: latestRevisionRowId)
+                ),
                 tx: tx
             )
         }

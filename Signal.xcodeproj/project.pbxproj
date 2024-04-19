@@ -887,6 +887,8 @@
 		6675F65129261E0C007A311E /* APNSRotationStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */; };
 		667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664352A43BBCD00716B84 /* OWSFingerprint.swift */; };
 		667664382A44B6C200716B84 /* OWSFingerprintBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */; };
+		6676A40A2BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6676A4092BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift */; };
+		6676A40C2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6676A40B2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift */; };
 		66783C2B29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */; };
 		667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9D92B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift */; };
 		667AF9DE2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */; };
@@ -3838,6 +3840,8 @@
 		6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSRotationStoreTest.swift; sourceTree = "<group>"; };
 		667664352A43BBCD00716B84 /* OWSFingerprint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprint.swift; sourceTree = "<group>"; };
 		667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprintBuilder.swift; sourceTree = "<group>"; };
+		6676A4092BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnedAttachmentPointerProto.swift; sourceTree = "<group>"; };
+		6676A40B2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedAttachmentInfo.swift; sourceTree = "<group>"; };
 		66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferQRCodeViewController.swift; sourceTree = "<group>"; };
 		667AF9D92B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PersistableGroupUpdateItemUpdater.swift"; sourceTree = "<group>"; };
 		667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift"; sourceTree = "<group>"; };
@@ -8197,6 +8201,8 @@
 				66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */,
 				66D7B9002B92889E0005C98B /* AttachmentManagerImpl.swift */,
 				66D7B9022B928AE10005C98B /* AttachmentManagerMock.swift */,
+				6676A4092BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift */,
+				6676A40B2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift */,
 			);
 			path = AttachmentManager;
 			sourceTree = "<group>";
@@ -14092,6 +14098,7 @@
 				884E4C4828AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift in Sources */,
 				C1E307402BA3B342009F015B /* OutputStreamable.swift in Sources */,
 				664165132BA4A27000C34F6A /* OwnedAttachmentBuilder.swift in Sources */,
+				6676A40A2BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift in Sources */,
 				F9C5CDDE289453B400548EEE /* OWS2FAManager.m in Sources */,
 				F9C5CE0D289453B400548EEE /* OWS2FAManager.swift in Sources */,
 				F9C5CC49289453B300548EEE /* OWSAddToContactsOfferMessage+SDS.swift in Sources */,
@@ -14289,6 +14296,7 @@
 				720547F72B9C98C600E2CF2F /* ProximityMonitoringManager.swift in Sources */,
 				503B47222AF0569B00978266 /* PublicKey.swift in Sources */,
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
+				6676A40C2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift in Sources */,
 				66D7B9132B979C3A0005C98B /* QuotedMessageAttachmentReference+TSResource.swift in Sources */,
 				66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */,
 				6635B8A52BA25D9F005C80EA /* QuotedReplyManager.swift in Sources */,

@@ -15,7 +15,7 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
         for dataMessage: SSKProtoDataMessage,
         thread: TSThread,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
+    ) -> OwnedAttachmentBuilder<QuotedMessageInfo>? {
         return nil
     }
 
@@ -39,7 +39,7 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
         draft: DraftQuotedReplyModel,
         threadUniqueId: String,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
+    ) -> OwnedAttachmentBuilder<QuotedMessageInfo> {
         fatalError("Unimplemented!")
     }
 

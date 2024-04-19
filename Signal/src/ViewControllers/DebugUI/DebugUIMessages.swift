@@ -3865,7 +3865,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         messageState: TSOutgoingMessageState,
         isDelivered: Bool = false,
         isRead: Bool = false,
-        quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>? = nil,
+        quotedMessageBuilder: OwnedAttachmentBuilder<QuotedMessageInfo>? = nil,
         contactShareBlock: CreateContactBlock? = nil,
         linkPreview: OWSLinkPreview? = nil,
         messageSticker: MessageSticker? = nil,
@@ -3891,7 +3891,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let message = messageBuilder.build(transaction: transaction)
 
-        quotedMessageBuilder.map { message.update(with: $0.info, transaction: transaction) }
+        quotedMessageBuilder.map { message.update(with: $0.info.quotedMessage, transaction: transaction) }
         linkPreview.map { message.update(with: $0, transaction: transaction) }
         messageSticker.map { message.update(with: $0, transaction: transaction) }
 
@@ -3903,7 +3903,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         message.update(withFakeMessageState: messageState, transaction: transaction)
 
         try? quotedMessageBuilder?.finalize(
-            owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
+            owner: .quotedReplyAttachment(.init(
+                messageRowId: message.sqliteRowId!,
+                renderingFlag: quotedMessageBuilder?.info.renderingFlag ?? .default
+            )),
             tx: transaction.asV2Write
         )
 
@@ -4075,7 +4078,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         messageBody messageBodyParam: String?,
         fakeAssetLoader fakeAssetLoaderParam: DebugUIMessagesAssetLoader?,
         isAttachmentDownloaded: Bool = false,
-        quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>? = nil,
+        quotedMessageBuilder: OwnedAttachmentBuilder<QuotedMessageInfo>? = nil,
         transaction: SDSAnyWriteTransaction
     ) -> TSIncomingMessage {
         owsAssertDebug(!messageBodyParam.isEmptyOrNil || fakeAssetLoaderParam != nil)
@@ -4097,13 +4100,16 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
         incomingMessageBuilder.authorAci = AciObjC(authorAci)
         let message = incomingMessageBuilder.build()
-        quotedMessageBuilder.map { message.update(with: $0.info, transaction: transaction) }
+        quotedMessageBuilder.map { message.update(with: $0.info.quotedMessage, transaction: transaction) }
         message.anyInsert(transaction: transaction)
         let messageRowId = message.sqliteRowId!
         message.debugonly_markAsReadNow(transaction: transaction)
 
         try? quotedMessageBuilder?.finalize(
-            owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
+            owner: .quotedReplyAttachment(.init(
+                messageRowId: message.sqliteRowId!,
+                renderingFlag: quotedMessageBuilder?.info.renderingFlag ?? .default
+            )),
             tx: transaction.asV2Write
         )
 

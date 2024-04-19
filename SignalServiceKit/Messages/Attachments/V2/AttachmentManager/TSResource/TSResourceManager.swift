@@ -188,7 +188,7 @@ public protocol TSResourceManager {
     func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>?
+    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>?
 
     func thumbnailImage(
         attachment: TSResource,

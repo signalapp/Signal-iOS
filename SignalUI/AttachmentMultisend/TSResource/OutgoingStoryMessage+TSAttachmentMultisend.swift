@@ -50,6 +50,7 @@ extension OutgoingStoryMessage {
                             thread: destination.thread,
                             attachmentBuilder: attachmentBuilder,
                             mediaCaption: captionBody,
+                            shouldLoop: attachment.isLoopingVideo,
                             transaction: transaction
                         )
                         if destination.thread is TSPrivateStoryThread {
@@ -87,6 +88,7 @@ extension OutgoingStoryMessage {
                         thread: destination.thread,
                         attachmentBuilder: textAttachmentBuilder.wrap { .text($0) },
                         mediaCaption: nil,
+                        shouldLoop: false,
                         transaction: transaction
                     )
                     if destination.thread is TSPrivateStoryThread {

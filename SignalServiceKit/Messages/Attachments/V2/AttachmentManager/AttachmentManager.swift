@@ -16,8 +16,7 @@ public protocol AttachmentManager {
     ///
     /// Throws an error if any of the provided protos are invalid.
     func createAttachmentPointers(
-        from protos: [SSKProtoAttachmentPointer],
-        owner: AttachmentReference.OwnerBuilder,
+        from protos: [OwnedAttachmentPointerProto],
         tx: DBWriteTransaction
     ) throws
 
@@ -26,8 +25,7 @@ public protocol AttachmentManager {
     /// the data source.
     /// Creates a reference from the owner to the attachments.
     func createAttachmentStreams(
-        consuming dataSources: [AttachmentDataSource],
-        owner: AttachmentReference.OwnerBuilder,
+        consuming dataSources: [OwnedAttachmentDataSource],
         tx: DBWriteTransaction
     ) throws
 
@@ -45,7 +43,7 @@ public protocol AttachmentManager {
     func quotedReplyAttachmentInfo(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> OWSAttachmentInfo?
+    ) -> QuotedAttachmentInfo?
 
     /// Given an original message available locally and a new message
     /// quoting that original, creates a thumbnail attachment and an owner
@@ -89,13 +87,11 @@ extension AttachmentManager {
     ///
     /// Throws an error if the provided proto is invalid.
     public func createAttachmentPointer(
-        from proto: SSKProtoAttachmentPointer,
-        owner: AttachmentReference.OwnerBuilder,
+        from proto: OwnedAttachmentPointerProto,
         tx: DBWriteTransaction
     ) throws {
         try createAttachmentPointers(
             from: [proto],
-            owner: owner,
             tx: tx
         )
     }
@@ -105,13 +101,11 @@ extension AttachmentManager {
     /// the data source.
     /// Creates a reference from the owner to the attachment.
     public func createAttachmentStream(
-        consuming dataSource: AttachmentDataSource,
-        owner: AttachmentReference.OwnerBuilder,
+        consuming dataSource: OwnedAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
         try createAttachmentStreams(
             consuming: [dataSource],
-            owner: owner,
             tx: tx
         )
     }

@@ -220,7 +220,7 @@ public class UnpreparedOutgoingMessage {
                 tx: tx.asV2Write
             )
         }.map {
-            message.message.update(with: $0.info, transaction: tx)
+            message.message.update(with: $0.info.quotedMessage, transaction: tx)
             return $0
         }
 
@@ -267,7 +267,10 @@ public class UnpreparedOutgoingMessage {
             tx: tx.asV2Write
         )
         try quotedReplyBuilder?.finalize(
-            owner: .quotedReplyAttachment(messageRowId: messageRowId),
+            owner: .quotedReplyAttachment(.init(
+                messageRowId: messageRowId,
+                renderingFlag: quotedReplyBuilder?.info.renderingFlag ?? .default
+            )),
             tx: tx.asV2Write
         )
 

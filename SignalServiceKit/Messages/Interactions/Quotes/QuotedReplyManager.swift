@@ -6,13 +6,18 @@
 import Foundation
 import LibSignalClient
 
+public struct QuotedMessageInfo {
+    public let quotedMessage: TSQuotedMessage
+    public let renderingFlag: AttachmentReference.RenderingFlag
+}
+
 public protocol QuotedReplyManager {
 
     func quotedMessage(
         for dataMessage: SSKProtoDataMessage,
         thread: TSThread,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage>?
+    ) -> OwnedAttachmentBuilder<QuotedMessageInfo>?
 
     func buildDraftQuotedReply(
         originalMessage: TSMessage,
@@ -30,7 +35,7 @@ public protocol QuotedReplyManager {
         draft: DraftQuotedReplyModel,
         threadUniqueId: String,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage>
+    ) -> OwnedAttachmentBuilder<QuotedMessageInfo>
 
     func buildProtoForSending(
         _ quote: TSQuotedMessage,

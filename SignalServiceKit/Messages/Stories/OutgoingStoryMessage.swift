@@ -71,6 +71,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         thread: TSThread,
         attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>,
         mediaCaption: StyleOnlyMessageBody?,
+        shouldLoop: Bool,
         transaction: SDSAnyWriteTransaction
     ) throws -> OutgoingStoryMessage {
         let storyManifest: StoryManifest = .outgoing(
@@ -97,6 +98,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             replyCount: 0,
             attachmentBuilder: attachmentBuilder,
             mediaCaption: mediaCaption,
+            shouldLoop: shouldLoop,
             transaction: transaction
         )
 

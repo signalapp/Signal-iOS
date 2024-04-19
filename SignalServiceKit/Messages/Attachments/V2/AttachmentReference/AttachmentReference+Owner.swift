@@ -58,7 +58,7 @@ extension AttachmentReference {
         case messageLinkPreview(messageRowId: Int64)
         /// Note that the row id is for the parent message containing the quoted reply,
         /// not the original message being quoted.
-        case quotedReplyAttachment(messageRowId: Int64)
+        case quotedReplyAttachment(MessageQuotedReplyAttachmentBuilder)
         case messageSticker(MessageStickerBuilder)
         case messageContactAvatar(messageRowId: Int64)
         case storyMessageMedia(StoryMediaBuilder)
@@ -67,13 +67,31 @@ extension AttachmentReference {
 
         public struct MessageBodyAttachmentBuilder: Equatable {
             public let messageRowId: Int64
+            public let renderingFlag: AttachmentReference.RenderingFlag
 
             /// Note: index/orderInOwner is inferred from the order of the provided array at creation time.
 
             /// Note: at time of writing message captions are unused; not taken as input here.
 
-            public init(messageRowId: Int64) {
+            public init(
+                messageRowId: Int64,
+                renderingFlag: AttachmentReference.RenderingFlag
+            ) {
                 self.messageRowId = messageRowId
+                self.renderingFlag = renderingFlag
+            }
+        }
+
+        public struct MessageQuotedReplyAttachmentBuilder: Equatable {
+            public let messageRowId: Int64
+            public let renderingFlag: AttachmentReference.RenderingFlag
+
+            public init(
+                messageRowId: Int64,
+                renderingFlag: AttachmentReference.RenderingFlag
+            ) {
+                self.messageRowId = messageRowId
+                self.renderingFlag = renderingFlag
             }
         }
 
@@ -96,10 +114,16 @@ extension AttachmentReference {
         public struct StoryMediaBuilder: Equatable {
             public let storyMessageRowId: Int64
             public let caption: StyleOnlyMessageBody?
+            public let shouldLoop: Bool
 
-            public init(storyMessageRowId: Int64, caption: StyleOnlyMessageBody?) {
+            public init(
+                storyMessageRowId: Int64,
+                caption: StyleOnlyMessageBody?,
+                shouldLoop: Bool
+            ) {
                 self.storyMessageRowId = storyMessageRowId
                 self.caption = caption
+                self.shouldLoop = shouldLoop
             }
         }
     }
@@ -139,6 +163,8 @@ extension AttachmentReference {
 
             public class BodyAttachmentMetadata: Metadata {
                 public var contentType: ContentType? { _contentType }
+                /// Read-only in practice; we never set this for new message body attachments but
+                /// it may be set for older messages.
                 public var caption: MessageBody? { _caption }
                 public var renderingFlag: RenderingFlag { _renderingFlag }
                 public var index: UInt32 { _orderInOwner! }
@@ -399,8 +425,8 @@ extension AttachmentReference.OwnerBuilder {
             return .messageOversizeText(messageRowId: messageRowId)
         case .messageLinkPreview(let messageRowId):
             return .messageLinkPreview(messageRowId: messageRowId)
-        case .quotedReplyAttachment(let messageRowId):
-            return .quotedReplyAttachment(messageRowId: messageRowId)
+        case .quotedReplyAttachment(let builder):
+            return .quotedReplyAttachment(messageRowId: builder.messageRowId)
         case .messageSticker(let stickerOwnerBuilder):
             return .messageSticker(messageRowId: stickerOwnerBuilder.messageRowId)
         case .messageContactAvatar(let messageRowId):

@@ -327,7 +327,7 @@ public class TSAttachmentManager {
     public func cloneThumbnailForNewQuotedReplyMessage(
         originalAttachment: TSAttachment,
         tx: SDSAnyWriteTransaction
-    ) -> OWSAttachmentInfo? {
+    ) -> QuotedAttachmentInfo? {
         if
             let stream = originalAttachment as? TSAttachmentStream,
             MimeTypeUtil.isSupportedVisualMediaMimeType(stream.mimeType)
@@ -335,9 +335,12 @@ public class TSAttachmentManager {
             // We found an attachment stream on the original message! Use it as our quoted attachment
             if let thumbnail = stream.cloneAsThumbnail() {
                 thumbnail.anyInsert(transaction: tx)
-                return OWSAttachmentInfo(
-                    legacyAttachmentId: thumbnail.uniqueId,
-                    ofType: .thumbnail
+                return .init(
+                    info: OWSAttachmentInfo(
+                        legacyAttachmentId: thumbnail.uniqueId,
+                        ofType: .thumbnail
+                    ),
+                    renderingFlag: thumbnail.attachmentType.asRenderingFlag
                 )
             } else {
                 owsFailDebug("Unable to clone!")
@@ -349,15 +352,21 @@ public class TSAttachmentManager {
             MimeTypeUtil.isSupportedVisualMediaMimeType(pointer.mimeType)
         {
             // No attachment stream, but we have a pointer. It's likely this media hasn't finished downloading yet.
-            return OWSAttachmentInfo(
-                legacyAttachmentId: pointer.uniqueId,
-                ofType: .original
+            return .init(
+                info: OWSAttachmentInfo(
+                    legacyAttachmentId: pointer.uniqueId,
+                    ofType: .original
+                ),
+                renderingFlag: pointer.attachmentType.asRenderingFlag
             )
         } else {
             // We have an attachment in the original message, but it doesn't support thumbnailing
-            return OWSAttachmentInfo(
-                stubWithMimeType: originalAttachment.mimeType,
-                sourceFilename: originalAttachment.sourceFilename
+            return .init(
+                info: OWSAttachmentInfo(
+                    stubWithMimeType: originalAttachment.mimeType,
+                    sourceFilename: originalAttachment.sourceFilename
+                ),
+                renderingFlag: originalAttachment.attachmentType.asRenderingFlag
             )
         }
     }

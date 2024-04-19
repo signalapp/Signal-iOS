@@ -18,29 +18,27 @@ public class AttachmentManagerImpl: AttachmentManager {
     // MARK: Creating Attachments from source
 
     public func createAttachmentPointers(
-        from protos: [SSKProtoAttachmentPointer],
-        owner: AttachmentReference.OwnerBuilder,
+        from protos: [OwnedAttachmentPointerProto],
         tx: DBWriteTransaction
     ) throws {
         try createAttachments(
             protos,
-            mimeType: \.contentType,
-            owner: owner,
-            createFn: self._createAttachmentPointer(from:owner:sourceOrder:tx:),
+            mimeType: \.proto.contentType,
+            owner: \.owner,
+            createFn: self._createAttachmentPointer(from:sourceOrder:tx:),
             tx: tx
         )
     }
 
     public func createAttachmentStreams(
-        consuming dataSources: [AttachmentDataSource],
-        owner: AttachmentReference.OwnerBuilder,
+        consuming dataSources: [OwnedAttachmentDataSource],
         tx: DBWriteTransaction
     ) throws {
         try createAttachments(
             dataSources,
             mimeType: { $0.mimeType },
-            owner: owner,
-            createFn: self._createAttachmentStream(consuming:owner:sourceOrder:tx:),
+            owner: \.owner,
+            createFn: self._createAttachmentStream(consuming:sourceOrder:tx:),
             tx: tx
         )
     }
@@ -50,7 +48,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     public func quotedReplyAttachmentInfo(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> OWSAttachmentInfo? {
+    ) -> QuotedAttachmentInfo? {
         return _quotedReplyAttachmentInfo(originalMessage: originalMessage, tx: tx)?.info
     }
 
@@ -62,7 +60,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         guard
             let info = _quotedReplyAttachmentInfo(originalMessage: originalMessage, tx: tx),
             // Not a stub! Stubs would be .unset
-            info.info.attachmentType == .V2
+            info.info.info.attachmentType == .V2
         else {
             return
         }
@@ -101,15 +99,15 @@ public class AttachmentManagerImpl: AttachmentManager {
     private func createAttachments<T>(
         _ inputArray: [T],
         mimeType: (T) -> String?,
-        owner: OwnerBuilder,
-        createFn: (T, OwnerBuilder, Int?, DBWriteTransaction) throws -> Void,
+        owner: (T) -> OwnerBuilder,
+        createFn: (T, Int?, DBWriteTransaction) throws -> Void,
         tx: DBWriteTransaction
     ) throws {
         var indexOffset = 0
         for (i, input) in inputArray.enumerated() {
             let sourceOrder: Int?
-            var ownerForInput = owner
-            switch owner {
+            var ownerForInput = owner(input)
+            switch ownerForInput {
             case .messageBodyAttachment(let bodyOwnerBuilder):
                 // Convert text mime type attachments in the first spot to oversize text.
                 if mimeType(input) == MimeType.textXSignalPlain.rawValue {
@@ -125,17 +123,18 @@ public class AttachmentManagerImpl: AttachmentManager {
                 }
             }
 
-            try createFn(input, ownerForInput, sourceOrder, tx)
+            try createFn(input, sourceOrder, tx)
         }
     }
 
     private func _createAttachmentPointer(
-        from proto: SSKProtoAttachmentPointer,
-        owner: OwnerBuilder,
+        from protoAndOwner: OwnedAttachmentPointerProto,
         // Nil if no order is to be applied.
         sourceOrder: Int?,
         tx: DBWriteTransaction
     ) throws {
+        let proto = protoAndOwner.proto
+        let owner = protoAndOwner.owner
         let cdnNumber = proto.cdnNumber
         guard let cdnKey = proto.cdnKey?.nilIfEmpty, cdnNumber > 0 else {
             throw OWSAssertionError("Invalid cdn info")
@@ -175,8 +174,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     }
 
     private func _createAttachmentStream(
-        consuming dataSource: AttachmentDataSource,
-        owner: OwnerBuilder,
+        consuming dataSource: OwnedAttachmentDataSource,
         // Nil if no order is to be applied.
         sourceOrder: Int?,
         tx: DBWriteTransaction
@@ -214,16 +212,16 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: Quoted Replies
 
-    private struct QuotedAttachmentInfo {
+    private struct WrappedQuotedAttachmentInfo {
         let originalAttachmentReference: AttachmentReference
         let originalAttachment: Attachment
-        let info: OWSAttachmentInfo
+        let info: QuotedAttachmentInfo
     }
 
     private func _quotedReplyAttachmentInfo(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> QuotedAttachmentInfo? {
+    ) -> WrappedQuotedAttachmentInfo? {
         guard
             let originalReference = attachmentStore.attachmentToUseInQuote(
                 originalMessage: originalMessage,
@@ -239,12 +237,18 @@ public class AttachmentManagerImpl: AttachmentManager {
             info: {
                 guard MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType) else {
                     // Can't make a thumbnail, just return a stub.
-                    return OWSAttachmentInfo(
-                        stubWithMimeType: originalAttachment.mimeType,
-                        sourceFilename: originalReference.sourceFilename
+                    return .init(
+                        info: OWSAttachmentInfo(
+                            stubWithMimeType: originalAttachment.mimeType,
+                            sourceFilename: originalReference.sourceFilename
+                        ),
+                        renderingFlag: originalReference.renderingFlag
                     )
                 }
-                return OWSAttachmentInfo(forV2ThumbnailReference: ())
+                return .init(
+                    info: OWSAttachmentInfo(forV2ThumbnailReference: ()),
+                    renderingFlag: originalReference.renderingFlag
+                )
             }()
         )
     }

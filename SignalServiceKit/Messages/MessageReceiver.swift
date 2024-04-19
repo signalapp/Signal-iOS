@@ -1067,7 +1067,7 @@ public final class MessageReceiver: Dependencies {
         }
 
         // Update attachment fields before inserting.
-        quotedMessageBuilder.map { message.update(with: $0.info, transaction: tx) }
+        quotedMessageBuilder.map { message.update(with: $0.info.quotedMessage, transaction: tx) }
         contactBuilder.map { message.update(withContactShare: $0.info, transaction: tx) }
         linkPreviewBuilder.map { message.update(with: $0.info, transaction: tx) }
         messageStickerBuilder.map { message.update(with: $0.info, transaction: tx) }
@@ -1089,7 +1089,10 @@ public final class MessageReceiver: Dependencies {
             )
 
             try quotedMessageBuilder?.finalize(
-                owner: .quotedReplyAttachment(messageRowId: message.sqliteRowId!),
+                owner: .quotedReplyAttachment(.init(
+                    messageRowId: message.sqliteRowId!,
+                    renderingFlag: quotedMessageBuilder?.info.renderingFlag ?? .default
+                )),
                 tx: tx.asV2Write
             )
             try linkPreviewBuilder?.finalize(

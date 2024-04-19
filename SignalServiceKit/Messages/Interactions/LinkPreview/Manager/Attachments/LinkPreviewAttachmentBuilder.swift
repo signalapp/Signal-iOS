@@ -23,10 +23,7 @@ public class LinkPreviewAttachmentBuilder: LinkPreviewBuilder {
     ) -> DataSource {
         return AttachmentDataSource.from(
             data: data,
-            mimeType: mimeType,
-            caption: nil,
-            renderingFlag: .default,
-            sourceFilename: nil
+            mimeType: mimeType
         )
     }
 
@@ -39,8 +36,7 @@ public class LinkPreviewAttachmentBuilder: LinkPreviewBuilder {
             info: .withForeignReferenceImageAttachment(metadata: metadata),
             finalize: { [attachmentManager] owner, innerTx in
                 return try attachmentManager.createAttachmentStream(
-                    consuming: dataSource,
-                    owner: owner,
+                    consuming: .init(dataSource: dataSource, owner: owner),
                     tx: innerTx
                 )
             }
@@ -56,8 +52,7 @@ public class LinkPreviewAttachmentBuilder: LinkPreviewBuilder {
             info: .withForeignReferenceImageAttachment(metadata: metadata),
             finalize: { [attachmentManager] owner, innerTx in
                 return try attachmentManager.createAttachmentPointer(
-                    from: proto,
-                    owner: owner,
+                    from: .init(proto: proto, owner: owner),
                     tx: innerTx
                 )
             }

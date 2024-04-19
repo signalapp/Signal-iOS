@@ -95,7 +95,7 @@ public class TSResourceManagerMock: TSResourceManager {
     public func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
+    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
         return nil
     }
 

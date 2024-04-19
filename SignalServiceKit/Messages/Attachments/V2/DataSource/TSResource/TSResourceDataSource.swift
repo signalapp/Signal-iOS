@@ -86,10 +86,28 @@ public struct TSResourceDataSource {
             )
         case (.v2(let attachment), .v2(let reference)):
             let v2 = AttachmentDataSource.forwarding(existingAttachment: attachment, with: reference)
+
+            let caption: MessageBody?
+            let renderingFlag: AttachmentReference.RenderingFlag
+            switch reference.owner {
+            case .message(.bodyAttachment(let metadata)):
+                caption = metadata.caption
+                renderingFlag = metadata.renderingFlag
+            case .message(.quotedReply(let metadata)):
+                caption = nil
+                renderingFlag = metadata.renderingFlag
+            case .storyMessage(.media(let metadata)):
+                caption = metadata.caption?.asMessageBody()
+                renderingFlag = metadata.shouldLoop ? .shouldLoop : .default
+            default:
+                caption = nil
+                renderingFlag = .default
+            }
+
             return .init(
                 mimeType: v2.mimeType,
-                caption: v2.caption,
-                renderingFlag: v2.renderingFlag,
+                caption: caption,
+                renderingFlag: renderingFlag,
                 sourceFilename: v2.sourceFilename,
                 dataSource: .existingAttachment(existingAttachment.resourceId)
             )
@@ -103,20 +121,21 @@ extension TSResourceDataSource {
 
     enum ConcreteType {
         case legacy(TSAttachmentDataSource)
-        case v2(AttachmentDataSource)
+        case v2(AttachmentDataSource, AttachmentReference.RenderingFlag)
     }
 
     var concreteType: ConcreteType {
         switch dataSource {
         case .dataSource(let dataSource, shouldCopy: let shouldCopy):
             if FeatureFlags.newAttachmentsUseV2 {
-                return .v2(.from(
-                    dataSource: dataSource,
-                    mimeType: mimeType,
-                    caption: caption,
-                    renderingFlag: renderingFlag,
-                    shouldCopyDataSource: shouldCopy
-                ))
+                return .v2(
+                    .from(
+                        dataSource: dataSource,
+                        mimeType: mimeType,
+                        shouldCopyDataSource: shouldCopy
+                    ),
+                    renderingFlag
+                )
             } else {
                 return .legacy(.init(
                     mimeType: mimeType,
@@ -128,13 +147,13 @@ extension TSResourceDataSource {
             }
         case .data(let data):
             if FeatureFlags.newAttachmentsUseV2 {
-                return .v2(.from(
-                    data: data,
-                    mimeType: mimeType,
-                    caption: caption,
-                    renderingFlag: renderingFlag,
-                    sourceFilename: sourceFilename
-                ))
+                return .v2(
+                    .from(
+                        data: data,
+                        mimeType: mimeType
+                    ),
+                   renderingFlag
+                )
             } else {
                 return .legacy(.init(
                     mimeType: mimeType,
@@ -147,13 +166,15 @@ extension TSResourceDataSource {
         case .existingAttachment(let existingResourceId):
             switch existingResourceId {
             case .v2(let rowId):
-                return .v2(.init(
-                    mimeType: mimeType,
-                    caption: caption,
-                    renderingFlag: renderingFlag,
-                    sourceFilename: sourceFilename,
-                    dataSource: .existingAttachment(rowId)
-                ))
+                return .v2(
+                    .init(
+                        mimeType: mimeType,
+                        contentHash: nil,
+                        sourceFilename: sourceFilename,
+                        dataSource: .existingAttachment(rowId)
+                    ),
+                    renderingFlag
+                )
             case .legacy(let uniqueId):
                 return .legacy(.init(
                     mimeType: mimeType,

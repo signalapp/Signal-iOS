@@ -76,3 +76,21 @@ public class TSAttachmentReference: TSResourceReference {
         return message.attachmentIds.firstIndex(of: uniqueId).map(UInt32.init(_:))
     }
 }
+
+extension TSAttachmentType {
+
+    var asRenderingFlag: AttachmentReference.RenderingFlag {
+        switch self {
+        case .default:
+            return .default
+        case .voiceMessage:
+            return .voiceMessage
+        case .borderless:
+            return .borderless
+        case .GIF:
+            return .shouldLoop
+        @unknown default:
+            return .default
+        }
+    }
+}
