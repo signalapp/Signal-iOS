@@ -308,11 +308,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
         return self.write { (tx) -> TSGroupThread in
             // Create a group with all the addresses.
             let groupThread = {
-                let factory = GroupThreadFactory()
-                factory.memberAddressesBuilder = {
-                    return addresses.map { SignalServiceAddress(serviceId: $0.aci, phoneNumber: $0.phoneNumber?.stringValue) }
-                }
-                return factory.create(transaction: tx)
+                return try! GroupManager.createGroupForTests(
+                    members: addresses.map { SignalServiceAddress(serviceId: $0.aci, phoneNumber: $0.phoneNumber?.stringValue) },
+                    transaction: tx
+                )
             }()
             // Delete the group members that were created automatically.
             TSGroupMember.anyRemoveAllWithInstantiation(transaction: tx)

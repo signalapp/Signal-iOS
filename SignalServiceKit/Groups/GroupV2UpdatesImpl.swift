@@ -815,7 +815,7 @@ private extension GroupV2UpdatesImpl {
             )
             builder.apply(options: groupModelOptions)
 
-            let newGroupModel = try builder.build()
+            let newGroupModel = try builder.buildAsV2()
 
             let newDisappearingMessageToken = snapshot.disappearingMessageToken
             let didAddLocalUserToV2Group = self.didAddLocalUserToV2Group(

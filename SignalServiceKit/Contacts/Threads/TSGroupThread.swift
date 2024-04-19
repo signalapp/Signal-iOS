@@ -148,7 +148,7 @@ extension TSGroupThread {
                 name: "Example Group",
                 descriptionText: nil,
                 avatarData: nil,
-                groupMembership: GroupMembership(v1Members: Set(groupMembers)),
+                groupMembership: GroupMembership(membersForTest: groupMembers),
                 groupAccess: .defaultForV2,
                 revision: 1,
                 secretParamsData: Data(count: 1),

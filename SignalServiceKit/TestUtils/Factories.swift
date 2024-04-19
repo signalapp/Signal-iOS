@@ -381,55 +381,6 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 }
 
-public class GroupThreadFactory: NSObject, Factory {
-
-    public var messageCount: UInt = 0
-
-    public func create(transaction: SDSAnyWriteTransaction) -> TSGroupThread {
-        let thread = try! GroupManager.createGroupForTests(members: memberAddressesBuilder(),
-                                                           name: titleBuilder(),
-                                                           avatarData: groupAvatarDataBuilder(),
-                                                           groupsVersion: groupsVersionBuilder(),
-                                                           transaction: transaction)
-
-        let incomingMessageFactory = IncomingMessageFactory()
-        incomingMessageFactory.threadCreator = { _ in return thread }
-
-        let outgoingMessageFactory = OutgoingMessageFactory()
-        outgoingMessageFactory.threadCreator = { _ in return thread }
-
-        (0..<messageCount).forEach { _ in
-            if Bool.random() {
-                _ = incomingMessageFactory.create(transaction: transaction)
-            } else {
-                _ = outgoingMessageFactory.create(transaction: transaction)
-            }
-        }
-
-        return thread
-    }
-
-    // MARK: Generators
-
-    public var titleBuilder: () -> String? = {
-        return CommonGenerator.words(count: 3)
-    }
-
-    public var groupsVersionBuilder: () -> GroupsVersion = {
-        // TODO: Make this .V2.
-        return .V1
-    }
-
-    public var groupAvatarDataBuilder: () -> Data? = {
-        return nil
-    }
-
-    public var memberAddressesBuilder: () -> [SignalServiceAddress] = {
-        let groupSize = Int.random(in: 1...10)
-        return (0..<groupSize).map { _ in  CommonGenerator.address(hasPhoneNumber: Bool.random()) }
-    }
-}
-
 public class ConversationFactory: NSObject {
 
     public var attachmentCount: Int = 0

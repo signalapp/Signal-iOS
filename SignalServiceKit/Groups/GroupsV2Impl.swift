@@ -1832,8 +1832,6 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
 
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
-
             if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
                 // The group already existing in the database; make sure
                 // that we are a requesting member.
@@ -1900,9 +1898,10 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 membershipBuilder.addRequestingMember(localIdentifiers.aci)
                 builder.groupMembership = membershipBuilder.build()
 
-                let groupModel = try builder.build()
-                let groupThread = TSGroupThread(groupModelPrivate: groupModel, transaction: transaction)
-                groupThread.anyInsert(transaction: transaction)
+                let groupModel = try builder.buildAsV2()
+                let groupThread = DependenciesBridge.shared.threadStore.createGroupThread(
+                    groupModel: groupModel, tx: transaction.asV2Write
+                )
 
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
                 let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken

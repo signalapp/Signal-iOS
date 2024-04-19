@@ -51,13 +51,15 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx.asV2Write)
                 identityManager.saveIdentityKey(identityKey(serviceId), for: serviceId, tx: tx.asV2Write)
             }
-        }
 
-        // Create a group with our recipients plus us.
-        self.groupThread = try! GroupManager.createGroupForTests(
-            members: recipients.map { SignalServiceAddress($0) },
-            name: "Test Group"
-        )
+            // Create a group with our recipients plus us.
+            self.groupThread = try! GroupManager.createGroupForTests(
+                members: recipients.map { SignalServiceAddress($0) },
+                name: "Test Group",
+                avatarData: nil,
+                transaction: tx
+            )
+        }
     }
 
     private var identityManager: OWSIdentityManager { DependenciesBridge.shared.identityManager }

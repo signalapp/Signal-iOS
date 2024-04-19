@@ -25,6 +25,7 @@ public protocol ThreadStore {
 
     func getOrCreateLocalThread(tx: DBWriteTransaction) -> TSContactThread?
     func getOrCreateContactThread(with address: SignalServiceAddress, tx: DBWriteTransaction) -> TSContactThread
+    func createGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread
 
     func removeThread(_ thread: TSThread, tx: DBWriteTransaction)
     func updateThread(_ thread: TSThread, tx: DBWriteTransaction)
@@ -154,6 +155,20 @@ public class ThreadStoreImpl: ThreadStore {
 
     public func getOrCreateContactThread(with address: SignalServiceAddress, tx: DBWriteTransaction) -> TSContactThread {
         return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func createGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread {
+        let sdsTx = SDSDB.shimOnlyBridge(tx)
+
+        let newGroupThread = TSGroupThread(groupModelPrivate: groupModel, transaction: sdsTx)
+        newGroupThread.anyInsert(transaction: sdsTx)
+        TSGroupThread.setGroupIdMapping(
+            newGroupThread.uniqueId,
+            forGroupId: groupModel.groupId,
+            transaction: sdsTx
+        )
+
+        return newGroupThread
     }
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
@@ -320,6 +335,10 @@ public class MockThreadStore: ThreadStore {
             return thread
         }
         return contactThread
+    }
+
+    public func createGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread {
+        return TSGroupThread(groupModelForTests: groupModel)
     }
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {

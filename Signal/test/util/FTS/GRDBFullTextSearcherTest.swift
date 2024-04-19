@@ -94,7 +94,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             ]
 
             let bookClubGroupThread = try! GroupManager.createGroupForTests(
-                members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                members: [self.aliceRecipient.address, self.bobRecipient.address, localIdentifiers.aciAddress],
+                shouldInsertInfoMessage: true,
                 name: "Book Club",
                 transaction: transaction
             )
@@ -105,7 +106,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             )
 
             let snackClubGroupThread = try! GroupManager.createGroupForTests(
-                members: [self.aliceRecipient.address],
+                members: [self.aliceRecipient.address, localIdentifiers.aciAddress],
+                shouldInsertInfoMessage: true,
                 name: "Snack Club",
                 transaction: transaction
             )
@@ -361,6 +363,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         self.write { transaction in
             thread = try! GroupManager.createGroupForTests(
                 members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                shouldInsertInfoMessage: true,
                 name: "Lifecycle",
                 transaction: transaction
             )
@@ -417,6 +420,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         self.write { transaction in
             let thread = try! GroupManager.createGroupForTests(
                 members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                shouldInsertInfoMessage: true,
                 name: "Lifecycle",
                 transaction: transaction
             )
@@ -448,6 +452,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         self.write { transaction in
             let thread = try! GroupManager.createGroupForTests(
                 members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                shouldInsertInfoMessage: true,
                 name: "Lifecycle",
                 transaction: transaction
             )
@@ -500,6 +505,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         self.write { transaction in
             thread = try! GroupManager.createGroupForTests(
                 members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                shouldInsertInfoMessage: true,
                 name: "Lifecycle",
                 transaction: transaction
             )
@@ -542,6 +548,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             self.write { transaction in
                 let thread = try! GroupManager.createGroupForTests(
                     members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
+                    shouldInsertInfoMessage: true,
                     name: "Perf",
                     transaction: transaction
                 )

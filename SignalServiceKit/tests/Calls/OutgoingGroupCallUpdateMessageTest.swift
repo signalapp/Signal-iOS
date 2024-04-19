@@ -23,8 +23,11 @@ final class OutgoingGroupCallUpdateMessageSerializationTest: SSKBaseTestSwift {
         }
 
         let updateMessage = write { tx in
+            var groupModelBuilder = TSGroupModelBuilder()
+            groupModelBuilder.name = "Test group"
+
             return OutgoingGroupCallUpdateMessage(
-                thread: GroupThreadFactory().create(transaction: tx),
+                thread: TSGroupThread(groupModelForTests: try! groupModelBuilder.buildAsV2()),
                 eraId: "beep boop",
                 tx: tx
             )

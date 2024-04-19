@@ -248,10 +248,6 @@ public class GroupManager: NSObject {
             )
             let groupModel = try builder.buildAsV2()
 
-            if proposedGroupModel != groupModel {
-                owsFailDebug("Proposed group model does not match created group model.")
-            }
-
             let thread = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
                 groupModel: groupModel,
                 disappearingMessageToken: disappearingMessageToken,
@@ -316,19 +312,6 @@ public class GroupManager: NSObject {
     #if TESTABLE_BUILD
 
     @objc
-    public static func createGroupForTests(members: [SignalServiceAddress],
-                                           name: String? = nil,
-                                           avatarData: Data? = nil) throws -> TSGroupThread {
-
-        return try databaseStorage.write { transaction in
-            return try createGroupForTests(members: members,
-                                           name: name,
-                                           avatarData: avatarData,
-                                           transaction: transaction)
-        }
-    }
-
-    @objc
     public static func createGroupForTestsObjc(members: [SignalServiceAddress],
                                                name: String? = nil,
                                                avatarData: Data? = nil,
@@ -337,19 +320,24 @@ public class GroupManager: NSObject {
             return try createGroupForTests(members: members,
                                            name: name,
                                            avatarData: avatarData,
-                                           groupsVersion: .V1, // Tests historically hardcode V1 groups.
                                            transaction: transaction)
         } catch {
             owsFail("Error: \(error)")
         }
     }
 
+    /// Create a group for testing purposes.
+    ///
+    /// - Parameter shouldInsertInfoMessage
+    /// Whether an info message describing this group's creation should be
+    /// inserted in the to-be-created thread corresponding to the group. If
+    /// `true`, the local user must be a member of the group.
     public static func createGroupForTests(members: [SignalServiceAddress],
+                                           shouldInsertInfoMessage: Bool = false,
                                            name: String? = nil,
                                            descriptionText: String? = nil,
                                            avatarData: Data? = nil,
                                            groupId: Data? = nil,
-                                           groupsVersion: GroupsVersion = .V1,
                                            transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
@@ -357,11 +345,8 @@ public class GroupManager: NSObject {
         }
 
         // GroupsV2 TODO: Elaborate tests to include admins, pending members, etc.
-        let groupMembership = GroupMembership(v1Members: Set(members))
         // GroupsV2 TODO: Let tests specify access levels.
         // GroupsV2 TODO: Fill in avatarUrlPath when we test v2 groups.
-        let groupAccess = GroupAccess.defaultForV1
-        // Use buildGroupModel() to fill in defaults, like it was a new group.
 
         var builder = TSGroupModelBuilder()
         builder.groupId = groupId
@@ -369,16 +354,16 @@ public class GroupManager: NSObject {
         builder.descriptionText = descriptionText
         builder.avatarData = avatarData
         builder.avatarUrlPath = nil
-        builder.groupMembership = groupMembership
-        builder.groupAccess = groupAccess
-        builder.groupsVersion = groupsVersion
-        let groupModel = try builder.build()
+        builder.groupMembership = GroupMembership(membersForTest: members)
+        builder.groupAccess = .defaultForV2
+        let groupModel = try builder.buildAsV2()
 
         // Just create it in the database, don't create it on the service.
         return try remoteUpsertExistingGroupForTests(
             groupModel: groupModel,
             disappearingMessageToken: nil,
             groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
+            infoMessagePolicy: shouldInsertInfoMessage ? .always : .never,
             localIdentifiers: localIdentifiers,
             transaction: transaction
         )
@@ -386,15 +371,13 @@ public class GroupManager: NSObject {
 
     // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
     private static func remoteUpsertExistingGroupForTests(
-        groupModel: TSGroupModel,
+        groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken?,
         groupUpdateSource: GroupUpdateSource,
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) throws -> TSGroupThread {
-        owsAssertDebug(groupModel.groupsVersion == .V1)
-
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
             newGroupModel: groupModel,
             newDisappearingMessageToken: disappearingMessageToken,
@@ -975,7 +958,7 @@ public class GroupManager: NSObject {
 
     // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
     public static func insertGroupThreadInDatabaseAndCreateInfoMessage(
-        groupModel: TSGroupModel,
+        groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken?,
         groupUpdateSource: GroupUpdateSource,
         infoMessagePolicy: InfoMessagePolicy = .always,
@@ -988,13 +971,9 @@ public class GroupManager: NSObject {
             owsFail("Inserting existing group thread: \(groupThread.uniqueId).")
         }
 
-        let groupThread = TSGroupThread(groupModelPrivate: groupModel,
-                                        transaction: transaction)
-        groupThread.anyInsert(transaction: transaction)
-
-        TSGroupThread.setGroupIdMapping(groupThread.uniqueId,
-                                        forGroupId: groupModel.groupId,
-                                        transaction: transaction)
+        let groupThread = DependenciesBridge.shared.threadStore.createGroupThread(
+            groupModel: groupModel, tx: transaction.asV2Write
+        )
 
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
         _ = updateDisappearingMessagesInDatabaseAndCreateMessages(
@@ -1043,7 +1022,7 @@ public class GroupManager: NSObject {
     /// Associations between PNIs and ACIs that were learned as a result of this
     /// group update.
     public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
-        newGroupModel: TSGroupModel,
+        newGroupModel: TSGroupModelV2,
         newDisappearingMessageToken: DisappearingMessageToken?,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
@@ -1069,22 +1048,20 @@ public class GroupManager: NSObject {
                 transaction: transaction
             )
         } else {
-            // When inserting a v2 group into the database for the
-            // first time, we don't want to attribute all of the group
-            // state to the author of the most recent revision.
-            //
-            // We only want to attribute the changes if we've just been
-            // added, so that we can say "Alice added you to the group,"
-            // etc.
-            var shouldAttributeAuthor = true
-            if newGroupModel.groupsVersion == .V2 {
-                if didAddLocalUserToV2Group, newGroupModel.groupMembers.contains(localIdentifiers.aciAddress) {
-                    // Do attribute.
-                } else {
-                    // Don't attribute.
-                    shouldAttributeAuthor = false
+            /// We only want to attribute the author for this insertion if we've
+            /// just been added to the group. Otherwise, we don't want to
+            /// attribute all the group state to the author of the most recent
+            /// revision.
+            let shouldAttributeAuthor: Bool = {
+                if
+                    didAddLocalUserToV2Group,
+                    newGroupModel.groupMembership.isMemberOfAnyKind(localIdentifiers.aciAddress)
+                {
+                    return true
                 }
-            }
+
+                return false
+            }()
 
             return insertGroupThreadInDatabaseAndCreateInfoMessage(
                 groupModel: newGroupModel,

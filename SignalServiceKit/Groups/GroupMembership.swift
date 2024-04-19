@@ -233,15 +233,23 @@ public class GroupMembership: MTLModel {
     }
 
     @objc
-    public init(v1Members: Set<SignalServiceAddress>) {
+    init(v1Members: [SignalServiceAddress]) {
         var builder = Builder()
-        builder.addFullMembers(v1Members, role: .normal)
+        builder.addFullMembers(Set(v1Members), role: .normal)
         self.memberStates = builder.memberStates
         self.bannedMembers = [:]
         self.invalidInviteMap = [:]
 
         super.init()
     }
+
+    #if TESTABLE_BUILD
+    /// Construction for tests is functionally equivalent to construction of a
+    /// group membership for a legacy, V1 group model.
+    convenience init(membersForTest: [SignalServiceAddress]) {
+        self.init(v1Members: membersForTest)
+    }
+    #endif
 
     // MARK: - Equality
 

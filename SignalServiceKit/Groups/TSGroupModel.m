@@ -107,7 +107,7 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
 
 - (GroupMembership *)groupMembership
 {
-    return [[GroupMembership alloc] initWithV1Members:[NSSet setWithArray:self.groupMembers]];
+    return [[GroupMembership alloc] initWithV1Members:self.groupMembers];
 }
 
 + (BOOL)isValidGroupAvatarData:(nullable NSData *)imageData
