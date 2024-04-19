@@ -1054,7 +1054,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         toastController.presentToastView(from: .bottom, of: view, inset: kToastInset)
     }
 
-    private var shownTooltipTypes = Set<ObjectIdentifier>()
+    private var shownTooltipTypes = Set<ConversationItemMessageType>()
     private var currentTooltip: VideoSegmentingTooltipView? {
         didSet {
             oldValue?.removeFromSuperview()
@@ -1074,7 +1074,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             return
         }
 
-        let typeIdentifier = ObjectIdentifier(conversation.outgoingMessageClass)
+        let typeIdentifier = conversation.outgoingMessageType
         guard !shownTooltipTypes.contains(typeIdentifier) else {
             // We've already shown the tooltip for this type.
             return

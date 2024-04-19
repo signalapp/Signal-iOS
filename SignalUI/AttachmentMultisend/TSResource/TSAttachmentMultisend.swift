@@ -31,19 +31,6 @@ public class TSAttachmentMultisend: Dependencies {
         return sendAttachment(preparedSend: preparedPromise)
     }
 
-    // Used to allow a raw Type as the key of a dictionary
-    private struct TypeWrapper: Hashable {
-        let type: TSOutgoingMessage.Type
-
-        static func == (lhs: TypeWrapper, rhs: TypeWrapper) -> Bool {
-            lhs.type == rhs.type
-        }
-
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(ObjectIdentifier(type))
-        }
-    }
-
     private class func prepareForSendingWithSneakyTransaction(
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
@@ -94,7 +81,7 @@ public class TSAttachmentMultisend: Dependencies {
             )
         }
 
-        var attachmentsByMessageType = [TypeWrapper: [(ConversationItem, [Identified<SignalAttachment>])]]()
+        var attachmentsByMessageType = [ConversationItemMessageType: [(ConversationItem, [Identified<SignalAttachment>])]]()
 
         var hasConversationRequiringSegments = false
         var hasConversationRequiringOriginals = false
@@ -117,10 +104,10 @@ public class TSAttachmentMultisend: Dependencies {
                     try $0.mapValue { return try $0.cloneAttachment() }
                 }
 
-            let wrappedType = TypeWrapper(type: conversation.outgoingMessageClass)
-            var messageTypeArray = attachmentsByMessageType[wrappedType] ?? []
+            let messageType = conversation.outgoingMessageType
+            var messageTypeArray = attachmentsByMessageType[messageType] ?? []
             messageTypeArray.append((conversation, clonedAttachments))
-            attachmentsByMessageType[wrappedType] = messageTypeArray
+            attachmentsByMessageType[messageType] = messageTypeArray
         }
 
         // We only upload one set of attachments, and then copy the upload details into
@@ -154,7 +141,7 @@ public class TSAttachmentMultisend: Dependencies {
         let state = MultisendState(approvalMessageBody: approvalMessageBody)
 
         try self.databaseStorage.write { transaction in
-            for (wrapper, values) in attachmentsByMessageType {
+            for (type, values) in attachmentsByMessageType {
                 let destinations = try values.lazy.map { conversation, attachments -> MultisendDestination in
                     guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
                         throw OWSAssertionError("Missing thread for conversation")
@@ -164,7 +151,7 @@ public class TSAttachmentMultisend: Dependencies {
                 // This will create TSAttachments for each destination, but will not actually upload anything.
                 // It will map the UUIDs we created above for each attachment we want to upload to the unique ids
                 // of each created TSAttachment in state.correspondingAttachmentIds.
-                try wrapper.type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
+                try type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
             }
 
             // Every attachment we plan to upload should be accounted for, since at least one destination
@@ -213,7 +200,7 @@ public class TSAttachmentMultisend: Dependencies {
     ) throws -> PreparedMultisend {
 
         let state = MultisendState(approvalMessageBody: nil)
-        let conversationsByMessageType = Dictionary(grouping: conversations, by: { TypeWrapper(type: $0.outgoingMessageClass) })
+        let conversationsByMessageType = Dictionary(grouping: conversations, by: { $0.outgoingMessageType })
         try self.databaseStorage.write { transaction in
 
             // Create one special TextAttachment from our UnsentTextAttachment; this implicitly creates a TSAttachment
@@ -230,7 +217,7 @@ public class TSAttachmentMultisend: Dependencies {
                 throw OWSAssertionError("Invalid text attachment")
             }
 
-            for (wrapper, conversations) in conversationsByMessageType {
+            for (type, conversations) in conversationsByMessageType {
                 let destinations = try conversations.lazy.map { conversation -> MultisendDestination in
                     guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
                         throw OWSAssertionError("Missing thread for conversation")
@@ -242,7 +229,7 @@ public class TSAttachmentMultisend: Dependencies {
                 // will not actually upload anything.
                 // It will map the id we created above to the unique ids of each created TSAttachment in
                 // state.correspondingAttachmentIds.
-                try wrapper.type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
+                try type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
             }
 
             if
@@ -421,5 +408,29 @@ class MultisendState: NSObject {
 
     init(approvalMessageBody: MessageBody?) {
         self.approvalMessageBody = approvalMessageBody
+    }
+}
+
+extension ConversationItemMessageType {
+
+    func prepareForMultisending(
+        destinations: [MultisendDestination],
+        state: MultisendState,
+        transaction: SDSAnyWriteTransaction
+    ) throws {
+        switch self {
+        case .message:
+            return try TSOutgoingMessage.prepareForMultisending(
+                destinations: destinations,
+                state: state,
+                transaction: transaction
+            )
+        case .storyMessage:
+            return try OutgoingStoryMessage.prepareForMultisending(
+                destinations: destinations,
+                state: state,
+                transaction: transaction
+            )
+        }
     }
 }

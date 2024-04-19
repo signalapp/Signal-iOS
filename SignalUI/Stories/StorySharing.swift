@@ -11,7 +11,7 @@ public enum StorySharing: Dependencies {
         linkPreviewDraft: OWSLinkPreviewDraft?,
         to conversations: [ConversationItem]
     ) -> TSResourceMultisendResult? {
-        let storyConversations = conversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
+        let storyConversations = conversations.filter { $0.outgoingMessageType == .storyMessage }
         owsAssertDebug(conversations.count == storyConversations.count)
 
         guard !storyConversations.isEmpty else { return nil }

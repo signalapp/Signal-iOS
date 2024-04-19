@@ -206,7 +206,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     fileprivate func ensureBottomFooterVisibility() {
         AssertIsOnMainThread()
 
-        if selectedConversations.allSatisfy({ $0.outgoingMessageClass == OutgoingStoryMessage.self }) {
+        if selectedConversations.allSatisfy({ $0.outgoingMessageType == .storyMessage }) {
             pickerVC.approvalTextMode = .none
         } else {
             let placeholderText = OWSLocalizedString(
@@ -416,7 +416,7 @@ extension ForwardMessageViewController {
 
             // Send the text message to any selected story recipients
             // as a text story with default styling.
-            let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
+            let storyConversations = selectedConversations.filter { $0.outgoingMessageType == .storyMessage }
             let storySendResult = StorySharing.sendTextStory(with: messageBody, linkPreviewDraft: linkPreviewDraft, to: storyConversations)
             let storySendEnqueuedPromise = storySendResult?.enqueuedPromise.asVoid() ?? .value(())
             return Promise<Void>.when(fulfilled: [nonStorySendPromise, storySendEnqueuedPromise])
@@ -476,7 +476,7 @@ extension ForwardMessageViewController {
             }
 
             return try self.databaseStorage.write { transaction in
-                try conversationItems.lazy.filter { $0.outgoingMessageClass == TSOutgoingMessage.self }.map {
+                try conversationItems.lazy.filter { $0.outgoingMessageType == .message }.map {
                     guard let thread = $0.getOrCreateThread(transaction: transaction) else {
                         throw ForwardError.missingThread
                     }

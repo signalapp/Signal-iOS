@@ -14,12 +14,17 @@ public enum MessageRecipient: Equatable {
 
 // MARK: -
 
+public enum ConversationItemMessageType: Equatable, Hashable {
+    case message
+    case storyMessage
+}
+
 public protocol ConversationItem {
     var messageRecipient: MessageRecipient { get }
 
     func title(transaction: SDSAnyReadTransaction) -> String
 
-    var outgoingMessageClass: TSOutgoingMessage.Type { get }
+    var outgoingMessageType: ConversationItemMessageType { get }
 
     var image: UIImage? { get }
     var isBlocked: Bool { get }
@@ -76,7 +81,7 @@ struct RecentConversationItem {
 // MARK: -
 
 extension RecentConversationItem: ConversationItem {
-    var outgoingMessageClass: TSOutgoingMessage.Type { unwrapped.outgoingMessageClass }
+    var outgoingMessageType: ConversationItemMessageType { unwrapped.outgoingMessageType }
 
     var limitsVideoAttachmentLengthForStories: Bool { return unwrapped.limitsVideoAttachmentLengthForStories }
 
@@ -144,7 +149,7 @@ struct ContactConversationItem: Dependencies {
 // MARK: -
 
 extension ContactConversationItem: ConversationItem {
-    var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
+    var outgoingMessageType: ConversationItemMessageType { .message }
 
     var isStory: Bool { return false }
 
@@ -217,7 +222,7 @@ public struct GroupConversationItem: Dependencies {
 // MARK: -
 
 extension GroupConversationItem: ConversationItem {
-    public var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
+    public var outgoingMessageType: ConversationItemMessageType { .message }
 
     public var isStory: Bool { return false }
 
@@ -450,7 +455,7 @@ public struct StoryConversationItem {
 // MARK: -
 
 extension StoryConversationItem: ConversationItem {
-    public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
+    public var outgoingMessageType: ConversationItemMessageType { .storyMessage }
 
     public var limitsVideoAttachmentLengthForStories: Bool { return true }
 
@@ -574,7 +579,7 @@ public struct PrivateStoryConversationItem: Dependencies {
 // MARK: -
 
 extension PrivateStoryConversationItem: ConversationItem {
-    public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
+    public var outgoingMessageType: ConversationItemMessageType { .storyMessage }
 
     public var limitsVideoAttachmentLengthForStories: Bool { return true }
 

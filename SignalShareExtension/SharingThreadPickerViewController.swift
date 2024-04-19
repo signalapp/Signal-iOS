@@ -339,7 +339,7 @@ extension SharingThreadPickerViewController {
         messageBlock: @escaping (TSThread, SDSAnyWriteTransaction) throws -> PreparedOutgoingMessage,
         storySendBlock: (([ConversationItem]) -> TSResourceMultisendResult?)?
     ) async -> Result<Void, SendError> {
-        let conversations = selectedConversations.filter { $0.outgoingMessageClass == TSOutgoingMessage.self }
+        let conversations = selectedConversations.filter { $0.outgoingMessageType == .message }
 
         let preparedNonStoryMessages: [PreparedOutgoingMessage]
         let nonStorySendPromises: [Promise<Void>]
@@ -371,7 +371,7 @@ extension SharingThreadPickerViewController {
             return .failure(.init(outgoingMessages: [], error: error))
         }
 
-        let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
+        let storyConversations = selectedConversations.filter { $0.outgoingMessageType == .storyMessage }
         let storySendResult = storySendBlock?(storyConversations)
 
         let preparedStoryMessages: [PreparedOutgoingMessage]
