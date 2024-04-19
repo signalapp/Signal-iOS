@@ -40,6 +40,8 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
     public var hasPendingBytes: Bool { false }
     public private(set) var hasFinalized = false
 
+    private var outputCount: Int = 0
+
     private var stream: z_stream
     private let operation: Operation
 
@@ -173,6 +175,7 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
         bufferWritten = 0
         stream.avail_out = UInt32(Constants.BufferSize)
 
+        outputCount += returnData.count
         return returnData
     }
 
@@ -180,7 +183,22 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
         hasFinalized = true
 
         // Finalize the gzip and return any remaining data
-        let finalData = try process(data: Data(), finalize: true)
+        var finalData = try process(data: Data(), finalize: true)
+        outputCount += finalData.count
+
+        switch operation {
+        case .compress:
+            // Pad the gzip similar to how attachments are padded.
+            // gzip will ignore this trailing data during decompression.
+            let unpaddedSize = UInt(bitPattern: outputCount)
+            let paddedSize = Cryptography.paddedSize(unpaddedSize: unpaddedSize)
+            if paddedSize > unpaddedSize {
+                finalData.append(Data(repeating: 0, count: Int(paddedSize - unpaddedSize)))
+            }
+        case .decompress:
+            break
+        }
+
         // Close the zlib stream
         var status = Z_OK
         switch operation {
