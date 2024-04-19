@@ -46,7 +46,7 @@ final class ChunkedStreamTransformTests: XCTestCase {
         let outputStream = ChunkedOutputStreamTransform()
         let inputStream = ChunkedInputStreamTransform()
 
-        var data1 = [
+        let data1 = [
             "aa".data(using: .utf8)!,
             "bbb".data(using: .utf8)!,
             "cccc".data(using: .utf8)!,
@@ -72,10 +72,105 @@ final class ChunkedStreamTransformTests: XCTestCase {
 final class GzipStreamTransformTests: XCTestCase {
     func testRoundtrip() throws {
 
-        let outputStream = try GzipCompressingStreamTransform()
-        let inputStream = try GzipDecompressingStreamTransform()
+        let outputStream = try GzipStreamTransform(.compress)
+        let inputStream = try GzipStreamTransform(.decompress)
 
         let data1 = "TestString".data(using: .utf8)!
+
+        var transformedData = try outputStream.transform(data: data1)
+        transformedData.append(try outputStream.finalize())
+
+        var roundTripData = try inputStream.transform(data: transformedData)
+        roundTripData.append(try inputStream.finalize())
+
+        XCTAssertEqual(data1, roundTripData)
+    }
+
+    func testRoundtrip2() throws {
+
+        let outputStream = try GzipStreamTransform(.compress)
+        let inputStream = try GzipStreamTransform(.decompress)
+
+        let data1 = Randomness.generateRandomBytes(68000)
+
+        var transformedData = try outputStream.transform(data: data1)
+        transformedData.append(try outputStream.finalize())
+
+        var roundTripData = try inputStream.transform(data: transformedData)
+        roundTripData.append(try inputStream.finalize())
+
+        XCTAssertEqual(data1, roundTripData)
+    }
+
+    func testRoundtrip3() throws {
+        let outputStream = try GzipStreamTransform(.compress)
+        let inputStream = try GzipStreamTransform(.decompress)
+
+        let data1 = String(repeating: "abcdefghijklmnopqrstuv", count: 1600).data(using: .utf8)!
+
+        var transformedData = try outputStream.transform(data: data1)
+        transformedData.append(try outputStream.finalize())
+
+        var roundTripData = try inputStream.transform(data: transformedData)
+        roundTripData.append(try inputStream.finalize())
+
+        XCTAssertEqual(data1, roundTripData)
+    }
+
+    func testFailedCRC() throws {
+
+        let outputStream = try GzipStreamTransform(.compress)
+        let inputStream = try GzipStreamTransform(.decompress)
+
+        let data1 = Randomness.generateRandomBytes(4096)
+
+        var transformedData = try outputStream.transform(data: data1)
+        let tmpData = try outputStream.finalize()
+        transformedData.append(tmpData.subdata(in: 0..<(tmpData.count - 2000)))
+        transformedData.append(1)
+        transformedData.append(tmpData.subdata(in: (tmpData.count - 2000)..<tmpData.count))
+
+        do {
+            _ = try inputStream.transform(data: transformedData)
+            XCTFail("Shouldn't reach here")
+        } catch {
+            switch error {
+            case GzipStreamTransform.GzipError.dataError:
+                // Expected
+                break
+            default:
+                XCTFail("Unexpected error")
+            }
+        }
+    }
+
+    func testRoundtrip4() throws {
+
+        let outputStream = try GzipStreamTransform(.compress)
+        let inputStream = try GzipStreamTransform(.decompress)
+
+        let data1 = "A".data(using: .utf8)!
+        let data2 = "B".data(using: .utf8)!
+        let data3 = "C".data(using: .utf8)!
+        let expectedResult = [data1, data2, data3].reduce(Data(), +)
+
+        var transformedData = try outputStream.transform(data: data1)
+        transformedData.append(try outputStream.transform(data: data2))
+        transformedData.append(try outputStream.transform(data: data3))
+        transformedData.append(try outputStream.finalize())
+
+        var roundTripData = try inputStream.transform(data: transformedData)
+        roundTripData.append(try inputStream.finalize())
+
+        XCTAssertEqual(expectedResult, roundTripData)
+    }
+
+    func testRoundtripBigData() throws {
+
+        let outputStream = try GzipStreamTransform(.compress)
+        let inputStream = try GzipStreamTransform(.decompress)
+
+        let data1 = Randomness.generateRandomBytes(20242000)
 
         var transformedData = try outputStream.transform(data: data1)
         transformedData.append(try outputStream.finalize())

@@ -66,7 +66,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
             let transformingOutputStream = TransformingOutputStream(
                 transforms: [
                     ChunkedOutputStreamTransform(),
-                    try GzipCompressingStreamTransform(),
+                    try GzipStreamTransform(.compress),
                     try backupKeyMaterial.createEncryptingStreamTransform(localAci: localAci, tx: tx)
                 ],
                 outputStream: outputStream,
@@ -104,7 +104,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
             let transformableInputStream = TransformingInputStream(
                 transforms: [
                     try backupKeyMaterial.createDecryptingStreamTransform(localAci: localAci, tx: tx),
-                    try GzipDecompressingStreamTransform(),
+                    try GzipStreamTransform(.decompress),
                     ChunkedInputStreamTransform(),
                 ],
                 inputStream: inputStream,

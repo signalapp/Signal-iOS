@@ -17,7 +17,7 @@ final class TransformingInputStreamTests: XCTestCase {
         let transformingOutputStream = TransformingOutputStream(
             transforms: [
                 ChunkedOutputStreamTransform(),
-                try GzipCompressingStreamTransform(),
+                try GzipStreamTransform(.compress),
                 try EncryptingStreamTransform(iv: iv, encryptionKey: encryptionKey, hmacKey: hmacKey)
             ],
             outputStream: outputStream
@@ -35,7 +35,7 @@ final class TransformingInputStreamTests: XCTestCase {
         let transformingIntputStream = TransformingInputStream(
             transforms: [
                 try DecryptingStreamTransform(iv: iv, encryptionKey: encryptionKey, hmacKey: hmacKey),
-                try GzipDecompressingStreamTransform(),
+                try GzipStreamTransform(.decompress),
                 ChunkedInputStreamTransform()
             ],
             inputStream: inputStream

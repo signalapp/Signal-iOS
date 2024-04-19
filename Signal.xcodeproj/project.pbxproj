@@ -1551,7 +1551,6 @@
 		C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */; };
 		C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */; };
-		C14EC1A42BA8BE1C00A4D064 /* GzipDecompressingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A32BA8BE1C00A4D064 /* GzipDecompressingStreamTransform.swift */; };
 		C14EC1A92BAA4B5F00A4D064 /* StreamTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */; };
 		C14EC1AB2BAB57B900A4D064 /* DecryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
@@ -1578,7 +1577,7 @@
 		C1CD0E3A2A6B0D2700307F1A /* SignalSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */; };
 		C1CD0E402A6B37BF00307F1A /* SSKPreKeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */; };
 		C1CF83D02B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83CF2B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift */; };
-		C1CF83D22B9A1FCB00CDC9C4 /* GzipCompressingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83D12B9A1FCB00CDC9C4 /* GzipCompressingStreamTransform.swift */; };
+		C1CF83D22B9A1FCB00CDC9C4 /* GzipStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83D12B9A1FCB00CDC9C4 /* GzipStreamTransform.swift */; };
 		C1CF83D42B9A207800CDC9C4 /* TransformingOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83D32B9A207800CDC9C4 /* TransformingOutputStream.swift */; };
 		C1CF83D62B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83D52B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift */; };
 		C1D9B1532B7E949500D94595 /* SpamReportingUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */; };
@@ -4499,7 +4498,6 @@
 		C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationObserver.swift; sourceTree = "<group>"; };
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
 		C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingInputStream.swift; sourceTree = "<group>"; };
-		C14EC1A32BA8BE1C00A4D064 /* GzipDecompressingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GzipDecompressingStreamTransform.swift; sourceTree = "<group>"; };
 		C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTransformTests.swift; sourceTree = "<group>"; };
 		C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptingStreamTransform.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
@@ -4528,7 +4526,7 @@
 		C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalSessionStore.swift; sourceTree = "<group>"; };
 		C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKPreKeyStoreTests.swift; sourceTree = "<group>"; };
 		C1CF83CF2B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChunkedOutputStreamTransform.swift; sourceTree = "<group>"; };
-		C1CF83D12B9A1FCB00CDC9C4 /* GzipCompressingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GzipCompressingStreamTransform.swift; sourceTree = "<group>"; };
+		C1CF83D12B9A1FCB00CDC9C4 /* GzipStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GzipStreamTransform.swift; sourceTree = "<group>"; };
 		C1CF83D32B9A207800CDC9C4 /* TransformingOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingOutputStream.swift; sourceTree = "<group>"; };
 		C1CF83D52B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptingStreamTransform.swift; sourceTree = "<group>"; };
 		C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+IDEAL.swift"; sourceTree = "<group>"; };
@@ -9075,6 +9073,7 @@
 			children = (
 				C1DD78AE2BB1CF300020F064 /* Input */,
 				C1DD78AF2BB1CF450020F064 /* Output */,
+				C1CF83D12B9A1FCB00CDC9C4 /* GzipStreamTransform.swift */,
 				C1DD78AC2BB1CF110020F064 /* Streamable.swift */,
 				C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */,
 			);
@@ -9103,7 +9102,6 @@
 			children = (
 				C1EB623B2BADEE56006D99CB /* ChunkedInputStreamTransform.swift */,
 				C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */,
-				C14EC1A32BA8BE1C00A4D064 /* GzipDecompressingStreamTransform.swift */,
 				C1DD78AA2BB1CEF80020F064 /* InputStreamable.swift */,
 				C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */,
 			);
@@ -9115,7 +9113,6 @@
 			children = (
 				C1CF83CF2B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift */,
 				C1CF83D52B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift */,
-				C1CF83D12B9A1FCB00CDC9C4 /* GzipCompressingStreamTransform.swift */,
 				C1E3073F2BA3B342009F015B /* OutputStreamable.swift */,
 				C1CF83D32B9A207800CDC9C4 /* TransformingOutputStream.swift */,
 			);
@@ -13876,8 +13873,7 @@
 				724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */,
 				724D47BC2B97C57C001BE973 /* GroupV2SnapshotImpl.swift in Sources */,
 				725465552BA0282D00EABFD2 /* GroupV2UpdatesImpl.swift in Sources */,
-				C1CF83D22B9A1FCB00CDC9C4 /* GzipCompressingStreamTransform.swift in Sources */,
-				C14EC1A42BA8BE1C00A4D064 /* GzipDecompressingStreamTransform.swift in Sources */,
+				C1CF83D22B9A1FCB00CDC9C4 /* GzipStreamTransform.swift in Sources */,
 				72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */,
 				F9C5CD94289453B300548EEE /* HTMLMetadata.swift in Sources */,
 				F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */,
