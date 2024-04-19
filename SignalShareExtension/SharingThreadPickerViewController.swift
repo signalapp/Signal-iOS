@@ -11,8 +11,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     weak var shareViewDelegate: ShareViewDelegate?
 
-    private var sendProgressSheet: ActionSheetController?
-    private var progressNotificationObserver: NSObjectProtocol?
+    private var sendProgressSheet: SharingThreadPickerProgressSheet?
 
     /// It can take a while to fully process attachments, and until we do we aren't
     /// fully sure if the attachments are stories-compatible. To speed things up,
@@ -54,8 +53,6 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     var approvedContactShare: ContactShareDraft?
     var approvalMessageBody: MessageBody?
     var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
-
-    var outgoingMessages = AtomicArray<PreparedOutgoingMessage>(lock: .init())
 
     var mentionCandidates: [SignalServiceAddress] = []
 
@@ -191,212 +188,144 @@ extension SharingThreadPickerViewController {
 extension SharingThreadPickerViewController {
 
     func send() {
-        self.showSendProgress()
-        firstly {
-            tryToSend()
-        }.done {
-            self.dismissSendProgress {}
-            self.shareViewDelegate?.shareViewWasCompleted()
-        }.catch { error in
-            self.dismissSendProgress { self.showSendFailure(error: error) }
+        // Start presenting empty; the attachments will get set later.
+        self.presentOrUpdateSendProgressSheet(attachmentIds: [])
+
+        Task {
+            switch await tryToSend(
+                selectedConversations: selectedConversations,
+                isTextMessage: isTextMessage,
+                isContactShare: isContactShare,
+                messageBody: approvalMessageBody,
+                attachments: approvedAttachments,
+                linkPreviewDraft: approvalLinkPreviewDraft,
+                contactShareDraft: approvedContactShare
+            ) {
+            case .success:
+                self.dismissSendProgressSheet {}
+                self.shareViewDelegate?.shareViewWasCompleted()
+            case .failure(let error):
+                self.dismissSendProgressSheet { self.showSendFailure(error: error) }
+            }
         }
     }
 
-    func tryToSend() -> Promise<Void> {
-        outgoingMessages.removeAll()
+    private struct SendError: Error {
+        let outgoingMessages: [PreparedOutgoingMessage]
+        let error: Error
+    }
 
+    private nonisolated func tryToSend(
+        selectedConversations: [ConversationItem],
+        isTextMessage: Bool,
+        isContactShare: Bool,
+        messageBody: MessageBody?,
+        attachments: [SignalAttachment]?,
+        linkPreviewDraft: OWSLinkPreviewDraft?,
+        contactShareDraft: ContactShareDraft?
+    ) async -> Result<Void, SendError> {
         if isTextMessage {
-            guard let body = approvalMessageBody, !body.text.isEmpty else {
-                return Promise(error: OWSAssertionError("Missing body."))
+            guard let messageBody, !messageBody.text.isEmpty else {
+                return .failure(.init(outgoingMessages: [], error: OWSAssertionError("Missing body.")))
             }
-
-            let linkPreviewDraft = approvalLinkPreviewDraft
-
-            let nonStorySendPromise = sendToOutgoingMessageThreads { thread in
-                return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                    return self.databaseStorage.write { transaction in
-                        let unpreparedMessage = UnpreparedOutgoingMessage.build(
-                            thread: thread,
-                            messageBody: body,
-                            quotedReplyDraft: nil,
-                            linkPreviewDraft: linkPreviewDraft,
-                            transaction: transaction
-                        )
-                        do {
-                            let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
-                            self.outgoingMessages.append(preparedMessage)
-                            return ThreadUtil.enqueueMessagePromise(
-                                message: preparedMessage,
-                                transaction: transaction
-                            )
-                        } catch {
-                            return Promise(error: error)
-                        }
-                    }
+            return await self.sendToOutgoingMessageThreads(
+                selectedConversations: selectedConversations,
+                messageBlock: { thread, tx in
+                    let unpreparedMessage = UnpreparedOutgoingMessage.build(
+                        thread: thread,
+                        messageBody: messageBody,
+                        quotedReplyDraft: nil,
+                        linkPreviewDraft: linkPreviewDraft,
+                        transaction: tx
+                    )
+                    return try unpreparedMessage.prepare(tx: tx)
+                },
+                storySendBlock: { storyConversations in
+                    // Send the text message to any selected story recipients
+                    // as a text story with default styling.
+                    StorySharing.sendTextStory(
+                        with: messageBody,
+                        linkPreviewDraft: linkPreviewDraft,
+                        to: storyConversations
+                    )
                 }
-            }
-
-            // Send the text message to any selected story recipients
-            // as a text story with default styling.
-            let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
-            let storySendResult = StorySharing.sendTextStory(
-                with: body,
-                linkPreviewDraft: linkPreviewDraft,
-                to: storyConversations
             )
-            storySendResult?.preparedPromise.done(on: SyncScheduler(), { messages in
-                self.outgoingMessages.append(contentsOf: messages)
-            }).cauterize()
-            let storySentPromise = storySendResult?.sentPromise.asVoid() ?? .value(())
-            return Promise<Void>.when(fulfilled: [nonStorySendPromise, storySentPromise])
         } else if isContactShare {
-            guard let contactShare = approvedContactShare else {
-                return Promise(error: OWSAssertionError("Missing contactShare."))
+            guard let contactShareDraft else {
+                return .failure(.init(outgoingMessages: [], error: OWSAssertionError("Missing contactShare.")))
             }
-
-            return sendToOutgoingMessageThreads { thread in
-                return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                    return self.databaseStorage.write { transaction in
-                        let builder = TSOutgoingMessageBuilder(thread: thread)
-                        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                        builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-                        let message = builder.build(transaction: transaction)
-                        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
-                            message,
-                            contactShareDraft: contactShare
-                        )
-                        do {
-                            let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
-                            self.outgoingMessages.append(preparedMessage)
-                            return ThreadUtil.enqueueMessagePromise(
-                                message: preparedMessage,
-                                transaction: transaction
-                            )
-                        } catch {
-                            return Promise(error: error)
-                        }
-                    }
-                }
-            }
+            return await self.sendToOutgoingMessageThreads(
+                selectedConversations: selectedConversations,
+                messageBlock: { thread, tx in
+                    let builder = TSOutgoingMessageBuilder(thread: thread)
+                    let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                    builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read)
+                    let message = builder.build(transaction: tx)
+                    let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+                        message,
+                        contactShareDraft: contactShareDraft
+                    )
+                    return try unpreparedMessage.prepare(tx: tx)
+                },
+                // We don't send contact shares to stories
+                storySendBlock: nil
+            )
         } else {
-            guard let approvedAttachments = approvedAttachments else {
-                return Promise(error: OWSAssertionError("Missing approvedAttachments."))
+            guard let attachments else {
+                return .failure(.init(outgoingMessages: [], error: OWSAssertionError("Missing approvedAttachments.")))
             }
 
-            return sendToConversations { conversations in
-                let sendResult = TSResourceMultisend.sendApprovedMedia(
-                    conversations: conversations,
-                    approvalMessageBody: self.approvalMessageBody,
-                    approvedAttachments: approvedAttachments
-                )
-                sendResult.preparedPromise.done(on: SyncScheduler(), { messages in
-                    self.outgoingMessages.append(contentsOf: messages)
-                }).cauterize()
-                return sendResult.sentPromise
+            // This method will also add threads to the profile whitelist.
+            let sendResult = TSResourceMultisend.sendApprovedMedia(
+                conversations: selectedConversations,
+                approvalMessageBody: messageBody,
+                approvedAttachments: attachments
+            )
+
+            let preparedMessages: [PreparedOutgoingMessage]
+            do {
+                preparedMessages = try await sendResult.preparedPromise.awaitable()
+            } catch let error {
+                return .failure(.init(outgoingMessages: [], error: error))
             }
+            await MainActor.run {
+                self.presentOrUpdateSendProgressSheet(outgoingMessages: preparedMessages)
+            }
+
+            do {
+                _ = try await sendResult.sentPromise.awaitable()
+            } catch let error {
+                return .failure(.init(outgoingMessages: preparedMessages, error: error))
+            }
+            return .success(())
         }
     }
 
-    func showSendProgress() {
+    private func presentOrUpdateSendProgressSheet(outgoingMessages: [PreparedOutgoingMessage]) {
+        let attachmentIds = databaseStorage.read { tx in
+            return outgoingMessages.attachmentIdsForUpload(tx: tx)
+        }
+        presentOrUpdateSendProgressSheet(attachmentIds: attachmentIds)
+    }
+
+    private func presentOrUpdateSendProgressSheet(attachmentIds: [TSResourceId]) {
         AssertIsOnMainThread()
 
-        let actionSheet = ActionSheetController()
-
-        let headerWithProgress = UIView()
-        headerWithProgress.backgroundColor = Theme.actionSheetBackgroundColor
-        headerWithProgress.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-
-        let progressLabel = UILabel()
-        progressLabel.textAlignment = .center
-        progressLabel.numberOfLines = 0
-        progressLabel.lineBreakMode = .byWordWrapping
-        progressLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-        progressLabel.textColor = Theme.primaryTextColor
-        progressLabel.text = OWSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", comment: "Alert title")
-
-        headerWithProgress.addSubview(progressLabel)
-        progressLabel.autoPinWidthToSuperviewMargins()
-        progressLabel.autoPinTopToSuperviewMargin()
-
-        let progressView = UIProgressView(progressViewStyle: .default)
-        headerWithProgress.addSubview(progressView)
-        progressView.autoPinWidthToSuperviewMargins()
-        progressView.autoPinEdge(.top, to: .bottom, of: progressLabel, withOffset: 8)
-        progressView.autoPinBottomToSuperviewMargin()
-
-        actionSheet.customHeader = headerWithProgress
-
-        let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { [weak self] _ in
-            self?.shareViewDelegate?.shareViewWasCancelled()
-        }
-        actionSheet.addAction(cancelAction)
-
-        presentActionSheetOnNavigationController(actionSheet)
-
-        let progressFormat = OWSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT",
-                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
-
-        var progressPerAttachment: [TSResourceId: Float] = [:]
-        var cachedAttachmentIds: [TSResourceId]?
-        func fetchAttachmentIds() -> [TSResourceId]? {
-            if let cachedAttachmentIds { return cachedAttachmentIds }
-            cachedAttachmentIds = databaseStorage.read { tx in
-                return self.outgoingMessages.first?.attachmentIdsForUpload(tx: tx)
-            }
-            if let cachedAttachmentIds {
-                // Populate the initial progress for all attachments at 0
-                progressPerAttachment =
-                    Dictionary(uniqueKeysWithValues: cachedAttachmentIds.map { ($0, 0) })
-            }
-            return cachedAttachmentIds
-        }
-
-        self.progressNotificationObserver = NotificationCenter.default.addObserver(
-            forName: Upload.Constants.resourceUploadProgressNotification,
-            object: nil,
-            queue: nil
-        ) { notification in
-            // We can safely show the progress for just the first message,
-            // all the messages share the same attachment upload progress.
-            guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? TSResourceId else {
-                owsFailDebug("Missing notificationAttachmentId.")
-                return
-            }
-            guard let progress = notification.userInfo?[Upload.Constants.uploadProgressKey] as? NSNumber else {
-                owsFailDebug("Missing progress.")
-                return
-            }
-
-            guard let attachmentIds = fetchAttachmentIds() else {
-                return
-            }
-
-            guard attachmentIds.contains(notificationAttachmentId) else { return }
-
-            progressPerAttachment[notificationAttachmentId] = progress.floatValue
-
-            // Attachments can upload in parallel, so we show the progress
-            // of the average of all the individual attachment's progress.
-            progressView.progress = progressPerAttachment.values.reduce(0, +) / Float(attachmentIds.count)
-
-            // In order to indicate approximately how many attachments remain
-            // to upload, we look at the number that have had their progress
-            // reach 100%.
-            let totalCompleted = progressPerAttachment.values.filter { $0 == 1 }.count
-
-            progressLabel.text = String(
-                format: progressFormat,
-                OWSFormat.formatInt(min(totalCompleted + 1, attachmentIds.count)),
-                OWSFormat.formatInt(attachmentIds.count)
+        if let sendProgressSheet {
+            // Update the existing sheet.
+            sendProgressSheet.updateSendingAttachmentIds(attachmentIds)
+            return
+        } else {
+            let actionSheet = SharingThreadPickerProgressSheet(
+                attachmentIds: attachmentIds,
+                delegate: self.shareViewDelegate
             )
+            presentActionSheetOnNavigationController(actionSheet)
+            self.sendProgressSheet = actionSheet
         }
-
-        self.sendProgressSheet = actionSheet
     }
 
-    private func dismissSendProgress(_ completion: (() -> Void)?) {
-        progressNotificationObserver.map { NotificationCenter.default.removeObserver($0) }
-        self.progressNotificationObserver = nil
+    private func dismissSendProgressSheet(_ completion: (() -> Void)?) {
         if let sendProgressSheet {
             sendProgressSheet.dismiss(animated: true, completion: completion)
             self.sendProgressSheet = nil
@@ -405,61 +334,90 @@ extension SharingThreadPickerViewController {
         }
     }
 
-    func sendToConversations(enqueueBlock: @escaping ([ConversationItem]) -> Promise<[TSThread]>) -> Promise<Void> {
-        AssertIsOnMainThread()
+    private nonisolated func sendToOutgoingMessageThreads(
+        selectedConversations: [ConversationItem],
+        messageBlock: @escaping (TSThread, SDSAnyWriteTransaction) throws -> PreparedOutgoingMessage,
+        storySendBlock: (([ConversationItem]) -> TSResourceMultisendResult?)?
+    ) async -> Result<Void, SendError> {
+        let conversations = selectedConversations.filter { $0.outgoingMessageClass == TSOutgoingMessage.self }
 
-        let conversations = self.selectedConversations
-
-        return firstly {
-            enqueueBlock(conversations)
-        }.done { threads in
-            for thread in threads {
-                // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
-            }
-        }
-    }
-
-    func sendToOutgoingMessageThreads(enqueueBlock: @escaping (TSThread) -> Promise<Void>) -> Promise<Void> {
-        AssertIsOnMainThread()
-
-        let conversations = self.selectedConversations.filter { $0.outgoingMessageClass == TSOutgoingMessage.self }
-        return firstly {
-            self.threads(for: conversations)
-        }.then { (threads: [TSThread]) -> Promise<Void> in
-            var sendPromises = [Promise<Void>]()
-            for thread in threads {
-                sendPromises.append(enqueueBlock(thread))
-
-                // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
-            }
-            return Promise.when(fulfilled: sendPromises)
-        }
-    }
-
-    func threads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {
-        return firstly(on: DispatchQueue.sharedUserInteractive) {
-            var threads: [TSThread] = []
-            if !conversationItems.isEmpty {
-                self.databaseStorage.write { transaction in
-                    for conversation in conversationItems {
-                        guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
-                            owsFailDebug("Missing thread for conversation")
-                            continue
-                        }
-                        threads.append(thread)
-                    }
+        let preparedNonStoryMessages: [PreparedOutgoingMessage]
+        let nonStorySendPromises: [Promise<Void>]
+        do {
+            (preparedNonStoryMessages, nonStorySendPromises) = try await self.databaseStorage.awaitableWrite { tx in
+                let threads = self.threads(for: conversations, tx: tx)
+                let preparedMessages = try threads.map { thread in
+                    return try messageBlock(thread, tx)
                 }
+
+                // We're sending a message to this thread, approve any pending message request
+                threads.forEach { thread in
+                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
+                        thread,
+                        setDefaultTimerIfNecessary: true,
+                        tx: tx
+                    )
+                }
+
+                let sendPromises = preparedMessages.map {
+                    ThreadUtil.enqueueMessagePromise(
+                        message: $0,
+                        transaction: tx
+                    )
+                }
+                return (preparedMessages, sendPromises)
             }
-            return threads
+        } catch let error {
+            return .failure(.init(outgoingMessages: [], error: error))
+        }
+
+        let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
+        let storySendResult = storySendBlock?(storyConversations)
+
+        let preparedStoryMessages: [PreparedOutgoingMessage]
+        do {
+            preparedStoryMessages = try await storySendResult?.preparedPromise.awaitable() ?? []
+        } catch let error {
+            return .failure(.init(outgoingMessages: [], error: error))
+        }
+
+        let preparedMessages = preparedNonStoryMessages + preparedStoryMessages
+        await MainActor.run {
+            self.presentOrUpdateSendProgressSheet(outgoingMessages: preparedMessages)
+        }
+
+        do {
+            try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+                nonStorySendPromises.forEach { promise in
+                    taskGroup.addTask(operation: {
+                        try await promise.awaitable()
+                    })
+                }
+                taskGroup.addTask(operation: {
+                    try await _ = storySendResult?.sentPromise.awaitable()
+                })
+                try await taskGroup.waitForAll()
+            }
+            return .success(())
+        } catch let error {
+            return .failure(.init(outgoingMessages: preparedMessages, error: error))
         }
     }
 
-    func showSendFailure(error: Error) {
+    private nonisolated func threads(for conversationItems: [ConversationItem], tx: SDSAnyWriteTransaction) -> [TSThread] {
+        return conversationItems.compactMap { conversation in
+            guard let thread = conversation.getOrCreateThread(transaction: tx) else {
+                owsFailDebug("Missing thread for conversation")
+                return nil
+            }
+            return thread
+        }
+    }
+
+    private func showSendFailure(error: SendError) {
         AssertIsOnMainThread()
 
-        owsFailDebug("Error: \(error)")
+        owsFailDebug("Error: \(error.error)")
 
         let cancelAction = ActionSheetAction(
             title: CommonStrings.cancelButton,
@@ -467,7 +425,7 @@ extension SharingThreadPickerViewController {
         ) { [weak self] _ in
             guard let self = self else { return }
             self.databaseStorage.write { transaction in
-                for message in self.outgoingMessages.get() {
+                for message in error.outgoingMessages {
                     // If we sent the message to anyone, mark it as failed
                     message.updateWithAllSendingRecipientsMarkedAsFailed(tx: transaction)
                 }
@@ -530,7 +488,7 @@ extension SharingThreadPickerViewController {
                 }
 
                 // Resend
-                self.resendMessages()
+                self.resendMessages(error.outgoingMessages)
             }
             actionSheet.addAction(confirmAction)
 
@@ -540,7 +498,7 @@ extension SharingThreadPickerViewController {
             actionSheet.addAction(cancelAction)
 
             let retryAction = ActionSheetAction(title: CommonStrings.retryButton, style: .default) { [weak self] _ in
-                self?.resendMessages()
+                self?.resendMessages(error.outgoingMessages)
             }
             actionSheet.addAction(retryAction)
 
@@ -548,13 +506,13 @@ extension SharingThreadPickerViewController {
         }
     }
 
-    func resendMessages() {
+    func resendMessages(_ outgoingMessages: [PreparedOutgoingMessage]) {
         AssertIsOnMainThread()
         owsAssertDebug(outgoingMessages.count > 0)
 
         var promises = [Promise<Void>]()
         databaseStorage.write { transaction in
-            for message in outgoingMessages.get() {
+            for message in outgoingMessages {
                 promises.append(SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,
                     message: message,
@@ -563,12 +521,14 @@ extension SharingThreadPickerViewController {
             }
         }
 
-        self.showSendProgress()
+        self.presentOrUpdateSendProgressSheet(outgoingMessages: outgoingMessages)
         Promise.when(fulfilled: promises).done {
-            self.dismissSendProgress {}
+            self.dismissSendProgressSheet {}
             self.shareViewDelegate?.shareViewWasCompleted()
         }.catch { error in
-            self.dismissSendProgress { self.showSendFailure(error: error) }
+            self.dismissSendProgressSheet {
+                self.showSendFailure(error: .init(outgoingMessages: outgoingMessages, error: error))
+            }
         }
     }
 }

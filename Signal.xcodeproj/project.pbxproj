@@ -775,6 +775,7 @@
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */; };
+		661566742BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */; };
 		6618DF402BBEF56900BCDC06 /* MessageEdits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618DF3F2BBEF56900BCDC06 /* MessageEdits.swift */; };
@@ -3723,6 +3724,7 @@
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRegistrationState.swift; sourceTree = "<group>"; };
+		661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingThreadPickerProgressSheet.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
 		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
 		6618DF3F2BBEF56900BCDC06 /* MessageEdits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageEdits.swift; sourceTree = "<group>"; };
@@ -6806,6 +6808,7 @@
 				7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */,
 				4535186A1FC635DD00210559 /* ShareViewController.swift */,
 				34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */,
+				661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */,
 				88EFF4FB25AD4230000FAFBA /* SharingThreadPickerViewController.swift */,
 				881FF30723B5B16F0023B620 /* SignalShareExtension-AppStore.entitlements */,
 				34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */,
@@ -12762,6 +12765,7 @@
 				7677E40729F7472800AC6A75 /* ShareAppExtensionContext.swift in Sources */,
 				4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */,
 				50BF51022BB1FACA00C2C309 /* ShareViewDelegate.swift in Sources */,
+				661566742BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift in Sources */,
 				88EFF4FC25AD4230000FAFBA /* SharingThreadPickerViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

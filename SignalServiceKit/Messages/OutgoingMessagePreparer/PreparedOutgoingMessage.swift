@@ -278,7 +278,7 @@ public class PreparedOutgoingMessage {
 
     // MARK: - Private
 
-    private let messageType: MessageType
+    fileprivate let messageType: MessageType
 
     // Can effectively only be called by UnpreparedOutgoingMessage, as only
     // that class can instantiate a builder.
@@ -343,6 +343,33 @@ public class PreparedOutgoingMessage {
             // Do send states even matter for transient messages?
             return message
         }
+    }
+}
+
+extension Array where Element == PreparedOutgoingMessage {
+
+    public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [TSResourceId] {
+        // Use a non-story message if we have one.
+        // When we multisend N attachments to M message threads and S story threads,
+        // we create M messages with N attachments each, and (N * S) story messages
+        // with one attachment each. So, prefer a non story message which has
+        // all the attachments on it.
+        // Fall back to just a single story message; fetching attachments for each
+        // one and collating is too expensive.
+        var storyMessages = [PreparedOutgoingMessage]()
+        for preparedMessage in self {
+            switch preparedMessage.messageType {
+            case .persisted, .editMessage, .contactSync, .transient:
+                return preparedMessage.attachmentIdsForUpload(tx: tx)
+            case .story:
+                storyMessages.append(preparedMessage)
+            }
+        }
+        var attachmentIds = Set<TSResourceId>()
+        storyMessages.forEach { message in
+            message.attachmentIdsForUpload(tx: tx).forEach { attachmentIds.insert($0) }
+        }
+        return [TSResourceId](attachmentIds)
     }
 }
 
