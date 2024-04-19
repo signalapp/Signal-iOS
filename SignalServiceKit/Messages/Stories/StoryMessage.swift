@@ -1110,7 +1110,7 @@ public struct StoryRecipientState: Codable {
     public var sendingErrorCode: Int?
     public var viewedTimestamp: UInt64?
 
-    init(allowsReplies: Bool, contexts: [UUID], sendingState: OWSOutgoingMessageRecipientState = .sending) {
+    public init(allowsReplies: Bool, contexts: [UUID], sendingState: OWSOutgoingMessageRecipientState = .sending) {
         self.allowsReplies = allowsReplies
         self.contexts = contexts
         self.sendingState = sendingState
