@@ -74,10 +74,6 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             return nil
         }
 
-        if let groupId {
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: SDSDB.shimOnlyBridge(tx))
-        }
-
         var isExpirationTimerUpdate = false
         var isEndSessionMessage = false
         if dataMessage.hasFlags {

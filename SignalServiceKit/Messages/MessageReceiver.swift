@@ -380,10 +380,7 @@ public final class MessageReceiver: Dependencies {
             }
 
             if let dataMessage = sent.message {
-                let groupId = groupId(for: dataMessage)
-                if let groupId {
-                    TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: tx)
-                }
+                let groupId: Data? = groupId(for: dataMessage)
 
                 guard SDS.fitsInInt64(sent.expirationStartTimestamp) else {
                     owsFailDebug("Invalid expirationStartTimestamp.")
@@ -704,8 +701,6 @@ public final class MessageReceiver: Dependencies {
         let envelope = request.decryptedEnvelope
 
         if let groupId = self.groupId(for: dataMessage) {
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: tx)
-
             if blockingManager.isGroupIdBlocked(groupId, transaction: tx) {
                 Logger.warn("Ignoring blocked message from \(envelope.sourceAci) in group \(groupId)")
                 return
@@ -1332,17 +1327,12 @@ public final class MessageReceiver: Dependencies {
             owsFailDebug("typingMessage has invalid timestamp")
             return
         }
-        let groupId = typingMessage.groupID
-        if let groupId {
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: tx)
-        }
-        // TODO: Merge the above/below `if let groupId` blocks when moving this check.
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         if envelope.sourceAci == tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci {
             return
         }
         let thread: TSThread
-        if let groupId {
+        if let groupId = typingMessage.groupID {
             if blockingManager.isGroupIdBlocked(groupId, transaction: tx) {
                 Logger.warn("Ignoring blocked message from \(envelope.sourceAci) in \(groupId)")
                 return

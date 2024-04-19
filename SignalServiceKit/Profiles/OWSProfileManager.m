@@ -797,7 +797,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     [self.whitelistedGroupsStore removeValueForKey:groupIdKey transaction:transaction];
 
-    [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
     TSThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
     if (groupThread) {
         [self.databaseStorage touchThread:groupThread shouldReindex:NO transaction:transaction];
@@ -829,7 +828,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:transaction];
 
-    [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
     TSThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
     if (groupThread) {
         [self.databaseStorage touchThread:groupThread shouldReindex:NO transaction:transaction];

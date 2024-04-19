@@ -38,6 +38,8 @@ public extension TSGroupThread {
         groupMembership.isLocalUserFullMemberAndAdministrator
     }
 
+    // MARK: -
+
     static let groupThreadUniqueIdPrefix = "g"
 
     private static let uniqueIdMappingStore = SDSKeyValueStore(collection: "TSGroupThread.uniqueIdMappingStore")
@@ -54,11 +56,27 @@ public extension TSGroupThread {
         return uniqueIdMappingStore.getString(mappingKey, transaction: transaction)
     }
 
-    static func threadId(forGroupId groupId: Data,
-                         transaction: SDSAnyReadTransaction) -> String {
+    /// Returns the uniqueId for the ``TSGroupThread`` with the given group ID,
+    /// if one exists.
+    ///
+    /// We've historically stored a mapping of `[GroupId: ThreadUniqueId]`,
+    /// which facilitated things like V1 -> V2 migration. We'll still check the
+    /// mapping to find the correct unique ID for old threads who had an entry
+    /// there, but for new threads going forward we'll deterministically derive
+    /// a unique ID from the group ID.
+    ///
+    /// We've actually been doing a deterministic unique ID derivation for new
+    /// threads for some time; we'd then also store that mapping, which is not
+    /// necessary.
+    static func threadId(
+        forGroupId groupId: Data,
+        transaction tx: SDSAnyReadTransaction
+    ) -> String {
         owsAssertDebug(!groupId.isEmpty)
 
-        if let threadUniqueId = existingThreadId(forGroupId: groupId, transaction: transaction) {
+        if let threadUniqueId = existingThreadId(
+            forGroupId: groupId, transaction: tx
+        ) {
             return threadUniqueId
         }
 
@@ -71,72 +89,38 @@ public extension TSGroupThread {
         return groupThreadUniqueIdPrefix + groupId.base64EncodedString()
     }
 
-    private static func setThreadId(_ threadUniqueId: String,
-                                    forGroupId groupId: Data,
-                                    transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(!groupId.isEmpty)
-
-        let mappingKey = self.mappingKey(forGroupId: groupId)
-
-        if let existingThreadUniqueId = uniqueIdMappingStore.getString(mappingKey, transaction: transaction) {
-            // Don't overwrite existing mapping; but verify.
-            owsAssertDebug(threadUniqueId == existingThreadUniqueId)
-            return
-        }
-
-        uniqueIdMappingStore.setString(threadUniqueId, key: mappingKey, transaction: transaction)
-    }
-
-    /// Set a mapping from the given group ID to the given thread ID.
+    /// Sets a `[GroupId: ThreadUniqueId]` mapping for a legacy thread.
     ///
-    /// If the given group ID is a V1 group ID, also sets the mapping for the
-    /// corresponding V2 group ID.
-    static func setGroupIdMapping(_ threadUniqueId: String,
-                                  forGroupId groupId: Data,
-                                  transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(!groupId.isEmpty)
-
-        setThreadId(threadUniqueId, forGroupId: groupId, transaction: transaction)
+    /// All newly-created threads use a deterministic mapping from group ID to
+    /// thread unique ID, so this is unnecessary except for legacy threads for
+    /// whom the mapping does not exist.
+    ///
+    /// - SeeAlso ``threadId(forGroupId:transaction:)``
+    static func setGroupIdMappingForLegacyThread(
+        threadUniqueId: String,
+        groupId: Data,
+        tx: SDSAnyWriteTransaction
+    ) {
+        setGroupIdMapping(threadUniqueId: threadUniqueId, groupId: groupId, tx: tx)
 
         if
             GroupManager.isV1GroupId(groupId),
             let v2GroupId = groupsV2.v2GroupId(forV1GroupId: groupId)
         {
-            setThreadId(threadUniqueId, forGroupId: v2GroupId, transaction: transaction)
+            setGroupIdMapping(threadUniqueId: threadUniqueId, groupId: v2GroupId, tx: tx)
         }
     }
 
-    /// Update the mapping of this group ID to a thread ID.
-    ///
-    /// Reuses existing mappings if available. If the given group ID is a V1
-    /// group ID, also updates the mapping for the corresponding V2 group ID.
-    static func ensureGroupIdMapping(forGroupId groupId: Data,
-                                     transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(!groupId.isEmpty)
-
-        guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
-            return
-        }
-
-        let threadUniqueId: String = {
-            if let threadUniqueId = existingThreadId(
-                forGroupId: groupId,
-                transaction: transaction
-            ) {
-                return threadUniqueId
-            } else if
-                GroupManager.isV1GroupId(groupId),
-                let v2GroupId = groupsV2.v2GroupId(forV1GroupId: groupId),
-                let v2ThreadUniqueId = existingThreadId(forGroupId: v2GroupId, transaction: transaction)
-            {
-                return v2ThreadUniqueId
-            }
-
-            return defaultThreadId(forGroupId: groupId)
-        }()
-
-        setGroupIdMapping(threadUniqueId, forGroupId: groupId, transaction: transaction)
+    private static func setGroupIdMapping(
+        threadUniqueId: String,
+        groupId: Data,
+        tx: SDSAnyWriteTransaction
+    ) {
+        let mappingKey = mappingKey(forGroupId: groupId)
+        uniqueIdMappingStore.setString(threadUniqueId, key: mappingKey, transaction: tx)
     }
+
+    // MARK: -
 
     /// Posted when the group associated with this thread adds or removes members.
     ///

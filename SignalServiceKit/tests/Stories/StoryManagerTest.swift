@@ -412,9 +412,9 @@ class StoryManagerTest: SSKBaseTestSwift {
         modelBuilder.groupId = groupId
         modelBuilder.groupMembership = membershipBuilder.build()
         modelBuilder.isAnnouncementsOnly = announcementOnly
-        let groupModel = try modelBuilder.build()
+        let groupModel = try modelBuilder.buildAsV2()
 
-        let thread = TSGroupThread(groupModelPrivate: groupModel, transaction: transaction)
+        let thread = TSGroupThread(groupModel: groupModel)
         thread.anyInsert(transaction: transaction)
     }
 

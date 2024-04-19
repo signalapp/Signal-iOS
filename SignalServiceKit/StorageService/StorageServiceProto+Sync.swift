@@ -982,10 +982,6 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         }
         let groupId = groupContextInfo.groupId
 
-        // We might be learning of a v1 group id for the first time that
-        // corresponds to a v2 group without a v1-to-v2 group id mapping.
-        TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
-
         var needsUpdate = false
 
         if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {

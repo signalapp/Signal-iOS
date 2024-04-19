@@ -87,7 +87,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithGroupModel:(TSGroupModelV2 *)groupModel
 {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);
@@ -95,7 +95,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
         OWSAssertDebug(address.isValid);
     }
 
-    NSString *uniqueIdentifier = [[self class] threadIdForGroupId:groupModel.groupId transaction:transaction];
+    NSString *uniqueIdentifier = [[self class] defaultThreadIdForGroupId:groupModel.groupId];
     self = [super initWithUniqueId:uniqueIdentifier];
     if (!self) {
         return self;
@@ -105,22 +105,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
     return self;
 }
-
-#ifdef TESTABLE_BUILD
-
-- (instancetype)initWithGroupModelForTests:(TSGroupModel *)groupModel
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _groupModel = groupModel;
-
-    return self;
-}
-
-#endif
 
 + (nullable instancetype)fetchWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -222,16 +206,12 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillInsertWithTransaction:transaction];
-
-    [TSGroupThread ensureGroupIdMappingForGroupId:self.groupModel.groupId transaction:transaction];
     [self updateGroupMemberRecordsWithTransaction:transaction];
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
-
-    [TSGroupThread ensureGroupIdMappingForGroupId:self.groupModel.groupId transaction:transaction];
 
     // We used to update the group member records here, but there are many updates that don't touch membership.
     // Now it's done explicitly where we update the group model, and not for other updates.

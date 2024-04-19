@@ -58,7 +58,6 @@ public struct TSGroupModelBuilder: Dependencies {
             owsFailDebug("Missing groupId.")
             return builder
         }
-        TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
         guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             // Group not yet in db.
             return builder

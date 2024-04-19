@@ -195,7 +195,6 @@ extension BlockingManager {
             let didInsert = state.addBlockedGroup(groupModel)
             if didInsert {
                 Logger.info("Added blocked groupId: \(groupId.hexadecimalString)")
-                TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
 
                 if blockMode.locallyInitiated {
                     storageServiceManager.recordPendingUpdates(groupModel: groupModel)
@@ -223,7 +222,6 @@ extension BlockingManager {
         updateCurrentState(transaction: transaction, wasLocallyInitiated: wasLocallyInitiated) { state in
             if let unblockedGroup = state.removeBlockedGroup(groupId) {
                 Logger.info("Removed blocked groupId: \(groupId.hexadecimalString)")
-                TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
 
                 if wasLocallyInitiated {
                     storageServiceManager.recordPendingUpdates(groupModel: unblockedGroup)
@@ -285,7 +283,6 @@ extension BlockingManager {
         // and the following write. I'm just using the `withCurrentState` method here to avoid reenterancy
         // that'd require having a separate helper implementation.
         let groupModelToUse: TSGroupModel? = withCurrentState(transaction: transaction) { state in
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
             if let existingModel = state.blockedGroupMap[groupId] {
                 return existingModel
             } else if let currentThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
@@ -324,7 +321,6 @@ extension BlockingManager {
             // * If we can find the group thread, we use it to preserve the group name.
             // * If we only know the group id, we use a "fake" group model with only the group id.
             let newBlockedGroups: [Data: TSGroupModel] = blockedGroupIds.dictionaryMappingToValues { (blockedGroupId: Data) -> TSGroupModel? in
-                TSGroupThread.ensureGroupIdMapping(forGroupId: blockedGroupId, transaction: transaction)
                 if let existingModel = state.blockedGroupMap[blockedGroupId] {
                     return existingModel
                 } else if let currentThread = TSGroupThread.fetch(groupId: blockedGroupId, transaction: transaction) {

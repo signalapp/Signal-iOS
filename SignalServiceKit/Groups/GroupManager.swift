@@ -1032,10 +1032,7 @@ public class GroupManager: NSObject {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
     ) throws -> TSGroupThread {
-
-        TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
         let threadId = TSGroupThread.threadId(forGroupId: newGroupModel.groupId, transaction: transaction)
-
         if TSGroupThread.anyExists(uniqueId: threadId, transaction: transaction) {
             return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 newGroupModel: newGroupModel,
@@ -1215,19 +1212,12 @@ public class GroupManager: NSObject {
                 tx: transaction
             )
 
-            TSGroupThread.ensureGroupIdMapping(
-                forGroupId: newGroupModel.groupId,
-                transaction: transaction
-            )
-
             let hasUserFacingGroupModelChange = newGroupModel.hasUserFacingChangeCompared(
                 to: oldGroupModel
             )
-
             let hasDMUpdate = updateDMResult.newConfiguration != updateDMResult.oldConfiguration
 
             let hasUserFacingUpdate = hasUserFacingGroupModelChange || hasDMUpdate
-
             groupThread.update(
                 with: newGroupModel,
                 shouldUpdateChatListUi: hasUserFacingUpdate,

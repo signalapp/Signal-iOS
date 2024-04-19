@@ -2022,7 +2022,6 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing groupThread.")
             }
@@ -2183,7 +2182,6 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                     throw OWSAssertionError("Missing localIdentifiers.")
                 }
-                TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                     // Thread not yet in database.
                     return

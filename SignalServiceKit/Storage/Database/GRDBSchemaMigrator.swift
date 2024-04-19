@@ -2888,9 +2888,11 @@ public class GRDBSchemaMigrator: NSObject {
                 guard let groupThread = thread as? TSGroupThread else {
                     return
                 }
-                TSGroupThread.setGroupIdMapping(groupThread.uniqueId,
-                                                forGroupId: groupThread.groupModel.groupId,
-                                                transaction: transaction.asAnyWrite)
+                TSGroupThread.setGroupIdMappingForLegacyThread(
+                    threadUniqueId: groupThread.uniqueId,
+                    groupId: groupThread.groupId,
+                    tx: transaction.asAnyWrite
+                )
             }
             return .success(())
         }

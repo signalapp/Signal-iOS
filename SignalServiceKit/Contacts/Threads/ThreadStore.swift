@@ -158,16 +158,8 @@ public class ThreadStoreImpl: ThreadStore {
     }
 
     public func createGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread {
-        let sdsTx = SDSDB.shimOnlyBridge(tx)
-
-        let newGroupThread = TSGroupThread(groupModelPrivate: groupModel, transaction: sdsTx)
-        newGroupThread.anyInsert(transaction: sdsTx)
-        TSGroupThread.setGroupIdMapping(
-            newGroupThread.uniqueId,
-            forGroupId: groupModel.groupId,
-            transaction: sdsTx
-        )
-
+        let newGroupThread = TSGroupThread(groupModel: groupModel)
+        newGroupThread.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
         return newGroupThread
     }
 
@@ -338,7 +330,7 @@ public class MockThreadStore: ThreadStore {
     }
 
     public func createGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread {
-        return TSGroupThread(groupModelForTests: groupModel)
+        return TSGroupThread(groupModel: groupModel)
     }
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {

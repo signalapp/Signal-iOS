@@ -25,15 +25,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-// This method should only be called by GroupManager.
-- (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel
-                              transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
-
-#ifdef TESTABLE_BUILD
-
-- (instancetype)initWithGroupModelForTests:(TSGroupModel *)groupModel NS_DESIGNATED_INITIALIZER;
-
-#endif
+- (instancetype)initWithGroupModel:(TSGroupModelV2 *)groupModel NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                                        uniqueId:(NSString *)uniqueId
