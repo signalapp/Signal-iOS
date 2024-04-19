@@ -39,7 +39,7 @@ PODS:
     - Logging (~> 1.4)
     - SwiftProtobuf
   - PureLayout (3.1.4)
-  - Reachability (3.2)
+  - Reachability (3.7.6)
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack (~> 3.7.4)
   - SignalCoreKit/Tests (1.0.0):
@@ -191,7 +191,7 @@ SPEC CHECKSUMS:
   MobileCoin: 3df783a5cc278a328635ea1f5c7124c5e924648d
   MobileCoinMinimal: 627ed590d8a0d5d57c39ec25727bde3d976d2f7a
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
-  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
   SignalCoreKit: 7658a72244fa81858df4618e92044b0db0dcf59e
   SignalRingRTC: ce13dcbbb9efed7ad1965699d4092593463d7e46
   SQLCipher: 838309284f29953a28ad2e81d87d55ea6b7c74fd
