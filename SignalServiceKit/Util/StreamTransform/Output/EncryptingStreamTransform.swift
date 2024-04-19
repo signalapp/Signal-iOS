@@ -19,6 +19,7 @@ public class EncryptingStreamTransform: StreamTransform, FinalizableStreamTransf
 
     private var finalized = false
     public var hasFinalized: Bool { finalized }
+    private var hasWrittenHeader = false
 
     init(iv: Data, encryptionKey: Data, hmacKey: Data) throws {
         self.iv = iv
@@ -36,13 +37,14 @@ public class EncryptingStreamTransform: StreamTransform, FinalizableStreamTransf
     }
 
     public func transform(data: Data) throws -> Data {
-        // Current message backup format doesn't output the iv since
-        // it's derived from the encryption material.  If this is used
-        // for attachments, the option to include the iv in the header
-        // will need to be passed in as part of the initialization.
+        var ciphertextBlock = Data()
+        if !hasWrittenHeader {
+            ciphertextBlock.append(iv)
+            hasWrittenHeader = true
+        }
 
         // Get the next block of ciphertext
-        let ciphertextBlock = try cipherContext.update(data)
+        ciphertextBlock.append(try cipherContext.update(data))
 
         // If a small amount of data is encrypted, it may not be enought
         // to complete a full ciphertext block.  If that's the case,

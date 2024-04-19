@@ -9,18 +9,19 @@ import SignalCoreKit
 public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransform {
 
     public enum Error: Swift.Error {
-        case InvalidFooter
-        case InvalidHmac
+        case invalidFooter
+        case invalidHmac
+        case notInitialized
     }
 
     private enum Constants {
+        static let HeaderSize = 16
         static let FooterSize = 32
     }
 
-    private var cipherContext: CipherContext
+    private var cipherContext: CipherContext?
     private var hmacContext: HmacContext
 
-    private let iv: Data
     private let encryptionKey: Data
     private let hmacKey: Data
 
@@ -31,24 +32,16 @@ public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransf
 
     private var finalized = false
     public var hasFinalized: Bool { finalized }
-
-    init(iv: Data, encryptionKey: Data, hmacKey: Data) throws {
-        self.iv = iv
-        self.encryptionKey = encryptionKey
-        self.hmacKey = hmacKey
-
-        self.hmacContext = try HmacContext(key: hmacKey)
-        self.cipherContext = try CipherContext(
-            operation: .decrypt,
-            algorithm: .aes,
-            options: .pkcs7Padding,
-            key: encryptionKey,
-            iv: iv
-        )
-    }
-
     /// If there is data in excess of the footer size, return true.
     public var hasPendingBytes: Bool { return inputBuffer.count > Constants.FooterSize }
+
+    public var hasInitialized = false
+
+    init(encryptionKey: Data, hmacKey: Data) throws {
+        self.encryptionKey = encryptionKey
+        self.hmacKey = hmacKey
+        self.hmacContext = try HmacContext(key: hmacKey)
+    }
 
     /// Return any data in excess of the footer.
     public func readBufferedData() throws -> Data {
@@ -64,6 +57,24 @@ public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransf
 
     public func transform(data: Data) throws -> Data {
         inputBuffer.append(data)
+        if !hasInitialized {
+            guard inputBuffer.count > Constants.HeaderSize else { return Data() }
+            // read the IV
+            let iv = inputBuffer.subdata(in: 0..<Constants.HeaderSize)
+            inputBuffer = inputBuffer.subdata(in: Constants.HeaderSize..<inputBuffer.count)
+
+            try hmacContext.update(iv)
+
+            self.cipherContext = try CipherContext(
+                operation: .decrypt,
+                algorithm: .aes,
+                options: .pkcs7Padding,
+                key: encryptionKey,
+                iv: iv
+            )
+            hasInitialized = true
+        }
+        guard var cipherContext else { throw Error.notInitialized }
 
         let targetData = try readBufferedData()
         if targetData.count > 0 {
@@ -76,11 +87,12 @@ public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransf
     }
 
     public func finalize() throws -> Data {
+        guard var cipherContext else { throw Error.notInitialized }
         guard !finalized else { return Data() }
         finalized = true
 
         if inputBuffer.count < Constants.FooterSize {
-            throw Error.InvalidFooter
+            throw Error.invalidFooter
         }
 
         // Fetch the remaining non-footer data
@@ -98,7 +110,7 @@ public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransf
         // Verify our HMAC of the encrypted data matches the one included.
         let hmac = try hmacContext.finalize()
         guard hmac.ows_constantTimeIsEqual(to: footerData) else {
-            throw Error.InvalidHmac
+            throw Error.invalidHmac
         }
         return finalDecryptedData
     }

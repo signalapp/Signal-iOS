@@ -189,7 +189,7 @@ final class EncryptionStreamTransformTests: XCTestCase {
         let hmacKey = Cryptography.generateRandomBytes(UInt(32))
 
         let outputStream = try EncryptingStreamTransform(iv: iv, encryptionKey: encryptionKey, hmacKey: hmacKey)
-        let inputStream = try DecryptingStreamTransform(iv: iv, encryptionKey: encryptionKey, hmacKey: hmacKey)
+        let inputStream = try DecryptingStreamTransform(encryptionKey: encryptionKey, hmacKey: hmacKey)
 
         let data1 = "TestString".data(using: .utf8)!
 

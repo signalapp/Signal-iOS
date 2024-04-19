@@ -5,6 +5,7 @@
 
 import Foundation
 import LibSignalClient
+import SignalCoreKit
 
 public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
@@ -13,7 +14,7 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         static let MessageBackupIdLength = 16
 
         static let MessageBackupEncryptionInfoString = "20231003_Signal_Backups_EncryptMessageBackup"
-        static let MessageBackupEncryptionDataLength = 80
+        static let MessageBackupEncryptionDataLength = 64
     }
 
     private let svr: SecureValueRecovery
@@ -56,12 +57,12 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             info: infoData
         )
 
-        guard keyBytes.count == 80 else {
+        guard keyBytes.count == Constants.MessageBackupEncryptionDataLength else {
             throw MessageBackupKeyMaterialError.invalidEncryptionKey
         }
 
         return try EncryptingStreamTransform(
-            iv: Data(Array(keyBytes[64..<80])),
+            iv: Randomness.generateRandomBytes(16),
             encryptionKey: Data(Array(keyBytes[32..<64])),
             hmacKey: Data(Array(keyBytes[0..<32]))
         )
@@ -84,12 +85,11 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             info: infoData
         )
 
-        guard keyBytes.count == 80 else {
+        guard keyBytes.count == Constants.MessageBackupEncryptionDataLength else {
             throw MessageBackupKeyMaterialError.invalidEncryptionKey
         }
 
         return try DecryptingStreamTransform(
-            iv: Data(Array(keyBytes[64..<80])),
             encryptionKey: Data(Array(keyBytes[32..<64])),
             hmacKey: Data(Array(keyBytes[0..<32]))
         )

@@ -34,7 +34,7 @@ final class TransformingInputStreamTests: XCTestCase {
 
         let transformingIntputStream = TransformingInputStream(
             transforms: [
-                try DecryptingStreamTransform(iv: iv, encryptionKey: encryptionKey, hmacKey: hmacKey),
+                try DecryptingStreamTransform(encryptionKey: encryptionKey, hmacKey: hmacKey),
                 try GzipStreamTransform(.decompress),
                 ChunkedInputStreamTransform()
             ],
@@ -43,7 +43,7 @@ final class TransformingInputStreamTests: XCTestCase {
 
         var results = [Data]()
         while transformingIntputStream.hasBytesAvailable {
-            results.append(try transformingIntputStream.read(maxLength: 64))
+            results.append(try transformingIntputStream.read(maxLength: 1024))
         }
         try transformingIntputStream.close()
 
