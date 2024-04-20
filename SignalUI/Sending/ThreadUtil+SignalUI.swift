@@ -181,9 +181,6 @@ extension UnpreparedOutgoingMessage {
 
         let (truncatedBody, oversizeTextDataSource) = handleOversizeText(messageBody: messageBody)
 
-        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-
         let edits = MessageEdits(
             timestamp: NSDate.ows_millisecondTimeStamp(),
             body: .change(truncatedBody?.text),

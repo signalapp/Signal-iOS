@@ -398,13 +398,12 @@ public class MobileCoinAPI: Dependencies {
                 return promise
             }
             let client = self.client
-            client.submitTransaction(transaction) { (result: Swift.Result<Void, TransactionSubmissionError>) in
+            client.submitTransaction(transaction: transaction) { (result: Result<UInt64, SubmitTransactionError>) in
                 switch result {
                 case .success:
                     future.resolve()
                 case .failure(let error):
-                    let error = Self.convertMCError(error: error)
-                    future.reject(error)
+                    future.reject(Self.convertMCError(error: error.submissionError))
                 }
             }
             return promise
