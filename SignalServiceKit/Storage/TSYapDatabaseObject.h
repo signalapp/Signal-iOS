@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 // This property should only ever be accesssed within a GRDB write transaction.
 @property (atomic, readonly, nullable) NSNumber *grdbId;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)init;
 
 /**
  *  Initializes a new database object with a unique identifier
