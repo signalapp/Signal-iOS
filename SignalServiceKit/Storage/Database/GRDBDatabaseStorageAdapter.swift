@@ -838,10 +838,9 @@ private struct GRDBStorage {
             try GRDBDatabaseStorageAdapter.prepareDatabase(db: db, keyFetcher: keyFetcher)
 
             #if DEBUG
-            let shouldLogDbQueries = false
-            if shouldLogDbQueries {
+            #if false
                 db.trace { dbQueryLog("\($0)") }
-            }
+            #endif
             #endif
 
             MediaGalleryRecordManager.setupDatabaseFunction(database: db)
