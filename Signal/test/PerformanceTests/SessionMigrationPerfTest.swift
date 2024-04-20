@@ -68,11 +68,15 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
         }
     }
 
-    func testUnarchiveDeepSession() {
+    func testUnarchiveDeepSession() throws {
         let x = makeDeepSession()
-        let data = NSKeyedArchiver.archivedData(withRootObject: x)
+        let data = try NSKeyedArchiver.archivedData(withRootObject: x, requiringSecureCoding: true)
         measure {
-            _ = NSKeyedUnarchiver.unarchiveObject(with: data)
+            do {
+                _ = try NSKeyedUnarchiver.unarchivedObject(ofClass: type(of: x), from: data)
+            } catch {
+                XCTFail()
+            }
         }
     }
 
@@ -99,11 +103,15 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
         }
     }
 
-    func testUnarchiveSomewhatDeepSession() {
+    func testUnarchiveSomewhatDeepSession() throws {
         let x = makeDeepSession(depth: 200)
-        let data = NSKeyedArchiver.archivedData(withRootObject: x)
+        let data = try NSKeyedArchiver.archivedData(withRootObject: x, requiringSecureCoding: true)
         measure {
-            _ = NSKeyedUnarchiver.unarchiveObject(with: data)
+            do {
+                _ = try NSKeyedUnarchiver.unarchivedObject(ofClass: type(of: x), from: data)
+            } catch {
+                XCTFail()
+            }
         }
     }
 
