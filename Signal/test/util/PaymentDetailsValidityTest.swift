@@ -212,7 +212,7 @@ final class PaymentDetailsValidityTest: XCTestCase {
             XCTAssertEqual(n(countryCode, focused: true), .potentiallyValid)
         }
 
-        var stripeTestIBANs = [
+        let stripeTestIBANs = [
             "AT611904300234573201",
             "BE62510007547061",
             "HR7624020064583467589",
