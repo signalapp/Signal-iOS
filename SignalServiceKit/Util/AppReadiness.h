@@ -11,11 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
                __LINE__,                                                                                               \
                __PRETTY_FUNCTION__])
 
-#define AppReadinessRunNowOrWhenAppWillBecomeReady(block)                                                              \
-    do {                                                                                                               \
-        [AppReadiness runNowOrWhenAppWillBecomeReady:block label:AppReadinessLogPrefix()];                             \
-    } while (0)
-
 #define AppReadinessRunNowOrWhenAppDidBecomeReadySync(block)                                                           \
     do {                                                                                                               \
         [AppReadiness runNowOrWhenAppDidBecomeReadySync:block label:AppReadinessLogPrefix()];                          \
@@ -29,11 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 #define AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(block)                                                      \
     do {                                                                                                               \
         [AppReadiness runNowOrWhenMainAppDidBecomeReadyAsync:block label:AppReadinessLogPrefix()];                     \
-    } while (0)
-
-#define AppReadinessRunNowOrWhenUIDidBecomeReadySync(block)                                                            \
-    do {                                                                                                               \
-        [AppReadiness runNowOrWhenUIDidBecomeReadySync:block label:AppReadinessLogPrefix()];                           \
     } while (0)
 
 NS_ASSUME_NONNULL_END
