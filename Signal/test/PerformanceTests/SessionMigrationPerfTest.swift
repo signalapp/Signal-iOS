@@ -75,7 +75,7 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
             do {
                 _ = try NSKeyedUnarchiver.unarchivedObject(ofClass: type(of: x), from: data)
             } catch {
-                XCTFail()
+                XCTFail("unarchiving failed")
             }
         }
     }
@@ -110,7 +110,7 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
             do {
                 _ = try NSKeyedUnarchiver.unarchivedObject(ofClass: type(of: x), from: data)
             } catch {
-                XCTFail()
+                XCTFail("unarchiving failed")
             }
         }
     }
