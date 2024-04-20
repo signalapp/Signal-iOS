@@ -216,7 +216,6 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         let thisThreadPinnedOrder: UInt32
         let pinnedThreadIds = pinnedThreadManager.pinnedThreadIds(tx: tx)
-        let isThreadPinned = false
         if let pinnedThreadIndex: Int = pinnedThreadIds.firstIndex(of: thread.uniqueId) {
             // Add one so we don't start at 0.
             thisThreadPinnedOrder = UInt32(clamping: pinnedThreadIndex + 1)

@@ -104,7 +104,7 @@ public class TSAttachmentDownloadManager: NSObject {
                 store: Self.pendingMessageDownloads,
                 transaction: transaction
             ) { pendingMessageId, downloadBehavior in
-                self.enqueueDownloadOfAttachmentsForMessageId(
+                _ = self.enqueueDownloadOfAttachmentsForMessageId(
                     pendingMessageId,
                     downloadBehavior: downloadBehavior,
                     transaction: transaction
@@ -116,7 +116,7 @@ public class TSAttachmentDownloadManager: NSObject {
                 store: Self.pendingStoryMessageDownloads,
                 transaction: transaction
             ) { pendingStoryMessageId, downloadBehavior in
-                self.enqueueDownloadOfAttachmentsForStoryMessageId(
+                _ = self.enqueueDownloadOfAttachmentsForStoryMessageId(
                     pendingStoryMessageId,
                     downloadBehavior: downloadBehavior,
                     transaction: transaction
@@ -822,8 +822,6 @@ public extension TSAttachmentDownloadManager {
                 attachmentStream: attachmentStream
             )
         }.cauterize()
-
-        let jobCount = jobRequest.jobs.count
 
         Promise.when(
             on: schedulers.sync,

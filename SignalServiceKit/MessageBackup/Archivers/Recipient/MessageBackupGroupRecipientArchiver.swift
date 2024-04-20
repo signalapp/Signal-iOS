@@ -166,8 +166,6 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         }
         let groupId = groupContextInfo.groupId
 
-        var needsUpdate = false
-
         // TODO: support group creation.
         // group creation as written is async, and therefore needs refactoring
         // before it can be triggered from here (and waited on).
@@ -176,7 +174,6 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         guard let localThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
             return .failure([.unimplemented(recipient.recipientId)])
         }
-        let localStorySendMode = localThread.storyViewMode.storageServiceMode
         switch (groupProto.storySendMode, localThread.storyViewMode) {
         case (.DISABLED, .disabled), (.ENABLED, .explicit), (.DEFAULT, _), (nil, _):
             // Nothing to change.

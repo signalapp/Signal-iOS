@@ -266,7 +266,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             storyStore.updateStoryContext(storyContext, isHidden: true, tx: tx)
         }
 
-        let shouldFetchProfile = profileManager.setProfileGivenName(
+        // TODO: Check the return value of this call and add to a list of profiles to update after registration finishes
+        _ = profileManager.setProfileGivenName(
             givenName: contactProto.profileGivenName,
             familyName: contactProto.profileFamilyName,
             profileKey: contactProto.profileKey,
@@ -274,9 +275,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             localIdentifiers: context.localIdentifiers,
             tx: tx
         )
-
-        // TODO: Check `shouldFetchProfile` and add to a list of profiles to update after
-        // registration finishes
 
         return .success
     }

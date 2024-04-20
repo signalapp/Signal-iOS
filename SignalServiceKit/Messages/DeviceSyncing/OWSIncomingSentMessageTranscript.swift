@@ -214,8 +214,6 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
     ) throws -> SentMessageTranscriptType.Message? {
         let isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce
 
-        let requiredProtocolVersion = dataMessage.requiredProtocolVersion == 0 ? nil : dataMessage.requiredProtocolVersion
-
         let body = dataMessage.body
 
         let bodyRanges: MessageBodyRanges?

@@ -62,7 +62,7 @@ public class AttachmentReference {
 
         // Do source validation
         guard
-            let owner = Owner.validateAndBuild(
+            Owner.validateAndBuild(
                 ownerId: ownerId,
                 orderInOwner: orderInOwner,
                 renderingFlag: renderingFlag,
@@ -72,7 +72,7 @@ public class AttachmentReference {
                 stickerPackId: stickerPackId,
                 stickerId: stickerId,
                 contentType: contentType
-            )
+            ) != nil
         else {
             return nil
         }

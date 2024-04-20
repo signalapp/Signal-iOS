@@ -899,7 +899,6 @@ public class SignalAttachment: NSObject {
 
             let dataFileExtension: String
             let dataUTI: CFString
-            let dataMIMEType: String
 
             // We convert everything that's not sticker-like to jpg, because
             // often images with alpha channels don't actually have any
@@ -909,11 +908,9 @@ public class SignalAttachment: NSObject {
             if dataSource.hasStickerLikeProperties {
                 dataFileExtension = "png"
                 dataUTI = kUTTypePNG
-                dataMIMEType = MimeType.imagePng.rawValue
             } else {
                 dataFileExtension = "jpg"
                 dataUTI = kUTTypeJPEG
-                dataMIMEType = MimeType.imageJpeg.rawValue
                 imageProperties[kCGImageDestinationLossyCompressionQuality] = compressionQuality(for: pixelSize)
             }
 
@@ -1106,13 +1103,11 @@ public class SignalAttachment: NSObject {
             }
         }
 
-        var error: Unmanaged<CFError>?
         let copyOptions: NSDictionary = [
             kCGImageDestinationMergeMetadata: true,
             kCGImageDestinationMetadata: metadata
         ]
-        guard CGImageDestinationCopyImageSource(destination, source, copyOptions, &error) else {
-            let errorMessage = (error?.takeRetainedValue()).map { String(describing: $0) } ?? "(unknown error)"
+        guard CGImageDestinationCopyImageSource(destination, source, copyOptions, nil) else {
             throw SignalAttachmentError.couldNotRemoveMetadata
         }
 

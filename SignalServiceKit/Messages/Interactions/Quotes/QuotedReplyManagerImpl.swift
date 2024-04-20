@@ -392,7 +392,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             return createDraftReply(content: .giftBadge)
         }
 
-        if let sticker = originalMessage.messageSticker {
+        if originalMessage.messageSticker != nil {
             guard
                 let attachmentRef = attachmentStore.stickerAttachment(for: originalMessage, tx: tx),
                 let attachment = attachmentStore.fetch(attachmentRef.resourceId, tx: tx),

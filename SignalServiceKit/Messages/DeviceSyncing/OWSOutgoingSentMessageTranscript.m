@@ -111,7 +111,6 @@ NS_ASSUME_NONNULL_BEGIN
             continue;
         }
 
-        NSError *error;
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder *statusBuilder =
             [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus builder];
         [statusBuilder setDestinationServiceID:recipientAddress.serviceIdString];

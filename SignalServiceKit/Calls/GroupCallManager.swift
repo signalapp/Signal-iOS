@@ -39,7 +39,7 @@ public class GroupCallManager {
             case .receivedGroupUpdateMessage(let eraId, _):
                 let callId = eraId.map { CallId(eraId: $0) }
                 return "GroupCallUpdateMessage, callId: \(callId?.description ?? "(null)")"
-            case .localEvent(let timestamp):
+            case .localEvent:
                 return "LocalEvent"
             }
         }

@@ -942,7 +942,7 @@ public class SubscriptionManagerImpl: NSObject {
                     }
                 }()
 
-                requestAndRedeemReceipt(
+                _ = requestAndRedeemReceipt(
                     subscriberId: subscriberID,
                     subscriptionLevel: subscription.level,
                     priorSubscriptionLevel: nil,

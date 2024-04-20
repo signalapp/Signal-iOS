@@ -22,7 +22,6 @@ public class PendingTasks: NSObject {
         // This promise blocks on all pending tasks already in flight,
         // but will not block on new tasks added after this promise
         // is created.
-        let label = self.label
         let promises = pendingTasks.allValues.map { $0.promise }
         return Promise.when(on: SyncScheduler(), resolved: promises).asVoid()
     }
