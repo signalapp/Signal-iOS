@@ -1535,7 +1535,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnection {
         }
 
         do {
-            let (healthCheckResult, debugInfo) = try await chatService.unauthenticatedSendAndDebug(.init(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 2))
+            let (healthCheckResult, debugInfo) = try await chatService.unauthenticatedSendAndDebug(.init(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 3))
             let succeeded = (200...299).contains(healthCheckResult.status)
             if !succeeded {
                 Logger.warn("\(logPrefix): [\(originalRequestId)] keepalive via libsignal responded with status [\(healthCheckResult.status)] (\(debugInfo.connectionInfo))")
