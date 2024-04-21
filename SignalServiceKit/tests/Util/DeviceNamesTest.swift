@@ -29,9 +29,6 @@ class DeviceNamesTest: XCTestCase {
         let identityPrivateKey = try PrivateKey(Array(repeating: 0, count: 31) + [0x41])
         let identityKeyPair = IdentityKeyPair(publicKey: identityPrivateKey.publicKey, privateKey: identityPrivateKey)
 
-        let otherPrivateKey = try PrivateKey(Array(repeating: 0, count: 31) + [0x42])
-        let otherKeyPair = IdentityKeyPair(publicKey: otherPrivateKey.publicKey, privateKey: otherPrivateKey)
-
         let encryptedDeviceName = try XCTUnwrap(Data(
             base64Encoded: "CiEFrYxIwmdlrqetxTYolgXBq+qVBQCT29IYyWq9JIGgNWUSEFNO1AI2/J8BQ+9Re91Y5OcaBsNYrahasg=="
         ))

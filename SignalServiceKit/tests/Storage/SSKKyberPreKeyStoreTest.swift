@@ -479,7 +479,7 @@ class KyberPreKeyStoreTest: XCTestCase {
             timeIntervalSinceNow: -(SSKKyberPreKeyStore.Constants.lastResortKeyExpirationInterval + 1)
         )
 
-        let expiredLastResort = try! self.db.write { tx in
+        _ = try! self.db.write { tx in
             let record = try self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: self.identityKey, tx: tx)
             try self.kyberPreKeyStore.storeLastResortPreKey(record: record, tx: tx)
             return record
@@ -523,9 +523,6 @@ class KyberPreKeyStoreTest: XCTestCase {
         }
 
         XCTAssertEqual(recordsAfterCull.count, 2)
-
-        let sortedFoundRecords = recordsAfterCull.sorted { $0.id < $1.id }
-
         XCTAssertNotNil(recordsAfterCull.firstIndex(where: { $0.id == oldUnexpiredLastResort.id }))
         XCTAssertNotNil(recordsAfterCull.firstIndex(where: { $0.id == currentLastResort.id }))
     }

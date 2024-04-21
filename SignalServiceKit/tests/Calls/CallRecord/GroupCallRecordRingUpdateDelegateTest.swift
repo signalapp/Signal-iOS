@@ -113,7 +113,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
                         Premise(ringUpdate, groupCallStatus)
                     ))
 
-                    _ = mockCallRecordStore.insert(
+                    mockCallRecordStore.insert(
                         callRecord: CallRecord(
                             callId: callIdFromRingId(ringId),
                             interactionRowId: .maxRandom,
@@ -169,7 +169,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
         mockThreadStore.insertThread(groupThread)
 
         mockDB.write { tx in
-            _ = mockCallRecordStore.insert(
+            mockCallRecordStore.insert(
                 callRecord: CallRecord(
                     callId: callIdFromRingId(ringId),
                     interactionRowId: .maxRandom,

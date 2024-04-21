@@ -53,7 +53,6 @@ class TSAttachmentUploadManagerMockHelper {
         }
 
         mockURLSession.promiseForDataTaskBlock = { request in
-            let urlString = request.url!.absoluteString
             switch self.activeUploadRequestMocks.removeFirst() {
             case .uploadLocation(let requestBlock):
                 self.capturedRequests.append(.uploadLocation(request))

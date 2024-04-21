@@ -77,7 +77,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
                         .contains(url.lastPathComponent)
                     )
                     return .value(OWSUrlDownloadResponse(
-                        task: URLSessionTask(), // doesn't matter
+                        task: URLSession.shared.dataTask(with: url), // doesn't matter
                         httpUrlResponse: HTTPURLResponse(
                             url: url,
                             statusCode: 200,
@@ -136,7 +136,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
                         .contains(url.lastPathComponent)
                     )
                     return .value(OWSUrlDownloadResponse(
-                        task: URLSessionTask(), // doesn't matter
+                        task: URLSession.shared.dataTask(with: url), // doesn't matter
                         httpUrlResponse: HTTPURLResponse(
                             url: url,
                             statusCode: 200,
@@ -217,7 +217,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
                         .contains(url.lastPathComponent)
                     )
                     return .value(OWSUrlDownloadResponse(
-                        task: URLSessionTask(), // doesn't matter
+                        task: URLSession.shared.dataTask(with: url), // doesn't matter
                         httpUrlResponse: HTTPURLResponse(
                             url: url,
                             statusCode: 200,
@@ -337,7 +337,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
                         .contains(url.lastPathComponent)
                     )
                     return .value(OWSUrlDownloadResponse(
-                        task: URLSessionTask(), // doesn't matter
+                        task: URLSession.shared.dataTask(with: url), // doesn't matter
                         httpUrlResponse: HTTPURLResponse(
                             url: url,
                             statusCode: 200,

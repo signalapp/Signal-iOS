@@ -41,7 +41,6 @@ class TSAttachmentDownloadManagerTest: SSKBaseTestSwift {
 
         // Query for the attachments in one specific thread.
         var actualUniqueIds = Set<String>()
-        let finder = InteractionFinder(threadUniqueId: threads[0].uniqueId)
         read { transaction in
             try! TSAttachmentDownloadManager.enumerateMessagesWithLegacyAttachments(
                 inThreadUniqueId: threads[0].uniqueId,

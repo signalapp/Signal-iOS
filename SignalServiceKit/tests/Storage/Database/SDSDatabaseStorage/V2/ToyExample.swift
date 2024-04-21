@@ -108,6 +108,7 @@ private class FooBarManagerTest: SSKBaseTestSwift {
     func testGetFooAndBar() throws {
         throw XCTSkip("Don't actually want to run this test")
 
+        #if false
         // This comes from SSKEnvironment, which by its very creation
         // requires setting up countless managers and running all sorts
         // of database startup tasks.
@@ -121,6 +122,7 @@ private class FooBarManagerTest: SSKBaseTestSwift {
         }
 
         // Assert stuff...
+        #endif
     }
 }
 
@@ -177,6 +179,7 @@ extension FooBarManagerTest {
     func testGetFooAndBar_2() throws {
         throw XCTSkip("Don't actually want to run this test")
 
+        #if false
         // This is a dumb, simple class with no dependencies.
         // It has no overhead, no startup jobs, nothing.
         // All it does is give you things that _look_
@@ -194,6 +197,7 @@ extension FooBarManagerTest {
         }
 
         // Assert stuff...
+        #endif
     }
 }
 
@@ -249,8 +253,8 @@ private class FooBarManager2 {
     }
 
     func doTheFooBar(transaction: DBReadTransaction) {
-        let foo = fooFinder.getFoo(transaction: transaction)!
-        let bar = BarFinder.getBar(transaction: transaction)!
+        _ = fooFinder.getFoo(transaction: transaction)!
+        _ = BarFinder.getBar(transaction: transaction)!
         // doTheFooBar(foo: foo, bar: bar)
     }
 }
@@ -275,6 +279,7 @@ class FooBarManagerTest2: XCTestCase {
 
     func testGetFooAndBar_2() throws {
         throw XCTSkip("Don't actually want to run this test")
+        #if false
         let db = MockDB()
 
         // Setting and returning this value doesn't go through
@@ -289,6 +294,7 @@ class FooBarManagerTest2: XCTestCase {
         }
 
         // Assert stuff...
+        #endif
     }
 }
 
@@ -382,8 +388,8 @@ private class FooBarManager3 {
     }
 
     func doTheFooBar(transaction: DBReadTransaction) {
-        let foo = fooFinder.getFoo(transaction: transaction)!
-        let bar = barFinder.getBar(transaction: transaction)!
+        _ = fooFinder.getFoo(transaction: transaction)!
+        _ = barFinder.getBar(transaction: transaction)!
         // doTheFooBar(foo: foo, bar: bar)
     }
 }
@@ -414,6 +420,7 @@ class FooBarManagerTest3: XCTestCase {
 
     func testGetFooAndBar_2() throws {
         throw XCTSkip("Don't actually want to run this test")
+        #if false
         let db = MockDB()
 
         fooFinderMock.fooToReturn = Foo(text: "Hello, world!")
@@ -424,6 +431,7 @@ class FooBarManagerTest3: XCTestCase {
         }
 
         // Assert stuff...
+        #endif
     }
 }
 
