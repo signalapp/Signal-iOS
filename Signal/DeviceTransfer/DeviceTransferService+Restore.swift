@@ -438,10 +438,18 @@ extension DeviceTransferService {
             throw OWSAssertionError("No manifest available")
         }
 
+        let possibleUserDefaultClasses = [
+            NSData.self,
+            NSString.self,
+            NSNumber.self,
+            NSDate.self,
+            NSArray.self,
+            NSDictionary.self,
+        ]
         // TODO: We should codify how we want to use standardDefaults. Either we should
         // get rid of them, or expand them to support all of our extensions
         for userDefault in manifest.standardDefaults {
-            guard let unarchivedValue = NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue) else {
+            guard let unarchivedValue = try? NSKeyedUnarchiver.unarchivedObject(ofClasses: possibleUserDefaultClasses, from: userDefault.encodedValue) else {
                 owsFailDebug("Failed to unarchive value for key \(userDefault.key)")
                 continue
             }
@@ -460,7 +468,7 @@ extension DeviceTransferService {
                 LegacyRestorationFlags.pendingWasTransferredClearKey
             ].contains(userDefault.key) else { continue }
 
-            guard let unarchivedValue = NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue) else {
+            guard let unarchivedValue = try? NSKeyedUnarchiver.unarchivedObject(ofClasses: possibleUserDefaultClasses, from: userDefault.encodedValue) else {
                 owsFailDebug("Failed to unarchive value for key \(userDefault.key)")
                 continue
             }
