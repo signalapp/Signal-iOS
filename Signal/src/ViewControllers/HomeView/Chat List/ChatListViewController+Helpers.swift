@@ -141,38 +141,9 @@ public extension ChatListViewController {
 
 // MARK: Previews
 
-extension ChatListViewController: UIViewControllerPreviewingDelegate {
-
-    public func previewingContext(
-        _ previewingContext: UIViewControllerPreviewing,
-        viewControllerForLocation location: CGPoint
-    ) -> UIViewController? {
-
-        guard let indexPath = tableView.indexPathForRow(at: location),
-              canPresentPreview(fromIndexPath: indexPath)
-        else {
-            return nil
-        }
-
-        // TODO: Use UIContextMenuInteraction instead.
-        previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
-        return createPreviewController(atIndexPath: indexPath)
-    }
-
-    public func previewingContext(
-        _ previewingContext: UIViewControllerPreviewing,
-        commit viewControllerToCommit: UIViewController
-    ) {
-        commitPreviewController(viewControllerToCommit)
-    }
-
-    func canPresentPreview(fromIndexPath indexPath: IndexPath?) -> Bool {
-        AssertIsOnMainThread()
-
+extension ChatListViewController {
+    func canPresentPreview(fromIndexPath indexPath: IndexPath) -> Bool {
         guard !tableView.isEditing else {
-            return false
-        }
-        guard let indexPath else {
             return false
         }
         guard let section = ChatListSection(rawValue: indexPath.section) else {
@@ -182,22 +153,16 @@ extension ChatListViewController: UIViewControllerPreviewingDelegate {
         switch section {
         case .pinned, .unpinned:
             let currentSelectedThreadId = conversationSplitViewController?.selectedThread?.uniqueId
-            if thread(forIndexPath: indexPath)?.uniqueId == currentSelectedThreadId {
-                // Currently, no previewing the currently selected thread.
-                // Though, in a scene-aware, multiwindow world, we may opt to permit this.
-                // If only to allow the user to pick up and drag a conversation to a new window.
-                return false
-            } else {
-                return true
-            }
+            // Currently, no previewing the currently selected thread.
+            // Though, in a scene-aware, multiwindow world, we may opt to permit this.
+            // If only to allow the user to pick up and drag a conversation to a new window.
+            return thread(forIndexPath: indexPath)?.uniqueId != currentSelectedThreadId
         default:
             return false
         }
     }
 
     func createPreviewController(atIndexPath indexPath: IndexPath) -> UIViewController? {
-        AssertIsOnMainThread()
-
         guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
             owsFailDebug("Missing threadViewModel.")
             return nil
@@ -208,8 +173,6 @@ extension ChatListViewController: UIViewControllerPreviewingDelegate {
     }
 
     func commitPreviewController(_ previewController: UIViewController) {
-        AssertIsOnMainThread()
-
         guard let previewController = previewController as? ConversationViewController else {
             owsFailDebug("Invalid previewController: \(type(of: previewController))")
             return
