@@ -340,7 +340,8 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
      * This behavior is identical to what you'd see if we hadn't previously registered for user notification settings, though
      * in this case we've verified that we *have* properly registered notification settings.
      */
-    private var isSusceptibleToFailedPushRegistration: Bool {
+    @MainActor
+    private func isSusceptibleToFailedPushRegistration() async -> Bool {
 
         // Only affects users who have disabled both: background refresh *and* notifications
         guard UIApplication.shared.backgroundRefreshStatus == .denied else {
@@ -348,12 +349,10 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
             return false
         }
 
-        guard let notificationSettings = UIApplication.shared.currentUserNotificationSettings else {
-            owsFailDebug("notificationSettings was unexpectedly nil.")
-            return false
-        }
+        let notificationSettings = await UNUserNotificationCenter.current().notificationSettings()
 
-        guard notificationSettings.types == [] else {
+        // This was ported from UIApplication.shared.currentUserNotificationSettings.types == [] so it only looks at these three settings.
+        guard notificationSettings.alertSetting != .enabled && notificationSettings.badgeSetting != .enabled && notificationSettings.soundSetting != .enabled else {
             Logger.info("notificationSettings was not empty, not susceptible to push registration failure.")
             return false
         }
@@ -393,28 +392,36 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         }.recover { error -> Promise<Data> in
             switch error {
             case PushRegistrationError.timeout:
-                if self.isSusceptibleToFailedPushRegistration {
-                    // If we've timed out on a device known to be susceptible to failures, quit trying
-                    // so the user doesn't remain indefinitely hung for no good reason.
-                    throw PushRegistrationError.pushNotSupported(description: "Device configuration disallows push notifications")
-                } else {
-                    Logger.info("Push registration is taking a while. Continuing to wait since this configuration is not known to fail push registration.")
-                    // Sometimes registration can just take a while.
-                    // If we're not on a device known to be susceptible to push registration failure,
-                    // just return the original promise.
-                    return promise
+                Promise.wrapAsync {
+                    await self.isSusceptibleToFailedPushRegistration()
+                }.then { isSusceptibleToFailedPushRegistration in
+                    if isSusceptibleToFailedPushRegistration {
+                        // If we've timed out on a device known to be susceptible to failures, quit trying
+                        // so the user doesn't remain indefinitely hung for no good reason.
+                        throw PushRegistrationError.pushNotSupported(description: "Device configuration disallows push notifications")
+                    } else {
+                        Logger.info("Push registration is taking a while. Continuing to wait since this configuration is not known to fail push registration.")
+                        // Sometimes registration can just take a while.
+                        // If we're not on a device known to be susceptible to push registration failure,
+                        // just return the original promise.
+                        return promise
+                    }
                 }
             default:
                 throw error
             }
-        }.map { (pushTokenData: Data) -> String in
-            if self.isSusceptibleToFailedPushRegistration {
-                // Sentinel in case this bug is fixed.
-                owsFailDebug("Device was unexpectedly able to complete push registration even though it was susceptible to failure.")
-            }
+        }.then { (pushTokenData: Data) -> Promise<String> in
+            Promise.wrapAsync {
+                await self.isSusceptibleToFailedPushRegistration()
+            }.map { isSusceptibleToFailedPushRegistration in
+                if isSusceptibleToFailedPushRegistration {
+                    // Sentinel in case this bug is fixed.
+                    owsFailDebug("Device was unexpectedly able to complete push registration even though it was susceptible to failure.")
+                }
 
-            Logger.info("successfully registered for vanilla push notifications")
-            return pushTokenData.hexEncodedString
+                Logger.info("successfully registered for vanilla push notifications")
+                return pushTokenData.hexEncodedString
+            }
         }.ensure {
             self.vanillaTokenPromise = nil
         }
