@@ -111,13 +111,12 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     var attachmentId: MediaGalleryResourceId { attachmentStream.reference.mediaGalleryResourceId }
 
     typealias AsyncThumbnailBlock = @MainActor (UIImage) -> Void
-    func thumbnailImage(async: @escaping AsyncThumbnailBlock) -> UIImage? {
+    func thumbnailImage(completion: @escaping AsyncThumbnailBlock) {
         Task { [attachmentStream] in
             if let image = await attachmentStream.attachmentStream.thumbnailImage(quality: .small) {
-                await async(image)
+                await completion(image)
             }
         }
-        return nil
     }
 
     func thumbnailImageSync() -> UIImage? {

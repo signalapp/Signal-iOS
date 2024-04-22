@@ -103,8 +103,8 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
     var isFavorite: Bool { false }
 
-    func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
-        return galleryItem.thumbnailImage(async: completion)
+    func asyncThumbnail(completion: @escaping (UIImage?) -> Void) {
+        galleryItem.thumbnailImage(completion: completion)
     }
 
     private var videoDurationPromise: Promise<TimeInterval> {

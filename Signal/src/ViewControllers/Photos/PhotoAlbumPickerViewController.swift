@@ -176,7 +176,8 @@ class PhotoAlbumPickerViewController: OWSTableViewController, OWSNavigationChild
     }
 
     private func loadThumbnail(for imageView: UIImageView, using assetItem: PhotoPickerAssetItem) {
-        imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
+        imageView.image = nil
+        assetItem.asyncThumbnail { [weak imageView] image in
             AssertIsOnMainThread()
 
             guard let imageView = imageView else {

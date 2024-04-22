@@ -565,7 +565,8 @@ private class RecentPhotoCell: UICollectionViewCell {
     func configure(item: PhotoGridItem, isLoading: Bool) {
         self.item = item
 
-        image = item.asyncThumbnail { [weak self] image in
+        image = nil
+        item.asyncThumbnail { [weak self] image in
             guard let self = self, let currentItem = self.item, currentItem === item else { return }
             self.image = image
         }

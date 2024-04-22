@@ -117,7 +117,8 @@ class WidePhotoCell: MediaTileListModeCell {
         // `configure(item:)` multiple times because the high-quality image eventually applied
         // last time it was called will be momentarily replaced by a progression of lower
         // quality images.
-        thumbnailView.image = item.asyncThumbnail { [weak self] image in
+        thumbnailView.image = nil
+        item.asyncThumbnail { [weak self] image in
             guard let self else { return }
 
             guard let currentItem = self.photoGridItem, currentItem === item else { return }
