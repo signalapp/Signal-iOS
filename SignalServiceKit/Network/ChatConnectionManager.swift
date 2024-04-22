@@ -23,7 +23,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     private let connectionUnidentified: OWSChatConnection
     private var connections: [OWSChatConnection] { [ connectionIdentified, connectionUnidentified ]}
 
-    public init(appExpiry: AppExpiry, db: DB, libsignalNet: Net) {
+    public init(appExpiry: AppExpiry, db: DB, libsignalNet: Net, userDefaults: UserDefaults) {
         AssertIsOnMainThread()
 
         connectionIdentified = OWSChatConnection(
@@ -32,23 +32,27 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             db: db
         )
 
-        let chatService = libsignalNet.createChatService(username: "", password: "")
-        let shadowingConnection = OWSChatConnectionWithLibSignalShadowing(
-            chatService: chatService,
-            type: .unidentified,
-            appExpiry: appExpiry,
-            db: db,
-            shadowingFrequency: 0.0
-        )
-        // RemoteConfig isn't available while we're still setting up singletons,
-        // so we might not shadow the first few requests.
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            let frequency = RemoteConfig.experimentalTransportShadowingHigh ? 1.0 : 0.1
-            Logger.info("Using unauth OWSChatConnectionWithLibSignalShadowing, shadowing frequency \(frequency)")
-            shadowingConnection.updateShadowingFrequency(frequency)
-        }
+        if userDefaults.bool(forKey: Self.enableShadowingDefaultsKey) {
+            let chatService = libsignalNet.createChatService(username: "", password: "")
+            let shadowingConnection = OWSChatConnectionWithLibSignalShadowing(
+                chatService: chatService,
+                type: .unidentified,
+                appExpiry: appExpiry,
+                db: db,
+                shadowingFrequency: 0.0
+            )
+            // RemoteConfig isn't available while we're still setting up singletons,
+            // so we might not shadow the first few requests.
+            AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+                let frequency = RemoteConfig.experimentalTransportShadowingHigh ? 1.0 : 0.1
+                Logger.info("Using unauth OWSChatConnectionWithLibSignalShadowing, shadowing frequency \(frequency)")
+                shadowingConnection.updateShadowingFrequency(frequency)
+            }
 
-        connectionUnidentified = shadowingConnection
+            connectionUnidentified = shadowingConnection
+        } else {
+            connectionUnidentified = OWSChatConnection(type: .unidentified, appExpiry: appExpiry, db: db)
+        }
 
         SwiftSingletons.register(self)
     }
@@ -146,6 +150,18 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
 
     public var hasEmptiedInitialQueue: Bool {
         connectionIdentified.hasEmptiedInitialQueue
+    }
+
+    // MARK: -
+
+    private static var enableShadowingDefaultsKey: String = "EnableShadowingForUnidentifiedWebsocket"
+
+    /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
+    static func saveEnableShadowingForUnidentifiedWebsocket(
+        _ enableShadowingForUnidentifiedWebsocket: Bool,
+        in defaults: UserDefaults
+    ) {
+        defaults.set(enableShadowingForUnidentifiedWebsocket, forKey: enableShadowingDefaultsKey)
     }
 }
 

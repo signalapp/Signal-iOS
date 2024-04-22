@@ -263,6 +263,11 @@ public class RemoteConfig: NSObject {
         return isEnabled(.experimentalTransportShadowingHigh, defaultValue: DebugFlags.internalLogging)
     }
 
+    @available(*, unavailable, message: "cached in UserDefaults by ChatConnectionManager")
+    public static var experimentalTransportShadowingEnabled: Bool {
+        return false
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -476,6 +481,7 @@ private enum IsEnabledFlag: String, FlagType {
     case enableGifSearch = "global.gifSearch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
     case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
+    case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
 
     var isSticky: Bool {
         switch self {
@@ -495,7 +501,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
         case .enableGifSearch: fallthrough
         case .serviceExtensionFailureKillSwitch: fallthrough
-        case .experimentalTransportShadowingHigh:
+        case .experimentalTransportShadowingHigh: fallthrough
+        case .experimentalTransportShadowingEnabled:
             return false
         }
     }
@@ -518,7 +525,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
         case .enableGifSearch: fallthrough
-        case .experimentalTransportShadowingHigh:
+        case .experimentalTransportShadowingHigh: fallthrough
+        case .experimentalTransportShadowingEnabled:
             return false
         }
     }
@@ -895,6 +903,13 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                     let isKilled = isEnabledFlags[flag.rawValue] ?? false
                     return !isKilled
                 }(),
+                in: CurrentAppContext().appUserDefaults()
+            )
+
+            // Similarly, persist the configuration to use for the chat websockets.
+            let enableShadowingForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportShadowingEnabled.rawValue] ?? true
+            ChatConnectionManagerImpl.saveEnableShadowingForUnidentifiedWebsocket(
+                enableShadowingForUnidentifiedWebsocket,
                 in: CurrentAppContext().appUserDefaults()
             )
 

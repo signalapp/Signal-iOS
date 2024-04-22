@@ -534,7 +534,13 @@ public class AppSetup {
         )
 
         let libsignalNet = Net(env: TSConstants.isUsingProductionService ? .production : .staging)
-        let chatConnectionManager = ChatConnectionManagerImpl(appExpiry: appExpiry, db: db, libsignalNet: libsignalNet)
+        let chatConnectionManager = ChatConnectionManagerImpl(
+            appExpiry: appExpiry,
+            db: db,
+            libsignalNet: libsignalNet,
+            userDefaults: appContext.appUserDefaults()
+        )
+
         let preKeyManager = PreKeyManagerImpl(
             dateProvider: dateProvider,
             db: db,
