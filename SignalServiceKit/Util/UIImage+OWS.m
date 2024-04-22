@@ -11,22 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation UIImage (normalizeImage)
 
-- (UIImage *)resizedWithQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate
-{
-    UIImage *resized = nil;
-    CGFloat width = self.size.width * rate;
-    CGFloat height = self.size.height * rate;
-
-    UIGraphicsBeginImageContext(CGSizeMake(width, height));
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetInterpolationQuality(context, quality);
-    [self drawInRect:CGRectMake(0, 0, width, height)];
-    resized = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return resized;
-}
-
 - (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints
 {
     // Use points.
