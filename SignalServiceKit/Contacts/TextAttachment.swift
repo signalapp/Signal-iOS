@@ -77,6 +77,10 @@ public struct UnsentTextAttachment {
 public struct TextAttachment: Codable, Equatable {
     private let body: StyleOnlyMessageBody?
 
+    private enum Constants {
+        static let maxGradientPoints = 100
+    }
+
     public enum TextStyle: Int, Codable, Equatable {
         case regular = 0
         case bold = 1
@@ -235,8 +239,8 @@ public struct TextAttachment: Codable, Equatable {
             let colors: [UInt32]
             let positions: [Float]
             if !gradient.colors.isEmpty && !gradient.positions.isEmpty {
-                colors = gradient.colors
-                positions = gradient.positions
+                colors = Array(gradient.colors.prefix(Constants.maxGradientPoints))
+                positions = Array(gradient.positions.prefix(Constants.maxGradientPoints).map({ $0.isNaN ? 0 : $0 }))
             } else {
                 colors = [ gradient.startColor, gradient.endColor ]
                 positions = [ 0, 1 ]
