@@ -41,6 +41,7 @@ public class DependenciesBridge {
 
     public let accountAttributesUpdater: AccountAttributesUpdater
     public let appExpiry: AppExpiry
+    public let attachmentCloner: SignalAttachmentCloner
     public let attachmentDownloadManager: AttachmentDownloadManager
     public let attachmentManager: AttachmentManager
     public let attachmentStore: AttachmentStore
@@ -112,6 +113,7 @@ public class DependenciesBridge {
     public let threadReplyInfoStore: ThreadReplyInfoStore
     public let threadStore: ThreadStore
     public let tsAccountManager: TSAccountManager
+    public let tsResourceCloner: SignalTSResourceCloner
     public let tsResourceDownloadManager: TSResourceDownloadManager
     public let tsResourceManager: TSResourceManager
     public let tsResourceStore: TSResourceStore
@@ -126,6 +128,7 @@ public class DependenciesBridge {
     init(
         accountAttributesUpdater: AccountAttributesUpdater,
         appExpiry: AppExpiry,
+        attachmentCloner: SignalAttachmentCloner,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
@@ -197,6 +200,7 @@ public class DependenciesBridge {
         threadReplyInfoStore: ThreadReplyInfoStore,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
+        tsResourceCloner: SignalTSResourceCloner,
         tsResourceDownloadManager: TSResourceDownloadManager,
         tsResourceManager: TSResourceManager,
         tsResourceStore: TSResourceStore,
@@ -210,6 +214,7 @@ public class DependenciesBridge {
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
         self.appExpiry = appExpiry
+        self.attachmentCloner = attachmentCloner
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
@@ -281,6 +286,7 @@ public class DependenciesBridge {
         self.threadReplyInfoStore = threadReplyInfoStore
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
+        self.tsResourceCloner = tsResourceCloner
         self.tsResourceDownloadManager = tsResourceDownloadManager
         self.tsResourceManager = tsResourceManager
         self.tsResourceStore = tsResourceStore

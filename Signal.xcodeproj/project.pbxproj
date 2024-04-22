@@ -775,8 +775,8 @@
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */; };
-		661566742BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */; };
 		661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566712BCEDD58003F1647 /* AttachmentMultisend.swift */; };
+		661566742BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */; };
 		6618DF402BBEF56900BCDC06 /* MessageEdits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618DF3F2BBEF56900BCDC06 /* MessageEdits.swift */; };
@@ -849,6 +849,10 @@
 		664BA84A2BB5DFE1005638E0 /* ContactShareDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */; };
 		664BA84D2BB63102005638E0 /* TSResourceDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA84C2BB63102005638E0 /* TSResourceDataSource.swift */; };
 		664BA84F2BB632D9005638E0 /* TSAttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA84E2BB632D9005638E0 /* TSAttachmentDataSource.swift */; };
+		664E8D842BD6D71C00C4968A /* SignalTSAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D832BD6D71C00C4968A /* SignalTSAttachmentCloner.swift */; };
+		664E8D862BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D852BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift */; };
+		664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */; };
+		664E8D8A2BD6DACB00C4968A /* SignalTSResourceCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D892BD6DACB00C4968A /* SignalTSResourceCloner.swift */; };
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
 		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
 		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
@@ -3722,8 +3726,8 @@
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRegistrationState.swift; sourceTree = "<group>"; };
-		661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingThreadPickerProgressSheet.swift; sourceTree = "<group>"; };
 		661566712BCEDD58003F1647 /* AttachmentMultisend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
+		661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingThreadPickerProgressSheet.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
 		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
 		6618DF3F2BBEF56900BCDC06 /* MessageEdits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageEdits.swift; sourceTree = "<group>"; };
@@ -3797,6 +3801,10 @@
 		664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareDraft.swift; sourceTree = "<group>"; };
 		664BA84C2BB63102005638E0 /* TSResourceDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceDataSource.swift; sourceTree = "<group>"; };
 		664BA84E2BB632D9005638E0 /* TSAttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentDataSource.swift; sourceTree = "<group>"; };
+		664E8D832BD6D71C00C4968A /* SignalTSAttachmentCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalTSAttachmentCloner.swift; sourceTree = "<group>"; };
+		664E8D852BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloneAsSignalAttachmentRequest.swift; sourceTree = "<group>"; };
+		664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentCloner.swift; sourceTree = "<group>"; };
+		664E8D892BD6DACB00C4968A /* SignalTSResourceCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalTSResourceCloner.swift; sourceTree = "<group>"; };
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
 		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
 		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
@@ -7563,6 +7571,15 @@
 			path = TSResource;
 			sourceTree = "<group>";
 		};
+		664E8D822BD6D70B00C4968A /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				664E8D832BD6D71C00C4968A /* SignalTSAttachmentCloner.swift */,
+				664E8D892BD6DACB00C4968A /* SignalTSResourceCloner.swift */,
+			);
+			path = TSResource;
+			sourceTree = "<group>";
+		};
 		66533E3529B7B53500E8D928 /* WhoAmI */ = {
 			isa = PBXGroup;
 			children = (
@@ -8307,8 +8324,11 @@
 		7255A4C32B98D5A800E95368 /* Attachments */ = {
 			isa = PBXGroup;
 			children = (
+				664E8D822BD6D70B00C4968A /* TSResource */,
+				664E8D852BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift */,
 				66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */,
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
+				664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */,
 			);
 			path = Attachments;
 			sourceTree = "<group>";
@@ -13718,6 +13738,7 @@
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
 				C1EB623C2BADEE56006D99CB /* ChunkedInputStreamTransform.swift in Sources */,
 				C1CF83D02B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift in Sources */,
+				664E8D862BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
 				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
 				66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */,
@@ -14396,6 +14417,7 @@
 				50597BBA2B97C38C004681E1 /* SignalAccountStore.swift in Sources */,
 				7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */,
 				7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */,
+				664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */,
 				F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */,
 				F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */,
 				725465382BA01FAA00EABFD2 /* SignalMessagingJobQueues.swift in Sources */,
@@ -14415,6 +14437,8 @@
 				F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */,
 				C1CD0E3A2A6B0D2700307F1A /* SignalSessionStore.swift in Sources */,
 				C1CD0E382A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift in Sources */,
+				664E8D842BD6D71C00C4968A /* SignalTSAttachmentCloner.swift in Sources */,
+				664E8D8A2BD6DACB00C4968A /* SignalTSResourceCloner.swift in Sources */,
 				F9C5CD42289453B300548EEE /* SignedPrekeyRecord.m in Sources */,
 				F9C5CC51289453B300548EEE /* SMKError.swift in Sources */,
 				F9C5CC53289453B300548EEE /* SMKSecretSessionCipher.swift in Sources */,

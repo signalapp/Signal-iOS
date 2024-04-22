@@ -762,9 +762,13 @@ public class AppSetup {
         )
         let mediaGalleryResourceManager = MediaGalleryResourceManagerImpl()
 
+        let attachmentCloner = SignalAttachmentClonerImpl()
+        let tsResourceCloner = SignalTSResourceClonerImpl(attachmentCloner: attachmentCloner)
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             appExpiry: appExpiry,
+            attachmentCloner: attachmentCloner,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
@@ -836,6 +840,7 @@ public class AppSetup {
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
+            tsResourceCloner: tsResourceCloner,
             tsResourceDownloadManager: tsResourceDownloadManager,
             tsResourceManager: tsResourceManager,
             tsResourceStore: tsResourceStore,
