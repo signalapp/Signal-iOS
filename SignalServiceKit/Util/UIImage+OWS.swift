@@ -19,6 +19,21 @@ extension UIImage {
         }
     }
 
+    @objc(normalizedImage)
+    public func normalized() -> UIImage {
+        guard imageOrientation != .up else {
+            return self
+        }
+
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = scale
+        format.opaque = false
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { context in
+            self.draw(in: CGRect(origin: CGPoint.zero, size: size))
+        }
+    }
+
     public func withCornerRadius(_ cornerRadius: CGFloat) -> UIImage? {
         let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: size)
         UIGraphicsBeginImageContextWithOptions(size, false, 1)

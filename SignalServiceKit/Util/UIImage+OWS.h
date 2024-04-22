@@ -7,7 +7,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIImage (normalizeImage)
 
-- (UIImage *)normalizedImage;
 - (UIImage *)resizedWithQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate;
 
 - (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints;
