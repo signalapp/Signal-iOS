@@ -161,12 +161,12 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         let location0 = location(ofTouch: 0, in: referenceView)
         let location1 = location(ofTouch: 1, in: referenceView)
 
-        let centroid = CGPointScale(CGPointAdd(location0, location1), 0.5)
+        let centroid = CGPoint.scale(CGPoint.add(location0, location1), factor: 0.5)
         let distance = location0.distance(location1)
 
         // The valence of the angle doesn't matter; we're only going to be using
         // changes to the angle.
-        let delta = CGPointSubtract(location1, location0)
+        let delta = CGPoint.subtract(location1, location0)
         let angleRadians = atan2(delta.y, delta.x)
         return ImageEditorPinchState(centroid: centroid,
                                      distance: distance,
@@ -187,10 +187,10 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         var sum = CGPoint.zero
         for touch in touches {
             let location = touch.location(in: view)
-            sum = CGPointAdd(sum, location)
+            sum = CGPoint.add(sum, location)
         }
 
-        let centroid = CGPointScale(sum, 1 / CGFloat(touches.count))
+        let centroid = CGPoint.scale(sum, factor: 1 / CGFloat(touches.count))
         return centroid
     }
 }

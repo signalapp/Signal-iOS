@@ -1667,7 +1667,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         // Fade out the voice message views as the cancel gesture
         // proceeds as feedback.
-        voiceMemoCancelLabel?.alpha = CGFloatClamp01(1 - cancelAlpha)
+        voiceMemoCancelLabel?.alpha = CGFloat.clamp01(1 - cancelAlpha)
     }
 
     @objc
@@ -2124,10 +2124,10 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         contentSize.height += textView.textContainerInset.top
         contentSize.height += textView.textContainerInset.bottom
 
-        let newHeight = CGFloatClamp(
+        let newHeight = CGFloat.clamp(
             contentSize.height,
-            LayoutMetrics.minTextViewHeight,
-            UIDevice.current.isIPad ? LayoutMetrics.maxIPadTextViewHeight : LayoutMetrics.maxTextViewHeight
+            min: LayoutMetrics.minTextViewHeight,
+            max: UIDevice.current.isIPad ? LayoutMetrics.maxIPadTextViewHeight : LayoutMetrics.maxTextViewHeight
         )
 
         guard newHeight != textViewHeight else { return }

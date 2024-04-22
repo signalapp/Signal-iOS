@@ -76,7 +76,7 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
 
         case .changed:
             let offset = gestureRecognizer.translation(in: coordinateSpace)
-            let progress = CGFloatClamp01(offset.length / Self.distanceToCompletion)
+            let progress = CGFloat.clamp01(offset.length / Self.distanceToCompletion)
             update(progress)
 
             interactiveDismissDelegate?.interactiveDismiss(self, didChangeProgress: progress, touchOffset: offset)

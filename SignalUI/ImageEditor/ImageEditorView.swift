@@ -381,12 +381,12 @@ class ImageEditorView: UIView {
                                                                               model: model,
                                                                               transform: model.currentTransform())
             let gestureDeltaImageUnit = gestureNowImageUnit.minus(gestureStartImageUnit)
-            let unitCenter = CGPointClamp01(item.unitCenter.plus(gestureDeltaImageUnit))
+            let unitCenter = CGPoint.clamp01(item.unitCenter.plus(gestureDeltaImageUnit))
 
             // NOTE: We use max(1, ...) to avoid divide-by-zero.
-            let newScaling = CGFloatClamp(item.scaling * gestureRecognizer.pinchStateLast.distance / max(1.0, gestureRecognizer.pinchStateStart.distance),
-                                          ImageEditorTextItem.kMinScaling,
-                                          ImageEditorTextItem.kMaxScaling)
+            let newScaling = CGFloat.clamp(item.scaling * gestureRecognizer.pinchStateLast.distance / max(1.0, gestureRecognizer.pinchStateStart.distance),
+                                           min: ImageEditorTextItem.kMinScaling,
+                                           max: ImageEditorTextItem.kMaxScaling)
 
             let newRotationRadians = item.rotationRadians + gestureRecognizer.pinchStateLast.angleRadians - gestureRecognizer.pinchStateStart.angleRadians
 
@@ -489,7 +489,7 @@ class ImageEditorView: UIView {
                                                                         model: model,
                                                                         transform: model.currentTransform())
             let gestureDeltaImageUnit = gestureNowImageUnit.minus(gestureStartImageUnit)
-            let unitCenter = CGPointClamp01(movingTextStartUnitCenter.plus(gestureDeltaImageUnit))
+            let unitCenter = CGPoint.clamp01(movingTextStartUnitCenter.plus(gestureDeltaImageUnit))
             let newItem = item.copy(unitCenter: unitCenter)
 
             if movingTextHasMoved {

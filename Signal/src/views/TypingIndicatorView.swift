@@ -179,9 +179,9 @@ class TypingIndicatorView: ManualStackView {
             var animationDuration: CFTimeInterval = 0
 
             let addDotKeyFrame = { (keyFrameTime: CFTimeInterval, progress: CGFloat) in
-                let dotColor = baseColor.withAlphaComponent(CGFloatLerp(0.4, 1.0, CGFloatClamp01(progress)))
+                let dotColor = baseColor.withAlphaComponent(CGFloat.lerp(left: 0.4, right: 1.0, alpha: CGFloat.clamp01(progress)))
                 colorValues.append(dotColor.cgColor)
-                let radius = CGFloatLerp(TypingIndicatorView.kMinRadiusPt, TypingIndicatorView.kMaxRadiusPt, CGFloatClamp01(progress))
+                let radius = CGFloat.lerp(left: TypingIndicatorView.kMinRadiusPt, right: TypingIndicatorView.kMaxRadiusPt, alpha: CGFloat.clamp01(progress))
                 let margin = (TypingIndicatorView.kMaxRadiusPt - radius) * 0.5
                 let bezierPath = UIBezierPath(ovalIn: CGRect(x: margin, y: margin, width: radius, height: radius))
                 pathValues.append(bezierPath.cgPath)

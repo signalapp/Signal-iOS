@@ -616,7 +616,7 @@ class ImageEditorCropViewController: OWSViewController {
         let locationNow = gestureRecognizer.location(in: clipView)
 
         // Crop pan gesture
-        let locationDelta = CGPointSubtract(locationNow, locationStart)
+        let locationDelta = CGPoint.subtract(locationNow, locationStart)
 
         let cropRectangleStart = clipView.bounds
         var cropRectangleNow = cropRectangleStart
@@ -675,8 +675,8 @@ class ImageEditorCropViewController: OWSViewController {
         let viewBounds = clipView.bounds
 
         // TODO: The output size should be rounded, although this can cause crop to be slightly not WYSIWYG.
-        let croppedOutputSizePixels = CGSizeRound(CGSize(width: transform.outputSizePixels.width * cropRect.width / viewBounds.width,
-                                                         height: transform.outputSizePixels.height * cropRect.height / viewBounds.height))
+        let croppedOutputSizePixels = CGSize.round(CGSize(width: transform.outputSizePixels.width * cropRect.width / viewBounds.width,
+                                                          height: transform.outputSizePixels.height * cropRect.height / viewBounds.height))
 
         // We need to update the transform's unitTranslation and scaling properties
         // to reflect the crop.

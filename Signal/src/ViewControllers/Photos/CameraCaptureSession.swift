@@ -627,7 +627,7 @@ class CameraCaptureSession: NSObject {
                 return
             }
 
-            let zoomFactor = CGFloatLerp(self.initialSlideZoomFactor!, self.maximumZoomFactor(forDevice: captureDevice), alpha)
+            let zoomFactor = CGFloat.lerp(left: self.initialSlideZoomFactor!, right: self.maximumZoomFactor(forDevice: captureDevice), alpha: alpha)
             self.update(captureDevice: captureDevice, zoomFactor: zoomFactor)
         }
     }

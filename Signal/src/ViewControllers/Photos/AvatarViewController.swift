@@ -15,7 +15,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         let currentScale = avatarImage.scale
         let desiredScale = UIScreen.main.scale
         let factor = currentScale / desiredScale
-        return CGSizeScale(avatarImage.size, factor)
+        return CGSize.scale(avatarImage.size, factor: factor)
     }
 
     private let imageView: UIImageView = {

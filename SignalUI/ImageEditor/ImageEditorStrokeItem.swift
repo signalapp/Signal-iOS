@@ -82,6 +82,6 @@ class ImageEditorStrokeItem: ImageEditorItem {
     }
 
     class func strokeWidth(forUnitStrokeWidth unitStrokeWidth: CGFloat, dstSize: CGSize) -> CGFloat {
-        return CGFloatClamp01(unitStrokeWidth) * min(dstSize.width, dstSize.height)
+        return CGFloat.clamp01(unitStrokeWidth) * min(dstSize.width, dstSize.height)
     }
 }

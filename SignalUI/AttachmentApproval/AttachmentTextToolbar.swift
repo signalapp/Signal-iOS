@@ -200,7 +200,7 @@ class AttachmentTextToolbar: UIView {
     private func clampedHeight(for textView: UITextView) -> CGFloat {
         let fixedWidth = textView.width
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        return CGFloatClamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
+        return CGFloat.clamp(contentSize.height, min: kMinTextViewHeight, max: maxTextViewHeight)
     }
 
     // MARK: - Subviews

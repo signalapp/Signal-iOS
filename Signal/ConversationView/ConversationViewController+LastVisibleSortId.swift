@@ -126,7 +126,7 @@ extension ConversationViewController {
 
         // Distance between top edge of cell's frame and the bottom of the content frame
         let heightAboveBottom = contentFrameInPrimaryCoordinateSpace.maxY - cellFrameInPrimaryCoordinateSpace.minY
-        return CGFloatClamp01(heightAboveBottom / cellFrameInPrimaryCoordinateSpace.height)
+        return CGFloat.clamp01(heightAboveBottom / cellFrameInPrimaryCoordinateSpace.height)
     }
 
     struct RenderItemReference {

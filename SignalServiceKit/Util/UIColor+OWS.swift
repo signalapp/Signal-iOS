@@ -24,11 +24,11 @@ public extension UIColor {
         let result1 = otherColor.getRed(&r1, green: &g1, blue: &b1, alpha: &a1)
         assert(result1)
 
-        let alpha = CGFloatClamp01(alphaParam)
-        return UIColor(red: CGFloatLerp(r0, r1, alpha),
-                       green: CGFloatLerp(g0, g1, alpha),
-                       blue: CGFloatLerp(b0, b1, alpha),
-                       alpha: CGFloatLerp(a0, a1, alpha))
+        let alpha = CGFloat.clamp01(alphaParam)
+        return UIColor(red: CGFloat.lerp(left: r0, right: r1, alpha: alpha),
+                       green: CGFloat.lerp(left: g0, right: g1, alpha: alpha),
+                       blue: CGFloat.lerp(left: b0, right: b1, alpha: alpha),
+                       alpha: CGFloat.lerp(left: a0, right: a1, alpha: alpha))
 
     }
 }

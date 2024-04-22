@@ -104,7 +104,7 @@ public class VideoPlayerView: UIView {
             .map { (assetTrack: AVAssetTrack) -> CGSize in
                 assetTrack.naturalSize.applying(assetTrack.preferredTransform).abs
             }.reduce(.zero) {
-                CGSizeMax($0, $1)
+                CGSize.max($0, $1)
             }
     }
 

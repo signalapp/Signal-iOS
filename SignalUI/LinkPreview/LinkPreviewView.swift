@@ -944,7 +944,7 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
         let rawImageHeight = maxMessageWidth * imageHeightWidthRatio
 
         let normalizedHeight: CGFloat = min(maxImageHeight, max(minImageHeight, rawImageHeight))
-        return CGSizeCeil(CGSize(width: maxMessageWidth, height: normalizedHeight))
+        return CGSize.ceil(CGSize(width: maxMessageWidth, height: normalizedHeight))
     }
 }
 

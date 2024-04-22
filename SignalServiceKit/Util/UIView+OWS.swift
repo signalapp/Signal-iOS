@@ -66,19 +66,19 @@ public extension CGPoint {
     }
 
     func plus(_ value: CGPoint) -> CGPoint {
-        CGPointAdd(self, value)
+        CGPoint.add(self, value)
     }
 
     func plusX(_ value: CGFloat) -> CGPoint {
-        CGPointAdd(self, CGPoint(x: value, y: 0))
+        CGPoint.add(self, CGPoint(x: value, y: 0))
     }
 
     func plusY(_ value: CGFloat) -> CGPoint {
-        CGPointAdd(self, CGPoint(x: 0, y: value))
+        CGPoint.add(self, CGPoint(x: 0, y: value))
     }
 
     func minus(_ value: CGPoint) -> CGPoint {
-        CGPointSubtract(self, value)
+        CGPoint.subtract(self, value)
     }
 
     func times(_ value: CGFloat) -> CGPoint {
@@ -173,15 +173,15 @@ public extension CGSize {
     }
 
     var ceil: CGSize {
-        CGSizeCeil(self)
+        CGSize.ceil(self)
     }
 
     var floor: CGSize {
-        CGSizeFloor(self)
+        CGSize.floor(self)
     }
 
     var round: CGSize {
-        CGSizeRound(self)
+        CGSize.round(self)
     }
 
     var abs: CGSize {
@@ -205,7 +205,7 @@ public extension CGSize {
     }
 
     func plus(_ value: CGSize) -> CGSize {
-        CGSizeAdd(self, value)
+        CGSize.add(self, value)
     }
 
     func max(_ other: CGSize) -> CGSize {

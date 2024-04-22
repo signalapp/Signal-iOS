@@ -7,11 +7,11 @@ import Foundation
 
 public extension CGFloat {
     func clamp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
-        return CGFloatClamp(self, minValue, maxValue)
+        return CGFloat.clamp(self, min: minValue, max: maxValue)
     }
 
     func clamp01() -> CGFloat {
-        return CGFloatClamp01(self)
+        return CGFloat.clamp01(self)
     }
 
     /// Returns a random value within the specified range with a fixed number of discrete choices.
@@ -39,13 +39,13 @@ public extension CGFloat {
 
     // Linear interpolation
     func lerp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
-        return CGFloatLerp(minValue, maxValue, self)
+        return CGFloat.lerp(left: minValue, right: maxValue, alpha: self)
     }
 
     // Inverse linear interpolation
     func inverseLerp(_ minValue: CGFloat, _ maxValue: CGFloat, shouldClamp: Bool = false) -> CGFloat {
-        let value = CGFloatInverseLerp(self, minValue, maxValue)
-        return (shouldClamp ? CGFloatClamp01(value) : value)
+        let value = CGFloat.inverseLerp(self, min: minValue, max: maxValue)
+        return (shouldClamp ? CGFloat.clamp01(value) : value)
     }
 
     static let halfPi: CGFloat = CGFloat.pi * 0.5

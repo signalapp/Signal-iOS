@@ -218,7 +218,7 @@ public extension UIView {
     @discardableResult
     func autoPin(toAspectRatio ratio: CGFloat, relation: NSLayoutConstraint.Relation = .equal) -> NSLayoutConstraint {
         // Clamp to ensure view has reasonable aspect ratio.
-        let clampedRatio: CGFloat = CGFloatClamp(ratio, 0.05, 95.0)
+        let clampedRatio: CGFloat = CGFloat.clamp(ratio, min: 0.05, max: 95.0)
         if clampedRatio != ratio {
             owsFailDebug("Invalid aspect ratio: \(ratio) for view: \(self)")
         }

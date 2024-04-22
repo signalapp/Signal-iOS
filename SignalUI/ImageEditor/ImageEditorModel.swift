@@ -333,7 +333,7 @@ class ImageEditorModel: NSObject {
         context.interpolationQuality = .high
 
         // Draw source image.
-        let dstFrame = CGRect(origin: CGPointInvert(cropRect.origin), size: srcImageSize)
+        let dstFrame = CGRect(origin: CGPoint.invert(cropRect.origin), size: srcImageSize)
         srcImage.draw(in: dstFrame)
 
         let dstImage = UIGraphicsGetImageFromCurrentImageContext()

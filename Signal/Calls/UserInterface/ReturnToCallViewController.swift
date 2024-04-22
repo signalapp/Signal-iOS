@@ -143,7 +143,7 @@ public class ReturnToCallViewController: UIViewController {
     // MARK: -
 
     private func updateLocalVideoFrame() {
-        let localVideoSize = CGSizeScale(Self.inherentPipSize, 0.3)
+        let localVideoSize = CGSize.scale(Self.inherentPipSize, factor: 0.3)
         callViewController?.localVideoViewReference.frame = CGRect(
             origin: CGPoint(
                 x: Self.inherentPipSize.width - 6 - localVideoSize.width,

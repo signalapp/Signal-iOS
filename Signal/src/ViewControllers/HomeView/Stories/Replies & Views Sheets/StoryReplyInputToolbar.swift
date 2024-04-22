@@ -333,7 +333,7 @@ class StoryReplyInputToolbar: UIView {
         }
 
         let contentSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: .greatestFiniteMagnitude))
-        let newHeight = CGFloatClamp(contentSize.height, minTextViewHeight, maxTextViewHeight)
+        let newHeight = CGFloat.clamp(contentSize.height, min: minTextViewHeight, max: maxTextViewHeight)
         guard textViewHeightConstraint.constant != newHeight else { return }
 
         if let superview {

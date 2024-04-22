@@ -304,7 +304,7 @@ class AudioMessageView: ManualStackView {
 
     func progressForLocation(_ point: CGPoint) -> CGFloat {
         let sliderContainer = convert(waveformProgress.frame, from: waveformProgress.superview)
-        let newRatio = CGFloatInverseLerp(point.x, sliderContainer.minX, sliderContainer.maxX).clamp01()
+        let newRatio = CGFloat.inverseLerp(point.x, min: sliderContainer.minX, max: sliderContainer.maxX).clamp01()
         return newRatio.clamp01()
     }
 

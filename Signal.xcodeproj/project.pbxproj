@@ -1181,6 +1181,7 @@
 		7255A4D12B98E2B700E95368 /* LogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */; };
 		7255A4D22B98E2B700E95368 /* ScrubbingLogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962FF4829AD0C7C00AFA397 /* ScrubbingLogFormatter.swift */; };
 		7255A4D42B98E36900E95368 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768F720C2A22CEAC002C4E7D /* Preferences.swift */; };
+		72B4819D2BD60FDF008B8BA1 /* OWSMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */; };
 		72C905892B9A28BF00E586B8 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7634F08C2A21963600BB93D5 /* Sounds.swift */; };
 		72C9058A2B9A293300E586B8 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
 		72C9058B2B9A298100E586B8 /* MessageRequestPendingReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */; };
@@ -2542,7 +2543,6 @@
 		F9C5CDCC289453B400548EEE /* OWSFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFA289453B200548EEE /* OWSFileSystem.m */; };
 		F9C5CDCD289453B400548EEE /* ParamParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFB289453B200548EEE /* ParamParser.swift */; };
 		F9C5CDCE289453B400548EEE /* TestModel+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFC289453B200548EEE /* TestModel+SDS.swift */; };
-		F9C5CDCF289453B400548EEE /* OWSMath.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAFD289453B200548EEE /* OWSMath.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDD0289453B400548EEE /* OWSUserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */; };
 		F9C5CDD1289453B400548EEE /* NSTimer+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFF289453B200548EEE /* NSTimer+OWS.m */; };
 		F9C5CDD2289453B400548EEE /* AppContext.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB00289453B200548EEE /* AppContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -4052,6 +4052,7 @@
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		721BC7EB2BC8253600648981 /* MimeTypeUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MimeTypeUtil.swift; sourceTree = "<group>"; };
 		7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserDisplayMode.swift; sourceTree = "<group>"; };
+		72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMath.swift; sourceTree = "<group>"; };
 		741B66EF7DCE5EF90200211D /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackControls.swift; sourceTree = "<group>"; };
 		760981872936DE90008F8300 /* BezierPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierPathView.swift; sourceTree = "<group>"; };
@@ -5530,7 +5531,6 @@
 		F9C5CAFA289453B200548EEE /* OWSFileSystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFileSystem.m; sourceTree = "<group>"; };
 		F9C5CAFB289453B200548EEE /* ParamParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParamParser.swift; sourceTree = "<group>"; };
 		F9C5CAFC289453B200548EEE /* TestModel+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TestModel+SDS.swift"; sourceTree = "<group>"; };
-		F9C5CAFD289453B200548EEE /* OWSMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMath.h; sourceTree = "<group>"; };
 		F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSUserProfile.swift; sourceTree = "<group>"; };
 		F9C5CAFF289453B200548EEE /* NSTimer+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+OWS.m"; sourceTree = "<group>"; };
 		F9C5CB00289453B200548EEE /* AppContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppContext.h; sourceTree = "<group>"; };
@@ -11234,7 +11234,7 @@
 				F9C5CAFA289453B200548EEE /* OWSFileSystem.m */,
 				F9C5CB05289453B200548EEE /* OWSFileSystem.swift */,
 				F9C5CB48289453B200548EEE /* OWSFormat.swift */,
-				F9C5CAFD289453B200548EEE /* OWSMath.h */,
+				72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */,
 				F9C5CB01289453B200548EEE /* OWSOperation.h */,
 				F9C5CB3F289453B200548EEE /* OWSOperation.m */,
 				F9C5CB0A289453B200548EEE /* OWSOperation.swift */,
@@ -11443,7 +11443,6 @@
 				50B815862A5E15390009D42D /* OWSIdentity.h in Headers */,
 				6605D4FC2A85AD0B004DC345 /* OWSIncomingPaymentMessage.h in Headers */,
 				F9C5CD02289453B300548EEE /* OWSLinkedDeviceReadReceipt.h in Headers */,
-				F9C5CDCF289453B400548EEE /* OWSMath.h in Headers */,
 				F9C5CC3E289453B300548EEE /* OWSMessageContentJob.h in Headers */,
 				F9C5CC45289453B300548EEE /* OWSMessageHandler.h in Headers */,
 				F9C5CD92289453B300548EEE /* OWSMultipart.h in Headers */,
@@ -14143,6 +14142,7 @@
 				6619A1C72B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift in Sources */,
 				F9C5CD0D289453B300548EEE /* OWSLinkedDeviceReadReceipt.m in Sources */,
 				F9C5CBD7289453B300548EEE /* OWSLinkPreview.swift in Sources */,
+				72B4819D2BD60FDF008B8BA1 /* OWSMath.swift in Sources */,
 				F9C5CC75289453B300548EEE /* OWSMediaUtils.swift in Sources */,
 				F9C5CC56289453B300548EEE /* OWSMessageContentJob+SDS.swift in Sources */,
 				F9C5CC8D289453B300548EEE /* OWSMessageContentJob.m in Sources */,

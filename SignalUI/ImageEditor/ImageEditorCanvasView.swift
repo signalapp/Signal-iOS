@@ -795,18 +795,18 @@ class ImageEditorCanvasView: UIView {
             } else if index == 0 {
                 // First sample.
                 let nextPoint = points[index + 1]
-                forwardVector = CGPointSubtract(nextPoint, point)
+                forwardVector = CGPoint.subtract(nextPoint, point)
             } else if index == points.count - 1 {
                 // Last sample.
                 let previousPoint = points[index - 1]
-                forwardVector = CGPointSubtract(point, previousPoint)
+                forwardVector = CGPoint.subtract(point, previousPoint)
             } else {
                 // Middle samples.
                 let previousPoint = points[index - 1]
-                let previousPointForwardVector = CGPointSubtract(point, previousPoint)
+                let previousPointForwardVector = CGPoint.subtract(point, previousPoint)
                 let nextPoint = points[index + 1]
-                let nextPointForwardVector = CGPointSubtract(nextPoint, point)
-                forwardVector = CGPointScale(CGPointAdd(previousPointForwardVector, nextPointForwardVector), 0.5)
+                let nextPointForwardVector = CGPoint.subtract(nextPoint, point)
+                forwardVector = CGPoint.scale(CGPoint.add(previousPointForwardVector, nextPointForwardVector), factor: 0.5)
             }
 
             if index == 0 {
@@ -830,8 +830,8 @@ class ImageEditorCanvasView: UIView {
                 //
                 // TODO: Tune this variable once we have stroke input.
                 let controlPointFactor: CGFloat = 0.25
-                let controlPoint1 = CGPointAdd(previousPoint, CGPointScale(previousForwardVector, +controlPointFactor))
-                let controlPoint2 = CGPointAdd(point, CGPointScale(forwardVector, -controlPointFactor))
+                let controlPoint1 = CGPoint.add(previousPoint, CGPoint.scale(previousForwardVector, factor: +controlPointFactor))
+                let controlPoint2 = CGPoint.add(point, CGPoint.scale(forwardVector, factor: -controlPointFactor))
                 // We're using Cubic curves.
                 bezierPath.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
             }
@@ -1201,9 +1201,9 @@ class ImageEditorCanvasView: UIView {
                 let lastPoint = points[index - 1]
                 let nextPoint = points[index + 1]
                 let alpha: CGFloat = 0.1
-                let smoothedPoint = CGPointAdd(CGPointScale(point, 1.0 - 2.0 * alpha),
-                                               CGPointAdd(CGPointScale(lastPoint, alpha),
-                                                          CGPointScale(nextPoint, alpha)))
+                let smoothedPoint = CGPoint.add(CGPoint.scale(point, factor: 1.0 - 2.0 * alpha),
+                                                CGPoint.add(CGPoint.scale(lastPoint, factor: alpha),
+                                                            CGPoint.scale(nextPoint, factor: alpha)))
                 result.append(smoothedPoint)
             }
         }

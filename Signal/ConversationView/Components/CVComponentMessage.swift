@@ -2482,7 +2482,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var iconAlpha: CGFloat = 1
         let useSwipeFadeTransition = isBorderless
         if useSwipeFadeTransition {
-            iconAlpha = CGFloatInverseLerp(alpha, 0, swipeActionOffsetThreshold).clamp01()
+            iconAlpha = CGFloat.inverseLerp(alpha, min: 0, max: swipeActionOffsetThreshold).clamp01()
         }
 
         let animations = {

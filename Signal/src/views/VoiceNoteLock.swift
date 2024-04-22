@@ -42,7 +42,7 @@ class VoiceMemoLockView: UIView {
     // MARK: -
 
     func update(ratioComplete: CGFloat) {
-        offsetConstraint.constant = CGFloatLerp(0, chevronTravel, ratioComplete)
+        offsetConstraint.constant = CGFloat.lerp(left: 0, right: chevronTravel, alpha: ratioComplete)
     }
 
     // MARK: - Subviews

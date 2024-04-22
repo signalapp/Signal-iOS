@@ -192,11 +192,11 @@ private class ContextMenuHostView: UIView {
             let scaleFactor = max((targetHeight / previewFrame.height), minPreviewScaleFactor)
             if previewViewAlignment == .right {
                 let oldWidth = previewFrame.width
-                previewFrame.size = CGSizeScale(previewFrame.size, scaleFactor)
+                previewFrame.size = CGSize.scale(previewFrame.size, factor: scaleFactor)
                 previewFrame.origin.x += oldWidth - previewFrame.width
                 previewWidthAdjustment = oldWidth - previewFrame.width
             } else {
-                previewFrame.size = CGSizeScale(previewFrame.size, scaleFactor)
+                previewFrame.size = CGSize.scale(previewFrame.size, factor: scaleFactor)
             }
         }
 
@@ -208,10 +208,10 @@ private class ContextMenuHostView: UIView {
             let scaleFactor = max((targetWidth / previewFrame.width), minPreviewScaleFactor)
             if previewViewAlignment == .right {
                 let oldWidth = previewFrame.width
-                previewFrame.size = CGSizeScale(previewFrame.size, scaleFactor)
+                previewFrame.size = CGSize.scale(previewFrame.size, factor: scaleFactor)
                 previewFrame.origin.x += oldWidth - previewFrame.width
             } else {
-                previewFrame.size = CGSizeScale(previewFrame.size, scaleFactor)
+                previewFrame.size = CGSize.scale(previewFrame.size, factor: scaleFactor)
             }
         }
 
@@ -226,10 +226,10 @@ private class ContextMenuHostView: UIView {
         let auxSourceFrame = auxPreviewSourceFrame
         let previewSourceFrame = previewSourceFrame
         let scaleFactor = previewFrame.width / previewSourceFrame.width
-        let originOffset = CGPointScale(CGPointSubtract(auxSourceFrame.origin, previewSourceFrame.origin), scaleFactor)
+        let originOffset = CGPoint.scale(CGPoint.subtract(auxSourceFrame.origin, previewSourceFrame.origin), factor: scaleFactor)
         var frame = auxView.frame
-        frame.origin = CGPointAdd(originOffset, previewFrame.origin)
-        frame.size = CGSizeScale(auxSourceFrame.size, scaleFactor)
+        frame.origin = CGPoint.add(originOffset, previewFrame.origin)
+        frame.size = CGSize.scale(auxSourceFrame.size, factor: scaleFactor)
         return frame
     }
 

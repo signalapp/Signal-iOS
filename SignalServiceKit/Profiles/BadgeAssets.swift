@@ -197,9 +197,9 @@ extension BadgeAssets {
 
         let imageScale: CGFloat
         switch CGSize(width: rawImage.width, height: rawImage.height) {
-        case CGSizeScale(variant.pointSize, 1.0): imageScale = 1.0
-        case CGSizeScale(variant.pointSize, 2.0): imageScale = 2.0
-        case CGSizeScale(variant.pointSize, 3.0): imageScale = 3.0
+        case CGSize.scale(variant.pointSize, factor: 1.0): imageScale = 1.0
+        case CGSize.scale(variant.pointSize, factor: 2.0): imageScale = 2.0
+        case CGSize.scale(variant.pointSize, factor: 3.0): imageScale = 3.0
         default:
             owsFailDebug("Bad scale")
             return nil
@@ -240,7 +240,7 @@ private class DefaultSpriteSheetParser {
     func copySprite(variant: BadgeAssets.Variant) -> CGImage? {
         // First array element is 1x scale, etc.
         let scaleIndex = scale - 1
-        let pixelSize = CGSizeScale(variant.pointSize, CGFloat(scale))
+        let pixelSize = CGSize.scale(variant.pointSize, factor: CGFloat(scale))
         guard let origin = Self.spriteOrigins[variant]?[scaleIndex] else {
             owsFailDebug("Invalid sprite \(variant) \(scale)")
             return nil

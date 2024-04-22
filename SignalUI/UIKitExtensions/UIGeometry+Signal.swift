@@ -41,8 +41,8 @@ public extension CGFloat {
     // based on screen width, linearly interpolating.
     static func scaleFromIPhone5To7Plus(_ iPhone5Value: CGFloat, _ iPhone7PlusValue: CGFloat) -> CGFloat {
         let shortDimension = CurrentAppContext().frame.size.smallerAxis
-        let alpha = CGFloatClamp01(CGFloatInverseLerp(shortDimension, iPhone5ScreenWidth, iPhone7PlusScreenWidth))
-        return CGFloatLerp(iPhone5Value, iPhone7PlusValue, alpha).rounded()
+        let alpha = CGFloat.clamp01(CGFloat.inverseLerp(shortDimension, min: iPhone5ScreenWidth, max: iPhone7PlusScreenWidth))
+        return CGFloat.lerp(left: iPhone5Value, right: iPhone7PlusValue, alpha: alpha).rounded()
     }
 
     // A convenience method for doing responsive layout. Scales a reference
