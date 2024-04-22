@@ -776,6 +776,7 @@
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */; };
 		661566742BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */; };
+		661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566712BCEDD58003F1647 /* AttachmentMultisend.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */; };
 		6618DF402BBEF56900BCDC06 /* MessageEdits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618DF3F2BBEF56900BCDC06 /* MessageEdits.swift */; };
@@ -3722,6 +3723,7 @@
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRegistrationState.swift; sourceTree = "<group>"; };
 		661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingThreadPickerProgressSheet.swift; sourceTree = "<group>"; };
+		661566712BCEDD58003F1647 /* AttachmentMultisend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
 		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
 		6618DF3F2BBEF56900BCDC06 /* MessageEdits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageEdits.swift; sourceTree = "<group>"; };
@@ -8501,6 +8503,7 @@
 			isa = PBXGroup;
 			children = (
 				663A18A12BCDDC10005C1B41 /* TSResource */,
+				661566712BCEDD58003F1647 /* AttachmentMultisend.swift */,
 			);
 			path = AttachmentMultisend;
 			sourceTree = "<group>";
@@ -12507,6 +12510,7 @@
 				763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */,
 				3402AA4A271D9DCD0084CBAE /* AttachmentApprovalViewController.swift in Sources */,
 				3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */,
+				661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */,
 				3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */,
 				762EBBD02A2FB759002FD28F /* AttachmentSharing.swift in Sources */,
 				3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */,

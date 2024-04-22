@@ -19,7 +19,7 @@ public class TSAttachmentMultisend: Dependencies {
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment]
-    ) -> TSResourceMultisendResult {
+    ) -> AttachmentMultisend.Result {
         let preparedPromise = firstly(on: ThreadUtil.enqueueSendQueue) { () -> Promise<PreparedMultisend> in
             self.prepareForSendingWithSneakyTransaction(
                 conversations: conversations,
@@ -187,7 +187,7 @@ public class TSAttachmentMultisend: Dependencies {
     public class func sendTextAttachment(
         _ textAttachment: UnsentTextAttachment,
         to conversations: [ConversationItem]
-    ) -> TSResourceMultisendResult {
+    ) -> AttachmentMultisend.Result {
         let preparedPromise = firstly(on: ThreadUtil.enqueueSendQueue) { () -> PreparedMultisend in
             try self.prepareForSending(conversations: conversations, textAttachment: textAttachment)
         }
@@ -329,7 +329,7 @@ public class TSAttachmentMultisend: Dependencies {
         return (linkPreview, attachmentUniqueId: attachmentUniqueId)
     }
 
-    private class func sendAttachment(preparedSend: Promise<PreparedMultisend>) -> TSResourceMultisendResult {
+    private class func sendAttachment(preparedSend: Promise<PreparedMultisend>) -> AttachmentMultisend.Result {
         let (enqueuedPromise, enqueuedFuture) = Promise<[TSThread]>.pending()
         let (sentPromise, sentFuture) = Promise<[TSThread]>.pending()
 

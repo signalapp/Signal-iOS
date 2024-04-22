@@ -10,7 +10,7 @@ public enum StorySharing: Dependencies {
         with messageBody: MessageBody,
         linkPreviewDraft: OWSLinkPreviewDraft?,
         to conversations: [ConversationItem]
-    ) -> TSResourceMultisendResult? {
+    ) -> AttachmentMultisend.Result? {
         let storyConversations = conversations.filter { $0.outgoingMessageType == .storyMessage }
         owsAssertDebug(conversations.count == storyConversations.count)
 

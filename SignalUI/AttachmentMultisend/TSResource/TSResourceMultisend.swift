@@ -6,15 +6,6 @@
 import Foundation
 import SignalServiceKit
 
-public struct TSResourceMultisendResult {
-    /// Resolved when the messages are prepared but before uploading/sending.
-    public let preparedPromise: Promise<[PreparedOutgoingMessage]>
-    /// Resolved when sending is durably enqueued but before uploading/sending.
-    public let enqueuedPromise: Promise<[TSThread]>
-    /// Resolved when the message is sent.
-    public let sentPromise: Promise<[TSThread]>
-}
-
 public class TSResourceMultisend {
 
     private init() {}
@@ -23,18 +14,30 @@ public class TSResourceMultisend {
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment]
-    ) -> TSResourceMultisendResult {
-        return TSAttachmentMultisend.sendApprovedMedia(
-            conversations: conversations,
-            approvalMessageBody: approvalMessageBody,
-            approvedAttachments: approvedAttachments
-        )
+    ) -> AttachmentMultisend.Result {
+        if FeatureFlags.newAttachmentsUseV2 {
+            return AttachmentMultisend.sendApprovedMedia(
+                conversations: conversations,
+                approvedMessageBody: approvalMessageBody,
+                approvedAttachments: approvedAttachments
+            )
+        } else {
+            return TSAttachmentMultisend.sendApprovedMedia(
+                conversations: conversations,
+                approvalMessageBody: approvalMessageBody,
+                approvedAttachments: approvedAttachments
+            )
+        }
     }
 
     public class func sendTextAttachment(
         _ textAttachment: UnsentTextAttachment,
         to conversations: [ConversationItem]
-    ) -> TSResourceMultisendResult {
-        return TSAttachmentMultisend.sendTextAttachment(textAttachment, to: conversations)
+    ) -> AttachmentMultisend.Result {
+        if FeatureFlags.newAttachmentsUseV2 {
+            return AttachmentMultisend.sendTextAttachment(textAttachment, to: conversations)
+        } else {
+            return TSAttachmentMultisend.sendTextAttachment(textAttachment, to: conversations)
+        }
     }
 }

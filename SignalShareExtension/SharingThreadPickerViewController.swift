@@ -337,7 +337,7 @@ extension SharingThreadPickerViewController {
     private nonisolated func sendToOutgoingMessageThreads(
         selectedConversations: [ConversationItem],
         messageBlock: @escaping (TSThread, SDSAnyWriteTransaction) throws -> PreparedOutgoingMessage,
-        storySendBlock: (([ConversationItem]) -> TSResourceMultisendResult?)?
+        storySendBlock: (([ConversationItem]) -> AttachmentMultisend.Result?)?
     ) async -> Result<Void, SendError> {
         let conversations = selectedConversations.filter { $0.outgoingMessageType == .message }
 
