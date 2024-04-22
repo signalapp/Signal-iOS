@@ -7,7 +7,6 @@ import Foundation
 import CoreImage
 
 extension UIImage {
-    @objc
     public func withCornerRadius(_ cornerRadius: CGFloat) -> UIImage? {
         let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: size)
         UIGraphicsBeginImageContextWithOptions(size, false, 1)
@@ -16,7 +15,6 @@ extension UIImage {
         return UIGraphicsGetImageFromCurrentImageContext()
     }
 
-    @objc
     public func withTitle(
         _ title: String,
         font: UIFont,
@@ -157,7 +155,6 @@ extension UIImage {
         return blurredImage
     }
 
-    @objc
     public func preloadForRendering() -> UIImage {
         guard let inputCGImage = self.cgImage else {
             owsFailDebug("Unexpected ciImage.")
