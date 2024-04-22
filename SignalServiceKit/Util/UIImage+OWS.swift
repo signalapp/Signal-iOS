@@ -311,10 +311,8 @@ extension UIImage {
         owsAssertDebug(dstSize.width > 0)
         owsAssertDebug(dstSize.height > 0)
 
-        let normalized = normalized()
-
         // Get the size in pixels, not points.
-        let srcSize = CGSize(width: normalized.cgImage?.width ?? 0, height: normalized.cgImage?.height ?? 0)
+        let srcSize = pixelSize
         owsAssertDebug(srcSize.width > 0)
         owsAssertDebug(srcSize.height > 0)
 
