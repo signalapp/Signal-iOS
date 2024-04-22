@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints;
 - (nullable UIImage *)resizedWithMaxDimensionPixels:(CGFloat)maxDimensionPixels;
 - (nullable UIImage *)resizedImageToSize:(CGSize)dstSize;
-- (UIImage *)resizedImageToFillPixelSize:(CGSize)boundingSize;
 
 @end
 

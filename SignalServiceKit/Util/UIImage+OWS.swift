@@ -305,4 +305,38 @@ extension UIImage {
 
         return avatarImage.jpegData(compressionQuality: 0.9)
     }
+
+    @objc
+    public func resizedImage(toFillPixelSize dstSize: CGSize) -> UIImage {
+        owsAssertDebug(dstSize.width > 0)
+        owsAssertDebug(dstSize.height > 0)
+
+        let normalized = normalized()
+
+        // Get the size in pixels, not points.
+        let srcSize = CGSize(width: normalized.cgImage?.width ?? 0, height: normalized.cgImage?.height ?? 0)
+        owsAssertDebug(srcSize.width > 0)
+        owsAssertDebug(srcSize.height > 0)
+
+        let widthRatio = srcSize.width / dstSize.width
+        let heightRatio = srcSize.height / dstSize.height
+        var drawRect: CGRect
+        if widthRatio > heightRatio {
+            let width = dstSize.height * srcSize.width / srcSize.height
+            drawRect = CGRect(x: (width - dstSize.width) * -0.5, y: 0, width: width, height: dstSize.height)
+        } else {
+            let height = dstSize.width * srcSize.height / srcSize.width
+            drawRect = CGRect(x: 0, y: (height - dstSize.height) * -0.5, width: dstSize.width, height: height)
+        }
+
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let renderer = UIGraphicsImageRenderer(size: dstSize)
+        return renderer.image { context in
+            context.cgContext.interpolationQuality = .high
+            draw(in: drawRect)
+        }
+    }
+
 }
