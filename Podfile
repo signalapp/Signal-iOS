@@ -313,11 +313,64 @@ def copy_acknowledgements
     system('plutil', '-insert', 'PreferenceSpecifiers', '-json', output_json, '-append', output_file, exception: true)
   end
 
+  def add_in_repo_third_party_code_licenses(specifiers)
+#    specifiers << {
+#      "Type" => "PSGroupSpecifier",
+#      "Title" => "",
+#      "FooterText" => "",
+#      "License" => "",
+#    }
+     specifiers << {
+       "Type" => "PSGroupSpecifier",
+       "Title" => "UIImage-Resize",
+       "FooterText" => <<~'LICENSE',
+         Without any further information, all the sources provided here are under the MIT License
+         quoted below.
+
+         Anyway, please contact me by email (olivier.halligon+ae@gmail.com) if you plan to use my work and the provided classes
+         in your own software. Thanks.
+
+
+         /***********************************************************************************
+          *
+          * Copyright (c) 2010 Olivier Halligon
+          *
+          * Permission is hereby granted, free of charge, to any person obtaining a copy
+          * of this software and associated documentation files (the "Software"), to deal
+          * in the Software without restriction, including without limitation the rights
+          * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+          * copies of the Software, and to permit persons to whom the Software is
+          * furnished to do so, subject to the following conditions:
+          *
+          * The above copyright notice and this permission notice shall be included in
+          * all copies or substantial portions of the Software.
+          *
+          * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+          * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+          * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+          * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+          * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+          * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+          * THE SOFTWARE.
+          *
+          ***********************************************************************************
+          *
+          * Any comment or suggestion welcome. Referencing this project in your AboutBox is appreciated.
+          * Please tell me if you use this class so we can cross-reference our projects.
+          *
+          ***********************************************************************************/
+       LICENSE
+       "License" => "MIT",
+     }
+  end
+
   specifier_groups = get_specifier_groups(acknowledgements_files)
 
   header_specifier = specifier_groups.first.first
   footer_specifier = specifier_groups.first.last
   all_acknowledgements_specifiers = specifier_groups.flat_map {|g| get_acknowledgements_specifiers(g)}
+
+  add_in_repo_third_party_code_licenses(all_acknowledgements_specifiers)
 
   cleaned_acknowledgements_specifiers = all_acknowledgements_specifiers
     .uniq {|s| s["Title"]}
