@@ -96,8 +96,8 @@ public class DonationCurrencyPickerButton: UIStackView {
             .color(Theme.primaryTextColor)
         ), for: .normal)
 
-        picker.setBackgroundImage(UIImage(color: DonationViewsUtil.bubbleBackgroundColor), for: .normal)
-        picker.setBackgroundImage(UIImage(color: DonationViewsUtil.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
+        picker.setBackgroundImage(UIImage.image(color: DonationViewsUtil.bubbleBackgroundColor), for: .normal)
+        picker.setBackgroundImage(UIImage.image(color: DonationViewsUtil.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
 
         let pillView = PillView()
         pillView.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth

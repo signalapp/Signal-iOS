@@ -213,8 +213,8 @@ public class OWSFlatButton: UIView {
 
     public func setBackgroundColors(upColor: UIColor,
                                     downColor: UIColor ) {
-        button.setBackgroundImage(UIImage(color: upColor), for: .normal)
-        button.setBackgroundImage(UIImage(color: downColor), for: .highlighted)
+        button.setBackgroundImage(UIImage.image(color: upColor), for: .normal)
+        button.setBackgroundImage(UIImage.image(color: downColor), for: .highlighted)
     }
 
     public func setBackgroundColors(upColor: UIColor) {

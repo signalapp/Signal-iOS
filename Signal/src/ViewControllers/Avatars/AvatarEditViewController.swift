@@ -197,7 +197,7 @@ class AvatarEditViewController: OWSTableViewController2 {
                 isEmojiOnly: text.containsOnlyEmoji
             )
             if !headerTextField.isFirstResponder { headerTextField.text = text }
-            headerImageView.image = .init(color: model.theme.backgroundColor)
+            headerImageView.image = .image(color: model.theme.backgroundColor)
         case .image:
             owsFailDebug("Unexpectedly encountered image model")
         }

@@ -111,7 +111,7 @@ public class LocationPicker: UIViewController {
         // When the search bar isn't translucent, it doesn't allow
         // setting the textField's backgroundColor. Instead, we need
         // to use the background image.
-        let backgroundImage = UIImage(
+        let backgroundImage = UIImage.image(
             color: Theme.searchFieldBackgroundColor,
             size: CGSize(square: 36)
         ).withCornerRadius(10)

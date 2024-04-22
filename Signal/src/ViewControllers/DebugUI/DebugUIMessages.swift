@@ -3431,7 +3431,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 message.debugonly_markAsReadNow(transaction: transaction)
 
                 let dataSource = TSResourceDataSource.from(
-                    data: UIImage(color: .blue, size: .square(100)).jpegData(compressionQuality: 0.1)!,
+                    data: UIImage.image(color: .blue, size: .square(100)).jpegData(compressionQuality: 0.1)!,
                     mimeType: "image/jpg",
                     caption: nil,
                     renderingFlag: .default,

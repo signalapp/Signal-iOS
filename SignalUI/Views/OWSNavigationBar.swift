@@ -228,7 +228,7 @@ public class OWSNavigationBar: UINavigationBar {
             // If we can't find the tinting subview (e.g. a new iOS version changed the behavior)
             // We'll make the navbar more translucent by setting a background color.
             let color = navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-            let backgroundImage = UIImage(color: color)
+            let backgroundImage = UIImage.image(color: color)
             self.setBackgroundImage(backgroundImage, for: .default)
         }
     }
@@ -351,11 +351,11 @@ internal struct OWSNavigationBarAppearance: Equatable {
     private var backgroundImage: UIImage? {
         switch backgroundStyle {
         case .blur:
-            return UIImage(color: .clear)
+            return UIImage.image(color: .clear)
         case .tint:
             return nil
         case .image(let color):
-            return UIImage(color: color)
+            return UIImage.image(color: color)
         }
     }
 

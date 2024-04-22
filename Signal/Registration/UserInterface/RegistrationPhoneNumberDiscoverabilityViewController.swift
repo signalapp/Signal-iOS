@@ -260,8 +260,8 @@ private class ButtonRow: UIButton {
     }
 
     public func render() {
-        setBackgroundImage(UIImage(color: Theme.cellSelectedColor), for: .highlighted)
-        setBackgroundImage(UIImage(color: Theme.backgroundColor), for: .normal)
+        setBackgroundImage(UIImage.image(color: Theme.cellSelectedColor), for: .highlighted)
+        setBackgroundImage(UIImage.image(color: Theme.backgroundColor), for: .normal)
 
         buttonLabel.textColor = Theme.primaryTextColor
         buttonLabel.font = .dynamicTypeBodyClamped

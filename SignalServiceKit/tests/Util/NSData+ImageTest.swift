@@ -11,7 +11,7 @@ import XCTest
 class NSDataImageTests: XCTestCase {
 
     func testIsAnimatedPngData_png() {
-        let image = UIImage(color: .red, size: CGSize(width: 1, height: 1))
+        let image = UIImage.image(color: .red, size: CGSize(width: 1, height: 1))
         let data = image.pngData()!
         let isApng = (data as NSData).isAnimatedPngData()
         XCTAssertEqual(isApng?.boolValue, false)

@@ -95,8 +95,8 @@ class EmojiMoodPickerView: UIView {
         let selectedButtonBackground = Theme.accentBlueColor
 
         moodButtons.values.forEach { (button) in
-            button.setBackgroundImage(UIImage(color: defaultButtonBackground), for: .normal)
-            button.setBackgroundImage(UIImage(color: selectedButtonBackground), for: .selected)
+            button.setBackgroundImage(UIImage.image(color: defaultButtonBackground), for: .normal)
+            button.setBackgroundImage(UIImage.image(color: selectedButtonBackground), for: .selected)
         }
     }
 }

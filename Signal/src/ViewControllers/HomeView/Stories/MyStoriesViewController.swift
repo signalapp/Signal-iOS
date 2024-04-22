@@ -467,7 +467,7 @@ class SentStoryCell: UITableViewCell {
 
         saveButton.tintColor = Theme.primaryIconColor
         saveButton.setImage(UIImage(imageLiteralResourceName: "save-20"), for: .normal)
-        saveButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
+        saveButton.setBackgroundImage(UIImage.image(color: Theme.secondaryBackgroundColor), for: .normal)
 
         if item.attachment.isSaveable {
             saveButton.isHiddenInStackView = false
@@ -482,7 +482,7 @@ class SentStoryCell: UITableViewCell {
 
         contextButton.tintColor = Theme.primaryIconColor
         contextButton.setImage(UIImage(imageLiteralResourceName: "more-compact"), for: .normal)
-        contextButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
+        contextButton.setBackgroundImage(UIImage.image(color: Theme.secondaryBackgroundColor), for: .normal)
         contextButton.delegate = contextMenuButtonDelegate
         contextButton.indexPath = indexPath
 

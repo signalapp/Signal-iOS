@@ -266,10 +266,10 @@ class RecentPhotosCollectionView: UICollectionView {
         let button = OWSButton()
 
         let backgroundColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.08)
-        button.setBackgroundImage(UIImage(color: backgroundColor), for: .normal)
+        button.setBackgroundImage(UIImage.image(color: backgroundColor), for: .normal)
 
         let highlightedBgColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.26) : UIColor(white: 0, alpha: 0.18)
-        button.setBackgroundImage(UIImage(color: highlightedBgColor), for: .highlighted)
+        button.setBackgroundImage(UIImage.image(color: highlightedBgColor), for: .highlighted)
 
         button.contentEdgeInsets = UIEdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16)
         button.heightAnchor.constraint(greaterThanOrEqualToConstant: 32).isActive = true

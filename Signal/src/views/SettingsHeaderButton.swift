@@ -32,7 +32,7 @@ class SettingsHeaderButton: OWSButton {
         dimsWhenHighlighted = true
         self.isEnabled = isEnabled
         layer.cornerRadius = 10
-        setBackgroundImage(UIImage(color: backgroundColor), for: .normal)
+        setBackgroundImage(UIImage.image(color: backgroundColor), for: .normal)
         clipsToBounds = true
         accessibilityLabel = text
 

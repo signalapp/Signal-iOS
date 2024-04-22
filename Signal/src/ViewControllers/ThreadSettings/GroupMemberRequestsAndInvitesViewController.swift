@@ -181,7 +181,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         let denyButton = OWSButton()
         denyButton.layer.cornerRadius = buttonHeight / 2
         denyButton.clipsToBounds = true
-        denyButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
+        denyButton.setBackgroundImage(UIImage.image(color: Theme.secondaryBackgroundColor), for: .normal)
         denyButton.setTemplateImageName("x-20", tintColor: Theme.primaryIconColor)
         denyButton.accessibilityIdentifier = "member-request-deny"
         denyButton.block = { [weak self] in
@@ -191,7 +191,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         let approveButton = OWSButton()
         approveButton.layer.cornerRadius = buttonHeight / 2
         approveButton.clipsToBounds = true
-        approveButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
+        approveButton.setBackgroundImage(UIImage.image(color: Theme.secondaryBackgroundColor), for: .normal)
         approveButton.setTemplateImageName("check-20", tintColor: Theme.primaryIconColor)
         approveButton.accessibilityIdentifier = "member-request-approveButton"
         approveButton.block = { [weak self] in

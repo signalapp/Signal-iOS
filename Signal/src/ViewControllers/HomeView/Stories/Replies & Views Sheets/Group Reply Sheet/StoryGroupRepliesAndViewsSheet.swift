@@ -170,7 +170,7 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         button.contentEdgeInsets = UIEdgeInsets(hMargin: 12, vMargin: 4)
         button.setTitle(title, for: .normal)
         button.setTitleColor(Theme.darkThemePrimaryColor, for: .normal)
-        button.setBackgroundImage(UIImage(color: .ows_gray65), for: .selected)
+        button.setBackgroundImage(UIImage.image(color: .ows_gray65), for: .selected)
         return button
     }
 }

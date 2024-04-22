@@ -1577,7 +1577,7 @@ class CameraBottomBar: UIView {
             backgroundColor = .clear
 
             // Use a clear image for the background and the dividers
-            let tintColorImage = UIImage(color: .clear, size: CGSize(width: 1, height: 32))
+            let tintColorImage = UIImage.image(color: .clear, size: CGSize(width: 1, height: 32))
             setBackgroundImage(tintColorImage, for: .normal, barMetrics: .default)
             setDividerImage(tintColorImage, forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
 

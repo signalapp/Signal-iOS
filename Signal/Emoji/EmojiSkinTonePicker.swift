@@ -301,7 +301,7 @@ class EmojiSkinTonePicker: UIView {
         let button = OWSButton { handler(emoji) }
         button.titleLabel?.font = .boldSystemFont(ofSize: 32)
         button.setTitle(emoji.rawValue, for: .normal)
-        button.setBackgroundImage(UIImage(color: Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray25), for: .selected)
+        button.setBackgroundImage(UIImage.image(color: Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray25), for: .selected)
         button.layer.cornerRadius = 6
         button.clipsToBounds = true
         button.autoSetDimensions(to: CGSize(square: 38))

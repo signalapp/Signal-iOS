@@ -41,7 +41,7 @@ class ImageEditorTest: SignalBaseTest {
     }
 
     private func writeDummyImage() -> String {
-        let image = UIImage.init(color: .red, size: CGSize(square: 1))
+        let image = UIImage.image(color: .red, size: CGSize(square: 1))
         guard let data = image.pngData() else {
             owsFail("Couldn't export dummy image.")
         }

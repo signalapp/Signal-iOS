@@ -54,7 +54,7 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
             }),
 
             OWSTableItem(title: "Share UIImage", actionBlock: {
-                let image = UIImage(color: .red, size: .square(1))
+                let image = UIImage.image(color: .red, size: .square(1))
                 AttachmentSharing.showShareUI(for: image)
             }),
             OWSTableItem(title: "Share 2 images", actionBlock: {

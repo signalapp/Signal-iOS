@@ -24,12 +24,12 @@ class BlurredToolbarContainer: UIView {
         if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
             let color = Theme.navbarBackgroundColor
-            let backgroundImage = UIImage(color: color)
+            let backgroundImage = UIImage.image(color: color)
             toolbar.setBackgroundImage(backgroundImage, forToolbarPosition: .any, barMetrics: .default)
         } else {
             // Make navbar more translucent than default. Navbars remove alpha from any assigned backgroundColor, so
             // to achieve transparency, we have to assign a transparent image.
-            toolbar.setBackgroundImage(UIImage(color: .clear), forToolbarPosition: .any, barMetrics: .default)
+            toolbar.setBackgroundImage(UIImage.image(color: .clear), forToolbarPosition: .any, barMetrics: .default)
 
             let blurEffect = Theme.barBlurEffect
 

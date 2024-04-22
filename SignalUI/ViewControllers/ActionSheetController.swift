@@ -444,7 +444,7 @@ public class ActionSheetAction: NSObject {
             style = action.style
             super.init(frame: .zero)
 
-            setBackgroundImage(UIImage(color: Theme.ActionSheet.default.buttonHighlightColor), for: .highlighted)
+            setBackgroundImage(UIImage.image(color: Theme.ActionSheet.default.buttonHighlightColor), for: .highlighted)
 
             [leadingIconView, trailingIconView].forEach { iconView in
                 addSubview(iconView)
@@ -486,7 +486,7 @@ public class ActionSheetAction: NSObject {
 
         public func applyActionSheetTheme(_ theme: Theme.ActionSheet) {
             // Recolor everything based on the requested theme
-            setBackgroundImage(UIImage(color: theme.buttonHighlightColor), for: .highlighted)
+            setBackgroundImage(UIImage.image(color: theme.buttonHighlightColor), for: .highlighted)
 
             leadingIconView.tintColor = theme.buttonTextColor
             trailingIconView.tintColor = theme.buttonTextColor

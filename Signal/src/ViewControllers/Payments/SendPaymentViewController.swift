@@ -633,8 +633,8 @@ public class SendPaymentViewController: OWSViewController {
                 let downStateColor = (Theme.isDarkThemeEnabled
                                         ? UIColor.ows_gray90
                                         : UIColor.ows_gray02)
-                let downStateImage = UIImage(color: downStateColor,
-                                             size: CGSize(width: 1, height: 1))
+                let downStateImage = UIImage.image(color: downStateColor,
+                                                   size: CGSize(width: 1, height: 1))
                 button.setBackgroundImage(downStateImage, for: .highlighted)
 
                 // We clip the button to a circle so that the

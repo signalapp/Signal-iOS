@@ -249,32 +249,6 @@ NS_ASSUME_NONNULL_BEGIN
     return dstImage;
 }
 
-+ (UIImage *)imageWithColor:(UIColor *)color
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(color);
-
-    return [self imageWithColor:color size:CGSizeMake(1.f, 1.f)];
-}
-
-+ (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(color);
-
-    CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
-    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 1.f);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextClearRect(context, rect);
-    CGContextSetFillColorWithColor(context, [color CGColor]);
-    CGContextFillRect(context, rect);
-
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return image;
-}
-
 + (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData
 {
     ImageMetadata *imageMetadata = [avatarData imageMetadataWithPath:nil mimeType:nil];

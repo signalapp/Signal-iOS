@@ -57,7 +57,7 @@ class EmojiPickerSectionToolbar: BlurredToolbarContainer {
             ? (Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_gray05)
             : Theme.backgroundColor
 
-        button.setBackgroundImage(UIImage(color: selectedBackgroundColor), for: .selected)
+        button.setBackgroundImage(UIImage.image(color: selectedBackgroundColor), for: .selected)
 
         button.autoSetDimensions(to: CGSize(square: 30))
         button.layer.cornerRadius = 15

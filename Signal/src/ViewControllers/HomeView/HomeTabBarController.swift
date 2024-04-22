@@ -291,7 +291,7 @@ public class OWSTabBar: UITabBar {
 
         if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
-            self.backgroundImage = UIImage(color: tabBarBackgroundColor)
+            self.backgroundImage = UIImage.image(color: tabBarBackgroundColor)
         } else {
             let blurEffect = Theme.barBlurEffect
 
@@ -332,7 +332,7 @@ public class OWSTabBar: UITabBar {
                 // If we can't find the tinting subview (e.g. a new iOS version changed the behavior)
                 // We'll make the tabBar more translucent by setting a background color.
                 let color = tabBarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-                self.backgroundImage = UIImage(color: color)
+                self.backgroundImage = UIImage.image(color: color)
             }
         }
     }

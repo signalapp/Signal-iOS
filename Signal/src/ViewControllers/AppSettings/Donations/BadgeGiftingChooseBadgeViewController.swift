@@ -241,10 +241,10 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             retryButton.setTitle(CommonStrings.retryButton, for: .normal)
             if Theme.isDarkThemeEnabled {
                 retryButton.setTitleColor(.ows_gray05, for: .normal)
-                retryButton.setBackgroundImage(UIImage.init(color: .ows_gray85), for: .normal)
+                retryButton.setBackgroundImage(UIImage.image(color: .ows_gray85), for: .normal)
             } else {
                 retryButton.setTitleColor(.ows_gray90, for: .normal)
-                retryButton.setBackgroundImage(UIImage.init(color: .ows_gray05), for: .normal)
+                retryButton.setBackgroundImage(UIImage.image(color: .ows_gray05), for: .normal)
             }
             retryButton.contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
             retryButton.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)

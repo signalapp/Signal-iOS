@@ -7,6 +7,18 @@ import Foundation
 import CoreImage
 
 extension UIImage {
+    public static func image(color: UIColor, size: CGSize = CGSize(width: 1, height: 1)) -> UIImage {
+        let rect = CGRect(origin: CGPoint.zero, size: size)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
+        return renderer.image { context in
+            color.setFill()
+            context.fill(rect)
+        }
+    }
+
     public func withCornerRadius(_ cornerRadius: CGFloat) -> UIImage? {
         let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: size)
         UIGraphicsBeginImageContextWithOptions(size, false, 1)

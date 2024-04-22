@@ -185,7 +185,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
             backgroundColor: .ows_accentBlue,
             target: self,
             selector: #selector(didTapPrevious))
-        previousButton.button.setBackgroundImage(UIImage(color: .clear), for: .disabled)
+        previousButton.button.setBackgroundImage(UIImage.image(color: .clear), for: .disabled)
         previousButton.button.setTitleColor(.ows_accentBlue, for: .disabled)
         previousButton.contentEdgeInsets = Constants.buttonEdgeInsets
         return previousButton
@@ -202,7 +202,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
             backgroundColor: .ows_accentBlue,
             target: self,
             selector: #selector(didTapNext))
-        nextButton.button.setBackgroundImage(UIImage(color: .clear), for: .disabled)
+        nextButton.button.setBackgroundImage(UIImage.image(color: .clear), for: .disabled)
         nextButton.button.setTitleColor(.ows_accentBlue, for: .disabled)
         nextButton.contentEdgeInsets = Constants.buttonEdgeInsets
         return nextButton
