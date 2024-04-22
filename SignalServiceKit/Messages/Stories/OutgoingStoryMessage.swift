@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public class OutgoingStoryMessage: TSOutgoingMessage {
@@ -18,22 +19,44 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
     public private(set) var skipSyncTranscript: NSNumber!
 
-    @objc
     public init(
+        thread: TSThread,
+        storyMessage: StoryMessage,
+        storyMessageRowId: Int64,
+        storyAllowsReplies: Bool,
+        isPrivateStorySend: Bool,
+        skipSyncTranscript: Bool,
+        transaction: SDSAnyReadTransaction
+    ) {
+        self.storyMessageId = storyMessage.uniqueId
+        self.storyMessageRowId = storyMessageRowId
+        self.storyAllowsReplies = NSNumber(value: storyAllowsReplies)
+        self.isPrivateStorySend = NSNumber(value: isPrivateStorySend)
+        self.skipSyncTranscript = NSNumber(value: skipSyncTranscript)
+        let builder = TSOutgoingMessageBuilder(thread: thread)
+        builder.timestamp = storyMessage.timestamp
+        super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
+    }
+
+    @objc
+    public convenience init(
         thread: TSThread,
         storyMessage: StoryMessage,
         storyMessageRowId: Int64,
         skipSyncTranscript: Bool = false,
         transaction: SDSAnyReadTransaction
     ) {
-        self.storyMessageId = storyMessage.uniqueId
-        self.storyMessageRowId = storyMessageRowId
-        self.storyAllowsReplies = NSNumber(value: (thread as? TSPrivateStoryThread)?.allowsReplies ?? true)
-        self.isPrivateStorySend = NSNumber(value: thread is TSPrivateStoryThread)
-        self.skipSyncTranscript = NSNumber(value: skipSyncTranscript)
-        let builder = TSOutgoingMessageBuilder(thread: thread)
-        builder.timestamp = storyMessage.timestamp
-        super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
+        let storyAllowsReplies = (thread as? TSPrivateStoryThread)?.allowsReplies ?? true
+        let isPrivateStorySend = thread is TSPrivateStoryThread
+        self.init(
+            thread: thread,
+            storyMessage: storyMessage,
+            storyMessageRowId: storyMessageRowId,
+            storyAllowsReplies: storyAllowsReplies,
+            isPrivateStorySend: isPrivateStorySend,
+            skipSyncTranscript: skipSyncTranscript,
+            transaction: transaction
+        )
     }
 
     required init?(coder: NSCoder) {
@@ -171,34 +194,68 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     /// Additionally, each private story has different levels of permissions. Some may allow replies & reactions
     /// while others do not. Since we convey to the recipient if this is allowed in the sent proto, it's important that
     /// we send to a recipient only from the thread with the most privilege (or randomly select one with equal privilege)
-    public static func dedupePrivateStoryRecipients(for messages: [OutgoingStoryMessage], transaction: SDSAnyWriteTransaction) {
-        // Bucket outgoing messages per recipient and story. We may be sending multiple stories if the user selected multiple attachments.
-        let messagesPerRecipientPerStory = messages.reduce(into: [String: [SignalServiceAddress: [OutgoingStoryMessage]]]()) { result, message in
-            guard message.isPrivateStorySend.boolValue else { return }
-            var messagesByRecipient = result[message.storyMessageId] ?? [:]
-            for address in message.recipientAddresses() {
-                var messages = messagesByRecipient[address] ?? []
-                // Always prioritize sending to stories that allow replies,
-                // we'll later select the first message from this list as
-                // the one to actually send to for a given recipient.
-                if message.storyAllowsReplies.boolValue {
-                    messages.insert(message, at: 0)
-                } else {
-                    messages.append(message)
-                }
-                messagesByRecipient[address] = messages
+    public static func createDedupedOutgoingMessages(
+        for storyMessage: StoryMessage,
+        sendingTo threads: [TSPrivateStoryThread],
+        tx: SDSAnyWriteTransaction
+    ) -> [OutgoingStoryMessage] {
+
+        class OutgoingMessageBuilder {
+            let thread: TSPrivateStoryThread
+            let allowsReplies: Bool
+            var skippedRecipients = Set<SignalServiceAddress>()
+
+            init(thread: TSPrivateStoryThread) {
+                self.thread = thread
+                self.allowsReplies = thread.allowsReplies
             }
-            result[message.storyMessageId] = messagesByRecipient
         }
 
-        for messagesPerRecipient in messagesPerRecipientPerStory.values {
-            for (address, messages) in messagesPerRecipient {
-                // For every message after the first for a given recipient, mark the
-                // recipient as skipped so we don't send them any additional copies.
-                for message in messages.dropFirst() {
-                    message.update(withSkippedRecipient: address, transaction: transaction)
+        var messageBuilders = [OutgoingMessageBuilder]()
+        var perRecipientBuilders = [SignalServiceAddress: OutgoingMessageBuilder]()
+        for thread in threads {
+            let builderForCurrentThread = OutgoingMessageBuilder(thread: thread)
+            for recipient in thread.addresses {
+                // We only want to send one message per recipient,
+                // and it should be the thread with the most privileges.
+                guard let existingBuilderForThisRecipient = perRecipientBuilders[recipient] else {
+                    // If this is the first time we see this recipient, do nothing.
+                    perRecipientBuilders[recipient] = builderForCurrentThread
+                    continue
+                }
+                // Otherwise skip this recipient in the message with _fewer_ privileges.
+                if
+                    !existingBuilderForThisRecipient.allowsReplies,
+                    builderForCurrentThread.allowsReplies
+                {
+                    // Current thread has more privileges, prefer it for this recipient.
+                    existingBuilderForThisRecipient.skippedRecipients.insert(recipient)
+                    perRecipientBuilders[recipient] = builderForCurrentThread
+                } else {
+                    // Existing has more privileges, skip the recipient for the current thread.
+                    builderForCurrentThread.skippedRecipients.insert(recipient)
                 }
             }
+            messageBuilders.append(builderForCurrentThread)
         }
+
+        let outgoingMessages = messageBuilders.enumerated().map { (index, builder) in
+            let message = OutgoingStoryMessage(
+                thread: builder.thread,
+                storyMessage: storyMessage,
+                storyMessageRowId: storyMessage.id!,
+                storyAllowsReplies: builder.allowsReplies,
+                isPrivateStorySend: true,
+                // Only send one sync transcript, even if we're sending to multiple threads
+                skipSyncTranscript: index > 0,
+                transaction: tx
+            )
+            builder.skippedRecipients.forEach {
+                message.update(withSkippedRecipient: $0, transaction: tx)
+            }
+            return message
+        }
+
+        return outgoingMessages
     }
 }

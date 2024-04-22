@@ -957,22 +957,31 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         Logger.info("Resending story message \(timestamp)")
 
-        var messages = [OutgoingStoryMessage]()
-        let threads = threads(transaction: transaction)
-        for (idx, thread) in threads.enumerated() {
-            let message = OutgoingStoryMessage(
-                thread: thread,
-                storyMessage: self,
-                storyMessageRowId: self.id!,
-                // Only send one sync transcript, even if we're sending to multiple threads
-                skipSyncTranscript: idx > 0,
-                transaction: transaction
+        let messages: [OutgoingStoryMessage]
+        if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            messages = [
+                OutgoingStoryMessage(
+                    thread: groupThread,
+                    storyMessage: self,
+                    storyMessageRowId: self.id!,
+                    skipSyncTranscript: false,
+                    transaction: transaction
+                )
+            ]
+        } else {
+            let contexts = Set(recipientStates.values.flatMap({ $0.contexts }))
+            let privateStoryThreads = contexts.compactMap {
+                TSPrivateStoryThread.anyFetchPrivateStoryThread(
+                    uniqueId: $0.uuidString,
+                    transaction: transaction
+                )
+            }
+            messages = OutgoingStoryMessage.createDedupedOutgoingMessages(
+                for: self,
+                sendingTo: privateStoryThreads,
+                tx: transaction
             )
-            messages.append(message)
         }
-
-        // Ensure we only send once per recipient
-        OutgoingStoryMessage.dedupePrivateStoryRecipients(for: messages, transaction: transaction)
 
         // Only send to recipients in the "failed" state
         for (serviceId, state) in recipientStates {
