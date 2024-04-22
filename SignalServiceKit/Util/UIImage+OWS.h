@@ -17,10 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData;
 
-@property (readonly) size_t pixelWidth;
-@property (readonly) size_t pixelHeight;
-@property (readonly) CGSize pixelSize;
-
 @end
 
 NS_ASSUME_NONNULL_END

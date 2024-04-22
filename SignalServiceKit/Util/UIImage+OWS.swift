@@ -225,4 +225,35 @@ extension UIImage {
             return UIImage(cgImage: cgImage, scale: scale, orientation: self.imageOrientation)
         }
     }
+
+    @objc
+    public var pixelWidth: Int {
+        switch imageOrientation {
+        case .up, .down, .upMirrored, .downMirrored:
+            return cgImage?.width ?? 0
+        case .left, .right, .leftMirrored, .rightMirrored:
+            return cgImage?.height ?? 0
+        @unknown default:
+            owsFailDebug("unhandled image orientation: \(imageOrientation)")
+            return 0
+        }
+    }
+
+    @objc
+    public var pixelHeight: Int {
+        switch imageOrientation {
+        case .up, .down, .upMirrored, .downMirrored:
+            return cgImage?.height ?? 0
+        case .left, .right, .leftMirrored, .rightMirrored:
+            return cgImage?.width ?? 0
+        @unknown default:
+            owsFailDebug("unhandled image orientation: \(imageOrientation)")
+            return 0
+        }
+    }
+
+    @objc
+    public var pixelSize: CGSize {
+        CGSize(width: pixelWidth, height: pixelHeight)
+    }
 }

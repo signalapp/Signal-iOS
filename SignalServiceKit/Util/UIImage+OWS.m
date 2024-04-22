@@ -4,6 +4,7 @@
 //
 
 #import "NSData+Image.h"
+#import "SignalServiceKit/SignalServiceKit-Swift.h"
 #import "UIImage+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -280,43 +281,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *jpegData = UIImageJPEGRepresentation(avatarImage, 0.9);
     return jpegData;
-}
-
-- (size_t)pixelWidth
-{
-    switch (self.imageOrientation) {
-        case UIImageOrientationUp:
-        case UIImageOrientationDown:
-        case UIImageOrientationUpMirrored:
-        case UIImageOrientationDownMirrored:
-            return CGImageGetWidth(self.CGImage);
-        case UIImageOrientationLeft:
-        case UIImageOrientationRight:
-        case UIImageOrientationLeftMirrored:
-        case UIImageOrientationRightMirrored:
-            return CGImageGetHeight(self.CGImage);
-    }
-}
-
-- (size_t)pixelHeight
-{
-    switch (self.imageOrientation) {
-        case UIImageOrientationUp:
-        case UIImageOrientationDown:
-        case UIImageOrientationUpMirrored:
-        case UIImageOrientationDownMirrored:
-            return CGImageGetHeight(self.CGImage);
-        case UIImageOrientationLeft:
-        case UIImageOrientationRight:
-        case UIImageOrientationLeftMirrored:
-        case UIImageOrientationRightMirrored:
-            return CGImageGetWidth(self.CGImage);
-    }
-}
-
-- (CGSize)pixelSize
-{
-    return CGSizeMake(self.pixelWidth, self.pixelHeight);
 }
 
 @end
