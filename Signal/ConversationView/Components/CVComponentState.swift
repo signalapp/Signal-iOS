@@ -1026,19 +1026,7 @@ fileprivate extension CVComponentState.Builder {
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
             let renderingFlag = mediaAttachment.reference.renderingFlag
-            if let attachmentPointer = mediaAttachment.attachment.asTransitTierPointer() {
-                switch attachmentPointer.downloadState(tx: transaction.asV2Read) {
-                case .enqueued, .downloading:
-                    return buildViewOnce(viewOnceState: .incomingDownloading(
-                        attachmentPointer: attachmentPointer,
-                        renderingFlag: renderingFlag
-                    ))
-                case .failed, .none:
-                    return buildViewOnce(viewOnceState: .incomingFailed)
-                case .pendingMessageRequest, .pendingManualDownload:
-                    return buildViewOnce(viewOnceState: .incomingPending)
-                }
-            } else if let attachmentStream = mediaAttachment.attachment.asResourceStream() {
+            if let attachmentStream = mediaAttachment.attachment.asResourceStream() {
                 if attachmentStream.computeIsValidVisualMedia()
                     && (
                         MimeTypeUtil.isSupportedImageMimeType(attachmentStream.mimeType)
@@ -1050,6 +1038,18 @@ fileprivate extension CVComponentState.Builder {
                         attachmentStream: attachmentStream,
                         renderingFlag: renderingFlag
                     ))
+                }
+            } else if let attachmentPointer = mediaAttachment.attachment.asTransitTierPointer() {
+                switch attachmentPointer.downloadState(tx: transaction.asV2Read) {
+                case .enqueued, .downloading:
+                    return buildViewOnce(viewOnceState: .incomingDownloading(
+                        attachmentPointer: attachmentPointer,
+                        renderingFlag: renderingFlag
+                    ))
+                case .failed, .none:
+                    return buildViewOnce(viewOnceState: .incomingFailed)
+                case .pendingMessageRequest, .pendingManualDownload:
+                    return buildViewOnce(viewOnceState: .incomingPending)
                 }
             }
 
