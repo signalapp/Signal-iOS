@@ -256,4 +256,38 @@ extension UIImage {
     public var pixelSize: CGSize {
         CGSize(width: pixelWidth, height: pixelHeight)
     }
+
+    public static func validJpegData(fromAvatarData avatarData: Data) -> Data? {
+        let imageMetadata = (avatarData as NSData).imageMetadata(withPath: nil, mimeType: nil)
+        guard imageMetadata.isValid else {
+            return nil
+        }
+
+        // TODO: We might want to raise this value if we ever want to render large contact avatars
+        // on linked devices (e.g. in a call view).  If so, we should also modify `avatarDataForCNContact`
+        // to _not_ use `thumbnailImageData`.  This would make contact syncs much more expensive, however.
+        let maxAvatarDimensionPixels = 600
+        if imageMetadata.imageFormat == .jpeg
+            && imageMetadata.pixelSize.width <= CGFloat(maxAvatarDimensionPixels)
+            && imageMetadata.pixelSize.height <= CGFloat(maxAvatarDimensionPixels) {
+
+            return avatarData
+        }
+
+        guard var avatarImage = UIImage(data: avatarData) else {
+            owsFailDebug("Could not load avatar.")
+            return nil
+        }
+
+        if avatarImage.pixelWidth > maxAvatarDimensionPixels || avatarImage.pixelHeight > maxAvatarDimensionPixels {
+            if let newAvatarImage = avatarImage.resized(withMaxDimensionPixels: CGFloat(maxAvatarDimensionPixels)) {
+                avatarImage = newAvatarImage
+            } else {
+                owsFailDebug("Could not resize avatar.")
+                return nil
+            }
+        }
+
+        return avatarImage.jpegData(compressionQuality: 0.9)
+    }
 }

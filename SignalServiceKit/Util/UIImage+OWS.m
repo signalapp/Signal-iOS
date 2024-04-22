@@ -250,39 +250,6 @@ NS_ASSUME_NONNULL_BEGIN
     return dstImage;
 }
 
-+ (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData
-{
-    ImageMetadata *imageMetadata = [avatarData imageMetadataWithPath:nil mimeType:nil];
-    if (!imageMetadata.isValid) {
-        return nil;
-    }
-
-    // TODO: We might want to raise this value if we ever want to render large contact avatars
-    // on linked devices (e.g. in a call view).  If so, we should also modify `avatarDataForCNContact`
-    // to _not_ use `thumbnailImageData`.  This would make contact syncs much more expensive, however.
-    const CGFloat kMaxAvatarDimensionPixels = 600;
-    if (imageMetadata.imageFormat == ImageFormat_Jpeg && imageMetadata.pixelSize.width <= kMaxAvatarDimensionPixels
-        && imageMetadata.pixelSize.height <= kMaxAvatarDimensionPixels) {
-        return avatarData;
-    }
-
-    UIImage *_Nullable avatarImage = [UIImage imageWithData:avatarData];
-    if (avatarImage == nil) {
-        OWSFailDebug(@"Could not load avatar.");
-        return nil;
-    }
-    if (avatarImage.pixelWidth > kMaxAvatarDimensionPixels || avatarImage.pixelHeight > kMaxAvatarDimensionPixels) {
-        avatarImage = [avatarImage resizedWithMaxDimensionPixels:kMaxAvatarDimensionPixels];
-        if (avatarImage == nil) {
-            OWSFailDebug(@"Could not resize avatar.");
-            return nil;
-        }
-    }
-
-    NSData *jpegData = UIImageJPEGRepresentation(avatarImage, 0.9);
-    return jpegData;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -15,8 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)resizedImageToSize:(CGSize)dstSize;
 - (UIImage *)resizedImageToFillPixelSize:(CGSize)boundingSize;
 
-+ (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData;
-
 @end
 
 NS_ASSUME_NONNULL_END
