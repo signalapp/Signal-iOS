@@ -51,13 +51,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif
 
-#define OWSFailDebugUnlessRunningTests(_messageFormat, ...)                                                            \
-    do {                                                                                                               \
-        if (!CurrentAppContext().isRunningTests) {                                                                     \
-            OWSFailDebug(_messageFormat, ##__VA_ARGS__);                                                               \
-        } else {                                                                                                       \
-            OWSLogError(_messageFormat, ##__VA_ARGS__);                                                                \
-        }                                                                                                              \
-    } while (NO)
-
 NS_ASSUME_NONNULL_END
