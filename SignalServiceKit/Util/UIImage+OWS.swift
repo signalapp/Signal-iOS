@@ -28,7 +28,7 @@ extension UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = scale
         format.opaque = false
-        let renderer = UIGraphicsImageRenderer(size: size)
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
         return renderer.image { context in
             self.draw(in: CGRect(origin: CGPoint.zero, size: size))
         }
@@ -363,7 +363,7 @@ extension UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.opaque = false
         format.scale = scale
-        let renderer = UIGraphicsImageRenderer(size: dstSize)
+        let renderer = UIGraphicsImageRenderer(size: dstSize, format: format)
         return renderer.image { context in
             context.cgContext.interpolationQuality = .high
 
@@ -407,7 +407,7 @@ extension UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1
         format.opaque = false
-        let renderer = UIGraphicsImageRenderer(size: dstSize)
+        let renderer = UIGraphicsImageRenderer(size: dstSize, format: format)
         return renderer.image { context in
             context.cgContext.interpolationQuality = .high
             draw(in: drawRect)
@@ -478,7 +478,7 @@ extension UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1
         format.opaque = false
-        let renderer = UIGraphicsImageRenderer(size: thumbnailSize)
+        let renderer = UIGraphicsImageRenderer(size: thumbnailSize, format: format)
         return renderer.image { context in
             context.cgContext.interpolationQuality = .high
             draw(in: renderRect)
