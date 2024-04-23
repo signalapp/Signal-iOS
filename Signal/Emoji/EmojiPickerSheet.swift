@@ -12,7 +12,10 @@ class EmojiPickerSheet: InteractiveSheetViewController {
     let completionHandler: (EmojiWithSkinTones?) -> Void
 
     let collectionView: EmojiPickerCollectionView
-    lazy var sectionToolbar = EmojiPickerSectionToolbar(delegate: self)
+    lazy var sectionToolbar = EmojiPickerSectionToolbar(
+        delegate: self,
+        forceDarkTheme: self.forceDarkTheme
+    )
 
     let allowReactionConfiguration: Bool
 
@@ -28,24 +31,31 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         let button = UIButton()
 
         button.setImage(Theme.iconImage(.emojiSettings), for: .normal)
-        button.tintColor = Theme.primaryIconColor
+        button.tintColor = self.forceDarkTheme ? Theme.darkThemeNavbarIconColor : Theme.primaryIconColor
 
         button.addTarget(self, action: #selector(didSelectConfigureButton), for: .touchUpInside)
         return button
     }()
 
+    private let forceDarkTheme: Bool
+
     override var sheetBackgroundColor: UIColor {
-        Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+        (Theme.isDarkThemeEnabled || forceDarkTheme) ? .ows_gray80 : .ows_white
     }
 
     init(
         message: TSMessage?,
         allowReactionConfiguration: Bool = true,
+        forceDarkTheme: Bool = false,
         completionHandler: @escaping (EmojiWithSkinTones?) -> Void
     ) {
         self.allowReactionConfiguration = allowReactionConfiguration
+        self.forceDarkTheme = forceDarkTheme
         self.completionHandler = completionHandler
-        self.collectionView = EmojiPickerCollectionView(message: message)
+        self.collectionView = EmojiPickerCollectionView(
+            message: message,
+            forceDarkTheme: forceDarkTheme
+        )
         super.init()
 
         if !allowReactionConfiguration {
@@ -64,6 +74,10 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+
+        if self.forceDarkTheme {
+            self.overrideUserInterfaceStyle = .dark
+        }
 
         let topStackView = UIStackView()
         topStackView.axis = .horizontal

@@ -76,7 +76,14 @@ class EmojiPickerCollectionView: UICollectionView {
 
     lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissSkinTonePicker))
 
-    init(message: TSMessage?) {
+    private let forceDarkTheme: Bool
+
+    init(
+        message: TSMessage?,
+        forceDarkTheme: Bool = false
+    ) {
+        self.forceDarkTheme = forceDarkTheme
+
         layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(square: EmojiPickerCollectionView.emojiWidth)
         layout.minimumInteritemSpacing = EmojiPickerCollectionView.minimumSpacing
@@ -126,7 +133,7 @@ class EmojiPickerCollectionView: UICollectionView {
             withReuseIdentifier: EmojiSectionHeader.reuseIdentifier
         )
 
-        backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+        backgroundColor = (Theme.isDarkThemeEnabled || self.forceDarkTheme) ? .ows_gray80 : .ows_white
 
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
         panGestureRecognizer.require(toFail: longPressGesture)
@@ -504,7 +511,7 @@ extension EmojiPickerCollectionView: UICollectionViewDelegateFlowLayout {
             return CGSize.zero
         }
 
-        let measureCell = EmojiSectionHeader()
+        let measureCell = EmojiSectionHeader(forceDarkTheme: self.forceDarkTheme)
         measureCell.label.text = nameForSection(section)
         return measureCell.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
     }
@@ -545,7 +552,7 @@ private class EmojiSectionHeader: UICollectionReusableView {
 
     let label = UILabel()
 
-    override init(frame: CGRect) {
+    private override init(frame: CGRect) {
         super.init(frame: frame)
 
         layoutMargins = UIEdgeInsets(
@@ -556,10 +563,14 @@ private class EmojiSectionHeader: UICollectionReusableView {
         )
 
         label.font = UIFont.dynamicTypeFootnoteClamped.semibold()
-        label.textColor = Theme.secondaryTextAndIconColor
         addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
         label.setCompressionResistanceHigh()
+    }
+
+    convenience init(forceDarkTheme: Bool = false) {
+        self.init(frame: .zero)
+        label.textColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
     }
 
     required init?(coder: NSCoder) {

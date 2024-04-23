@@ -16,10 +16,13 @@ class EmojiPickerSectionToolbar: BlurredToolbarContainer {
 
     private weak var delegate: EmojiPickerSectionToolbarDelegate?
 
-    init(delegate: EmojiPickerSectionToolbarDelegate) {
+    init(
+        delegate: EmojiPickerSectionToolbarDelegate,
+        forceDarkTheme: Bool = false
+    ) {
         self.delegate = delegate
 
-        super.init()
+        super.init(forceDarkTheme: forceDarkTheme)
 
         buttons = [
             createSectionButton(icon: .emojiSmiley),
@@ -53,9 +56,12 @@ class EmojiPickerSectionToolbar: BlurredToolbarContainer {
         let button = UIButton()
         button.setImage(Theme.iconImage(icon), for: .normal)
 
-        let selectedBackgroundColor = UIAccessibility.isReduceTransparencyEnabled
-            ? (Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_gray05)
-            : Theme.backgroundColor
+        let selectedBackgroundColor: UIColor
+        if UIAccessibility.isReduceTransparencyEnabled {
+            selectedBackgroundColor = (Theme.isDarkThemeEnabled || forceDarkTheme) ? UIColor.ows_gray75 : UIColor.ows_gray05
+        } else {
+            selectedBackgroundColor = forceDarkTheme ? Theme.darkThemeBackgroundColor : Theme.backgroundColor
+        }
 
         button.setBackgroundImage(UIImage.image(color: selectedBackgroundColor), for: .selected)
 

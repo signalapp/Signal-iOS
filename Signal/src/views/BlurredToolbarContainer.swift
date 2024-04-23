@@ -9,9 +9,15 @@ class BlurredToolbarContainer: UIView {
     let toolbar = UIToolbar()
     private var blurEffectView: UIVisualEffectView?
 
-    init() {
+    let forceDarkTheme: Bool
+
+    init(forceDarkTheme: Bool = false) {
+        self.forceDarkTheme = forceDarkTheme
         super.init(frame: .zero)
 
+        if forceDarkTheme {
+            toolbar.overrideUserInterfaceStyle = .dark
+        }
         addSubview(toolbar)
         toolbar.autoPinEdge(toSuperviewSafeArea: .bottom)
         toolbar.autoPinWidthToSuperview()
@@ -20,10 +26,10 @@ class BlurredToolbarContainer: UIView {
     }
 
     func themeChanged() {
-        toolbar.tintColor = Theme.primaryIconColor
+        toolbar.tintColor = self.forceDarkTheme ? Theme.darkThemeNavbarIconColor : Theme.primaryIconColor
         if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
-            let color = Theme.navbarBackgroundColor
+            let color = self.forceDarkTheme ? Theme.darkThemeNavbarBackgroundColor : Theme.navbarBackgroundColor
             let backgroundImage = UIImage.image(color: color)
             toolbar.setBackgroundImage(backgroundImage, forToolbarPosition: .any, barMetrics: .default)
         } else {
@@ -31,7 +37,7 @@ class BlurredToolbarContainer: UIView {
             // to achieve transparency, we have to assign a transparent image.
             toolbar.setBackgroundImage(UIImage.image(color: .clear), forToolbarPosition: .any, barMetrics: .default)
 
-            let blurEffect = Theme.barBlurEffect
+            let blurEffect = self.forceDarkTheme ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect
 
             let blurEffectView: UIVisualEffectView = {
                 if let existingBlurEffectView = self.blurEffectView {
