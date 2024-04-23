@@ -1,1 +1,1 @@
-• Pieniä säätöjä, virheenkorjauksia ja suorituskykyparannuksia. Kiitos, että käytät Signalia! 
+• Lisäsimme mukautettujen lempinimien ja huomautusten tuen niille, joiden kanssa juttelet Signalissa – vaikka he eivät olisikaan järjestelmäsi yhteystiedoissa. Huomautukset ja lempinimet ovat kätevä ja turvallinen tapa kirjoittaa muistiin lisätietoa Signal-kontakteistasi, ja ne suojataan Signal PIN-koodillasi päästä päähän. Näin ne voidaan palauttaa turvallisesti, jos kadotat puhelimesi.

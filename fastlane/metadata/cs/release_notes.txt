@@ -1,1 +1,1 @@
-• Drobná vylepšení, opravy chyb a zvýšení výkonu. Děkujeme, že používáte Signal! 
+• Přidali jsme podporu vlastních přezdívek a poznámek pro kohokoli, s kým chatujete ve službě Signal, i když danou osobu nemáte v kontaktech zařízení. Poznámky a přezdívky poskytují pohodlný a bezpečný způsob, jak si zapsat další podrobnosti o svých spojeních Signal – a navíc jsou koncově šifrovány a chráněny vaším PIN kódem Signal, takže je lze bezpečně obnovit, když ztratíte telefon.

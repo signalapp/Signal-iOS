@@ -1,1 +1,1 @@
-• Pequenas alterações, correções de bugs e melhorias de desempenho. Agradecemos por usar o Signal! 
+• Adicionamos suporte para notas e apelidos personalizados para todas as pessoas com quem você conversar no Signal, mesmo que elas não estejam nos seus contatos. Notas e apelidos são uma forma prática e segura de saber mais informações adicionais dos seus contatos do Signal rapidamente. Essas informações são criptografadas de ponta a ponta e protegidas pelo seu PIN do Signal, mesmo se não estiverem nos contatos do telefone.

@@ -1,1 +1,1 @@
-• Manja podešavanja, ispravci programskih pogrešaka i poboljšanje rada aplikacije. Hvala što koristite Signal! 
+• Dodali smo podršku za nadimke i bilješke koje možete dodati za svaku osobu s kojom razgovarate na Signalu, čak i ako se ona ne nalazi u kontaktima sustava vašeg uređaja. Nadimci i bilješke pružaju prikladan i siguran način za bilježenje dodatnih pojedinosti o vašim kontaktima na Signalu, a zaštićeni su sveobuhvatnim šifriranjem i vašim Signal PIN-om tako da im možete pristupiti čak i u slučaju da izgubite telefon.

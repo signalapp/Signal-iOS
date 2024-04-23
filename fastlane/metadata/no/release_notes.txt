@@ -1,1 +1,1 @@
-• Noen små justeringer, feilrettinger og ytelsesforbedringer. Takk for at du bruker Signal! 
+• Nå kan du legge til notater og gi kallenavn til alle du chatter med på Signal, selv de som ikke står i kontaktlisten på telefonen din. Dette gjør det trygt og enkelt å skrive ned informasjon om alle Signal-kontaktene dine. Notatene og kallenavnene er også ende-til-ende-krypterte og beskyttet av PIN-koden din, slik at det er lett å finne dem igjen dersom du mister mobilen.

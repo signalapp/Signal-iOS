@@ -1,1 +1,1 @@
-• Malé úpravy, opravy chýb a vylepšenia výkonu. Ďakujeme, že používate Signal! 
+• Pridali sme podporu pre prezývky a poznámky pre každého, s kým v aplikácii četujete, a to aj v prípade, že nie je vo vašich systémových kontaktoch. Poznámky a prezývky predstavujú pohodlný a bezpečný spôsob, ako pridať viac podrobností o vašich Signal spojeniach — navyše sú vybavené end-to-end šifrovaním a chránené Signal PINom, takže ich možno bezpečne obnoviť aj v prípade straty telefónu.

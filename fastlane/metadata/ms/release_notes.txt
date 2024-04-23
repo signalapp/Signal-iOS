@@ -1,1 +1,1 @@
-• Sedikit pengubahsuaian, pembaikan pepijat dan peningkatan prestasi. Terima kasih kerana menggunakan Signal! 
+• Kami telah menambahkan sokongan untuk nama pendek dan nota tersuai bagi sesiapa yang bersembang dengan anda di Signal, walaupun mereka bukan dalam kenalan sistem anda. Nota dan nama pendek memberikan cara yang mudah dan selamat untuk mencatat maklumat tambahan mengenai Hubungan Signal anda — dan ia disulitkan hujung ke hujung  dan dilindungi oleh Signal PIN anda supaya ia boleh dipulihkan dengan selamat jika anda kehilangan telefon.

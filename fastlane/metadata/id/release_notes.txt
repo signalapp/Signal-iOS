@@ -1,1 +1,1 @@
-• Penyesuaian kecil, perbaikan bug, dan peningkatan performa.  Terima kasih telah menggunakan Signal! 
+• Kami menambahkan dukungan untuk nama panggilan kustom dan catatan bagi siapa saja yang mengobrol dengan Anda di Signal, sekalipun mereka tidak tersimpan di daftar kontak sistem. Dengan catatan dan nama panggilan, Anda bisa menuliskan detail tambahan tentang Koneksi Signal Anda dengan aman dan nyaman — catatan dan nama pengguna ini juga terenkripsi ujung-ke-ujung dan dilindungi PIN Signal Anda, jadi dapat dipulihkan dengan aman jika ponsel Anda hilang.

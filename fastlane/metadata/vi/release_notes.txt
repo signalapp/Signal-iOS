@@ -1,1 +1,1 @@
-• Các tinh chỉnh, sửa lỗi, và cải thiện hiệu năng. Cảm ơn bạn đã sử dụng Signal! 
+• Giờ đây chúng tôi hỗ trợ biệt danh tùy chỉnh và ghi chú đối với bất kỳ ai trò chuyện với bạn trên Signal, ngay cả trong trường hợp người đó không có trong danh bạ của thiết bị. Ghi chú và biệt danh là một cách tiện lợi và bảo mật giúp bạn ghi lại những thông tin khác về các Liên hệ Signal của mình — và các nội dung này đều được mã hóa đầu cuối và bảo vệ bởi mã PIN của Signal của bạn để có thể được khôi phục một cách an toàn ngay cả trong trường hợp bạn mất điện thoại.

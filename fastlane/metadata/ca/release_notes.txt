@@ -1,1 +1,1 @@
-• Petits ajustos, correccions d'errors i tasques de millora de rendiment. Gràcies per utilitzar Signal! 
+• Ara, pots afegir sobrenoms i notes personalitzades per a qualsevol persona de Signal amb qui tinguis un xat, fins i tot si no el tens guardat als contactes. Les notes i els sobrenoms són una forma pràctica i segura d'anotar detalls addicionals sobre les teves Connexions de Signal. A més a més, estan xifrats d'extrem a extrem i protegits amb el PIN de Signal, així que pots restaurar-los de forma segura en cas de perdre el mòbil.

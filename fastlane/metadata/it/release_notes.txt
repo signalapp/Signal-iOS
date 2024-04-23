@@ -1,1 +1,1 @@
-• Qualche modifica qua e là, qualche bug rimosso e prestazioni migliorate per tutta l'app. Da ora usare Signal sarà ancora più piacevole! 
+• Hai la possibilità di aggiungere soprannomi e note per ogni persona con cui chatti su Signal, anche se non è salvata tra i contatti del tuo telefono. Puoi rinominare i tuoi contatti con i soprannomi che usi da una vita o scrivere una nota sul vostro primo incontro: il tutto usando un modo sicuro, crittografato end-to-end e protetto dal tuo PIN di Signal (così da poter ripristinare tutti questi dati su un nuovo telefono).

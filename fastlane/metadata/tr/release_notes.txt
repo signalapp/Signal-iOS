@@ -1,1 +1,1 @@
-• Küçük ince ayarlar, hata düzeltmeleri ve performans geliştirmeleri yaptık. Signal'i kullandığın için teşekkürler! 
+• Sistem kişilerinde olmasa bile Signal'de sohbet ettiğin herkes için özel takma adlar ve notlar için destek ekledik. Notlar ve takma adlar, Signal Bağlantıların hakkındaki ek detayları not almak için kullanışlı ve güvenli bir yol sağlar — ve uçtan uca şifrelenir ve Signal PIN'in tarafından korunurlar böylece telefonunu kaybetsen bile güvenli bir şekilde geri yüklenebilirler.

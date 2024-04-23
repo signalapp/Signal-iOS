@@ -1,1 +1,1 @@
-• Pequenos ajustes adicionais, correções de bugs e melhorias de desempenho. Obrigado por utilizar o Signal! 
+• Adicionámos suporte para alcunhas e notas personalizadas para qualquer pessoa com quem esteja a conversar no Signal, mesmo que não esteja nos seus contactos do telemóvel. As notas e as alcunhas são uma forma conveniente e segura de anotar detalhes adicionais acerca dos seus contactos do Signal. São encriptadas de ponto a ponto e protegidas pelo seu PIN do Signal, por isso podem ser restauradas com segurança caso perca o seu telemóvel.

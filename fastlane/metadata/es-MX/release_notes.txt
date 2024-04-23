@@ -1,1 +1,1 @@
-• Pequeños ajustes, soluciones a errores y mejoras al desempeño. ¡Gracias por usar Signal! 
+• Ahora, puedes añadir apodos y notas personalizados para cualquier persona con la que estés chateando en Signal, incluso si no la tienes en tus contactos del sistema. Las notas y los apodos son una forma práctica y segura de anotar detalles adicionales sobre tus Conexiones de Signal. Además, están cifrados de extremo a extremo y protegidos con tu PIN de Signal, así que puedes restaurarlos de forma segura en caso de perder tu teléfono.

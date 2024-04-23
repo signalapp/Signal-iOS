@@ -1,1 +1,1 @@
-• Kleine Optimierungen, Fehlerbehebungen und Leistungsverbesserungen. Danke, dass du Signal nutzt! 
+• Wir unterstützen nun auch Spitznamen und Notizen für alle, mit denen du auf Signal chattest, auch wenn sie nicht in deinen Telefonkontakten gespeichert sind. Dank Notizen und Spitznamen kannst du ganz bequem und sicher weitere Details zu deinen Signal-Kontakten hinzufügen. Und diese sind Ende-zu-Ende-verschlüsselt und durch deine Signal-PIN geschützt, sodass sie auch bei Verlust deines Telefons sicher wiederhergestellt werden können.

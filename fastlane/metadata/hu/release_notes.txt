@@ -1,1 +1,1 @@
-• Kis módosítások, hibajavítások és teljesítménynövelések. Köszönjük, hogy a Signalt használod! 
+• Mostantól támogatjuk az egyéni beceneveket és megjegyzéseket mindenki számára, akivel a Signalban csevegsz, még akkor is, ha az adott személy nem szerepel a rendszernévjegyeid között. A megjegyzések és becenevek kényelmes és biztonságos módot kínálnak a Signal Névjegyekkel kapcsolatos további részletek feljegyzésére – végponttól végpontig titkosítva vannak, és Signal PIN-kód védi őket, így biztonságosan visszaállíthatók, ha elveszítenéd a telefonodat.

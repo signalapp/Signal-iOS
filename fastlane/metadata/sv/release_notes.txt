@@ -1,1 +1,1 @@
-• Små justeringar, buggfixar och prestandaförbättringar. Tack för att du använder Signal! 
+• Vi har lagt till stöd för anpassade smeknamn och anteckningar för alla som du chattar med på Signal, även om de inte finns med i dina systemkontakter. Anteckningar och smeknamn är ett bekvämt och säkert sätt att skriva ner ytterligare information om dina Signal-kontakter – och de är totalsträckskrypterade och skyddas av din Signal-pinkod så att de kan återställas på ett säkert sätt om du tappar bort din telefon.

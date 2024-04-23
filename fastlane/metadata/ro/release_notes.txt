@@ -1,1 +1,1 @@
-• Mici ajustări, soluționări de bug-uri și îmbunătățiri ale performanței. Mulțumim că folosești Signal! 
+• Am adăugat suport pentru pseudonime și note personalizate pentru oricine cu care discuți pe Signal, chiar dacă nu îl ai la contactele din telefon. Notele și pseudonimele oferă un mod convenabil și sigur de a nota detalii suplimentare despre conexiunile Signal — și sunt criptate de la un capăt la altul și protejate de PIN-ul Signal, astfel încât pot fi restabilite în siguranță dacă îți pierzi și telefonul.
