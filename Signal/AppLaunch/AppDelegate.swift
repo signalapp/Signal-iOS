@@ -1027,7 +1027,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             // need to handle this behavior for legacy UINotification users anyway, we "allow" all
             // notification options here, and rely on the shared logic in NotificationPresenterImpl to
             // honor notification sound preferences for both modern and legacy users.
-            let options: UNNotificationPresentationOptions = [.alert, .badge, .sound]
+            let options: UNNotificationPresentationOptions = [.badge, .banner, .list, .sound]
             completionHandler(options)
         }
     }

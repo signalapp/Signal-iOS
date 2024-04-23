@@ -162,7 +162,7 @@ public class LocationPicker: UIViewController {
     }
 
     func requestAuthorization() {
-        switch CLLocationManager.authorizationStatus() {
+        switch locationManager.authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
             // We are already authorized, do nothing!
             break

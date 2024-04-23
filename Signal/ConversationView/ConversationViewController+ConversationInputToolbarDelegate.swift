@@ -637,14 +637,10 @@ fileprivate extension ConversationViewController {
     func showDocumentPicker() {
         AssertIsOnMainThread()
 
-        let documentTypes: [String] = [ kUTTypeItem as String ]
-
-        // UIDocumentPickerModeImport copies to a temp file within our container.
+        // UIDocumentPickerViewController with asCopy true copies to a temp file within our container.
         // It uses more memory than "open" but lets us avoid working with security scoped URLs.
-        let pickerMode: UIDocumentPickerMode = .import
-
-        let pickerController = UIDocumentPickerViewController(documentTypes: documentTypes,
-                                                              in: pickerMode)
+        let pickerController = UIDocumentPickerViewController(forOpeningContentTypes: [.item],
+                                                              asCopy: true)
         pickerController.delegate = self
 
         dismissKeyBoard()

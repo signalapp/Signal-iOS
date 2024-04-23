@@ -303,11 +303,6 @@ public extension UIBarButtonItem {
         }
     }
 
-    /// Creates a flexible space bar item.
-    static func flexibleSpace() -> UIBarButtonItem {
-        UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-    }
-
     // Feel free to add more system item functions as the need arises
 }
 

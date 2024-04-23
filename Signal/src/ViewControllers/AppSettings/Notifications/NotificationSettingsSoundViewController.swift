@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import UniformTypeIdentifiers
+
 import SignalServiceKit
 import SignalUI
 
@@ -100,17 +102,17 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
             ),
             actionBlock: { [weak self] in
                 guard let self = self else { return }
-                let picker = UIDocumentPickerViewController(
-                    documentTypes: [
-                        "com.microsoft.waveform-audio",
-                        "public.aifc-audio",
-                        "public.aiff-audio",
-                        "com.apple.coreaudio-format",
-                        "public.mp3",
-                        "com.apple.mpeg-4-ringtone"
-                    ],
-                    in: .import
-                )
+                var contentTypes: [UTType] = [.wav, .aiff, .mp3]
+                for additionalUti in [
+                    "public.aifc-audio",
+                    "com.apple.coreaudio-format",
+                    "com.apple.mpeg-4-ringtone",
+                ] {
+                    if let element = UTType(additionalUti) {
+                        contentTypes.append(element)
+                    }
+                }
+                let picker = UIDocumentPickerViewController(forOpeningContentTypes: contentTypes, asCopy: true)
                 picker.delegate = self
                 self.present(picker, animated: true)
             }

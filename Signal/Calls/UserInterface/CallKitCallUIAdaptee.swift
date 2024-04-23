@@ -45,8 +45,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // The app's provider configuration, representing its CallKit capabilities
     class func buildProviderConfiguration(useSystemCallLog: Bool) -> CXProviderConfiguration {
-        let localizedName = OWSLocalizedString("APPLICATION_NAME", comment: "Name of application")
-        let providerConfiguration = CXProviderConfiguration(localizedName: localizedName)
+        let providerConfiguration = CXProviderConfiguration()
 
         providerConfiguration.supportsVideo = true
 

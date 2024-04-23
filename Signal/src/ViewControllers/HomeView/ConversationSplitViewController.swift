@@ -60,7 +60,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
         chatListNavController.delegate = self
         delegate = self
-        preferredDisplayMode = .allVisible
+        preferredDisplayMode = .oneBesideSecondary
 
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
         NotificationCenter.default.addObserver(
