@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
+
 public class GradientView: UIView {
 
     public override class var layerClass: AnyClass { CAGradientLayer.self }
@@ -38,15 +40,25 @@ public class GradientView: UIView {
     }
 
     private func updateGradientColors() {
+        guard gradientWithinPerformanceLimits() else { return }
         gradientLayer.colors = colors.map { $0.cgColor }
     }
 
     private func updateGradientLocations() {
+        guard gradientWithinPerformanceLimits() else { return }
         if let locations = locations, !locations.isEmpty {
             gradientLayer.locations = locations.map { NSNumber(value: $0) }
         } else {
             gradientLayer.locations = nil
         }
+    }
+
+    private func gradientWithinPerformanceLimits() -> Bool {
+        if (colors.count * 4 + (locations?.count ?? 0)) > 512 {
+            owsFailDebug("Too many gradient points")
+            return false
+        }
+        return true
     }
 
     /// Sets the `startPoint` and `endPoint` of the layer to reflect an angle in degrees
