@@ -382,7 +382,6 @@ extension UIImage {
         }
     }
 
-
     @objc
     public func resizedImage(toFillPixelSize dstSize: CGSize) -> UIImage {
         owsAssertDebug(dstSize.width > 0)
