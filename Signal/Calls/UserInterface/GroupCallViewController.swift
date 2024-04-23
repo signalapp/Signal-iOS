@@ -65,7 +65,13 @@ class GroupCallViewController: UIViewController {
     lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
     lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
 
-    var shouldRemoteVideoControlsBeHidden = false {
+    enum CallControlsDisplayState {
+        case callControlsAndOverflow
+        case callControlsOnly
+        case none
+    }
+
+    private var callControlsDisplayState: CallControlsDisplayState = .callControlsOnly {
         didSet { updateCallUI() }
     }
     var hasUnresolvedSafetyNumberMismatch = false
@@ -91,6 +97,15 @@ class GroupCallViewController: UIViewController {
     private var shouldRelayoutAfterPipAnimationCompletes = false
     private var postAnimationUpdateMemberViewFramesSize: CGSize?
     private var postAnimationUpdateMemberViewFramesControlsAreHidden: Bool?
+
+    private lazy var callControlsOverflowView: CallControlsOverflowView = {
+        return CallControlsOverflowView(
+            reactionSender: self.groupCall,
+            reactionReceiver: self.incomingReactionsView,
+            emojiPickerSheetPresenter: self,
+            callControlsOverflowPresenter: self
+        )
+    }()
 
     init(call: SignalCall) {
         // TODO: Eventually unify UI for group and individual calls
@@ -249,14 +264,17 @@ class GroupCallViewController: UIViewController {
         swipeToastView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
         swipeToastView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
 
-        // Confirmation toasts should sit on top of the `localMemberView` and `videoOverflow`,
-        // so this `addSubview` should remain towards the end of the setup.
-        // 
-        // TODO: The call controls '...' overflow menu (which will include reactions and raise hand
-        // options) will sit on top of these toasts.
         view.addSubview(callControlsConfirmationToastContainerView)
         callControlsConfirmationToastContainerView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -30)
         callControlsConfirmationToastContainerView.autoHCenterInSuperview()
+
+        view.addSubview(callControlsOverflowView)
+        if UIDevice.current.isIPad {
+            callControlsOverflowView.centerXAnchor.constraint(equalTo: callControls.centerXAnchor).isActive = true
+        } else {
+            callControlsOverflowView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -12)
+        }
+        callControlsOverflowView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -12)
 
         view.addGestureRecognizer(tapGesture)
 
@@ -578,30 +596,109 @@ class GroupCallViewController: UIViewController {
             incomingCallControls.isHidden = true
         }
 
-        let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !groupCall.remoteDeviceStates.isEmpty
-        let remoteControlsAreHidden = callControls.isHidden && callHeader.isHidden
-        if hideRemoteControls != remoteControlsAreHidden {
-            callControls.isHidden = false
-            callHeader.isHidden = false
-
-            UIView.animate(withDuration: 0.15, animations: {
-                self.callControls.alpha = hideRemoteControls ? 0 : 1
-                self.callHeader.alpha = hideRemoteControls ? 0 : 1
-
-                self.updateMemberViewFrames(size: size, controlsAreHidden: hideRemoteControls)
-                self.updateScrollViewFrames(size: size, controlsAreHidden: hideRemoteControls)
-                self.view.layoutIfNeeded()
-            }) { _ in
-                self.callControls.isHidden = hideRemoteControls
-                self.callHeader.isHidden = hideRemoteControls
-            }
+        let callControlsAreHidden = callControls.isHidden && callHeader.isHidden
+        let callControlsOverflowContentIsHidden = self.callControlsOverflowView.isHidden
+        if !callControlsAreHidden && !callControlsOverflowContentIsHidden {
+            self.callControlDisplayStateDidChange(
+                oldState: .callControlsAndOverflow,
+                newState: self.callControlsDisplayState,
+                size: size
+            )
+        } else if !callControlsAreHidden {
+            self.callControlDisplayStateDidChange(
+                oldState: .callControlsOnly,
+                newState: self.callControlsDisplayState,
+                size: size
+            )
+        } else if !callControlsOverflowContentIsHidden {
+            owsFailDebug("Call Controls Overflow content should never be visible while Call Controls are hidden.")
         } else {
-            updateMemberViewFrames(size: size, controlsAreHidden: hideRemoteControls)
-            updateScrollViewFrames(size: size, controlsAreHidden: hideRemoteControls)
+            self.callControlDisplayStateDidChange(
+                oldState: .none,
+                newState: self.callControlsDisplayState,
+                size: size
+            )
         }
 
         scheduleControlTimeoutIfNecessary()
         updateSwipeToastView()
+    }
+
+    private func callControlDisplayStateDidChange(
+        oldState: CallControlsDisplayState,
+        newState: CallControlsDisplayState,
+        size: CGSize?
+    ) {
+        func updateFrames(controlsAreHidden: Bool) {
+            updateMemberViewFrames(size: size, controlsAreHidden: controlsAreHidden)
+            updateScrollViewFrames(size: size, controlsAreHidden: controlsAreHidden)
+        }
+
+        switch oldState {
+        case .callControlsAndOverflow:
+            switch newState {
+            case .callControlsAndOverflow:
+                updateFrames(controlsAreHidden: false)
+            case .callControlsOnly:
+                self.callControlsOverflowView.animateOut()
+            case .none:
+                // This can happen if you tap the root view fast enough in succession.
+                animateCallControls(
+                    hideCallControls: !groupCall.remoteDeviceStates.isEmpty,
+                    size: size
+                )
+                self.callControlsOverflowView.animateOut()
+            }
+        case .callControlsOnly:
+            switch newState {
+            case .callControlsAndOverflow:
+                self.callControlsOverflowView.animateIn()
+            case .callControlsOnly:
+                updateFrames(controlsAreHidden: false)
+            case .none:
+                animateCallControls(
+                    hideCallControls: !groupCall.remoteDeviceStates.isEmpty,
+                    size: size
+                )
+            }
+        case .none:
+            switch newState {
+            case .callControlsAndOverflow:
+                owsFailDebug("Impossible callControlsDisplayState transition")
+                // But if you must...
+                animateCallControls(
+                    hideCallControls: false,
+                    size: size
+                )
+                self.callControlsOverflowView.animateIn()
+            case .callControlsOnly:
+                animateCallControls(
+                    hideCallControls: false,
+                    size: size
+                )
+            case .none:
+                updateFrames(controlsAreHidden: true)
+            }
+        }
+    }
+
+    private func animateCallControls(
+        hideCallControls: Bool,
+        size: CGSize?
+    ) {
+        callControls.isHidden = false
+        callHeader.isHidden = false
+        UIView.animate(withDuration: 0.15, animations: {
+            self.callControls.alpha = hideCallControls ? 0 : 1
+            self.callHeader.alpha = hideCallControls ? 0 : 1
+
+            self.updateMemberViewFrames(size: size, controlsAreHidden: hideCallControls)
+            self.updateScrollViewFrames(size: size, controlsAreHidden: hideCallControls)
+            self.view.layoutIfNeeded()
+        }) { _ in
+            self.callControls.isHidden = hideCallControls
+            self.callHeader.isHidden = hideCallControls
+        }
     }
 
     private func dismissCall(shouldHangUp: Bool = true) {
@@ -644,18 +741,35 @@ class GroupCallViewController: UIViewController {
         return true
     }
 
-    // MARK: - Video control timeout
+    // MARK: - Call controls timeout
 
     @objc
     private func didTouchRootView(sender: UIGestureRecognizer) {
-        shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
+        switch self.callControlsDisplayState {
+        case .callControlsAndOverflow,
+             .none:
+            self.callControlsDisplayState = .callControlsOnly
+        case .callControlsOnly:
+            self.callControlsDisplayState = .none
+        }
     }
 
     private var controlTimeoutTimer: Timer?
     private func scheduleControlTimeoutIfNecessary() {
-        if  groupCall.remoteDeviceStates.isEmpty || shouldRemoteVideoControlsBeHidden {
+        switch self.callControlsDisplayState {
+        case .callControlsAndOverflow,
+             .none:
             controlTimeoutTimer?.invalidate()
             controlTimeoutTimer = nil
+            return
+        case .callControlsOnly:
+            break
+        }
+
+        if groupCall.remoteDeviceStates.isEmpty {
+            controlTimeoutTimer?.invalidate()
+            controlTimeoutTimer = nil
+            return
         }
 
         guard controlTimeoutTimer == nil else { return }
@@ -673,8 +787,15 @@ class GroupCallViewController: UIViewController {
         controlTimeoutTimer?.invalidate()
         controlTimeoutTimer = nil
 
-        guard !isCallMinimized && !groupCall.remoteDeviceStates.isEmpty && !shouldRemoteVideoControlsBeHidden else { return }
-        shouldRemoteVideoControlsBeHidden = true
+        guard !isCallMinimized && !groupCall.remoteDeviceStates.isEmpty else { return }
+
+        switch self.callControlsDisplayState {
+        case .callControlsAndOverflow,
+             .none:
+            return
+        case .callControlsOnly:
+            self.callControlsDisplayState = .none
+        }
     }
 }
 
@@ -706,7 +827,14 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         }
 
         isCallMinimized = false
-        shouldRemoteVideoControlsBeHidden = false
+
+        switch self.callControlsDisplayState {
+        case .callControlsAndOverflow,
+             .callControlsOnly:
+            break
+        case .none:
+            self.callControlsDisplayState = .callControlsOnly
+        }
 
         animateReturnFromPip(pipSnapshot: pipSnapshot, pipFrame: pipWindow.frame, splitViewSnapshot: splitViewSnapshot)
     }
@@ -1068,6 +1196,14 @@ extension GroupCallViewController: CallControlsDelegate {
     func didPressHangup() {
         didHangupCall()
     }
+
+    func didPressMore() {
+        if self.callControlsOverflowView.isHidden {
+            self.callControlsDisplayState = .callControlsAndOverflow
+        } else {
+            self.callControlsDisplayState = .callControlsOnly
+        }
+    }
 }
 
 extension GroupCallViewController: CallMemberErrorPresenter {
@@ -1147,5 +1283,22 @@ extension GroupCallViewController: AnimatableLocalMemberViewDelegate {
     func animatableLocalMemberViewWillBeginAnimation(_ localMemberView: CallMemberView) {
         self.isPipAnimationInProgress = true
         self.flipCameraTooltipManager.dismissTooltip()
+    }
+}
+
+// MARK: - CallControlsOverflowPresenter
+
+extension GroupCallViewController: CallControlsOverflowPresenter {
+    func callControlsOverflowWillAppear() {
+        self.controlTimeoutTimer?.invalidate()
+        self.controlTimeoutTimer = nil
+    }
+
+    func callControlsOverflowDidDisappear() {
+        self.scheduleControlTimeoutIfNecessary()
+    }
+
+    func willSendReaction() {
+        self.callControlsDisplayState = .callControlsOnly
     }
 }

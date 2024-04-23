@@ -1196,15 +1196,19 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
 
 extension IndividualCallViewController: CallControlsDelegate {
     func didPressRing() {
-        // Ring not available for individual calls
+        owsFailDebug("Ring button should not be available in Call Controls for individual calls!")
     }
 
     func didPressJoin() {
-        // Join not available for individual calls
+        owsFailDebug("Join button should not be available in Call Controls for individual calls!")
     }
 
     func didPressHangup() {
         dismissIfPossible(shouldDelay: false)
+    }
+
+    func didPressMore() {
+        owsFailDebug("More button should not be available in Call Controls for individual calls!")
     }
 }
 

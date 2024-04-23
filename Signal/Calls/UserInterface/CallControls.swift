@@ -12,6 +12,7 @@ protocol CallControlsDelegate: AnyObject {
     func didPressRing()
     func didPressJoin()
     func didPressHangup()
+    func didPressMore()
 }
 
 class CallControls: UIView {
@@ -658,7 +659,7 @@ extension CallControlsViewModel {
 
     @objc
     func didPressMore() {
-        // TODO: Display reaction picker and raise hand option.
+        delegate?.didPressMore()
     }
 }
 
