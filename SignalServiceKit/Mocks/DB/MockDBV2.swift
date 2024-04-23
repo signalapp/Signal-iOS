@@ -23,6 +23,12 @@ import SignalCoreKit
 private class MockTransaction: DBWriteTransaction {
     init() {}
 
+    var syncCompletions = [() -> Void]()
+
+    func addSyncCompletion(_ block: @escaping () -> Void) {
+        syncCompletions.append(block)
+    }
+
     struct AsyncCompletion {
         let scheduler: Scheduler
         let block: () -> Void
@@ -109,6 +115,10 @@ public class MockDB: DB {
             weaklyHeldTransactions.append(tx)
 
             let blockValue = try block(tx)
+
+            tx.syncCompletions.forEach {
+                $0()
+            }
 
             tx.asyncCompletions.forEach {
                 $0.scheduler.async($0.block)

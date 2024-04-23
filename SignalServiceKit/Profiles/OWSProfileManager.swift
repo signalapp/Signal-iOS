@@ -633,7 +633,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         // so skip the update profile for address call.
         if case .otherUser(let serviceId) = address {
             udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
-            SDSDB.shimOnlyBridge(tx).addSyncCompletion {
+            tx.addSyncCompletion {
                 let profileFetcher = SSKEnvironment.shared.profileFetcherRef
                 _ = profileFetcher.fetchProfileSync(for: serviceId, options: [.mainAppOnly], authedAccount: authedAccount)
             }
